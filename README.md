@@ -14,6 +14,10 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 
 This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 
+## Draft Posts
+
+Each post has an optional boolean gray matter field 'draft'. It will only publish a page during a static build if the draft property is set to false.
+
 ## Build and Deployment
 
 This site generates a static site for hosting through [GitHub Pages](https://docs.github.com/en/pages).  
@@ -21,7 +25,7 @@ This site generates a static site for hosting through [GitHub Pages](https://doc
 To run a build use:
 
 ```bash
-npm build
+npm run build
 ```
 
 ## NextJS Info
