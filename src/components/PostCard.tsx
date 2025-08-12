@@ -10,15 +10,7 @@ export function PostCard({ post }: PostCardProps) {
   const postUrl = generatePostUrl(post.date, post.slug);
 
   return (
-    <article className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden hover:shadow-lg transition-shadow duration-200">
-      {post.featured_image && (
-        <div className="aspect-video bg-gray-200 dark:bg-gray-700">
-          {/* Placeholder for featured image */}
-          <div className="w-full h-full flex items-center justify-center text-gray-500 dark:text-gray-400">
-            Featured Image
-          </div>
-        </div>
-      )}
+    <article className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden drop-shadow-lg hover:shadow-lg transition-shadow duration-200">
       
       <div className="p-6">
         <div className="flex items-center gap-2 mb-3 text-sm text-gray-600 dark:text-gray-400">
@@ -65,6 +57,15 @@ export function PostCard({ post }: PostCardProps) {
           </Link>
         </div>
       </div>
+
+      {post.featured_image && (
+        <div className="aspect-video bg-gray-200 dark:bg-gray-700">
+          {/* Placeholder for featured image */}
+          <div className="w-full h-full flex items-center justify-center text-gray-500 dark:text-gray-400">
+            Featured Image
+          </div>
+        </div>
+      )}
     </article>
   );
 }
