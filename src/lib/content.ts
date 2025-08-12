@@ -3,6 +3,7 @@ import path from 'path';
 import matter from 'gray-matter';
 import readingTime from 'reading-time';
 import { Post, PostMeta, Page, PostFrontmatter, PageFrontmatter, PaginatedPosts, TagPage } from './types';
+import { extractHeadings } from './utils';
 
 const POSTS_DIR = path.join(process.cwd(), 'content', 'posts');
 const PAGES_DIR = path.join(process.cwd(), 'content', 'pages');
@@ -155,6 +156,7 @@ export function getPostMeta(filename: string): PostMeta {
   const frontmatter = data as PostFrontmatter;
   const slug = generatePostSlug(filename, frontmatter.slug);
   const readingTimeResult = readingTime(content);
+  const headings = extractHeadings(content);
   
   return {
     slug,
@@ -164,6 +166,8 @@ export function getPostMeta(filename: string): PostMeta {
     tags: frontmatter.tags || [],
     featured_image: frontmatter.featured_image,
     readingTime: Math.ceil(readingTimeResult.minutes),
+    showToc: frontmatter.showToc,
+    headings,
   };
 }
 
@@ -200,6 +204,8 @@ export function getPost(slug: string): Post | null {
     featured_image: frontmatter.featured_image,
     content,
     readingTime: Math.ceil(readingTimeResult.minutes),
+    showToc: frontmatter.showToc,
+    headings: extractHeadings(content),
   };
 }
 
@@ -288,6 +294,8 @@ export function getPage(slug: string): Page | null {
     title: frontmatter.title,
     description: frontmatter.description,
     content,
+    showToc: frontmatter.showToc,
+    headings: extractHeadings(content),
   };
 }
 

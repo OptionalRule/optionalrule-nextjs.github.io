@@ -5,6 +5,8 @@ import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import type { Metadata } from 'next';
 import { MDXRemote } from 'next-mdx-remote/rsc';
+import { useMDXComponents } from '@/mdx-components';
+import TableOfContents from '@/components/TableOfContents';
 // import { useMDXComponents } from '@/mdx-components';
 
 interface PostPageProps {
@@ -160,9 +162,19 @@ export default async function PostPage({ params }: PostPageProps) {
               )}
             </header>
 
+            {/* Table of Contents */}
+            {post.showToc !== false && (
+              <div className="mb-8 p-6 bg-gray-50 dark:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-600">
+                <TableOfContents headings={post.headings} />
+              </div>
+            )}
+
             {/* Post Content */}
             <div className="prose prose-lg dark:prose-invert max-w-none">
-              <MDXRemote source={post.content} />
+              <MDXRemote 
+                source={post.content} 
+                components={useMDXComponents({})}
+              />
             </div>
           </div>
         </article>

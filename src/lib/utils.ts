@@ -32,3 +32,31 @@ export function generatePageTitle(title: string, siteName: string = 'My Blog'): 
 export function generateMetaDescription(description?: string, excerpt?: string, defaultDescription: string = 'A modern blog about web development, best practices, and emerging technologies.'): string {
   return description || excerpt || defaultDescription;
 }
+
+// Generate slugified ID from heading text
+export function generateHeadingId(text: string): string {
+  return text
+    .toLowerCase()
+    .trim()
+    .replace(/[^\w\s-]/g, '') // Remove special characters except spaces and hyphens
+    .replace(/\s+/g, '-') // Replace spaces with hyphens
+    .replace(/-+/g, '-') // Replace multiple hyphens with single hyphen
+    .replace(/^-|-$/g, ''); // Remove leading/trailing hyphens
+}
+
+// Extract headings from MDX content
+export function extractHeadings(content: string): Array<{ level: number; text: string; id: string }> {
+  const headingRegex = /^(#{1,6})\s+(.+)$/gm;
+  const headings: Array<{ level: number; text: string; id: string }> = [];
+  
+  let match;
+  while ((match = headingRegex.exec(content)) !== null) {
+    const level = match[1].length;
+    const text = match[2].trim();
+    const id = generateHeadingId(text);
+    
+    headings.push({ level, text, id });
+  }
+  
+  return headings;
+}

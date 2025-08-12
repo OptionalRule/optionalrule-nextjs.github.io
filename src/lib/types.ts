@@ -1,3 +1,9 @@
+export interface Heading {
+  level: number;
+  text: string;
+  id: string;
+}
+
 export interface Post {
   slug: string;
   title: string;
@@ -7,6 +13,8 @@ export interface Post {
   featured_image?: string;
   content: string;
   readingTime: number;
+  showToc?: boolean;
+  headings: Heading[];
 }
 
 export interface PostMeta {
@@ -17,6 +25,8 @@ export interface PostMeta {
   tags: string[];
   featured_image?: string;
   readingTime: number;
+  showToc?: boolean;
+  headings: Heading[];
 }
 
 export interface Page {
@@ -24,6 +34,8 @@ export interface Page {
   title: string;
   description?: string;
   content: string;
+  showToc?: boolean;
+  headings: Heading[];
 }
 
 export interface PostFrontmatter {
@@ -34,12 +46,14 @@ export interface PostFrontmatter {
   featured_image?: string;
   slug?: string;
   draft?: boolean;
+  showToc?: boolean;
 }
 
 export interface PageFrontmatter {
   title: string;
   description?: string;
   draft?: boolean;
+  showToc?: boolean;
 }
 
 export interface PaginatedPosts {

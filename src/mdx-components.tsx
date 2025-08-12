@@ -1,36 +1,113 @@
 import type { MDXComponents } from 'mdx/types';
+import SmartLink from '@/components/SmartLink';
+import HeadingAnchor from '@/components/HeadingAnchor';
+import { generateHeadingId } from '@/lib/utils';
 
 export function useMDXComponents(components: MDXComponents): MDXComponents {
   return {
-    h1: ({ children }) => (
-      <h1 className="text-4xl font-bold text-gray-900 dark:text-gray-100 mb-6">
-        {children}
-      </h1>
-    ),
-    h2: ({ children }) => (
-      <h2 className="text-3xl font-semibold text-gray-900 dark:text-gray-100 mb-4 mt-8">
-        {children}
-      </h2>
-    ),
-    h3: ({ children }) => (
-      <h3 className="text-2xl font-medium text-gray-900 dark:text-gray-100 mb-3 mt-6">
-        {children}
-      </h3>
-    ),
+    h1: ({ children, ...props }) => {
+      const headingText = typeof children === 'string' ? children : '';
+      const id = generateHeadingId(headingText);
+      
+      return (
+        <h1 
+          id={id} 
+          className="text-4xl font-bold text-gray-900 dark:text-gray-100 mb-6 scroll-mt-20 group"
+          {...props}
+        >
+          {children}
+          <HeadingAnchor id={id} headingText={headingText} />
+        </h1>
+      );
+    },
+    h2: ({ children, ...props }) => {
+      const headingText = typeof children === 'string' ? children : '';
+      const id = generateHeadingId(headingText);
+      
+      return (
+        <h2 
+          id={id} 
+          className="text-3xl font-semibold text-gray-900 dark:text-gray-100 mb-4 mt-8 scroll-mt-20 group"
+          {...props}
+        >
+          {children}
+          <HeadingAnchor id={id} headingText={headingText} />
+        </h2>
+      );
+    },
+    h3: ({ children, ...props }) => {
+      const headingText = typeof children === 'string' ? children : '';
+      const id = generateHeadingId(headingText);
+      
+      return (
+        <h3 
+          id={id} 
+          className="text-2xl font-medium text-gray-900 dark:text-gray-100 mb-3 mt-6 scroll-mt-20 group"
+          {...props}
+        >
+          {children}
+          <HeadingAnchor id={id} headingText={headingText} />
+        </h3>
+      );
+    },
+    h4: ({ children, ...props }) => {
+      const headingText = typeof children === 'string' ? children : '';
+      const id = generateHeadingId(headingText);
+      
+      return (
+        <h4 
+          id={id} 
+          className="text-xl font-medium text-gray-900 dark:text-gray-100 mb-2 mt-4 scroll-mt-20 group"
+          {...props}
+        >
+          {children}
+          <HeadingAnchor id={id} headingText={headingText} />
+        </h4>
+      );
+    },
+    h5: ({ children, ...props }) => {
+      const headingText = typeof children === 'string' ? children : '';
+      const id = generateHeadingId(headingText);
+      
+      return (
+        <h5 
+          id={id} 
+          className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2 mt-4 scroll-mt-20 group"
+          {...props}
+        >
+          {children}
+          <HeadingAnchor id={id} headingText={headingText} />
+        </h5>
+      );
+    },
+    h6: ({ children, ...props }) => {
+      const headingText = typeof children === 'string' ? children : '';
+      const id = generateHeadingId(headingText);
+      
+      return (
+        <h6 
+          id={id} 
+          className="text-base font-medium text-gray-900 dark:text-gray-100 mb-2 mt-4 scroll-mt-20 group"
+          {...props}
+        >
+          {children}
+          <HeadingAnchor id={id} headingText={headingText} />
+        </h6>
+      );
+    },
     p: ({ children }) => (
       <p className="text-gray-700 dark:text-gray-300 mb-4 leading-relaxed">
         {children}
       </p>
     ),
-    a: ({ href, children }) => (
-      <a
-        href={href}
-        className="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-200 underline"
-        target={href?.startsWith('http') ? '_blank' : undefined}
-        rel={href?.startsWith('http') ? 'noopener noreferrer' : undefined}
+    a: ({ href, children, ...props }) => (
+      <SmartLink
+        href={href || '#'}
+        className="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-200 underline transition-colors"
+        {...props}
       >
         {children}
-      </a>
+      </SmartLink>
     ),
     ul: ({ children }) => (
       <ul className="list-disc list-inside text-gray-700 dark:text-gray-300 mb-4 space-y-1">

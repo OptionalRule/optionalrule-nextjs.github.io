@@ -24,3 +24,48 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+/* Smooth scrolling for anchor links */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Heading anchor link styling */
+.group:hover .group-hover\:opacity-100 {
+  opacity: 1;
+}
+
+/* Table of contents styling */
+.toc {
+  max-height: none; /* Remove max-height constraint for collapsible behavior */
+}
+
+.toc ul {
+  list-style: none;
+  padding: 0;
+}
+
+.toc a {
+  text-decoration: none;
+  display: block;
+  padding: 0.25rem 0;
+  border-radius: 0.25rem;
+  transition: all 0.2s ease;
+}
+
+.toc a:hover {
+  background-color: rgba(59, 130, 246, 0.1);
+  padding-left: 0.5rem;
+}
+
+/* Dark mode table of contents */
+@media (prefers-color-scheme: dark) {
+  .toc a:hover {
+    background-color: rgba(59, 130, 246, 0.2);
+  }
+}
+
+/* Smooth transitions for collapsible content */
+.toc [id="toc-content"] {
+  transition: max-height 0.3s ease-in-out, opacity 0.3s ease-in-out;
+}

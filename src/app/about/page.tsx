@@ -4,6 +4,8 @@ import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import type { Metadata } from 'next';
 import { MDXRemote } from 'next-mdx-remote/rsc';
+import { useMDXComponents } from '@/mdx-components';
+import TableOfContents from '@/components/TableOfContents';
 // import { useMDXComponents } from '@/mdx-components';
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -69,9 +71,19 @@ export default function AboutPage() {
             )}
           </header>
 
+          {/* Table of Contents */}
+          {page.showToc !== false && (
+            <div className="mb-8 p-6 bg-gray-50 dark:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-600">
+              <TableOfContents headings={page.headings} />
+            </div>
+          )}
+
           {/* Page Content */}
           <div className="prose prose-lg dark:prose-invert max-w-none">
-            <MDXRemote source={page.content} />
+            <MDXRemote 
+              source={page.content} 
+              components={useMDXComponents({})}
+            />
           </div>
         </div>
       </article>
