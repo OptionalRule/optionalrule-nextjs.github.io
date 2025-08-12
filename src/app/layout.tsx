@@ -16,15 +16,15 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: {
-    default: "My Blog",
-    template: "%s | My Blog",
+    default: "Optional Rule",
+    template: "%s | Optional Rule",
   },
-  description: "A modern blog about web development, best practices, and emerging technologies.",
-  keywords: ["web development", "javascript", "typescript", "react", "nextjs", "programming", "technology"],
-  authors: [{ name: "Blog Author" }],
-  creator: "Blog Author",
-  publisher: "My Blog",
-  metadataBase: new URL('https://yourdomain.github.io'), // Replace with your GitHub Pages URL
+  description: "A modern blog about TTRPG and RPG design.",
+  keywords: ["ttrpg", "gaming", "rpg", "dungeons and dragons", "shadowdark", "role-playing", "game design"],
+  authors: [{ name: "Scott Turnbull" }],
+  creator: "Tech-Tavern",
+  publisher: "Optional Rule Games",
+  metadataBase: new URL('https://optionalrule-nextjs.github.io'), // 
   alternates: {
     canonical: '/',
   },
@@ -32,15 +32,15 @@ export const metadata: Metadata = {
     type: 'website',
     locale: 'en_US',
     url: '/',
-    siteName: 'My Blog',
-    title: 'My Blog',
-    description: 'A modern blog about web development, best practices, and emerging technologies.',
+    siteName: 'Optional Rule',
+    title: 'Optional Rule',
+    description: 'A modern blog about TTRPG and RPG design.',
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'My Blog',
-    description: 'A modern blog about web development, best practices, and emerging technologies.',
-    creator: '@yourusername', // Replace with your Twitter handle
+    title: 'Optional Rule',
+    description: 'A modern blog about TTRPG and RPG design.',
+    creator: '@optionalrule', // Replace with your Twitter handle
   },
   robots: {
     index: true,
@@ -63,7 +63,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-gray-50 dark:bg-gray-900`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-slate-50 dark:bg-gray-900`}
       >
         <div className="min-h-screen flex flex-col">
           <Header />

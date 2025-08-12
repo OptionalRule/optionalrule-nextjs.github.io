@@ -10,7 +10,7 @@ export function PostCard({ post }: PostCardProps) {
   const postUrl = generatePostUrl(post.date, post.slug);
 
   return (
-    <article className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden drop-shadow-lg hover:shadow-lg transition-shadow duration-200">
+    <article className="bg-zinc-50 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden drop-shadow-lg hover:shadow-lg transition-shadow duration-200">
       
       <div className="p-6">
         <div className="flex items-center gap-2 mb-3 text-sm text-gray-600 dark:text-gray-400">

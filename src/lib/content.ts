@@ -40,8 +40,38 @@ function generateExcerpt(content: string, limit: number = 160): string {
     : plainText;
 }
 
-// Get all post files
-export function getPostFiles(): string[] {
+// Check if a post is a draft
+export function isPostDraft(filename: string): boolean {
+  try {
+    const filePath = path.join(POSTS_DIR, filename);
+    const fileContent = fs.readFileSync(filePath, 'utf8');
+    const { data } = matter(fileContent);
+    const frontmatter = data as PostFrontmatter;
+    
+    return frontmatter.draft === true;
+  } catch (error) {
+    // If there's an error reading the file, consider it a draft
+    return true;
+  }
+}
+
+// Check if a page is a draft
+export function isPageDraft(filename: string): boolean {
+  try {
+    const filePath = path.join(PAGES_DIR, filename);
+    const fileContent = fs.readFileSync(filePath, 'utf8');
+    const { data } = matter(fileContent);
+    const frontmatter = data as PageFrontmatter;
+    
+    return frontmatter.draft === true;
+  } catch (error) {
+    // If there's an error reading the file, consider it a draft
+    return true;
+  }
+}
+
+// Get all post files including drafts
+export function getAllPostFiles(): string[] {
   if (!fs.existsSync(POSTS_DIR)) {
     return [];
   }
@@ -50,13 +80,70 @@ export function getPostFiles(): string[] {
     .sort((a, b) => b.localeCompare(a)); // Sort by filename desc (newest first)
 }
 
+// Get all post files
+export function getPostFiles(): string[] {
+  if (!fs.existsSync(POSTS_DIR)) {
+    return [];
+  }
+  return fs.readdirSync(POSTS_DIR)
+    .filter(file => /\.mdx?$/.test(file))
+    .filter(file => {
+      // Filter out draft posts during static builds
+      if (process.env.NODE_ENV === 'production') {
+        try {
+          const filePath = path.join(POSTS_DIR, file);
+          const fileContent = fs.readFileSync(filePath, 'utf8');
+          const { data } = matter(fileContent);
+          const frontmatter = data as PostFrontmatter;
+          
+          // Only include posts where draft is explicitly false or undefined
+          return frontmatter.draft !== true;
+        } catch (error) {
+          // If there's an error reading the file, exclude it
+          return false;
+        }
+      }
+      // In development, include all posts
+      return true;
+    })
+    .sort((a, b) => b.localeCompare(a)); // Sort by filename desc (newest first)
+}
+
+// Get all page files including drafts
+export function getAllPageFiles(): string[] {
+  if (!fs.existsSync(PAGES_DIR)) {
+    return [];
+  }
+  return fs.readdirSync(PAGES_DIR)
+    .filter(file => /\.mdx?$/.test(file));
+}
+
 // Get all page files
 export function getPageFiles(): string[] {
   if (!fs.existsSync(PAGES_DIR)) {
     return [];
   }
   return fs.readdirSync(PAGES_DIR)
-    .filter(file => /\.mdx?$/.test(file));
+    .filter(file => /\.mdx?$/.test(file))
+    .filter(file => {
+      // Filter out draft pages during static builds
+      if (process.env.NODE_ENV === 'production') {
+        try {
+          const filePath = path.join(PAGES_DIR, file);
+          const fileContent = fs.readFileSync(filePath, 'utf8');
+          const { data } = matter(fileContent);
+          const frontmatter = data as PageFrontmatter;
+          
+          // Only include pages where draft is explicitly false or undefined
+          return frontmatter.draft !== true;
+        } catch (error) {
+          // If there's an error reading the file, exclude it
+          return false;
+        }
+      }
+      // In development, include all pages
+      return true;
+    });
 }
 
 // Get post metadata only (for listings)
@@ -114,6 +201,12 @@ export function getPost(slug: string): Post | null {
     content,
     readingTime: Math.ceil(readingTimeResult.minutes),
   };
+}
+
+// Get all post metadata including drafts
+export function getAllPostsMetaWithDrafts(): PostMeta[] {
+  const files = getAllPostFiles();
+  return files.map(getPostMeta);
 }
 
 // Get all post metadata

@@ -33,11 +33,13 @@ export interface PostFrontmatter {
   tags: string[];
   featured_image?: string;
   slug?: string;
+  draft?: boolean;
 }
 
 export interface PageFrontmatter {
   title: string;
   description?: string;
+  draft?: boolean;
 }
 
 export interface PaginatedPosts {
