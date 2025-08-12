@@ -1,0 +1,40 @@
+/* Custom Storybook Branding */
+/* This file customizes the Storybook UI appearance */
+
+/* Hide the default Storybook title */
+.sidebar-header h1,
+[data-testid="sidebar-header"] h1,
+.sidebar-header .title {
+  display: none !important;
+}
+
+/* Add custom title */
+.sidebar-header::before {
+  content: "Optional Rule Blog";
+  font-size: 20px;
+  font-weight: 700;
+  color: #333;
+  display: block;
+  padding: 16px 20px;
+  border-bottom: 1px solid #e1e5e9;
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .sidebar-header::before {
+    color: #fff;
+    border-bottom-color: #2a2a2a;
+  }
+}
+
+/* Alternative selectors for different Storybook versions */
+[data-testid="sidebar-header"]::before,
+.sidebar-header .brand::before {
+  content: "Optional Rule Blog";
+  font-size: 20px;
+  font-weight: 700;
+  color: #333;
+  display: block;
+  padding: 16px 20px;
+  border-bottom: 1px solid #e1e5e9;
+}
