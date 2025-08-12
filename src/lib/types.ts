@@ -32,6 +32,7 @@ export interface PostFrontmatter {
   excerpt?: string;
   tags: string[];
   featured_image?: string;
+  slug?: string;
 }
 
 export interface PageFrontmatter {

@@ -9,7 +9,7 @@ export function Footer() {
         <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
           <div className="text-center md:text-left">
             <p className="text-gray-600 dark:text-gray-400 text-sm">
-              © {currentYear} My Blog. Built with Next.js and deployed on GitHub Pages.
+              © 2020-{currentYear} Optional Rule Games.
             </p>
           </div>
           

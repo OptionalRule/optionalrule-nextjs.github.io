@@ -13,6 +13,17 @@ function generateSlug(filename: string): string {
   return filename.replace(/\.mdx?$/, '');
 }
 
+// Generate slug with fallback logic
+function generatePostSlug(filename: string, customSlug?: string): string {
+  // Use custom slug from frontmatter if provided and not empty
+  if (customSlug && customSlug.trim() !== '') {
+    return customSlug.trim();
+  }
+  
+  // Fall back to filename-based slug
+  return generateSlug(filename);
+}
+
 // Generate excerpt from content if not provided in frontmatter
 function generateExcerpt(content: string, limit: number = 160): string {
   const plainText = content
@@ -55,7 +66,7 @@ export function getPostMeta(filename: string): PostMeta {
   const { data, content } = matter(fileContent);
   
   const frontmatter = data as PostFrontmatter;
-  const slug = generateSlug(filename);
+  const slug = generatePostSlug(filename, frontmatter.slug);
   const readingTimeResult = readingTime(content);
   
   return {
@@ -72,7 +83,14 @@ export function getPostMeta(filename: string): PostMeta {
 // Get full post content
 export function getPost(slug: string): Post | null {
   const files = getPostFiles();
-  const filename = files.find(file => generateSlug(file) === slug);
+  const filename = files.find(file => {
+    const filePath = path.join(POSTS_DIR, file);
+    const fileContent = fs.readFileSync(filePath, 'utf8');
+    const { data } = matter(fileContent);
+    const frontmatter = data as PostFrontmatter;
+    const postSlug = generatePostSlug(file, frontmatter.slug);
+    return postSlug === slug;
+  });
   
   if (!filename) {
     return null;
@@ -83,10 +101,11 @@ export function getPost(slug: string): Post | null {
   const { data, content } = matter(fileContent);
   
   const frontmatter = data as PostFrontmatter;
+  const postSlug = generatePostSlug(filename, frontmatter.slug);
   const readingTimeResult = readingTime(content);
   
   return {
-    slug,
+    slug: postSlug,
     title: frontmatter.title,
     date: frontmatter.date,
     excerpt: frontmatter.excerpt || generateExcerpt(content),
@@ -172,7 +191,7 @@ export function getPage(slug: string): Page | null {
   const frontmatter = data as PageFrontmatter;
   
   return {
-    slug,
+    slug: generateSlug(filename),
     title: frontmatter.title,
     description: frontmatter.description,
     content,

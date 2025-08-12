@@ -10,7 +10,7 @@ export function Header() {
               href="/" 
               className="text-2xl font-bold text-gray-900 dark:text-gray-100 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
             >
-              My Blog
+              Optional Rule
             </Link>
             <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
               Web development insights & best practices
