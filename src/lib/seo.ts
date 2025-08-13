@@ -33,7 +33,7 @@ export function generateBlogPostStructuredData(post: Post, siteUrl: string = 'ht
         height: 630,
       },
     }),
-    keywords: post.tags.join(', '),
+    ...(post.tags && post.tags.length > 0 && { keywords: post.tags.join(', ') }),
   };
 }
 

@@ -60,3 +60,19 @@ export function extractHeadings(content: string): Array<{ level: number; text: s
   
   return headings;
 }
+
+// Normalize image path for Next.js Image component
+export function normalizeImagePath(imagePath: string): string {
+  // If it's already a full URL, return as is
+  if (imagePath.startsWith('http://') || imagePath.startsWith('https://')) {
+    return imagePath;
+  }
+  
+  // If it's a relative path starting with /, it's already correct for public folder
+  if (imagePath.startsWith('/')) {
+    return imagePath;
+  }
+  
+  // If it's a relative path without /, add it
+  return `/${imagePath}`;
+}

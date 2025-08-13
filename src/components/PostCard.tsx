@@ -1,6 +1,7 @@
 import Link from 'next/link';
+import Image from 'next/image';
 import { PostMeta } from '@/lib/types';
-import { formatDate, generatePostUrl } from '@/lib/utils';
+import { formatDate, generatePostUrl, normalizeImagePath } from '@/lib/utils';
 
 interface PostCardProps {
   post: PostMeta;
@@ -12,6 +13,19 @@ export function PostCard({ post }: PostCardProps) {
   return (
     <article className="bg-zinc-50 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden drop-shadow-lg hover:shadow-lg transition-shadow duration-200">
       
+      {post.featured_image && (
+        <div className="relative aspect-video bg-gray-200 dark:bg-gray-700 overflow-hidden">
+          <Image
+            src={normalizeImagePath(post.featured_image)}
+            alt={`Featured image for ${post.title}`}
+            fill
+            className="object-cover transition-transform duration-300 hover:scale-105"
+            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+            priority={false}
+          />
+        </div>
+      )}
+
       <div className="p-6">
         <div className="flex items-center gap-2 mb-3 text-sm text-gray-600 dark:text-gray-400">
           <time dateTime={post.date}>
@@ -38,7 +52,7 @@ export function PostCard({ post }: PostCardProps) {
 
         <div className="flex items-center justify-between">
           <div className="flex flex-wrap gap-2">
-            {post.tags.map((tag) => (
+            {post.tags?.map((tag) => (
               <Link
                 key={tag}
                 href={`/tag/${tag.toLowerCase()}/`}
@@ -57,15 +71,6 @@ export function PostCard({ post }: PostCardProps) {
           </Link>
         </div>
       </div>
-
-      {post.featured_image && (
-        <div className="aspect-video bg-gray-200 dark:bg-gray-700">
-          {/* Placeholder for featured image */}
-          <div className="w-full h-full flex items-center justify-center text-gray-500 dark:text-gray-400">
-            Featured Image
-          </div>
-        </div>
-      )}
     </article>
   );
 }

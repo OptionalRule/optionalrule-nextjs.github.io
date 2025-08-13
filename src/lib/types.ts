@@ -9,7 +9,7 @@ export interface Post {
   title: string;
   date: string;
   excerpt?: string;
-  tags: string[];
+  tags?: string[];
   featured_image?: string;
   content: string;
   readingTime: number;
@@ -22,7 +22,7 @@ export interface PostMeta {
   title: string;
   date: string;
   excerpt?: string;
-  tags: string[];
+  tags?: string[];
   featured_image?: string;
   readingTime: number;
   showToc?: boolean;
@@ -42,7 +42,7 @@ export interface PostFrontmatter {
   title: string;
   date: string;
   excerpt?: string;
-  tags: string[];
+  tags?: string[];
   featured_image?: string;
   slug?: string;
   draft?: boolean;

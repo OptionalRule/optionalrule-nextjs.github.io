@@ -245,7 +245,9 @@ export function getAllTags(): string[] {
   const tags = new Set<string>();
   
   allPosts.forEach(post => {
-    post.tags.forEach(tag => tags.add(tag));
+    if (post.tags) {
+      post.tags.forEach(tag => tags.add(tag));
+    }
   });
   
   return Array.from(tags).sort();
@@ -255,7 +257,7 @@ export function getAllTags(): string[] {
 export function getPostsByTag(tag: string, page: number = 1): TagPage {
   const allPosts = getAllPostsMeta();
   const tagPosts = allPosts.filter(post => 
-    post.tags.some(t => t.toLowerCase() === tag.toLowerCase())
+    post.tags && post.tags.some(t => t.toLowerCase() === tag.toLowerCase())
   );
   
   const totalPosts = tagPosts.length;

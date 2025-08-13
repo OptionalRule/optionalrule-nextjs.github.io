@@ -1,8 +1,9 @@
 import { getPost, getAllPostsMeta, generatePostUrl } from '@/lib/content';
 import { generateBlogPostStructuredData } from '@/lib/seo';
-import { formatDate } from '@/lib/utils';
+import { formatDate, normalizeImagePath } from '@/lib/utils';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
+import Image from 'next/image';
 import type { Metadata } from 'next';
 import { MDXRemote } from 'next-mdx-remote/rsc';
 import { useMDXComponents } from '@/mdx-components';
@@ -54,7 +55,7 @@ export async function generateMetadata({ params }: PostPageProps): Promise<Metad
       description: post.excerpt,
       type: 'article',
       publishedTime: post.date,
-      tags: post.tags,
+      ...(post.tags && post.tags.length > 0 && { tags: post.tags }),
       ...(post.featured_image && {
         images: [
           {
@@ -121,10 +122,15 @@ export default async function PostPage({ params }: PostPageProps) {
         <article className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden">
           {/* Featured Image */}
           {post.featured_image && (
-            <div className="aspect-video bg-gray-200 dark:bg-gray-700">
-              <div className="w-full h-full flex items-center justify-center text-gray-500 dark:text-gray-400">
-                Featured Image: {post.featured_image}
-              </div>
+            <div className="relative aspect-video bg-gray-200 dark:bg-gray-700 overflow-hidden">
+              <Image
+                src={normalizeImagePath(post.featured_image)}
+                alt={`Featured image for ${post.title}`}
+                fill
+                className="object-cover"
+                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 60vw"
+                priority={true}
+              />
             </div>
           )}
 
@@ -143,17 +149,19 @@ export default async function PostPage({ params }: PostPageProps) {
                 <span>{post.readingTime} min read</span>
               </div>
 
-              <div className="flex flex-wrap gap-2 mb-6">
-                {post.tags.map((tag) => (
-                  <Link
-                    key={tag}
-                    href={`/tag/${tag.toLowerCase()}/`}
-                    className="inline-block px-3 py-1 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-full text-sm hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
-                  >
-                    {tag}
-                  </Link>
-                ))}
-              </div>
+              {post.tags && post.tags.length > 0 && (
+                <div className="flex flex-wrap gap-2 mb-6">
+                  {post.tags.map((tag) => (
+                    <Link
+                      key={tag}
+                      href={`/tag/${tag.toLowerCase()}/`}
+                      className="inline-block px-3 py-1 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-full text-sm hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
+                    >
+                      {tag}
+                    </Link>
+                  ))}
+                </div>
+              )}
 
               {post.excerpt && (
                 <p className="text-lg text-gray-600 dark:text-gray-400 leading-relaxed italic border-l-4 border-gray-300 dark:border-gray-600 pl-4">
