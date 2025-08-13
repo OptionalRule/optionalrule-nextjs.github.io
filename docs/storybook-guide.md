@@ -7,26 +7,33 @@ Storybook is set up in this project to document and showcase all the blog compon
 ## 🚀 **Getting Started**
 
 ### **Installation**
+
 Storybook has already been installed with the following command:
+
 ```bash
 npx storybook@latest init --yes
 ```
 
 ### **Running Storybook**
+
 ```bash
 npm run storybook
 ```
+
 This will start Storybook on `http://localhost:6006`
 
 ### **Building Storybook**
+
 ```bash
 npm run build-storybook
 ```
+
 This creates a static build for deployment.
 
 ## 📚 **Available Stories**
 
 ### **1. SmartLink Component** (`src/components/SmartLink.stories.tsx`)
+
 - **Internal Link**: Shows how internal links use Next.js Link
 - **External Link**: Demonstrates external link security features
 - **Anchor Link**: Shows anchor link behavior
@@ -35,6 +42,7 @@ This creates a static build for deployment.
 - **Custom Styling**: How to apply custom CSS
 
 ### **2. TableOfContents Component** (`src/components/TableOfContents.stories.tsx`)
+
 - **Default**: Expanded TOC with sample headings
 - **Collapsed**: Initially collapsed TOC
 - **Short Content**: TOC for posts with few headings
@@ -42,6 +50,7 @@ This creates a static build for deployment.
 - **Empty Headings**: Graceful handling of no headings
 
 ### **3. HeadingAnchor Component** (`src/components/HeadingAnchor.stories.tsx`)
+
 - **Default**: Basic anchor link
 - **Long Heading**: Handling of extended text
 - **Special Characters**: Question marks and punctuation
@@ -49,6 +58,7 @@ This creates a static build for deployment.
 - **Multiple Anchors**: Complete heading system
 
 ### **4. PostCard Component** (`src/components/PostCard.stories.tsx`)
+
 - **Default**: Standard post card
 - **Without Featured Image**: No image variant
 - **Short Excerpt**: Minimal content
@@ -59,6 +69,7 @@ This creates a static build for deployment.
 - **Old Post**: Past date display
 
 ### **5. Component Library** (`src/components/ComponentLibrary.stories.tsx`)
+
 - **Complete Blog System**: All components working together
 - **Realistic Layout**: Production-like page structure
 - **Interactive Examples**: Live component demonstrations
@@ -67,11 +78,13 @@ This creates a static build for deployment.
 ## 🛠️ **Storybook Features**
 
 ### **Addons Installed**
+
 - **@storybook/addon-a11y**: Accessibility testing
 - **@storybook/addon-vitest**: Component testing integration
 - **@storybook/addon-docs**: Automatic documentation generation
 
 ### **Controls Panel**
+
 - **Interactive Props**: Modify component props in real-time
 - **Type Safety**: Full TypeScript support
 - **Validation**: Input validation for props

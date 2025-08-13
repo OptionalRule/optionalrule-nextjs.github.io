@@ -7,17 +7,20 @@ Your blog now has automatic table of contents (TOC) generation with collapsible 
 ## Features
 
 ### 1. **Automatic Heading IDs**
+
 - All headings (h1-h6) automatically get unique, slugified IDs
 - No more manual ID management
 - SEO-friendly anchor links
 
 ### 2. **Collapsible Table of Contents**
+
 - Click the TOC header to expand/collapse
 - Smooth animations with CSS transitions
 - Accessible with proper ARIA attributes
 - Default state is expanded (configurable)
 
 ### 3. **Conditional Display**
+
 - TOC shows by default for all posts/pages
 - Explicitly hide with `showToc: false` in frontmatter
 - Explicitly show with `showToc: true` in frontmatter
@@ -25,6 +28,7 @@ Your blog now has automatic table of contents (TOC) generation with collapsible 
 ## Usage
 
 ### **Show TOC (Default Behavior)**
+
 ```mdx
 ---
 title: "My Post"
@@ -38,6 +42,7 @@ date: "2024-01-15"
 ```
 
 ### **Hide TOC**
+
 ```mdx
 ---
 title: "My Post"
@@ -50,6 +55,7 @@ showToc: false
 ```
 
 ### **Explicitly Show TOC**
+
 ```mdx
 ---
 title: "My Post"
@@ -72,18 +78,21 @@ showToc: true
 ## Best Practices
 
 ### **When to Show TOC**
+
 - ✅ **Long posts** (1000+ words)
 - ✅ **Posts with many sections** (5+ headings)
 - ✅ **Technical tutorials** with multiple steps
 - ✅ **Reference guides** with many subsections
 
 ### **When to Hide TOC**
+
 - ❌ **Short posts** (< 500 words)
 - ❌ **Simple announcements**
 - ❌ **Posts with minimal structure**
 - ❌ **Personal stories** with few sections
 
 ### **Default Behavior**
+
 - **Posts**: TOC shows by default (can be hidden with `showToc: false`)
 - **Pages**: TOC shows by default (can be hidden with `showToc: false`)
 - **No frontmatter**: TOC shows (default behavior)
@@ -91,6 +100,7 @@ showToc: true
 ## Examples
 
 ### **Long Tutorial Post**
+
 ```mdx
 ---
 title: "Complete Next.js Tutorial"
@@ -114,6 +124,7 @@ showToc: true  # Explicitly show for long content
 ```
 
 ### **Short Announcement**
+
 ```mdx
 ---
 title: "Site Update"
@@ -137,6 +148,7 @@ We've made some improvements to the blog...
 ## Customization
 
 The TOC component accepts these props:
+
 - `headings`: Array of heading objects
 - `className`: Additional CSS classes
 - `defaultExpanded`: Initial state (default: true)
