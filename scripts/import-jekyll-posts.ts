@@ -12,9 +12,7 @@ interface JekyllFrontmatter {
   layout?: string;
   image?: string;
   description?: string;
-  categories?: string[];
   date?: string;
-  tags?: string[];
   subtitle?: string;
   summary?: string;
 }
@@ -24,7 +22,6 @@ interface NextJSFrontmatter {
   title: string;
   date: string;
   excerpt: string | null;
-  tags: string[];
   featured_image: string;
   draft: boolean;
   showToc: boolean;
@@ -152,17 +149,9 @@ function convertFrontmatter(jekyll: JekyllFrontmatter, slug: string, date: strin
     excerpt = jekyll.summary.trim();
   }
   
-  // Determine tags (tags > categories > empty array)
-  let tags: string[] = [];
-  if (jekyll.tags && Array.isArray(jekyll.tags)) {
-    tags = jekyll.tags.filter(tag => tag && typeof tag === 'string' && tag.trim() !== '');
-  } else if (jekyll.categories && Array.isArray(jekyll.categories)) {
-    tags = jekyll.categories.filter(cat => cat && typeof cat === 'string' && cat.trim() !== '');
-  }
-  
-  // Ensure tags is always a valid array
-  if (!Array.isArray(tags)) {
-    tags = [];
+  // Clean up quotes from excerpt
+  if (excerpt) {
+    excerpt = excerpt.replace(/"/g, '').replace(/'/g, '');
   }
   
   // Determine featured image
@@ -171,6 +160,14 @@ function convertFrontmatter(jekyll: JekyllFrontmatter, slug: string, date: strin
     featured_image = '/images/or_logo.png';
   } else {
     featured_image = featured_image.trim();
+    // Fix paths from /assets/images/* to /images/*
+    if (featured_image.startsWith('/assets/images/')) {
+      featured_image = featured_image.replace('/assets/images/', '/images/');
+    }
+    // Fix paths from /assets/img/* to /images/*
+    if (featured_image.startsWith('/assets/img/')) {
+      featured_image = featured_image.replace('/assets/img/', '/images/');
+    }
   }
   
   // Ensure title is always valid
@@ -186,7 +183,6 @@ function convertFrontmatter(jekyll: JekyllFrontmatter, slug: string, date: strin
     title,
     date: dateOnly,
     excerpt,
-    tags,
     featured_image,
     draft: false,
     showToc: false
@@ -197,20 +193,102 @@ function convertFrontmatter(jekyll: JekyllFrontmatter, slug: string, date: strin
 function generateNextJSFrontmatter(frontmatter: NextJSFrontmatter): string {
   const excerptValue = frontmatter.excerpt ? `"${frontmatter.excerpt}"` : 'null';
   
-  // Only include tags if they exist and are not empty
-  const tagsField = frontmatter.tags && frontmatter.tags.length > 0 
-    ? `\ntags:\n  - "${frontmatter.tags.join('"\n  - "')}"`
-    : '';
-  
   return `---
 slug: "${frontmatter.slug}"
 title: "${frontmatter.title}"
 date: "${frontmatter.date}"
-excerpt: ${excerptValue}${tagsField}
+excerpt: ${excerptValue}
 featured_image: "${frontmatter.featured_image}"
 draft: ${frontmatter.draft}
 showToc: ${frontmatter.showToc}
 ---`;
+}
+
+// Function to convert Jekyll Liquid syntax to MDX-compatible content
+function convertLiquidToMDX(content: string): string {
+  let convertedContent = content;
+  
+  // Convert link attributes: [text](url){:target="_blank"} -> <a href="url" target="_blank">text</a>
+  convertedContent = convertedContent.replace(
+    /\[([^\]]+)\]\(([^)]+)\)\{:([^}]+)\}/g,
+    (match, text, url, attributes) => {
+      const attrPairs = attributes.split(' ').map((attr: string) => attr.trim());
+      const attrString = attrPairs.map((attr: string) => {
+        if (attr.includes('=')) {
+          return attr;
+        } else {
+          return `${attr}="${attr}"`;
+        }
+      }).join(' ');
+      return `<a href="${url}" ${attrString}>${text}</a>`;
+    }
+  );
+  
+  // Convert link attributes: [text](url target="_blank") -> <a href="url" target="_blank">text</a>
+  convertedContent = convertedContent.replace(
+    /\[([^\]]+)\]\(([^)]+)\s+([^)]+)\)/g,
+    (match, text, url, attributes) => {
+      // Check if the attributes part contains actual attributes (not just URL)
+      if (attributes.includes('=') || attributes.includes('target') || attributes.includes('rel')) {
+        const attrPairs = attributes.split(' ').map((attr: string) => attr.trim());
+        const attrString = attrPairs.map((attr: string) => {
+          if (attr.includes('=')) {
+            return attr;
+          } else if (attr === 'target="_blank"' || attr === 'target=\'_blank\'') {
+            return 'target="_blank"';
+          } else if (attr === 'rel="noopener"' || attr === 'rel=\'noopener\'') {
+            return 'rel="noopener"';
+          } else {
+            return `${attr}="${attr}"`;
+          }
+        }).join(' ');
+        return `<a href="${url}" ${attrString}>${text}</a>`;
+      }
+      // If it's just a URL with spaces, treat it as a regular markdown link
+      return match;
+    }
+  );
+  
+  // Convert image includes: {% include imageframe.html ... %} -> <img src="..." alt="..." />
+  convertedContent = convertedContent.replace(
+    /{%\s*include\s+imageframe\.html\s*([^%]*)%}/g,
+    (match, attributes) => {
+      // Parse the attributes
+      const srcMatch = attributes.match(/src\s*=\s*["']([^"']+)["']/);
+      const altMatch = attributes.match(/alt\s*=\s*["']([^"']+)["']/);
+      const widthMatch = attributes.match(/width\s*=\s*["']([^"']+)["']/);
+      const heightMatch = attributes.match(/height\s*=\s*["']([^"']+)["']/);
+      
+      if (srcMatch) {
+        let src = srcMatch[1];
+        // Convert /assets/img/ to /images/
+        if (src.startsWith('/assets/img/')) {
+          src = src.replace('/assets/img/', '/images/');
+        }
+        
+        let imgTag = `<img src="${src}"`;
+        if (altMatch) {
+          imgTag += ` alt="${altMatch[1]}"`;
+        }
+        if (widthMatch) {
+          imgTag += ` width="${widthMatch[1]}"`;
+        }
+        if (heightMatch) {
+          imgTag += ` height="${heightMatch[1]}"`;
+        }
+        imgTag += ' />';
+        return imgTag;
+      }
+      
+      // If we can't parse it properly, return a comment for manual review
+      return `<!-- Could not convert image include: ${match} -->`;
+    }
+  );
+  
+  // Global path conversion: /assets/img/ -> /images/
+  convertedContent = convertedContent.replace(/\/assets\/img\//g, '/images/');
+  
+  return convertedContent;
 }
 
 // Function to read and parse Jekyll post file
@@ -223,11 +301,14 @@ function readJekyllPost(filepath: string): JekyllPost | null {
     
     const { frontmatter, content: postContent } = parseJekyllFrontmatter(content);
     
+    // Convert Liquid syntax to MDX-compatible content
+    const convertedContent = convertLiquidToMDX(postContent);
+    
     return {
       filename,
       slug,
       date,
-      content: postContent,
+      content: convertedContent,
       frontmatter
     };
   } catch (error) {
@@ -339,6 +420,7 @@ async function importJekyllPosts(): Promise<void> {
       if (writeNextJSPost(post, nextJSFrontmatter, outputDir)) {
         result.success++;
         console.log(`  ✅ Converted: ${nextJSFrontmatter.date}-${nextJSFrontmatter.slug}.mdx`);
+        console.log(`  🔄 Applied Liquid-to-MDX conversions`);
       } else {
         result.failed++;
       }
@@ -359,7 +441,7 @@ async function importJekyllPosts(): Promise<void> {
       console.log('\n💡 Next steps:');
       console.log('   1. Review the imported posts');
       console.log('   2. Update frontmatter fields as needed');
-      console.log('   3. Verify tags and excerpts');
+      console.log('   3. Verify excerpts');
       console.log('   4. Check featured images');
     }
     
@@ -373,5 +455,5 @@ async function importJekyllPosts(): Promise<void> {
 // Run the script
 importJekyllPosts();
 
-export { importJekyllPosts, convertFrontmatter, parseJekyllFrontmatter };
+export { importJekyllPosts, convertFrontmatter, parseJekyllFrontmatter, convertLiquidToMDX };
 export type { JekyllFrontmatter, NextJSFrontmatter, JekyllPost };
