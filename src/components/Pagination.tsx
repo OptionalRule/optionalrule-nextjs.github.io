@@ -13,7 +13,15 @@ export function Pagination({ currentPage, totalPages, basePath }: PaginationProp
 
   const generatePageUrl = (page: number): string => {
     if (page === 1) {
-      return basePath === '/' ? '/' : `${basePath}/`;
+      // Handle different basePath scenarios
+      if (basePath === '' || basePath === '/') {
+        return '/';
+      }
+      return `${basePath}/`;
+    }
+    // For page 2+, always use the /page/X/ format
+    if (basePath === '' || basePath === '/') {
+      return `/page/${page}/`;
     }
     return `${basePath}/page/${page}/`;
   };

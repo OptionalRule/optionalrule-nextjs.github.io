@@ -10,7 +10,11 @@
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build",
     "create-post": "ts-node --project scripts/tsconfig.json scripts/create-post.ts",
-    "import-jekyll-posts": "ts-node --project scripts/tsconfig.json scripts/import-jekyll-posts.ts"
+    "import-jekyll-posts": "ts-node --project scripts/tsconfig.json scripts/import-jekyll-posts.ts",
+    "build-debug": "node scripts/build-debug.js",
+    "download-images": "ts-node --project scripts/tsconfig.json scripts/download-featured-images.ts",
+    "preview-images": "ts-node --project scripts/tsconfig.json scripts/preview-external-images.ts",
+    "replace-default-images": "ts-node --project scripts/tsconfig.json scripts/replace-default-images.ts"
   },
   "dependencies": {
     "@mdx-js/loader": "^3.1.0",

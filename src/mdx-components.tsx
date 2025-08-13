@@ -136,6 +136,39 @@ export function useMDXComponents(components: MDXComponents): MDXComponents {
         {children}
       </pre>
     ),
+    // Table components
+    table: ({ children }) => (
+      <div className="overflow-x-auto mb-6">
+        <table className="min-w-full border border-gray-300 dark:border-gray-600 rounded-lg">
+          {children}
+        </table>
+      </div>
+    ),
+    thead: ({ children }) => (
+      <thead className="bg-gray-50 dark:bg-gray-800">
+        {children}
+      </thead>
+    ),
+    tbody: ({ children }) => (
+      <tbody className="divide-y divide-gray-300 dark:divide-gray-600">
+        {children}
+      </tbody>
+    ),
+    tr: ({ children }) => (
+      <tr className="hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+        {children}
+      </tr>
+    ),
+    th: ({ children }) => (
+      <th className="px-4 py-3 text-left text-sm font-semibold text-gray-900 dark:text-gray-100 border-b border-gray-300 dark:border-gray-600">
+        {children}
+      </th>
+    ),
+    td: ({ children }) => (
+      <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">
+        {children}
+      </td>
+    ),
     YouTubeEmbed,
     MediaEmbed,
     ...components,

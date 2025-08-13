@@ -28,6 +28,23 @@ export const metadata: Metadata = {
   alternates: {
     canonical: '/',
   },
+  // Favicon configuration
+  icons: {
+    icon: [
+      { url: '/favicon/favicon-16x16.png', sizes: '16x16', type: 'image/png' },
+      { url: '/favicon/favicon-32x32.png', sizes: '32x32', type: 'image/png' },
+    ],
+    shortcut: '/favicon/favicon.ico',
+    apple: '/favicon/apple-touch-icon.png',
+    other: [
+      {
+        rel: 'mask-icon',
+        url: '/favicon/safari-pinned-tab.svg',
+        color: '#000000',
+      },
+    ],
+  },
+  manifest: '/favicon/site.webmanifest',
   openGraph: {
     type: 'website',
     locale: 'en_US',
@@ -62,6 +79,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
+      <head>
+        <meta name="msapplication-config" content="/favicon/browserconfig.xml" />
+      </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased bg-slate-50 dark:bg-gray-900`}
       >
