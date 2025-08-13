@@ -207,6 +207,14 @@ showToc: ${frontmatter.showToc}
 // Function to convert Jekyll Liquid syntax to MDX-compatible content
 function convertLiquidToMDX(content: string): string {
   let convertedContent = content;
+  let conversionCount = 0;
+  
+  const logConversion = (type: string, from: string, to: string) => {
+    conversionCount++;
+    console.log(`🔄 [${conversionCount}] Converting ${type}:`);
+    console.log(`   From: ${from}`);
+    console.log(`   To:   ${to}`);
+  };
   
   // Convert link attributes: [text](url){:target="_blank"} -> <a href="url" target="_blank">text</a>
   convertedContent = convertedContent.replace(
@@ -285,8 +293,225 @@ function convertLiquidToMDX(content: string): string {
     }
   );
   
+  // Convert YouTube video includes: {% include video/youtube.html id="..." %} -> <YouTubeEmbed id="..." />
+  convertedContent = convertedContent.replace(
+    /{%\s*include\s+video\/youtube\.html\s*([^%]*)%}/g,
+    (match, attributes) => {
+      // Parse the id attribute
+      const idMatch = attributes.match(/id\s*=\s*["']([^"']+)["']/);
+      
+      if (idMatch) {
+        const videoId = idMatch[1];
+        const replacement = `<YouTubeEmbed id="${videoId}" />`;
+        logConversion('YouTube include', match, replacement);
+        return replacement;
+      }
+      
+      // If we can't parse it properly, return a comment for manual review
+      return `<!-- Could not convert YouTube include: ${match} -->`;
+    }
+  );
+  
+  // Convert generic video includes: {% include video/... %} -> <MediaEmbed url="..." />
+  convertedContent = convertedContent.replace(
+    /{%\s*include\s+video\/([^\.]+)\.html\s*([^%]*)%}/g,
+    (match, videoType, attributes) => {
+      // Skip YouTube as it's handled above
+      if (videoType === 'youtube') {
+        return match;
+      }
+      
+      // Parse the url attribute if present
+      const urlMatch = attributes.match(/url\s*=\s*["']([^"']+)["']/);
+      
+      if (urlMatch) {
+        const url = urlMatch[1];
+        const replacement = `<MediaEmbed url="${url}" />`;
+        logConversion('generic video include', match, replacement);
+        return replacement;
+      }
+      
+      // If we can't parse it properly, return a comment for manual review
+      return `<!-- Could not convert video include: ${match} -->`;
+    }
+  );
+  
+  // Convert quote includes: {% include quote.html ... %} -> <blockquote>...</blockquote>
+  convertedContent = convertedContent.replace(
+    /{%\s*include\s+quote\.html\s*([^%]*)%}([\s\S]*?){%\s*endinclude\s*%}/g,
+    (match, attributes, content) => {
+      // Parse any attributes if present (like author, source, etc.)
+      const authorMatch = attributes.match(/author\s*=\s*["']([^"']+)["']/);
+      const sourceMatch = attributes.match(/source\s*=\s*["']([^"']+)["']/);
+      
+      let blockquote = '<blockquote className="border-l-4 border-blue-500 pl-4 py-2 mb-4 italic text-gray-600 dark:text-gray-400">';
+      
+      // Add the quoted content
+      blockquote += content.trim();
+      
+      // Add attribution if present
+      if (authorMatch || sourceMatch) {
+        blockquote += '<footer className="mt-2 text-sm text-gray-500 dark:text-gray-400 not-italic">';
+        if (authorMatch) {
+          blockquote += `<cite>— ${authorMatch[1]}`;
+          if (sourceMatch) {
+            blockquote += `, ${sourceMatch[1]}`;
+          }
+          blockquote += '</cite>';
+        } else if (sourceMatch) {
+          blockquote += `<cite>— ${sourceMatch[1]}</cite>`;
+        }
+        blockquote += '</footer>';
+      }
+      
+      blockquote += '</blockquote>';
+      
+      const replacement = blockquote;
+      logConversion('quote include', match, replacement);
+      return replacement;
+    }
+  );
+  
+  // Also handle single-line quote includes without endinclude
+  convertedContent = convertedContent.replace(
+    /{%\s*include\s+quote\.html\s*([^%]*)%}/g,
+    (match, attributes) => {
+      // Parse any attributes if present
+      const authorMatch = attributes.match(/author\s*=\s*["']([^"']+)["']/);
+      const sourceMatch = attributes.match(/source\s*=\s*["']([^"']+)["']/);
+      
+      let blockquote = '<blockquote className="border-l-4 border-blue-500 pl-4 py-2 mb-4 italic text-gray-600 dark:text-gray-400">';
+      
+      // Add attribution if present
+      if (authorMatch || sourceMatch) {
+        if (authorMatch) {
+          blockquote += `<cite>— ${authorMatch[1]}`;
+          if (sourceMatch) {
+            blockquote += `, ${sourceMatch[1]}`;
+          }
+          blockquote += '</cite>';
+        } else if (sourceMatch) {
+          blockquote += `<cite>— ${sourceMatch[1]}</cite>`;
+        }
+      }
+      
+      blockquote += '</blockquote>';
+      
+      const replacement = blockquote;
+      logConversion('quote include (single-line)', match, replacement);
+      return replacement;
+    }
+  );
+  
+  // Convert iframe embeds to MediaEmbed components
+  convertedContent = convertedContent.replace(
+    /<iframe\s+src\s*=\s*["']([^"']+)["']([^>]*)>/g,
+    (match, src, otherAttributes) => {
+      // Extract title from other attributes if present
+      const titleMatch = otherAttributes.match(/title\s*=\s*["']([^"']+)["']/);
+      const title = titleMatch ? titleMatch[1] : 'Embedded content';
+      
+      // Check if it's a YouTube embed
+      if (src.includes('youtube.com/embed/')) {
+        const videoId = src.match(/youtube\.com\/embed\/([^&\n?#]+)/)?.[1];
+        if (videoId) {
+          const replacement = `<YouTubeEmbed id="${videoId}" title="${title}" />`;
+          logConversion('YouTube iframe', match, replacement);
+          return replacement;
+        }
+      }
+      
+      // Check if it's a Vimeo embed
+      if (src.includes('vimeo.com')) {
+        const replacement = `<MediaEmbed url="${src}" title="${title}" />`;
+        logConversion('Vimeo iframe', match, replacement);
+        return replacement;
+      }
+      
+      // For other embeds, use MediaEmbed
+      const replacement = `<MediaEmbed url="${src}" title="${title}" />`;
+      logConversion('iframe embed', match, replacement);
+      return replacement;
+    }
+  );
+  
+  // Convert anchor.fm podcast embeds to MediaEmbed
+  convertedContent = convertedContent.replace(
+    /<iframe\s+src\s*=\s*["']https:\/\/anchor\.fm\/[^"']+["']([^>]*)>/g,
+    (match, otherAttributes) => {
+      // Extract the src from the match
+      const srcMatch = match.match(/src\s*=\s*["']([^"']+)["']/);
+      if (srcMatch) {
+        const src = srcMatch[1];
+        const replacement = `<MediaEmbed url="${src}" title="Podcast Episode" />`;
+        logConversion('anchor.fm embed', match, replacement);
+        return replacement;
+      }
+      return match;
+    }
+  );
+  
+  // Convert empty ose-youtube divs (common pattern in your content)
+  convertedContent = convertedContent.replace(
+    /<div\s+class\s*=\s*["']ose-youtube[^"']*["'][^>]*>\s*<\/div>/g,
+    (match) => {
+      const replacement = '<!-- Converted: Empty ose-youtube div - add YouTubeEmbed component here -->';
+      logConversion('empty ose-youtube div', match, replacement);
+      return replacement;
+    }
+  );
+  
+  // Convert figure elements with iframes to MediaEmbed
+  convertedContent = convertedContent.replace(
+    /<figure[^>]*>\s*<iframe\s+src\s*=\s*["']([^"']+)["']([^>]*)>([^<]*)<\/iframe>\s*(?:<figcaption[^>]*>([^<]*)<\/figcaption>)?\s*<\/figure>/g,
+    (match, src, otherAttributes, iframeContent, figcaption) => {
+      // Extract title from other attributes if present
+      const titleMatch = otherAttributes.match(/title\s*=\s*["']([^"']+)["']/);
+      const title = titleMatch ? titleMatch[1] : (figcaption || 'Embedded content');
+      
+      // Check if it's a YouTube embed
+      if (src.includes('youtube.com/embed/')) {
+        const videoId = src.match(/youtube\.com\/embed\/([^&\n?#]+)/)?.[1];
+        if (videoId) {
+          const replacement = `<YouTubeEmbed id="${videoId}" title="${title}" />`;
+          logConversion('YouTube iframe in figure', match, replacement);
+          return replacement;
+        }
+      }
+      
+      // For other embeds, use MediaEmbed
+      const replacement = `<MediaEmbed url="${src}" title="${title}" />`;
+      logConversion('iframe embed in figure', match, replacement);
+      return replacement;
+    }
+  );
+  
+  // Convert YouTube URLs in text to YouTubeEmbed components
+  convertedContent = convertedContent.replace(
+    /<a\s+href\s*=\s*["']https:\/\/www\.youtube\.com\/watch\?v=([^"']+)["'][^>]*>([^<]*)<\/a>/g,
+    (match, videoId, linkText) => {
+      const replacement = `<YouTubeEmbed id="${videoId}" title="${linkText.trim()}" />`;
+      logConversion('YouTube link', match, replacement);
+      return replacement;
+    }
+  );
+  
+  // Convert youtu.be URLs in text to YouTubeEmbed components
+  convertedContent = convertedContent.replace(
+    /<a\s+href\s*=\s*["']https:\/\/youtu\.be\/([^"']+)["'][^>]*>([^<]*)<\/a>/g,
+    (match, videoId, linkText) => {
+      const replacement = `<YouTubeEmbed id="${videoId}" title="${linkText.trim()}" />`;
+      logConversion('YouTube link', match, replacement);
+      return replacement;
+    }
+  );
+  
   // Global path conversion: /assets/img/ -> /images/
   convertedContent = convertedContent.replace(/\/assets\/img\//g, '/images/');
+  
+  if (conversionCount > 0) {
+    console.log(`✅ Total conversions: ${conversionCount}`);
+  }
   
   return convertedContent;
 }

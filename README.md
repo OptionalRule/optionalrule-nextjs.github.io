@@ -2,31 +2,37 @@
 
 This is website to publishe a static site for [Optional Rule Games](https://www.optionalrule.com) using [Next.js](https://nextjs.org).
 
+The implementation builds a statis site that is served from GitHub Pages.
+
 ## Development
 
-To run dynamic builds in development use:
+To setup this app locall just clone the git repository and type `npm install` to install dependencies.  
 
-```bash
-npm run dev
-```
+## Custom and Important npm commands
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+I have created a number of custom scripts for blog management that run from the command line.  
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### `npm run new-post`
 
-## Draft Posts
+Creates a new blog post with the correct frontmatter template. It will prompt for the title and automatically generate the slug, date, and other required fields.
 
-Each post has an optional boolean gray matter field 'draft'. It will only publish a page during a static build if the draft property is set to false.
+### `npm run import-jekyll`
 
-## Build and Deployment
+Imports posts from a Jekyll blog, converting the frontmatter and content to be compatible with this Next.js site. It handles:
 
-This site generates a static site for hosting through [GitHub Pages](https://docs.github.com/en/pages).  
+- Converting dates to the correct format
+- Updating image paths
+- Transforming Jekyll-specific frontmatter fields
+- Preserving excerpts and metadata
 
-To run a build use:
+### `npm run build`
 
-```bash
-npm run build
-```
+Builds the static site, excluding any posts marked as drafts. The output is ready for deployment to GitHub Pages.
+
+### `npm run dev`
+
+Runs the development server with hot reloading, including draft posts for preview.
+
 
 ## NextJS Info
 

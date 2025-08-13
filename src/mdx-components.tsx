@@ -1,6 +1,8 @@
 import type { MDXComponents } from 'mdx/types';
 import SmartLink from '@/components/SmartLink';
 import HeadingAnchor from '@/components/HeadingAnchor';
+import YouTubeEmbed from '@/components/YouTubeEmbed';
+import MediaEmbed from '@/components/MediaEmbed';
 import { generateHeadingId } from '@/lib/utils';
 
 export function useMDXComponents(components: MDXComponents): MDXComponents {
@@ -134,6 +136,8 @@ export function useMDXComponents(components: MDXComponents): MDXComponents {
         {children}
       </pre>
     ),
+    YouTubeEmbed,
+    MediaEmbed,
     ...components,
   };
 }

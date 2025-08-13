@@ -40,5 +40,10 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
+# Storybook
 *storybook.log
 storybook-static
+
+# Working directories
+/_jekyll_content
+/_ignore

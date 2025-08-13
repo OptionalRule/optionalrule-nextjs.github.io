@@ -2,6 +2,8 @@ import type { Meta, StoryObj } from '@storybook/react';
 import { PostCard } from './PostCard';
 import TableOfContents from './TableOfContents';
 import SmartLink from './SmartLink';
+import YouTubeEmbed from './YouTubeEmbed';
+import MediaEmbed from './MediaEmbed';
 import { PostMeta } from '@/lib/types';
 
 const meta: Meta = {
@@ -43,6 +45,9 @@ const sampleHeadings = [
   { level: 3, text: 'Post Metadata Display', id: 'post-metadata-display' },
   { level: 2, text: 'Heading Anchors', id: 'heading-anchors' },
   { level: 3, text: 'Automatic ID Generation', id: 'automatic-id-generation' },
+  { level: 2, text: 'Media Embed Components', id: 'media-embed-components' },
+  { level: 3, text: 'YouTube Embed', id: 'youtube-embed' },
+  { level: 3, text: 'Media Embed', id: 'media-embed' },
   { level: 2, text: 'Best Practices', id: 'best-practices' },
   { level: 3, text: 'When to Use Each Component', id: 'when-to-use-each-component' },
 ];
@@ -172,6 +177,60 @@ export const CompleteBlogSystem: Story = {
               </div>
             </section>
 
+            {/* Media Embed Section */}
+            <section className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-8">
+              <h2 className="text-3xl font-semibold text-gray-900 dark:text-gray-100 mb-6">
+                Media Embed Components
+              </h2>
+              <p className="text-gray-600 dark:text-gray-400 mb-6">
+                Our media components provide responsive, accessible embedding for various media types:
+              </p>
+              
+              <div className="space-y-8">
+                {/* YouTube Embed */}
+                <div>
+                  <h3 className="text-xl font-medium text-gray-900 dark:text-gray-100 mb-4">
+                    YouTube Embed
+                  </h3>
+                  <p className="text-gray-600 dark:text-gray-400 mb-4">
+                    Automatically handles YouTube URLs and provides responsive embedding:
+                  </p>
+                  <div className="max-w-2xl">
+                    <YouTubeEmbed 
+                      id="P0rXo-Wp_II" 
+                      title="D&D 2024 Spell Changes" 
+                    />
+                  </div>
+                </div>
+
+                {/* Media Embed */}
+                <div>
+                  <h3 className="text-xl font-medium text-gray-900 dark:text-gray-100 mb-4">
+                    Media Embed (Vimeo Example)
+                  </h3>
+                  <p className="text-gray-600 dark:text-gray-400 mb-4">
+                    Handles various media types including Vimeo, podcasts, and other embeds:
+                  </p>
+                  <div className="max-w-2xl">
+                    <MediaEmbed 
+                      url="https://vimeo.com/123456789" 
+                      title="Sample Vimeo Video" 
+                    />
+                  </div>
+                </div>
+
+                {/* Usage Examples */}
+                <div className="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
+                  <h4 className="font-medium text-gray-900 dark:text-gray-100 mb-2">Usage Examples:</h4>
+                  <div className="text-sm text-gray-600 dark:text-gray-400 space-y-2">
+                    <div><code className="bg-gray-200 dark:bg-gray-600 px-2 py-1 rounded">{"<YouTubeEmbed id=\"P0rXo-Wp_II\" />"}</code></div>
+                    <div><code className="bg-gray-200 dark:bg-gray-600 px-2 py-1 rounded">{"<YouTubeEmbed url=\"https://youtu.be/P0rXo-Wp_II\" />"}</code></div>
+                    <div><code className="bg-gray-200 dark:bg-gray-600 px-2 py-1 rounded">{"<MediaEmbed url=\"https://vimeo.com/123456789\" />"}</code></div>
+                  </div>
+                </div>
+              </div>
+            </section>
+
             {/* Best Practices Section */}
             <section className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-8">
               <h2 className="text-3xl font-semibold text-gray-900 dark:text-gray-100 mb-6">
@@ -186,6 +245,9 @@ export const CompleteBlogSystem: Story = {
                     <li>• Enable TOC for long posts</li>
                     <li>• Add meaningful tags to posts</li>
                     <li>• Use descriptive heading text</li>
+                    <li>• Use YouTubeEmbed for YouTube videos</li>
+                    <li>• Use MediaEmbed for other media types</li>
+                    <li>• Always provide meaningful titles for accessibility</li>
                   </ul>
                 </div>
                 
@@ -196,6 +258,9 @@ export const CompleteBlogSystem: Story = {
                     <li>• Skip TOC for long content</li>
                     <li>• Use generic tag names</li>
                     <li>• Create vague headings</li>
+                    <li>• Embed raw iframes directly</li>
+                    <li>• Skip accessibility titles</li>
+                    <li>• Use non-responsive video embeds</li>
                   </ul>
                 </div>
               </div>
