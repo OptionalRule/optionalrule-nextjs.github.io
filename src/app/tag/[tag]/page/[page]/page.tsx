@@ -1,4 +1,4 @@
-import { getPostsByTag, getAllTags } from '@/lib/content';
+import { getPostsByTag } from '@/lib/content';
 import { PostCard } from '@/components/PostCard';
 import { Pagination } from '@/components/Pagination';
 import { capitalize } from '@/lib/utils';

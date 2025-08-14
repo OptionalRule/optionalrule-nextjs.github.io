@@ -42,7 +42,7 @@ export default async function PagePage({ params }: PageProps) {
   }
   
   try {
-    const { posts, totalPages, currentPage, hasNextPage, hasPrevPage } = getPaginatedPosts(pageNum);
+    const { posts, totalPages, currentPage } = getPaginatedPosts(pageNum);
     
     if (posts.length === 0) {
       notFound();

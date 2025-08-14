@@ -19,7 +19,7 @@ export default function HeadingIdDemo() {
       <div className="space-y-2">
         {testHeadings.map((heading, index) => (
           <div key={index} className="text-sm">
-            <strong>"{heading}"</strong> → <code className="bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded">#{generateHeadingId(heading)}</code>
+            <strong>&ldquo;{heading}&rdquo;</strong> → <code className="bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded">#{generateHeadingId(heading)}</code>
           </div>
         ))}
       </div>

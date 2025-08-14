@@ -1,7 +1,7 @@
 import Link from 'next/link';
-import { ReactNode } from 'react';
+import { ReactNode, AnchorHTMLAttributes } from 'react';
 
-interface SmartLinkProps {
+interface SmartLinkProps extends Omit<AnchorHTMLAttributes<HTMLAnchorElement>, 'href'> {
   href: string;
   children: ReactNode;
   className?: string;
@@ -9,7 +9,6 @@ interface SmartLinkProps {
   rel?: string;
   onClick?: () => void;
   title?: string;
-  [key: string]: any; // Allow other HTML attributes
 }
 
 export default function SmartLink({

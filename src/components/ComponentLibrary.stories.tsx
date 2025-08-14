@@ -252,7 +252,7 @@ export const CompleteBlogSystem: Story = {
                 </div>
                 
                 <div className="bg-red-50 dark:bg-red-900/20 p-4 rounded-lg">
-                  <h3 className="font-semibold text-red-900 dark:text-red-100 mb-2">❌ Don't</h3>
+                  <h3 className="font-semibold text-red-900 dark:text-red-100 mb-2">❌ Don&apos;t</h3>
                   <ul className="text-sm text-red-800 dark:text-red-200 space-y-1">
                     <li>• Hardcode anchor links</li>
                     <li>• Skip TOC for long content</li>

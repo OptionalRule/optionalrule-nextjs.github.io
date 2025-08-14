@@ -10,7 +10,7 @@ export const metadata: Metadata = {
 
 export default function Home() {
   try {
-    const { posts, totalPages, currentPage, hasNextPage, hasPrevPage } = getPaginatedPosts(1);
+    const { posts, totalPages, currentPage } = getPaginatedPosts(1);
 
     return (
       <div className="container mx-auto px-4 py-8 max-w-4xl">
