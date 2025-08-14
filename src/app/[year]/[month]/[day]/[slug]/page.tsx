@@ -6,6 +6,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import type { Metadata } from 'next';
 import { MDXRemote } from 'next-mdx-remote/rsc';
+import remarkGfm from 'remark-gfm';
 import TableOfContents from '@/components/TableOfContents';
 import { mdxComponents } from '@/mdx-components';
 
@@ -174,9 +175,12 @@ export default async function PostPage({ params }: PostPageProps) {
 
             {/* Post Content */}
             <div className="prose prose-lg dark:prose-invert max-w-none">
-              <MDXRemote 
-                source={post.content} 
+              <MDXRemote
+                source={post.content}
                 components={mdxComponents}
+                options={{
+                  mdxOptions: { remarkPlugins: [remarkGfm] },
+                }}
               />
             </div>
           </div>
