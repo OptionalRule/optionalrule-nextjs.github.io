@@ -6,6 +6,32 @@ interface PaginationProps {
   basePath: string; // e.g., "/" or "/tag/react"
 }
 
+/**
+ * Calculate a list of visible page numbers for the pagination component.
+ * Ensures a consistent number of pages are shown even near the end of the list.
+ */
+export function getVisiblePages(
+  currentPage: number,
+  totalPages: number,
+  maxVisiblePages = 5
+): number[] {
+  const pages = Array.from({ length: totalPages }, (_, i) => i + 1);
+
+  if (totalPages <= maxVisiblePages) {
+    return pages;
+  }
+
+  let start = Math.max(0, currentPage - Math.floor(maxVisiblePages / 2));
+  let end = start + maxVisiblePages;
+
+  if (end > totalPages) {
+    end = totalPages;
+    start = Math.max(0, end - maxVisiblePages);
+  }
+
+  return pages.slice(start, end);
+}
+
 export function Pagination({ currentPage, totalPages, basePath }: PaginationProps) {
   if (totalPages <= 1) {
     return null;
@@ -26,17 +52,7 @@ export function Pagination({ currentPage, totalPages, basePath }: PaginationProp
     return `${basePath}/page/${page}/`;
   };
 
-  const pages = Array.from({ length: totalPages }, (_, i) => i + 1);
-  
-  // Show max 5 pages around current page
-  const maxVisiblePages = 5;
-  let visiblePages = pages;
-  
-  if (totalPages > maxVisiblePages) {
-    const start = Math.max(0, currentPage - Math.floor(maxVisiblePages / 2));
-    const end = Math.min(totalPages, start + maxVisiblePages);
-    visiblePages = pages.slice(start, end);
-  }
+  const visiblePages = getVisiblePages(currentPage, totalPages);
 
   return (
     <nav className="flex justify-center items-center space-x-2 mt-12" aria-label="Pagination">
