@@ -7,12 +7,7 @@ import Image from 'next/image';
 import type { Metadata } from 'next';
 import { MDXRemote } from 'next-mdx-remote/rsc';
 import TableOfContents from '@/components/TableOfContents';
-import SmartLink from '@/components/SmartLink';
-import HeadingAnchor from '@/components/HeadingAnchor';
-import YouTubeEmbed from '@/components/YouTubeEmbed';
-import MediaEmbed from '@/components/MediaEmbed';
-import { generateHeadingId } from '@/lib/utils';
-import type { MDXComponents } from 'mdx/types';
+import { mdxComponents } from '@/mdx-components';
 
 interface PostPageProps {
   params: Promise<{
@@ -99,51 +94,7 @@ export default async function PostPage({ params }: PostPageProps) {
     notFound();
   }
 
-  // Use default MDX components
   const structuredData = generateBlogPostStructuredData(post);
-  const mdxComponents: MDXComponents = {
-    h1: ({ children, ...props }) => {
-      const headingText = typeof children === 'string' ? children : '';
-      const id = generateHeadingId(headingText);
-      
-      return (
-        <h1 
-          id={id} 
-          className="text-4xl font-bold text-gray-900 dark:text-gray-100 mb-6 scroll-mt-20 group"
-          {...props}
-        >
-          {children}
-          <HeadingAnchor id={id} headingText={headingText} />
-        </h1>
-      );
-    },
-    h2: ({ children, ...props }) => {
-      const headingText = typeof children === 'string' ? children : '';
-      const id = generateHeadingId(headingText);
-      
-      return (
-        <h2 
-          id={id} 
-          className="text-3xl font-semibold text-gray-900 dark:text-gray-100 mb-4 mt-8 scroll-mt-20 group"
-          {...props}
-        >
-          {children}
-          <HeadingAnchor id={id} headingText={headingText} />
-        </h2>
-      );
-    },
-    a: ({ href, children, ...props }) => (
-      <SmartLink
-        href={href || '#'}
-        className="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-200 underline transition-colors"
-        {...props}
-      >
-        {children}
-      </SmartLink>
-    ),
-    YouTubeEmbed,
-    MediaEmbed,
-  };
 
   return (
     <>

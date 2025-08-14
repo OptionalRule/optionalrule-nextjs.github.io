@@ -4,9 +4,8 @@ import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import type { Metadata } from 'next';
 import { MDXRemote } from 'next-mdx-remote/rsc';
-import { useMDXComponents } from '@/mdx-components';
+import { mdxComponents } from '@/mdx-components';
 import TableOfContents from '@/components/TableOfContents';
-// import { useMDXComponents } from '@/mdx-components';
 
 export async function generateMetadata(): Promise<Metadata> {
   const page = getPage('about');
@@ -39,8 +38,6 @@ export default function AboutPage() {
   if (!page) {
     notFound();
   }
-
-  // Use default MDX components
 
   return (
     <div className="container mx-auto px-4 py-8 max-w-4xl">
@@ -82,7 +79,7 @@ export default function AboutPage() {
           <div className="prose prose-lg dark:prose-invert max-w-none">
             <MDXRemote 
               source={page.content} 
-              components={useMDXComponents({})}
+              components={mdxComponents}
             />
           </div>
         </div>
