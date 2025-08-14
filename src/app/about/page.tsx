@@ -4,6 +4,7 @@ import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import type { Metadata } from 'next';
 import { MDXRemote } from 'next-mdx-remote/rsc';
+import remarkGfm from 'remark-gfm';
 import { mdxComponents } from '@/mdx-components';
 import TableOfContents from '@/components/TableOfContents';
 
@@ -77,9 +78,12 @@ export default function AboutPage() {
 
           {/* Page Content */}
           <div className="prose prose-lg dark:prose-invert max-w-none">
-            <MDXRemote 
-              source={page.content} 
+            <MDXRemote
+              source={page.content}
               components={mdxComponents}
+              options={{
+                mdxOptions: { remarkPlugins: [remarkGfm] },
+              }}
             />
           </div>
         </div>
