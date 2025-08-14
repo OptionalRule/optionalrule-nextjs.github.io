@@ -1,4 +1,4 @@
-import { getPost, getAllPostsMeta, generatePostUrl } from '@/lib/content';
+import { getPost, getAllPostsMeta } from '@/lib/content';
 import { generateBlogPostStructuredData } from '@/lib/seo';
 import { formatDate, normalizeImagePath } from '@/lib/utils';
 import { notFound } from 'next/navigation';
@@ -6,9 +6,13 @@ import Link from 'next/link';
 import Image from 'next/image';
 import type { Metadata } from 'next';
 import { MDXRemote } from 'next-mdx-remote/rsc';
-import { useMDXComponents } from '@/mdx-components';
 import TableOfContents from '@/components/TableOfContents';
-// import { useMDXComponents } from '@/mdx-components';
+import SmartLink from '@/components/SmartLink';
+import HeadingAnchor from '@/components/HeadingAnchor';
+import YouTubeEmbed from '@/components/YouTubeEmbed';
+import MediaEmbed from '@/components/MediaEmbed';
+import { generateHeadingId } from '@/lib/utils';
+import type { MDXComponents } from 'mdx/types';
 
 interface PostPageProps {
   params: Promise<{
@@ -79,21 +83,67 @@ export async function generateMetadata({ params }: PostPageProps): Promise<Metad
 export default async function PostPage({ params }: PostPageProps) {
   const { year, month, day, slug } = await params;
   
-  // Validate URL format matches post date
+  // Find the post by slug
   const post = getPost(slug);
   if (!post) {
     notFound();
   }
 
-  const expectedUrl = generatePostUrl(post.date, post.slug);
-  const currentUrl = `/${year}/${month}/${day}/${slug}/`;
+  // Validate that the URL date matches the post date
+  const postDate = new Date(post.date);
+  const expectedYear = postDate.getFullYear().toString();
+  const expectedMonth = String(postDate.getMonth() + 1).padStart(2, '0');
+  const expectedDay = String(postDate.getDate()).padStart(2, '0');
   
-  if (expectedUrl !== currentUrl) {
+  if (year !== expectedYear || month !== expectedMonth || day !== expectedDay) {
     notFound();
   }
 
   // Use default MDX components
   const structuredData = generateBlogPostStructuredData(post);
+  const mdxComponents: MDXComponents = {
+    h1: ({ children, ...props }) => {
+      const headingText = typeof children === 'string' ? children : '';
+      const id = generateHeadingId(headingText);
+      
+      return (
+        <h1 
+          id={id} 
+          className="text-4xl font-bold text-gray-900 dark:text-gray-100 mb-6 scroll-mt-20 group"
+          {...props}
+        >
+          {children}
+          <HeadingAnchor id={id} headingText={headingText} />
+        </h1>
+      );
+    },
+    h2: ({ children, ...props }) => {
+      const headingText = typeof children === 'string' ? children : '';
+      const id = generateHeadingId(headingText);
+      
+      return (
+        <h2 
+          id={id} 
+          className="text-3xl font-semibold text-gray-900 dark:text-gray-100 mb-4 mt-8 scroll-mt-20 group"
+          {...props}
+        >
+          {children}
+          <HeadingAnchor id={id} headingText={headingText} />
+        </h2>
+      );
+    },
+    a: ({ href, children, ...props }) => (
+      <SmartLink
+        href={href || '#'}
+        className="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-200 underline transition-colors"
+        {...props}
+      >
+        {children}
+      </SmartLink>
+    ),
+    YouTubeEmbed,
+    MediaEmbed,
+  };
 
   return (
     <>
@@ -181,7 +231,7 @@ export default async function PostPage({ params }: PostPageProps) {
             <div className="prose prose-lg dark:prose-invert max-w-none">
               <MDXRemote 
                 source={post.content} 
-                components={useMDXComponents({})}
+                components={mdxComponents}
               />
             </div>
           </div>

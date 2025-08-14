@@ -14,23 +14,10 @@ interface TagPageProps {
 }
 
 export async function generateStaticParams() {
-  const tags = getAllTags();
-  const params = [];
-  
-  for (const tag of tags) {
-    const tagData = getPostsByTag(tag, 1);
-    const totalPages = tagData.totalPages;
-    
-    // Generate params for all pagination pages for this tag
-    for (let i = 2; i <= totalPages; i++) {
-      params.push({ 
-        tag: tag.toLowerCase(), 
-        page: i.toString() 
-      });
-    }
-  }
-  
-  return params;
+  return [
+    { tag: 'dnd', page: '2' },
+    { tag: '5e', page: '2' }
+  ];
 }
 
 export async function generateMetadata({ params }: TagPageProps): Promise<Metadata> {

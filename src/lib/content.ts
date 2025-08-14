@@ -100,8 +100,10 @@ export function getPostFiles(): string[] {
           // Only include posts where draft is explicitly false or undefined
           return frontmatter.draft !== true;
         } catch (error) {
-          // If there's an error reading the file, exclude it
-          return false;
+          // If there's an error reading the file, log it but include the post
+          // This prevents posts from being silently excluded due to parsing errors
+          console.warn(`Warning: Error reading post ${file}, including it anyway:`, error);
+          return true;
         }
       }
       // In development, include all posts

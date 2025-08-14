@@ -14,7 +14,10 @@
     "build-debug": "node scripts/build-debug.js",
     "download-images": "ts-node --project scripts/tsconfig.json scripts/download-featured-images.ts",
     "preview-images": "ts-node --project scripts/tsconfig.json scripts/preview-external-images.ts",
-    "replace-default-images": "ts-node --project scripts/tsconfig.json scripts/replace-default-images.ts"
+    "replace-default-images": "ts-node --project scripts/tsconfig.json scripts/replace-default-images.ts",
+    "convert-html": "ts-node --project scripts/tsconfig.json scripts/convert-html-to-markdown.ts",
+    "preview-html": "ts-node --project scripts/tsconfig.json scripts/preview-html-conversion.ts",
+    "convert-jekyll-links": "ts-node --project scripts/tsconfig.json scripts/convert-jekyll-links.ts"
   },
   "dependencies": {
     "@mdx-js/loader": "^3.1.0",
@@ -29,7 +32,8 @@
     "reading-time": "^1.5.0",
     "rehype-highlight": "^7.0.2",
     "remark": "^15.0.1",
-    "remark-gfm": "^4.0.1"
+    "remark-gfm": "^4.0.1",
+    "turndown": "^7.1.2"
   },
   "devDependencies": {
     "@chromatic-com/storybook": "^4.1.0",
@@ -42,6 +46,7 @@
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
     "@types/react": "^19",
+    "@types/turndown": "^5.0.4",
     "@types/react-dom": "^19",
     "@vitest/browser": "^3.2.4",
     "@vitest/coverage-v8": "^3.2.4",

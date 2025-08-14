@@ -20,7 +20,7 @@ export function generateRSSFeed(): string {
       <link>${postUrl}</link>
       <guid isPermaLink="true">${postUrl}</guid>
       <pubDate>${pubDate}</pubDate>
-      <category><![CDATA[${post.tags.join(', ')}]]></category>
+      <category><![CDATA[${post.tags?.join(', ') || ''}]]></category>
     </item>`;
   }).join('');
 
@@ -74,7 +74,7 @@ export function generateSitemap(): string {
   // Get unique tags
   const tags = new Set<string>();
   posts.forEach(post => {
-    post.tags.forEach(tag => tags.add(tag.toLowerCase()));
+    post.tags?.forEach(tag => tags.add(tag.toLowerCase()));
   });
   
   const tagPages = Array.from(tags).map(tag => ({

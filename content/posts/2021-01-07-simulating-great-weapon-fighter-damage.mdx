@@ -10,9 +10,9 @@ showToc: false
 
 I have always had a bit of doubt about the overall benefit of the Great Weapon Fighter fighting style and the Improved Critical ability for Champions in 5th Edition Dungeons and Dragons, so I dig into it a bit below. 
 
-In terms of damage, Great Weapon fighter letting you reroll a one or two seem okay, but you have to keep the result of whatever the reroll is. Not only might this not change the result but if you roll a 2 the first time, and a 1 on the reroll you&#8217;re actually doing **LESS** damage on the roll. 
+In terms of damage, Great Weapon fighter letting you reroll a one or two seem okay, but you have to keep the result of whatever the reroll is. Not only might this not change the result but if you roll a 2 the first time, and a 1 on the reroll you're actually doing **LESS** damage on the roll. 
 
-<img src="/images/grog_by_nickroblesart-384x301.jpg" alt="A goliath barbarian leaping in the air about to strike with their axe." width="384" height="301" />
+![A goliath barbarian leaping in the air about to strike with their axe.](/images/grog_by_nickroblesart-384x301.jpg)
 
 The ability of Champions to score a critical on a 19 or 20 sounds fine but I think this fails Fighter classes because dice are generally not where the fighters damage is and they spread that damage out across multiple attacks as they level. This means that doubling the weapon damage dice from a critical has a relatively small effect. It also means that the increased chance of a critical is limited by relatively small number of dice bound to a single attack roll.
 
@@ -28,14 +28,14 @@ The ability of Champions to score a critical on a 19 or 20 sounds fine but I thi
 |1d10|0.80|
 |1d12|0.83|
 |2d6|1.32|
-{: .table .table-striped .table-hover .data-table .table-fluid .table-responsive}
+
 
 ***
 
 ## The Simulation
 
 In any case, I just wanted to have a bit of fun so I setup a small bit of code to simulate a million damage rolls and calculate the mean. Below is the resulting data from that simulation. The mean of the damage output was simulated for the **Base** weapon damage, Base Weapon Damage with a chance of critical on a **20**, and Base Weapon Damage with a chance of critical on **19** and above. I did this both for a **Normal** fighter and again for a fighter with the great weapon fighting style (**GWF**)
-{: .clearfix .w-100 }
+
 
 **Update June 2021** I had a typo in the data which caused a real gem of a person to launch a series of personal attacks about this. Sociopathic issues aside they wanted to see the simulation code, which is a reasonable requst.  You can find that [here](https://github.com/Streamweaver/DnDNotebook) and it should be runnable in MyBinder. This run is cranked down to 10k iterations for performance.
 
@@ -47,7 +47,7 @@ In any case, I just wanted to have a bit of fun so I setup a small bit of code t
 |Glaive, Halberd, Longsword, Pike, Warhammer|1d10|5.5|5.8|6.0|
 |Greataxe|1d12|6.5|6.9|7.1|
 |Greatsword, Maul|2d6|7.0|7.4|7.6|
-{: .table .table-striped .table-hover .data-table }
+
 
 ***
 
@@ -59,20 +59,20 @@ In any case, I just wanted to have a bit of fun so I setup a small bit of code t
 |Glaive, Halberd, Longsword, Pike, Warhammer|1d10|6.3|6.6|6.9|
 |Greataxe|1d12|7.3|7.7|8.1|
 |Greatsword, Maul|2d6|8.3|8.7|9.2|
-{: .table .table-striped .table-hover .data-table }
 
-Given the relatively small benefit of these differences, and the general disruption of flow at the table as a player manages dice that need to be rerolled, these abilities seem questionable in value to the game. Perhaps I&#8217;m missing something about the numbers but that is my take after looking at the numbers. 
+
+Given the relatively small benefit of these differences, and the general disruption of flow at the table as a player manages dice that need to be rerolled, these abilities seem questionable in value to the game. Perhaps I'm missing something about the numbers but that is my take after looking at the numbers. 
 
 ## House Rules
 
-It&#8217;s 5th edition right? so everyone&#8217;s first response is to create a fix through a house rule. I&#8217;ve seen two house rules frequently suggested, I&#8217;m not sure if people are using them or not so drop me an <a rel="noreferrer noopener" href="https://www.twitter.com/optionalrule" target="_blank">@ on twitter</a> with your experiences if you do. The two house rules I&#8217;ve seen are:
+It's 5th edition right? so everyone's first response is to create a fix through a house rule. I've seen two house rules frequently suggested, I'm not sure if people are using them or not so drop me an [@ on twitter](https://www.twitter.com/optionalrule) with your experiences if you do. The two house rules I've seen are:
 
   1. When you roll a 1 or 2 you can roll the die again and add the value to the previous roll. 
   2. When you roll a 1 or a 2 you can reroll the die, keeping the higher of the two die results.
 
-So let&#8217;s take a look at the results of these rules.
+So let's take a look at the results of these rules.
 
-**Table 3.** GWF house rule option &#8211; Adding the rerolled die to the original result
+**Table 3.** GWF house rule option – Adding the rerolled die to the original result
 
 |Weapons|Damage|Base|20|19|
 |--- |--- |--- |--- |--- |
@@ -80,12 +80,12 @@ So let&#8217;s take a look at the results of these rules.
 |Glaive, Halberd, Longsword, Pike, Warhammer|1d10|6.6|7.0|7.3|
 |Greataxe|1d12|7.6|7.9|8.3|
 |Greatsword, Maul|2d6|9.3|9.8|10.3|
-{: .table .table-striped .table-hover .data-table }
 
 
-I&#8217;m not a huge fan of this, even though it&#8217;s a bit more powerful than the vanilla rule. Sure it provides a slight bump but it seems fairly weak tea compared to the single weapon Dueling fighting style that gets a flat +2 to damage and still gets to use a shield (you know that right?). 
 
-***Table 4.*** GWF house rule option &#8211; GWF rerolling until you get a higher result.
+I'm not a huge fan of this, even though it's a bit more powerful than the vanilla rule. Sure it provides a slight bump but it seems fairly weak tea compared to the single weapon Dueling fighting style that gets a flat +2 to damage and still gets to use a shield (you know that right?). 
+
+***Table 4.*** GWF house rule option – GWF rerolling until you get a higher result.
 
 |Weapons|Damage|Base|20|19|
 |--- |--- |--- |--- |--- |
@@ -93,12 +93,12 @@ I&#8217;m not a huge fan of this, even though it&#8217;s a bit more powerful tha
 |Glaive, Halberd, Longsword, Pike, Warhammer|1d10|6.3|6.6|7.0|
 |Greataxe|1d12|7.4|7.7|8.0|
 |Greatsword, Maul|2d6|8.4|8.8|9.3|
-{: .table .table-striped .table-hover .data-table }
+
   
-I&#8217;m even less a fan of this rule. I honestly can&#8217;t believe people do this but I hear about it enough to think I should include it. The interruption of a player examining the outcome of each of their die rolls, rerolling and examining that, and rerolling again, seems not worth the interruption to combat turns. It makes very little comparative difference for the effort, and it only even seems a bit useful in the context of a Champion, which I would recommend become a subclass feature if I thought the rule worthwhile at all.
+I'm even less a fan of this rule. I honestly can't believe people do this but I hear about it enough to think I should include it. The interruption of a player examining the outcome of each of their die rolls, rerolling and examining that, and rerolling again, seems not worth the interruption to combat turns. It makes very little comparative difference for the effort, and it only even seems a bit useful in the context of a Champion, which I would recommend become a subclass feature if I thought the rule worthwhile at all.
 
 ## Swing and a Missed Opportunity
 
-Overall I feel like Great Weapon Fighter was a missed opportunity in 5th edition. A weak damage bonus is a counter to the notion of powerful attacks the fighting style evokes. I think this is falling victim to the notion that Battlemaster has to have all the combat maneuvers and would much rather have seen Great Weapon Fighter dominate the battlefield with abilities that pointed to power or burst damage. A fix would go beyond the complexity of a simple house rule, but I&#8217;d have preferred to see something like cleve options, knocking opponents down, or even something out of the box like a times per long rest damage add similar to a Paladin&#8217;s smite (Paladin&#8217;s still retain the upper hand since theirs overcomes damage resistance in many cases).
+Overall I feel like Great Weapon Fighter was a missed opportunity in 5th edition. A weak damage bonus is a counter to the notion of powerful attacks the fighting style evokes. I think this is falling victim to the notion that Battlemaster has to have all the combat maneuvers and would much rather have seen Great Weapon Fighter dominate the battlefield with abilities that pointed to power or burst damage. A fix would go beyond the complexity of a simple house rule, but I'd have preferred to see something like cleve options, knocking opponents down, or even something out of the box like a times per long rest damage add similar to a Paladin's smite (Paladin's still retain the upper hand since theirs overcomes damage resistance in many cases).
 
-Regardless, I&#8217;d like to hear what you think or how you handle it so hit me up and let me know.
+Regardless, I'd like to hear what you think or how you handle it so hit me up and let me know.
