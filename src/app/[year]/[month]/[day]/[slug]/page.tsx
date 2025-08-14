@@ -1,6 +1,6 @@
 import { getPost, getAllPostsMeta } from '@/lib/content';
 import { generateBlogPostStructuredData } from '@/lib/seo';
-import { formatDate, normalizeImagePath } from '@/lib/utils';
+import { formatDate, normalizeImagePath, parseDateToUTC } from '@/lib/utils';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -22,15 +22,12 @@ export async function generateStaticParams() {
   const posts = getAllPostsMeta();
   
   return posts.map((post) => {
-    const postDate = new Date(post.date);
-    const year = postDate.getFullYear().toString();
-    const month = String(postDate.getMonth() + 1).padStart(2, '0');
-    const day = String(postDate.getDate()).padStart(2, '0');
+    const { year, month, day } = parseDateToUTC(post.date);
     
     return {
-      year,
-      month,
-      day,
+      year: year.toString(),
+      month: String(month).padStart(2, '0'),
+      day: String(day).padStart(2, '0'),
       slug: post.slug,
     };
   });
@@ -85,12 +82,9 @@ export default async function PostPage({ params }: PostPageProps) {
   }
 
   // Validate that the URL date matches the post date
-  const postDate = new Date(post.date);
-  const expectedYear = postDate.getFullYear().toString();
-  const expectedMonth = String(postDate.getMonth() + 1).padStart(2, '0');
-  const expectedDay = String(postDate.getDate()).padStart(2, '0');
+  const { year: expectedYear, month: expectedMonth, day: expectedDay } = parseDateToUTC(post.date);
   
-  if (year !== expectedYear || month !== expectedMonth || day !== expectedDay) {
+  if (year !== expectedYear.toString() || month !== String(expectedMonth).padStart(2, '0') || day !== String(expectedDay).padStart(2, '0')) {
     notFound();
   }
 

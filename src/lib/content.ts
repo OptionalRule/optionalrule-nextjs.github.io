@@ -308,13 +308,3 @@ export function getAllPageSlugs(): string[] {
   const files = getPageFiles();
   return files.map(generateSlug);
 }
-
-// Generate post URL from date and slug
-export function generatePostUrl(date: string, slug: string): string {
-  const postDate = new Date(date);
-  const year = postDate.getFullYear();
-  const month = String(postDate.getMonth() + 1).padStart(2, '0');
-  const day = String(postDate.getDate()).padStart(2, '0');
-  
-  return `/${year}/${month}/${day}/${slug}/`;
-}

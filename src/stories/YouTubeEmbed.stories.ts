@@ -1,5 +1,5 @@
-import type { Meta, StoryObj } from '@storybook/react';
-import YouTubeEmbed from '../components/YouTubeEmbed';
+import type { Meta, StoryObj } from '@storybook/nextjs-vite';
+import YouTubeEmbed from '@/components/YouTubeEmbed';
 
 const meta: Meta<typeof YouTubeEmbed> = {
   title: 'Components/YouTubeEmbed',

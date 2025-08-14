@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/react';
+import type { Meta, StoryObj } from '@storybook/nextjs-vite';
 import { PostCard } from './PostCard';
 import TableOfContents from './TableOfContents';
 import SmartLink from './SmartLink';

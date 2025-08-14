@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { ReactNode, AnchorHTMLAttributes } from 'react';
+import { ReactNode, AnchorHTMLAttributes, MouseEventHandler } from 'react';
 
 interface SmartLinkProps extends Omit<AnchorHTMLAttributes<HTMLAnchorElement>, 'href'> {
   href: string;
@@ -7,7 +7,7 @@ interface SmartLinkProps extends Omit<AnchorHTMLAttributes<HTMLAnchorElement>, '
   className?: string;
   target?: string;
   rel?: string;
-  onClick?: () => void;
+  onClick?: MouseEventHandler<HTMLAnchorElement>;
   title?: string;
 }
 

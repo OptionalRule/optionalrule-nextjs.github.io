@@ -1,4 +1,4 @@
-import { ReactNode, AnchorHTMLAttributes } from 'react';
+import { ReactNode, AnchorHTMLAttributes, MouseEventHandler } from 'react';
 import SmartLink from './SmartLink';
 
 interface MarkdownLinkProps extends Omit<AnchorHTMLAttributes<HTMLAnchorElement>, 'href'> {
@@ -6,6 +6,7 @@ interface MarkdownLinkProps extends Omit<AnchorHTMLAttributes<HTMLAnchorElement>
   children: ReactNode;
   className?: string;
   title?: string;
+  onClick?: MouseEventHandler<HTMLAnchorElement>;
 }
 
 export default function MarkdownLink({

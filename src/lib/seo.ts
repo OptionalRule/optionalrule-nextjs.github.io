@@ -1,4 +1,5 @@
 import { Post, PostMeta } from './types';
+import { generatePostUrl } from './utils';
 
 // Generate JSON-LD structured data for a blog post
 export function generateBlogPostStructuredData(post: Post, siteUrl: string = 'https://yourdomain.github.io') {
@@ -91,14 +92,4 @@ export function generateWebsiteStructuredData(siteUrl: string = 'https://yourdom
       'query-input': 'required name=search_term_string',
     },
   };
-}
-
-// Helper function to generate post URL (duplicated from utils for this file's independence)
-function generatePostUrl(date: string, slug: string): string {
-  const postDate = new Date(date);
-  const year = postDate.getFullYear();
-  const month = String(postDate.getMonth() + 1).padStart(2, '0');
-  const day = String(postDate.getDate()).padStart(2, '0');
-  
-  return `/${year}/${month}/${day}/${slug}/`;
 }

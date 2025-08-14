@@ -1,5 +1,5 @@
-import type { Meta, StoryObj } from '@storybook/react';
-import MediaEmbed from '../components/MediaEmbed';
+import type { Meta, StoryObj } from '@storybook/nextjs-vite';
+import MediaEmbed from '@/components/MediaEmbed';
 
 const meta: Meta<typeof MediaEmbed> = {
   title: 'Components/MediaEmbed',

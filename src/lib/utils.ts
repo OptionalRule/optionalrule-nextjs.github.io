@@ -1,21 +1,48 @@
 // Format date for display
 export function formatDate(dateString: string): string {
-  const date = new Date(dateString);
+  // Parse the date string directly to avoid timezone conversion issues
+  // dateString format: "YYYY-MM-DD"
+  const [year, month, day] = dateString.split('-').map(Number);
+  
+  // Create a date object for formatting, but use UTC methods to avoid timezone conversion
+  const date = new Date(Date.UTC(year, month - 1, day)); // month is 0-indexed
+  
   return date.toLocaleDateString('en-US', {
     year: 'numeric',
     month: 'long',
-    day: 'numeric'
+    day: 'numeric',
+    timeZone: 'UTC' // Force UTC timezone to avoid local conversion
   });
+}
+
+/**
+ * Centralized date parsing utility that ensures consistent UTC-based date handling
+ * This function should be used anywhere we need to extract year, month, or day from a date string
+ */
+export function parseDateToUTC(dateString: string): { year: number; month: number; day: number } {
+  const postDate = parseDateToUTCDate(dateString);
+  return {
+    year: postDate.getUTCFullYear(),
+    month: postDate.getUTCMonth() + 1, // getUTCMonth() returns 0-11, so add 1
+    day: postDate.getUTCDate()
+  };
+}
+
+/**
+ * Centralized date parsing utility that returns a Date object
+ * This is the single source of truth for all date operations
+ */
+export function parseDateToUTCDate(dateString: string): Date {
+  return new Date(dateString + 'T00:00:00.000Z'); // Force UTC midnight to avoid timezone issues
 }
 
 // Generate post URL from date and slug
 export function generatePostUrl(date: string, slug: string): string {
-  const postDate = new Date(date);
-  const year = postDate.getFullYear();
-  const month = String(postDate.getMonth() + 1).padStart(2, '0');
-  const day = String(postDate.getDate()).padStart(2, '0');
+  const { year, month, day } = parseDateToUTC(date);
+  const monthStr = String(month).padStart(2, '0');
+  const dayStr = String(day).padStart(2, '0');
   
-  return `/${year}/${month}/${day}/${slug}/`;
+  return `/${year}/${monthStr}/${dayStr}/${slug}/`;
 }
 
 // Capitalize first letter of string
