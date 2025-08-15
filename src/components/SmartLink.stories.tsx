@@ -42,7 +42,7 @@ type Story = StoryObj<typeof meta>;
 
 export const InternalLink: Story = {
   args: {
-    href: '/about',
+    href: '/pages/about/',
     children: 'About Page',
     className: 'text-blue-600 hover:text-blue-800 underline',
   },
@@ -117,7 +117,7 @@ export const PhoneLink: Story = {
 
 export const WithCustomStyling: Story = {
   args: {
-    href: '/contact',
+    href: '/pages/contact/',
     children: 'Contact Us',
     className: 'inline-block px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors',
   },

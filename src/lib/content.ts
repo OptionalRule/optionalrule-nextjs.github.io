@@ -51,7 +51,7 @@ export function isPostDraft(filename: string): boolean {
     
     return frontmatter.draft === true;
   } catch (error) {
-    // If there's an error reading the file, consider it a draft
+    console.warn(`Warning: Error reading post ${filename} for draft check, treating as draft:`, error);
     return true;
   }
 }
@@ -66,7 +66,7 @@ export function isPageDraft(filename: string): boolean {
     
     return frontmatter.draft === true;
   } catch (error) {
-    // If there's an error reading the file, consider it a draft
+    console.warn(`Warning: Error reading page ${filename} for draft check, treating as draft:`, error);
     return true;
   }
 }
@@ -140,7 +140,7 @@ export function getPageFiles(): string[] {
           // Only include pages where draft is explicitly false or undefined
           return frontmatter.draft !== true;
         } catch (error) {
-          // If there's an error reading the file, exclude it
+          console.warn(`Warning: Error reading page ${file} for filtering, excluding from build:`, error);
           return false;
         }
       }
