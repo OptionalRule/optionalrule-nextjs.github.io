@@ -91,7 +91,7 @@ export const CompleteBlogSystem: Story = {
               <div className="space-y-4">
                 <div className="flex items-center gap-4">
                   <span className="text-sm font-medium text-gray-500 dark:text-gray-400 w-24">Internal:</span>
-                  <SmartLink href="/about" className="text-blue-600 hover:text-blue-800 underline">
+                  <SmartLink href="/pages/about/" className="text-blue-600 hover:text-blue-800 underline">
                     About Page
                   </SmartLink>
                 </div>
