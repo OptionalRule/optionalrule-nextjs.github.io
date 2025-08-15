@@ -1,6 +1,7 @@
 import { getPostsByTag } from '@/lib/content';
 import { PostCard } from '@/components/PostCard';
 import { Pagination } from '@/components/Pagination';
+import { generateTagMetadata } from '@/lib/seo';
 import { capitalize } from '@/lib/utils';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
@@ -24,10 +25,7 @@ export async function generateMetadata({ params }: TagPageProps): Promise<Metada
   const { tag, page } = await params;
   const pageNum = parseInt(page);
   
-  return {
-    title: `Posts tagged "${capitalize(tag)}" - Page ${pageNum} | My Blog`,
-    description: `Browse posts tagged with ${tag} on page ${pageNum}. Discover articles about ${tag} and related topics.`,
-  };
+  return generateTagMetadata(tag, pageNum);
 }
 
 export default async function TagPagePage({ params }: TagPageProps) {

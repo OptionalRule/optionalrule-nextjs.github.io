@@ -1,6 +1,7 @@
 import { getPostsByTag, getAllTags } from '@/lib/content';
 import { PostCard } from '@/components/PostCard';
 import { Pagination } from '@/components/Pagination';
+import { generateTagMetadata } from '@/lib/seo';
 import { capitalize } from '@/lib/utils';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
@@ -30,10 +31,7 @@ export async function generateMetadata({ params }: TagPageProps): Promise<Metada
     };
   }
   
-  return {
-    title: `${capitalize(tag)} Posts | My Blog`,
-    description: `Browse all posts tagged with "${tag}". Discover articles about ${tag} and related topics.`,
-  };
+  return generateTagMetadata(tag);
 }
 
 export default async function TagPage({ params }: TagPageProps) {

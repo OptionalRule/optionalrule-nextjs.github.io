@@ -1,6 +1,7 @@
 import { getPaginatedPosts, getAllPostsMeta } from '@/lib/content';
 import { PostCard } from '@/components/PostCard';
 import { Pagination } from '@/components/Pagination';
+import { generatePaginationMetadata } from '@/lib/seo';
 import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
 
@@ -27,10 +28,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const { page } = await params;
   const pageNum = parseInt(page);
   
-  return {
-    title: `Page ${pageNum} | My Blog`,
-    description: `Blog posts page ${pageNum}. Browse our collection of articles and insights.`,
-  };
+  return generatePaginationMetadata(pageNum);
 }
 
 export default async function PagePage({ params }: PageProps) {

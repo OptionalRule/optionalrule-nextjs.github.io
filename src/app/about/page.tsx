@@ -1,5 +1,5 @@
 import { getPage } from '@/lib/content';
-import { generatePageTitle, generateMetaDescription } from '@/lib/utils';
+import { generatePageMetadata } from '@/lib/seo';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import type { Metadata } from 'next';
@@ -12,25 +12,10 @@ export async function generateMetadata(): Promise<Metadata> {
   const page = getPage('about');
   
   if (!page) {
-    return {
-      title: 'About | My Blog',
-    };
+    return generatePageMetadata('About', 'Learn more about us and what we do.', '/about/');
   }
 
-  return {
-    title: generatePageTitle(page.title),
-    description: generateMetaDescription(page.description, undefined),
-    openGraph: {
-      title: page.title,
-      description: generateMetaDescription(page.description, undefined),
-      type: 'website',
-    },
-    twitter: {
-      card: 'summary',
-      title: page.title,
-      description: generateMetaDescription(page.description, undefined),
-    },
-  };
+  return generatePageMetadata(page.title, page.description, '/about/');
 }
 
 export default function AboutPage() {
