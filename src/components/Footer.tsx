@@ -15,7 +15,7 @@ export function Footer() {
           
           <div className="flex items-center space-x-6">
             <Link
-              href="/about/"
+              href="/pages/about/"
               className="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200 text-sm transition-colors"
             >
               About
