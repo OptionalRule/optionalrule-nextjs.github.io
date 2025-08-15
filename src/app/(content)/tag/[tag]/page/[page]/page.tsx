@@ -1,8 +1,8 @@
-import { getPostsByTag } from '@/lib/content';
+import { getPostsByTag, getAllTags } from '@/lib/content';
 import { PostCard } from '@/components/PostCard';
 import { Pagination } from '@/components/Pagination';
 import { generateTagMetadata } from '@/lib/seo';
-import { capitalize } from '@/lib/utils';
+import { capitalize, createTagSlug } from '@/lib/utils';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import type { Metadata } from 'next';
@@ -15,10 +15,23 @@ interface TagPageProps {
 }
 
 export async function generateStaticParams() {
-  return [
-    { tag: 'dnd', page: '2' },
-    { tag: '5e', page: '2' }
-  ];
+  const tags = getAllTags();
+  const params: { tag: string; page: string }[] = [];
+  
+  for (const tag of tags) {
+    const tagSlug = createTagSlug(tag);
+    const tagData = getPostsByTag(tag, 1);
+    
+    // Generate params for pages 2 and beyond
+    for (let page = 2; page <= tagData.totalPages; page++) {
+      params.push({
+        tag: tagSlug,
+        page: page.toString()
+      });
+    }
+  }
+  
+  return params;
 }
 
 export async function generateMetadata({ params }: TagPageProps): Promise<Metadata> {
@@ -59,10 +72,10 @@ export default async function TagPagePage({ params }: TagPageProps) {
           <span>Tags</span>
           <span className="mx-2">›</span>
           <Link 
-            href={`/tag/${tag}/`}
+            href={`/tag/${createTagSlug(tagData.tag)}/`}
             className="hover:text-gray-900 dark:hover:text-gray-200 transition-colors"
           >
-            {capitalize(tag)}
+            {capitalize(tagData.tag)}
           </Link>
           <span className="mx-2">›</span>
           <span className="text-gray-900 dark:text-gray-200">Page {pageNum}</span>
@@ -70,13 +83,13 @@ export default async function TagPagePage({ params }: TagPageProps) {
 
         <header className="mb-12 text-center">
           <h1 className="text-4xl font-bold text-gray-900 dark:text-gray-100 mb-4">
-            Posts tagged with &ldquo;{capitalize(tag)}&rdquo;
+            Posts tagged with &ldquo;{capitalize(tagData.tag)}&rdquo;
           </h1>
           <div className="mb-6">
             <Pagination 
               currentPage={currentPage}
               totalPages={totalPages}
-              basePath={`/tag/${tag.toLowerCase()}`}
+              basePath={`/tag/${createTagSlug(tagData.tag)}`}
             />
           </div>
           
@@ -101,7 +114,7 @@ export default async function TagPagePage({ params }: TagPageProps) {
           <Pagination 
             currentPage={currentPage}
             totalPages={totalPages}
-            basePath={`/tag/${tag.toLowerCase()}`}
+            basePath={`/tag/${createTagSlug(tagData.tag)}`}
           />
         </main>
       </div>

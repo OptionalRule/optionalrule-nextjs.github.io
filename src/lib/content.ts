@@ -3,7 +3,7 @@ import path from 'path';
 import matter from 'gray-matter';
 import readingTime from 'reading-time';
 import { Post, PostMeta, Page, PostFrontmatter, PageFrontmatter, PaginatedPosts, TagPage } from './types';
-import { extractHeadings } from './utils';
+import { extractHeadings, tagSlugToName } from './utils';
 
 const POSTS_DIR = path.join(process.cwd(), 'content', 'posts');
 const PAGES_DIR = path.join(process.cwd(), 'content', 'pages');
@@ -255,11 +255,15 @@ export function getAllTags(): string[] {
   return Array.from(tags).sort();
 }
 
-// Get posts by tag with pagination
-export function getPostsByTag(tag: string, page: number = 1): TagPage {
+// Get posts by tag with pagination (accepts slug or tag name)
+export function getPostsByTag(tagSlugOrName: string, page: number = 1): TagPage {
   const allPosts = getAllPostsMeta();
+  
+  // Convert slug to tag name for comparison
+  const tagName = tagSlugOrName.includes('-') ? tagSlugToName(tagSlugOrName) : tagSlugOrName;
+  
   const tagPosts = allPosts.filter(post => 
-    post.tags && post.tags.some(t => t.toLowerCase() === tag.toLowerCase())
+    post.tags && post.tags.some(t => t.toLowerCase() === tagName.toLowerCase())
   );
   
   const totalPosts = tagPosts.length;
@@ -269,7 +273,7 @@ export function getPostsByTag(tag: string, page: number = 1): TagPage {
   const posts = tagPosts.slice(startIndex, endIndex);
 
   return {
-    tag,
+    tag: tagName, // Return the actual tag name, not the slug
     posts,
     totalPages,
     currentPage: page,

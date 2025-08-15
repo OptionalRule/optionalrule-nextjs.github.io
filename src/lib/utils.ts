@@ -103,3 +103,19 @@ export function normalizeImagePath(imagePath: string): string {
   // If it's a relative path without /, add it
   return `/${imagePath}`;
 }
+
+// Create URL-safe slug from tag name
+export function createTagSlug(tag: string): string {
+  return tag
+    .toLowerCase()
+    .trim()
+    .replace(/\s+/g, '-')           // Replace spaces with hyphens
+    .replace(/[^\w\-]/g, '')        // Remove special characters except hyphens
+    .replace(/\-+/g, '-')           // Replace multiple hyphens with single
+    .replace(/^\-+|\-+$/g, '');     // Remove leading/trailing hyphens
+}
+
+// Convert tag slug back to display name
+export function tagSlugToName(slug: string): string {
+  return slug.replace(/\-/g, ' ');
+}

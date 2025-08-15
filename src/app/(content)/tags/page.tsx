@@ -1,5 +1,5 @@
 import { getAllTags, getPostsByTag } from '@/lib/content';
-import { capitalize } from '@/lib/utils';
+import { capitalize, createTagSlug } from '@/lib/utils';
 import Link from 'next/link';
 import type { Metadata } from 'next';
 
@@ -15,7 +15,7 @@ export default function TagsPage() {
   const tagsWithCounts = tags.map(tag => ({
     name: tag,
     count: getPostsByTag(tag, 1).posts.length + (getPostsByTag(tag, 1).totalPages - 1) * 10,
-    slug: tag.toLowerCase(),
+    slug: createTagSlug(tag),
   })).sort((a, b) => b.count - a.count); // Sort by post count descending
 
   return (

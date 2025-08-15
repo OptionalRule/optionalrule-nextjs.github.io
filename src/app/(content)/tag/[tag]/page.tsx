@@ -2,7 +2,7 @@ import { getPostsByTag, getAllTags } from '@/lib/content';
 import { PostCard } from '@/components/PostCard';
 import { Pagination } from '@/components/Pagination';
 import { generateTagMetadata } from '@/lib/seo';
-import { capitalize } from '@/lib/utils';
+import { capitalize, createTagSlug } from '@/lib/utils';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import type { Metadata } from 'next';
@@ -17,7 +17,7 @@ export async function generateStaticParams() {
   const tags = getAllTags();
   
   return tags.map((tag) => ({
-    tag: tag.toLowerCase(),
+    tag: createTagSlug(tag),
   }));
 }
 
@@ -77,7 +77,7 @@ export default async function TagPage({ params }: TagPageProps) {
               <Pagination 
                 currentPage={currentPage}
                 totalPages={totalPages}
-                basePath={`/tag/${tag.toLowerCase()}`}
+                basePath={`/tag/${createTagSlug(tag)}`}
               />
             </div>
           )}
@@ -103,7 +103,7 @@ export default async function TagPage({ params }: TagPageProps) {
           <Pagination 
             currentPage={currentPage}
             totalPages={totalPages}
-            basePath={`/tag/${tag.toLowerCase()}`}
+            basePath={`/tag/${createTagSlug(tag)}`}
           />
         </main>
       </div>
