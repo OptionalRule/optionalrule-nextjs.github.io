@@ -24,7 +24,22 @@ export default function Home() {
         />
         
         <div className="container mx-auto px-4 py-8 max-w-4xl">
-            <main>
+          {totalPages > 1 && (
+            <header className="mb-12 text-center">
+              <h1 className="text-4xl font-bold text-gray-900 dark:text-gray-100 mb-4">
+                Blog Posts
+              </h1>
+              <div className="mb-6">
+                <Pagination 
+                  currentPage={currentPage}
+                  totalPages={totalPages}
+                  basePath=""
+                />
+              </div>
+            </header>
+          )}
+          
+          <main>
               <div className="grid gap-8 md:gap-6">
                 {posts.map((post) => (
                   <PostCard key={post.slug} post={post} />

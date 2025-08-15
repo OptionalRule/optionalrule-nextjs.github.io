@@ -72,6 +72,16 @@ export default async function TagPage({ params }: TagPageProps) {
             }
           </p>
           
+          {totalPages > 1 && (
+            <div className="mb-6">
+              <Pagination 
+                currentPage={currentPage}
+                totalPages={totalPages}
+                basePath={`/tag/${tag.toLowerCase()}`}
+              />
+            </div>
+          )}
+          
           {/* Tag Navigation */}
           <div className="flex justify-center">
             <Link

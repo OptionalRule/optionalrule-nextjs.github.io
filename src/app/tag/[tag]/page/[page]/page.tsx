@@ -72,9 +72,13 @@ export default async function TagPagePage({ params }: TagPageProps) {
           <h1 className="text-4xl font-bold text-gray-900 dark:text-gray-100 mb-4">
             Posts tagged with &ldquo;{capitalize(tag)}&rdquo;
           </h1>
-          <p className="text-lg text-gray-600 dark:text-gray-400 mb-6">
-            Page {currentPage} of {totalPages}
-          </p>
+          <div className="mb-6">
+            <Pagination 
+              currentPage={currentPage}
+              totalPages={totalPages}
+              basePath={`/tag/${tag.toLowerCase()}`}
+            />
+          </div>
           
           {/* Tag Navigation */}
           <div className="flex justify-center">
