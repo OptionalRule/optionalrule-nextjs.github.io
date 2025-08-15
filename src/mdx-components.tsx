@@ -221,6 +221,18 @@ export const mdxComponents: MDXComponents = {
     </em>
   ),
 
+  // Images with centering and responsive styling
+  img: ({ src, alt, ...props }) => (
+    <div className="flex justify-center my-6">
+      <img
+        src={src}
+        alt={alt}
+        className="max-w-full h-auto rounded-lg shadow-md"
+        {...props}
+      />
+    </div>
+  ),
+
   // Custom components
   YouTubeEmbed,
   MediaEmbed,
