@@ -10,7 +10,7 @@ export default function LinkExamples() {
       <div className="space-y-2">
         <div>
           <strong>Internal Link:</strong>{' '}
-          <SmartLink href="/about" className="text-blue-600 hover:text-blue-800">
+          <SmartLink href="/pages/about/" className="text-blue-600 hover:text-blue-800">
             About Page
           </SmartLink>
         </div>

@@ -50,7 +50,7 @@ export function generateSitemap(): string {
   // Static pages
   const staticPages = [
     { url: '', priority: '1.0' },
-    { url: '/about/', priority: '0.8' },
+    { url: '/pages/about/', priority: '0.8' },
     { url: '/tags/', priority: '0.7' },
   ];
   

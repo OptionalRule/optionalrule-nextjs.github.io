@@ -170,7 +170,7 @@ export default async function PostPage({ params }: PostPageProps) {
           </Link>
           
           <Link
-            href="/about/"
+            href="/pages/about/"
             className="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200 transition-colors"
           >
             About this blog →
