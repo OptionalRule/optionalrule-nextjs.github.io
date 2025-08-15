@@ -1,8 +1,9 @@
 import { Post, PostMeta } from './types';
 import { generatePostUrl } from './utils';
+import { siteConfig } from '@/config/site';
 
 // Generate JSON-LD structured data for a blog post
-export function generateBlogPostStructuredData(post: Post, siteUrl: string = 'https://yourdomain.github.io') {
+export function generateBlogPostStructuredData(post: Post, siteUrl: string = siteConfig.url) {
   return {
     '@context': 'https://schema.org',
     '@type': 'BlogPosting',
@@ -10,14 +11,14 @@ export function generateBlogPostStructuredData(post: Post, siteUrl: string = 'ht
     description: post.excerpt,
     author: {
       '@type': 'Person',
-      name: 'Blog Author', // Replace with actual author name
+      name: siteConfig.author,
     },
     publisher: {
       '@type': 'Organization',
-      name: 'My Blog',
+      name: siteConfig.name,
       logo: {
         '@type': 'ImageObject',
-        url: `${siteUrl}/logo.png`, // Add your logo
+        url: `${siteUrl}${siteConfig.logo}`,
       },
     },
     datePublished: post.date,
@@ -39,19 +40,19 @@ export function generateBlogPostStructuredData(post: Post, siteUrl: string = 'ht
 }
 
 // Generate JSON-LD structured data for the blog homepage
-export function generateBlogStructuredData(posts: PostMeta[], siteUrl: string = 'https://yourdomain.github.io') {
+export function generateBlogStructuredData(posts: PostMeta[], siteUrl: string = siteConfig.url) {
   return {
     '@context': 'https://schema.org',
     '@type': 'Blog',
-    name: 'My Blog',
-    description: 'A modern blog about web development, best practices, and emerging technologies.',
+    name: siteConfig.name,
+    description: siteConfig.description,
     url: siteUrl,
     publisher: {
       '@type': 'Organization',
-      name: 'My Blog',
+      name: siteConfig.name,
       logo: {
         '@type': 'ImageObject',
-        url: `${siteUrl}/logo.png`, // Add your logo
+        url: `${siteUrl}${siteConfig.logo}`,
       },
     },
     mainEntity: {
@@ -67,7 +68,7 @@ export function generateBlogStructuredData(posts: PostMeta[], siteUrl: string = 
           datePublished: post.date,
           author: {
             '@type': 'Person',
-            name: 'Blog Author',
+            name: siteConfig.author,
           },
         },
       })),
@@ -76,12 +77,12 @@ export function generateBlogStructuredData(posts: PostMeta[], siteUrl: string = 
 }
 
 // Generate JSON-LD structured data for website
-export function generateWebsiteStructuredData(siteUrl: string = 'https://yourdomain.github.io') {
+export function generateWebsiteStructuredData(siteUrl: string = siteConfig.url) {
   return {
     '@context': 'https://schema.org',
     '@type': 'WebSite',
-    name: 'My Blog',
-    description: 'A modern blog about web development, best practices, and emerging technologies.',
+    name: siteConfig.name,
+    description: siteConfig.description,
     url: siteUrl,
     potentialAction: {
       '@type': 'SearchAction',

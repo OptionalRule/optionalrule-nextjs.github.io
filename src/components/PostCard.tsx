@@ -14,16 +14,18 @@ export function PostCard({ post }: PostCardProps) {
     <article className="bg-zinc-50 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden drop-shadow-lg hover:shadow-lg transition-shadow duration-200">
       
       {post.featured_image && (
-        <div className="relative aspect-video bg-gray-200 dark:bg-gray-700 overflow-hidden">
-          <Image
-            src={normalizeImagePath(post.featured_image)}
-            alt={`Featured image for ${post.title}`}
-            fill
-            className="object-cover transition-transform duration-300 hover:scale-105"
-            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-            priority={false}
-          />
-        </div>
+        <Link href={postUrl} className="block">
+          <div className="relative aspect-video bg-gray-200 dark:bg-gray-700 overflow-hidden">
+            <Image
+              src={normalizeImagePath(post.featured_image)}
+              alt={`Featured image for ${post.title}`}
+              fill
+              className="object-cover transition-transform duration-300 hover:scale-105"
+              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+              priority={false}
+            />
+          </div>
+        </Link>
       )}
 
       <div className="p-6">
