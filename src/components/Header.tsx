@@ -7,7 +7,7 @@ import { useState } from 'react';
 // Navigation configuration - single source of truth
 const navigationItems = [
   { href: '/', label: 'Home' },
-  { href: '/about/', label: 'About' },
+  { href: '/pages/about/', label: 'About' },
   { href: '/tags/', label: 'Tags' },
   { 
     href: '/rss.xml', 
