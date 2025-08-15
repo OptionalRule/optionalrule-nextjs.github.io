@@ -25,6 +25,22 @@ interface PostData {
   filepath: string;
 }
 
+// Available featured images for random selection
+const FEATURED_IMAGES = [
+  '/images/optionalrule-escaping-fireball.webp',
+  '/images/optionalrule-escaping-wound.webp',
+  '/images/optionalrule-exploring-question.webp',
+  '/images/optionalrule-exploring-encumbered.webp',
+  '/images/optionalrule-exploring-monster.webp',
+  '/images/optionalrule-exploring-wizard.webp'
+];
+
+// Function to randomly select a featured image
+function getRandomFeaturedImage(): string {
+  const randomIndex = Math.floor(Math.random() * FEATURED_IMAGES.length);
+  return FEATURED_IMAGES[randomIndex];
+}
+
 // Create readline interface for user input
 const rl = readline.createInterface({
   input: process.stdin,
@@ -157,7 +173,7 @@ function generateFrontmatter(data: PostData): string {
     date: data.date,
     excerpt: "A brief description of your post that will appear in previews and summaries.",
     tags: ["tag1", "tag2", "tag3"],
-    featured_image: "/images/default-featured.jpg",
+    featured_image: getRandomFeaturedImage(),
     draft: false,
     showToc: false
   };
@@ -234,13 +250,14 @@ function displaySuccessMessage(data: PostData): void {
   console.log(`📅 Date: ${data.date}`);
   console.log('\n📝 The post includes:');
   console.log('   - Proper frontmatter with all required fields');
+  console.log('   - Randomly selected featured image from available options');
   console.log('   - Sample content with Markdown examples');
   console.log('   - Guide for links, images, code blocks, and more');
   console.log('\n💡 Next steps:');
   console.log('   1. Edit the frontmatter fields as needed');
   console.log('   2. Replace the sample content with your actual content');
   console.log('   3. Add appropriate tags and update the excerpt');
-  console.log('   4. Add a featured image to /public/images/');
+  console.log('   4. Change the featured image if desired (currently randomly selected)');
 }
 
 // Main function to create the post
