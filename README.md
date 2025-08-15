@@ -50,6 +50,17 @@ Builds the static site, excluding any posts marked as drafts. The output is read
 
 Runs the development server with hot reloading, including draft posts for preview.
 
+### `node scripts/tag-and-excerpt`
+
+Runs a custom script to generate tags and a better excerpt for posts through opeanai
+
+```
+node scripts/tag-and-excerpt.mjs --api-key sk-xxx
+# or
+export MY_OPENAI_KEY="sk-xxx"
+node scripts/tag-and-excerpt.mjs --api-key MY_OPENAI_KEY
+```
+
 ## NextJS Info
 
 To learn more about Next.js, take a look at the following resources:

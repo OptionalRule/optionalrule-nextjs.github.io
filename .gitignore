@@ -47,3 +47,4 @@ storybook-static
 # Working directories
 /_jekyll_content
 /_ignore
+/src/config/secret_config.ini

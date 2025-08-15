@@ -25,11 +25,11 @@ function parseArgs(argv) {
   const opts = {
     path: 'content/posts',
     dryRun: false,
-    overwrite: false,
-    overwriteTags: false,
-    noBackup: false,
+    overwrite: true,
+    overwriteTags: true,
+    noBackup: true,
     concurrency: 3,
-    model: 'gpt-4o-mini',
+    model: 'gpt-5-2025-08-07',
     apiKey: process.env.OPENAI_API_KEY || process.env.OPENAI_APIKEY || ''
   };
   for (let i = 0; i < argv.length; i++) {
@@ -138,6 +138,7 @@ async function callOpenAI({ title, content, model, apiKey }) {
 async function processFile(file, opts, stats) {
   stats.scanned++;
   try {
+    console.log(`Processing file: ${file}`);
     const raw = await fs.readFile(file, 'utf8');
     const parsed = matter(raw);
     const front = parsed.data;
@@ -152,12 +153,22 @@ async function processFile(file, opts, stats) {
     const needsExcerpt = opts.overwrite || !hasExcerpt;
     const needsTags = opts.overwriteTags || !hasValidTags;
 
+    console.log(`  Title: ${title}`);
+    console.log(`  Has excerpt: ${hasExcerpt}`);
+    console.log(`  Has tags: ${tags.length > 0}`);
+    console.log(`  Needs excerpt: ${needsExcerpt}`);
+    console.log(`  Needs tags: ${needsTags}`);
+
     if (!needsExcerpt && !needsTags) {
+      console.log(`  Skipping file - no updates needed`);
       stats.skipped++;
       return;
     }
 
+    console.log(`  Calling OpenAI for analysis...`);
     const analysis = await callOpenAI({ title, content: body, model: opts.model, apiKey: opts.apiKey });
+    console.log(`  OpenAI response:`, analysis);
+    
     const modelExcerpt = analysis.excerpt || '';
     const modelTags = Array.isArray(analysis.tags) ? analysis.tags : [];
 
@@ -189,18 +200,36 @@ async function processFile(file, opts, stats) {
     }
     stats.updated++;
   } catch (err) {
-    stats.errors++;
     console.error(`Error processing ${file}:`, err.message);
+    console.error(`Full error:`, err);
+    stats.errors++;
   }
 }
 
 async function main() {
   const opts = parseArgs(process.argv.slice(2));
+  console.log('Current working directory:', process.cwd());
+  console.log('Path option:', opts.path);
   const basePath = path.resolve(opts.path);
+  console.log('Resolved base path:', basePath);
+  console.log('Base path exists:', await fs.access(basePath).then(() => true).catch(() => false));
+  
   const files = await globby('**/*.mdx', { cwd: basePath, absolute: true });
+  console.log('Files found by globby:', files.length);
+  console.log('First few files:', files.slice(0, 5));
+  
   const stats = { scanned: 0, updated: 0, skipped: 0, errors: 0 };
+  console.log('Starting to process files...');
+  
   const limit = pLimit(opts.concurrency);
-  await Promise.all(files.map(f => limit(() => processFile(f, opts, stats))));
+  console.log('Concurrency limit set to:', opts.concurrency);
+  
+  // Process files one by one for debugging
+  for (const file of files) { 
+    console.log(`\n--- Processing file: ${file} ---`);
+    await processFile(file, opts, stats);
+  }
+  
   console.log(`\nScanned: ${stats.scanned}, Updated: ${stats.updated}, Skipped: ${stats.skipped}, Errors: ${stats.errors}`);
 }
 
