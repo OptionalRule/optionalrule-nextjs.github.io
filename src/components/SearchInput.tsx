@@ -25,12 +25,8 @@ export function SearchInput({
   // Initialize with URL search param if available
   useEffect(() => {
     const urlQuery = searchParams.get('q') || '';
-    // Only sync from URL if the URL query is different from current query
-    // and we're not in the middle of clearing (avoid overriding user actions)
-    if (urlQuery !== query) {
-      setQuery(urlQuery);
-    }
-  }, [searchParams, query]);
+    setQuery(urlQuery);
+  }, [searchParams]);
 
   // Handle input changes with debouncing
   useEffect(() => {
