@@ -1,8 +1,9 @@
 'use client';
 
 import Link from 'next/link';
-import { SearchResult, highlightMatches } from '@/lib/search';
+import { SearchResult } from '@/lib/search';
 import { formatDate, generatePostUrl } from '@/lib/utils';
+import { HighlightedText } from './HighlightedText';
 
 interface SearchResultsProps {
   results: SearchResult[];
@@ -134,10 +135,9 @@ export function SearchResults({ results, query, isLoading }: SearchResultsProps)
                     href={postUrl}
                     className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
                   >
-                    <span 
-                      dangerouslySetInnerHTML={{
-                        __html: highlightMatches(result.item.title, result.matches)
-                      }}
+                    <HighlightedText 
+                      text={result.item.title}
+                      searchQuery={query}
                     />
                   </Link>
                 </h2>
@@ -145,10 +145,9 @@ export function SearchResults({ results, query, isLoading }: SearchResultsProps)
                 {/* Excerpt with highlighting */}
                 {result.item.excerpt && (
                   <p className="text-gray-700 dark:text-gray-300 mb-4 leading-relaxed">
-                    <span 
-                      dangerouslySetInnerHTML={{
-                        __html: highlightMatches(result.item.excerpt, result.matches)
-                      }}
+                    <HighlightedText 
+                      text={result.item.excerpt}
+                      searchQuery={query}
                     />
                   </p>
                 )}

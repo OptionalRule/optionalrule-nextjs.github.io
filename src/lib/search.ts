@@ -118,24 +118,3 @@ export async function getSearchTags(): Promise<string[]> {
   return Array.from(tagsSet).sort();
 }
 
-// Highlight search matches in text
-export function highlightMatches(text: string, matches?: Fuse.FuseResultMatch[]): string {
-  if (!matches || matches.length === 0) {
-    return text;
-  }
-
-  let highlightedText = text;
-  const sortedMatches = matches
-    .filter(match => match.key === 'title' || match.key === 'excerpt')
-    .flatMap(match => match.indices)
-    .sort((a, b) => b[0] - a[0]); // Sort in reverse order to avoid index shifting
-
-  sortedMatches.forEach(([start, end]) => {
-    const before = highlightedText.slice(0, start);
-    const match = highlightedText.slice(start, end + 1);
-    const after = highlightedText.slice(end + 1);
-    highlightedText = `${before}<mark class="bg-yellow-200 dark:bg-yellow-800">${match}</mark>${after}`;
-  });
-
-  return highlightedText;
-}

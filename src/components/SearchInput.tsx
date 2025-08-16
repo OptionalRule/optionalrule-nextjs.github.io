@@ -25,10 +25,12 @@ export function SearchInput({
   // Initialize with URL search param if available
   useEffect(() => {
     const urlQuery = searchParams.get('q') || '';
-    if (urlQuery && urlQuery !== query) {
+    // Only sync from URL if the URL query is different from current query
+    // and we're not in the middle of clearing (avoid overriding user actions)
+    if (urlQuery !== query) {
       setQuery(urlQuery);
     }
-  }, [searchParams, query]);
+  }, [searchParams]); // Remove 'query' from dependencies to prevent loops
 
   // Handle input changes with debouncing
   useEffect(() => {
@@ -56,6 +58,8 @@ export function SearchInput({
   const handleClear = () => {
     setQuery('');
     inputRef.current?.focus();
+    // Update URL to remove query parameter
+    router.push('/search');
     if (onSearch) {
       onSearch('');
     }
