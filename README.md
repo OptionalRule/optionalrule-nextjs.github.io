@@ -54,7 +54,7 @@ Runs the development server with hot reloading, including draft posts for previe
 
 Runs a custom script to generate tags and a better excerpt for posts through opeanai
 
-```
+```bash
 node scripts/tag-and-excerpt.mjs --api-key sk-xxx
 # or
 export MY_OPENAI_KEY="sk-xxx"
@@ -106,4 +106,3 @@ To learn more about Next.js, take a look at the following resources:
 
 - [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
 - [Tailwindcss](https://tailwindcss.com/) - styling done through Tailwindcss.
-
