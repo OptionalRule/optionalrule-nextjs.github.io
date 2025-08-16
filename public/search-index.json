@@ -1,0 +1,1192 @@
+[
+  {
+    "slug": "site-migration-complete",
+    "title": "Site Migration Complete",
+    "excerpt": "I migrated the site to NextJS for easier management. Having used AI for this I reflect a bit on the future of TTRPG content.",
+    "tags": [],
+    "content": "",
+    "date": "2025-08-15",
+    "readingTime": 3
+  },
+  {
+    "slug": "the-zero-sum-fallacy-of-ttrpgs",
+    "title": "The Zero-Sum Fallacy of TTRPG Playstyles",
+    "excerpt": "Reject the win-lose mindset and celebrate diverse TTRPG playstyles; curiosity over gatekeeping turns debate into discovery and keeps the hobby welcoming.",
+    "tags": [
+      "Philosophy",
+      "Community",
+      "Analysis"
+    ],
+    "content": "",
+    "date": "2025-02-02",
+    "readingTime": 5
+  },
+  {
+    "slug": "the-human-side-of-dnd-history",
+    "title": "The Human Side of D&D History",
+    "excerpt": "Reflecting on Tim Cain and Gary Gygax, this calls for empathetic, nuanced remembrance of D&D's creators over meme-fueled narratives.",
+    "tags": [
+      "Community",
+      "Philosophy",
+      "Analysis"
+    ],
+    "content": "",
+    "date": "2024-11-26",
+    "readingTime": 4
+  },
+  {
+    "slug": "exception-based-dnd-design",
+    "title": "Exception Based Design in D&D - When Rules Enable Rule Lawyers",
+    "excerpt": "5e 2024’s exception-heavy design can fuel rules debates; here’s how DMs and players can balance rulings, fun, and table expectations.",
+    "tags": [
+      "DnD 5e",
+      "Analysis",
+      "DM Advice",
+      "Philosophy"
+    ],
+    "content": "",
+    "date": "2024-11-24",
+    "readingTime": 8
+  },
+  {
+    "slug": "warfare-in-ttrpgs",
+    "title": "War and Warfare in TTRPGs - How to Bring Epic Conflicts to Life",
+    "excerpt": "Practical guidance for crafting player-driven wartime stories: pitfalls to avoid, scenario types to run, tools to add tension, and moral nuance.",
+    "tags": [
+      "DM Advice",
+      "RPG Resources",
+      "Analysis",
+      "Mechanics"
+    ],
+    "content": "",
+    "date": "2024-11-22",
+    "readingTime": 13
+  },
+  {
+    "slug": "hasbro-q3-2024",
+    "title": "The DnD 2024 Launch and the Future of Hasbro",
+    "excerpt": "A data-driven read of Hasbro’s Q3 shows stable cash and strong margins but D&D 2024 underperformed as BG3 fades, pushing a risky digital pivot.",
+    "tags": [
+      "DnD 5e",
+      "Analysis"
+    ],
+    "content": "",
+    "date": "2024-10-24",
+    "readingTime": 6
+  },
+  {
+    "slug": "theater-of-the-mind-movement-in-5e",
+    "title": "Movement in Theater of the Mind for DnD 5e",
+    "excerpt": "Streamline combat by declaring intentions, using simple ranges, and resolving maneuvers with opposed checks to keep TotM battles fast, tactical, and fun.",
+    "tags": [
+      "DnD 5e",
+      "DM Advice",
+      "Mechanics",
+      "House Rules"
+    ],
+    "content": "",
+    "date": "2024-10-20",
+    "readingTime": 7
+  },
+  {
+    "slug": "a-return-to-greyhawk",
+    "title": "Greyhawk - The Original D&D Setting Returns",
+    "excerpt": "D&D 2024 brings Greyhawk back as the default setting, exploring its roots, politics, grittier tone, and what it means for DMs and players.",
+    "tags": [
+      "DnD 5e",
+      "Lore",
+      "Analysis"
+    ],
+    "content": "",
+    "date": "2024-10-01",
+    "readingTime": 10
+  },
+  {
+    "slug": "ethical-ai-in-ttrpgs",
+    "title": "Embracing AI in TTRPGs - Enhancing, Not Replacing, Creativity",
+    "excerpt": "AI can streamline search, lore, prep, and tracking in tabletop play, freeing DMs and players to focus on storytelling while keeping human creativity central.",
+    "tags": [
+      "DM Advice",
+      "RPG Resources",
+      "Community",
+      "Analysis"
+    ],
+    "content": "",
+    "date": "2024-09-20",
+    "readingTime": 7
+  },
+  {
+    "slug": "worldbuilding-through-food",
+    "title": "Crafting Cultural Depth Through Food in TTRPGs",
+    "excerpt": "Use cuisine as a storytelling tool: describe dishes, tie meals to rituals, status, and environment, and turn ingredients into hooks for richer play.",
+    "tags": [
+      "DM Advice",
+      "RPG Resources",
+      "Analysis"
+    ],
+    "content": "",
+    "date": "2024-09-08",
+    "readingTime": 5
+  },
+  {
+    "slug": "mounted-combat-in-shadowdark",
+    "title": "Mounted Combat in Shadowdark TTRPG",
+    "excerpt": "Streamlined Shadowdark mount rules: melee bonus, charging with polearms, risks of bolting, gear and barding, mounts and costs, plus travel flavor.",
+    "tags": [
+      "Shadowdark",
+      "Mechanics",
+      "House Rules",
+      "RPG Resources"
+    ],
+    "content": "",
+    "date": "2024-09-04",
+    "readingTime": 7
+  },
+  {
+    "slug": "rolepalying-origins-of-dnd",
+    "title": "The Roleplaying Origins of Early Dungeons and Dragons",
+    "excerpt": "Classic modules show early editions centered on negotiation and player ingenuity, contrasting with later skill-driven, performative approaches.",
+    "tags": [
+      "Analysis",
+      "Philosophy",
+      "Mechanics",
+      "Shadowdark"
+    ],
+    "content": "",
+    "date": "2024-08-28",
+    "readingTime": 7
+  },
+  {
+    "slug": "expanded-herb-list-for-shadowdark",
+    "title": "Foraging for Herbs in Shadowdark",
+    "excerpt": "OSR-inspired herbalism rules add strategic foraging, preservation checks, an expanded herb list, Ranger balance notes, and GM tips to your Shadowdark games.",
+    "tags": [
+      "Shadowdark",
+      "Mechanics",
+      "House Rules",
+      "DM Advice"
+    ],
+    "content": "",
+    "date": "2024-08-26",
+    "readingTime": 10
+  },
+  {
+    "slug": "simplifying-runequests-critical-system",
+    "title": "Simplifying Runequest's Critical System",
+    "excerpt": "Proposes a universal 10s/5s critical scheme for Chaosium percentile games to speed resolution, add special failures, and reduce sheet-checking.",
+    "tags": [
+      "House Rules",
+      "Mechanics",
+      "Analysis"
+    ],
+    "content": "",
+    "date": "2024-08-02",
+    "readingTime": 5
+  },
+  {
+    "slug": "twelve-rules-for-players-to-live-by",
+    "title": "12 Rules for TTRPG Players to Live By",
+    "excerpt": "Practical, playful principles to be a better TTRPG player: show up, engage, share spotlight, pursue story beats, state intentions, respect others' fun.",
+    "tags": [
+      "RPG Resources",
+      "Community",
+      "Philosophy"
+    ],
+    "content": "",
+    "date": "2024-07-16",
+    "readingTime": 5
+  },
+  {
+    "slug": "experience-matters-updated",
+    "title": "Experience Still Matters - The Benefits of using XP in 5e.",
+    "excerpt": "Argues for XP-based advancement in D&D, rewarding non-combat play, encouraging agency, easing pacing, and doubling as a memory log for your campaign.",
+    "tags": [
+      "DnD 5e",
+      "DM Advice",
+      "Mechanics",
+      "Philosophy"
+    ],
+    "content": "",
+    "date": "2024-05-02",
+    "readingTime": 5
+  },
+  {
+    "slug": "ttrpg-tools-for-collaboration",
+    "title": "TTRPG Tools for Collboration and Change",
+    "excerpt": "Build better tables by aligning assumptions about the world and preferred play styles, then using communication, examples, and incentives to support shared fun.",
+    "tags": [
+      "DM Advice",
+      "Philosophy",
+      "Community",
+      "RPG Resources"
+    ],
+    "content": "",
+    "date": "2024-04-28",
+    "readingTime": 14
+  },
+  {
+    "slug": "revised-exhausted-condition",
+    "title": "Gritty DnD Injuries - Expanding Exhaustion",
+    "excerpt": "Revamps exhaustion in 5e with -1 per level, gains on crits and death saves, class Shake It Off, and clearer recovery, adding tension, stakes, and teamwork.",
+    "tags": [
+      "DnD 5e",
+      "House Rules",
+      "Mechanics",
+      "DM Advice"
+    ],
+    "content": "",
+    "date": "2024-02-16",
+    "readingTime": 6
+  },
+  {
+    "slug": "the-magic-of-yes-if",
+    "title": "Yes, if ... the true secret of crafting adventures",
+    "excerpt": "Rather than quick yes/no rulings, challenge players with conditional goals that turn edge cases into quests, deepening stakes and shared world.",
+    "tags": [
+      "DM Advice",
+      "Philosophy",
+      "DnD 5e",
+      "Analysis"
+    ],
+    "content": "",
+    "date": "2023-12-20",
+    "readingTime": 4
+  },
+  {
+    "slug": "guidelines-for-great-ttrpg-design",
+    "title": "Unlocking the Magic of TTRPG Design",
+    "excerpt": "Applying Sanderson’s principles to tabletop RPGs, this argues for limits, costs, and risk over power creep, using subsystem interplay to enrich play.",
+    "tags": [
+      "Philosophy",
+      "Analysis",
+      "Mechanics",
+      "Community"
+    ],
+    "content": "",
+    "date": "2023-12-11",
+    "readingTime": 4
+  },
+  {
+    "slug": "dming-isnt-a-conspiracy-to-control-you",
+    "title": "DMing is not a Covert Power Grab",
+    "excerpt": "The DM initiates and shapes play; collaboration matters, but new norms that cast their creative lead as suspect risk stifling games.",
+    "tags": [
+      "DM Advice",
+      "Community",
+      "Philosophy",
+      "DnD 5e"
+    ],
+    "content": "",
+    "date": "2023-11-27",
+    "readingTime": 3
+  },
+  {
+    "slug": "the-advantage-of-knowing-modifiers",
+    "title": "The Statistical Mirage of Advantage in D&D 5th Edition",
+    "excerpt": "Advantage skews outcomes toward the mean, boosts easy checks more than hard ones, and its non-stacking design blunts creative tactics and tension.",
+    "tags": [
+      "DnD 5e",
+      "Mechanics",
+      "Analysis",
+      "DM Advice"
+    ],
+    "content": "",
+    "date": "2023-11-09",
+    "readingTime": 4
+  },
+  {
+    "slug": "dungeon-of-the-grieving-mind",
+    "title": "Dungeon of the Grieving Mind - Not Your Typical Dungeon!",
+    "excerpt": "A level-5 DnD 5e grief-themed dungeon born from slain innocents, mixing environmental hazards and moral trials across five evocative chambers.",
+    "tags": [
+      "DnD 5e",
+      "Encounters",
+      "DM Advice",
+      "RPG Resources"
+    ],
+    "content": "",
+    "date": "2023-11-04",
+    "readingTime": 5
+  },
+  {
+    "slug": "painting-geography-with-narrative",
+    "title": "Narrative Landscapes - More Engaging TTRPG Travel",
+    "excerpt": "Transform travel by treating geography as a character, embedding hooks and implied encounters that spark curiosity and player-driven choices.",
+    "tags": [
+      "DM Advice",
+      "RPG Resources",
+      "Encounters",
+      "Philosophy"
+    ],
+    "content": "",
+    "date": "2023-07-23",
+    "readingTime": 4
+  },
+  {
+    "slug": "arcane-servant-spells",
+    "title": "Summon the Unusual - 3 New  Spells for DnD 5e",
+    "excerpt": "Homebrew options for arcane pet play: animate weapons, clockwork constructs, and mephits, with balance notes, scaling, and narrative discovery hooks.",
+    "tags": [
+      "DnD 5e",
+      "House Rules",
+      "DM Advice",
+      "Mechanics"
+    ],
+    "content": "",
+    "date": "2023-06-28",
+    "readingTime": 7
+  },
+  {
+    "slug": "revisiting-death-saves-in-5e",
+    "title": "Gritty Survival in 5e - Breathing life into Death Saves",
+    "excerpt": "A proposed 5e house rule ties risk to negative HP and CON saves, raising urgency, nerfing Healing Word, and making knockdowns matter again.",
+    "tags": [
+      "DnD 5e",
+      "House Rules",
+      "Mechanics",
+      "DM Advice"
+    ],
+    "content": "",
+    "date": "2023-06-19",
+    "readingTime": 5
+  },
+  {
+    "slug": "abstract-nature-of-ac",
+    "title": "Decoding D&D - The Enigma of Armor Class",
+    "excerpt": "Explains AC as an abstract defense working with HP to pace damage over time, guiding narration and design without literal blow-by-blow realism.",
+    "tags": [
+      "Mechanics",
+      "DM Advice",
+      "Philosophy",
+      "Analysis"
+    ],
+    "content": "",
+    "date": "2023-06-16",
+    "readingTime": 6
+  },
+  {
+    "slug": "campaign-pitch-decks",
+    "title": "Pitch Perfect - Using a Pitch Deck for Your D&D Campaign",
+    "excerpt": "Use a concise pitch deck to attract the right players by outlining premise, tone, rules, schedule, and boundaries, plus tools and templates to get started.",
+    "tags": [
+      "DM Advice",
+      "RPG Resources",
+      "House Rules"
+    ],
+    "content": "",
+    "date": "2023-06-10",
+    "readingTime": 7
+  },
+  {
+    "slug": "what-are-hit-points-in-dnd",
+    "title": "Decoding D&D - What the heck are Hit Points Anyway?",
+    "excerpt": "HP in D&D are an abstract tool shaped by the DM to set tone and stakes, not literal wounds, evolving across editions to serve fun.",
+    "tags": [
+      "Mechanics",
+      "DM Advice",
+      "Philosophy",
+      "Analysis"
+    ],
+    "content": "",
+    "date": "2023-06-02",
+    "readingTime": 5
+  },
+  {
+    "slug": "places-of-power",
+    "title": "You Have the Power - Places of Power in D&D",
+    "excerpt": "High-risk magical sites let casters supercharge spells via attunement and metamagic checks with failure risks and rarity tiers, giving DMs rich hooks.",
+    "tags": [
+      "DnD 5e",
+      "House Rules",
+      "Mechanics",
+      "DM Advice"
+    ],
+    "content": "",
+    "date": "2023-05-31",
+    "readingTime": 15
+  },
+  {
+    "slug": "improved-mark-option",
+    "title": "Reimagining the Mark Option in D&D 5E - Empowering Martial Characters",
+    "excerpt": "Proposes a streamlined Mark rule: if you hit a foe in melee since your last turn, you can make one opportunity attack each round without using your reaction.",
+    "tags": [
+      "DnD 5e",
+      "House Rules",
+      "Mechanics"
+    ],
+    "content": "",
+    "date": "2023-05-27",
+    "readingTime": 2
+  },
+  {
+    "slug": "vathirond-city-of-wild-inspiration",
+    "title": "Vathirond City of Wild Inspiration",
+    "excerpt": "On Eberron's Mournland edge, a shattered Brelish city of six Crowns, clashing factions, and refugee Gutters offers rich lore and adventure hooks.",
+    "tags": [
+      "DnD 5e",
+      "RPG Resources",
+      "Lore",
+      "DM Advice"
+    ],
+    "content": "",
+    "date": "2023-05-19",
+    "readingTime": 23
+  },
+  {
+    "slug": "the-benefits-of-xp-in-5th-edition",
+    "title": "Experience Matters - The benefits of XP in 5th edition",
+    "excerpt": "Advocates experience points over milestones, tying growth to player actions, pacing adventures, rewarding exploration and roleplay, and preserving memories.",
+    "tags": [
+      "DnD 5e",
+      "DM Advice",
+      "Mechanics",
+      "Philosophy"
+    ],
+    "content": "",
+    "date": "2023-05-17",
+    "readingTime": 5
+  },
+  {
+    "slug": "origins-of-the-astral-and-etherial-planes-in-dnd",
+    "title": "Origins of the Astral and Ethereal Planes in D&D",
+    "excerpt": "Explores how counterculture, pop icons, and early design split ghosts and psionics into two transitive realms, and how 5e streamlines that legacy.",
+    "tags": [
+      "Lore",
+      "Analysis",
+      "DnD 5e"
+    ],
+    "content": "",
+    "date": "2023-05-15",
+    "readingTime": 3
+  },
+  {
+    "slug": "design-goals-of-etherea",
+    "title": "Design Goals of Etherea",
+    "excerpt": "Outlines a Shadowdark homebrew where belief shapes reality, with lore-driven monsters, risky magic, and evolving hooks for adventures and towns.",
+    "tags": [
+      "Shadowdark",
+      "Lore",
+      "Monsters",
+      "Mechanics"
+    ],
+    "content": "",
+    "date": "2023-05-14",
+    "readingTime": 4
+  },
+  {
+    "slug": "the-world-of-etherea",
+    "title": "Introduction to the World of Etherea",
+    "excerpt": "After the Echofall shattered Etherea, emotions spawn Echoforms from the Umbraweave as Weavers and the faithful vie amid perilous ruins and volatile magic.",
+    "tags": [
+      "Shadowdark",
+      "Lore",
+      "RPG Resources"
+    ],
+    "content": "",
+    "date": "2023-05-13",
+    "readingTime": 10
+  },
+  {
+    "slug": "revised-injury-condition",
+    "title": "Revised Injured Condition",
+    "excerpt": "Add lasting injuries to DnD 5e for higher stakes and strategy, with levels affecting rolls, recovery checks, class perks, and magic-based healing.",
+    "tags": [
+      "DnD 5e",
+      "House Rules",
+      "Mechanics"
+    ],
+    "content": "",
+    "date": "2023-05-13",
+    "readingTime": 4
+  },
+  {
+    "slug": "return-of-the-write-spell-in-dnd",
+    "title": "The Return of the Write Spell -  A Nostalgic Callback or Unnecessary Complexity?",
+    "excerpt": "Playtest adds Scribe Spell to handle wizard scribing, a throwback to Write, but the author argues it adds fiddly complexity without real payoff.",
+    "tags": [
+      "DnD 5e",
+      "Mechanics",
+      "Analysis"
+    ],
+    "content": "",
+    "date": "2023-05-04",
+    "readingTime": 3
+  },
+  {
+    "slug": "injured-condition-onednd",
+    "title": "Injured Condition For Lasting Damage",
+    "excerpt": "A streamlined injury system for 5e applies level-based penalties to rolls and save DCs, with rest, medicine, and magic for recovery plus DM guidance.",
+    "tags": [
+      "DnD 5e",
+      "House Rules",
+      "Mechanics",
+      "DM Advice"
+    ],
+    "content": "",
+    "date": "2022-10-01",
+    "readingTime": 5
+  },
+  {
+    "slug": "wotc-errata-debate",
+    "title": "The WoTC Errata, Long Past Due",
+    "excerpt": "The latest D&D 5E errata drops racial alignment, inviting more inclusive, nuanced characters and worlds shaped by players and DMs.",
+    "tags": [
+      "DnD 5e",
+      "Analysis",
+      "Philosophy",
+      "Community"
+    ],
+    "content": "",
+    "date": "2021-12-17",
+    "readingTime": 3
+  },
+  {
+    "slug": "tavern-games-darts-minigame",
+    "title": "Tavern Games - Darts for your D&D Game",
+    "excerpt": "Add a tavern darts mini-game to your D&D sessions using two d20s for segment and ring, with ranged attack bonus to tweak rolls and score doubles and bulls.",
+    "tags": [
+      "House Rules",
+      "Mechanics",
+      "RPG Resources",
+      "DM Advice"
+    ],
+    "content": "",
+    "date": "2021-12-08",
+    "readingTime": 3
+  },
+  {
+    "slug": "sampling-random-ability-scores",
+    "title": "Sampling Random Ability Score Generation",
+    "excerpt": "An overview of popular random stat methods in 5e, their probability ranges, effects on bounded accuracy, and advice for group buy-in.",
+    "tags": [
+      "DnD 5e",
+      "DM Advice",
+      "Mechanics",
+      "Analysis"
+    ],
+    "content": "",
+    "date": "2021-08-12",
+    "readingTime": 6
+  },
+  {
+    "slug": "perilous-journeys-in-5e-p2",
+    "title": "Perilous Journeys in 5e Part 2",
+    "excerpt": "Turn overland travel into engaging play with clear roles—Forage, Guide, Scout, and Ward—plus terrain DCs, party synergies, and encounter-focused pacing.",
+    "tags": [
+      "DnD 5e",
+      "DM Advice",
+      "House Rules",
+      "Mechanics"
+    ],
+    "content": "",
+    "date": "2021-07-24",
+    "readingTime": 6
+  },
+  {
+    "slug": "perilous-journeys-in-5e-p1",
+    "title": "Perilous Journeys in 5e Part 1",
+    "excerpt": "This post offers simple travel rules for 5e: havens-only long rests, base camps, improved sleep and meals, and terrain-based pacing to enliven exploration.",
+    "tags": [
+      "DnD 5e",
+      "House Rules",
+      "Mechanics",
+      "DM Advice"
+    ],
+    "content": "",
+    "date": "2021-07-13",
+    "readingTime": 6
+  },
+  {
+    "slug": "gritty-healing-part-2-spells",
+    "title": "Gritty Healing in 5e Part 2: Spells",
+    "excerpt": "Tie magical healing to the recipient’s Hit Dice to cap recovery, keep injuries meaningful, and free healers from heal-bot duty in gritty 5e.",
+    "tags": [
+      "DnD 5e",
+      "House Rules",
+      "Mechanics",
+      "DM Advice"
+    ],
+    "content": "",
+    "date": "2021-06-30",
+    "readingTime": 6
+  },
+  {
+    "slug": "gritty-healing-and-survival-rules",
+    "title": "Gritty Healing & Survival in 5e",
+    "excerpt": "House rules for 5e shift healing to Hit Dice recovery, emphasize attrition, resource management, and conditions, with guidance for campaigns.",
+    "tags": [
+      "DnD 5e",
+      "House Rules",
+      "Mechanics",
+      "DM Advice"
+    ],
+    "content": "",
+    "date": "2021-06-27",
+    "readingTime": 8
+  },
+  {
+    "slug": "understanding-die-average-and-hitpoints",
+    "title": "On Die Averages and Hit Points in 5e",
+    "excerpt": "Explains correct dice averages and why character and monster health is computed differently, with examples and a simple leveling house rule.",
+    "tags": [
+      "DnD 5e",
+      "Mechanics",
+      "Analysis",
+      "House Rules"
+    ],
+    "content": "",
+    "date": "2021-06-22",
+    "readingTime": 7
+  },
+  {
+    "slug": "site-migration-deployed",
+    "title": "Site Migration Complete",
+    "excerpt": "We migrated the site to Jekyll on GitHub Pages for a faster, more accessible experience; see Lighthouse scores and DM me if you spot issues.",
+    "tags": [
+      "Community",
+      "Analysis"
+    ],
+    "content": "",
+    "date": "2021-06-07",
+    "readingTime": 1
+  },
+  {
+    "slug": "april-2021-experimental-house-rules",
+    "title": "April 2021 Experimental House Rules",
+    "excerpt": "Testing 5e rule tweaks: reaction-based Dodge with next-turn limits and expanded grappling options, with community feedback invited.",
+    "tags": [
+      "DnD 5e",
+      "House Rules",
+      "Mechanics",
+      "Community"
+    ],
+    "content": "",
+    "date": "2021-04-29",
+    "readingTime": 3
+  },
+  {
+    "slug": "when-failure-isnt-an-option-in-5e",
+    "title": "When Failure Isn’t an Option in 5e",
+    "excerpt": "Advice for DMs on embracing failure as a tool in 5e, avoiding stalled plots, and using techniques like success-at-cost to keep play dynamic.",
+    "tags": [
+      "DM Advice",
+      "DnD 5e",
+      "Mechanics",
+      "Philosophy"
+    ],
+    "content": "",
+    "date": "2021-04-21",
+    "readingTime": 4
+  },
+  {
+    "slug": "5e-spell-save-damage-breakdown",
+    "title": "5e Spell Save & Damage Breakdown",
+    "excerpt": "Analyzing 477 5e spells surfaces class save trends plus damage and condition profiles, offering guidance for vetting spells, subclasses, and encounters.",
+    "tags": [
+      "DnD 5e",
+      "Mechanics",
+      "Analysis",
+      "DM Advice"
+    ],
+    "content": "",
+    "date": "2021-04-15",
+    "readingTime": 3
+  },
+  {
+    "slug": "monster-resistance-totals-in-5e",
+    "title": "Monster Resistance Totals in 5e",
+    "excerpt": "Data-driven look at monster weaknesses, resistances, immunities and save proficiencies by CR, with insights for spell choices and encounter design.",
+    "tags": [
+      "DnD 5e",
+      "Analysis",
+      "Mechanics",
+      "Monsters"
+    ],
+    "content": "",
+    "date": "2021-04-07",
+    "readingTime": 9
+  },
+  {
+    "slug": "the-language-of-monsters-in-5e",
+    "title": "The Language of Monsters in 5e",
+    "excerpt": "A parsed survey of 799 5e monster stat blocks reveals which tongues appear most, from Common and Draconic to Telepathy and obscure oddities.",
+    "tags": [
+      "DnD 5e",
+      "Monsters",
+      "Analysis",
+      "RPG Resources"
+    ],
+    "content": "",
+    "date": "2021-04-02",
+    "readingTime": 2
+  },
+  {
+    "slug": "thinking-critically-on-agency",
+    "title": "Thinking Critically on Agency",
+    "excerpt": "An insightful discussion on player and GM agency, misconceptions, trade-offs, mechanics, and the role of trust in shaping richer TTRPG experiences.",
+    "tags": [
+      "DM Advice",
+      "Mechanics",
+      "Philosophy",
+      "Analysis"
+    ],
+    "content": "",
+    "date": "2021-03-26",
+    "readingTime": 2
+  },
+  {
+    "slug": "being-ready-for-surprise-in-5e",
+    "title": "Being Ready for Surprise in 5e",
+    "excerpt": "Clarifies 5e surprise: no surprise round, treat unaware vs unready distinctly, use situational checks, roll initiative normally, and keep combat flowing.",
+    "tags": [
+      "DnD 5e",
+      "DM Advice",
+      "Mechanics",
+      "House Rules"
+    ],
+    "content": "",
+    "date": "2021-03-24",
+    "readingTime": 7
+  },
+  {
+    "slug": "imagery-art-resources-for-rpg-creators",
+    "title": "Imagery & Art Resources for RPG Creators",
+    "excerpt": "Curated links to stock art, free repositories, portfolio sites, and licensing guides for using imagery in RPG projects, with 5e/WotC policy highlights",
+    "tags": [
+      "RPG Resources",
+      "DnD 5e"
+    ],
+    "content": "",
+    "date": "2021-03-10",
+    "readingTime": 6
+  },
+  {
+    "slug": "mounted-combat-in-5e",
+    "title": "Mounted Combat in 5e",
+    "excerpt": "House rules for D&D 5e make mounted play dynamic: training levels, riding vs war mounts, shared initiative, bonding, bolting, bucking, and equipment.",
+    "tags": [
+      "DnD 5e",
+      "House Rules",
+      "Mechanics",
+      "DM Advice"
+    ],
+    "content": "",
+    "date": "2021-03-08",
+    "readingTime": 9
+  },
+  {
+    "slug": "5e-advancement-difficulties",
+    "title": "5e Advancement Difficulties",
+    "excerpt": "Analysis of 5e XP pacing shows leveling slows then accelerates after 10th level, speeding tier 3–4 play and demanding adjusted encounter design and expectations.",
+    "tags": [
+      "DnD 5e",
+      "DM Advice",
+      "Analysis",
+      "Mechanics"
+    ],
+    "content": "",
+    "date": "2021-03-01",
+    "readingTime": 4
+  },
+  {
+    "slug": "the-zen-of-awarding-experience-for-roleplaying",
+    "title": "The Zen of Awarding Experience for Roleplaying",
+    "excerpt": "A simple system scores social encounters by stakes and change, maps them to CR vs party level, and awards shared XP to encourage noncombat play.",
+    "tags": [
+      "DnD 5e",
+      "DM Advice",
+      "House Rules",
+      "Mechanics"
+    ],
+    "content": "",
+    "date": "2021-02-25",
+    "readingTime": 5
+  },
+  {
+    "slug": "engaging-players-with-magic-item-creation",
+    "title": "Engaging Players with Magic Item Creation",
+    "excerpt": "Streamline 5e item crafting with recipe tracking, simple foraging and harvesting checks, and CR-themed major ingredients that create proactive hooks.",
+    "tags": [
+      "DnD 5e",
+      "DM Advice",
+      "House Rules",
+      "Mechanics"
+    ],
+    "content": "",
+    "date": "2021-02-17",
+    "readingTime": 7
+  },
+  {
+    "slug": "my-current-5e-house-rules",
+    "title": "My Current 5e House Rules",
+    "excerpt": "A concise set of 5e tweaks and table conventions, from exhaustion and movement rulings to rest limits, feat bans, and session etiquette for smoother play.",
+    "tags": [
+      "House Rules",
+      "Mechanics",
+      "DM Advice",
+      "DnD 5e"
+    ],
+    "content": "",
+    "date": "2021-02-10",
+    "readingTime": 5
+  },
+  {
+    "slug": "skill-challenges-in-5e",
+    "title": "Skill Challenges in 5e",
+    "excerpt": "Clarifies what skill challenges are, sheds 4e baggage, and offers pacing and resolution tools from the DMG and other systems to enrich 5e play.",
+    "tags": [
+      "DnD 5e",
+      "DM Advice",
+      "Mechanics",
+      "House Rules"
+    ],
+    "content": "",
+    "date": "2021-02-09",
+    "readingTime": 9
+  },
+  {
+    "slug": "cavern-elevator-trap",
+    "title": "Cavern Elevator Trap",
+    "excerpt": "CR 4 elevator boulder hazard for 5e triggers mid-shaft, challenging detection, lever logic, Dex saves, and Athletics with fall-risk stakes.",
+    "tags": [
+      "DnD 5e",
+      "DM Advice",
+      "Encounters",
+      "Mechanics"
+    ],
+    "content": "",
+    "date": "2021-02-05",
+    "readingTime": 3
+  },
+  {
+    "slug": "safety-consent-rpg-checklist",
+    "title": "Safety & Consent RPG Checklist",
+    "excerpt": "Practical guidance and resources for using safety and consent tools in TTRPGs, from setting baselines to gathering player feedback for respectful play.",
+    "tags": [
+      "DM Advice",
+      "RPG Resources",
+      "Community",
+      "Philosophy"
+    ],
+    "content": "",
+    "date": "2021-01-29",
+    "readingTime": 5
+  },
+  {
+    "slug": "managing-dm-anxiety",
+    "title": "Managing DM Anxiety",
+    "excerpt": "Practical strategies for DMs to ease anxiety: seek professional support, reframe self-talk, name feelings, use bodywork and prep tools, and ask your table.",
+    "tags": [
+      "DM Advice",
+      "RPG Resources",
+      "Philosophy"
+    ],
+    "content": "",
+    "date": "2021-01-27",
+    "readingTime": 10
+  },
+  {
+    "slug": "summary-of-5e-alchemy-rules",
+    "title": "Summary of 5e Alchemy Rules",
+    "excerpt": "Potion crafting guidelines with costs and times, Alchemist subclass tweaks, mundane item recipes, and streamlined foraging and harvesting house rules.",
+    "tags": [
+      "DnD 5e",
+      "Mechanics",
+      "House Rules",
+      "RPG Resources"
+    ],
+    "content": "",
+    "date": "2021-01-24",
+    "readingTime": 3
+  },
+  {
+    "slug": "create-captivating-traps",
+    "title": "Create Captivating Traps",
+    "excerpt": "Design traps with purpose to advance plot and energize combat, using environmental challenges, skill-driven complications, and scalable DCs.",
+    "tags": [
+      "DnD 5e",
+      "DM Advice",
+      "Encounters",
+      "Mechanics"
+    ],
+    "content": "",
+    "date": "2021-01-21",
+    "readingTime": 8
+  },
+  {
+    "slug": "level-up-your-game-with-these-rpgs",
+    "title": "Level Up Your Game with these RPGs",
+    "excerpt": "Explore a crowd-sourced list of RPG systems beyond DnD to expand your skills in narration, pacing, mechanics, and new approaches to play.",
+    "tags": [
+      "RPG Resources",
+      "DM Advice",
+      "Analysis",
+      "Community"
+    ],
+    "content": "",
+    "date": "2021-01-19",
+    "readingTime": 3
+  },
+  {
+    "slug": "thoughts-on-the-first-issue-of-arcadia",
+    "title": "Thoughts on the First Issue of Arcadia",
+    "excerpt": "A practical look at how this 5e magazine adds a drop-in encounter, a sorcerer subclass, mounted combat options, and fresh celestials, plus tooling quibbles.",
+    "tags": [
+      "DnD 5e",
+      "RPG Resources",
+      "DM Advice",
+      "Mechanics"
+    ],
+    "content": "",
+    "date": "2021-01-17",
+    "readingTime": 6
+  },
+  {
+    "slug": "rotf-remix-foaming-mugs",
+    "title": "RotF Remix: Foaming Mugs",
+    "excerpt": "Remix this Icewind Dale side quest with an inside-job twist, a yeti-lured ambush, goblin negotiations, a haunted locale, and a secret crime-boss stinger.",
+    "tags": [
+      "DnD 5e",
+      "Rime of the Frostmaiden",
+      "Encounters",
+      "DM Advice"
+    ],
+    "content": "",
+    "date": "2021-01-12",
+    "readingTime": 13
+  },
+  {
+    "slug": "icewind-dale-npc-arnold-beitz",
+    "title": "Icewind Dale NPC: Arnold Beitz",
+    "excerpt": "Elitist Waterdeep-educated magnate in Bryn Shander runs salvage and crimes for the Chardalyn Syndicate, sabotaging rivals with goblins to seize the speakership.",
+    "tags": [
+      "Rime of the Frostmaiden",
+      "DnD 5e",
+      "RPG Resources",
+      "Lore"
+    ],
+    "content": "",
+    "date": "2021-01-11",
+    "readingTime": 2
+  },
+  {
+    "slug": "be-friends-with-your-roleplaying-group",
+    "title": "Be Friends with your Roleplaying Group",
+    "excerpt": "RPGs ask for vulnerability, so invest in real friendship with players and your DM—chat, bond, and see the people behind characters to strengthen the table.",
+    "tags": [
+      "Community",
+      "DM Advice",
+      "Philosophy"
+    ],
+    "content": "",
+    "date": "2021-01-08",
+    "readingTime": 2
+  },
+  {
+    "slug": "simulating-great-weapon-fighter-damage",
+    "title": "Simulating Sadness: Great Weapon Fighter Damage",
+    "excerpt": "Analyzes GWF and Champion crits in 5e using math and simulations, finding modest damage gains and evaluating common house rules.",
+    "tags": [
+      "DnD 5e",
+      "Mechanics",
+      "Analysis",
+      "House Rules"
+    ],
+    "content": "",
+    "date": "2021-01-07",
+    "readingTime": 6
+  },
+  {
+    "slug": "rotf-remix-the-far-north-ten-towns",
+    "title": "RotF Remix: The Far North & Ten-Towns",
+    "excerpt": "Remix adds Icewind Dale politics and Duergar intrigue, caravan hooks, harsher travel and survival rules, and darker Auril sacrifices for 5e.",
+    "tags": [
+      "Rime of the Frostmaiden",
+      "DnD 5e",
+      "House Rules",
+      "DM Advice"
+    ],
+    "content": "",
+    "date": "2021-01-04",
+    "readingTime": 10
+  },
+  {
+    "slug": "rotf-remix-heart-of-winter-supernatural-regions",
+    "title": "RotF Remix: Heart of Winter Supernatural Regions",
+    "excerpt": "Introduce volatile planar cold zones in Icewind Dale with triggers and a d100 table of chilling effects to reshape rests, spells, and encounters.",
+    "tags": [
+      "DnD 5e",
+      "Rime of the Frostmaiden",
+      "Mechanics",
+      "RPG Resources"
+    ],
+    "content": "",
+    "date": "2021-01-04",
+    "readingTime": 5
+  },
+  {
+    "slug": "progressive-failures-and-rising-tension-in-5th-edition",
+    "title": "Progressive Failures and Rising Tension in 5th Edition",
+    "excerpt": "Proposes a rule-of-three progressive failure framework for 5e skill checks to build tension, preserve agency, and avoid swingy all-or-nothing outcomes.",
+    "tags": [
+      "DnD 5e",
+      "DM Advice",
+      "Mechanics",
+      "House Rules"
+    ],
+    "content": "",
+    "date": "2021-01-03",
+    "readingTime": 5
+  },
+  {
+    "slug": "tools-for-effecting-rolls-in-dd",
+    "title": "Tools to Affect Rolls in D&D",
+    "excerpt": "Compares 5e roll modifiers—add vs replace—ranked for normal and crittable checks, with simulations showing Elven Accuracy, advantage, cover, and luck impacts.",
+    "tags": [
+      "DnD 5e",
+      "Mechanics",
+      "Analysis",
+      "House Rules"
+    ],
+    "content": "",
+    "date": "2021-01-02",
+    "readingTime": 4
+  },
+  {
+    "slug": "rotf-remix-lake-monster",
+    "title": "RotF Remix: Lake Monster",
+    "excerpt": "A Frostmaiden quest remix: an awakened plesiosaur coerced by frost druids menaces Bremen, with investigation hooks, parley options, and a cave assault.",
+    "tags": [
+      "DnD 5e",
+      "Rime of the Frostmaiden",
+      "Encounters",
+      "DM Advice"
+    ],
+    "content": "",
+    "date": "2020-12-24",
+    "readingTime": 10
+  },
+  {
+    "slug": "thrilling-heroics-rules-for-dd-5e",
+    "title": "Thrilling Heroics Rules for D&D 5e",
+    "excerpt": "Add swashbuckling flair to 5e with ad hoc stunts that trade risk for reward, using clear DCs, balanced effects, and examples to guide fair play.",
+    "tags": [
+      "DnD 5e",
+      "House Rules",
+      "DM Advice",
+      "Mechanics"
+    ],
+    "content": "",
+    "date": "2020-12-22",
+    "readingTime": 6
+  },
+  {
+    "slug": "no-racism-is-not-required-in-a-fantasy-world",
+    "title": "No, racism is not required in a fantasy world",
+    "excerpt": "Using safety tools and rejecting racial essentialism, we help new D&D players see that engaging, respectful fantasy play works without bigotry.",
+    "tags": [
+      "DnD 5e",
+      "DM Advice",
+      "Community",
+      "Philosophy"
+    ],
+    "content": "",
+    "date": "2020-12-21",
+    "readingTime": 3
+  },
+  {
+    "slug": "rime-of-the-frostmaiden-remixes",
+    "title": "Rime of the Frostmaiden Remixes",
+    "excerpt": "A DM shares plans for a series of practical remixes, showing how to tweak Icewind Dale’s 5e adventure for pacing, balance, and table needs.",
+    "tags": [
+      "DnD 5e",
+      "DM Advice",
+      "Rime of the Frostmaiden",
+      "RPG Resources"
+    ],
+    "content": "",
+    "date": "2020-12-09",
+    "readingTime": 2
+  },
+  {
+    "slug": "character-voices-reference",
+    "title": "Character Voices Reference",
+    "excerpt": "A d100 table of vocal descriptors to inspire varied NPC portrayals and help DMs note and reuse consistent speech styles during play.",
+    "tags": [
+      "RPG Resources",
+      "DM Advice"
+    ],
+    "content": "",
+    "date": "2020-12-01",
+    "readingTime": 3
+  },
+  {
+    "slug": "icewind-dale-npc-beldora-nine-dogs",
+    "title": "Icewind Dale NPC: Beldora Nine-Dogs",
+    "excerpt": "A stoic, scarred sled dog trainer and secret Harper leader in Bryn Shander, she speaks little, uses dogs and messengers, and fiercely shields her agents.",
+    "tags": [
+      "DnD 5e",
+      "RPG Resources",
+      "Rime of the Frostmaiden",
+      "Lore"
+    ],
+    "content": "",
+    "date": "2020-11-30",
+    "readingTime": 3
+  },
+  {
+    "slug": "winter-camp-map",
+    "title": "Winter Camp Map",
+    "excerpt": "Snowy campsite battlemap for Rime of the Frostmaiden: a 25x25 grid at 5 ft per 100 px, ideal for random encounters and quick drop-in play.",
+    "tags": [
+      "Rime of the Frostmaiden",
+      "DnD 5e",
+      "RPG Resources",
+      "Encounters"
+    ],
+    "content": "",
+    "date": "2020-11-28",
+    "readingTime": 1
+  },
+  {
+    "slug": "rotf-remix-the-inkwell-taphouse-termalaine",
+    "title": "RotF Remix:  The Inkwell Taphouse, Termalaine",
+    "excerpt": "Decrepit roadside brewery turned ad hoc library battlemap, with a damp, coughing halfling keeper and research granting advantage on local lore checks.",
+    "tags": [
+      "DnD 5e",
+      "RPG Resources",
+      "Rime of the Frostmaiden",
+      "Lore"
+    ],
+    "content": "",
+    "date": "2020-11-21",
+    "readingTime": 2
+  },
+  {
+    "slug": "tresendar-manor-above-ground",
+    "title": "Tresendar Manor Above Ground",
+    "excerpt": "A large hilltop ruined manor battlemap for a prequel one-shot to Lost Mines of Phandelver, created in DungeonDraft and sized for extended play.",
+    "tags": [
+      "DnD 5e",
+      "RPG Resources",
+      "Encounters"
+    ],
+    "content": "",
+    "date": "2020-11-03",
+    "readingTime": 1
+  },
+  {
+    "slug": "rotf-remix-houlens-tomb",
+    "title": "RotF Remix: Houlen’s Tomb",
+    "excerpt": "Custom DungeonDraft battlemap for Rime of the Frostmaiden: a Horizon Walker's tomb besieged by a barbarian cult with sentries, a camp, and hidden leaders.",
+    "tags": [
+      "Rime of the Frostmaiden",
+      "RPG Resources",
+      "Encounters",
+      "DnD 5e"
+    ],
+    "content": "",
+    "date": "2020-10-24",
+    "readingTime": 1
+  }
+]
