@@ -1,16 +1,13 @@
 import { getAllPostsMeta } from './content';
 import { generatePostUrl } from './utils';
-
-const SITE_URL = 'https://yourdomain.github.io'; // Replace with your GitHub Pages URL
-const SITE_NAME = 'My Blog';
-const SITE_DESCRIPTION = 'A modern blog about web development, best practices, and emerging technologies.';
+import { siteConfig } from '../config/site';
 
 // Generate RSS feed XML
 export function generateRSSFeed(): string {
   const posts = getAllPostsMeta();
   
   const rssItems = posts.map(post => {
-    const postUrl = `${SITE_URL}${generatePostUrl(post.date, post.slug)}`;
+    const postUrl = `${siteConfig.url}${generatePostUrl(post.date, post.slug)}`;
     const pubDate = new Date(post.date).toUTCString();
     
     return `
@@ -31,11 +28,14 @@ export function generateRSSFeed(): string {
   return `<?xml version="1.0" encoding="UTF-8" ?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title><![CDATA[${SITE_NAME}]]></title>
-    <description><![CDATA[${SITE_DESCRIPTION}]]></description>
-    <link>${SITE_URL}</link>
-    <atom:link href="${SITE_URL}/rss.xml" rel="self" type="application/rss+xml" />
-    <language>en-us</language>
+    <title><![CDATA[${siteConfig.title}]]></title>
+    <description><![CDATA[${siteConfig.description}]]></description>
+    <link>${siteConfig.url}</link>
+    <atom:link href="${siteConfig.url}/rss.xml" rel="self" type="application/rss+xml" />
+    <language>${siteConfig.language}</language>
+    <managingEditor>${siteConfig.author.email} (${siteConfig.author.name})</managingEditor>
+    <webMaster>${siteConfig.author.email} (${siteConfig.author.name})</webMaster>
+    <copyright>Copyright ${new Date().getFullYear()} ${siteConfig.publisher}</copyright>
     <lastBuildDate>${lastBuildDate}</lastBuildDate>
     <ttl>60</ttl>
     ${rssItems}
@@ -85,7 +85,7 @@ export function generateSitemap(): string {
   const allPages = [...staticPages, ...postPages, ...paginationPages, ...tagPages];
   
   const urlEntries = allPages.map(page => {
-    const fullUrl = `${SITE_URL}${page.url}`;
+    const fullUrl = `${siteConfig.url}${page.url}`;
     const lastmod = ('lastmod' in page) ? `<lastmod>${page.lastmod}</lastmod>` : '';
     const priority = page.priority ? `<priority>${page.priority}</priority>` : '';
     
