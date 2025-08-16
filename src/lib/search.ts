@@ -1,4 +1,4 @@
-import Fuse, { type FuseResult } from 'fuse.js';
+import Fuse, { type FuseResult, type IFuseOptions } from 'fuse.js';
 
 export interface SearchIndexItem {
   slug: string;
@@ -23,7 +23,7 @@ export interface SearchOptions {
 }
 
 // Fuse.js configuration
-const fuseOptions: Fuse.IFuseOptions<SearchIndexItem> = {
+const fuseOptions: IFuseOptions<SearchIndexItem> = {
   // Fields to search
   keys: [
     {
@@ -65,7 +65,35 @@ export async function loadSearchIndex(): Promise<SearchIndexItem[]> {
     if (!response.ok) {
       throw new Error(`Failed to load search index: ${response.status}`);
     }
-    searchIndex = await response.json();
+    
+    const data = await response.json();
+    
+    // Validate that we got an array
+    if (!Array.isArray(data)) {
+      console.error('Search index is not an array:', data);
+      return [];
+    }
+    
+    // Basic validation that items have required properties
+    const validatedData = data.filter((item): item is SearchIndexItem => {
+      return (
+        typeof item === 'object' &&
+        item !== null &&
+        typeof item.slug === 'string' &&
+        typeof item.title === 'string' &&
+        typeof item.excerpt === 'string' &&
+        Array.isArray(item.tags) &&
+        typeof item.content === 'string' &&
+        typeof item.date === 'string' &&
+        typeof item.readingTime === 'number'
+      );
+    });
+    
+    if (validatedData.length !== data.length) {
+      console.warn(`Filtered out ${data.length - validatedData.length} invalid search index items`);
+    }
+    
+    searchIndex = validatedData;
     return searchIndex;
   } catch (error) {
     console.error('Error loading search index:', error);
