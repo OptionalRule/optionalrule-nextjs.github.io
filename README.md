@@ -50,6 +50,33 @@ export MY_OPENAI_KEY="sk-xxx"
 node scripts/tag-and-excerpt.mjs --api-key MY_OPENAI_KEY
 ```
 
+### `npm run find-empty-links`
+
+Scans all markdown content files for empty markdown links and reports their locations. This utility helps maintain content quality by identifying broken or incomplete link references.
+
+The script detects various patterns of empty links:
+- `[text]()` - Empty parentheses
+- `[text]("")` or `[text]('')` - Empty quotes  
+- `[]()` - Empty text and URL
+- `[text]( )` - Whitespace-only URLs
+
+Output includes:
+- File paths containing empty links
+- Line numbers and context for each issue
+- Summary statistics of files scanned and issues found
+
+Example output:
+```bash
+❌ content/posts/example-post.mdx
+   Line 28: [Tools for Effecting Rolls]()
+   Context: In my article, "[Tools for Effecting Rolls]()," I explored...
+
+📊 Summary:
+Files scanned: 88
+Files with empty links: 1  
+Total empty links found: 1
+```
+
 ## Github Pages
 
 This site is setup to run under github pages.  The build is automatic and run from `.github/workflows/deploy.yml`

@@ -12,7 +12,8 @@
     "generate-search-index": "node --import tsx/esm scripts/generate-search-index.ts",
     "create-post": "node --import tsx/esm scripts/create-post.ts",
     "replace-default-images": "node --import tsx/esm scripts/replace-default-images.ts",
-    "download-external-images": "node --import tsx/esm scripts/download-external-images.ts"
+    "download-external-images": "node --import tsx/esm scripts/download-external-images.ts",
+    "find-empty-links": "node --import tsx/esm scripts/find-empty-links.ts"
   },
   "dependencies": {
     "@mdx-js/loader": "^3.1.0",
