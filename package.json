@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "npm run generate-search-index && next build",
+    "build": "npm run generate-search-index && npm run generate-rss && next build",
     "start": "next start",
     "lint": "next lint",
     "storybook": "storybook dev -p 6006",
@@ -13,7 +13,8 @@
     "create-post": "node --import tsx/esm scripts/create-post.ts",
     "replace-default-images": "node --import tsx/esm scripts/replace-default-images.ts",
     "download-external-images": "node --import tsx/esm scripts/download-external-images.ts",
-    "find-empty-links": "node --import tsx/esm scripts/find-empty-links.ts"
+    "find-empty-links": "node --import tsx/esm scripts/find-empty-links.ts",
+    "generate-rss": "ts-node scripts/generate-rss.ts"
   },
   "dependencies": {
     "@mdx-js/loader": "^3.1.0",

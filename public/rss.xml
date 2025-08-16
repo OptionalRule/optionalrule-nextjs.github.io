@@ -1,0 +1,712 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title><![CDATA[Optional Rule]]></title>
+    <description><![CDATA[Analysis, advice, and adventures for tabletop RPG enthusiasts.]]></description>
+    <link>https://optionalrule.com</link>
+    <atom:link href="https://optionalrule.com/rss.xml" rel="self" type="application/rss+xml" />
+    <language>en</language>
+    <managingEditor>optionalrule@gmail.com (Mike Bernier)</managingEditor>
+    <webMaster>optionalrule@gmail.com (Mike Bernier)</webMaster>
+    <copyright>Copyright 2025 Optional Rule Games</copyright>
+    <lastBuildDate>Fri, 15 Aug 2025 00:00:00 GMT</lastBuildDate>
+    <ttl>60</ttl>
+    
+    <item>
+      <title><![CDATA[Site Migration Complete]]></title>
+      <description><![CDATA[I migrated the site to NextJS for easier management. Having used AI for this I reflect a bit on the future of TTRPG content.]]></description>
+      <link>https://optionalrule.com/2025/08/14/site-migration-complete/</link>
+      <guid isPermaLink="true">https://optionalrule.com/2025/08/14/site-migration-complete/</guid>
+      <pubDate>Fri, 15 Aug 2025 00:00:00 GMT</pubDate>
+      <category><![CDATA[]]></category>
+    </item>
+    <item>
+      <title><![CDATA[The Zero-Sum Fallacy of TTRPG Playstyles]]></title>
+      <description><![CDATA[Reject the win-lose mindset and celebrate diverse TTRPG playstyles; curiosity over gatekeeping turns debate into discovery and keeps the hobby welcoming.]]></description>
+      <link>https://optionalrule.com/2025/02/01/the-zero-sum-fallacy-of-ttrpgs/</link>
+      <guid isPermaLink="true">https://optionalrule.com/2025/02/01/the-zero-sum-fallacy-of-ttrpgs/</guid>
+      <pubDate>Sun, 02 Feb 2025 00:00:00 GMT</pubDate>
+      <category><![CDATA[Philosophy, Community, Analysis]]></category>
+    </item>
+    <item>
+      <title><![CDATA[The Human Side of D&D History]]></title>
+      <description><![CDATA[Reflecting on Tim Cain and Gary Gygax, this calls for empathetic, nuanced remembrance of D&D's creators over meme-fueled narratives.]]></description>
+      <link>https://optionalrule.com/2024/11/25/the-human-side-of-dnd-history/</link>
+      <guid isPermaLink="true">https://optionalrule.com/2024/11/25/the-human-side-of-dnd-history/</guid>
+      <pubDate>Tue, 26 Nov 2024 00:00:00 GMT</pubDate>
+      <category><![CDATA[Community, Philosophy, Analysis]]></category>
+    </item>
+    <item>
+      <title><![CDATA[Exception Based Design in D&D - When Rules Enable Rule Lawyers]]></title>
+      <description><![CDATA[5e 2024’s exception-heavy design can fuel rules debates; here’s how DMs and players can balance rulings, fun, and table expectations.]]></description>
+      <link>https://optionalrule.com/2024/11/23/exception-based-dnd-design/</link>
+      <guid isPermaLink="true">https://optionalrule.com/2024/11/23/exception-based-dnd-design/</guid>
+      <pubDate>Sun, 24 Nov 2024 00:00:00 GMT</pubDate>
+      <category><![CDATA[DnD 5e, Analysis, DM Advice, Philosophy]]></category>
+    </item>
+    <item>
+      <title><![CDATA[War and Warfare in TTRPGs - How to Bring Epic Conflicts to Life]]></title>
+      <description><![CDATA[Practical guidance for crafting player-driven wartime stories: pitfalls to avoid, scenario types to run, tools to add tension, and moral nuance.]]></description>
+      <link>https://optionalrule.com/2024/11/21/warfare-in-ttrpgs/</link>
+      <guid isPermaLink="true">https://optionalrule.com/2024/11/21/warfare-in-ttrpgs/</guid>
+      <pubDate>Fri, 22 Nov 2024 00:00:00 GMT</pubDate>
+      <category><![CDATA[DM Advice, RPG Resources, Analysis, Mechanics]]></category>
+    </item>
+    <item>
+      <title><![CDATA[The DnD 2024 Launch and the Future of Hasbro]]></title>
+      <description><![CDATA[A data-driven read of Hasbro’s Q3 shows stable cash and strong margins but D&D 2024 underperformed as BG3 fades, pushing a risky digital pivot.]]></description>
+      <link>https://optionalrule.com/2024/10/23/hasbro-q3-2024/</link>
+      <guid isPermaLink="true">https://optionalrule.com/2024/10/23/hasbro-q3-2024/</guid>
+      <pubDate>Thu, 24 Oct 2024 00:00:00 GMT</pubDate>
+      <category><![CDATA[DnD 5e, Analysis]]></category>
+    </item>
+    <item>
+      <title><![CDATA[Movement in Theater of the Mind for DnD 5e]]></title>
+      <description><![CDATA[Streamline combat by declaring intentions, using simple ranges, and resolving maneuvers with opposed checks to keep TotM battles fast, tactical, and fun.]]></description>
+      <link>https://optionalrule.com/2024/10/19/theater-of-the-mind-movement-in-5e/</link>
+      <guid isPermaLink="true">https://optionalrule.com/2024/10/19/theater-of-the-mind-movement-in-5e/</guid>
+      <pubDate>Sun, 20 Oct 2024 00:00:00 GMT</pubDate>
+      <category><![CDATA[DnD 5e, DM Advice, Mechanics, House Rules]]></category>
+    </item>
+    <item>
+      <title><![CDATA[Greyhawk - The Original D&D Setting Returns]]></title>
+      <description><![CDATA[D&D 2024 brings Greyhawk back as the default setting, exploring its roots, politics, grittier tone, and what it means for DMs and players.]]></description>
+      <link>https://optionalrule.com/2024/09/30/a-return-to-greyhawk/</link>
+      <guid isPermaLink="true">https://optionalrule.com/2024/09/30/a-return-to-greyhawk/</guid>
+      <pubDate>Tue, 01 Oct 2024 00:00:00 GMT</pubDate>
+      <category><![CDATA[DnD 5e, Lore, Analysis]]></category>
+    </item>
+    <item>
+      <title><![CDATA[Embracing AI in TTRPGs - Enhancing, Not Replacing, Creativity]]></title>
+      <description><![CDATA[AI can streamline search, lore, prep, and tracking in tabletop play, freeing DMs and players to focus on storytelling while keeping human creativity central.]]></description>
+      <link>https://optionalrule.com/2024/09/19/ethical-ai-in-ttrpgs/</link>
+      <guid isPermaLink="true">https://optionalrule.com/2024/09/19/ethical-ai-in-ttrpgs/</guid>
+      <pubDate>Fri, 20 Sep 2024 00:00:00 GMT</pubDate>
+      <category><![CDATA[DM Advice, RPG Resources, Community, Analysis]]></category>
+    </item>
+    <item>
+      <title><![CDATA[Crafting Cultural Depth Through Food in TTRPGs]]></title>
+      <description><![CDATA[Use cuisine as a storytelling tool: describe dishes, tie meals to rituals, status, and environment, and turn ingredients into hooks for richer play.]]></description>
+      <link>https://optionalrule.com/2024/09/07/worldbuilding-through-food/</link>
+      <guid isPermaLink="true">https://optionalrule.com/2024/09/07/worldbuilding-through-food/</guid>
+      <pubDate>Sun, 08 Sep 2024 00:00:00 GMT</pubDate>
+      <category><![CDATA[DM Advice, RPG Resources, Analysis]]></category>
+    </item>
+    <item>
+      <title><![CDATA[Mounted Combat in Shadowdark TTRPG]]></title>
+      <description><![CDATA[Streamlined Shadowdark mount rules: melee bonus, charging with polearms, risks of bolting, gear and barding, mounts and costs, plus travel flavor.]]></description>
+      <link>https://optionalrule.com/2024/09/03/mounted-combat-in-shadowdark/</link>
+      <guid isPermaLink="true">https://optionalrule.com/2024/09/03/mounted-combat-in-shadowdark/</guid>
+      <pubDate>Wed, 04 Sep 2024 00:00:00 GMT</pubDate>
+      <category><![CDATA[Shadowdark, Mechanics, House Rules, RPG Resources]]></category>
+    </item>
+    <item>
+      <title><![CDATA[The Roleplaying Origins of Early Dungeons and Dragons]]></title>
+      <description><![CDATA[Classic modules show early editions centered on negotiation and player ingenuity, contrasting with later skill-driven, performative approaches.]]></description>
+      <link>https://optionalrule.com/2024/08/27/rolepalying-origins-of-dnd/</link>
+      <guid isPermaLink="true">https://optionalrule.com/2024/08/27/rolepalying-origins-of-dnd/</guid>
+      <pubDate>Wed, 28 Aug 2024 00:00:00 GMT</pubDate>
+      <category><![CDATA[Analysis, Philosophy, Mechanics, Shadowdark]]></category>
+    </item>
+    <item>
+      <title><![CDATA[Foraging for Herbs in Shadowdark]]></title>
+      <description><![CDATA[OSR-inspired herbalism rules add strategic foraging, preservation checks, an expanded herb list, Ranger balance notes, and GM tips to your Shadowdark games.]]></description>
+      <link>https://optionalrule.com/2024/08/25/expanded-herb-list-for-shadowdark/</link>
+      <guid isPermaLink="true">https://optionalrule.com/2024/08/25/expanded-herb-list-for-shadowdark/</guid>
+      <pubDate>Mon, 26 Aug 2024 00:00:00 GMT</pubDate>
+      <category><![CDATA[Shadowdark, Mechanics, House Rules, DM Advice]]></category>
+    </item>
+    <item>
+      <title><![CDATA[Simplifying Runequest's Critical System]]></title>
+      <description><![CDATA[Proposes a universal 10s/5s critical scheme for Chaosium percentile games to speed resolution, add special failures, and reduce sheet-checking.]]></description>
+      <link>https://optionalrule.com/2024/08/01/simplifying-runequests-critical-system/</link>
+      <guid isPermaLink="true">https://optionalrule.com/2024/08/01/simplifying-runequests-critical-system/</guid>
+      <pubDate>Fri, 02 Aug 2024 00:00:00 GMT</pubDate>
+      <category><![CDATA[House Rules, Mechanics, Analysis]]></category>
+    </item>
+    <item>
+      <title><![CDATA[12 Rules for TTRPG Players to Live By]]></title>
+      <description><![CDATA[Practical, playful principles to be a better TTRPG player: show up, engage, share spotlight, pursue story beats, state intentions, respect others' fun.]]></description>
+      <link>https://optionalrule.com/2024/07/15/twelve-rules-for-players-to-live-by/</link>
+      <guid isPermaLink="true">https://optionalrule.com/2024/07/15/twelve-rules-for-players-to-live-by/</guid>
+      <pubDate>Tue, 16 Jul 2024 00:00:00 GMT</pubDate>
+      <category><![CDATA[RPG Resources, Community, Philosophy]]></category>
+    </item>
+    <item>
+      <title><![CDATA[Experience Still Matters - The Benefits of using XP in 5e.]]></title>
+      <description><![CDATA[Argues for XP-based advancement in D&D, rewarding non-combat play, encouraging agency, easing pacing, and doubling as a memory log for your campaign.]]></description>
+      <link>https://optionalrule.com/2024/05/01/experience-matters-updated/</link>
+      <guid isPermaLink="true">https://optionalrule.com/2024/05/01/experience-matters-updated/</guid>
+      <pubDate>Thu, 02 May 2024 00:00:00 GMT</pubDate>
+      <category><![CDATA[DnD 5e, DM Advice, Mechanics, Philosophy]]></category>
+    </item>
+    <item>
+      <title><![CDATA[TTRPG Tools for Collboration and Change]]></title>
+      <description><![CDATA[Build better tables by aligning assumptions about the world and preferred play styles, then using communication, examples, and incentives to support shared fun.]]></description>
+      <link>https://optionalrule.com/2024/04/27/ttrpg-tools-for-collaboration/</link>
+      <guid isPermaLink="true">https://optionalrule.com/2024/04/27/ttrpg-tools-for-collaboration/</guid>
+      <pubDate>Sun, 28 Apr 2024 00:00:00 GMT</pubDate>
+      <category><![CDATA[DM Advice, Philosophy, Community, RPG Resources]]></category>
+    </item>
+    <item>
+      <title><![CDATA[Gritty DnD Injuries - Expanding Exhaustion]]></title>
+      <description><![CDATA[Revamps exhaustion in 5e with -1 per level, gains on crits and death saves, class Shake It Off, and clearer recovery, adding tension, stakes, and teamwork.]]></description>
+      <link>https://optionalrule.com/2024/02/15/revised-exhausted-condition/</link>
+      <guid isPermaLink="true">https://optionalrule.com/2024/02/15/revised-exhausted-condition/</guid>
+      <pubDate>Fri, 16 Feb 2024 00:00:00 GMT</pubDate>
+      <category><![CDATA[DnD 5e, House Rules, Mechanics, DM Advice]]></category>
+    </item>
+    <item>
+      <title><![CDATA[Yes, if ... the true secret of crafting adventures]]></title>
+      <description><![CDATA[Rather than quick yes/no rulings, challenge players with conditional goals that turn edge cases into quests, deepening stakes and shared world.]]></description>
+      <link>https://optionalrule.com/2023/12/19/the-magic-of-yes-if/</link>
+      <guid isPermaLink="true">https://optionalrule.com/2023/12/19/the-magic-of-yes-if/</guid>
+      <pubDate>Wed, 20 Dec 2023 00:00:00 GMT</pubDate>
+      <category><![CDATA[DM Advice, Philosophy, DnD 5e, Analysis]]></category>
+    </item>
+    <item>
+      <title><![CDATA[Unlocking the Magic of TTRPG Design]]></title>
+      <description><![CDATA[Applying Sanderson’s principles to tabletop RPGs, this argues for limits, costs, and risk over power creep, using subsystem interplay to enrich play.]]></description>
+      <link>https://optionalrule.com/2023/12/10/guidelines-for-great-ttrpg-design/</link>
+      <guid isPermaLink="true">https://optionalrule.com/2023/12/10/guidelines-for-great-ttrpg-design/</guid>
+      <pubDate>Mon, 11 Dec 2023 00:00:00 GMT</pubDate>
+      <category><![CDATA[Philosophy, Analysis, Mechanics, Community]]></category>
+    </item>
+    <item>
+      <title><![CDATA[DMing is not a Covert Power Grab]]></title>
+      <description><![CDATA[The DM initiates and shapes play; collaboration matters, but new norms that cast their creative lead as suspect risk stifling games.]]></description>
+      <link>https://optionalrule.com/2023/11/26/dming-isnt-a-conspiracy-to-control-you/</link>
+      <guid isPermaLink="true">https://optionalrule.com/2023/11/26/dming-isnt-a-conspiracy-to-control-you/</guid>
+      <pubDate>Mon, 27 Nov 2023 00:00:00 GMT</pubDate>
+      <category><![CDATA[DM Advice, Community, Philosophy, DnD 5e]]></category>
+    </item>
+    <item>
+      <title><![CDATA[The Statistical Mirage of Advantage in D&D 5th Edition]]></title>
+      <description><![CDATA[Advantage skews outcomes toward the mean, boosts easy checks more than hard ones, and its non-stacking design blunts creative tactics and tension.]]></description>
+      <link>https://optionalrule.com/2023/11/08/the-advantage-of-knowing-modifiers/</link>
+      <guid isPermaLink="true">https://optionalrule.com/2023/11/08/the-advantage-of-knowing-modifiers/</guid>
+      <pubDate>Thu, 09 Nov 2023 00:00:00 GMT</pubDate>
+      <category><![CDATA[DnD 5e, Mechanics, Analysis, DM Advice]]></category>
+    </item>
+    <item>
+      <title><![CDATA[Dungeon of the Grieving Mind - Not Your Typical Dungeon!]]></title>
+      <description><![CDATA[A level-5 DnD 5e grief-themed dungeon born from slain innocents, mixing environmental hazards and moral trials across five evocative chambers.]]></description>
+      <link>https://optionalrule.com/2023/11/03/dungeon-of-the-grieving-mind/</link>
+      <guid isPermaLink="true">https://optionalrule.com/2023/11/03/dungeon-of-the-grieving-mind/</guid>
+      <pubDate>Sat, 04 Nov 2023 00:00:00 GMT</pubDate>
+      <category><![CDATA[DnD 5e, Encounters, DM Advice, RPG Resources]]></category>
+    </item>
+    <item>
+      <title><![CDATA[Narrative Landscapes - More Engaging TTRPG Travel]]></title>
+      <description><![CDATA[Transform travel by treating geography as a character, embedding hooks and implied encounters that spark curiosity and player-driven choices.]]></description>
+      <link>https://optionalrule.com/2023/07/22/painting-geography-with-narrative/</link>
+      <guid isPermaLink="true">https://optionalrule.com/2023/07/22/painting-geography-with-narrative/</guid>
+      <pubDate>Sun, 23 Jul 2023 00:00:00 GMT</pubDate>
+      <category><![CDATA[DM Advice, RPG Resources, Encounters, Philosophy]]></category>
+    </item>
+    <item>
+      <title><![CDATA[Summon the Unusual - 3 New  Spells for DnD 5e]]></title>
+      <description><![CDATA[Homebrew options for arcane pet play: animate weapons, clockwork constructs, and mephits, with balance notes, scaling, and narrative discovery hooks.]]></description>
+      <link>https://optionalrule.com/2023/06/27/arcane-servant-spells/</link>
+      <guid isPermaLink="true">https://optionalrule.com/2023/06/27/arcane-servant-spells/</guid>
+      <pubDate>Wed, 28 Jun 2023 00:00:00 GMT</pubDate>
+      <category><![CDATA[DnD 5e, House Rules, DM Advice, Mechanics]]></category>
+    </item>
+    <item>
+      <title><![CDATA[Gritty Survival in 5e - Breathing life into Death Saves]]></title>
+      <description><![CDATA[A proposed 5e house rule ties risk to negative HP and CON saves, raising urgency, nerfing Healing Word, and making knockdowns matter again.]]></description>
+      <link>https://optionalrule.com/2023/06/18/revisiting-death-saves-in-5e/</link>
+      <guid isPermaLink="true">https://optionalrule.com/2023/06/18/revisiting-death-saves-in-5e/</guid>
+      <pubDate>Mon, 19 Jun 2023 00:00:00 GMT</pubDate>
+      <category><![CDATA[DnD 5e, House Rules, Mechanics, DM Advice]]></category>
+    </item>
+    <item>
+      <title><![CDATA[Decoding D&D - The Enigma of Armor Class]]></title>
+      <description><![CDATA[Explains AC as an abstract defense working with HP to pace damage over time, guiding narration and design without literal blow-by-blow realism.]]></description>
+      <link>https://optionalrule.com/2023/06/15/abstract-nature-of-ac/</link>
+      <guid isPermaLink="true">https://optionalrule.com/2023/06/15/abstract-nature-of-ac/</guid>
+      <pubDate>Fri, 16 Jun 2023 00:00:00 GMT</pubDate>
+      <category><![CDATA[Mechanics, DM Advice, Philosophy, Analysis]]></category>
+    </item>
+    <item>
+      <title><![CDATA[Pitch Perfect - Using a Pitch Deck for Your D&D Campaign]]></title>
+      <description><![CDATA[Use a concise pitch deck to attract the right players by outlining premise, tone, rules, schedule, and boundaries, plus tools and templates to get started.]]></description>
+      <link>https://optionalrule.com/2023/06/09/campaign-pitch-decks/</link>
+      <guid isPermaLink="true">https://optionalrule.com/2023/06/09/campaign-pitch-decks/</guid>
+      <pubDate>Sat, 10 Jun 2023 00:00:00 GMT</pubDate>
+      <category><![CDATA[DM Advice, RPG Resources, House Rules]]></category>
+    </item>
+    <item>
+      <title><![CDATA[Decoding D&D - What the heck are Hit Points Anyway?]]></title>
+      <description><![CDATA[HP in D&D are an abstract tool shaped by the DM to set tone and stakes, not literal wounds, evolving across editions to serve fun.]]></description>
+      <link>https://optionalrule.com/2023/06/01/what-are-hit-points-in-dnd/</link>
+      <guid isPermaLink="true">https://optionalrule.com/2023/06/01/what-are-hit-points-in-dnd/</guid>
+      <pubDate>Fri, 02 Jun 2023 00:00:00 GMT</pubDate>
+      <category><![CDATA[Mechanics, DM Advice, Philosophy, Analysis]]></category>
+    </item>
+    <item>
+      <title><![CDATA[You Have the Power - Places of Power in D&D]]></title>
+      <description><![CDATA[High-risk magical sites let casters supercharge spells via attunement and metamagic checks with failure risks and rarity tiers, giving DMs rich hooks.]]></description>
+      <link>https://optionalrule.com/2023/05/30/places-of-power/</link>
+      <guid isPermaLink="true">https://optionalrule.com/2023/05/30/places-of-power/</guid>
+      <pubDate>Wed, 31 May 2023 00:00:00 GMT</pubDate>
+      <category><![CDATA[DnD 5e, House Rules, Mechanics, DM Advice]]></category>
+    </item>
+    <item>
+      <title><![CDATA[Reimagining the Mark Option in D&D 5E - Empowering Martial Characters]]></title>
+      <description><![CDATA[Proposes a streamlined Mark rule: if you hit a foe in melee since your last turn, you can make one opportunity attack each round without using your reaction.]]></description>
+      <link>https://optionalrule.com/2023/05/26/improved-mark-option/</link>
+      <guid isPermaLink="true">https://optionalrule.com/2023/05/26/improved-mark-option/</guid>
+      <pubDate>Sat, 27 May 2023 00:00:00 GMT</pubDate>
+      <category><![CDATA[DnD 5e, House Rules, Mechanics]]></category>
+    </item>
+    <item>
+      <title><![CDATA[Vathirond City of Wild Inspiration]]></title>
+      <description><![CDATA[On Eberron's Mournland edge, a shattered Brelish city of six Crowns, clashing factions, and refugee Gutters offers rich lore and adventure hooks.]]></description>
+      <link>https://optionalrule.com/2023/05/18/vathirond-city-of-wild-inspiration/</link>
+      <guid isPermaLink="true">https://optionalrule.com/2023/05/18/vathirond-city-of-wild-inspiration/</guid>
+      <pubDate>Fri, 19 May 2023 00:00:00 GMT</pubDate>
+      <category><![CDATA[DnD 5e, RPG Resources, Lore, DM Advice]]></category>
+    </item>
+    <item>
+      <title><![CDATA[Experience Matters - The benefits of XP in 5th edition]]></title>
+      <description><![CDATA[Advocates experience points over milestones, tying growth to player actions, pacing adventures, rewarding exploration and roleplay, and preserving memories.]]></description>
+      <link>https://optionalrule.com/2023/05/16/the-benefits-of-xp-in-5th-edition/</link>
+      <guid isPermaLink="true">https://optionalrule.com/2023/05/16/the-benefits-of-xp-in-5th-edition/</guid>
+      <pubDate>Wed, 17 May 2023 00:00:00 GMT</pubDate>
+      <category><![CDATA[DnD 5e, DM Advice, Mechanics, Philosophy]]></category>
+    </item>
+    <item>
+      <title><![CDATA[Origins of the Astral and Ethereal Planes in D&D]]></title>
+      <description><![CDATA[Explores how counterculture, pop icons, and early design split ghosts and psionics into two transitive realms, and how 5e streamlines that legacy.]]></description>
+      <link>https://optionalrule.com/2023/05/14/origins-of-the-astral-and-etherial-planes-in-dnd/</link>
+      <guid isPermaLink="true">https://optionalrule.com/2023/05/14/origins-of-the-astral-and-etherial-planes-in-dnd/</guid>
+      <pubDate>Mon, 15 May 2023 00:00:00 GMT</pubDate>
+      <category><![CDATA[Lore, Analysis, DnD 5e]]></category>
+    </item>
+    <item>
+      <title><![CDATA[Design Goals of Etherea]]></title>
+      <description><![CDATA[Outlines a Shadowdark homebrew where belief shapes reality, with lore-driven monsters, risky magic, and evolving hooks for adventures and towns.]]></description>
+      <link>https://optionalrule.com/2023/05/13/design-goals-of-etherea/</link>
+      <guid isPermaLink="true">https://optionalrule.com/2023/05/13/design-goals-of-etherea/</guid>
+      <pubDate>Sun, 14 May 2023 00:00:00 GMT</pubDate>
+      <category><![CDATA[Shadowdark, Lore, Monsters, Mechanics]]></category>
+    </item>
+    <item>
+      <title><![CDATA[Revised Injured Condition]]></title>
+      <description><![CDATA[Add lasting injuries to DnD 5e for higher stakes and strategy, with levels affecting rolls, recovery checks, class perks, and magic-based healing.]]></description>
+      <link>https://optionalrule.com/2023/05/12/revised-injury-condition/</link>
+      <guid isPermaLink="true">https://optionalrule.com/2023/05/12/revised-injury-condition/</guid>
+      <pubDate>Sat, 13 May 2023 00:00:00 GMT</pubDate>
+      <category><![CDATA[DnD 5e, House Rules, Mechanics]]></category>
+    </item>
+    <item>
+      <title><![CDATA[Introduction to the World of Etherea]]></title>
+      <description><![CDATA[After the Echofall shattered Etherea, emotions spawn Echoforms from the Umbraweave as Weavers and the faithful vie amid perilous ruins and volatile magic.]]></description>
+      <link>https://optionalrule.com/2023/05/12/the-world-of-etherea/</link>
+      <guid isPermaLink="true">https://optionalrule.com/2023/05/12/the-world-of-etherea/</guid>
+      <pubDate>Sat, 13 May 2023 00:00:00 GMT</pubDate>
+      <category><![CDATA[Shadowdark, Lore, RPG Resources]]></category>
+    </item>
+    <item>
+      <title><![CDATA[The Return of the Write Spell -  A Nostalgic Callback or Unnecessary Complexity?]]></title>
+      <description><![CDATA[Playtest adds Scribe Spell to handle wizard scribing, a throwback to Write, but the author argues it adds fiddly complexity without real payoff.]]></description>
+      <link>https://optionalrule.com/2023/05/03/return-of-the-write-spell-in-dnd/</link>
+      <guid isPermaLink="true">https://optionalrule.com/2023/05/03/return-of-the-write-spell-in-dnd/</guid>
+      <pubDate>Thu, 04 May 2023 00:00:00 GMT</pubDate>
+      <category><![CDATA[DnD 5e, Mechanics, Analysis]]></category>
+    </item>
+    <item>
+      <title><![CDATA[Injured Condition For Lasting Damage]]></title>
+      <description><![CDATA[A streamlined injury system for 5e applies level-based penalties to rolls and save DCs, with rest, medicine, and magic for recovery plus DM guidance.]]></description>
+      <link>https://optionalrule.com/2022/09/30/injured-condition-onednd/</link>
+      <guid isPermaLink="true">https://optionalrule.com/2022/09/30/injured-condition-onednd/</guid>
+      <pubDate>Sat, 01 Oct 2022 00:00:00 GMT</pubDate>
+      <category><![CDATA[DnD 5e, House Rules, Mechanics, DM Advice]]></category>
+    </item>
+    <item>
+      <title><![CDATA[The WoTC Errata, Long Past Due]]></title>
+      <description><![CDATA[The latest D&D 5E errata drops racial alignment, inviting more inclusive, nuanced characters and worlds shaped by players and DMs.]]></description>
+      <link>https://optionalrule.com/2021/12/16/wotc-errata-debate/</link>
+      <guid isPermaLink="true">https://optionalrule.com/2021/12/16/wotc-errata-debate/</guid>
+      <pubDate>Fri, 17 Dec 2021 00:00:00 GMT</pubDate>
+      <category><![CDATA[DnD 5e, Analysis, Philosophy, Community]]></category>
+    </item>
+    <item>
+      <title><![CDATA[Tavern Games - Darts for your D&D Game]]></title>
+      <description><![CDATA[Add a tavern darts mini-game to your D&D sessions using two d20s for segment and ring, with ranged attack bonus to tweak rolls and score doubles and bulls.]]></description>
+      <link>https://optionalrule.com/2021/12/07/tavern-games-darts-minigame/</link>
+      <guid isPermaLink="true">https://optionalrule.com/2021/12/07/tavern-games-darts-minigame/</guid>
+      <pubDate>Wed, 08 Dec 2021 00:00:00 GMT</pubDate>
+      <category><![CDATA[House Rules, Mechanics, RPG Resources, DM Advice]]></category>
+    </item>
+    <item>
+      <title><![CDATA[Sampling Random Ability Score Generation]]></title>
+      <description><![CDATA[An overview of popular random stat methods in 5e, their probability ranges, effects on bounded accuracy, and advice for group buy-in.]]></description>
+      <link>https://optionalrule.com/2021/08/11/sampling-random-ability-scores/</link>
+      <guid isPermaLink="true">https://optionalrule.com/2021/08/11/sampling-random-ability-scores/</guid>
+      <pubDate>Thu, 12 Aug 2021 00:00:00 GMT</pubDate>
+      <category><![CDATA[DnD 5e, DM Advice, Mechanics, Analysis]]></category>
+    </item>
+    <item>
+      <title><![CDATA[Perilous Journeys in 5e Part 2]]></title>
+      <description><![CDATA[Turn overland travel into engaging play with clear roles—Forage, Guide, Scout, and Ward—plus terrain DCs, party synergies, and encounter-focused pacing.]]></description>
+      <link>https://optionalrule.com/2021/07/23/perilous-journeys-in-5e-p2/</link>
+      <guid isPermaLink="true">https://optionalrule.com/2021/07/23/perilous-journeys-in-5e-p2/</guid>
+      <pubDate>Sat, 24 Jul 2021 00:00:00 GMT</pubDate>
+      <category><![CDATA[DnD 5e, DM Advice, House Rules, Mechanics]]></category>
+    </item>
+    <item>
+      <title><![CDATA[Perilous Journeys in 5e Part 1]]></title>
+      <description><![CDATA[This post offers simple travel rules for 5e: havens-only long rests, base camps, improved sleep and meals, and terrain-based pacing to enliven exploration.]]></description>
+      <link>https://optionalrule.com/2021/07/12/perilous-journeys-in-5e-p1/</link>
+      <guid isPermaLink="true">https://optionalrule.com/2021/07/12/perilous-journeys-in-5e-p1/</guid>
+      <pubDate>Tue, 13 Jul 2021 00:00:00 GMT</pubDate>
+      <category><![CDATA[DnD 5e, House Rules, Mechanics, DM Advice]]></category>
+    </item>
+    <item>
+      <title><![CDATA[Gritty Healing in 5e Part 2: Spells]]></title>
+      <description><![CDATA[Tie magical healing to the recipient’s Hit Dice to cap recovery, keep injuries meaningful, and free healers from heal-bot duty in gritty 5e.]]></description>
+      <link>https://optionalrule.com/2021/06/29/gritty-healing-part-2-spells/</link>
+      <guid isPermaLink="true">https://optionalrule.com/2021/06/29/gritty-healing-part-2-spells/</guid>
+      <pubDate>Wed, 30 Jun 2021 00:00:00 GMT</pubDate>
+      <category><![CDATA[DnD 5e, House Rules, Mechanics, DM Advice]]></category>
+    </item>
+    <item>
+      <title><![CDATA[Gritty Healing & Survival in 5e]]></title>
+      <description><![CDATA[House rules for 5e shift healing to Hit Dice recovery, emphasize attrition, resource management, and conditions, with guidance for campaigns.]]></description>
+      <link>https://optionalrule.com/2021/06/26/gritty-healing-and-survival-rules/</link>
+      <guid isPermaLink="true">https://optionalrule.com/2021/06/26/gritty-healing-and-survival-rules/</guid>
+      <pubDate>Sun, 27 Jun 2021 00:00:00 GMT</pubDate>
+      <category><![CDATA[DnD 5e, House Rules, Mechanics, DM Advice]]></category>
+    </item>
+    <item>
+      <title><![CDATA[On Die Averages and Hit Points in 5e]]></title>
+      <description><![CDATA[Explains correct dice averages and why character and monster health is computed differently, with examples and a simple leveling house rule.]]></description>
+      <link>https://optionalrule.com/2021/06/21/understanding-die-average-and-hitpoints/</link>
+      <guid isPermaLink="true">https://optionalrule.com/2021/06/21/understanding-die-average-and-hitpoints/</guid>
+      <pubDate>Tue, 22 Jun 2021 00:00:00 GMT</pubDate>
+      <category><![CDATA[DnD 5e, Mechanics, Analysis, House Rules]]></category>
+    </item>
+    <item>
+      <title><![CDATA[Site Migration Complete]]></title>
+      <description><![CDATA[We migrated the site to Jekyll on GitHub Pages for a faster, more accessible experience; see Lighthouse scores and DM me if you spot issues.]]></description>
+      <link>https://optionalrule.com/2021/06/06/site-migration-deployed/</link>
+      <guid isPermaLink="true">https://optionalrule.com/2021/06/06/site-migration-deployed/</guid>
+      <pubDate>Mon, 07 Jun 2021 00:00:00 GMT</pubDate>
+      <category><![CDATA[Community, Analysis]]></category>
+    </item>
+    <item>
+      <title><![CDATA[April 2021 Experimental House Rules]]></title>
+      <description><![CDATA[Testing 5e rule tweaks: reaction-based Dodge with next-turn limits and expanded grappling options, with community feedback invited.]]></description>
+      <link>https://optionalrule.com/2021/04/28/april-2021-experimental-house-rules/</link>
+      <guid isPermaLink="true">https://optionalrule.com/2021/04/28/april-2021-experimental-house-rules/</guid>
+      <pubDate>Thu, 29 Apr 2021 00:00:00 GMT</pubDate>
+      <category><![CDATA[DnD 5e, House Rules, Mechanics, Community]]></category>
+    </item>
+    <item>
+      <title><![CDATA[When Failure Isn’t an Option in 5e]]></title>
+      <description><![CDATA[Advice for DMs on embracing failure as a tool in 5e, avoiding stalled plots, and using techniques like success-at-cost to keep play dynamic.]]></description>
+      <link>https://optionalrule.com/2021/04/20/when-failure-isnt-an-option-in-5e/</link>
+      <guid isPermaLink="true">https://optionalrule.com/2021/04/20/when-failure-isnt-an-option-in-5e/</guid>
+      <pubDate>Wed, 21 Apr 2021 00:00:00 GMT</pubDate>
+      <category><![CDATA[DM Advice, DnD 5e, Mechanics, Philosophy]]></category>
+    </item>
+    <item>
+      <title><![CDATA[5e Spell Save & Damage Breakdown]]></title>
+      <description><![CDATA[Analyzing 477 5e spells surfaces class save trends plus damage and condition profiles, offering guidance for vetting spells, subclasses, and encounters.]]></description>
+      <link>https://optionalrule.com/2021/04/14/5e-spell-save-damage-breakdown/</link>
+      <guid isPermaLink="true">https://optionalrule.com/2021/04/14/5e-spell-save-damage-breakdown/</guid>
+      <pubDate>Thu, 15 Apr 2021 00:00:00 GMT</pubDate>
+      <category><![CDATA[DnD 5e, Mechanics, Analysis, DM Advice]]></category>
+    </item>
+    <item>
+      <title><![CDATA[Monster Resistance Totals in 5e]]></title>
+      <description><![CDATA[Data-driven look at monster weaknesses, resistances, immunities and save proficiencies by CR, with insights for spell choices and encounter design.]]></description>
+      <link>https://optionalrule.com/2021/04/06/monster-resistance-totals-in-5e/</link>
+      <guid isPermaLink="true">https://optionalrule.com/2021/04/06/monster-resistance-totals-in-5e/</guid>
+      <pubDate>Wed, 07 Apr 2021 00:00:00 GMT</pubDate>
+      <category><![CDATA[DnD 5e, Analysis, Mechanics, Monsters]]></category>
+    </item>
+    <item>
+      <title><![CDATA[The Language of Monsters in 5e]]></title>
+      <description><![CDATA[A parsed survey of 799 5e monster stat blocks reveals which tongues appear most, from Common and Draconic to Telepathy and obscure oddities.]]></description>
+      <link>https://optionalrule.com/2021/04/01/the-language-of-monsters-in-5e/</link>
+      <guid isPermaLink="true">https://optionalrule.com/2021/04/01/the-language-of-monsters-in-5e/</guid>
+      <pubDate>Fri, 02 Apr 2021 00:00:00 GMT</pubDate>
+      <category><![CDATA[DnD 5e, Monsters, Analysis, RPG Resources]]></category>
+    </item>
+    <item>
+      <title><![CDATA[Thinking Critically on Agency]]></title>
+      <description><![CDATA[An insightful discussion on player and GM agency, misconceptions, trade-offs, mechanics, and the role of trust in shaping richer TTRPG experiences.]]></description>
+      <link>https://optionalrule.com/2021/03/25/thinking-critically-on-agency/</link>
+      <guid isPermaLink="true">https://optionalrule.com/2021/03/25/thinking-critically-on-agency/</guid>
+      <pubDate>Fri, 26 Mar 2021 00:00:00 GMT</pubDate>
+      <category><![CDATA[DM Advice, Mechanics, Philosophy, Analysis]]></category>
+    </item>
+    <item>
+      <title><![CDATA[Being Ready for Surprise in 5e]]></title>
+      <description><![CDATA[Clarifies 5e surprise: no surprise round, treat unaware vs unready distinctly, use situational checks, roll initiative normally, and keep combat flowing.]]></description>
+      <link>https://optionalrule.com/2021/03/23/being-ready-for-surprise-in-5e/</link>
+      <guid isPermaLink="true">https://optionalrule.com/2021/03/23/being-ready-for-surprise-in-5e/</guid>
+      <pubDate>Wed, 24 Mar 2021 00:00:00 GMT</pubDate>
+      <category><![CDATA[DnD 5e, DM Advice, Mechanics, House Rules]]></category>
+    </item>
+    <item>
+      <title><![CDATA[Imagery & Art Resources for RPG Creators]]></title>
+      <description><![CDATA[Curated links to stock art, free repositories, portfolio sites, and licensing guides for using imagery in RPG projects, with 5e/WotC policy highlights]]></description>
+      <link>https://optionalrule.com/2021/03/09/imagery-art-resources-for-rpg-creators/</link>
+      <guid isPermaLink="true">https://optionalrule.com/2021/03/09/imagery-art-resources-for-rpg-creators/</guid>
+      <pubDate>Wed, 10 Mar 2021 00:00:00 GMT</pubDate>
+      <category><![CDATA[RPG Resources, DnD 5e]]></category>
+    </item>
+    <item>
+      <title><![CDATA[Mounted Combat in 5e]]></title>
+      <description><![CDATA[House rules for D&D 5e make mounted play dynamic: training levels, riding vs war mounts, shared initiative, bonding, bolting, bucking, and equipment.]]></description>
+      <link>https://optionalrule.com/2021/03/07/mounted-combat-in-5e/</link>
+      <guid isPermaLink="true">https://optionalrule.com/2021/03/07/mounted-combat-in-5e/</guid>
+      <pubDate>Mon, 08 Mar 2021 00:00:00 GMT</pubDate>
+      <category><![CDATA[DnD 5e, House Rules, Mechanics, DM Advice]]></category>
+    </item>
+    <item>
+      <title><![CDATA[5e Advancement Difficulties]]></title>
+      <description><![CDATA[Analysis of 5e XP pacing shows leveling slows then accelerates after 10th level, speeding tier 3–4 play and demanding adjusted encounter design and expectations.]]></description>
+      <link>https://optionalrule.com/2021/02/28/5e-advancement-difficulties/</link>
+      <guid isPermaLink="true">https://optionalrule.com/2021/02/28/5e-advancement-difficulties/</guid>
+      <pubDate>Mon, 01 Mar 2021 00:00:00 GMT</pubDate>
+      <category><![CDATA[DnD 5e, DM Advice, Analysis, Mechanics]]></category>
+    </item>
+    <item>
+      <title><![CDATA[The Zen of Awarding Experience for Roleplaying]]></title>
+      <description><![CDATA[A simple system scores social encounters by stakes and change, maps them to CR vs party level, and awards shared XP to encourage noncombat play.]]></description>
+      <link>https://optionalrule.com/2021/02/24/the-zen-of-awarding-experience-for-roleplaying/</link>
+      <guid isPermaLink="true">https://optionalrule.com/2021/02/24/the-zen-of-awarding-experience-for-roleplaying/</guid>
+      <pubDate>Thu, 25 Feb 2021 00:00:00 GMT</pubDate>
+      <category><![CDATA[DnD 5e, DM Advice, House Rules, Mechanics]]></category>
+    </item>
+    <item>
+      <title><![CDATA[Engaging Players with Magic Item Creation]]></title>
+      <description><![CDATA[Streamline 5e item crafting with recipe tracking, simple foraging and harvesting checks, and CR-themed major ingredients that create proactive hooks.]]></description>
+      <link>https://optionalrule.com/2021/02/16/engaging-players-with-magic-item-creation/</link>
+      <guid isPermaLink="true">https://optionalrule.com/2021/02/16/engaging-players-with-magic-item-creation/</guid>
+      <pubDate>Wed, 17 Feb 2021 00:00:00 GMT</pubDate>
+      <category><![CDATA[DnD 5e, DM Advice, House Rules, Mechanics]]></category>
+    </item>
+    <item>
+      <title><![CDATA[My Current 5e House Rules]]></title>
+      <description><![CDATA[A concise set of 5e tweaks and table conventions, from exhaustion and movement rulings to rest limits, feat bans, and session etiquette for smoother play.]]></description>
+      <link>https://optionalrule.com/2021/02/09/my-current-5e-house-rules/</link>
+      <guid isPermaLink="true">https://optionalrule.com/2021/02/09/my-current-5e-house-rules/</guid>
+      <pubDate>Wed, 10 Feb 2021 00:00:00 GMT</pubDate>
+      <category><![CDATA[House Rules, Mechanics, DM Advice, DnD 5e]]></category>
+    </item>
+    <item>
+      <title><![CDATA[Skill Challenges in 5e]]></title>
+      <description><![CDATA[Clarifies what skill challenges are, sheds 4e baggage, and offers pacing and resolution tools from the DMG and other systems to enrich 5e play.]]></description>
+      <link>https://optionalrule.com/2021/02/08/skill-challenges-in-5e/</link>
+      <guid isPermaLink="true">https://optionalrule.com/2021/02/08/skill-challenges-in-5e/</guid>
+      <pubDate>Tue, 09 Feb 2021 00:00:00 GMT</pubDate>
+      <category><![CDATA[DnD 5e, DM Advice, Mechanics, House Rules]]></category>
+    </item>
+    <item>
+      <title><![CDATA[Cavern Elevator Trap]]></title>
+      <description><![CDATA[CR 4 elevator boulder hazard for 5e triggers mid-shaft, challenging detection, lever logic, Dex saves, and Athletics with fall-risk stakes.]]></description>
+      <link>https://optionalrule.com/2021/02/04/cavern-elevator-trap/</link>
+      <guid isPermaLink="true">https://optionalrule.com/2021/02/04/cavern-elevator-trap/</guid>
+      <pubDate>Fri, 05 Feb 2021 00:00:00 GMT</pubDate>
+      <category><![CDATA[DnD 5e, DM Advice, Encounters, Mechanics]]></category>
+    </item>
+    <item>
+      <title><![CDATA[Safety & Consent RPG Checklist]]></title>
+      <description><![CDATA[Practical guidance and resources for using safety and consent tools in TTRPGs, from setting baselines to gathering player feedback for respectful play.]]></description>
+      <link>https://optionalrule.com/2021/01/28/safety-consent-rpg-checklist/</link>
+      <guid isPermaLink="true">https://optionalrule.com/2021/01/28/safety-consent-rpg-checklist/</guid>
+      <pubDate>Fri, 29 Jan 2021 00:00:00 GMT</pubDate>
+      <category><![CDATA[DM Advice, RPG Resources, Community, Philosophy]]></category>
+    </item>
+    <item>
+      <title><![CDATA[Managing DM Anxiety]]></title>
+      <description><![CDATA[Practical strategies for DMs to ease anxiety: seek professional support, reframe self-talk, name feelings, use bodywork and prep tools, and ask your table.]]></description>
+      <link>https://optionalrule.com/2021/01/26/managing-dm-anxiety/</link>
+      <guid isPermaLink="true">https://optionalrule.com/2021/01/26/managing-dm-anxiety/</guid>
+      <pubDate>Wed, 27 Jan 2021 00:00:00 GMT</pubDate>
+      <category><![CDATA[DM Advice, RPG Resources, Philosophy]]></category>
+    </item>
+    <item>
+      <title><![CDATA[Summary of 5e Alchemy Rules]]></title>
+      <description><![CDATA[Potion crafting guidelines with costs and times, Alchemist subclass tweaks, mundane item recipes, and streamlined foraging and harvesting house rules.]]></description>
+      <link>https://optionalrule.com/2021/01/23/summary-of-5e-alchemy-rules/</link>
+      <guid isPermaLink="true">https://optionalrule.com/2021/01/23/summary-of-5e-alchemy-rules/</guid>
+      <pubDate>Sun, 24 Jan 2021 00:00:00 GMT</pubDate>
+      <category><![CDATA[DnD 5e, Mechanics, House Rules, RPG Resources]]></category>
+    </item>
+    <item>
+      <title><![CDATA[Create Captivating Traps]]></title>
+      <description><![CDATA[Design traps with purpose to advance plot and energize combat, using environmental challenges, skill-driven complications, and scalable DCs.]]></description>
+      <link>https://optionalrule.com/2021/01/20/create-captivating-traps/</link>
+      <guid isPermaLink="true">https://optionalrule.com/2021/01/20/create-captivating-traps/</guid>
+      <pubDate>Thu, 21 Jan 2021 00:00:00 GMT</pubDate>
+      <category><![CDATA[DnD 5e, DM Advice, Encounters, Mechanics]]></category>
+    </item>
+    <item>
+      <title><![CDATA[Level Up Your Game with these RPGs]]></title>
+      <description><![CDATA[Explore a crowd-sourced list of RPG systems beyond DnD to expand your skills in narration, pacing, mechanics, and new approaches to play.]]></description>
+      <link>https://optionalrule.com/2021/01/18/level-up-your-game-with-these-rpgs/</link>
+      <guid isPermaLink="true">https://optionalrule.com/2021/01/18/level-up-your-game-with-these-rpgs/</guid>
+      <pubDate>Tue, 19 Jan 2021 00:00:00 GMT</pubDate>
+      <category><![CDATA[RPG Resources, DM Advice, Analysis, Community]]></category>
+    </item>
+    <item>
+      <title><![CDATA[Thoughts on the First Issue of Arcadia]]></title>
+      <description><![CDATA[A practical look at how this 5e magazine adds a drop-in encounter, a sorcerer subclass, mounted combat options, and fresh celestials, plus tooling quibbles.]]></description>
+      <link>https://optionalrule.com/2021/01/16/thoughts-on-the-first-issue-of-arcadia/</link>
+      <guid isPermaLink="true">https://optionalrule.com/2021/01/16/thoughts-on-the-first-issue-of-arcadia/</guid>
+      <pubDate>Sun, 17 Jan 2021 00:00:00 GMT</pubDate>
+      <category><![CDATA[DnD 5e, RPG Resources, DM Advice, Mechanics]]></category>
+    </item>
+    <item>
+      <title><![CDATA[RotF Remix: Foaming Mugs]]></title>
+      <description><![CDATA[Remix this Icewind Dale side quest with an inside-job twist, a yeti-lured ambush, goblin negotiations, a haunted locale, and a secret crime-boss stinger.]]></description>
+      <link>https://optionalrule.com/2021/01/11/rotf-remix-foaming-mugs/</link>
+      <guid isPermaLink="true">https://optionalrule.com/2021/01/11/rotf-remix-foaming-mugs/</guid>
+      <pubDate>Tue, 12 Jan 2021 00:00:00 GMT</pubDate>
+      <category><![CDATA[DnD 5e, Rime of the Frostmaiden, Encounters, DM Advice]]></category>
+    </item>
+    <item>
+      <title><![CDATA[Icewind Dale NPC: Arnold Beitz]]></title>
+      <description><![CDATA[Elitist Waterdeep-educated magnate in Bryn Shander runs salvage and crimes for the Chardalyn Syndicate, sabotaging rivals with goblins to seize the speakership.]]></description>
+      <link>https://optionalrule.com/2021/01/10/icewind-dale-npc-arnold-beitz/</link>
+      <guid isPermaLink="true">https://optionalrule.com/2021/01/10/icewind-dale-npc-arnold-beitz/</guid>
+      <pubDate>Mon, 11 Jan 2021 00:00:00 GMT</pubDate>
+      <category><![CDATA[Rime of the Frostmaiden, DnD 5e, RPG Resources, Lore]]></category>
+    </item>
+    <item>
+      <title><![CDATA[Be Friends with your Roleplaying Group]]></title>
+      <description><![CDATA[RPGs ask for vulnerability, so invest in real friendship with players and your DM—chat, bond, and see the people behind characters to strengthen the table.]]></description>
+      <link>https://optionalrule.com/2021/01/07/be-friends-with-your-roleplaying-group/</link>
+      <guid isPermaLink="true">https://optionalrule.com/2021/01/07/be-friends-with-your-roleplaying-group/</guid>
+      <pubDate>Fri, 08 Jan 2021 00:00:00 GMT</pubDate>
+      <category><![CDATA[Community, DM Advice, Philosophy]]></category>
+    </item>
+    <item>
+      <title><![CDATA[Simulating Sadness: Great Weapon Fighter Damage]]></title>
+      <description><![CDATA[Analyzes GWF and Champion crits in 5e using math and simulations, finding modest damage gains and evaluating common house rules.]]></description>
+      <link>https://optionalrule.com/2021/01/06/simulating-great-weapon-fighter-damage/</link>
+      <guid isPermaLink="true">https://optionalrule.com/2021/01/06/simulating-great-weapon-fighter-damage/</guid>
+      <pubDate>Thu, 07 Jan 2021 00:00:00 GMT</pubDate>
+      <category><![CDATA[DnD 5e, Mechanics, Analysis, House Rules]]></category>
+    </item>
+    <item>
+      <title><![CDATA[RotF Remix: Heart of Winter Supernatural Regions]]></title>
+      <description><![CDATA[Introduce volatile planar cold zones in Icewind Dale with triggers and a d100 table of chilling effects to reshape rests, spells, and encounters.]]></description>
+      <link>https://optionalrule.com/2021/01/03/rotf-remix-heart-of-winter-supernatural-regions/</link>
+      <guid isPermaLink="true">https://optionalrule.com/2021/01/03/rotf-remix-heart-of-winter-supernatural-regions/</guid>
+      <pubDate>Mon, 04 Jan 2021 00:00:00 GMT</pubDate>
+      <category><![CDATA[DnD 5e, Rime of the Frostmaiden, Mechanics, RPG Resources]]></category>
+    </item>
+    <item>
+      <title><![CDATA[RotF Remix: The Far North & Ten-Towns]]></title>
+      <description><![CDATA[Remix adds Icewind Dale politics and Duergar intrigue, caravan hooks, harsher travel and survival rules, and darker Auril sacrifices for 5e.]]></description>
+      <link>https://optionalrule.com/2021/01/03/rotf-remix-the-far-north-ten-towns/</link>
+      <guid isPermaLink="true">https://optionalrule.com/2021/01/03/rotf-remix-the-far-north-ten-towns/</guid>
+      <pubDate>Mon, 04 Jan 2021 00:00:00 GMT</pubDate>
+      <category><![CDATA[Rime of the Frostmaiden, DnD 5e, House Rules, DM Advice]]></category>
+    </item>
+    <item>
+      <title><![CDATA[Progressive Failures and Rising Tension in 5th Edition]]></title>
+      <description><![CDATA[Proposes a rule-of-three progressive failure framework for 5e skill checks to build tension, preserve agency, and avoid swingy all-or-nothing outcomes.]]></description>
+      <link>https://optionalrule.com/2021/01/02/progressive-failures-and-rising-tension-in-5th-edition/</link>
+      <guid isPermaLink="true">https://optionalrule.com/2021/01/02/progressive-failures-and-rising-tension-in-5th-edition/</guid>
+      <pubDate>Sun, 03 Jan 2021 00:00:00 GMT</pubDate>
+      <category><![CDATA[DnD 5e, DM Advice, Mechanics, House Rules]]></category>
+    </item>
+    <item>
+      <title><![CDATA[Tools to Affect Rolls in D&D]]></title>
+      <description><![CDATA[Compares 5e roll modifiers—add vs replace—ranked for normal and crittable checks, with simulations showing Elven Accuracy, advantage, cover, and luck impacts.]]></description>
+      <link>https://optionalrule.com/2021/01/01/tools-for-effecting-rolls-in-dd/</link>
+      <guid isPermaLink="true">https://optionalrule.com/2021/01/01/tools-for-effecting-rolls-in-dd/</guid>
+      <pubDate>Sat, 02 Jan 2021 00:00:00 GMT</pubDate>
+      <category><![CDATA[DnD 5e, Mechanics, Analysis, House Rules]]></category>
+    </item>
+    <item>
+      <title><![CDATA[RotF Remix: Lake Monster]]></title>
+      <description><![CDATA[A Frostmaiden quest remix: an awakened plesiosaur coerced by frost druids menaces Bremen, with investigation hooks, parley options, and a cave assault.]]></description>
+      <link>https://optionalrule.com/2020/12/23/rotf-remix-lake-monster/</link>
+      <guid isPermaLink="true">https://optionalrule.com/2020/12/23/rotf-remix-lake-monster/</guid>
+      <pubDate>Thu, 24 Dec 2020 00:00:00 GMT</pubDate>
+      <category><![CDATA[DnD 5e, Rime of the Frostmaiden, Encounters, DM Advice]]></category>
+    </item>
+    <item>
+      <title><![CDATA[Thrilling Heroics Rules for D&D 5e]]></title>
+      <description><![CDATA[Add swashbuckling flair to 5e with ad hoc stunts that trade risk for reward, using clear DCs, balanced effects, and examples to guide fair play.]]></description>
+      <link>https://optionalrule.com/2020/12/21/thrilling-heroics-rules-for-dd-5e/</link>
+      <guid isPermaLink="true">https://optionalrule.com/2020/12/21/thrilling-heroics-rules-for-dd-5e/</guid>
+      <pubDate>Tue, 22 Dec 2020 00:00:00 GMT</pubDate>
+      <category><![CDATA[DnD 5e, House Rules, DM Advice, Mechanics]]></category>
+    </item>
+    <item>
+      <title><![CDATA[No, racism is not required in a fantasy world]]></title>
+      <description><![CDATA[Using safety tools and rejecting racial essentialism, we help new D&D players see that engaging, respectful fantasy play works without bigotry.]]></description>
+      <link>https://optionalrule.com/2020/12/20/no-racism-is-not-required-in-a-fantasy-world/</link>
+      <guid isPermaLink="true">https://optionalrule.com/2020/12/20/no-racism-is-not-required-in-a-fantasy-world/</guid>
+      <pubDate>Mon, 21 Dec 2020 00:00:00 GMT</pubDate>
+      <category><![CDATA[DnD 5e, DM Advice, Community, Philosophy]]></category>
+    </item>
+    <item>
+      <title><![CDATA[Rime of the Frostmaiden Remixes]]></title>
+      <description><![CDATA[A DM shares plans for a series of practical remixes, showing how to tweak Icewind Dale’s 5e adventure for pacing, balance, and table needs.]]></description>
+      <link>https://optionalrule.com/2020/12/08/rime-of-the-frostmaiden-remixes/</link>
+      <guid isPermaLink="true">https://optionalrule.com/2020/12/08/rime-of-the-frostmaiden-remixes/</guid>
+      <pubDate>Wed, 09 Dec 2020 00:00:00 GMT</pubDate>
+      <category><![CDATA[DnD 5e, DM Advice, Rime of the Frostmaiden, RPG Resources]]></category>
+    </item>
+    <item>
+      <title><![CDATA[Character Voices Reference]]></title>
+      <description><![CDATA[A d100 table of vocal descriptors to inspire varied NPC portrayals and help DMs note and reuse consistent speech styles during play.]]></description>
+      <link>https://optionalrule.com/2020/11/30/character-voices-reference/</link>
+      <guid isPermaLink="true">https://optionalrule.com/2020/11/30/character-voices-reference/</guid>
+      <pubDate>Tue, 01 Dec 2020 00:00:00 GMT</pubDate>
+      <category><![CDATA[RPG Resources, DM Advice]]></category>
+    </item>
+    <item>
+      <title><![CDATA[Icewind Dale NPC: Beldora Nine-Dogs]]></title>
+      <description><![CDATA[A stoic, scarred sled dog trainer and secret Harper leader in Bryn Shander, she speaks little, uses dogs and messengers, and fiercely shields her agents.]]></description>
+      <link>https://optionalrule.com/2020/11/29/icewind-dale-npc-beldora-nine-dogs/</link>
+      <guid isPermaLink="true">https://optionalrule.com/2020/11/29/icewind-dale-npc-beldora-nine-dogs/</guid>
+      <pubDate>Mon, 30 Nov 2020 00:00:00 GMT</pubDate>
+      <category><![CDATA[DnD 5e, RPG Resources, Rime of the Frostmaiden, Lore]]></category>
+    </item>
+    <item>
+      <title><![CDATA[Winter Camp Map]]></title>
+      <description><![CDATA[Snowy campsite battlemap for Rime of the Frostmaiden: a 25x25 grid at 5 ft per 100 px, ideal for random encounters and quick drop-in play.]]></description>
+      <link>https://optionalrule.com/2020/11/27/winter-camp-map/</link>
+      <guid isPermaLink="true">https://optionalrule.com/2020/11/27/winter-camp-map/</guid>
+      <pubDate>Sat, 28 Nov 2020 00:00:00 GMT</pubDate>
+      <category><![CDATA[Rime of the Frostmaiden, DnD 5e, RPG Resources, Encounters]]></category>
+    </item>
+    <item>
+      <title><![CDATA[RotF Remix:  The Inkwell Taphouse, Termalaine]]></title>
+      <description><![CDATA[Decrepit roadside brewery turned ad hoc library battlemap, with a damp, coughing halfling keeper and research granting advantage on local lore checks.]]></description>
+      <link>https://optionalrule.com/2020/11/20/rotf-remix-the-inkwell-taphouse-termalaine/</link>
+      <guid isPermaLink="true">https://optionalrule.com/2020/11/20/rotf-remix-the-inkwell-taphouse-termalaine/</guid>
+      <pubDate>Sat, 21 Nov 2020 00:00:00 GMT</pubDate>
+      <category><![CDATA[DnD 5e, RPG Resources, Rime of the Frostmaiden, Lore]]></category>
+    </item>
+    <item>
+      <title><![CDATA[Tresendar Manor Above Ground]]></title>
+      <description><![CDATA[A large hilltop ruined manor battlemap for a prequel one-shot to Lost Mines of Phandelver, created in DungeonDraft and sized for extended play.]]></description>
+      <link>https://optionalrule.com/2020/11/02/tresendar-manor-above-ground/</link>
+      <guid isPermaLink="true">https://optionalrule.com/2020/11/02/tresendar-manor-above-ground/</guid>
+      <pubDate>Tue, 03 Nov 2020 00:00:00 GMT</pubDate>
+      <category><![CDATA[DnD 5e, RPG Resources, Encounters]]></category>
+    </item>
+    <item>
+      <title><![CDATA[RotF Remix: Houlen’s Tomb]]></title>
+      <description><![CDATA[Custom DungeonDraft battlemap for Rime of the Frostmaiden: a Horizon Walker's tomb besieged by a barbarian cult with sentries, a camp, and hidden leaders.]]></description>
+      <link>https://optionalrule.com/2020/10/23/rotf-remix-houlens-tomb/</link>
+      <guid isPermaLink="true">https://optionalrule.com/2020/10/23/rotf-remix-houlens-tomb/</guid>
+      <pubDate>Sat, 24 Oct 2020 00:00:00 GMT</pubDate>
+      <category><![CDATA[Rime of the Frostmaiden, RPG Resources, Encounters, DnD 5e]]></category>
+    </item>
+  </channel>
+</rss>
