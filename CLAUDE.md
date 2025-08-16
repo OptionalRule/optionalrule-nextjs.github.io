@@ -4,76 +4,101 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-This is a Next.js 15 project intended to become a static blog site for GitHub Pages. The project is currently in setup phase with the goal of implementing a complete MDX-based blog system.
+This is a Next.js 15 static blog site for Optional Rule Games that deploys to GitHub Pages. The project uses App Router with TypeScript and exports as a static site. Content is managed through MDX files with gray-matter frontmatter processing.
 
 ## Development Commands
 
-- `npm run dev` - Start development server on http://localhost:3000
-- `npm run build` - Build production version
-- `npm run start` - Start production server
+- `npm run dev` - Start development server with hot reloading (includes draft posts)
+- `npm run build` - Build static site for production (excludes draft posts)
+- `npm run start` - Start production server  
 - `npm run lint` - Run ESLint for code quality checks
+- `npm run generate-search-index` - Generate search index from all posts
+- `npm run find-empty-links` - Scan content for broken markdown links
+- `npm run create-post` - Create new blog post with frontmatter template
 
-## Project Architecture
+## Architecture Overview
 
-### Current State
-- Fresh Next.js 15 installation with App Router
-- TypeScript configuration with path aliases (`@/*` -> `./src/*`)
-- TailwindCSS v4 for styling with inline theme configuration
-- ESLint with Next.js and TypeScript rules
+### Static Site Generation
+The site uses Next.js static export (`output: 'export'`) configured in `next.config.ts`. All routes are pre-rendered at build time for GitHub Pages deployment. The build process runs through GitHub Actions using `.github/workflows/deploy.yml`.
 
-### Planned Architecture (from CodeInstructions.md)
-The project will implement a static blog with these key components:
+### Content Management System
+- **Content Location**: MDX files stored in `content/posts/` and `content/pages/`
+- **Processing Pipeline**: `src/lib/content.ts` handles MDX parsing with gray-matter for frontmatter
+- **URL Structure**: Posts follow `/:year/:month/:day/:slug/` pattern with trailing slashes
+- **Draft System**: Posts with `draft: true` frontmatter are excluded from production builds
 
-**URL Structure:**
-- Posts: `/:year/:month/:day/:slug/` (with trailing slashes)
-- Home: `/` (paginated post list)
-- Pagination: `/page/:num/`
-- Static pages: `/about/`, `/contact/`
-- Tag pages: `/tag/:tagname/`
+### Route Architecture  
+The App Router uses route groups for organization:
+- `(content)` group: Blog posts, pagination, tags, search
+- `(pages)` group: Static pages like About
+- Dynamic routes: `[year]/[month]/[day]/[slug]` for posts, `[tag]` for tag pages
 
-**Content Management:**
-- MDX for blog posts and static pages
-- Content stored outside `src/` directory
-- Frontmatter metadata: title, date, excerpt, tags, featured image
-- Automatic excerpt generation and reading time calculation
+### Search Implementation
+- **Client-side search** using Fuse.js for fuzzy matching
+- **Search index generation** creates JSON index from all posts during build
+- **Components**: `SearchInput` and `SearchResults` with debounced typing
+- **URL integration**: Search queries reflected in URL parameters
 
-**Technical Requirements:**
-- Static Site Generation (SSG) with `next export`
-- Export to `out/` directory for GitHub Pages
-- RSS feed and sitemap generation
-- SEO optimization with proper metadata
-- Mobile-responsive design
+### Styling System
+- **TailwindCSS v4** with inline configuration in `globals.css`
+- **Geist fonts** (sans and mono) loaded via `next/font/google`
+- **Dark mode support** through CSS custom properties and `prefers-color-scheme`
 
-### File Structure
+## Content Structure
+
+### Post Frontmatter Requirements
+```yaml
+slug: post-slug
+title: Post Title
+date: 'YYYY-MM-DD'
+excerpt: Brief description
+tags: [tag1, tag2]
+featured_image: /images/image.jpg
+draft: false
+showToc: false
 ```
-src/
-  app/                  # App Router pages and layouts
-    layout.tsx         # Root layout with Geist fonts
-    page.tsx           # Home page (currently default Next.js)
-    globals.css        # Global styles with TailwindCSS
-```
 
-## Styling System
+### Content Processing
+- **Reading time calculation** automatically added to all posts
+- **Heading extraction** for table of contents generation
+- **Excerpt generation** from content if not provided in frontmatter
+- **Tag normalization** and slug generation for tag pages
 
-- **TailwindCSS v4** with inline theme configuration
-- **CSS Custom Properties** for theming (background, foreground colors)
-- **Geist Fonts** (sans and mono) via next/font/google
-- **Dark mode support** via prefers-color-scheme media query
+## TypeScript Configuration
 
-## Key Implementation Notes
+### Module Resolution
+- **Path aliases**: `@/*` maps to `./src/*` for clean imports
+- **ESM scripts**: Scripts use `node --import tsx/esm` for TypeScript execution
+- **Type definitions**: Comprehensive types in `src/lib/types.ts`
 
-1. **Import Alias**: Use `@/*` for imports from `src/` directory
-2. **Static Export**: Will need to configure `next.config.ts` for static export to GitHub Pages
-3. **Content Location**: Blog content should be stored outside `src/` directory per requirements
-4. **SEO Focus**: Implement comprehensive metadata, Open Graph, and Twitter cards
-5. **Performance**: Focus on fast static generation and loading times
+### Search Index Types
+The search system uses strictly typed interfaces for `SearchIndexItem`, `SearchResult`, and `SearchOptions` with runtime validation during index loading.
 
-## Next Steps for Development
+## Scripts and Utilities
 
-Based on CodeInstructions.md, the main development tasks ahead are:
-1. Set up MDX processing and content management
-2. Implement blog post listing and detail pages
-3. Add pagination and tag filtering
-4. Configure static export for GitHub Pages
-5. Implement SEO metadata and feed generation
-6. Create responsive design with TailwindCSS
+### Content Management Scripts
+All scripts use ESM loader pattern and are located in `scripts/` directory:
+- **Search index generation**: Processes all MDX files into searchable JSON
+- **Empty link detection**: Scans for broken markdown link patterns
+- **Post creation**: Interactive post scaffold with proper frontmatter
+
+### Build Process
+1. Generate search index from all posts
+2. Next.js static build with route pre-rendering  
+3. Export to `out/` directory for GitHub Pages
+4. Automatic deployment via GitHub Actions
+
+## Key Configuration Files
+
+- **Site config**: `src/config/site.ts` contains metadata, author info, analytics
+- **Content processing**: `src/lib/content.ts` handles MDX parsing and post management
+- **Route layouts**: App Router layouts in `src/app/layout.tsx` with font loading
+- **Static export**: `next.config.ts` configures GitHub Pages deployment
+
+## Important Implementation Notes
+
+- **Content outside src/**: MDX files in `content/` directory separate from Next.js source
+- **Trailing slashes required**: All routes end with `/` for GitHub Pages compatibility  
+- **Static-only**: No server-side rendering or API routes in production
+- **Image optimization disabled**: Required for static export to GitHub Pages
+- **Search runs client-side**: No server dependency for search functionality
