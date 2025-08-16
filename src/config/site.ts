@@ -2,7 +2,7 @@ export const siteConfig = {
   name: 'Optional Rule',
   title: 'Optional Rule',
   description: 'A modern blog about TTRPG and RPG design.',
-  url: 'https://optionalrule-nextjs.github.io',
+  url: 'https://www.optionalrule.com',
   author: {
     name: 'Scott Turnbull',
     email: 'scott@optionalrule.com',
