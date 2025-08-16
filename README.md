@@ -65,6 +65,41 @@ node scripts/tag-and-excerpt.mjs --api-key MY_OPENAI_KEY
 
 This site is setup to run under github pages.  The build is automatic and run from `.github/workflows/deploy.yml`
 
+## Site Search
+
+Search is implemented client side using [Fuse.js](https://www.fusejs.io/).  
+
+1. Fuse.js Integration - Added fuzzy search library for client-side search
+2. Search Index Generation - Build script that creates a JSON index from all blog posts
+3. Search Components - SearchInput and SearchResults components with proper styling
+4. Search Page - Dedicated /search route with full search functionality
+5. Navigation Integration - Added search icon to header navigation
+6. Build Integration - Search index generates automatically before builds
+
+Key Features:
+
+- Fuzzy Search - Handles typos and partial matches
+- Real-time Results - Search as you type with debouncing
+- Keyboard Shortcuts - ⌘K or Ctrl+K to focus search
+- Responsive Design - Matches existing site styling
+- URL Sharing - Search queries are reflected in URL parameters
+- Performance - Pre-built index loads once, instant search results
+- SEO Friendly - Static generation compatible
+
+Files Created/Modified:
+
+- Added search index generation script
+- Created SearchInput and SearchResults components
+- Added /search page route
+- Updated header navigation with search icon
+- Modified build process to generate search index
+
+The search functionality is now ready to use! The development server should be running, and you can test the search by:
+
+1. Clicking the search icon in the header
+2. Using the keyboard shortcut ⌘K
+3. Navigating directly to /search
+
 ## NextJS Info
 
 To learn more about Next.js, take a look at the following resources:
