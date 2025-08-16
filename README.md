@@ -61,6 +61,10 @@ export MY_OPENAI_KEY="sk-xxx"
 node scripts/tag-and-excerpt.mjs --api-key MY_OPENAI_KEY
 ```
 
+## Github Pages
+
+This site is setup to run under github pages.  The build is automatic and run from `.github/workflows/deploy.yml`
+
 ## NextJS Info
 
 To learn more about Next.js, take a look at the following resources:
