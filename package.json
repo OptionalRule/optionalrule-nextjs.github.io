@@ -11,7 +11,6 @@
     "build-storybook": "storybook build",
     "generate-search-index": "ts-node --project scripts/tsconfig.json scripts/generate-search-index.ts",
     "create-post": "ts-node --project scripts/tsconfig.json scripts/create-post.ts",
-    "import-jekyll-posts": "ts-node --project scripts/tsconfig.json scripts/import-jekyll-posts.ts",
     "replace-default-images": "ts-node --project scripts/tsconfig.json scripts/replace-default-images.ts",
     "download-external-images": "ts-node --project scripts/tsconfig.json scripts/download-external-images.ts"
   },

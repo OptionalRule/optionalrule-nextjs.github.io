@@ -8,7 +8,21 @@ The implementation builds a statis site that is served from GitHub Pages.
 
 To setup this app locall just clone the git repository and type `npm install` to install dependencies.  
 
-## Custom and Important npm commands
+## Useful Commands
+
+### `npm run build`
+
+Builds the static site, excluding any posts marked as drafts. 
+
+### `npm run lint`
+
+Runs strict linter over code as an error check.
+
+### `npm run dev`
+
+Runs the development server with hot reloading, including draft posts for preview.
+
+## Custom Scriopts
 
 I have created a number of custom scripts for blog management that run from the command line.  
 
@@ -24,31 +38,6 @@ Imports posts from a Jekyll blog, converting the frontmatter and content to be c
 - Updating image paths
 - Transforming Jekyll-specific frontmatter fields
 - Preserving excerpts and metadata
-
-### `npm run preview-images`
-
-Shows a preview of all posts with external featured images before downloading them. Displays:
-
-- Count of posts with external vs. local images
-- List of specific posts and their external image URLs
-- Summary statistics for planning the download process
-
-### `npm run download-images`
-
-Downloads external featured images to local storage and updates post frontmatter:
-
-- Downloads images to `/public/images/third_party/`
-- Updates `featured_image` property to local path
-- Uses fallback images if download fails
-- Handles HTTP/HTTPS URLs with error logging
-
-### `npm run build`
-
-Builds the static site, excluding any posts marked as drafts. The output is ready for deployment to GitHub Pages.
-
-### `npm run dev`
-
-Runs the development server with hot reloading, including draft posts for preview.
 
 ### `node scripts/tag-and-excerpt`
 

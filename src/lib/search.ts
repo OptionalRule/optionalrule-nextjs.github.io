@@ -1,10 +1,19 @@
-import Fuse from 'fuse.js';
-import { SearchIndexItem } from './build-search-index';
+import Fuse, { type FuseResult } from 'fuse.js';
+
+export interface SearchIndexItem {
+  slug: string;
+  title: string;
+  excerpt: string;
+  tags: string[];
+  content: string;
+  date: string;
+  readingTime: number;
+}
 
 export interface SearchResult {
   item: SearchIndexItem;
   score?: number;
-  matches?: Fuse.FuseResultMatch[];
+  matches?: FuseResult<SearchIndexItem>['matches'];
 }
 
 export interface SearchOptions {

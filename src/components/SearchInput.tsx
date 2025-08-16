@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 
 interface SearchInputProps {
@@ -30,7 +30,7 @@ export function SearchInput({
     if (urlQuery !== query) {
       setQuery(urlQuery);
     }
-  }, [searchParams]); // Remove 'query' from dependencies to prevent loops
+  }, [searchParams, query]);
 
   // Handle input changes with debouncing
   useEffect(() => {
@@ -55,7 +55,7 @@ export function SearchInput({
     setQuery(e.target.value);
   };
 
-  const handleClear = () => {
+  const handleClear = useCallback(() => {
     setQuery('');
     inputRef.current?.focus();
     // Update URL to remove query parameter
@@ -63,7 +63,7 @@ export function SearchInput({
     if (onSearch) {
       onSearch('');
     }
-  };
+  }, [router, onSearch]);
 
   // Keyboard shortcuts
   useEffect(() => {
@@ -81,7 +81,7 @@ export function SearchInput({
 
     document.addEventListener('keydown', handleKeyDown);
     return () => document.removeEventListener('keydown', handleKeyDown);
-  }, [isFocused]);
+  }, [isFocused, handleClear]);
 
   return (
     <form onSubmit={handleSubmit} className={`relative ${className}`}>
