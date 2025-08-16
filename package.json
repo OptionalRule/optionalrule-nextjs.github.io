@@ -9,10 +9,10 @@
     "lint": "next lint",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build",
-    "generate-search-index": "ts-node --project scripts/tsconfig.json scripts/generate-search-index.ts",
-    "create-post": "ts-node --project scripts/tsconfig.json scripts/create-post.ts",
-    "replace-default-images": "ts-node --project scripts/tsconfig.json scripts/replace-default-images.ts",
-    "download-external-images": "ts-node --project scripts/tsconfig.json scripts/download-external-images.ts"
+    "generate-search-index": "node --import tsx/esm scripts/generate-search-index.ts",
+    "create-post": "node --import tsx/esm scripts/create-post.ts",
+    "replace-default-images": "node --import tsx/esm scripts/replace-default-images.ts",
+    "download-external-images": "node --import tsx/esm scripts/download-external-images.ts"
   },
   "dependencies": {
     "@mdx-js/loader": "^3.1.0",
@@ -54,6 +54,7 @@
     "tailwindcss": "^4",
     "ts-node": "^10.9.2",
     "tsconfig-paths": "^4.2.0",
+    "tsx": "^4.0.0",
     "typescript": "^5",
     "vitest": "^3.2.4"
   }
