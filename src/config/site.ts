@@ -29,6 +29,9 @@ export const siteConfig = {
   verification: {
     google: '',
     bing: '',
+  },
+  analytics: {
+    googleAnalyticsId: 'G-RXH8EZ5E8J',
   }
 } as const;
 
