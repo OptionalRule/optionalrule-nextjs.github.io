@@ -222,8 +222,10 @@ export const mdxComponents: MDXComponents = {
   ),
 
   // Images with centering and responsive styling
+  // Using img instead of next/image for static export compatibility
   img: ({ src, alt, ...props }) => (
     <div className="flex justify-center my-6">
+      {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
         src={src}
         alt={alt}
