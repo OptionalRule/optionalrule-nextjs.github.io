@@ -106,6 +106,10 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  // Build CSS variable overrides for light/dark from siteConfig.theme
+  const light = siteConfig.theme?.light;
+  const dark = siteConfig.theme?.dark;
+  const themeCss = light && dark ? `:root{--background:${light.background};--foreground:${light.foreground};--surface:${light.surface};--card:${light.card};--muted:${light.muted};--muted-2:${light.muted2};--border:${light.border};--surface-hover:${light.surfaceHover};--link:${light.link};--link-hover:${light.linkHover};--chip-bg:${light.chipBg};--chip-text:${light.chipText};--highlight-bg:${light.highlightBg};color-scheme:light}.dark{--background:${dark.background};--foreground:${dark.foreground};--surface:${dark.surface};--card:${dark.card};--muted:${dark.muted};--muted-2:${dark.muted2};--border:${dark.border};--surface-hover:${dark.surfaceHover};--link:${dark.link};--link-hover:${dark.linkHover};--chip-bg:${dark.chipBg};--chip-text:${dark.chipText};--highlight-bg:${dark.highlightBg};color-scheme:dark}` : '';
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
@@ -121,6 +125,9 @@ export default function RootLayout({
 })();`,
           }}
         />
+        {themeCss && (
+          <style id="theme-vars" dangerouslySetInnerHTML={{ __html: themeCss }} />
+        )}
         <meta name="msapplication-config" content="/favicon/browserconfig.xml" />
       </head>
       <body
