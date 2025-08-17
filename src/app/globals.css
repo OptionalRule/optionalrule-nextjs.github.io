@@ -3,6 +3,20 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
+  /* Ensure user-agent forms, scrollbars, etc., align with light by default */
+  color-scheme: light;
+  /* Theming tokens for class-based dark mode */
+  --surface: #f1f5f9; /* slate-100 */
+  --card: #fafafa; /* zinc-50 */
+  --muted: #4b5563; /* gray-700 */
+  --muted-2: #6b7280; /* gray-600 */
+  --border: #e5e7eb; /* gray-200 */
+  --surface-hover: #f3f4f6; /* gray-100 */
+  --link: #2563eb; /* blue-600 */
+  --link-hover: #1e40af; /* blue-800 */
+  --chip-bg: #f3f4f6; /* gray-100 */
+  --chip-text: #374151; /* gray-700 */
+  --highlight-bg: #fde68a; /* yellow-200 */
 }
 
 @theme inline {
@@ -12,17 +26,27 @@
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+/* Class-based dark mode overrides; toggled via .dark on <html> */
+.dark {
+  --background: #0a0a0a;
+  --foreground: #ededed;
+  color-scheme: dark;
+  --surface: #111827; /* gray-900 */
+  --card: #1f2937; /* gray-800 */
+  --muted: #d1d5db; /* gray-300 */
+  --muted-2: #9ca3af; /* gray-400 */
+  --border: #374151; /* gray-700 */
+  --surface-hover: #1f2937; /* gray-800 */
+  --link: #60a5fa; /* blue-400 */
+  --link-hover: #bfdbfe; /* blue-200 */
+  --chip-bg: #374151; /* gray-700 */
+  --chip-text: #d1d5db; /* gray-300 */
+  --highlight-bg: #854d0e; /* yellow-800 */
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
 }
 
 /* Smooth scrolling for anchor links */
@@ -59,10 +83,8 @@ html {
 }
 
 /* Dark mode table of contents */
-@media (prefers-color-scheme: dark) {
-  .toc a:hover {
-    background-color: rgba(59, 130, 246, 0.2);
-  }
+.dark .toc a:hover {
+  background-color: rgba(59, 130, 246, 0.2);
 }
 
 /* Smooth transitions for collapsible content */

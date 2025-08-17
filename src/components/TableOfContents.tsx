@@ -29,7 +29,7 @@ export default function TableOfContents({
     <nav className={`toc ${className}`}>
       <button
         onClick={() => setIsExpanded(!isExpanded)}
-        className="flex items-center justify-between w-full text-left text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4 p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+        className="flex items-center justify-between w-full text-left text-lg font-semibold text-[var(--foreground)] mb-4 p-2 rounded hover:bg-[var(--surface-hover)] transition-colors"
         aria-expanded={isExpanded}
         aria-controls="toc-content"
       >
@@ -58,13 +58,13 @@ export default function TableOfContents({
                 href={`#${heading.id}`}
                 className={`
                   block text-sm transition-colors
-                  ${heading.level === 1 ? 'font-semibold text-gray-900 dark:text-gray-100' : ''}
-                  ${heading.level === 2 ? 'font-medium text-gray-800 dark:text-gray-200 ml-4' : ''}
-                  ${heading.level === 3 ? 'text-gray-700 dark:text-gray-300 ml-8' : ''}
-                  ${heading.level === 4 ? 'text-gray-600 dark:text-gray-400 ml-12' : ''}
-                  ${heading.level === 5 ? 'text-gray-500 dark:text-gray-500 ml-16' : ''}
-                  ${heading.level === 6 ? 'text-gray-400 dark:text-gray-600 ml-20' : ''}
-                  hover:text-blue-600 dark:hover:text-blue-400
+                  ${heading.level === 1 ? 'font-semibold text-[var(--foreground)]' : ''}
+                  ${heading.level === 2 ? 'font-medium text-[var(--foreground)] ml-4' : ''}
+                  ${heading.level === 3 ? 'text-[var(--muted)] ml-8' : ''}
+                  ${heading.level === 4 ? 'text-[var(--muted-2)] ml-12' : ''}
+                  ${heading.level === 5 ? 'text-[var(--muted-2)] ml-16' : ''}
+                  ${heading.level === 6 ? 'text-[var(--muted-2)] ml-20' : ''}
+                  hover:text-[var(--link)]
                 `}
               >
                 {heading.text}

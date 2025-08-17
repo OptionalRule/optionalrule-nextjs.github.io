@@ -44,7 +44,7 @@ The App Router uses route groups for organization:
 ### Styling System
 - **TailwindCSS v4** with inline configuration in `globals.css`
 - **Geist fonts** (sans and mono) loaded via `next/font/google`
-- **Dark mode support** through CSS custom properties and `prefers-color-scheme`
+- **Theme toggle** using class-based dark mode (`.dark` on `<html>`) with persistence
 
 ## Content Structure
 
@@ -104,3 +104,11 @@ All scripts use ESM loader pattern and are located in `scripts/` directory:
 - **Static-only**: No server-side rendering or API routes in production
 - **Image optimization disabled**: Required for static export to GitHub Pages
 - **Search runs client-side**: No server dependency for search functionality
+
+## Theme Toggle
+
+- Behavior: A toggle in the header switches between Light/Dark and persists in `localStorage` under key `theme` (`light` | `dark`).
+- No flash on load: An inline script in `src/app/layout.tsx` applies `.dark` to `<html>` before React hydrates, based on `localStorage` or system preference fallback.
+- Tailwind v4: Dark mode is class-based via CSS. `:root` defines light tokens and `.dark` overrides tokens and sets `color-scheme: dark`.
+- Reset preference: Clear local storage key `theme` (DevTools > Application > Local Storage) or run `localStorage.removeItem('theme')` in console, then reload.
+- Revert to system preference: Remove the inline script in `src/app/layout.tsx` and delete the `.dark` overrides in `src/app/globals.css`, then rely on the existing `@media (prefers-color-scheme: dark)` approach.

@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import Image from 'next/image';
-import { useState, type ReactNode } from 'react';
+import { useEffect, useState, type ReactNode } from 'react';
 
 type NavigationItem = {
   href: string;
@@ -86,6 +86,24 @@ const navigationItems: NavigationItem[] = [
 
 export function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [theme, setTheme] = useState<"light" | "dark" | null>(null);
+
+  // Rehydrate theme from the current document class (set by inline script)
+  useEffect(() => {
+    const isDark = document.documentElement.classList.contains('dark');
+    setTheme(isDark ? 'dark' : 'light');
+  }, []);
+
+  const toggleTheme = () => {
+    const next = theme === 'dark' ? 'light' : 'dark';
+    setTheme(next);
+    try {
+      localStorage.setItem('theme', next);
+    } catch (_) {
+      // ignore storage failures
+    }
+    document.documentElement.classList.toggle('dark', next === 'dark');
+  };
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
@@ -109,8 +127,8 @@ export function Header() {
         rel={item.isExternal ? 'noopener noreferrer' : undefined}
         className={`${
           item.isSpecial 
-            ? 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200' 
-            : 'text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100'
+            ? 'text-[var(--muted-2)] hover:text-[var(--foreground)]'
+            : 'text-[var(--muted)] hover:text-[var(--foreground)]'
         } font-medium transition-colors ${className}`}
         title={item.label}
       >
@@ -128,8 +146,8 @@ export function Header() {
         onClick={onClick}
         className={`${
           item.isSpecial 
-            ? 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200' 
-            : 'text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100'
+            ? 'text-[var(--muted-2)] hover:text-[var(--foreground)]'
+            : 'text-[var(--muted)] hover:text-[var(--foreground)]'
         } font-medium transition-colors ${className}`}
         title={item.label}
         prefetch={false}
@@ -146,7 +164,7 @@ export function Header() {
   );
 
   return (
-    <header className="bg-slate-100 dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 sticky top-0 z-50">
+    <header className="bg-[var(--surface)] border-b border-[var(--border)] sticky top-0 z-[100] relative shadow-sm">
       <div className="container mx-auto px-4 py-6 max-w-4xl">
         <nav className="flex items-center justify-between">
           <div className="flex items-center space-x-3">
@@ -160,10 +178,10 @@ export function Header() {
                 priority
               />
               <div>
-                <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+                <h1 className="text-2xl font-bold text-[var(--foreground)]">
                   Optional Rule
                 </h1>
-                <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+                <p className="text-sm text-[var(--muted-2)] mt-1">
                   TTRPGs, game design, and all that happy stuff!
                 </p>
               </div>
@@ -175,12 +193,35 @@ export function Header() {
             {navigationItems.map((item) => (
               <NavLink key={item.href} item={item} />
             ))}
+            {/* Theme Toggle */}
+            <button
+              type="button"
+              onClick={toggleTheme}
+              aria-label={theme === 'dark' ? 'Switch to light theme' : 'Switch to dark theme'}
+              aria-pressed={theme === 'dark'}
+              className="inline-flex items-center gap-2 px-3 py-2 rounded-md text-[var(--muted)] hover:text-[var(--foreground)] hover:bg-[var(--surface-hover)] transition-colors"
+              title={theme === 'dark' ? 'Dark' : 'Light'}
+            >
+              {/* Icon */}
+              {theme === 'dark' ? (
+                // Sun icon
+                <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" xmlns="http://www.w3.org/2000/svg">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 3v2m0 14v2m9-9h-2M5 12H3m14.95 6.95l-1.414-1.414M7.464 7.464 6.05 6.05m11.314 0-1.414 1.414M7.464 16.536 6.05 17.95M12 8a4 4 0 100 8 4 4 0 000-8z" />
+                </svg>
+              ) : (
+                // Moon icon
+                <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" xmlns="http://www.w3.org/2000/svg">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12.79A9 9 0 1111.21 3c.05 0 .09 0 .14.01A7 7 0 0021 12.79z" />
+                </svg>
+              )}
+              <span className="text-sm hidden sm:inline">{theme === 'dark' ? 'Dark' : 'Light'}</span>
+            </button>
           </div>
 
           {/* Mobile Menu Button */}
           <button
             onClick={toggleMenu}
-            className="md:hidden p-2 rounded-md text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+            className="md:hidden p-2 rounded-md text-[var(--muted)] hover:text-[var(--foreground)] hover:bg-[var(--surface-hover)] transition-colors"
             aria-label="Toggle navigation menu"
           >
             <svg
@@ -211,7 +252,7 @@ export function Header() {
 
         {/* Mobile Navigation Dropdown */}
         {isMenuOpen && (
-          <div className="md:hidden mt-4 pb-4 border-t border-gray-200 dark:border-gray-700">
+          <div className="md:hidden mt-4 pb-4 border-t border-[var(--border)]">
             <div className="flex flex-col space-y-3 pt-4">
               {navigationItems.map((item) => (
                 <NavLink 
@@ -221,6 +262,25 @@ export function Header() {
                   className="py-2"
                 />
               ))}
+              <button
+                type="button"
+                onClick={() => { toggleTheme(); closeMenu(); }}
+                aria-label={theme === 'dark' ? 'Switch to light theme' : 'Switch to dark theme'}
+                aria-pressed={theme === 'dark'}
+                className="mt-2 inline-flex items-center gap-2 px-3 py-2 rounded-md text-[var(--muted)] hover:text-[var(--foreground)] hover:bg-[var(--surface-hover)] transition-colors"
+                title={theme === 'dark' ? 'Dark' : 'Light'}
+              >
+                {theme === 'dark' ? (
+                  <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" xmlns="http://www.w3.org/2000/svg">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 3v2m0 14v2m9-9h-2M5 12H3m14.95 6.95l-1.414-1.414M7.464 7.464 6.05 6.05m11.314 0-1.414 1.414M7.464 16.536 6.05 17.95M12 8a4 4 0 100 8 4 4 0 000-8z" />
+                  </svg>
+                ) : (
+                  <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" xmlns="http://www.w3.org/2000/svg">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12.79A9 9 0 1111.21 3c.05 0 .09 0 .14.01A7 7 0 0021 12.79z" />
+                  </svg>
+                )}
+                <span className="text-sm">{theme === 'dark' ? 'Dark' : 'Light'}</span>
+              </button>
             </div>
           </div>
         )}

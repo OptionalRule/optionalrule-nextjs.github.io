@@ -38,38 +38,38 @@ export default async function StaticPage({ params }: PageProps) {
 
   return (
     <div className="container mx-auto px-4 py-8 max-w-4xl">
-      <nav className="mb-8 text-sm text-gray-600 dark:text-gray-400">
+      <nav className="mb-8 text-sm text-[var(--muted-2)]">
         <Link
           href="/"
-          className="hover:text-gray-900 dark:hover:text-gray-200 transition-colors"
+          className="hover:text-[var(--foreground)] transition-colors"
         >
           Home
         </Link>
         <span className="mx-2">›</span>
-        <span className="text-gray-900 dark:text-gray-200">{page.title}</span>
+        <span className="text-[var(--foreground)]">{page.title}</span>
       </nav>
 
-      <article className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden">
+      <article className="bg-[var(--card)] rounded-lg border border-[var(--border)] overflow-hidden">
         <div className="p-8 lg:p-12">
           <header className="mb-8">
-            <h1 className="text-4xl font-bold text-gray-900 dark:text-gray-100 mb-4 leading-tight">
+            <h1 className="text-4xl font-bold text-[var(--foreground)] mb-4 leading-tight">
               {page.title}
             </h1>
 
             {page.description && (
-              <p className="text-lg text-gray-600 dark:text-gray-400 leading-relaxed italic border-l-4 border-gray-300 dark:border-gray-600 pl-4">
+              <p className="text-lg text-[var(--muted-2)] leading-relaxed italic border-l-4 border-[var(--border)] pl-4">
                 {page.description}
               </p>
             )}
           </header>
 
           {page.showToc !== false && (
-            <div className="mb-8 p-6 bg-gray-50 dark:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-600">
+            <div className="mb-8 p-6 bg-[var(--surface-hover)] rounded-lg border border-[var(--border)]">
               <TableOfContents headings={page.headings} />
             </div>
           )}
 
-          <div className="prose prose-lg dark:prose-invert max-w-none">
+          <div className="prose prose-lg max-w-none">
             <MDXRemote
               source={page.content}
               components={mdxComponents}
@@ -91,7 +91,7 @@ export default async function StaticPage({ params }: PageProps) {
 
         <Link
           href="/tags/"
-          className="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200 transition-colors"
+          className="text-[var(--muted-2)] hover:text-[var(--foreground)] transition-colors"
         >
           Browse by tags →
         </Link>
@@ -99,4 +99,3 @@ export default async function StaticPage({ params }: PageProps) {
     </div>
   );
 }
-

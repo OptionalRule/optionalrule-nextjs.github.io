@@ -107,12 +107,24 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <head>
+        {/* Pre-hydration theme script: apply user's theme choice before React mounts */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(() => {
+  try {
+    const stored = localStorage.getItem('theme');
+    const isDark = stored ? stored === 'dark' : window.matchMedia('(prefers-color-scheme: dark)').matches;
+    document.documentElement.classList.toggle('dark', !!isDark);
+  } catch (_) { /* no-op */ }
+})();`,
+          }}
+        />
         <meta name="msapplication-config" content="/favicon/browserconfig.xml" />
       </head>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-slate-50 dark:bg-gray-900`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased font-sans`}
       >
         <GoogleAnalytics />
         <div className="min-h-screen flex flex-col">

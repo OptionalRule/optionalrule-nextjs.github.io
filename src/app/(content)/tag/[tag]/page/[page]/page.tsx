@@ -58,13 +58,13 @@ export default async function TagPagePage({ params }: TagPageProps) {
   const { posts, totalPages, currentPage } = tagData;
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+    <div className="min-h-screen bg-[var(--surface)]">
       <div className="container mx-auto px-4 py-8 max-w-4xl">
         {/* Breadcrumb Navigation */}
-        <nav className="mb-8 text-sm text-gray-600 dark:text-gray-400">
+        <nav className="mb-8 text-sm text-[var(--muted-2)]">
           <Link 
             href="/"
-            className="hover:text-gray-900 dark:hover:text-gray-200 transition-colors"
+            className="hover:text-[var(--foreground)] transition-colors"
           >
             Home
           </Link>
@@ -73,16 +73,16 @@ export default async function TagPagePage({ params }: TagPageProps) {
           <span className="mx-2">›</span>
           <Link 
             href={`/tag/${createTagSlug(tagData.tag)}/`}
-            className="hover:text-gray-900 dark:hover:text-gray-200 transition-colors"
+            className="hover:text-[var(--foreground)] transition-colors"
           >
             {capitalize(tagData.tag)}
           </Link>
           <span className="mx-2">›</span>
-          <span className="text-gray-900 dark:text-gray-200">Page {pageNum}</span>
+          <span className="text-[var(--foreground)]">Page {pageNum}</span>
         </nav>
 
         <header className="mb-12 text-center">
-          <h1 className="text-4xl font-bold text-gray-900 dark:text-gray-100 mb-4">
+          <h1 className="text-4xl font-bold text-[var(--foreground)] mb-4">
             Posts tagged with &ldquo;{capitalize(tagData.tag)}&rdquo;
           </h1>
           <div className="mb-6">
@@ -97,7 +97,7 @@ export default async function TagPagePage({ params }: TagPageProps) {
           <div className="flex justify-center">
             <Link
               href="/tags/"
-              className="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-200 underline text-sm"
+              className="text-[var(--link)] hover:text-[var(--link-hover)] underline text-sm"
             >
               View all tags →
             </Link>

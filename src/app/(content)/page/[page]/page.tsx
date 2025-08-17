@@ -49,7 +49,7 @@ export default async function PagePage({ params }: PageProps) {
     return (
       <div className="container mx-auto px-4 py-8 max-w-4xl">
         <header className="mb-12 text-center">
-          <h1 className="text-4xl font-bold text-gray-900 dark:text-gray-100 mb-4">
+          <h1 className="text-4xl font-bold text-[var(--foreground)] mb-4">
             Blog Posts
           </h1>
           <div className="mb-6">
@@ -82,10 +82,10 @@ export default async function PagePage({ params }: PageProps) {
       <div className="container mx-auto px-4 py-8 max-w-4xl">
         <div className="text-center py-12">
           <h1 className="text-2xl font-bold text-red-600 mb-4">Error Loading Posts</h1>
-          <p className="text-gray-600 dark:text-gray-400">
+          <p className="text-[var(--muted-2)]">
             There was an error loading the blog posts. Please try refreshing the page.
           </p>
-          <pre className="mt-4 p-4 bg-gray-100 dark:bg-gray-800 rounded text-sm overflow-auto">
+          <pre className="mt-4 p-4 bg-[var(--surface-hover)] rounded text-sm overflow-auto">
             {error instanceof Error ? error.message : String(error)}
           </pre>
         </div>

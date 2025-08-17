@@ -12,7 +12,7 @@ export default function TestPaginationPage() {
     <div className="container mx-auto px-4 py-8 max-w-4xl">
       <h1 className="text-3xl font-bold mb-6">Pagination Test Page</h1>
       
-      <div className="mb-8 p-4 bg-gray-100 dark:bg-gray-800 rounded">
+      <div className="mb-8 p-4 bg-[var(--surface-hover)] rounded">
         <h2 className="text-xl font-semibold mb-2">Debug Info:</h2>
         <p>Total posts: {allPosts.length}</p>
         <p>Posts per page: 10</p>
@@ -25,9 +25,9 @@ export default function TestPaginationPage() {
           const { posts, totalPages: pageTotalPages, currentPage } = getPaginatedPosts(page);
           
           return (
-            <div key={page} className="border border-gray-200 dark:border-gray-700 rounded p-4">
+            <div key={page} className="border border-[var(--border)] rounded p-4">
               <h3 className="text-lg font-semibold mb-2">Page {page} (showing {posts.length} posts)</h3>
-              <p className="text-sm text-gray-600 mb-2">
+              <p className="text-sm text-[var(--muted-2)] mb-2">
                 Current: {currentPage}, Total: {pageTotalPages}
               </p>
               
@@ -48,7 +48,7 @@ export default function TestPaginationPage() {
         })}
       </div>
       
-      <div className="mt-8 p-4 bg-blue-50 dark:bg-blue-900/20 rounded">
+      <div className="mt-8 p-4 rounded" style={{background:"color-mix(in oklab, var(--link) 10%, transparent)"}}>
         <h2 className="text-lg font-semibold mb-2">Expected URLs:</h2>
         <ul className="text-sm space-y-1">
           <li>• Page 1: <code>/</code></li>

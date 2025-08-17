@@ -17,7 +17,7 @@ export default function MarkdownLink({
   ...props
 }: MarkdownLinkProps) {
   // Add default styling for markdown links
-  const defaultClassName = 'text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 underline transition-colors';
+  const defaultClassName = 'text-[var(--link)] hover:text-[var(--link-hover)] underline transition-colors';
   const combinedClassName = className ? `${defaultClassName} ${className}` : defaultClassName;
   
   return (

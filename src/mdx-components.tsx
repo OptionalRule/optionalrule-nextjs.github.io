@@ -18,7 +18,7 @@ export const mdxComponents: MDXComponents = {
     return (
       <h1 
         id={id} 
-        className="text-4xl font-bold text-gray-900 dark:text-gray-100 mb-6 scroll-mt-20 group"
+        className="text-4xl font-bold text-[var(--foreground)] mb-6 scroll-mt-20 group"
         {...props}
       >
         {children}
@@ -34,7 +34,7 @@ export const mdxComponents: MDXComponents = {
     return (
       <h2 
         id={id} 
-        className="text-3xl font-semibold text-gray-900 dark:text-gray-100 mb-4 mt-8 scroll-mt-20 group"
+        className="text-3xl font-semibold text-[var(--foreground)] mb-4 mt-8 scroll-mt-20 group"
         {...props}
       >
         {children}
@@ -50,7 +50,7 @@ export const mdxComponents: MDXComponents = {
     return (
       <h3 
         id={id} 
-        className="text-2xl font-medium text-gray-900 dark:text-gray-100 mb-3 mt-6 scroll-mt-20 group"
+        className="text-2xl font-medium text-[var(--foreground)] mb-3 mt-6 scroll-mt-20 group"
         {...props}
       >
         {children}
@@ -66,7 +66,7 @@ export const mdxComponents: MDXComponents = {
     return (
       <h4 
         id={id} 
-        className="text-xl font-medium text-gray-900 dark:text-gray-100 mb-2 mt-4 scroll-mt-20 group"
+        className="text-xl font-medium text-[var(--foreground)] mb-2 mt-4 scroll-mt-20 group"
         {...props}
       >
         {children}
@@ -82,7 +82,7 @@ export const mdxComponents: MDXComponents = {
     return (
       <h5 
         id={id} 
-        className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2 mt-4 scroll-mt-20 group"
+        className="text-lg font-medium text-[var(--foreground)] mb-2 mt-4 scroll-mt-20 group"
         {...props}
       >
         {children}
@@ -98,7 +98,7 @@ export const mdxComponents: MDXComponents = {
     return (
       <h6 
         id={id} 
-        className="text-base font-medium text-gray-900 dark:text-gray-100 mb-2 mt-4 scroll-mt-20 group"
+        className="text-base font-medium text-[var(--foreground)] mb-2 mt-4 scroll-mt-20 group"
         {...props}
       >
         {children}
@@ -109,7 +109,7 @@ export const mdxComponents: MDXComponents = {
 
   // Text elements with consistent spacing and typography
   p: ({ children, ...props }) => (
-    <p className="text-gray-700 dark:text-gray-300 mb-4 leading-relaxed" {...props}>
+    <p className="text-[var(--muted)] mb-4 leading-relaxed" {...props}>
       {children}
     </p>
   ),
@@ -118,7 +118,7 @@ export const mdxComponents: MDXComponents = {
   a: ({ href, children, ...props }) => (
     <SmartLink
       href={href || '#'}
-      className="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-200 underline transition-colors"
+      className="text-[var(--link)] hover:text-[var(--link-hover)] underline transition-colors"
       {...props}
     >
       {children}
@@ -127,13 +127,13 @@ export const mdxComponents: MDXComponents = {
 
   // Lists with consistent spacing and styling
   ul: ({ children, ...props }) => (
-    <ul className="list-disc list-inside text-gray-700 dark:text-gray-300 mb-4 space-y-1" {...props}>
+    <ul className="list-disc list-inside text-[var(--muted)] mb-4 space-y-1" {...props}>
       {children}
     </ul>
   ),
   
   ol: ({ children, ...props }) => (
-    <ol className="list-decimal list-inside text-gray-700 dark:text-gray-300 mb-4 space-y-1" {...props}>
+    <ol className="list-decimal list-inside text-[var(--muted)] mb-4 space-y-1" {...props}>
       {children}
     </ol>
   ),
@@ -146,20 +146,20 @@ export const mdxComponents: MDXComponents = {
 
   // Blockquotes with consistent styling
   blockquote: ({ children, ...props }) => (
-    <blockquote className="border-l-4 border-blue-500 pl-4 py-2 mb-4 italic text-gray-600 dark:text-gray-400" {...props}>
+    <blockquote className="border-l-4 border-[var(--link)] pl-4 py-2 mb-4 italic text-[var(--muted-2)]" {...props}>
       {children}
     </blockquote>
   ),
 
   // Code elements with consistent styling
   code: ({ children, ...props }) => (
-    <code className="bg-gray-100 dark:bg-gray-800 px-1 py-0.5 rounded text-sm font-mono" {...props}>
+    <code className="bg-[var(--surface-hover)] px-1 py-0.5 rounded text-sm font-mono" {...props}>
       {children}
     </code>
   ),
   
   pre: ({ children, ...props }) => (
-    <pre className="bg-gray-100 dark:bg-gray-800 p-4 rounded-lg overflow-x-auto mb-4" {...props}>
+    <pre className="bg-[var(--surface-hover)] p-4 rounded-lg overflow-x-auto mb-4" {...props}>
       {children}
     </pre>
   ),
@@ -167,50 +167,50 @@ export const mdxComponents: MDXComponents = {
   // Table components with consistent styling and responsive behavior
   table: ({ children, ...props }) => (
     <div className="overflow-x-auto mb-6" {...props}>
-      <table className="min-w-full border border-gray-300 dark:border-gray-600 rounded-lg">
+      <table className="min-w-full border border-[var(--border)] rounded-lg">
         {children}
       </table>
     </div>
   ),
   
   thead: ({ children, ...props }) => (
-    <thead className="bg-gray-50 dark:bg-gray-800" {...props}>
+    <thead className="bg-[var(--surface-hover)]" {...props}>
       {children}
     </thead>
   ),
   
   tbody: ({ children, ...props }) => (
-    <tbody className="divide-y divide-gray-300 dark:divide-gray-600" {...props}>
+    <tbody className="divide-y divide-[var(--border)]" {...props}>
       {children}
     </tbody>
   ),
   
   tr: ({ children, ...props }) => (
-    <tr className="hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors" {...props}>
+    <tr className="hover:bg-[var(--surface-hover)] transition-colors" {...props}>
       {children}
     </tr>
   ),
   
   th: ({ children, ...props }) => (
-    <th className="px-4 py-3 text-left text-sm font-semibold text-gray-900 dark:text-gray-100 border-b border-gray-300 dark:border-gray-600" {...props}>
+    <th className="px-4 py-3 text-left text-sm font-semibold text-[var(--foreground)] border-b border-[var(--border)]" {...props}>
       {children}
     </th>
   ),
   
   td: ({ children, ...props }) => (
-    <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300" {...props}>
+    <td className="px-4 py-3 text-sm text-[var(--muted)]" {...props}>
       {children}
     </td>
   ),
 
   // Horizontal rules
   hr: ({ ...props }) => (
-    <hr className="border-gray-300 dark:border-gray-600 my-8" {...props} />
+    <hr className="border-[var(--border)] my-8" {...props} />
   ),
 
   // Strong and emphasis
   strong: ({ children, ...props }) => (
-    <strong className="font-semibold text-gray-900 dark:text-gray-100" {...props}>
+    <strong className="font-semibold text-[var(--foreground)]" {...props}>
       {children}
     </strong>
   ),
@@ -222,17 +222,16 @@ export const mdxComponents: MDXComponents = {
   ),
 
   // Images with centering and responsive styling
+  // Render a plain <img> so it is valid inside paragraphs (MDX often nests images in <p>)
   // Using img instead of next/image for static export compatibility
   img: ({ src, alt, ...props }) => (
-    <div className="flex justify-center my-6">
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img
-        src={src}
-        alt={alt}
-        className="max-w-full h-auto rounded-lg shadow-md"
-        {...props}
-      />
-    </div>
+    // eslint-disable-next-line @next/next/no-img-element
+    <img
+      src={src}
+      alt={alt}
+      className="mx-auto my-6 max-w-full h-auto rounded-lg shadow-md"
+      {...props}
+    />
   ),
 
   // Custom components

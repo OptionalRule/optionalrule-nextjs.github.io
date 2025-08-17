@@ -65,7 +65,7 @@ export function Pagination({ currentPage, totalPages, basePath }: PaginationProp
       {currentPage > 1 && (
         <Link
           href={generatePageUrl(currentPage - 1)}
-          className="px-2 sm:px-4 py-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors text-sm sm:text-base"
+          className="px-2 sm:px-4 py-2 bg-[var(--card)] border border-[var(--border)] text-[var(--muted)] rounded-lg hover:bg-[var(--surface-hover)] transition-colors text-sm sm:text-base"
         >
           <span className="hidden sm:inline">Previous</span>
           <span className="sm:hidden">‹</span>
@@ -73,7 +73,7 @@ export function Pagination({ currentPage, totalPages, basePath }: PaginationProp
       )}
 
       {/* Mobile: Show current page info between Previous/Next */}
-      <div className="sm:hidden px-3 py-2 text-sm text-gray-600 dark:text-gray-400">
+      <div className="sm:hidden px-3 py-2 text-sm text-[var(--muted-2)]">
         {currentPage} of {totalPages}
       </div>
 
@@ -82,12 +82,12 @@ export function Pagination({ currentPage, totalPages, basePath }: PaginationProp
         <>
           <Link
             href={generatePageUrl(1)}
-            className="hidden sm:block px-2 sm:px-4 py-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors text-sm sm:text-base"
+            className="hidden sm:block px-2 sm:px-4 py-2 bg-[var(--card)] border border-[var(--border)] text-[var(--muted)] rounded-lg hover:bg-[var(--surface-hover)] transition-colors text-sm sm:text-base"
           >
             1
           </Link>
           {visiblePages[0] > 2 && (
-            <span className="hidden sm:block px-2 text-gray-500">…</span>
+            <span className="hidden sm:block px-2 text-[var(--muted-2)]">…</span>
           )}
         </>
       )}
@@ -99,8 +99,8 @@ export function Pagination({ currentPage, totalPages, basePath }: PaginationProp
           href={generatePageUrl(page)}
           className={`hidden sm:block px-2 sm:px-4 py-2 border rounded-lg transition-colors text-sm sm:text-base ${
             page === currentPage
-              ? 'bg-blue-600 border-blue-600 text-white'
-              : 'bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700'
+              ? 'bg-[var(--link)] border-[var(--link)] text-white'
+              : 'bg-[var(--card)] border-[var(--border)] text-[var(--muted)] hover:bg-[var(--surface-hover)]'
           }`}
           aria-current={page === currentPage ? 'page' : undefined}
         >
@@ -112,11 +112,11 @@ export function Pagination({ currentPage, totalPages, basePath }: PaginationProp
       {visiblePages[visiblePages.length - 1] < totalPages && (
         <>
           {visiblePages[visiblePages.length - 1] < totalPages - 1 && (
-            <span className="hidden sm:block px-2 text-gray-500">…</span>
+            <span className="hidden sm:block px-2 text-[var(--muted-2)]">…</span>
           )}
           <Link
             href={generatePageUrl(totalPages)}
-            className="hidden sm:block px-2 sm:px-4 py-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors text-sm sm:text-base"
+            className="hidden sm:block px-2 sm:px-4 py-2 bg-[var(--card)] border border-[var(--border)] text-[var(--muted)] rounded-lg hover:bg-[var(--surface-hover)] transition-colors text-sm sm:text-base"
           >
             {totalPages}
           </Link>
@@ -127,7 +127,7 @@ export function Pagination({ currentPage, totalPages, basePath }: PaginationProp
       {currentPage < totalPages && (
         <Link
           href={generatePageUrl(currentPage + 1)}
-          className="px-2 sm:px-4 py-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors text-sm sm:text-base"
+          className="px-2 sm:px-4 py-2 bg-[var(--card)] border border-[var(--border)] text-[var(--muted)] rounded-lg hover:bg-[var(--surface-hover)] transition-colors text-sm sm:text-base"
         >
           <span className="hidden sm:inline">Next</span>
           <span className="sm:hidden">›</span>

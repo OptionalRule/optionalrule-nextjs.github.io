@@ -75,7 +75,7 @@ export function HighlightedText({ text, searchQuery, className = '' }: Highlight
         segment.isHighlighted ? (
           <mark
             key={index}
-            className="bg-yellow-200 dark:bg-yellow-800 px-0.5 rounded-sm"
+            className="bg-[var(--highlight-bg)] px-0.5 rounded-sm"
           >
             {segment.text}
           </mark>

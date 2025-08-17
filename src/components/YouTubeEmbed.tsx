@@ -40,8 +40,8 @@ export default function YouTubeEmbed({
   if (!videoId) {
     console.warn('YouTubeEmbed: No valid video ID found from URL or id prop');
     return (
-      <div className={`bg-gray-100 dark:bg-gray-800 p-4 rounded-lg text-center ${className}`}>
-        <p className="text-gray-600 dark:text-gray-400">
+      <div className={`bg-[var(--surface-hover)] p-4 rounded-lg text-center ${className}`}>
+        <p className="text-[var(--muted-2)]">
           Invalid YouTube URL or ID provided
         </p>
       </div>

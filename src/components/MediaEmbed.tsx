@@ -75,15 +75,15 @@ export default function MediaEmbed({
   
   // Fallback for unsupported URLs
   return (
-    <div className={`bg-gray-100 dark:bg-gray-800 p-4 rounded-lg text-center ${className || ''}`}>
-      <p className="text-gray-600 dark:text-gray-400 mb-2">
+    <div className={`bg-[var(--surface-hover)] p-4 rounded-lg text-center ${className || ''}`}>
+      <p className="text-[var(--muted-2)] mb-2">
         Unsupported media URL
       </p>
       <a 
         href={url} 
         target="_blank" 
         rel="noopener noreferrer"
-        className="text-blue-600 dark:text-blue-400 hover:underline"
+        className="text-[var(--link)] hover:underline"
       >
         Open in new tab
       </a>

@@ -85,7 +85,7 @@ export function SearchInput({
         {/* Search Icon */}
         <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
           <svg
-            className="h-5 w-5 text-gray-400"
+            className="h-5 w-5 text-[var(--muted-2)]"
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
@@ -111,12 +111,12 @@ export function SearchInput({
           placeholder={placeholder}
           className={`
             block w-full pl-10 pr-12 py-3 
-            border border-gray-300 dark:border-gray-600 
+            border border-[var(--border)] 
             rounded-md 
-            bg-white dark:bg-gray-800 
-            text-gray-900 dark:text-gray-100 
-            placeholder-gray-500 dark:placeholder-gray-400
-            focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent
+            bg-[var(--card)] 
+            text-[var(--foreground)] 
+            placeholder-[var(--muted-2)]
+            focus:outline-none focus:ring-2 focus:ring-[var(--link)] focus:border-transparent
             transition-colors
             ${isFocused ? 'ring-2 ring-blue-500' : ''}
           `}
@@ -127,7 +127,7 @@ export function SearchInput({
           <button
             type="button"
             onClick={handleClear}
-            className="absolute inset-y-0 right-8 flex items-center pr-3 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
+            className="absolute inset-y-0 right-8 flex items-center pr-3 text-[var(--muted-2)] hover:text-[var(--muted)] transition-colors"
             aria-label="Clear search"
           >
             <svg
@@ -150,7 +150,7 @@ export function SearchInput({
         {/* Submit Button */}
         <button
           type="submit"
-          className="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
+          className="absolute inset-y-0 right-0 flex items-center pr-3 text-[var(--muted-2)] hover:text-[var(--muted)] transition-colors"
           aria-label="Search"
         >
           <svg
@@ -173,7 +173,7 @@ export function SearchInput({
       {/* Keyboard Shortcut Hint */}
       {!isFocused && !query && (
         <div className="absolute inset-y-0 right-3 flex items-center pointer-events-none">
-          <span className="text-xs text-gray-400 bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded border border-gray-200 dark:border-gray-600">
+          <span className="text-xs text-[var(--muted-2)] bg-[var(--surface-hover)] px-2 py-1 rounded border border-[var(--border)]">
             ⌘K
           </span>
         </div>
