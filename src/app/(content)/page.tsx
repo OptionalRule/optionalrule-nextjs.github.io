@@ -27,7 +27,7 @@ export default function Home() {
           {totalPages > 1 && (
             <header className="mb-12 text-center">
               <h1 className="text-4xl font-bold text-gray-900 dark:text-gray-100 mb-4">
-                Blog Posts
+                Latest Posts
               </h1>
               <div className="mb-6">
                 <Pagination 

@@ -26,18 +26,18 @@ export function Footer() {
             >
               Tags
             </Link>
-            <Link
+            <a
               href="/rss.xml"
               className="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200 text-sm transition-colors"
             >
               RSS
-            </Link>
-            <Link
+            </a>
+            <a
               href="/sitemap.xml"
               className="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200 text-sm transition-colors"
             >
               Sitemap
-            </Link>
+            </a>
           </div>
         </div>
       </div>

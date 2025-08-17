@@ -2,10 +2,21 @@
 
 import Link from 'next/link';
 import Image from 'next/image';
-import { useState } from 'react';
+import { useState, type ReactNode } from 'react';
+
+type NavigationItem = {
+  href: string;
+  label: string;
+  icon?: ReactNode;
+  iconOnly?: boolean;
+  isSpecial?: boolean;
+  isExternal?: boolean;
+  // When true, render as a plain <a> (e.g., static files like RSS)
+  isFile?: boolean;
+};
 
 // Navigation configuration - single source of truth
-const navigationItems = [
+const navigationItems: NavigationItem[] = [
   { href: '/', label: 'Home' },
   { href: '/pages/about/', label: 'About' },
   { href: '/tags/', label: 'Tags' },
@@ -50,7 +61,9 @@ const navigationItems = [
       </svg>
     ),
     isSpecial: true,
-    iconOnly: true
+    iconOnly: true,
+    // Using a regular anchor prevents Next.js prefetch of RSC flight data
+    isFile: true
   },
   { 
     href: 'https://x.com/optionalrule', 
@@ -84,30 +97,52 @@ export function Header() {
 
   // Reusable navigation link component
   const NavLink = ({ item, onClick, className = '' }: { 
-    item: typeof navigationItems[0], 
-    onClick?: () => void, 
-    className?: string 
+    item: NavigationItem; 
+    onClick?: () => void; 
+    className?: string; 
   }) => (
-    <Link
-      href={item.href}
-      onClick={onClick}
-      target={item.isExternal ? '_blank' : undefined}
-      rel={item.isExternal ? 'noopener noreferrer' : undefined}
-      className={`${
-        item.isSpecial 
-          ? 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200' 
-          : 'text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100'
-      } font-medium transition-colors ${className}`}
-      title={item.label}
-    >
-      {item.icon && (
-        <span className="inline-flex items-center space-x-2">
-          {item.icon}
-          {!item.iconOnly && <span>{item.label}</span>}
-        </span>
-      )}
-      {!item.icon && item.label}
-    </Link>
+    item.isExternal || item.isFile ? (
+      <a
+        href={item.href}
+        onClick={onClick}
+        target={item.isExternal ? '_blank' : undefined}
+        rel={item.isExternal ? 'noopener noreferrer' : undefined}
+        className={`${
+          item.isSpecial 
+            ? 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200' 
+            : 'text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100'
+        } font-medium transition-colors ${className}`}
+        title={item.label}
+      >
+        {item.icon && (
+          <span className="inline-flex items-center space-x-2">
+            {item.icon}
+            {!item.iconOnly && <span>{item.label}</span>}
+          </span>
+        )}
+        {!item.icon && item.label}
+      </a>
+    ) : (
+      <Link
+        href={item.href}
+        onClick={onClick}
+        className={`${
+          item.isSpecial 
+            ? 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200' 
+            : 'text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100'
+        } font-medium transition-colors ${className}`}
+        title={item.label}
+        prefetch={false}
+      >
+        {item.icon && (
+          <span className="inline-flex items-center space-x-2">
+            {item.icon}
+            {!item.iconOnly && <span>{item.label}</span>}
+          </span>
+        )}
+        {!item.icon && item.label}
+      </Link>
+    )
   );
 
   return (
