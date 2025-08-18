@@ -110,8 +110,14 @@ export default function RootLayout({
   const light = siteConfig.theme?.light;
   const dark = siteConfig.theme?.dark;
   const themeCss = light && dark ? `:root{--background:${light.background};--foreground:${light.foreground};--surface:${light.surface};--card:${light.card};--muted:${light.muted};--muted-2:${light.muted2};--border:${light.border};--surface-hover:${light.surfaceHover};--link:${light.link};--link-hover:${light.linkHover};--chip-bg:${light.chipBg};--chip-text:${light.chipText};--highlight-bg:${light.highlightBg};color-scheme:light}.dark{--background:${dark.background};--foreground:${dark.foreground};--surface:${dark.surface};--card:${dark.card};--muted:${dark.muted};--muted-2:${dark.muted2};--border:${dark.border};--surface-hover:${dark.surfaceHover};--link:${dark.link};--link-hover:${dark.linkHover};--chip-bg:${dark.chipBg};--chip-text:${dark.chipText};--highlight-bg:${dark.highlightBg};color-scheme:dark}` : '';
+  const defaultTheme = siteConfig.defaultTheme ?? 'system';
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html
+      lang="en"
+      suppressHydrationWarning
+      className={defaultTheme === 'dark' ? 'dark' : undefined}
+      data-default-theme={defaultTheme}
+    >
       <head>
         {/* Pre-hydration theme script: apply user's theme choice before React mounts */}
         <script
@@ -119,7 +125,17 @@ export default function RootLayout({
             __html: `(() => {
   try {
     const stored = localStorage.getItem('theme');
-    const isDark = stored ? stored === 'dark' : window.matchMedia('(prefers-color-scheme: dark)').matches;
+    const def = document.documentElement.getAttribute('data-default-theme') || 'system';
+    let isDark;
+    if (stored === 'dark' || stored === 'light') {
+      isDark = stored === 'dark';
+    } else if (def === 'dark') {
+      isDark = true;
+    } else if (def === 'light') {
+      isDark = false;
+    } else {
+      isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    }
     document.documentElement.classList.toggle('dark', !!isDark);
   } catch (_) { /* no-op */ }
 })();`,

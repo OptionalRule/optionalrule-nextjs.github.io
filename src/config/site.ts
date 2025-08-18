@@ -3,6 +3,9 @@ export const siteConfig = {
   title: 'Optional Rule',
   description: 'A modern blog about TTRPG and RPG design.',
   url: 'https://www.optionalrule.com',
+  // Default theme for first-time visitors (no saved preference)
+  // Options: 'dark' | 'light' | 'system'
+  defaultTheme: 'dark',
   author: {
     name: 'Scott Turnbull',
     email: 'scott@optionalrule.com',

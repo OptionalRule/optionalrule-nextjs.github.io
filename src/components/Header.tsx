@@ -200,7 +200,7 @@ export function Header() {
               aria-label={theme === 'dark' ? 'Switch to light theme' : 'Switch to dark theme'}
               aria-pressed={theme === 'dark'}
               className="inline-flex items-center gap-2 px-3 py-2 rounded-md text-[var(--muted)] hover:text-[var(--foreground)] hover:bg-[var(--surface-hover)] transition-colors"
-              title={theme === 'dark' ? 'Dark' : 'Light'}
+              title={theme === 'dark' ? 'Switch to light theme' : 'Switch to dark theme'}
             >
               {/* Icon */}
               {theme === 'dark' ? (
@@ -214,7 +214,7 @@ export function Header() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12.79A9 9 0 1111.21 3c.05 0 .09 0 .14.01A7 7 0 0021 12.79z" />
                 </svg>
               )}
-              <span className="text-sm hidden sm:inline">{theme === 'dark' ? 'Dark' : 'Light'}</span>
+              <span className="text-sm hidden sm:inline">{theme === 'dark' ? 'Light' : 'Dark'}</span>
             </button>
           </div>
 
@@ -268,7 +268,7 @@ export function Header() {
                 aria-label={theme === 'dark' ? 'Switch to light theme' : 'Switch to dark theme'}
                 aria-pressed={theme === 'dark'}
                 className="mt-2 inline-flex items-center gap-2 px-3 py-2 rounded-md text-[var(--muted)] hover:text-[var(--foreground)] hover:bg-[var(--surface-hover)] transition-colors"
-                title={theme === 'dark' ? 'Dark' : 'Light'}
+                title={theme === 'dark' ? 'Switch to light theme' : 'Switch to dark theme'}
               >
                 {theme === 'dark' ? (
                   <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" xmlns="http://www.w3.org/2000/svg">
@@ -279,7 +279,7 @@ export function Header() {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12.79A9 9 0 1111.21 3c.05 0 .09 0 .14.01A7 7 0 0021 12.79z" />
                   </svg>
                 )}
-                <span className="text-sm">{theme === 'dark' ? 'Dark' : 'Light'}</span>
+                <span className="text-sm">{theme === 'dark' ? 'Light' : 'Dark'}</span>
               </button>
             </div>
           </div>
