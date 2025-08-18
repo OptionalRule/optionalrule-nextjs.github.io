@@ -112,3 +112,4 @@ All scripts use ESM loader pattern and are located in `scripts/` directory:
 - Tailwind v4: Dark mode is class-based via CSS. `:root` defines light tokens and `.dark` overrides tokens and sets `color-scheme: dark`.
 - Reset preference: Clear local storage key `theme` (DevTools > Application > Local Storage) or run `localStorage.removeItem('theme')` in console, then reload.
 - Revert to system preference: Remove the inline script in `src/app/layout.tsx` and delete the `.dark` overrides in `src/app/globals.css`, then rely on the existing `@media (prefers-color-scheme: dark)` approach.
+- Default theme at loadtime can be set via `/src/config/site.ts` and theme variables changed as needed.
