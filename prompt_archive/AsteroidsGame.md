@@ -110,6 +110,7 @@ Implement pure TypeScript class with no React dependencies:
 - **Scoring**: 20 (large), 50 (medium), 100 (small) points
 
 #### Bullets
+
 - **Entity Class**: `Bullet.ts` extends base Entity class
 - **Lifetime Management**:
   - Despawn when reaching canvas edge (no wrapping)
