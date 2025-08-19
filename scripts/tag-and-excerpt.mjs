@@ -25,11 +25,11 @@ function parseArgs(argv) {
   const opts = {
     path: 'content/posts',
     dryRun: false,
-    overwrite: true,
-    overwriteTags: true,
+    overwriteExcerpts: false,
+    overwriteTags: false,
     noBackup: true,
     concurrency: 3,
-    model: 'gpt-5-2025-08-07',
+    model: 'gpt-4o-mini',
     apiKey: process.env.OPENAI_API_KEY || process.env.OPENAI_APIKEY || ''
   };
   for (let i = 0; i < argv.length; i++) {
@@ -38,8 +38,8 @@ function parseArgs(argv) {
       case '--dry-run':
         opts.dryRun = true;
         break;
-      case '--overwrite':
-        opts.overwrite = true;
+      case '--overwrite-excerpts':
+        opts.overwriteExcerpts = true;
         break;
       case '--overwrite-tags':
         opts.overwriteTags = true;
@@ -63,9 +63,7 @@ function parseArgs(argv) {
         break;
     }
   }
-  if (opts.apiKey && process.env[opts.apiKey]) {
-    opts.apiKey = process.env[opts.apiKey];
-  }
+  // Remove problematic API key logic - handled in default value above
   return opts;
 }
 
@@ -150,7 +148,7 @@ async function processFile(file, opts, stats) {
     const filteredExisting = tags.filter(t => TAG_SET.has(t));
     const hasValidTags = filteredExisting.length > 0;
 
-    const needsExcerpt = opts.overwrite || !hasExcerpt;
+    const needsExcerpt = opts.overwriteExcerpts || !hasExcerpt;
     const needsTags = opts.overwriteTags || !hasValidTags;
 
     console.log(`  Title: ${title}`);
@@ -208,15 +206,45 @@ async function processFile(file, opts, stats) {
 
 async function main() {
   const opts = parseArgs(process.argv.slice(2));
+  
+  // Validate required parameters
+  if (!opts.apiKey) {
+    console.error('Error: OpenAI API key is required. Set OPENAI_API_KEY environment variable or use --api-key option.');
+    process.exit(1);
+  }
   console.log('Current working directory:', process.cwd());
   console.log('Path option:', opts.path);
-  const basePath = path.resolve(opts.path);
-  console.log('Resolved base path:', basePath);
-  console.log('Base path exists:', await fs.access(basePath).then(() => true).catch(() => false));
+  const targetPath = path.resolve(opts.path);
+  console.log('Resolved target path:', targetPath);
   
-  const files = await globby('**/*.mdx', { cwd: basePath, absolute: true });
-  console.log('Files found by globby:', files.length);
-  console.log('First few files:', files.slice(0, 5));
+  // Check if path exists
+  let pathStats;
+  try {
+    pathStats = await fs.stat(targetPath);
+  } catch (err) {
+    console.error(`Error: Path '${targetPath}' does not exist.`);
+    process.exit(1);
+  }
+  
+  let files = [];
+  
+  if (pathStats.isFile()) {
+    // Single file mode
+    if (!targetPath.endsWith('.mdx')) {
+      console.error(`Error: File '${targetPath}' is not an MDX file.`);
+      process.exit(1);
+    }
+    files = [targetPath];
+    console.log('Processing single file:', targetPath);
+  } else if (pathStats.isDirectory()) {
+    // Directory mode
+    files = await globby('**/*.mdx', { cwd: targetPath, absolute: true });
+    console.log('Files found in directory:', files.length);
+    console.log('First few files:', files.slice(0, 5));
+  } else {
+    console.error(`Error: Path '${targetPath}' is neither a file nor a directory.`);
+    process.exit(1);
+  }
   
   const stats = { scanned: 0, updated: 0, skipped: 0, errors: 0 };
   console.log('Starting to process files...');
@@ -224,11 +252,13 @@ async function main() {
   const limit = pLimit(opts.concurrency);
   console.log('Concurrency limit set to:', opts.concurrency);
   
-  // Process files one by one for debugging
-  for (const file of files) { 
+  // Process files with concurrency control
+  const processWithLimit = limit(async (file) => {
     console.log(`\n--- Processing file: ${file} ---`);
-    await processFile(file, opts, stats);
-  }
+    return processFile(file, opts, stats);
+  });
+  
+  await Promise.all(files.map(processWithLimit));
   
   console.log(`\nScanned: ${stats.scanned}, Updated: ${stats.updated}, Skipped: ${stats.skipped}, Errors: ${stats.errors}`);
 }
