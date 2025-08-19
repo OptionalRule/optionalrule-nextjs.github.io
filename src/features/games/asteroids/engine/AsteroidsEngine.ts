@@ -140,6 +140,9 @@ export class AsteroidsEngine {
   }
 
   private handleShooting(): void {
+    // Guard against shooting when ship is not active
+    if (!this.ship.getActive()) return
+    
     const now = performance.now()
     
     if (now - this.lastShotTime >= GAME_CONFIG.bullets.cooldown) {
@@ -290,7 +293,10 @@ export class AsteroidsEngine {
   }
 
   private cleanupDeadEntities(): void {
-    this.entities = this.entities.filter(entity => entity.getActive())
+    // Keep the ship entity even when inactive (for respawning)
+    this.entities = this.entities.filter(entity => 
+      entity.getActive() || entity instanceof Ship
+    )
   }
 
   private render(): void {

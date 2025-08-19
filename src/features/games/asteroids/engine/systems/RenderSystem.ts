@@ -1,5 +1,5 @@
 import type { Vector2D } from '../../types'
-import { COLORS } from '../../constants'
+import { COLORS, GAME_CONFIG } from '../../constants'
 import type { Entity } from '../entities/Entity'
 
 export interface RenderOptions {
@@ -33,16 +33,16 @@ export class RenderSystem {
     
     // Set up pixel ratio for high DPI displays
     const pixelRatio = window.devicePixelRatio || 1
-    const rect = this.canvas.getBoundingClientRect()
     
-    this.canvas.width = rect.width * pixelRatio
-    this.canvas.height = rect.height * pixelRatio
+    // Use game config dimensions for internal canvas size
+    this.canvas.width = GAME_CONFIG.canvas.width * pixelRatio
+    this.canvas.height = GAME_CONFIG.canvas.height * pixelRatio
     
     this.ctx.scale(pixelRatio, pixelRatio)
     
-    // Set canvas display size
-    this.canvas.style.width = rect.width + 'px'
-    this.canvas.style.height = rect.height + 'px'
+    // Set canvas display size to match game dimensions
+    this.canvas.style.width = GAME_CONFIG.canvas.width + 'px'
+    this.canvas.style.height = GAME_CONFIG.canvas.height + 'px'
   }
 
   clear(): void {
@@ -335,10 +335,11 @@ export class RenderSystem {
   resize(width: number, height: number): void {
     const pixelRatio = window.devicePixelRatio || 1
     
-    this.canvas.width = width * pixelRatio
-    this.canvas.height = height * pixelRatio
-    this.canvas.style.width = width + 'px'
-    this.canvas.style.height = height + 'px'
+    // Always use game config dimensions regardless of requested size
+    this.canvas.width = GAME_CONFIG.canvas.width * pixelRatio
+    this.canvas.height = GAME_CONFIG.canvas.height * pixelRatio
+    this.canvas.style.width = GAME_CONFIG.canvas.width + 'px'
+    this.canvas.style.height = GAME_CONFIG.canvas.height + 'px'
     
     this.ctx.scale(pixelRatio, pixelRatio)
     this.ctx.imageSmoothingEnabled = false

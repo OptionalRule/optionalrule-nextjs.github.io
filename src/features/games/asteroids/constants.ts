@@ -64,7 +64,7 @@ export const COLORS = {
 } as const
 
 export const PHYSICS = {
-  wrapPadding: 50,
+  wrapPadding: 5,
   collisionRadius: {
     ship: 8,
     bullet: 2,

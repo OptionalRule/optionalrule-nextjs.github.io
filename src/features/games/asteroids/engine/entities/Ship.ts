@@ -74,8 +74,8 @@ export class Ship extends Entity {
       this.renderThrust(ctx)
     }
 
-    // Render ship with invulnerability flashing
-    if (!this.isInvulnerable || Math.floor(Date.now() / 100) % 2 === 0) {
+    // Render ship with invulnerability flashing (slower flash, more visible)
+    if (!this.isInvulnerable || Math.floor(Date.now() / 300) % 3 !== 0) {
       this.drawPolygon(ctx, this.shipVertices, COLORS.shipFill, COLORS.ship)
     }
   }
