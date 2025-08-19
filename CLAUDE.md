@@ -102,3 +102,81 @@ All scripts use ESM loader pattern and are located in `scripts/` directory:
 - **Static-only**: No server-side rendering or API routes in production
 - **Image optimization disabled**: Required for static export to GitHub Pages
 - **Search runs client-side**: No server dependency for search functionality
+
+## Code Quality and Best Practices Guidelines (Next.js with TypeScript)
+
+### Architecture and Design Principles
+
+- **Architecture-First Approach**: Design the application structure using Next.js conventions (pages/app router, API routes, middleware). Plan component hierarchy, state management, and data flow before implementation.
+- **Single Responsibility Principle**: Each React component, custom hook, utility function, and API route should have one clear purpose. Separate business logic from presentation logic.
+- **Encapsulation**: Use proper TypeScript access modifiers, private methods, and module boundaries. Expose only necessary props and interfaces from components and modules.
+- **DRY (Don't Repeat Yourself)**: Extract common functionality into custom hooks, utility functions, shared components, and reusable TypeScript types/interfaces.
+
+### Next.js Specific Best Practices
+
+- **App Router Structure**: Use the app directory structure with proper layout nesting, loading states, and error boundaries.
+- **Server vs Client Components**: Explicitly mark client components with 'use client' and prefer server components for data fetching and static content.
+- **API Route Security**: Implement proper HTTP method handling, request validation, and error responses in API routes.
+- **Performance Optimization**: Utilize Next.js built-in optimizations (Image component, dynamic imports, static generation) and implement proper caching strategies.
+- **SEO and Metadata**: Implement proper metadata API usage, structured data, and semantic HTML for better search engine optimization.
+
+### TypeScript Standards
+
+- **Type Safety**: Use strict TypeScript configuration with `strict: true` and additional strict flags (`noImplicitReturns`, `noFallthroughCasesInSwitch`).
+- **Interface Design**: Define clear interfaces for props, API responses, and data models. Use generic types for reusable components.
+- **Type Guards**: Implement proper runtime type checking using type guards or validation libraries like Zod for external data.
+- **Utility Types**: Leverage TypeScript utility types (`Omit`, `Pick`, `Partial`, etc.) for type transformations and avoid duplication.
+
+### React and Component Best Practices
+
+- **Component Design**: Create small, focused components with clear prop interfaces. Use composition over inheritance.
+- **State Management**: Choose appropriate state management (useState, useReducer, Zustand, Redux Toolkit) based on complexity and scope.
+- **Custom Hooks**: Extract complex logic into custom hooks for reusability and testability.
+- **Error Boundaries**: Implement error boundaries for graceful error handling in component trees.
+- **Accessibility**: Follow WCAG guidelines with proper ARIA attributes, semantic HTML, and keyboard navigation support.
+
+### Security Best Practices
+
+- **Input Validation**: Validate all user inputs using schema validation libraries (Zod, Yup) on both client and server sides.
+- **API Security**: Implement CSRF protection, rate limiting, and proper authentication/authorization for API routes.
+- **XSS Prevention**: Sanitize user-generated content and avoid dangerouslySetInnerHTML unless absolutely necessary.
+- **Environment Variables**: Use Next.js environment variable conventions (`NEXT_PUBLIC_` for client-side, secure server-only variables).
+- **Content Security Policy**: Implement CSP headers through next.config.js or middleware for additional security.
+- **Dependency Security**: Regular dependency updates, use of `npm audit`, and careful evaluation of third-party packages.
+
+### Performance and Optimization
+
+- **Bundle Optimization**: Use dynamic imports for code splitting, optimize bundle size with proper tree shaking.
+- **Image Optimization**: Always use Next.js Image component with proper sizing, lazy loading, and format optimization.
+- **Caching Strategies**: Implement appropriate caching with Next.js cache functions, SWR/React Query for client-side caching.
+- **Core Web Vitals**: Monitor and optimize for LCP, FID, CLS, and other performance metrics.
+
+### Testing and Quality Assurance
+
+- **Testing Stack**: Use Jest with React Testing Library for unit/integration tests, Playwright or Cypress for E2E tests.
+- **Component Testing**: Test component behavior, user interactions, and accessibility features.
+- **API Testing**: Test API routes with proper mocking and error scenarios.
+- **Type Testing**: Use TypeScript compiler tests and tools like `tsd` for type-level testing.
+
+### Development Workflow
+
+- **Linting and Formatting**: Configure ESLint with Next.js rules, Prettier, and TypeScript-specific linting rules.
+- **Git Hooks**: Implement pre-commit hooks for linting, type checking, and testing using Husky or similar tools.
+- **Code Review**: Review for TypeScript type safety, React patterns, Next.js best practices, and security considerations.
+
+### Implementation Standards
+
+- Follow Next.js and React conventions for file naming (kebab-case for files, PascalCase for components)
+- Use ESLint rules: `@next/eslint-plugin-next`, `@typescript-eslint/recommended`
+- Implement proper TypeScript path mapping in `tsconfig.json` for clean imports
+- Use Next.js built-in features (middleware, route handlers) over custom solutions
+- Implement proper loading states and error handling for async operations
+- Consider accessibility from the start with proper semantic HTML and ARIA attributes
+
+### Performance Monitoring
+
+- Implement analytics and monitoring (Web Vitals, error tracking)
+- Use Next.js built-in performance metrics and bundle analysis
+- Regular lighthouse audits and performance testing
+
+Remember: These guidelines should enhance development velocity while maintaining code quality. Leverage TypeScript's type system and Next.js optimizations to build robust, scalable applications.
