@@ -1,9 +1,9 @@
 /* Game Canvas Container */
 .gameContainer {
   position: relative;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  width: 800px;
+  height: 600px;
+  margin: 0 auto;
   background: linear-gradient(135deg, #000011 0%, #001122 100%);
   border-radius: 12px;
   overflow: hidden;
@@ -15,9 +15,8 @@
 
 .gameCanvas {
   display: block;
-  width: 100%;
-  height: auto;
-  max-width: 100%;
+  width: 800px;
+  height: 600px;
   image-rendering: optimizeSpeed;
   image-rendering: -moz-crisp-edges;
   image-rendering: -webkit-optimize-contrast;
@@ -140,40 +139,15 @@
   animation: blink 1.5s step-start infinite;
 }
 
-/* Responsive design */
-@media (max-width: 768px) {
-  .gameContainer {
-    border-radius: 8px;
-    margin: 0 -16px;
-  }
-  
-  .menuTitle {
-    font-size: 36px;
-  }
-  
-  .menuInstructions {
-    font-size: 16px;
-    padding: 0 20px;
-  }
-  
-  .startPrompt {
-    font-size: 18px;
-  }
+.mobileMessage {
+  color: #ff6666;
+  font-family: 'Courier New', monospace;
+  font-size: 20px;
+  text-shadow: 0 0 15px #ff6666;
+  margin-top: 30px;
+  text-align: center;
 }
 
-@media (max-width: 480px) {
-  .menuTitle {
-    font-size: 28px;
-  }
-  
-  .menuInstructions {
-    font-size: 14px;
-  }
-  
-  .startPrompt {
-    font-size: 16px;
-  }
-}
 
 /* Animations */
 @keyframes pulse {

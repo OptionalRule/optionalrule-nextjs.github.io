@@ -14,6 +14,7 @@ export default function AsteroidsGame({ className }: AsteroidsGameProps) {
     canvasRef,
     gameState,
     isEngineReady,
+    isMobile,
     startGame,
     pauseGame,
     resumeGame,
@@ -43,6 +44,7 @@ export default function AsteroidsGame({ className }: AsteroidsGameProps) {
               canvasRef={canvasRef}
               gameState={gameState}
               isEngineReady={isEngineReady}
+              isMobile={isMobile}
               onStartGame={startGame}
               className="w-full"
             />

@@ -9,6 +9,7 @@ export interface GameCanvasProps {
   canvasRef: React.RefObject<HTMLCanvasElement | null>
   gameState: GameState
   isEngineReady: boolean
+  isMobile: boolean
   onStartGame: () => void
   className?: string
 }
@@ -17,12 +18,13 @@ export function GameCanvas({
   canvasRef, 
   gameState, 
   isEngineReady, 
+  isMobile,
   onStartGame,
   className 
 }: GameCanvasProps) {
-  // Handle click to start on menu
+  // Handle click to start on menu (disabled on mobile)
   const handleCanvasClick = () => {
-    if (gameState.gameStatus === 'menu') {
+    if (gameState.gameStatus === 'menu' && !isMobile) {
       onStartGame()
     }
   }
@@ -48,7 +50,7 @@ export function GameCanvas({
       />
       
       {/* Loading overlay */}
-      {!isEngineReady && (
+      {!isEngineReady && !isMobile && (
         <div className={styles.menuOverlay}>
           <div className={styles.loadingText}>
             INITIALIZING ASTEROIDS...
@@ -56,8 +58,18 @@ export function GameCanvas({
         </div>
       )}
       
+      {/* Mobile not supported overlay */}
+      {isMobile && (
+        <div className={styles.menuOverlay}>
+          <h1 className={styles.menuTitle}>ASTEROIDS</h1>
+          <div className={styles.mobileMessage}>
+            Sorry, not available on Mobile
+          </div>
+        </div>
+      )}
+      
       {/* Menu overlay */}
-      {isEngineReady && gameState.gameStatus === 'menu' && (
+      {isEngineReady && !isMobile && gameState.gameStatus === 'menu' && (
         <div className={styles.menuOverlay}>
           <h1 className={styles.menuTitle}>ASTEROIDS</h1>
           

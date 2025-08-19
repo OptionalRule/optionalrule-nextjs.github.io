@@ -332,10 +332,10 @@ export class RenderSystem {
     return this.ctx
   }
 
-  resize(width: number, height: number): void {
+  resize(): void {
     const pixelRatio = window.devicePixelRatio || 1
     
-    // Always use game config dimensions regardless of requested size
+    // Always use game config dimensions
     this.canvas.width = GAME_CONFIG.canvas.width * pixelRatio
     this.canvas.height = GAME_CONFIG.canvas.height * pixelRatio
     this.canvas.style.width = GAME_CONFIG.canvas.width + 'px'

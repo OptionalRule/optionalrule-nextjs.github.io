@@ -7,6 +7,7 @@ export interface UseAsteroidsReturn {
   canvasRef: React.RefObject<HTMLCanvasElement | null>
   gameState: GameState
   isEngineReady: boolean
+  isMobile: boolean
   startGame: () => void
   pauseGame: () => void
   resumeGame: () => void
@@ -24,6 +25,25 @@ export function useAsteroids(): UseAsteroidsReturn {
     gameStatus: 'menu',
     highScore: 0,
   })
+
+  // Detect mobile device
+  const isMobile = useMemo(() => {
+    if (typeof window === 'undefined') return false
+    
+    const userAgent = navigator.userAgent || navigator.vendor || (window as any).opera
+    
+    // Check for mobile user agents
+    const mobileRegex = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i
+    const isMobileUserAgent = mobileRegex.test(userAgent)
+    
+    // Check for touch capability
+    const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0
+    
+    // Check screen size (consider tablets as mobile for this game)
+    const isSmallScreen = window.innerWidth <= 1024
+    
+    return isMobileUserAgent || (isTouchDevice && isSmallScreen)
+  }, [])
 
 
   // Engine event handlers wrapped in useMemo to prevent recreation on every render
@@ -59,9 +79,15 @@ export function useAsteroids(): UseAsteroidsReturn {
     },
   }), []) // Empty dependency array since these handlers don't depend on external values
 
-  // Initialize engine when canvas is ready
+  // Initialize engine when canvas is ready (but not on mobile)
   useEffect(() => {
-    if (!canvasRef.current) return
+    if (!canvasRef.current || isMobile) {
+      // On mobile, just set ready to true without initializing the engine
+      if (isMobile) {
+        setIsEngineReady(true)
+      }
+      return
+    }
 
     const timeoutId = setTimeout(() => {
       try {
@@ -93,7 +119,7 @@ export function useAsteroids(): UseAsteroidsReturn {
       }
       setIsEngineReady(false)
     }
-  }, [engineEvents])
+  }, [engineEvents, isMobile])
 
 
   // Handle window blur/focus for automatic pause/resume
@@ -157,6 +183,7 @@ export function useAsteroids(): UseAsteroidsReturn {
     canvasRef,
     gameState,
     isEngineReady,
+    isMobile,
     startGame,
     pauseGame,
     resumeGame,

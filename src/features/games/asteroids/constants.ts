@@ -2,8 +2,8 @@ import type { GameConfig } from './types'
 
 export const GAME_CONFIG: GameConfig = {
   canvas: {
-    width: 1280,
-    height: 720,
+    width: 800,
+    height: 600,
   },
   ship: {
     acceleration: 300,
