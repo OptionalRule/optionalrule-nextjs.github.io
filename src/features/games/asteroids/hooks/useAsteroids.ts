@@ -25,6 +25,7 @@ export function useAsteroids(): UseAsteroidsReturn {
     highScore: 0,
   })
 
+
   // Engine event handlers wrapped in useMemo to prevent recreation on every render
   const engineEvents: AsteroidsEngineEvents = useMemo(() => ({
     onGameStateChange: (newState: GameState) => {
@@ -60,35 +61,39 @@ export function useAsteroids(): UseAsteroidsReturn {
 
   // Initialize engine when canvas is ready
   useEffect(() => {
-    if (!canvasRef.current || engineRef.current) return
+    if (!canvasRef.current) return
 
-    try {
-      // Set canvas size
-      const canvas = canvasRef.current
-      canvas.width = GAME_CONFIG.canvas.width
-      canvas.height = GAME_CONFIG.canvas.height
+    const timeoutId = setTimeout(() => {
+      try {
+        // Set canvas size
+        const canvas = canvasRef.current!
+        canvas.width = GAME_CONFIG.canvas.width
+        canvas.height = GAME_CONFIG.canvas.height
 
-      // Create engine
-      engineRef.current = new AsteroidsEngine(canvas, engineEvents)
-      setIsEngineReady(true)
+        // Create engine
+        const engine = new AsteroidsEngine(canvas, engineEvents)
+        engineRef.current = engine
+        
+        // Set initial game state from engine
+        setGameState(engine.getGameState())
+        setIsEngineReady(true)
 
-      // Set initial game state from engine
-      setGameState(engineRef.current.getGameState())
-
-    } catch (error) {
-      console.error('Failed to initialize Asteroids engine:', error)
-      setIsEngineReady(false)
-    }
+      } catch (error) {
+        console.error('Failed to initialize Asteroids engine:', error)
+        setIsEngineReady(false)
+      }
+    }, 100) // Small delay to ensure canvas is properly mounted
 
     // Cleanup function
     return () => {
+      clearTimeout(timeoutId)
       if (engineRef.current) {
         engineRef.current.destroy()
         engineRef.current = undefined
       }
       setIsEngineReady(false)
     }
-  }, [engineEvents]) // Depend on engineEvents, but it's memoized so won't cause re-runs
+  }, [engineEvents])
 
 
   // Handle window blur/focus for automatic pause/resume

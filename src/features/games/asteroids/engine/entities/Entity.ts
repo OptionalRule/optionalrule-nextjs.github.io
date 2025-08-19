@@ -1,6 +1,15 @@
 import type { Vector2D, EntityState } from '../../types'
 import { Vector2DUtils } from '../utils/Vector2D'
 
+// Fallback UUID generator for environments without crypto.randomUUID
+function generateId(): string {
+  if (typeof crypto !== 'undefined' && crypto.randomUUID) {
+    return crypto.randomUUID()
+  }
+  // Fallback to simple random ID
+  return 'id-' + Math.random().toString(36).substr(2, 9) + '-' + Date.now().toString(36)
+}
+
 export abstract class Entity {
   protected id: string
   protected position: Vector2D
@@ -9,7 +18,7 @@ export abstract class Entity {
   protected isActive: boolean
 
   constructor(position: Vector2D = Vector2DUtils.zero()) {
-    this.id = crypto.randomUUID()
+    this.id = generateId()
     this.position = Vector2DUtils.clone(position)
     this.velocity = Vector2DUtils.zero()
     this.rotation = 0

@@ -35,17 +35,6 @@ export function GameCanvas({
     }
   }, [canvasRef, isEngineReady])
 
-  // Render loading state
-  if (!isEngineReady) {
-    return (
-      <div className={`${styles.loading} ${className || ''}`}>
-        <div className={styles.loadingText}>
-          INITIALIZING ASTEROIDS...
-        </div>
-      </div>
-    )
-  }
-
   return (
     <div className={`${styles.gameContainer} ${className || ''}`}>
       <canvas
@@ -58,8 +47,17 @@ export function GameCanvas({
         role="application"
       />
       
+      {/* Loading overlay */}
+      {!isEngineReady && (
+        <div className={styles.menuOverlay}>
+          <div className={styles.loadingText}>
+            INITIALIZING ASTEROIDS...
+          </div>
+        </div>
+      )}
+      
       {/* Menu overlay */}
-      {gameState.gameStatus === 'menu' && (
+      {isEngineReady && gameState.gameStatus === 'menu' && (
         <div className={styles.menuOverlay}>
           <h1 className={styles.menuTitle}>ASTEROIDS</h1>
           

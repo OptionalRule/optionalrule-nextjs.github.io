@@ -54,6 +54,9 @@ export class AsteroidsEngine {
 
     // Set up input handling
     this.setupInputHandling()
+    
+    // Render initial state
+    this.render()
   }
 
   private setupInputHandling(): void {
@@ -310,6 +313,9 @@ export class AsteroidsEngine {
       this.renderSystem.drawPauseScreen()
     } else if (this.gameState.gameStatus === 'gameOver') {
       this.renderSystem.drawGameOver(this.gameState.score, this.gameState.highScore)
+    } else if (this.gameState.gameStatus === 'menu') {
+      // For menu state, just render the background and maybe the ship
+      this.renderSystem.renderEntities([this.ship])
     }
   }
 
