@@ -1,0 +1,233 @@
+/* Game Canvas Container */
+.gameContainer {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: linear-gradient(135deg, #000011 0%, #001122 100%);
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 
+    0 0 30px rgba(0, 255, 255, 0.2),
+    inset 0 0 50px rgba(0, 0, 0, 0.5);
+  border: 2px solid rgba(0, 255, 255, 0.3);
+}
+
+.gameCanvas {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-width: 100%;
+  image-rendering: optimizeSpeed;
+  image-rendering: -moz-crisp-edges;
+  image-rendering: -webkit-optimize-contrast;
+  image-rendering: crisp-edges;
+  image-rendering: pixelated;
+  background: radial-gradient(ellipse at center, #001122 0%, #000000 100%);
+}
+
+/* Game overlay for UI elements */
+.gameOverlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  pointer-events: none;
+  z-index: 10;
+}
+
+/* Loading state */
+.loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 400px;
+  background: linear-gradient(135deg, #000011 0%, #001122 100%);
+  border-radius: 12px;
+  border: 2px solid rgba(0, 255, 255, 0.3);
+}
+
+.loadingText {
+  color: #00ff00;
+  font-family: 'Courier New', monospace;
+  font-size: 24px;
+  text-shadow: 0 0 10px #00ff00;
+  animation: pulse 2s ease-in-out infinite;
+}
+
+/* Error state */
+.error {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  min-height: 400px;
+  background: linear-gradient(135deg, #110000 0%, #220011 100%);
+  border-radius: 12px;
+  border: 2px solid rgba(255, 0, 0, 0.3);
+}
+
+.errorText {
+  color: #ff4444;
+  font-family: 'Courier New', monospace;
+  font-size: 18px;
+  text-shadow: 0 0 10px #ff4444;
+  text-align: center;
+  margin-bottom: 10px;
+}
+
+.errorSubtext {
+  color: #ff8888;
+  font-family: 'Courier New', monospace;
+  font-size: 14px;
+  text-align: center;
+}
+
+/* Menu overlay */
+.menuOverlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background: rgba(0, 0, 0, 0.8);
+  z-index: 20;
+}
+
+.menuTitle {
+  color: #00ffff;
+  font-family: 'Courier New', monospace;
+  font-size: 48px;
+  font-weight: bold;
+  text-shadow: 0 0 20px #00ffff;
+  margin-bottom: 30px;
+  animation: glow 2s ease-in-out infinite alternate;
+}
+
+.menuInstructions {
+  color: #ffff00;
+  font-family: 'Courier New', monospace;
+  font-size: 18px;
+  text-shadow: 0 0 10px #ffff00;
+  text-align: center;
+  line-height: 1.5;
+}
+
+.menuInstruction {
+  margin-bottom: 8px;
+}
+
+.startPrompt {
+  color: #00ff00;
+  font-family: 'Courier New', monospace;
+  font-size: 20px;
+  text-shadow: 0 0 15px #00ff00;
+  margin-top: 30px;
+  animation: blink 1.5s step-start infinite;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .gameContainer {
+    border-radius: 8px;
+    margin: 0 -16px;
+  }
+  
+  .menuTitle {
+    font-size: 36px;
+  }
+  
+  .menuInstructions {
+    font-size: 16px;
+    padding: 0 20px;
+  }
+  
+  .startPrompt {
+    font-size: 18px;
+  }
+}
+
+@media (max-width: 480px) {
+  .menuTitle {
+    font-size: 28px;
+  }
+  
+  .menuInstructions {
+    font-size: 14px;
+  }
+  
+  .startPrompt {
+    font-size: 16px;
+  }
+}
+
+/* Animations */
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+@keyframes glow {
+  0% {
+    text-shadow: 0 0 20px #00ffff;
+  }
+  100% {
+    text-shadow: 0 0 30px #00ffff, 0 0 40px #00ffff;
+  }
+}
+
+@keyframes blink {
+  0%, 50% {
+    opacity: 1;
+  }
+  51%, 100% {
+    opacity: 0;
+  }
+}
+
+/* Focus styles for accessibility */
+.gameCanvas:focus {
+  outline: 2px solid #00ffff;
+  outline-offset: 4px;
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .gameContainer {
+    border-color: #ffffff;
+    box-shadow: 0 0 0 2px #ffffff;
+  }
+  
+  .menuTitle {
+    color: #ffffff;
+    text-shadow: none;
+  }
+  
+  .menuInstructions {
+    color: #ffffff;
+    text-shadow: none;
+  }
+  
+  .startPrompt {
+    color: #ffffff;
+    text-shadow: none;
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .loadingText,
+  .menuTitle,
+  .startPrompt {
+    animation: none;
+  }
+}

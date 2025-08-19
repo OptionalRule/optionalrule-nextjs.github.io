@@ -1,5 +1,18 @@
 [
   {
+    "slug": "the-surprising-history-of-solo-ttrpg-play",
+    "title": "The Surprising History of Solo TTRPG Play",
+    "excerpt": "A brief description of your post that will appear in previews and summaries.",
+    "tags": [
+      "tag1",
+      "tag2",
+      "tag3"
+    ],
+    "content": "",
+    "date": "2025-08-18",
+    "readingTime": 5
+  },
+  {
     "slug": "site-migration-complete",
     "title": "Site Migration Complete",
     "excerpt": "I migrated the site to NextJS for easier management. Having used AI for this I reflect a bit on the future of TTRPG content.",

@@ -99,7 +99,7 @@ export function Header() {
     setTheme(next);
     try {
       localStorage.setItem('theme', next);
-    } catch (_) {
+    } catch {
       // ignore storage failures
     }
     document.documentElement.classList.toggle('dark', next === 'dark');
