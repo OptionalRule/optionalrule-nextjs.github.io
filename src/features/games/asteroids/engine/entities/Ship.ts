@@ -15,19 +15,19 @@ export class Ship extends Entity {
     super(position)
     this.rotation = -Math.PI / 2 // Point upward initially
     
-    // Define ship shape as triangle
+    // Define ship shape as triangle (pointing right in standard math coordinates)
     this.shipVertices = [
-      { x: 0, y: -12 },   // Nose
-      { x: -8, y: 8 },    // Left wing
-      { x: 0, y: 4 },     // Rear center
-      { x: 8, y: 8 },     // Right wing
+      { x: 12, y: 0 },    // Nose (pointing right)
+      { x: -8, y: -8 },   // Left wing
+      { x: -4, y: 0 },    // Rear center
+      { x: -8, y: 8 },    // Right wing
     ]
 
-    // Define thrust flame shape
+    // Define thrust flame shape (behind the ship when pointing right)
     this.thrustVertices = [
-      { x: -4, y: 8 },    // Left
-      { x: 0, y: 16 },    // Tip
-      { x: 4, y: 8 },     // Right
+      { x: -8, y: -4 },   // Left
+      { x: -16, y: 0 },   // Tip
+      { x: -8, y: 4 },    // Right
     ]
   }
 
