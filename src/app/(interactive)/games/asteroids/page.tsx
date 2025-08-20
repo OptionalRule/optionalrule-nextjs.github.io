@@ -20,7 +20,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Asteroids Game - Optional Rule",
     description: "Play the classic Asteroids arcade game reimagined with modern web technologies.",
-    images: ["/images/interactive/asteroids-splashscreen.webp"]
+    images: ["/images/interactive/asteroids-splashscreen.webp"] // Case sensative
   }
 }
 
