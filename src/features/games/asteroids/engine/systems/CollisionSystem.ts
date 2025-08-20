@@ -89,8 +89,7 @@ export class CollisionSystem {
   }
 
   private getEntityType(entity: Entity): string {
-    const constructor = entity.constructor.name.toLowerCase()
-    return constructor
+    return entity.getEntityType()
   }
 
   resolveCollisions(collisions: CollisionPair[]): void {

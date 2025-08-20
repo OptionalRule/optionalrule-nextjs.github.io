@@ -28,6 +28,7 @@ export abstract class Entity {
   abstract update(deltaTime: number, canvasWidth: number, canvasHeight: number): void
   abstract render(ctx: CanvasRenderingContext2D): void
   abstract getCollisionRadius(): number
+  abstract getEntityType(): string
 
   getId(): string {
     return this.id

@@ -139,6 +139,10 @@ export class Ship extends Entity {
     return PHYSICS.collisionRadius.ship
   }
 
+  getEntityType(): string {
+    return 'ship'
+  }
+
   getCanCollide(): boolean {
     return this.isActive && !this.isInvulnerable
   }

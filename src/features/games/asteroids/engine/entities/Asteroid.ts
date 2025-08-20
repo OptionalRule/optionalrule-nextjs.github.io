@@ -135,6 +135,10 @@ export class Asteroid extends Entity {
     return PHYSICS.collisionRadius.asteroid[this.size]
   }
 
+  getEntityType(): string {
+    return 'asteroid'
+  }
+
   getSize(): AsteroidSize {
     return this.size
   }

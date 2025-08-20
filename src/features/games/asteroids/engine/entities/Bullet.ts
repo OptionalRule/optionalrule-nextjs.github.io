@@ -63,6 +63,10 @@ export class Bullet extends Entity {
     return PHYSICS.collisionRadius.bullet
   }
 
+  getEntityType(): string {
+    return 'bullet'
+  }
+
   getSourceId(): string {
     return this.sourceId
   }
