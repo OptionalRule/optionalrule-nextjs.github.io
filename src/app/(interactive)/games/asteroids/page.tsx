@@ -1,22 +1,29 @@
-'use client'
+import type { Metadata } from 'next'
+import AsteroidsGameClient from './AsteroidsGameClient'
 
-import dynamic from 'next/dynamic'
-
-// Dynamically import the game with no SSR for client-side only rendering
-const AsteroidsGame = dynamic(() => import('@/features/games/asteroids'), {
-  ssr: false,
-  loading: () => (
-    <div className="min-h-screen bg-background flex items-center justify-center">
-      <div className="text-center">
-        <div className="text-2xl font-mono text-game-neon-green mb-4">
-          LOADING ASTEROIDS...
-        </div>
-        <div className="w-8 h-8 border-2 border-game-neon-green border-t-transparent rounded-full animate-spin mx-auto"></div>
-      </div>
-    </div>
-  ),
-})
+export const metadata: Metadata = {
+  title: "Asteroids Game - Optional Rule",
+  description: "Play the classic Asteroids arcade game reimagined with modern web technologies. Destroy asteroids, avoid collisions, and rack up points!",
+  openGraph: {
+    title: "Asteroids Game - Optional Rule",
+    description: "Play the classic Asteroids arcade game reimagined with modern web technologies.",
+    images: [
+      {
+        url: "/images/asteroids-splashscreen.webp",
+        width: 1200,
+        height: 800,
+        alt: "Asteroids Splashscreen"
+      }
+    ]
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Asteroids Game - Optional Rule",
+    description: "Play the classic Asteroids arcade game reimagined with modern web technologies.",
+    images: ["/images/asteroids-splashscreen.webp"]
+  }
+}
 
 export default function AsteroidsPage() {
-  return <AsteroidsGame />
+  return <AsteroidsGameClient />
 }

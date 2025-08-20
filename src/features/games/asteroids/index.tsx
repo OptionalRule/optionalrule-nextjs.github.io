@@ -30,7 +30,7 @@ export default function AsteroidsGame({ className }: AsteroidsGameProps) {
             ASTEROIDS
           </h1>
           <p className="text-muted-foreground mt-1">
-            Classic space shooter reimagined with modern graphics
+            Classic space shooter reimagined with modern graphics.
           </p>
         </div>
       </header>

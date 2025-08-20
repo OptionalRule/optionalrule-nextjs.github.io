@@ -259,9 +259,10 @@ export class AsteroidsEngine {
     const bonusPoints = this.gameState.level * GAMEPLAY.levelCompletionBonus
     this.addScore(bonusPoints)
     
-    // Set game state to paused to prevent game logic during transition
+    // Set game state to loading to show level loading screen
     const previousState = this.gameState.gameStatus
-    this.gameState.gameStatus = 'paused'
+    this.gameState.gameStatus = 'loading'
+    this.notifyStateChange()
     
     // Clear asteroids and bullets immediately to prevent visual artifacts
     this.entities = this.entities.filter(e => e instanceof Ship)
@@ -273,7 +274,7 @@ export class AsteroidsEngine {
     
     // Start next level after brief delay
     setTimeout(() => {
-      if (this.gameState.gameStatus === 'paused') {
+      if (this.gameState.gameStatus === 'loading') {
         this.initializeLevel()
         this.gameState.gameStatus = previousState
         this.notifyStateChange()
@@ -333,6 +334,14 @@ export class AsteroidsEngine {
         this.gameState.level
       )
       this.renderSystem.drawPauseScreen()
+    } else if (this.gameState.gameStatus === 'loading') {
+      this.renderSystem.renderEntities(this.entities)
+      this.renderSystem.drawHUD(
+        this.gameState.score,
+        this.gameState.lives,
+        this.gameState.level
+      )
+      this.renderSystem.drawLevelLoading(this.gameState.level)
     } else if (this.gameState.gameStatus === 'gameOver') {
       this.renderSystem.drawGameOver(this.gameState.score, this.gameState.highScore)
     } else if (this.gameState.gameStatus === 'menu') {

@@ -7,7 +7,7 @@ export interface GameState {
   score: number
   lives: number
   level: number
-  gameStatus: 'menu' | 'playing' | 'paused' | 'gameOver'
+  gameStatus: 'menu' | 'playing' | 'paused' | 'gameOver' | 'loading'
   highScore: number
 }
 

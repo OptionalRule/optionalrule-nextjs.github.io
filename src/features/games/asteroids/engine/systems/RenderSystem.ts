@@ -324,6 +324,41 @@ export class RenderSystem {
     this.ctx.restore()
   }
 
+  drawLevelLoading(level: number): void {
+    const centerX = this.canvas.width / 2
+    const centerY = this.canvas.height / 2
+    
+    // Semi-transparent overlay
+    this.ctx.save()
+    this.ctx.fillStyle = `rgba(0, 0, 0, ${RENDERING.pauseOverlayAlpha})`
+    this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height)
+    
+    // Blinking effect based on time
+    const time = Date.now()
+    const blinkSpeed = 500 // milliseconds for blink cycle
+    const opacity = Math.sin(time / blinkSpeed * Math.PI) * 0.5 + 0.5
+    
+    this.ctx.save()
+    this.ctx.globalAlpha = 0.3 + opacity * 0.7 // Blend between 30% and 100% opacity
+    
+    // "LOADING" text in yellow (larger)
+    this.drawText('LOADING', { x: centerX, y: centerY }, {
+      font: `${RENDERING.pauseTitleSize}px ${RENDERING.defaultFont}`,
+      color: '#ffff00',
+      shadow: true
+    })
+    
+    // "LEVEL #" text in green (smaller, below)
+    this.drawText(`LEVEL ${level}`, { x: centerX, y: centerY + 50 }, {
+      font: `${RENDERING.pauseInstructionSize}px ${RENDERING.defaultFont}`,
+      color: '#00ff00',
+      shadow: true
+    })
+    
+    this.ctx.restore()
+    this.ctx.restore()
+  }
+
   getCanvas(): HTMLCanvasElement {
     return this.canvas
   }
