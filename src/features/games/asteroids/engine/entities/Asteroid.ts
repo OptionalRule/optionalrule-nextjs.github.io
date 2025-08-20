@@ -63,12 +63,18 @@ export class Asteroid extends Entity {
   render(ctx: CanvasRenderingContext2D): void {
     if (!this.isActive) return
 
-    // Add subtle glow effect
+    // Get size-specific color
+    const asteroidColor = COLORS.asteroids[this.size]
+
     ctx.save()
-    ctx.shadowColor = COLORS.asteroids
-    ctx.shadowBlur = RENDERING.asteroidGlow
     
-    this.drawPolygon(ctx, this.vertices, COLORS.asteroidsFill, COLORS.asteroids)
+    // Add subtle outer glow effect
+    ctx.shadowColor = asteroidColor
+    ctx.shadowBlur = RENDERING.asteroidGlow
+    ctx.shadowOffsetX = 0
+    ctx.shadowOffsetY = 0
+    
+    this.drawPolygon(ctx, this.vertices, COLORS.asteroidsFill, asteroidColor)
     
     ctx.restore()
   }

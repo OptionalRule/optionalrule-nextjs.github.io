@@ -55,11 +55,15 @@ export const CONTROLS = {
 
 // Visual styling configuration
 export const COLORS = {
-  ship: '#00ffff',
+  ship: '#C0C0C0',
   shipFill: '#003333',
-  asteroids: '#00ff00',
-  asteroidsFill: '#333333',
-  bullets: '#ffff00',
+  asteroids: {
+    large: '#FF4500',     // Orange Red
+    medium: '#FF6347',    // Tomato
+    small: '#FFA500',     // Deep Pink
+  },
+  asteroidsFill: '#330066',
+  bullets: '#7FFF00',     // Lime
   thrust: ['#ff4400', '#ff8800', '#ffaa00'],
   ui: '#00ff00',
   background: '#000011',
@@ -143,7 +147,7 @@ export const RENDERING = {
   // Effects
   bulletRadius: 3,
   bulletGlow: 10,
-  asteroidGlow: 5,
+  asteroidGlow: 15,
   textShadowBlur: 10,
   
   // Overlay alphas

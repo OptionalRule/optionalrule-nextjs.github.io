@@ -184,7 +184,11 @@ export interface PhysicsConfig {
 export interface ColorsConfig {
   ship: string
   shipFill: string
-  asteroids: string
+  asteroids: {
+    large: string
+    medium: string
+    small: string
+  }
   asteroidsFill: string
   bullets: string
   thrust: string[]
