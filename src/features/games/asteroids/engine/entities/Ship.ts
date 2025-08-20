@@ -8,8 +8,8 @@ export class Ship extends Entity {
   private isInvulnerable = false
   private invulnerabilityTimer = 0
   private thrustTween = 0
-  private shipVertices: Vector2D[] = RENDERING.shipVertices
-  private thrustVertices: Vector2D[] = RENDERING.thrustVertices
+  private shipVertices: Vector2D[] = [...RENDERING.shipVertices]
+  private thrustVertices: Vector2D[] = [...RENDERING.thrustVertices]
 
   constructor(position: Vector2D) {
     super(position)
