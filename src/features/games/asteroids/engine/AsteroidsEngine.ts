@@ -259,19 +259,32 @@ export class AsteroidsEngine {
     const bonusPoints = this.gameState.level * GAMEPLAY.levelCompletionBonus
     this.addScore(bonusPoints)
     
-    // Start next level after brief delay
-    setTimeout(() => {
-      this.initializeLevel()
-    }, GAMEPLAY.levelTransitionDelay)
-  }
-
-  private initializeLevel(): void {
-    // Clear existing asteroids and bullets
+    // Set game state to paused to prevent game logic during transition
+    const previousState = this.gameState.gameStatus
+    this.gameState.gameStatus = 'paused'
+    
+    // Clear asteroids and bullets immediately to prevent visual artifacts
     this.entities = this.entities.filter(e => e instanceof Ship)
     
     // Add ship back if it was removed
     if (!this.entities.includes(this.ship)) {
       this.entities.push(this.ship)
+    }
+    
+    // Start next level after brief delay
+    setTimeout(() => {
+      if (this.gameState.gameStatus === 'paused') {
+        this.initializeLevel()
+        this.gameState.gameStatus = previousState
+        this.notifyStateChange()
+      }
+    }, GAMEPLAY.levelTransitionDelay)
+  }
+
+  private initializeLevel(): void {
+    // Entities should already be cleared in completeLevel(), but ensure ship is present
+    if (!this.entities.includes(this.ship)) {
+      this.entities = [this.ship]
     }
 
     // Spawn asteroids for this level

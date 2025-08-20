@@ -9,8 +9,8 @@ export const ASTEROIDS_CONFIG: GameConfig = {
   ship: {
     acceleration: 300,
     maxSpeed: 400,
-    rotationSpeed: 4,
-    friction: 0.98,
+    rotationSpeed: 3,
+    friction: 0.99,
     invulnerabilityTime: 2000,
     startingLives: 3,
   },
@@ -24,8 +24,8 @@ export const ASTEROIDS_CONFIG: GameConfig = {
     minSpeed: 20,
     maxSpeed: 80,
     splitCount: {
-      large: 3,
-      medium: 4,
+      large: 2,
+      medium: 3,
     },
     points: {
       large: 20,
