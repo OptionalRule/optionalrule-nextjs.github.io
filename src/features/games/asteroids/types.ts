@@ -117,3 +117,102 @@ export interface GameEvent {
   type: 'collision' | 'score' | 'levelComplete' | 'gameOver' | 'shipDestroyed'
   data: CollisionEvent | ScoreEvent | number
 }
+
+export interface GameplayConfig {
+  baseAsteroidCount: number
+  maxAsteroidCount: number
+  asteroidIncrement: number
+  levelCompletionBonus: number
+  respawnDelay: number
+  levelTransitionDelay: number
+  asteroidMinDistance: number
+  asteroidSafeSpawnAttempts: number
+  bulletNoseOffset: number
+  thrustAnimationSpeed: number
+  invulnerabilityFlashInterval: number
+  invulnerabilityFlashSkip: number
+  assumedFramerate: number
+}
+
+export interface RenderingConfig {
+  pixelRatioEnabled: boolean
+  imageSmoothingEnabled: boolean
+  starCount: number
+  starTwinkleSpeed: number
+  starBaseAlpha: number
+  starMaxAlpha: number
+  defaultFont: string
+  hudFontSize: number
+  gameOverTitleSize: number
+  gameOverScoreSize: number
+  gameOverHighScoreSize: number
+  gameOverInstructionSize: number
+  pauseTitleSize: number
+  pauseInstructionSize: number
+  debugFontSize: number
+  hudPadding: number
+  bulletRadius: number
+  bulletGlow: number
+  asteroidGlow: number
+  textShadowBlur: number
+  gameOverOverlayAlpha: number
+  pauseOverlayAlpha: number
+  debugLineWidth: number
+  debugAlpha: number
+  shipVertices: Vector2D[]
+  thrustVertices: Vector2D[]
+  fpsUpdateInterval: number
+}
+
+export interface PhysicsConfig {
+  wrapPadding: number
+  collisionRadius: {
+    ship: number
+    bullet: number
+    asteroid: {
+      large: number
+      medium: number
+      small: number
+    }
+    saucer: {
+      large: number
+      small: number
+    }
+  }
+}
+
+export interface ColorsConfig {
+  ship: string
+  shipFill: string
+  asteroids: string
+  asteroidsFill: string
+  bullets: string
+  thrust: string[]
+  ui: string
+  background: string
+  backgroundGradient: string
+}
+
+export interface ControlsConfig {
+  ArrowLeft: string
+  ArrowRight: string
+  ArrowUp: string
+  Space: string
+  Enter: string
+  Escape: string
+}
+
+export interface AudioConfig {
+  enabled: boolean
+  masterVolume: number
+  sfxVolume: number
+  musicVolume: number
+}
+
+export interface DebugConfig {
+  enabled: boolean
+  showCollisionBounds: boolean
+  showFPS: boolean
+  showEntityCount: boolean
+  logPerformance: boolean
+}

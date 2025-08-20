@@ -1,5 +1,5 @@
 import type { Vector2D, BulletState } from '../../types'
-import { GAME_CONFIG, COLORS, PHYSICS } from '../../constants'
+import { GAME_CONFIG, COLORS, PHYSICS, RENDERING } from '../../constants'
 import { Vector2DUtils } from '../utils/Vector2D'
 import { GameMath } from '../utils/GameMath'
 import { Entity } from './Entity'
@@ -52,9 +52,9 @@ export class Bullet extends Entity {
     
     // Draw bullet as glowing circle
     ctx.shadowColor = COLORS.bullets
-    ctx.shadowBlur = 10
+    ctx.shadowBlur = RENDERING.bulletGlow
     
-    this.drawCircle(ctx, 3, COLORS.bullets)
+    this.drawCircle(ctx, RENDERING.bulletRadius, COLORS.bullets)
     
     ctx.restore()
   }

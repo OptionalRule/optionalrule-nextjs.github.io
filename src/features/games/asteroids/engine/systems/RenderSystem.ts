@@ -1,5 +1,5 @@
 import type { Vector2D } from '../../types'
-import { COLORS, GAME_CONFIG } from '../../constants'
+import { COLORS, GAME_CONFIG, RENDERING } from '../../constants'
 import type { Entity } from '../entities/Entity'
 
 export interface RenderOptions {
@@ -67,7 +67,7 @@ export class RenderSystem {
   }
 
   private drawStarfield(): void {
-    const starCount = 100
+    const starCount = RENDERING.starCount
     const time = Date.now() * 0.0001
     
     this.ctx.save()
@@ -78,8 +78,8 @@ export class RenderSystem {
       const y = (Math.sin(i * 67.293) * 0.5 + 0.5) * this.canvas.height
       
       // Twinkling effect
-      const twinkle = Math.sin(time * 5 + i) * 0.5 + 0.5
-      const alpha = 0.3 + twinkle * 0.4
+      const twinkle = Math.sin(time * RENDERING.starTwinkleSpeed + i) * 0.5 + 0.5
+      const alpha = RENDERING.starBaseAlpha + twinkle * (RENDERING.starMaxAlpha - RENDERING.starBaseAlpha)
       
       this.ctx.globalAlpha = alpha
       this.ctx.fillStyle = '#ffffff'
@@ -142,8 +142,8 @@ export class RenderSystem {
     
     this.ctx.save()
     this.ctx.strokeStyle = '#ff0000'
-    this.ctx.lineWidth = 1
-    this.ctx.globalAlpha = 0.5
+    this.ctx.lineWidth = RENDERING.debugLineWidth
+    this.ctx.globalAlpha = RENDERING.debugAlpha
     
     this.ctx.beginPath()
     this.ctx.arc(position.x, position.y, radius, 0, 2 * Math.PI)
@@ -158,7 +158,7 @@ export class RenderSystem {
     
     this.ctx.save()
     this.ctx.fillStyle = COLORS.ui
-    this.ctx.font = '14px monospace'
+    this.ctx.font = `${RENDERING.debugFontSize}px ${RENDERING.defaultFont}`
     this.ctx.textAlign = 'left'
     
     let y = 20
@@ -191,7 +191,7 @@ export class RenderSystem {
     
     this.ctx.save()
     this.ctx.fillStyle = COLORS.ui
-    this.ctx.font = '14px monospace'
+    this.ctx.font = `${RENDERING.debugFontSize}px ${RENDERING.defaultFont}`
     this.ctx.textAlign = 'right'
     
     this.ctx.fillText(`FPS: ${this.lastFPS}`, this.canvas.width - 10, 20)
@@ -203,7 +203,7 @@ export class RenderSystem {
     this.frameCount++
     const now = performance.now()
     
-    if (now - this.lastFPSUpdate >= 1000) {
+    if (now - this.lastFPSUpdate >= RENDERING.fpsUpdateInterval) {
       this.lastFPS = Math.round((this.frameCount * 1000) / (now - this.lastFPSUpdate))
       this.frameCount = 0
       this.lastFPSUpdate = now
@@ -218,7 +218,7 @@ export class RenderSystem {
     shadow?: boolean
   } = {}): void {
     const {
-      font = '20px monospace',
+      font = `20px ${RENDERING.defaultFont}`,
       color = COLORS.ui,
       align = 'center',
       baseline = 'middle',
@@ -234,7 +234,7 @@ export class RenderSystem {
     
     if (shadow) {
       this.ctx.shadowColor = color
-      this.ctx.shadowBlur = 10
+      this.ctx.shadowBlur = RENDERING.textShadowBlur
     }
     
     this.ctx.fillText(text, position.x, position.y)
@@ -243,14 +243,14 @@ export class RenderSystem {
   }
 
   drawHUD(score: number, lives: number, level: number): void {
-    const padding = 20
-    const fontSize = 24
+    const padding = RENDERING.hudPadding
+    const fontSize = RENDERING.hudFontSize
     
     this.ctx.save()
-    this.ctx.font = `${fontSize}px monospace`
+    this.ctx.font = `${fontSize}px ${RENDERING.defaultFont}`
     this.ctx.fillStyle = COLORS.ui
     this.ctx.shadowColor = COLORS.ui
-    this.ctx.shadowBlur = 10
+    this.ctx.shadowBlur = RENDERING.textShadowBlur
     
     // Score (top left)
     this.ctx.textAlign = 'left'
@@ -273,29 +273,29 @@ export class RenderSystem {
     
     // Semi-transparent overlay
     this.ctx.save()
-    this.ctx.fillStyle = 'rgba(0, 0, 0, 0.7)'
+    this.ctx.fillStyle = `rgba(0, 0, 0, ${RENDERING.gameOverOverlayAlpha})`
     this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height)
     
     // Game Over text
     this.drawText('GAME OVER', { x: centerX, y: centerY - 60 }, {
-      font: '48px monospace',
+      font: `${RENDERING.gameOverTitleSize}px ${RENDERING.defaultFont}`,
       color: '#ff4444',
       shadow: true
     })
     
     // Final score
     this.drawText(`FINAL SCORE: ${finalScore.toLocaleString()}`, { x: centerX, y: centerY - 10 }, {
-      font: '24px monospace'
+      font: `${RENDERING.gameOverScoreSize}px ${RENDERING.defaultFont}`
     })
     
     // High score
     this.drawText(`HIGH SCORE: ${highScore.toLocaleString()}`, { x: centerX, y: centerY + 20 }, {
-      font: '20px monospace'
+      font: `${RENDERING.gameOverHighScoreSize}px ${RENDERING.defaultFont}`
     })
     
     // Restart instruction
     this.drawText('PRESS ENTER TO RESTART', { x: centerX, y: centerY + 60 }, {
-      font: '18px monospace',
+      font: `${RENDERING.gameOverInstructionSize}px ${RENDERING.defaultFont}`,
       color: '#ffff88'
     })
     
@@ -308,17 +308,17 @@ export class RenderSystem {
     
     // Semi-transparent overlay
     this.ctx.save()
-    this.ctx.fillStyle = 'rgba(0, 0, 0, 0.5)'
+    this.ctx.fillStyle = `rgba(0, 0, 0, ${RENDERING.pauseOverlayAlpha})`
     this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height)
     
     this.drawText('PAUSED', { x: centerX, y: centerY }, {
-      font: '48px monospace',
+      font: `${RENDERING.pauseTitleSize}px ${RENDERING.defaultFont}`,
       color: '#ffff00',
       shadow: true
     })
     
     this.drawText('PRESS ESC TO RESUME', { x: centerX, y: centerY + 50 }, {
-      font: '18px monospace'
+      font: `${RENDERING.pauseInstructionSize}px ${RENDERING.defaultFont}`
     })
     
     this.ctx.restore()

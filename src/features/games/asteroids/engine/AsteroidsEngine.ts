@@ -1,5 +1,5 @@
 import type { GameState, ScoreEvent } from '../types'
-import { GAME_CONFIG } from '../constants'
+import { GAME_CONFIG, GAMEPLAY } from '../constants'
 import { Vector2DUtils } from './utils/Vector2D'
 import { Entity } from './entities/Entity'
 import { Ship } from './entities/Ship'
@@ -156,7 +156,7 @@ export class AsteroidsEngine {
         const shipRot = this.ship.getRotation()
         
         // Offset bullet spawn position to ship nose
-        const noseOffset = Vector2DUtils.fromAngle(shipRot, 15)
+        const noseOffset = Vector2DUtils.fromAngle(shipRot, GAMEPLAY.bulletNoseOffset)
         const bulletPos = Vector2DUtils.add(shipPos, noseOffset)
         
         const bullet = new Bullet(bulletPos, shipRot, shipVel, this.ship.getId())
@@ -228,7 +228,7 @@ export class AsteroidsEngine {
           const centerY = GAME_CONFIG.canvas.height / 2
           this.ship.respawn({ x: centerX, y: centerY })
         }
-      }, 2000)
+      }, GAMEPLAY.respawnDelay)
     }
   }
 
@@ -256,13 +256,13 @@ export class AsteroidsEngine {
     this.events.onLevelChange(this.gameState.level)
     
     // Award bonus points for level completion
-    const bonusPoints = this.gameState.level * 100
+    const bonusPoints = this.gameState.level * GAMEPLAY.levelCompletionBonus
     this.addScore(bonusPoints)
     
     // Start next level after brief delay
     setTimeout(() => {
       this.initializeLevel()
-    }, 2000)
+    }, GAMEPLAY.levelTransitionDelay)
   }
 
   private initializeLevel(): void {
@@ -275,9 +275,12 @@ export class AsteroidsEngine {
     }
 
     // Spawn asteroids for this level
-    const asteroidCount = Math.min(5 + this.gameState.level - 1, 12)
+    const asteroidCount = Math.min(
+      GAMEPLAY.baseAsteroidCount + (this.gameState.level - 1) * GAMEPLAY.asteroidIncrement, 
+      GAMEPLAY.maxAsteroidCount
+    )
     const shipPos = this.ship.getPosition()
-    const minDistance = 150
+    const minDistance = GAMEPLAY.asteroidMinDistance
 
     const asteroids = Asteroid.createField(
       asteroidCount,

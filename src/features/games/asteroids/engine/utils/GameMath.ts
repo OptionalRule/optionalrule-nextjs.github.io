@@ -1,5 +1,6 @@
 import type { Vector2D } from '../../types'
 import { Vector2DUtils } from './Vector2D'
+import { GAMEPLAY } from '../../constants'
 
 export class GameMath {
   static clamp(value: number, min: number, max: number): number {
@@ -124,7 +125,7 @@ export class GameMath {
     minDistance: number
   ): Vector2D {
     let attempts = 0
-    const maxAttempts = 100
+    const maxAttempts = GAMEPLAY.asteroidSafeSpawnAttempts
     
     while (attempts < maxAttempts) {
       const position = {

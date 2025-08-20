@@ -1,6 +1,6 @@
 import type { Vector2D, AsteroidState } from '../../types'
 import { AsteroidSize } from '../../types'
-import { GAME_CONFIG, COLORS, PHYSICS } from '../../constants'
+import { GAME_CONFIG, COLORS, PHYSICS, RENDERING } from '../../constants'
 import { Vector2DUtils } from '../utils/Vector2D'
 import { GameMath } from '../utils/GameMath'
 import { Entity } from './Entity'
@@ -66,7 +66,7 @@ export class Asteroid extends Entity {
     // Add subtle glow effect
     ctx.save()
     ctx.shadowColor = COLORS.asteroids
-    ctx.shadowBlur = 5
+    ctx.shadowBlur = RENDERING.asteroidGlow
     
     this.drawPolygon(ctx, this.vertices, COLORS.asteroidsFill, COLORS.asteroids)
     

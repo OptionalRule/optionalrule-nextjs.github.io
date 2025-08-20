@@ -30,7 +30,7 @@ export function useAsteroids(): UseAsteroidsReturn {
   const isMobile = useMemo(() => {
     if (typeof window === 'undefined') return false
     
-    const userAgent = navigator.userAgent || navigator.vendor || (window as any).opera
+    const userAgent = navigator.userAgent || navigator.vendor || (window as Window & { opera?: string }).opera
     
     // Check for mobile user agents
     const mobileRegex = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i

@@ -1,5 +1,5 @@
 import type { Vector2D, ShipState } from '../../types'
-import { GAME_CONFIG, COLORS, PHYSICS } from '../../constants'
+import { GAME_CONFIG, COLORS, PHYSICS, GAMEPLAY, RENDERING } from '../../constants'
 import { Vector2DUtils } from '../utils/Vector2D'
 import { Entity } from './Entity'
 
@@ -8,27 +8,12 @@ export class Ship extends Entity {
   private isInvulnerable = false
   private invulnerabilityTimer = 0
   private thrustTween = 0
-  private shipVertices: Vector2D[] = []
-  private thrustVertices: Vector2D[] = []
+  private shipVertices: Vector2D[] = RENDERING.shipVertices
+  private thrustVertices: Vector2D[] = RENDERING.thrustVertices
 
   constructor(position: Vector2D) {
     super(position)
     this.rotation = -Math.PI / 2 // Point upward initially
-    
-    // Define ship shape as triangle (pointing right in standard math coordinates)
-    this.shipVertices = [
-      { x: 12, y: 0 },    // Nose (pointing right)
-      { x: -8, y: -8 },   // Left wing
-      { x: -4, y: 0 },    // Rear center
-      { x: -8, y: 8 },    // Right wing
-    ]
-
-    // Define thrust flame shape (behind the ship when pointing right)
-    this.thrustVertices = [
-      { x: -8, y: -4 },   // Left
-      { x: -16, y: 0 },   // Tip
-      { x: -8, y: 4 },    // Right
-    ]
   }
 
   update(deltaTime: number, canvasWidth: number, canvasHeight: number): void {
@@ -59,7 +44,7 @@ export class Ship extends Entity {
 
     // Update thrust animation
     const targetTween = this.isThrusting ? 1.0 : 0.0
-    this.thrustTween += (targetTween - this.thrustTween) * 8 * deltaSeconds
+    this.thrustTween += (targetTween - this.thrustTween) * GAMEPLAY.thrustAnimationSpeed * deltaSeconds
 
     // Update position and apply wrapping
     this.updatePosition(deltaTime)
@@ -75,7 +60,7 @@ export class Ship extends Entity {
     }
 
     // Render ship with invulnerability flashing (slower flash, more visible)
-    if (!this.isInvulnerable || Math.floor(Date.now() / 300) % 3 !== 0) {
+    if (!this.isInvulnerable || Math.floor(Date.now() / GAMEPLAY.invulnerabilityFlashInterval) % GAMEPLAY.invulnerabilityFlashSkip !== 0) {
       this.drawPolygon(ctx, this.shipVertices, COLORS.shipFill, COLORS.ship)
     }
   }
@@ -111,7 +96,7 @@ export class Ship extends Entity {
 
   rotate(direction: -1 | 1): void {
     if (!this.isActive) return
-    const deltaTime = 16 // Assume 60fps for rotation smoothness
+    const deltaTime = 1000 / GAMEPLAY.assumedFramerate // Assume configured framerate for rotation smoothness
     this.rotation += direction * GAME_CONFIG.ship.rotationSpeed * (deltaTime / 1000)
   }
 
@@ -119,7 +104,7 @@ export class Ship extends Entity {
     if (!this.isActive) return
     
     this.isThrusting = true
-    const deltaTime = 16 // Assume 60fps
+    const deltaTime = 1000 / GAMEPLAY.assumedFramerate // Assume configured framerate
     const deltaSeconds = deltaTime / 1000
     
     const thrustVector = Vector2DUtils.fromAngle(
