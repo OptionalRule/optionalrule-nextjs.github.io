@@ -9,6 +9,7 @@ export interface GameState {
   level: number
   gameStatus: 'menu' | 'playing' | 'paused' | 'gameOver' | 'loading'
   highScore: number
+  lastLevelBonus?: number
 }
 
 export interface EntityState {

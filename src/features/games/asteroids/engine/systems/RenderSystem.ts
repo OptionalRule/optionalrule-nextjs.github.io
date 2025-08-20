@@ -324,7 +324,7 @@ export class RenderSystem {
     this.ctx.restore()
   }
 
-  drawLevelLoading(level: number): void {
+  drawLevelLoading(level: number, levelBonus?: number): void {
     const centerX = this.canvas.width / 2
     const centerY = this.canvas.height / 2
     
@@ -342,18 +342,27 @@ export class RenderSystem {
     this.ctx.globalAlpha = 0.3 + opacity * 0.7 // Blend between 30% and 100% opacity
     
     // "LOADING" text in yellow (larger)
-    this.drawText('LOADING', { x: centerX, y: centerY }, {
+    this.drawText('LOADING', { x: centerX, y: centerY - 30 }, {
       font: `${RENDERING.pauseTitleSize}px ${RENDERING.defaultFont}`,
       color: '#ffff00',
       shadow: true
     })
     
     // "LEVEL #" text in green (smaller, below)
-    this.drawText(`LEVEL ${level}`, { x: centerX, y: centerY + 50 }, {
+    this.drawText(`LEVEL ${level}`, { x: centerX, y: centerY + 20 }, {
       font: `${RENDERING.pauseInstructionSize}px ${RENDERING.defaultFont}`,
       color: '#00ff00',
       shadow: true
     })
+    
+    // Level completion bonus text (if provided)
+    if (levelBonus !== undefined) {
+      this.drawText(`LEVEL BONUS: ${levelBonus} POINTS`, { x: centerX, y: centerY + 60 }, {
+        font: `${RENDERING.gameOverScoreSize}px ${RENDERING.defaultFont}`,
+        color: '#ffaa00',
+        shadow: true
+      })
+    }
     
     this.ctx.restore()
     this.ctx.restore()

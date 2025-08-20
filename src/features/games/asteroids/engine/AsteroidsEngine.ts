@@ -44,6 +44,7 @@ export class AsteroidsEngine {
       level: 1,
       gameStatus: 'menu',
       highScore: this.loadHighScore(),
+      lastLevelBonus: undefined,
     }
 
     // Initialize ship at center
@@ -256,6 +257,9 @@ export class AsteroidsEngine {
     const bonusPoints = this.gameState.level * GAMEPLAY.levelCompletionBonus
     this.addScore(bonusPoints)
     
+    // Store bonus points for display on loading screen
+    this.gameState.lastLevelBonus = bonusPoints
+    
     this.gameState.level++
     this.events.onLevelChange(this.gameState.level)
     
@@ -341,7 +345,7 @@ export class AsteroidsEngine {
         this.gameState.lives,
         this.gameState.level
       )
-      this.renderSystem.drawLevelLoading(this.gameState.level)
+      this.renderSystem.drawLevelLoading(this.gameState.level, this.gameState.lastLevelBonus)
     } else if (this.gameState.gameStatus === 'gameOver') {
       this.renderSystem.drawGameOver(this.gameState.score, this.gameState.highScore)
     } else if (this.gameState.gameStatus === 'menu') {
@@ -386,6 +390,7 @@ export class AsteroidsEngine {
       level: 1,
       gameStatus: 'playing',
       highScore: this.gameState.highScore,
+      lastLevelBonus: undefined,
     }
 
     // Reset ship
