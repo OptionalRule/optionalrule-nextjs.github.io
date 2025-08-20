@@ -252,12 +252,12 @@ export class AsteroidsEngine {
   }
 
   private completeLevel(): void {
-    this.gameState.level++
-    this.events.onLevelChange(this.gameState.level)
-    
-    // Award bonus points for level completion
+    // Award bonus points for level completion (before incrementing level)
     const bonusPoints = this.gameState.level * GAMEPLAY.levelCompletionBonus
     this.addScore(bonusPoints)
+    
+    this.gameState.level++
+    this.events.onLevelChange(this.gameState.level)
     
     // Set game state to loading to show level loading screen
     const previousState = this.gameState.gameStatus
