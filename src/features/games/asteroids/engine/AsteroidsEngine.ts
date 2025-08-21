@@ -7,6 +7,7 @@ import { Asteroid } from './entities/Asteroid'
 import { Bullet } from './entities/Bullet'
 import { CollisionSystem } from './systems/CollisionSystem'
 import { RenderSystem } from './systems/RenderSystem'
+import { SoundSystem } from './systems/SoundSystem'
 
 export interface AsteroidsEngineEvents {
   onGameStateChange: (gameState: GameState) => void
@@ -20,6 +21,7 @@ export class AsteroidsEngine {
   private canvas: HTMLCanvasElement
   private renderSystem: RenderSystem
   private collisionSystem: CollisionSystem
+  private soundSystem: SoundSystem
   private ship: Ship
   private entities: Entity[] = []
   private gameState: GameState
@@ -30,12 +32,14 @@ export class AsteroidsEngine {
   private lastShotTime = 0
   private levelStartTime = 0
   private nextSaucerSpawn = 0
+  private isThrusting = false
 
   constructor(canvas: HTMLCanvasElement, events: AsteroidsEngineEvents) {
     this.canvas = canvas
     this.events = events
     this.renderSystem = new RenderSystem(canvas)
     this.collisionSystem = new CollisionSystem()
+    this.soundSystem = new SoundSystem()
     
     // Initialize game state
     this.gameState = {
@@ -130,8 +134,18 @@ export class AsteroidsEngine {
     // Ship thrust
     if (this.keys.has('ArrowUp')) {
       this.ship.thrust()
+      // Start thrust sound if not already playing
+      if (!this.isThrusting) {
+        this.soundSystem.playSound('shipThrust')
+        this.isThrusting = true
+      }
     } else {
       this.ship.stopThrust()
+      // Stop thrust sound if playing
+      if (this.isThrusting) {
+        this.soundSystem.stopSound('shipThrust')
+        this.isThrusting = false
+      }
     }
 
     // Shooting
@@ -162,6 +176,9 @@ export class AsteroidsEngine {
         
         const bullet = new Bullet(bulletPos, shipRot, shipVel, this.ship.getId())
         this.entities.push(bullet)
+        
+        // Play bullet fire sound
+        this.soundSystem.playSound('bulletFire')
         
         this.lastShotTime = now
       }
@@ -204,8 +221,15 @@ export class AsteroidsEngine {
 
       // Split asteroid if possible
       const fragments = asteroid.split()
-      for (const fragment of fragments) {
-        this.entities.push(fragment)
+      if (fragments.length > 0) {
+        // Play asteroid split sound
+        this.soundSystem.playSound('asteroidSplit')
+        for (const fragment of fragments) {
+          this.entities.push(fragment)
+        }
+      } else {
+        // Play asteroid destruction sound (no fragments = completely destroyed)
+        this.soundSystem.playSound('asteroidDestruction')
       }
     }
 
@@ -216,6 +240,15 @@ export class AsteroidsEngine {
   }
 
   private handleShipDestroyed(): void {
+    // Play ship destruction sound
+    this.soundSystem.playSound('shipDestroyed')
+    
+    // Stop thrust sound if playing
+    if (this.isThrusting) {
+      this.soundSystem.stopSound('shipThrust')
+      this.isThrusting = false
+    }
+    
     this.gameState.lives--
     this.events.onLivesChange(this.gameState.lives)
 
@@ -393,14 +426,20 @@ export class AsteroidsEngine {
       lastLevelBonus: undefined,
     }
 
-    // Reset ship
+    // Clear all entities and reset ship
+    this.entities = []
     const centerX = GAME_CONFIG.canvas.width / 2
     const centerY = GAME_CONFIG.canvas.height / 2
     this.ship.respawn({ x: centerX, y: centerY })
+    this.entities.push(this.ship)
 
     // Clear input state
     this.keys.clear()
     this.lastShotTime = 0
+    this.isThrusting = false
+
+    // Stop all sounds
+    this.soundSystem.stopAllSounds()
 
     // Initialize first level
     this.initializeLevel()
@@ -429,6 +468,9 @@ export class AsteroidsEngine {
     if (this.gameLoop) {
       cancelAnimationFrame(this.gameLoop)
     }
+    
+    // Clean up sound system
+    this.soundSystem.destroy()
     
     // Clean up event listeners
     // Note: In a real implementation, we'd store and remove the actual listeners
@@ -467,5 +509,9 @@ export class AsteroidsEngine {
 
   getRenderSystem(): RenderSystem {
     return this.renderSystem
+  }
+
+  getSoundSystem(): SoundSystem {
+    return this.soundSystem
   }
 }
