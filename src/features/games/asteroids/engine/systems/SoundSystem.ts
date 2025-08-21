@@ -31,9 +31,12 @@ export class SoundSystem {
     if (this.initialized || !this.userInteracted) return
 
     try {
-      this.audioContext = new (window.AudioContext || (window as any).webkitAudioContext)()
-      this.initialized = true
-      this.preloadSounds()
+      const AudioContextClass = window.AudioContext || (window as Window & { webkitAudioContext?: typeof AudioContext }).webkitAudioContext
+      if (AudioContextClass) {
+        this.audioContext = new AudioContextClass()
+        this.initialized = true
+        this.preloadSounds()
+      }
     } catch (error) {
       console.warn('Audio context initialization failed:', error)
       this.initialized = false
