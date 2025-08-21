@@ -8,7 +8,7 @@ import type { Metadata } from 'next';
 import { MDXRemote } from 'next-mdx-remote/rsc';
 import remarkGfm from 'remark-gfm';
 import TableOfContents from '@/components/TableOfContents';
-import { mdxComponents } from '@/mdx-components';
+import { mdxComponents } from '@/stories/mdx-components';
 
 interface PostPageProps {
   params: Promise<{
