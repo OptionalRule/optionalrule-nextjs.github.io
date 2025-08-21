@@ -101,12 +101,16 @@ export class SoundSystem {
     const category = this.config.categories[soundDef.category]
     if (!category.enabled) return
 
+    // Determine which sound file to play (handle variants)
+    const soundPath = this.selectSoundVariant(soundDef)
+    const actualSoundKey = soundKey + ':' + soundPath // Create unique key for each variant
+
     // Load sound if not already loaded
-    if (!this.loadedSounds.has(soundKey)) {
-      await this.loadSound(soundKey, soundDef)
+    if (!this.loadedSounds.has(actualSoundKey)) {
+      await this.loadSoundVariant(actualSoundKey, soundPath, soundDef)
     }
 
-    const audioPool = this.sounds.get(soundKey)
+    const audioPool = this.sounds.get(actualSoundKey)
     if (!audioPool || audioPool.length === 0) return
 
     try {
@@ -131,15 +135,65 @@ export class SoundSystem {
     }
   }
 
-  stopSound(soundKey: string): void {
-    const audioPool = this.sounds.get(soundKey)
-    if (!audioPool) return
-
-    audioPool.forEach(audio => {
-      audio.pause()
-      audio.currentTime = 0
-    })
+  private selectSoundVariant(soundDef: SoundDefinition): string {
+    // If variants exist, randomly select one
+    if (soundDef.variants && soundDef.variants.length > 0) {
+      const randomIndex = Math.floor(Math.random() * soundDef.variants.length)
+      return soundDef.variants[randomIndex]
+    }
+    
+    // Otherwise use the main path
+    return soundDef.path
   }
+
+  private async loadSoundVariant(soundKey: string, soundPath: string, soundDef: SoundDefinition): Promise<void> {
+    if (this.loadedSounds.has(soundKey)) return
+
+    try {
+      // Create audio pool (multiple instances for overlapping sounds)
+      const poolSize = soundDef.loop ? 1 : 3
+      const audioPool: HTMLAudioElement[] = []
+
+      for (let i = 0; i < poolSize; i++) {
+        const audio = new Audio(soundPath)
+        audio.preload = 'auto'
+        audio.loop = soundDef.loop || false
+        
+        // Set volume based on category and individual settings
+        const categoryVolume = this.config.categories[soundDef.category].volume
+        const soundVolume = soundDef.volume || 1.0
+        audio.volume = this.config.masterVolume * categoryVolume * soundVolume
+
+        audioPool.push(audio)
+      }
+
+      this.sounds.set(soundKey, audioPool)
+      this.loadedSounds.add(soundKey)
+    } catch (error) {
+      console.warn(`Failed to load sound variant ${soundKey}:`, error)
+    }
+  }
+
+  stopSound(soundKey: string): void {
+    // Stop all variants of this sound
+    for (const [key, audioPool] of this.sounds.entries()) {
+      if (key.startsWith(soundKey + ':') || key === soundKey) {
+        audioPool.forEach(audio => {
+          audio.pause()
+          audio.currentTime = 0
+        })
+      }
+    }
+  }
+
+  pauseCategory(category: keyof SoundConfig['categories']): void {
+    for (const [soundKey, soundDef] of Object.entries(this.config.sounds)) {
+      if (soundDef.category === category) {
+        this.stopSound(soundKey)
+      }
+    }
+  }
+
 
   stopAllSounds(): void {
     this.sounds.forEach((audioPool) => {

@@ -95,6 +95,9 @@ export class AsteroidsEngine {
       this.initializeLevel()
       this.gameState.gameStatus = 'playing'
       this.notifyStateChange()
+      
+      // Play game start sound
+      this.soundSystem.playSound('gameStart')
     }
     
     this.lastFrameTime = performance.now()
@@ -261,6 +264,9 @@ export class AsteroidsEngine {
           const centerX = GAME_CONFIG.canvas.width / 2
           const centerY = GAME_CONFIG.canvas.height / 2
           this.ship.respawn({ x: centerX, y: centerY })
+          
+          // Play ship respawn sound
+          this.soundSystem.playSound('shipRespawn')
         }
       }, GAMEPLAY.respawnDelay)
     }
@@ -286,6 +292,9 @@ export class AsteroidsEngine {
   }
 
   private completeLevel(): void {
+    // Play level completion sound (before bonus display, non-blocking)
+    this.soundSystem.playSound('levelCompletion')
+    
     // Award bonus points for level completion (before incrementing level)
     const bonusPoints = this.gameState.level * GAMEPLAY.levelCompletionBonus
     this.addScore(bonusPoints)
@@ -400,6 +409,10 @@ export class AsteroidsEngine {
   }
 
   private gameOver(): void {
+    // Stop all sounds and play game over sound
+    this.soundSystem.stopAllSounds()
+    this.soundSystem.playSound('gameOver')
+    
     this.gameState.gameStatus = 'gameOver'
     this.events.onGameOver(this.gameState.score)
     this.notifyStateChange()
@@ -408,9 +421,20 @@ export class AsteroidsEngine {
   private togglePause(): void {
     if (this.gameState.gameStatus === 'playing') {
       this.gameState.gameStatus = 'paused'
+      
+      // Pause effects and ambient sounds, but allow UI sounds
+      this.soundSystem.pauseCategory('effects')
+      this.soundSystem.pauseCategory('ambient')
+      this.soundSystem.playSound('pause')
+      
+      // Reset thrust state so it can restart when unpaused
+      this.isThrusting = false
     } else if (this.gameState.gameStatus === 'paused') {
       this.gameState.gameStatus = 'playing'
       this.lastFrameTime = performance.now() // Reset frame timing
+      
+      // UI sounds still work, so play unpause sound
+      this.soundSystem.playSound('unpause')
     }
     this.notifyStateChange()
   }
