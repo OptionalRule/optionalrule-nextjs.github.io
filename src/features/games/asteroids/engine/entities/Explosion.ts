@@ -82,7 +82,7 @@ export class Explosion extends Entity {
     }
   }
 
-  update(deltaTime: number, canvasWidth: number, canvasHeight: number): void {
+  update(deltaTime: number, _canvasWidth: number, _canvasHeight: number): void {
     if (!this.isActive) return
 
     this.duration -= deltaTime
