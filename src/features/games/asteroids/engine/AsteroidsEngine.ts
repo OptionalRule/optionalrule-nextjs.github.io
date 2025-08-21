@@ -5,6 +5,7 @@ import { Entity } from './entities/Entity'
 import { Ship } from './entities/Ship'
 import { Asteroid } from './entities/Asteroid'
 import { Bullet } from './entities/Bullet'
+import { Explosion } from './entities/Explosion'
 import { CollisionSystem } from './systems/CollisionSystem'
 import { RenderSystem } from './systems/RenderSystem'
 import { SoundSystem } from './systems/SoundSystem'
@@ -214,6 +215,10 @@ export class AsteroidsEngine {
                   entityB instanceof Bullet ? entityB : null
 
     if (asteroid && bullet && !asteroid.getActive()) {
+      // Create small explosion at asteroid position
+      const explosion = new Explosion(asteroid.getPosition(), 'asteroid')
+      this.entities.push(explosion)
+      
       // Award points
       const points = asteroid.getPoints()
       this.addScore(points, {
@@ -243,6 +248,10 @@ export class AsteroidsEngine {
   }
 
   private handleShipDestroyed(): void {
+    // Create explosion at ship position
+    const explosion = new Explosion(this.ship.getPosition(), 'ship')
+    this.entities.push(explosion)
+    
     // Play ship destruction sound
     this.soundSystem.playSound('shipDestroyed')
     
@@ -311,7 +320,8 @@ export class AsteroidsEngine {
     this.notifyStateChange()
     
     // Clear asteroids and bullets immediately to prevent visual artifacts
-    this.entities = this.entities.filter(e => e instanceof Ship)
+    // Keep ship and explosions for visual continuity
+    this.entities = this.entities.filter(e => e instanceof Ship || e instanceof Explosion)
     
     // Add ship back if it was removed
     if (!this.entities.includes(this.ship)) {
