@@ -4,6 +4,9 @@ import AsteroidsGameClient from './AsteroidsGameClient'
 export const metadata: Metadata = {
   title: "Asteroids Game - Optional Rule",
   description: "Play the classic Asteroids arcade game reimagined with modern web technologies. Destroy asteroids, avoid collisions, and rack up points!",
+  alternates: {
+    canonical: "/games/asteroids/"
+  },
   openGraph: {
     title: "Asteroids Game - Optional Rule",
     description: "Play the classic Asteroids arcade game reimagined with modern web technologies.",
