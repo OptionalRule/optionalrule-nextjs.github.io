@@ -32,6 +32,7 @@ const mockMatter = vi.mocked(matter);
 describe('Content Management', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    vi.spyOn(console, 'warn').mockImplementation(() => {});
   });
 
   afterEach(() => {
@@ -76,6 +77,7 @@ describe('Content Management', () => {
         });
 
         expect(isPostDraft('test.mdx')).toBe(true);
+        expect(console.warn).toHaveBeenCalled();
       });
     });
 

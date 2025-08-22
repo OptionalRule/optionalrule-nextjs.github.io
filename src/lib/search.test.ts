@@ -1,13 +1,14 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, afterAll } from 'vitest';
 import { performSearch, getSearchTags } from './search';
 
-// Mock fetch
+// Preserve original fetch and mock
+const originalFetch = global.fetch;
 const mockFetch = vi.fn();
 global.fetch = mockFetch;
 
 // Mock console methods
-vi.spyOn(console, 'error').mockImplementation(() => {});
-vi.spyOn(console, 'warn').mockImplementation(() => {});
+const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+const consoleWarnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
 
 describe('Search functionality', () => {
   beforeEach(async () => {
@@ -16,8 +17,10 @@ describe('Search functionality', () => {
     vi.resetModules();
   });
 
-  afterEach(() => {
-    vi.restoreAllMocks();
+  afterAll(() => {
+    global.fetch = originalFetch;
+    consoleErrorSpy.mockRestore();
+    consoleWarnSpy.mockRestore();
   });
 
   const mockSearchData = [
@@ -61,26 +64,32 @@ describe('Search functionality', () => {
         status: 404
       });
 
-      // Import fresh module
       const { loadSearchIndex: freshLoadSearchIndex } = await import('./search');
       const result = await freshLoadSearchIndex();
       expect(result).toEqual([]);
+      expect(console.error).toHaveBeenCalledWith(
+        'Error loading search index:',
+        expect.any(Error)
+      );
     });
 
     it('handles network errors', async () => {
       mockFetch.mockRejectedValueOnce(new Error('Network error'));
 
-      // Import fresh module
       const { loadSearchIndex: freshLoadSearchIndex } = await import('./search');
       const result = await freshLoadSearchIndex();
       expect(result).toEqual([]);
+      expect(console.error).toHaveBeenCalledWith(
+        'Error loading search index:',
+        expect.any(Error)
+      );
     });
 
     it('validates search index data structure', async () => {
       const invalidData = [
-        mockSearchData[0], // valid
-        { slug: 'invalid', title: 123 }, // invalid - title should be string
-        mockSearchData[1] // valid
+        mockSearchData[0],
+        { slug: 'invalid', title: 123 },
+        mockSearchData[1]
       ];
 
       mockFetch.mockResolvedValueOnce({
@@ -88,10 +97,10 @@ describe('Search functionality', () => {
         json: () => Promise.resolve(invalidData)
       });
 
-      // Import fresh module
       const { loadSearchIndex: freshLoadSearchIndex } = await import('./search');
       const result = await freshLoadSearchIndex();
-      expect(result).toHaveLength(2); // Should filter out invalid item
+      expect(result).toHaveLength(2);
+      expect(console.warn).toHaveBeenCalledWith('Filtered out 1 invalid search index items');
     });
 
     it('handles non-array response', async () => {
@@ -100,10 +109,13 @@ describe('Search functionality', () => {
         json: () => Promise.resolve({ not: 'an array' })
       });
 
-      // Import fresh module
       const { loadSearchIndex: freshLoadSearchIndex } = await import('./search');
       const result = await freshLoadSearchIndex();
       expect(result).toEqual([]);
+      expect(console.error).toHaveBeenCalledWith(
+        'Search index is not an array:',
+        { not: 'an array' }
+      );
     });
 
     it('caches the search index after first load', async () => {
