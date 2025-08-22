@@ -33,6 +33,15 @@ jobs:
       - name: Install dependencies
         run: npm ci
         
+      - name: Run tests
+        run: npm run test
+        
+      - name: Run integration tests
+        run: npm run test:integration
+        
+      - name: Run SSG tests
+        run: npm run test:ssg
+        
       - name: Build with Next.js
         run: npm run build
         
