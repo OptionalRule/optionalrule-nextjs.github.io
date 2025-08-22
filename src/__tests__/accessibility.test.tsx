@@ -1,5 +1,6 @@
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { axe, toHaveNoViolations } from 'jest-axe';
 import React from 'react';
 import { SearchInput } from '@/components/SearchInput';
@@ -53,14 +54,15 @@ describe('Accessibility Tests', () => {
     });
 
     it('supports keyboard navigation', async () => {
+      const user = userEvent.setup();
       render(<SearchInput />);
-      
+
       const input = screen.getByRole('textbox');
       expect(input).toBeInTheDocument();
-      
+
       // Check that element is focusable
-      input.focus();
-      expect(document.activeElement).toBe(input);
+      await user.click(input);
+      expect(input).toHaveFocus();
     });
   });
 
