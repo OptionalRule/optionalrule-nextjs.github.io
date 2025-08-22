@@ -123,6 +123,8 @@ All scripts use ESM loader pattern and are located in `scripts/` directory:
 ### TypeScript Standards
 
 - **Type Safety**: Use strict TypeScript configuration with `strict: true` and additional strict flags (`noImplicitReturns`, `noFallthroughCasesInSwitch`).
+- **NO `any` TYPES**: **NEVER use `any` type**. Always specify proper types. Use `unknown` for truly unknown data, specific interfaces for objects, or union types for multiple possibilities.
+- **Unused Variables**: Prefix unused parameters with underscore (e.g., `_event`, `_index`) to indicate intentional non-use and avoid linting errors.
 - **Interface Design**: Define clear interfaces for props, API responses, and data models. Use generic types for reusable components.
 - **Type Guards**: Implement proper runtime type checking using type guards or validation libraries like Zod for external data.
 - **Utility Types**: Leverage TypeScript utility types (`Omit`, `Pick`, `Partial`, etc.) for type transformations and avoid duplication.
@@ -180,3 +182,12 @@ All scripts use ESM loader pattern and are located in `scripts/` directory:
 - Regular lighthouse audits and performance testing
 
 Remember: These guidelines should enhance development velocity while maintaining code quality. Leverage TypeScript's type system and Next.js optimizations to build robust, scalable applications.
+
+# important-instruction-reminders
+Do what has been asked; nothing more, nothing less.
+NEVER create files unless they're absolutely necessary for achieving your goal.
+ALWAYS prefer editing an existing file to creating a new one.
+NEVER proactively create documentation files (*.md) or README files. Only create documentation files if explicitly requested by the User.
+NEVER use `any` type in TypeScript - always specify proper types or use `unknown` for truly unknown data.
+ALWAYS prefix unused function parameters with underscore (e.g., `_event`, `_props`) to indicate intentional non-use.
+NEVER add comments to code unless explicitly requested by the user.
