@@ -2,11 +2,12 @@ import { defineConfig } from 'vitest/config';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-const dirname = 
-  typeof __dirname !== 'undefined' ? __dirname : path.dirname(fileURLToPath(import.meta.url));
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 export default defineConfig({
   esbuild: {
+    target: 'node20',
     jsx: 'automatic',
   },
   test: {
@@ -24,11 +25,17 @@ export default defineConfig({
         'src/**/*.stories.{js,ts,tsx}',
         'src/test-setup.ts'
       ]
+    },
+    pool: 'forks',
+    poolOptions: {
+      forks: {
+        singleFork: true
+      }
     }
   },
   resolve: {
     alias: {
-      '@': path.resolve(dirname, './src'),
+      '@': path.resolve(__dirname, './src'),
     },
   },
 });
