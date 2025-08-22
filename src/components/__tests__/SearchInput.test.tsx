@@ -18,8 +18,12 @@ const mockUseSearchParams = vi.mocked(useSearchParams);
 describe('SearchInput', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    mockUseRouter.mockReturnValue({ push: mockPush } as any);
-    mockUseSearchParams.mockReturnValue(new URLSearchParams() as any);
+    mockUseRouter.mockReturnValue(
+      { push: mockPush } as unknown as ReturnType<typeof useRouter>
+    );
+    mockUseSearchParams.mockReturnValue(
+      new URLSearchParams() as unknown as ReturnType<typeof useSearchParams>
+    );
   });
 
   describe('Basic functionality', () => {
@@ -33,9 +37,11 @@ describe('SearchInput', () => {
 
     it('shows default value when provided and no URL params', () => {
       // Mock search params to return the default value itself
-      mockUseSearchParams.mockReturnValue({
-        get: vi.fn().mockReturnValue('test query')
-      } as any);
+      const params = new URLSearchParams();
+      vi.spyOn(params, 'get').mockReturnValue('test query');
+      mockUseSearchParams.mockReturnValue(
+        params as unknown as ReturnType<typeof useSearchParams>
+      );
       
       render(<SearchInput defaultValue="test query" />);
       
@@ -45,9 +51,11 @@ describe('SearchInput', () => {
     });
 
     it('initializes with URL search parameter', () => {
-      mockUseSearchParams.mockReturnValue({
-        get: vi.fn().mockReturnValue('url query')
-      } as any);
+      const params = new URLSearchParams();
+      vi.spyOn(params, 'get').mockReturnValue('url query');
+      mockUseSearchParams.mockReturnValue(
+        params as unknown as ReturnType<typeof useSearchParams>
+      );
       
       render(<SearchInput />);
       
@@ -91,7 +99,7 @@ describe('SearchInput', () => {
       
       render(<SearchInput />);
       
-      const input = screen.getByRole('textbox');
+      screen.getByRole('textbox');
       await user.keyboard('{Enter}');
       
       expect(mockPush).not.toHaveBeenCalled();

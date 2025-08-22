@@ -1,15 +1,13 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { loadSearchIndex, performSearch, getSearchTags } from './search';
+import { performSearch, getSearchTags } from './search';
 
 // Mock fetch
 const mockFetch = vi.fn();
 global.fetch = mockFetch;
 
 // Mock console methods
-const consoleSpy = {
-  error: vi.spyOn(console, 'error').mockImplementation(() => {}),
-  warn: vi.spyOn(console, 'warn').mockImplementation(() => {}),
-};
+vi.spyOn(console, 'error').mockImplementation(() => {});
+vi.spyOn(console, 'warn').mockImplementation(() => {});
 
 describe('Search functionality', () => {
   beforeEach(async () => {

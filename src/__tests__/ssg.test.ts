@@ -1,6 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import fs from 'fs';
-import path from 'path';
 import { generatePostUrl, parseDateToUTC, normalizeImagePath } from '@/lib/utils';
 import { getAllPostsMeta, getAllTags, getPostsByTag } from '@/lib/content';
 
@@ -10,7 +9,8 @@ vi.mock('gray-matter', () => ({
   default: vi.fn(),
 }));
 
-import grayMatter from 'gray-matter';
+  import grayMatter from 'gray-matter';
+  import type { GrayMatterFile } from 'gray-matter';
 vi.mock('reading-time', () => ({
   default: vi.fn(() => ({ minutes: 5 })),
 }));
@@ -48,15 +48,15 @@ describe('Static Site Generation Tests', () => {
 
       mockFs.existsSync.mockReturnValue(true);
       // Files will be sorted descending by filename, so christmas comes first
-      mockFs.readdirSync.mockReturnValue(testPosts.map(p => p.filename) as any);
+      mockFs.readdirSync.mockReturnValue(testPosts.map(p => p.filename));
       
       // Mock file reads in the order they'll be processed (christmas first)
       testPosts.forEach(post => {
         mockFs.readFileSync.mockReturnValueOnce('mock content');
-        (mockGrayMatter as any).mockReturnValueOnce({
+        mockGrayMatter.mockReturnValueOnce({
           data: post.frontmatter,
           content: 'mock content'
-        });
+        } as unknown as GrayMatterFile<string>);
       });
 
       const posts = getAllPostsMeta();
@@ -119,15 +119,15 @@ describe('Static Site Generation Tests', () => {
       ];
 
       mockFs.existsSync.mockReturnValue(true);
-      mockFs.readdirSync.mockReturnValue(testPosts.map(p => p.filename) as any);
+      mockFs.readdirSync.mockReturnValue(testPosts.map(p => p.filename));
       
       // Setup mock for getAllTags call
       testPosts.forEach(post => {
         mockFs.readFileSync.mockReturnValueOnce('mock content');
-        (mockGrayMatter as any).mockReturnValueOnce({
+        mockGrayMatter.mockReturnValueOnce({
           data: post.frontmatter,
           content: 'mock content'
-        });
+        } as unknown as GrayMatterFile<string>);
       });
 
       const allTags = getAllTags();
@@ -139,10 +139,10 @@ describe('Static Site Generation Tests', () => {
         // Each getPostsByTag call will call getAllPostsMeta, so mock the file operations
         testPosts.forEach(post => {
           mockFs.readFileSync.mockReturnValueOnce('mock content');
-          (mockGrayMatter as any).mockReturnValueOnce({
+          mockGrayMatter.mockReturnValueOnce({
             data: post.frontmatter,
             content: 'mock content'
-          });
+          } as unknown as GrayMatterFile<string>);
         });
         
         const tagPage = getPostsByTag(tag);
@@ -207,7 +207,7 @@ describe('Static Site Generation Tests', () => {
         }
       ];
 
-      testCases.forEach(({ input, expected, description }) => {
+      testCases.forEach(({ input, expected }) => {
         const result = normalizeImagePath(input);
         expect(result).toBe(expected);
       });
@@ -244,13 +244,13 @@ describe('Static Site Generation Tests', () => {
       };
 
       mockFs.existsSync.mockReturnValue(true);
-      mockFs.readdirSync.mockReturnValue([mockPost.filename] as any);
+      mockFs.readdirSync.mockReturnValue([mockPost.filename]);
       mockFs.readFileSync.mockReturnValue('mock file content');
       
-      (mockGrayMatter as any).mockReturnValue({
+      mockGrayMatter.mockReturnValue({
         data: mockPost.frontmatter,
         content: mockPost.content
-      });
+      } as unknown as GrayMatterFile<string>);
 
       const posts = getAllPostsMeta();
       expect(posts).toHaveLength(1);

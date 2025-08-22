@@ -1,8 +1,7 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import fs from 'fs';
-import path from 'path';
 import { getAllPostsMeta, getPost, getPaginatedPosts } from '@/lib/content';
-import { loadSearchIndex, performSearch } from '@/lib/search';
+import { performSearch } from '@/lib/search';
 import { generatePostUrl, parseDateToUTC } from '@/lib/utils';
 
 // Mock fs and dependencies for integration tests
@@ -11,7 +10,8 @@ vi.mock('gray-matter', () => ({
   default: vi.fn(),
 }));
 
-import grayMatter from 'gray-matter';
+  import grayMatter from 'gray-matter';
+  import type { GrayMatterFile } from 'gray-matter';
 vi.mock('reading-time', () => ({
   default: vi.fn(() => ({ minutes: 5 })),
 }));
@@ -61,21 +61,23 @@ describe('Integration Tests', () => {
     it('processes content and makes it searchable', async () => {
       // Mock file system for content processing
       mockFs.existsSync.mockReturnValue(true);
-      mockFs.readdirSync.mockReturnValue(mockPosts.map(p => p.filename) as any);
+        mockFs.readdirSync.mockReturnValue(mockPosts.map(p => p.filename));
       
-      mockPosts.forEach((post, index) => {
-        mockFs.readFileSync.mockReturnValueOnce(
-          `---\n${JSON.stringify(post.frontmatter, null, 2)}\n---\n${post.content}`
-        );
-      });
+        mockPosts.forEach(post => {
+          mockFs.readFileSync.mockReturnValueOnce(
+            `---\n${JSON.stringify(post.frontmatter, null, 2)}\n---\n${post.content}`
+          );
+        });
 
       // Mock gray-matter parsing
-      mockPosts.forEach(post => {
-        (mockMatter as any).mockReturnValueOnce({
-          data: post.frontmatter,
-          content: post.content
+        mockPosts.forEach(post => {
+          mockMatter.mockReturnValueOnce(
+            {
+              data: post.frontmatter,
+              content: post.content
+            } as unknown as GrayMatterFile<string>
+          );
         });
-      });
 
       // Process content
       const allPosts = getAllPostsMeta();
@@ -134,7 +136,7 @@ describe('Integration Tests', () => {
       const mockFiles = Array.from({ length: 25 }, (_, i) => `post-${i + 1}.mdx`);
       
       mockFs.existsSync.mockReturnValue(true);
-      mockFs.readdirSync.mockReturnValue(mockFiles as any);
+      mockFs.readdirSync.mockReturnValue(mockFiles);
       
       // Mock each file read
       mockFiles.forEach((filename, index) => {
@@ -147,14 +149,14 @@ Content for post ${index + 1}`);
       });
 
       mockFiles.forEach((_, index) => {
-        (mockMatter as any).mockReturnValue({
+        mockMatter.mockReturnValue({
           data: {
             title: `Post ${index + 1}`,
             date: `2023-12-${String(index + 1).padStart(2, '0')}`,
             draft: false
           },
           content: `Content for post ${index + 1}`
-        });
+        } as unknown as GrayMatterFile<string>);
       });
 
       // Test first page
@@ -197,7 +199,7 @@ Content for post ${index + 1}`);
         
         const mockFiles = ['draft.mdx', 'published.mdx'];
         mockFs.existsSync.mockReturnValue(true);
-        mockFs.readdirSync.mockReturnValue(mockFiles as any);
+        mockFs.readdirSync.mockReturnValue(mockFiles);
         
         // Mock draft post - this should be filtered out by getPostFiles
         mockFs.readFileSync.mockReturnValueOnce(`---
@@ -216,20 +218,17 @@ draft: false
 This is published`);
         
         // Mock the matter calls for each file (both for filtering and meta extraction)
-        let matterCallCount = 0;
-        (mockMatter as any).mockImplementation((content: string) => {
-          matterCallCount++;
+        mockMatter.mockImplementation((content: string) => {
           if (typeof content === 'string' && content.includes('draft: true')) {
             return {
               data: { title: 'Draft Post', date: '2023-12-01', draft: true },
               content: 'This is a draft'
-            };
-          } else {
-            return {
-              data: { title: 'Published Post', date: '2023-12-02', draft: false },
-              content: 'This is published'
-            };
+            } as unknown as GrayMatterFile<string>;
           }
+          return {
+            data: { title: 'Published Post', date: '2023-12-02', draft: false },
+            content: 'This is published'
+          } as unknown as GrayMatterFile<string>;
         });
         
         const allPosts = getAllPostsMeta();
@@ -253,10 +252,10 @@ date: 2023-12-02
 draft: false
 ---
 This is published`);
-        (mockMatter as any).mockReturnValueOnce({
+        mockMatter.mockReturnValueOnce({
           data: { title: 'Published Post', date: '2023-12-02', draft: false },
           content: 'This is published'
-        });
+        } as unknown as GrayMatterFile<string>);
         
         const publishedPost = getPost('published');
         expect(publishedPost).toBeTruthy();
@@ -282,7 +281,7 @@ This is published`);
       // Mock content files - using proper date format that matches filename sorting
       const mockFiles = ['2023-12-02-nextjs-ssg.mdx', '2023-12-01-react-testing.mdx']; // Sorted descending by filename
       mockFs.existsSync.mockReturnValue(true);
-      mockFs.readdirSync.mockReturnValue(mockFiles as any);
+      mockFs.readdirSync.mockReturnValue(mockFiles);
       
       // Mock file reads in the order they will be accessed
       mockFs.readFileSync
@@ -302,7 +301,7 @@ excerpt: Learn how to test React components effectively
 This is a comprehensive guide to testing React components...`);
 
       // Mock matter parsing - directly mock the return values in the order they'll be called
-      (mockMatter as any)
+      mockMatter
         .mockReturnValueOnce({
           data: {
             title: 'Next.js Static Site Generation',
@@ -311,7 +310,7 @@ This is a comprehensive guide to testing React components...`);
             excerpt: 'Master SSG with Next.js'
           },
           content: 'Static Site Generation is a powerful feature of Next.js...'
-        })
+        } as unknown as GrayMatterFile<string>)
         .mockReturnValueOnce({
           data: {
             title: 'React Testing Guide',
@@ -320,7 +319,7 @@ This is a comprehensive guide to testing React components...`);
             excerpt: 'Learn how to test React components effectively'
           },
           content: 'This is a comprehensive guide to testing React components...'
-        });
+        } as unknown as GrayMatterFile<string>);
 
       // Get content
       const contentPosts = getAllPostsMeta();
