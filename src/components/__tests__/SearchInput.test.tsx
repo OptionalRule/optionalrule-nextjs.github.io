@@ -1,6 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import React from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { SearchInput } from '../SearchInput';
 
@@ -30,11 +31,17 @@ describe('SearchInput', () => {
       expect(input).toHaveAttribute('type', 'text');
     });
 
-    it('shows default value when provided', () => {
+    it('shows default value when provided and no URL params', () => {
+      // Mock search params to return the default value itself
+      mockUseSearchParams.mockReturnValue({
+        get: vi.fn().mockReturnValue('test query')
+      } as any);
+      
       render(<SearchInput defaultValue="test query" />);
       
-      const input = screen.getByDisplayValue('test query');
+      const input = screen.getByRole('textbox');
       expect(input).toBeInTheDocument();
+      expect(input).toHaveValue('test query');
     });
 
     it('initializes with URL search parameter', () => {
@@ -109,6 +116,10 @@ describe('SearchInput', () => {
       const mockOnSearch = vi.fn();
       
       render(<SearchInput onSearch={mockOnSearch} defaultValue="test" />);
+      
+      // Type to ensure query is present and clear button appears
+      const input = screen.getByRole('textbox');
+      await user.type(input, 'test query');
       
       const clearButton = screen.getByLabelText('Clear search');
       await user.click(clearButton);

@@ -2,6 +2,9 @@ import '@testing-library/jest-dom';
 import { vi } from 'vitest';
 import React from 'react';
 
+// Make React available globally for JSX
+(global as any).React = React;
+
 // Mock Next.js router
 vi.mock('next/navigation', () => ({
   useRouter: vi.fn(() => ({
@@ -34,8 +37,13 @@ vi.mock('next/navigation', () => ({
 // Mock Next.js Image component
 vi.mock('next/image', () => ({
   default: vi.fn((props) => {
-    const { src, alt, ...rest } = props;
-    return React.createElement('img', { src, alt, ...rest });
+    const { src, alt, fill, priority, sizes, className, ...rest } = props;
+    return React.createElement('img', { 
+      src, 
+      alt, 
+      className,
+      ...rest 
+    });
   }),
 }));
 

@@ -12,6 +12,11 @@
 
 # testing
 /coverage
+/test-results
+/.nyc_output
+*.lcov
+junit.xml
+test-results.xml
 
 # next.js
 /.next/

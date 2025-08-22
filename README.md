@@ -18,6 +18,15 @@ This is a Next.js 15 static blog site for Optional Rule Games that deploys to Gi
 - `npm run find-empty-links` - Scan content for broken markdown links
 - `npm run create-post` - Create new blog post with frontmatter template
 
+## Testing
+
+- `npm run test` - Run all unit tests
+- `npm run test:watch` - Run tests in watch mode during development
+- `npm run test:ui` - Run tests with browser-based UI
+- `npm run test:build` - Build verification tests (includes build + static tests)
+
+See [Testing Strategy Documentation](docs/testing-strategy.md) for comprehensive testing approach and upgrade protection details.
+
 ## Architecture Overview
 
 ### Static Site Generation
