@@ -3,7 +3,7 @@ import { vi } from 'vitest';
 import React from 'react';
 
 // Make React available globally for JSX
-(global as any).React = React;
+(globalThis as unknown as { React: typeof React }).React = React;
 
 // Mock Next.js router
 vi.mock('next/navigation', () => ({
@@ -36,16 +36,18 @@ vi.mock('next/navigation', () => ({
 
 // Mock Next.js Image component
 vi.mock('next/image', () => ({
-  default: vi.fn((props) => {
-    const { src, alt, fill, priority, sizes, className, ...rest } = props;
-    return React.createElement('img', { 
-      src, 
-      alt, 
-      className,
-      ...rest 
-    });
-  }),
-}));
+    default: vi.fn(
+      (props: React.ComponentProps<'img'> & { fill?: boolean; priority?: boolean; sizes?: string }) => {
+        const { src, alt, className, fill: _fill, priority: _priority, sizes: _sizes, ...rest } = props;
+        return React.createElement('img', {
+          src,
+          alt,
+          className,
+          ...rest
+        });
+      }
+    ),
+  }));
 
 // Mock Next.js Link component  
 vi.mock('next/link', () => ({

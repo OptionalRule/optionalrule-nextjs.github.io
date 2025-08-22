@@ -17,15 +17,19 @@ vi.mock('next/navigation', () => ({
 }));
 
 vi.mock('next/image', () => ({
-  default: vi.fn(({ src, alt, fill, priority, sizes, className, ...props }: any) => 
-    React.createElement('img', { src, alt, className })
+  default: vi.fn(
+    (props: React.ComponentProps<'img'> & { fill?: boolean; priority?: boolean; sizes?: string }) => {
+      const { src, alt, className, fill: _fill, priority: _priority, sizes: _sizes, ...rest } = props;
+      return React.createElement('img', { src, alt, className, ...rest });
+    }
   ),
 }));
 
 vi.mock('next/link', () => ({
-  default: vi.fn(({ href, children, ...props }: any) => 
-    React.createElement('a', { href, ...props }, children)
-  ),
+  default: vi.fn((props: React.ComponentProps<'a'>) => {
+    const { href, children, ...rest } = props;
+    return React.createElement('a', { href, ...rest }, children);
+  }),
 }));
 
 describe('Accessibility Tests', () => {

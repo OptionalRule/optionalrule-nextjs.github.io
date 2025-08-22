@@ -1,6 +1,5 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import fs from 'fs';
-import path from 'path';
 
 // Mock fs module
 vi.mock('fs');
@@ -17,8 +16,8 @@ vi.mock('reading-time', () => ({
 }));
 
 // Import after mocking
-import { 
-  isPostDraft, 
+import {
+  isPostDraft,
   isPageDraft,
   getAllPostFiles,
   getPostFiles,
@@ -26,6 +25,7 @@ import {
   getPageFiles
 } from './content';
 import matter from 'gray-matter';
+import type { GrayMatterFile } from 'gray-matter';
 
 const mockMatter = vi.mocked(matter);
 
@@ -45,7 +45,7 @@ describe('Content Management', () => {
         mockMatter.mockReturnValue({
           data: { draft: true },
           content: 'content'
-        } as any);
+        } as unknown as GrayMatterFile<string>);
 
         expect(isPostDraft('test.mdx')).toBe(true);
       });
@@ -55,7 +55,7 @@ describe('Content Management', () => {
         mockMatter.mockReturnValue({
           data: { draft: false },
           content: 'content'
-        } as any);
+        } as unknown as GrayMatterFile<string>);
 
         expect(isPostDraft('test.mdx')).toBe(false);
       });
@@ -65,7 +65,7 @@ describe('Content Management', () => {
         mockMatter.mockReturnValue({
           data: {},
           content: 'content'
-        } as any);
+        } as unknown as GrayMatterFile<string>);
 
         expect(isPostDraft('test.mdx')).toBe(false);
       });
@@ -85,7 +85,7 @@ describe('Content Management', () => {
         mockMatter.mockReturnValue({
           data: { draft: true },
           content: 'content'
-        } as any);
+        } as unknown as GrayMatterFile<string>);
 
         expect(isPageDraft('test.mdx')).toBe(true);
       });
@@ -95,7 +95,7 @@ describe('Content Management', () => {
         mockMatter.mockReturnValue({
           data: { draft: false },
           content: 'content'
-        } as any);
+        } as unknown as GrayMatterFile<string>);
 
         expect(isPageDraft('test.mdx')).toBe(false);
       });
@@ -117,7 +117,7 @@ describe('Content Management', () => {
           'image.jpg',
           'post3.mdx',
           'README.txt'
-        ] as any);
+        ] as unknown as string[]);
 
         const result = getAllPostFiles();
         expect(result).toEqual(['post3.mdx', 'post2.md', 'post1.mdx']);
@@ -125,7 +125,7 @@ describe('Content Management', () => {
 
       it('handles empty directory', () => {
         mockFs.existsSync.mockReturnValue(true);
-        mockFs.readdirSync.mockReturnValue([] as any);
+        mockFs.readdirSync.mockReturnValue([]);
         expect(getAllPostFiles()).toEqual([]);
       });
     });
@@ -136,7 +136,7 @@ describe('Content Management', () => {
         process.env.NODE_ENV = 'development';
 
         mockFs.existsSync.mockReturnValue(true);
-        mockFs.readdirSync.mockReturnValue(['post1.mdx', 'post2.mdx'] as any);
+        mockFs.readdirSync.mockReturnValue(['post1.mdx', 'post2.mdx']);
 
         const result = getPostFiles();
         expect(result).toEqual(['post2.mdx', 'post1.mdx']);
@@ -149,15 +149,19 @@ describe('Content Management', () => {
         process.env.NODE_ENV = 'production';
 
         mockFs.existsSync.mockReturnValue(true);
-        mockFs.readdirSync.mockReturnValue(['draft.mdx', 'published.mdx'] as any);
+        mockFs.readdirSync.mockReturnValue(['draft.mdx', 'published.mdx']);
         
         mockFs.readFileSync
           .mockReturnValueOnce('draft content')
           .mockReturnValueOnce('published content');
         
         mockMatter
-          .mockReturnValueOnce({ data: { draft: true }, content: 'content' } as any)
-          .mockReturnValueOnce({ data: { draft: false }, content: 'content' } as any);
+            .mockReturnValueOnce(
+              { data: { draft: true }, content: 'content' } as unknown as GrayMatterFile<string>
+            )
+            .mockReturnValueOnce(
+              { data: { draft: false }, content: 'content' } as unknown as GrayMatterFile<string>
+            );
 
         const result = getPostFiles();
         expect(result).toEqual(['published.mdx']);
@@ -173,7 +177,7 @@ describe('Content Management', () => {
           'about.mdx',
           'contact.md',
           'style.css'
-        ] as any);
+          ] as unknown as string[]);
 
         const result = getAllPageFiles();
         expect(result).toEqual(['about.mdx', 'contact.md']);
@@ -186,7 +190,7 @@ describe('Content Management', () => {
         process.env.NODE_ENV = 'development';
 
         mockFs.existsSync.mockReturnValue(true);
-        mockFs.readdirSync.mockReturnValue(['about.mdx'] as any);
+        mockFs.readdirSync.mockReturnValue(['about.mdx']);
 
         const result = getPageFiles();
         expect(result).toEqual(['about.mdx']);
@@ -199,15 +203,19 @@ describe('Content Management', () => {
         process.env.NODE_ENV = 'production';
 
         mockFs.existsSync.mockReturnValue(true);
-        mockFs.readdirSync.mockReturnValue(['draft-page.mdx', 'about.mdx'] as any);
+        mockFs.readdirSync.mockReturnValue(['draft-page.mdx', 'about.mdx']);
         
         mockFs.readFileSync
           .mockReturnValueOnce('draft content')
           .mockReturnValueOnce('about content');
         
         mockMatter
-          .mockReturnValueOnce({ data: { draft: true }, content: 'content' } as any)
-          .mockReturnValueOnce({ data: {}, content: 'content' } as any);
+            .mockReturnValueOnce(
+              { data: { draft: true }, content: 'content' } as unknown as GrayMatterFile<string>
+            )
+            .mockReturnValueOnce(
+              { data: {}, content: 'content' } as unknown as GrayMatterFile<string>
+            );
 
         const result = getPageFiles();
         expect(result).toEqual(['about.mdx']);
