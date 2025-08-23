@@ -9,9 +9,17 @@
     <managingEditor>optionalrule@gmail.com (Mike Bernier)</managingEditor>
     <webMaster>optionalrule@gmail.com (Mike Bernier)</webMaster>
     <copyright>Copyright 2025 Optional Rule Games</copyright>
-    <lastBuildDate>Fri, 15 Aug 2025 00:00:00 GMT</lastBuildDate>
+    <lastBuildDate>Fri, 22 Aug 2025 00:00:00 GMT</lastBuildDate>
     <ttl>60</ttl>
     
+    <item>
+      <title><![CDATA[Retro-Classic Game Asteroids Available]]></title>
+      <description><![CDATA[I developed a browser version of Asteroids, sharing my high score hopes while exploring TTRPG tools post-site conversion.]]></description>
+      <link>https://optionalrule.com/2025/08/21/retro-classic-game-asteroids-available/</link>
+      <guid isPermaLink="true">https://optionalrule.com/2025/08/21/retro-classic-game-asteroids-available/</guid>
+      <pubDate>Fri, 22 Aug 2025 00:00:00 GMT</pubDate>
+      <category><![CDATA[Community, Philosophy]]></category>
+    </item>
     <item>
       <title><![CDATA[Site Migration Complete]]></title>
       <description><![CDATA[I migrated the site to NextJS for easier management. Having used AI for this I reflect a bit on the future of TTRPG content.]]></description>

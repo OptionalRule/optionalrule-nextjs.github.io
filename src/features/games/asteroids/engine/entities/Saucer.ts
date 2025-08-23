@@ -30,10 +30,10 @@ export class Saucer extends Entity {
     // Set speed based on size
     this.speed = size === SaucerSize.LARGE ? 80 : 120
     
-    // Set vertices based on size
-    this.saucerVertices = size === SaucerSize.LARGE 
+    // Set vertices based on size (create mutable copy)
+    this.saucerVertices = [...(size === SaucerSize.LARGE 
       ? RENDERING.saucerVertices.large 
-      : RENDERING.saucerVertices.small
+      : RENDERING.saucerVertices.small)]
     
     // Set initial velocity
     this.velocity = Vector2DUtils.fromAngle(this.direction, this.speed)
