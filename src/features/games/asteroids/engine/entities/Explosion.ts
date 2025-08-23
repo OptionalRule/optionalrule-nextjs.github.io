@@ -17,31 +17,37 @@ export class Explosion extends Entity {
   private particles: Particle[] = []
   private duration: number
   private maxDuration: number
-  private explosionType: 'ship' | 'asteroid'
+  private explosionType: 'ship' | 'asteroid' | 'saucer'
 
-  constructor(position: Vector2D, explosionType: 'ship' | 'asteroid' = 'ship') {
+  constructor(position: Vector2D, explosionType: 'ship' | 'asteroid' | 'saucer' = 'ship') {
     super(position)
     
     this.explosionType = explosionType
-    this.maxDuration = explosionType === 'ship' ? 1000 : 500 // Ship explosion lasts much longer
+    this.maxDuration = explosionType === 'ship' ? 1000 : explosionType === 'saucer' ? 600 : 500
     this.duration = this.maxDuration
     
     this.createParticles()
   }
 
   private createParticles(): void {
-    const particleCount = this.explosionType === 'ship' ? 12 : 4
+    const particleCount = this.explosionType === 'ship' ? 12 : this.explosionType === 'saucer' ? 8 : 4
     const colors = this.explosionType === 'ship' 
       ? ['#ff4400', '#ff6600', '#ff8800', '#ffaa00', '#ffffff']
+      : this.explosionType === 'saucer'
+      ? ['#00FF41', '#41FF00', '#82FF41', '#ffffff'] // Green-tinted explosion
       : ['#ff6347', '#ffa500']
     
     for (let i = 0; i < particleCount; i++) {
       const angle = (Math.PI * 2 * i) / particleCount + GameMath.randomFloat(-0.3, 0.3)
       const speed = this.explosionType === 'ship' 
         ? GameMath.randomFloat(50, 150)
+        : this.explosionType === 'saucer'
+        ? GameMath.randomFloat(40, 100)
         : GameMath.randomFloat(20, 60)
       const life = this.explosionType === 'ship' 
         ? GameMath.randomFloat(600, 1000)
+        : this.explosionType === 'saucer'
+        ? GameMath.randomFloat(400, 600)
         : GameMath.randomFloat(200, 400)
       
       const particle: Particle = {
@@ -51,6 +57,8 @@ export class Explosion extends Entity {
         maxLife: life,
         size: this.explosionType === 'ship' 
           ? GameMath.randomFloat(2, 6)
+          : this.explosionType === 'saucer'
+          ? GameMath.randomFloat(1.5, 4)
           : GameMath.randomFloat(1, 3),
         color: colors[Math.floor(Math.random() * colors.length)]
       }

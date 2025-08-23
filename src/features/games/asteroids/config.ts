@@ -40,6 +40,16 @@ export const ASTEROIDS_CONFIG: GameConfig = {
     },
     spawnInterval: 30000,
     shootInterval: 2000,
+    minLevel: 1,
+    speeds: {
+      large: 80,
+      small: 120,
+    },
+    weights: {
+      early: { small: 0.8, large: 0.2 }, // levels 2-4
+      mid: { small: 0.6, large: 0.4 },   // levels 5-8
+      late: { small: 0.4, large: 0.6 }   // levels 9+
+    }
   },
 }
 
@@ -64,6 +74,9 @@ export const COLORS = {
   },
   asteroidsFill: '#330066',
   bullets: '#7FFF00',     // Lime
+  saucerBullets: '#FFFF00', // Bright yellow
+  saucer: '#00FF41',      // Bright neon green
+  saucerFill: '#001a0d',  // Dark green fill
   thrust: ['#ff4400', '#ff8800', '#ffaa00'],
   ui: '#00ff00',
   background: '#000011',
@@ -148,6 +161,7 @@ export const RENDERING = {
   bulletRadius: 3,
   bulletGlow: 10,
   asteroidGlow: 15,
+  saucerGlow: 12,
   textShadowBlur: 10,
   
   // Overlay alphas
@@ -170,6 +184,22 @@ export const RENDERING = {
     { x: -16, y: 0 },   // Tip
     { x: -8, y: 4 },    // Right
   ],
+  saucerVertices: {
+    large: [
+      // Top dome
+      { x: -20, y: -8 }, { x: -15, y: -12 }, { x: 0, y: -12 }, 
+      { x: 15, y: -12 }, { x: 20, y: -8 },
+      // Main body
+      { x: 20, y: 0 }, { x: 15, y: 4 }, { x: -15, y: 4 }, { x: -20, y: 0 }
+    ],
+    small: [
+      // Top dome (scaled down)
+      { x: -12, y: -5 }, { x: -9, y: -7 }, { x: 0, y: -7 }, 
+      { x: 9, y: -7 }, { x: 12, y: -5 },
+      // Main body (scaled down)
+      { x: 12, y: 0 }, { x: 9, y: 2 }, { x: -9, y: 2 }, { x: -12, y: 0 }
+    ]
+  },
   
   // FPS monitoring
   fpsUpdateInterval: 1000,

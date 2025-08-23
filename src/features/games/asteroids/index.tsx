@@ -85,7 +85,7 @@ export default function AsteroidsGame({ className }: AsteroidsGameProps) {
         {/* Attribution */}
         <footer className="mt-8 pt-4 border-t border-border text-center text-sm text-muted-foreground">
           <p>
-            Asteroids clone built with TypeScript, HTML5 Canvas, and React.
+            Asteroids clone built with TypeScript, HTML5 Canvas, and React as a test of coding CLIs.
             Original game by Atari (1979).
           </p>
         </footer>

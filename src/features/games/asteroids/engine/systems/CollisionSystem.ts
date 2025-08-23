@@ -5,6 +5,7 @@ import type { Entity } from '../entities/Entity'
 import type { Ship } from '../entities/Ship'
 import type { Bullet } from '../entities/Bullet'
 import type { Asteroid } from '../entities/Asteroid'
+import type { Saucer } from '../entities/Saucer'
 
 export interface CollisionPair {
   entityA: Entity
@@ -79,9 +80,10 @@ export class CollisionSystem {
 
     // Define collision rules
     const collisionRules: Record<string, string[]> = {
-      'ship': ['asteroid'],
-      'bullet': ['asteroid'],
+      'ship': ['asteroid', 'saucer', 'bullet'],
+      'bullet': ['asteroid', 'saucer'],
       'asteroid': ['ship', 'bullet'],
+      'saucer': ['ship', 'bullet'],
     }
 
     return collisionRules[typeA]?.includes(typeB) || 
@@ -119,6 +121,32 @@ export class CollisionSystem {
         typeA === 'asteroid' ? entityA as Asteroid : entityB as Asteroid
       )
     }
+
+    // Handle ship-saucer collision
+    if ((typeA === 'ship' && typeB === 'saucer') ||
+        (typeA === 'saucer' && typeB === 'ship')) {
+      this.handleShipSaucerCollision(
+        typeA === 'ship' ? entityA as Ship : entityB as Ship
+      )
+    }
+
+    // Handle bullet-saucer collision
+    if ((typeA === 'bullet' && typeB === 'saucer') ||
+        (typeA === 'saucer' && typeB === 'bullet')) {
+      this.handleBulletSaucerCollision(
+        typeA === 'bullet' ? entityA as Bullet : entityB as Bullet,
+        typeA === 'saucer' ? entityA as Saucer : entityB as Saucer
+      )
+    }
+
+    // Handle ship-bullet collision (saucer bullets hitting ship)
+    if ((typeA === 'ship' && typeB === 'bullet') ||
+        (typeA === 'bullet' && typeB === 'ship')) {
+      this.handleShipBulletCollision(
+        typeA === 'ship' ? entityA as Ship : entityB as Ship,
+        typeA === 'bullet' ? entityA as Bullet : entityB as Bullet
+      )
+    }
   }
 
   private handleShipAsteroidCollision(ship: Ship): void {
@@ -143,6 +171,54 @@ export class CollisionSystem {
     // Damage asteroid
     if ('takeDamage' in asteroid && typeof asteroid.takeDamage === 'function') {
       asteroid.takeDamage()
+    }
+  }
+
+  private handleShipSaucerCollision(ship: Ship): void {
+    // Check if ship can actually collide (not invulnerable)
+    if ('getCanCollide' in ship && typeof ship.getCanCollide === 'function') {
+      if (!ship.getCanCollide()) return
+    }
+
+    // Destroy ship
+    if ('takeDamage' in ship && typeof ship.takeDamage === 'function') {
+      ship.takeDamage()
+    }
+
+    // Note: We don't destroy the saucer in ship collision
+    // This maintains consistent behavior with asteroids
+  }
+
+  private handleBulletSaucerCollision(bullet: Bullet, saucer: Saucer): void {
+    // Check if bullet was fired by the same saucer - if so, ignore collision
+    if (bullet.getSourceId() === saucer.getId()) {
+      return
+    }
+
+    // Destroy bullet
+    bullet.destroy()
+
+    // Destroy saucer
+    saucer.destroy()
+  }
+
+  private handleShipBulletCollision(ship: Ship, bullet: Bullet): void {
+    // Check if bullet was fired by the ship - if so, ignore collision
+    if (bullet.getSourceId() === ship.getId()) {
+      return
+    }
+
+    // Check if ship can actually collide (not invulnerable)
+    if ('getCanCollide' in ship && typeof ship.getCanCollide === 'function') {
+      if (!ship.getCanCollide()) return
+    }
+
+    // Destroy bullet
+    bullet.destroy()
+
+    // Destroy ship
+    if ('takeDamage' in ship && typeof ship.takeDamage === 'function') {
+      ship.takeDamage()
     }
   }
 

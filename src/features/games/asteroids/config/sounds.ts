@@ -122,6 +122,32 @@ export const SOUND_CONFIG: SoundConfig = {
       category: 'ui',
       volume: 0.6,
       preload: false
+    },
+
+    // Saucer sounds
+    saucerArrival: {
+      path: '/games/asteroids/sounds/saucer_arrive_loop.mp3',
+      category: 'effects',
+      volume: 0.4,
+      loop: true,
+      preload: false
+    },
+    saucerFire: {
+      path: '/games/asteroids/sounds/saucer_fire_1.mp3',
+      category: 'effects',
+      volume: 0.6,
+      preload: false,
+      variants: [
+        '/games/asteroids/sounds/saucer_fire_1.mp3',
+        '/games/asteroids/sounds/saucer_fire_2.mp3',
+        '/games/asteroids/sounds/saucer_fire_3.mp3'
+      ]
+    },
+    saucerDestroyed: {
+      path: '/games/asteroids/sounds/saucer_destroyed.mp3',
+      category: 'effects',
+      volume: 0.8,
+      preload: false
     }
   }
 }
