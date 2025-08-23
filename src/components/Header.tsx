@@ -15,11 +15,46 @@ type NavigationItem = {
   isFile?: boolean;
 };
 
+type NavigationDropdown = {
+  label: string;
+  href?: string; // Optional href for the dropdown trigger itself
+  items: NavigationItem[];
+};
+
+type NavigationGroup = NavigationItem | NavigationDropdown;
+
+// Helper function to check if an item is a dropdown
+const isDropdown = (item: NavigationGroup): item is NavigationDropdown => {
+  return 'items' in item;
+};
+
 // Navigation configuration - single source of truth
-const navigationItems: NavigationItem[] = [
-  { href: '/', label: 'Home' },
-  { href: '/pages/about/', label: 'About' },
-  { href: '/tags/', label: 'Tags' },
+const navigationItems: NavigationGroup[] = [
+  {
+    label: 'Blog',
+    href: '/',
+    items: [
+      { href: '/tags/', label: 'Tags' },
+      { href: '/search/', label: 'Search' },
+      { href: '/pages/about/', label: 'About' }
+    ]
+  },
+  {
+    label: 'Games',
+    items: [
+      { href: '/games/asteroids/', label: 'Asteroids' }
+    ]
+  },
+  {
+    label: 'Tools',
+    items: [
+      { href: '#', label: 'Coming Soon' }
+    ]
+  }
+];
+
+// Utility navigation items (icons only)
+const utilityItems: NavigationItem[] = [
   { 
     href: '/search', 
     label: 'Search',
@@ -40,30 +75,6 @@ const navigationItems: NavigationItem[] = [
       </svg>
     ),
     iconOnly: true
-  },
-  { 
-    href: '/rss.xml', 
-    label: 'Feed',
-    icon: (
-      <svg
-        className="w-5 h-5"
-        fill="none"
-        stroke="currentColor"
-        viewBox="0 0 24 24"
-        xmlns="http://www.w3.org/2000/svg"
-      >
-        <path
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          strokeWidth={2}
-          d="M6 5c7.18 0 13 5.82 13 13M6 11a7 7 0 017 7m-6 0a1 1 0 11-2 0 1 1 0 012 0z"
-        />
-      </svg>
-    ),
-    isSpecial: true,
-    iconOnly: true,
-    // Using a regular anchor prevents Next.js prefetch of RSC flight data
-    isFile: true
   },
   { 
     href: 'https://x.com/optionalrule', 
@@ -87,12 +98,26 @@ const navigationItems: NavigationItem[] = [
 export function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [theme, setTheme] = useState<"light" | "dark" | null>(null);
+  const [openDropdown, setOpenDropdown] = useState<string | null>(null);
 
   // Rehydrate theme from the current document class (set by inline script)
   useEffect(() => {
     const isDark = document.documentElement.classList.contains('dark');
     setTheme(isDark ? 'dark' : 'light');
   }, []);
+
+  // Close dropdowns when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as Element;
+      if (openDropdown && !target.closest('.relative')) {
+        setOpenDropdown(null);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [openDropdown]);
 
   const toggleTheme = () => {
     const next = theme === 'dark' ? 'light' : 'dark';
@@ -113,6 +138,14 @@ export function Header() {
     setIsMenuOpen(false);
   };
 
+  const handleDropdownToggle = (label: string) => {
+    setOpenDropdown(openDropdown === label ? null : label);
+  };
+
+  const closeDropdown = () => {
+    setOpenDropdown(null);
+  };
+
   // Reusable navigation link component
   const NavLink = ({ item, onClick, className = '' }: { 
     item: NavigationItem; 
@@ -129,7 +162,7 @@ export function Header() {
           item.isSpecial 
             ? 'text-[var(--muted-2)] hover:text-[var(--foreground)]'
             : 'text-[var(--muted)] hover:text-[var(--foreground)]'
-        } font-medium transition-colors ${className}`}
+        } text-base font-medium transition-colors ${className}`}
         title={item.label}
       >
         {item.icon && (
@@ -148,7 +181,7 @@ export function Header() {
           item.isSpecial 
             ? 'text-[var(--muted-2)] hover:text-[var(--foreground)]'
             : 'text-[var(--muted)] hover:text-[var(--foreground)]'
-        } font-medium transition-colors ${className}`}
+        } text-base font-medium transition-colors ${className}`}
         title={item.label}
         prefetch={false}
       >
@@ -162,6 +195,52 @@ export function Header() {
       </Link>
     )
   );
+
+  // Dropdown component for desktop
+  const DropdownMenu = ({ dropdown }: { dropdown: NavigationDropdown }) => {
+    const isOpen = openDropdown === dropdown.label;
+    
+    return (
+      <div 
+        className="relative"
+        onMouseEnter={() => setOpenDropdown(dropdown.label)}
+        onMouseLeave={closeDropdown}
+      >
+        <button
+          onClick={() => handleDropdownToggle(dropdown.label)}
+          className="text-[var(--muted)] hover:text-[var(--foreground)] text-base font-medium transition-colors inline-flex items-center space-x-1"
+        >
+          {dropdown.href ? (
+            <Link href={dropdown.href} className="hover:text-[var(--foreground)]">
+              {dropdown.label}
+            </Link>
+          ) : (
+            <span>{dropdown.label}</span>
+          )}
+          <svg
+            className={`w-4 h-4 transition-transform ${isOpen ? 'rotate-180' : ''}`}
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+          </svg>
+        </button>
+        
+        {isOpen && (
+          <div
+            className="absolute top-full left-0 bg-[var(--surface)] border border-[var(--border)] rounded-md shadow-lg py-2 min-w-48 z-50"
+          >
+            {dropdown.items.map((item) => (
+              <div key={item.href} className="px-4 py-2 hover:bg-[var(--surface-hover)]">
+                <NavLink item={item} onClick={closeDropdown} />
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    );
+  };
 
   return (
     <header className="bg-[var(--surface)] border-b border-[var(--border)] sticky top-0 z-[100] relative shadow-sm">
@@ -191,6 +270,13 @@ export function Header() {
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-6">
             {navigationItems.map((item) => (
+              isDropdown(item) ? (
+                <DropdownMenu key={item.label} dropdown={item} />
+              ) : (
+                <NavLink key={item.href} item={item} />
+              )
+            ))}
+            {utilityItems.map((item) => (
               <NavLink key={item.href} item={item} />
             ))}
             {/* Theme Toggle */}
@@ -214,7 +300,6 @@ export function Header() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12.79A9 9 0 1111.21 3c.05 0 .09 0 .14.01A7 7 0 0021 12.79z" />
                 </svg>
               )}
-              <span className="text-sm hidden sm:inline">{theme === 'dark' ? 'Light' : 'Dark'}</span>
             </button>
           </div>
 
@@ -255,6 +340,55 @@ export function Header() {
           <div className="md:hidden mt-4 pb-4 border-t border-[var(--border)]">
             <div className="flex flex-col space-y-3 pt-4">
               {navigationItems.map((item) => (
+                isDropdown(item) ? (
+                  <div key={item.label} className="flex flex-col">
+                    {/* Mobile dropdown trigger */}
+                    <button
+                      onClick={() => handleDropdownToggle(`mobile-${item.label}`)}
+                      className="text-[var(--muted)] hover:text-[var(--foreground)] text-base font-medium py-2 flex items-center justify-between"
+                    >
+                      <span className="flex items-center space-x-2">
+                        {item.href ? (
+                          <Link href={item.href} onClick={closeMenu}>
+                            {item.label}
+                          </Link>
+                        ) : (
+                          <span>{item.label}</span>
+                        )}
+                      </span>
+                      <svg
+                        className={`w-4 h-4 transition-transform ${openDropdown === `mobile-${item.label}` ? 'rotate-180' : ''}`}
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                      </svg>
+                    </button>
+                    {/* Mobile dropdown items */}
+                    {openDropdown === `mobile-${item.label}` && (
+                      <div className="pl-4 flex flex-col space-y-2">
+                        {item.items.map((subItem) => (
+                          <NavLink
+                            key={subItem.href}
+                            item={subItem}
+                            onClick={closeMenu}
+                            className="py-1 text-sm"
+                          />
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                ) : (
+                  <NavLink 
+                    key={item.href} 
+                    item={item} 
+                    onClick={closeMenu}
+                    className="py-2"
+                  />
+                )
+              ))}
+              {utilityItems.map((item) => (
                 <NavLink 
                   key={item.href} 
                   item={item} 
@@ -279,7 +413,6 @@ export function Header() {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12.79A9 9 0 1111.21 3c.05 0 .09 0 .14.01A7 7 0 0021 12.79z" />
                   </svg>
                 )}
-                <span className="text-sm">{theme === 'dark' ? 'Light' : 'Dark'}</span>
               </button>
             </div>
           </div>
