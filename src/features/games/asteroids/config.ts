@@ -46,9 +46,9 @@ export const ASTEROIDS_CONFIG: GameConfig = {
       small: 120,
     },
     weights: {
-      early: { small: 0.8, large: 0.2 }, // levels 2-4
-      mid: { small: 0.6, large: 0.4 },   // levels 5-8
-      late: { small: 0.4, large: 0.6 }   // levels 9+
+      early: { small: 0.2, large: 0.8 }, // levels 2-4: large saucers spawn more often
+      mid: { small: 0.4, large: 0.6 },   // levels 5-8: still favor large saucers
+      late: { small: 0.6, large: 0.4 }   // levels 9+: more small saucers for difficulty
     }
   },
 }

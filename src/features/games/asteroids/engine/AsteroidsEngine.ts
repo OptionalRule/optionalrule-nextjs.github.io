@@ -579,6 +579,10 @@ export class AsteroidsEngine {
       
       // UI sounds still work, so play unpause sound
       this.soundSystem.playSound('unpause')
+      
+      // Resume paused effects and ambient sounds
+      this.soundSystem.resumeCategory('effects')
+      this.soundSystem.resumeCategory('ambient')
     }
     this.notifyStateChange()
   }
@@ -620,6 +624,15 @@ export class AsteroidsEngine {
   pause(): void {
     if (this.gameState.gameStatus === 'playing') {
       this.gameState.gameStatus = 'paused'
+      
+      // Pause effects and ambient sounds, but allow UI sounds
+      this.soundSystem.pauseCategory('effects')
+      this.soundSystem.pauseCategory('ambient')
+      this.soundSystem.playSound('pause')
+      
+      // Reset thrust state so it can restart when unpaused
+      this.isThrusting = false
+      
       this.notifyStateChange()
     }
   }
@@ -628,6 +641,22 @@ export class AsteroidsEngine {
     if (this.gameState.gameStatus === 'paused') {
       this.gameState.gameStatus = 'playing'
       this.lastFrameTime = performance.now()
+      
+      // UI sounds still work, so play unpause sound
+      this.soundSystem.playSound('unpause')
+      
+      // Resume paused effects and ambient sounds
+      this.soundSystem.resumeCategory('effects')
+      this.soundSystem.resumeCategory('ambient')
+      
+      // DEBUG: Also try to directly play saucer sound if there are active saucers
+      const activeSaucers = this.entities.filter(e => e instanceof Saucer && e.getActive())
+      console.log('Resume - Active saucers found:', activeSaucers.length)
+      if (activeSaucers.length > 0) {
+        console.log('Directly playing saucer arrival sound')
+        this.soundSystem.playSound('saucerArrival')
+      }
+      
       this.notifyStateChange()
     }
   }

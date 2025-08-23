@@ -83,11 +83,12 @@ export class Saucer extends Entity {
       this.destroy()
     }
     
-    // Vertical wrapping to keep saucer on screen
-    if (this.position.y < -50) {
-      this.position.y = canvasHeight + 50
-    } else if (this.position.y > canvasHeight + 50) {
-      this.position.y = -50
+    // Keep saucer within visible bounds (with small margin for visibility)
+    const margin = 25 // Small margin to keep saucer fully visible
+    if (this.position.y < margin) {
+      this.position.y = margin
+    } else if (this.position.y > canvasHeight - margin) {
+      this.position.y = canvasHeight - margin
     }
   }
 

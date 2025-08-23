@@ -189,7 +189,55 @@ export class SoundSystem {
   pauseCategory(category: keyof SoundConfig['categories']): void {
     for (const [soundKey, soundDef] of Object.entries(this.config.sounds)) {
       if (soundDef.category === category) {
-        this.stopSound(soundKey)
+        this.pauseSound(soundKey)
+      }
+    }
+  }
+
+  private pauseSound(soundKey: string): void {
+    // Pause all variants of this sound without resetting currentTime
+    for (const [key, audioPool] of this.sounds.entries()) {
+      if (key.startsWith(soundKey + ':') || key === soundKey) {
+        audioPool.forEach(audio => {
+          audio.pause()
+          // Don't reset currentTime to allow resuming from the same position
+        })
+      }
+    }
+  }
+
+  resumeCategory(category: keyof SoundConfig['categories']): void {
+    for (const [soundKey, soundDef] of Object.entries(this.config.sounds)) {
+      if (soundDef.category === category && soundDef.loop) {
+        // Only resume looping sounds automatically
+        this.resumeSound(soundKey)
+      }
+    }
+  }
+
+  private resumeSound(soundKey: string): void {
+    // Resume all variants of this sound
+    for (const [key, audioPool] of this.sounds.entries()) {
+      if (key.startsWith(soundKey + ':') || key === soundKey) {
+        audioPool.forEach(audio => {
+          if (audio.paused && audio.currentTime > 0) {
+            try {
+              audio.play().catch(error => {
+                console.debug(`Could not resume sound ${soundKey}:`, error)
+              })
+            } catch (error) {
+              console.debug(`Could not resume sound ${soundKey}:`, error)
+            }
+          } else if (audio.paused && audio.currentTime === 0) {
+            try {
+              audio.play().catch(error => {
+                console.debug(`Could not start sound ${soundKey}:`, error)
+              })
+            } catch (error) {
+              console.debug(`Could not start sound ${soundKey}:`, error)
+            }
+          }
+        })
       }
     }
   }

@@ -58,7 +58,7 @@ export function useAsteroids(): UseAsteroidsReturn {
       // TODO: Handle score event for visual effects
       if (event) {
         // Could trigger particle effects or score popup animations
-        console.log('Score event:', event)
+        // console.log('Score event:', event) // Disabled to reduce console noise
       }
     },
 
