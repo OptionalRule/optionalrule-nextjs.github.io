@@ -15,6 +15,7 @@ export class Saucer extends Entity {
   private saucerVertices: Vector2D[]
   private startSide: 'left' | 'right'
   private hasExited: boolean = false
+  private isPlayingArrivalSound: boolean = false
 
   constructor(position: Vector2D, size: SaucerSize, startSide: 'left' | 'right') {
     super(position)

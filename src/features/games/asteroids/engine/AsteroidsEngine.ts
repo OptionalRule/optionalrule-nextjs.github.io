@@ -224,8 +224,8 @@ export class AsteroidsEngine {
         this.entities.push(bullet)
         saucer.resetShootTimer()
         
-        // Play saucer shoot sound (will be implemented later)
-        // this.soundSystem.playSound('saucerShoot')
+        // Play saucer fire sound (with variants)
+        this.soundSystem.playSound('saucerFire')
       }
     }
   }
@@ -303,8 +303,11 @@ export class AsteroidsEngine {
       type: 'saucer'
     })
 
-    // Play saucer destruction sound (will be implemented later)
-    // this.soundSystem.playSound('saucerDestroyed')
+    // Play saucer destruction sound
+    this.soundSystem.playSound('saucerDestroyed')
+    
+    // Stop the looping arrival sound when saucer is destroyed
+    this.soundSystem.stopSound('saucerArrival')
   }
 
   private handleShipDestroyed(): void {
@@ -394,8 +397,8 @@ export class AsteroidsEngine {
     
     this.entities.push(saucer)
     
-    // Play saucer spawn sound (will be implemented later)
-    // this.soundSystem.playSound('saucerAmbient')
+    // Play saucer arrival sound (looping)
+    this.soundSystem.playSound('saucerArrival')
   }
 
   private getSaucerSizeByLevel(level: number): SaucerSize {
@@ -430,6 +433,12 @@ export class AsteroidsEngine {
     const previousState = this.gameState.gameStatus
     this.gameState.gameStatus = 'loading'
     this.notifyStateChange()
+    
+    // Stop any active saucer sounds before clearing entities
+    const activeSaucers = this.entities.filter(e => e instanceof Saucer && e.getActive())
+    if (activeSaucers.length > 0) {
+      this.soundSystem.stopSound('saucerArrival')
+    }
     
     // Clear asteroids and bullets immediately to prevent visual artifacts
     // Keep ship and explosions for visual continuity
@@ -478,6 +487,19 @@ export class AsteroidsEngine {
   }
 
   private cleanupDeadEntities(): void {
+    // Check for saucers that need sound cleanup before filtering
+    const deadSaucers = this.entities.filter(entity => 
+      entity instanceof Saucer && !entity.getActive()
+    ) as Saucer[]
+    
+    // Stop arrival sound for any saucers being cleaned up (they exited screen)
+    for (const saucer of deadSaucers) {
+      if (saucer.hasExitedScreen()) {
+        // Saucer exited naturally (not destroyed), just stop the sound
+        this.soundSystem.stopSound('saucerArrival')
+      }
+    }
+
     // Keep the ship entity even when inactive (for respawning)
     this.entities = this.entities.filter(entity => 
       entity.getActive() || entity instanceof Ship
