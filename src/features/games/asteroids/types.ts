@@ -99,6 +99,16 @@ export interface GameConfig {
     }
     spawnInterval: number
     shootInterval: number
+    minLevel: number
+    speeds: {
+      large: number
+      small: number
+    }
+    weights: {
+      early: { small: number, large: number }
+      mid: { small: number, large: number }
+      late: { small: number, large: number }
+    }
   }
 }
 

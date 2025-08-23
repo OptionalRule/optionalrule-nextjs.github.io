@@ -1,11 +1,14 @@
 import type { GameState, ScoreEvent } from '../types'
-import { GAME_CONFIG, GAMEPLAY } from '../constants'
+import { SaucerSize } from '../types'
+import { GAME_CONFIG, GAMEPLAY, COLORS } from '../constants'
 import { Vector2DUtils } from './utils/Vector2D'
+import { GameMath } from './utils/GameMath'
 import { Entity } from './entities/Entity'
 import { Ship } from './entities/Ship'
 import { Asteroid } from './entities/Asteroid'
 import { Bullet } from './entities/Bullet'
 import { Explosion } from './entities/Explosion'
+import { Saucer } from './entities/Saucer'
 import { CollisionSystem } from './systems/CollisionSystem'
 import { RenderSystem } from './systems/RenderSystem'
 import { SoundSystem } from './systems/SoundSystem'
@@ -112,6 +115,7 @@ export class AsteroidsEngine {
     if (this.gameState.gameStatus === 'playing') {
       this.handleInput()
       this.updateEntities(deltaTime)
+      this.updateSaucerShooting()
       this.checkCollisions()
       this.updateGameLogic()
       this.cleanupDeadEntities()
@@ -197,6 +201,35 @@ export class AsteroidsEngine {
     }
   }
 
+  private updateSaucerShooting(): void {
+    // Find active saucers that can shoot
+    const saucers = this.entities.filter(e => 
+      e instanceof Saucer && e.getActive()
+    ) as Saucer[]
+
+    for (const saucer of saucers) {
+      if (saucer.canShoot() && this.ship.getActive()) {
+        const shootDirection = saucer.calculateShootDirection(this.ship.getPosition())
+        const shootPosition = saucer.getShootPosition()
+        
+        // Create saucer bullet with yellow color
+        const bullet = new Bullet(
+          shootPosition, 
+          shootDirection, 
+          Vector2DUtils.zero(), // Saucers don't inherit velocity
+          saucer.getId(),
+          COLORS.saucerBullets
+        )
+        
+        this.entities.push(bullet)
+        saucer.resetShootTimer()
+        
+        // Play saucer shoot sound (will be implemented later)
+        // this.soundSystem.playSound('saucerShoot')
+      }
+    }
+  }
+
   private checkCollisions(): void {
     const collisions = this.collisionSystem.checkCollisions(this.entities)
     this.collisionSystem.resolveCollisions(collisions)
@@ -213,6 +246,8 @@ export class AsteroidsEngine {
                     entityB instanceof Asteroid ? entityB : null
     const bullet = entityA instanceof Bullet ? entityA : 
                   entityB instanceof Bullet ? entityB : null
+    const saucer = entityA instanceof Saucer ? entityA : 
+                  entityB instanceof Saucer ? entityB : null
 
     if (asteroid && bullet && !asteroid.getActive()) {
       // Create small explosion at asteroid position
@@ -241,10 +276,35 @@ export class AsteroidsEngine {
       }
     }
 
+    // Handle saucer destruction by player bullets
+    if (saucer && bullet && !saucer.getActive()) {
+      // Only award points if bullet was fired by the player (not another saucer)
+      if (bullet.getSourceId() === this.ship.getId()) {
+        this.handleSaucerDestroyed(saucer)
+      }
+    }
+
     // Handle ship destruction
     if (!this.ship.getActive()) {
       this.handleShipDestroyed()
     }
+  }
+
+  private handleSaucerDestroyed(saucer: Saucer): void {
+    // Create explosion at saucer position
+    const explosion = new Explosion(saucer.getPosition(), 'saucer')
+    this.entities.push(explosion)
+    
+    // Award points
+    const points = saucer.getPoints()
+    this.addScore(points, {
+      points,
+      position: saucer.getPosition(),
+      type: 'saucer'
+    })
+
+    // Play saucer destruction sound (will be implemented later)
+    // this.soundSystem.playSound('saucerDestroyed')
   }
 
   private handleShipDestroyed(): void {
@@ -296,8 +356,60 @@ export class AsteroidsEngine {
   }
 
   private updateSaucerSpawning(): void {
-    // TODO: Implement saucer spawning logic
-    // For now, we'll skip saucers in the initial implementation
+    // Only spawn saucers from level 2 onward
+    if (this.gameState.level < GAME_CONFIG.saucer.minLevel) {
+      return
+    }
+
+    // Check if there's already a saucer on screen
+    const existingSaucer = this.entities.find(e => e instanceof Saucer && e.getActive())
+    if (existingSaucer) {
+      return
+    }
+
+    // Check if it's time to spawn a saucer
+    const now = performance.now()
+    if (now >= this.nextSaucerSpawn) {
+      this.spawnSaucer()
+      this.nextSaucerSpawn = now + GAME_CONFIG.saucer.spawnInterval
+    }
+  }
+
+  private spawnSaucer(): void {
+    // Determine saucer size based on level
+    const saucerSize = this.getSaucerSizeByLevel(this.gameState.level)
+    
+    // Randomly choose spawn side
+    const startSide = Math.random() < 0.5 ? 'left' : 'right'
+    
+    // Set spawn position
+    const spawnX = startSide === 'left' ? -50 : GAME_CONFIG.canvas.width + 50
+    const spawnY = GameMath.randomFloat(50, GAME_CONFIG.canvas.height - 50)
+    
+    const saucer = new Saucer(
+      { x: spawnX, y: spawnY },
+      saucerSize,
+      startSide
+    )
+    
+    this.entities.push(saucer)
+    
+    // Play saucer spawn sound (will be implemented later)
+    // this.soundSystem.playSound('saucerAmbient')
+  }
+
+  private getSaucerSizeByLevel(level: number): SaucerSize {
+    let weights: { small: number, large: number }
+    
+    if (level <= 4) {
+      weights = GAME_CONFIG.saucer.weights.early
+    } else if (level <= 8) {
+      weights = GAME_CONFIG.saucer.weights.mid
+    } else {
+      weights = GAME_CONFIG.saucer.weights.late
+    }
+    
+    return Math.random() < weights.small ? 'small' as SaucerSize : 'large' as SaucerSize
   }
 
   private completeLevel(): void {

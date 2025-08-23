@@ -8,13 +8,15 @@ export class Bullet extends Entity {
   private lifetime: number
   private sourceId: string
   private maxLifetime: number
+  private bulletColor: string
 
-  constructor(position: Vector2D, direction: number, sourceVelocity: Vector2D, sourceId: string) {
+  constructor(position: Vector2D, direction: number, sourceVelocity: Vector2D, sourceId: string, color?: string) {
     super(position)
     
     this.sourceId = sourceId
     this.maxLifetime = GAME_CONFIG.bullets.lifetime
     this.lifetime = this.maxLifetime
+    this.bulletColor = color || COLORS.bullets
     
     // Set bullet velocity: source velocity + bullet speed in direction
     const bulletVelocity = Vector2DUtils.fromAngle(direction, GAME_CONFIG.bullets.speed)
@@ -51,10 +53,10 @@ export class Bullet extends Entity {
     ctx.globalAlpha = alpha
     
     // Draw bullet as glowing circle
-    ctx.shadowColor = COLORS.bullets
+    ctx.shadowColor = this.bulletColor
     ctx.shadowBlur = RENDERING.bulletGlow
     
-    this.drawCircle(ctx, RENDERING.bulletRadius, COLORS.bullets)
+    this.drawCircle(ctx, RENDERING.bulletRadius, this.bulletColor)
     
     ctx.restore()
   }
