@@ -53,3 +53,6 @@ storybook-static
 /_jekyll_content
 /_ignore
 /src/config/secret_config.ini
+
+# VSCode
+.vscode
