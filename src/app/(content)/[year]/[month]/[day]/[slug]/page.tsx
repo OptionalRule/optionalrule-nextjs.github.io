@@ -64,7 +64,7 @@ export default async function PostPage({ params }: PostPageProps) {
     notFound();
   }
 
-  const nonce = headers().get('x-nonce') ?? undefined;
+  const nonce = (await headers()).get('x-nonce') ?? undefined;
   const structuredData = generateBlogPostStructuredData(post);
 
   return (

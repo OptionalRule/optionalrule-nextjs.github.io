@@ -3,8 +3,6 @@ import rehypeSanitize from './rehype-sanitize';
 import { sanitizeSchema } from './sanitize-schema';
 
 export const mdxOptions = {
-  mdxOptions: {
-    remarkPlugins: [remarkGfm],
-    rehypePlugins: [[rehypeSanitize, sanitizeSchema]],
-  },
+  remarkPlugins: [remarkGfm],
+  rehypePlugins: [[rehypeSanitize, sanitizeSchema]],
 };
