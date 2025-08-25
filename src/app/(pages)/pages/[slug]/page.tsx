@@ -73,7 +73,7 @@ export default async function StaticPage({ params }: PageProps) {
             <MDXRemote
               source={page.content}
               components={mdxComponents}
-              options={mdxOptions}
+              options={{ mdxOptions }}
             />
           </div>
         </div>

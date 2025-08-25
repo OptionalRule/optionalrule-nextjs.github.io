@@ -155,7 +155,7 @@ export default async function PostPage({ params }: PostPageProps) {
               <MDXRemote
                 source={post.content}
                 components={mdxComponents}
-                options={mdxOptions}
+                options={{ mdxOptions }}
               />
             </div>
           </div>
