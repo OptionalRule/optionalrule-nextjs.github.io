@@ -3,10 +3,12 @@ import { PostCard } from '@/components/PostCard';
 import { Pagination } from '@/components/Pagination';
 import { generateHomeMetadata, generateBlogStructuredData, generateWebsiteStructuredData } from '@/lib/seo';
 import type { Metadata } from 'next';
+import { headers } from 'next/headers';
 
 export const metadata: Metadata = generateHomeMetadata();
 
 export default function Home() {
+  const nonce = headers().get('x-nonce') ?? undefined;
   try {
     const { posts, totalPages, currentPage } = getPaginatedPosts(1);
     
@@ -17,6 +19,7 @@ export default function Home() {
       <>
         {/* JSON-LD Structured Data */}
         <script
+          nonce={nonce}
           type="application/ld+json"
           dangerouslySetInnerHTML={{
             __html: JSON.stringify([blogStructuredData, websiteStructuredData]),
