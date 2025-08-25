@@ -10,7 +10,8 @@ const nextConfig: NextConfig = {
     cpus: 1,
   },
   images: {
-    unoptimized: false,
+    // Disable the Image Optimization API for static exports
+    unoptimized: true,
     remotePatterns: [
       {
         protocol: 'https',
