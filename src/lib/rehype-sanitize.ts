@@ -1,4 +1,4 @@
-import { visit } from 'unist-util-visit';
+import { visit, SKIP } from 'unist-util-visit';
 import type { Root, Element } from 'hast';
 
 interface SanitizeSchema {
@@ -18,7 +18,7 @@ export default function rehypeSanitize(schema: SanitizeSchema = {}) {
       // Remove disallowed tags
       if (schema.tagNames && !schema.tagNames.includes(node.tagName)) {
         parent.children.splice(index, 1);
-        return [visit.SKIP, index];
+        return [SKIP, index];
       }
 
       // Filter attributes based on allowlist and remove event handlers
