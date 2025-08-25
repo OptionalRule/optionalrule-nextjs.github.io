@@ -6,7 +6,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import type { Metadata } from 'next';
 import { MDXRemote } from 'next-mdx-remote/rsc';
-import remarkGfm from 'remark-gfm';
+import { mdxOptions } from '@/lib/mdx-options';
 import TableOfContents from '@/components/TableOfContents';
 import { mdxComponents } from '@/stories/mdx-components';
 
@@ -152,9 +152,7 @@ export default async function PostPage({ params }: PostPageProps) {
               <MDXRemote
                 source={post.content}
                 components={mdxComponents}
-                options={{
-                  mdxOptions: { remarkPlugins: [remarkGfm] },
-                }}
+                options={mdxOptions}
               />
             </div>
           </div>

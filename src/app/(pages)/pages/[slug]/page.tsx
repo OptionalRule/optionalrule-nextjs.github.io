@@ -4,7 +4,7 @@ import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import type { Metadata } from 'next';
 import { MDXRemote } from 'next-mdx-remote/rsc';
-import remarkGfm from 'remark-gfm';
+import { mdxOptions } from '@/lib/mdx-options';
 import { mdxComponents } from '@/stories/mdx-components';
 import TableOfContents from '@/components/TableOfContents';
 
@@ -73,9 +73,7 @@ export default async function StaticPage({ params }: PageProps) {
             <MDXRemote
               source={page.content}
               components={mdxComponents}
-              options={{
-                mdxOptions: { remarkPlugins: [remarkGfm] },
-              }}
+              options={mdxOptions}
             />
           </div>
         </div>
