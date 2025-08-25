@@ -10,15 +10,11 @@ const nextConfig: NextConfig = {
     cpus: 1,
   },
   images: {
-    unoptimized: true,
+    unoptimized: false,
     remotePatterns: [
       {
         protocol: 'https',
         hostname: 'i.redd.it',
-      },
-      {
-        protocol: 'https',
-        hostname: '**',
       },
     ],
   },

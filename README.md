@@ -69,6 +69,17 @@ draft: false
 showToc: false
 ```
 
+For static images rendered in MDX, Next.js's `<Image>` component requires explicit dimensions. Add `imageWidth` and `imageHeight` fields to your frontmatter and use them when referencing the image:
+
+```yaml
+imageWidth: 800
+imageHeight: 600
+```
+
+```mdx
+<img src="/images/example.png" alt="Example" width={frontmatter.imageWidth} height={frontmatter.imageHeight} />
+```
+
 ### Content Processing
 - **Reading time calculation** automatically added to all posts
 - **Heading extraction** for table of contents generation
@@ -109,9 +120,9 @@ All scripts use ESM loader pattern and are located in `scripts/` directory:
 ## Important Implementation Notes
 
 - **Content outside src/**: MDX files in `content/` directory separate from Next.js source
-- **Trailing slashes required**: All routes end with `/` for GitHub Pages compatibility  
+- **Trailing slashes required**: All routes end with `/` for GitHub Pages compatibility
 - **Static-only**: No server-side rendering or API routes in production
-- **Image optimization disabled**: Required for static export to GitHub Pages
+- **Image optimization enabled**: Uses Next.js `<Image>` with static export; images require width and height in frontmatter
 - **Search runs client-side**: No server dependency for search functionality
 
 ## Theme Toggle

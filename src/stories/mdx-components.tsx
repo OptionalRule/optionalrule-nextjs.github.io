@@ -1,9 +1,36 @@
 import type { MDXComponents } from 'mdx/types';
+import Image, { ImageProps } from 'next/image';
 import SmartLink from '@/components/SmartLink';
 import HeadingAnchor from '@/components/HeadingAnchor';
 import YouTubeEmbed from '@/components/YouTubeEmbed';
 import MediaEmbed from '@/components/MediaEmbed';
 import { generateHeadingId } from '@/lib/utils';
+
+type MDXImageProps = Omit<ImageProps, 'src' | 'alt'> & {
+  src: string;
+  alt?: string;
+};
+
+function MDXImage({
+  src,
+  alt = '',
+  width,
+  height,
+  className,
+  ...props
+}: MDXImageProps) {
+  return (
+    <Image
+      src={src}
+      alt={alt}
+      width={typeof width === 'string' ? parseInt(width, 10) : width}
+      height={typeof height === 'string' ? parseInt(height, 10) : height}
+      className={`mx-auto my-6 rounded-lg shadow-md ${className ?? ''}`}
+      style={{ width: '100%', height: 'auto' }}
+      {...props}
+    />
+  );
+}
 
 /**
  * Comprehensive MDX component overrides for consistent rendering
@@ -221,18 +248,8 @@ export const mdxComponents: MDXComponents = {
     </em>
   ),
 
-  // Images with centering and responsive styling
-  // Render a plain <img> so it is valid inside paragraphs (MDX often nests images in <p>)
-  // Using img instead of next/image for static export compatibility
-  img: ({ src, alt, ...props }) => (
-    // eslint-disable-next-line @next/next/no-img-element
-    <img
-      src={src}
-      alt={alt}
-      className="mx-auto my-6 max-w-full h-auto rounded-lg shadow-md"
-      {...props}
-    />
-  ),
+  // Images wrapped with next/image for optimization
+  img: (props) => <MDXImage {...props} />,
 
   // Custom components
   YouTubeEmbed,
