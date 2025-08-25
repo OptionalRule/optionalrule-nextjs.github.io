@@ -38,6 +38,7 @@ export class AsteroidsEngine {
   private levelStartTime = 0
   private nextSaucerSpawn = 0
   private isThrusting = false
+  private isProcessingShipDeath = false
 
   constructor(canvas: HTMLCanvasElement, events: AsteroidsEngineEvents) {
     this.canvas = canvas
@@ -315,6 +316,10 @@ export class AsteroidsEngine {
   }
 
   private handleShipDestroyed(): void {
+    // Prevent multiple death processing
+    if (this.isProcessingShipDeath) return
+    this.isProcessingShipDeath = true
+
     // Create explosion at ship position
     const explosion = new Explosion(this.ship.getPosition(), 'ship')
     this.entities.push(explosion)
@@ -344,6 +349,7 @@ export class AsteroidsEngine {
           // Play ship respawn sound
           this.soundSystem.playSound('shipRespawn')
         }
+        this.isProcessingShipDeath = false
       }, GAMEPLAY.respawnDelay)
     }
   }
@@ -658,6 +664,7 @@ export class AsteroidsEngine {
     this.keys.clear()
     this.lastShotTime = 0
     this.isThrusting = false
+    this.isProcessingShipDeath = false
 
     // Stop all sounds
     this.soundSystem.stopAllSounds()
