@@ -6,9 +6,10 @@ import Link from 'next/link';
 import Image from 'next/image';
 import type { Metadata } from 'next';
 import { MDXRemote } from 'next-mdx-remote/rsc';
-import remarkGfm from 'remark-gfm';
+import { mdxOptions } from '@/lib/mdx-options';
 import TableOfContents from '@/components/TableOfContents';
 import { mdxComponents } from '@/stories/mdx-components';
+import { headers } from 'next/headers';
 
 interface PostPageProps {
   params: Promise<{
@@ -63,12 +64,14 @@ export default async function PostPage({ params }: PostPageProps) {
     notFound();
   }
 
+  const nonce = (await headers()).get('x-nonce') ?? undefined;
   const structuredData = generateBlogPostStructuredData(post);
 
   return (
     <>
       {/* JSON-LD Structured Data */}
       <script
+        nonce={nonce}
         type="application/ld+json"
         dangerouslySetInnerHTML={{
           __html: JSON.stringify(structuredData),
@@ -152,9 +155,7 @@ export default async function PostPage({ params }: PostPageProps) {
               <MDXRemote
                 source={post.content}
                 components={mdxComponents}
-                options={{
-                  mdxOptions: { remarkPlugins: [remarkGfm] },
-                }}
+                options={mdxOptions}
               />
             </div>
           </div>

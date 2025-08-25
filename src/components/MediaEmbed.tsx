@@ -1,6 +1,9 @@
 import React from 'react';
 import YouTubeEmbed from './YouTubeEmbed';
 
+const YOUTUBE_HOSTS = new Set(['youtube.com', 'www.youtube.com', 'youtu.be']);
+const VIMEO_HOSTS = new Set(['vimeo.com', 'player.vimeo.com']);
+
 interface MediaEmbedProps {
   url: string;
   title?: string;
@@ -9,29 +12,54 @@ interface MediaEmbedProps {
   className?: string;
 }
 
-export default function MediaEmbed({ 
-  url, 
-  title, 
-  width, 
-  height, 
-  className 
+export default function MediaEmbed({
+  url,
+  title,
+  width,
+  height,
+  className
 }: MediaEmbedProps) {
-  // YouTube URLs
-  if (url.includes('youtube.com') || url.includes('youtu.be')) {
+  let parsed: URL;
+  try {
+    parsed = new URL(url);
+    if (parsed.protocol !== 'https:') {
+      throw new Error('Invalid protocol');
+    }
+  } catch {
     return (
-      <YouTubeEmbed 
-        url={url} 
-        title={title} 
-        width={width} 
-        height={height} 
-        className={className} 
+      <div className={`bg-[var(--surface-hover)] p-4 rounded-lg text-center ${className || ''}`}>
+        <p className="text-[var(--muted-2)] mb-2">
+          Unsupported media URL
+        </p>
+        <a
+          href={url}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-[var(--link)] hover:underline"
+        >
+          Open in new tab
+        </a>
+      </div>
+    );
+  }
+
+  const host = parsed.hostname;
+
+  if (YOUTUBE_HOSTS.has(host)) {
+    return (
+      <YouTubeEmbed
+        url={url}
+        title={title}
+        width={width}
+        height={height}
+        className={className}
       />
     );
   }
-  
-  // Vimeo URLs
-  if (url.includes('vimeo.com')) {
-    const vimeoId = url.match(/vimeo\.com\/(\d+)/)?.[1];
+
+  if (VIMEO_HOSTS.has(host)) {
+    const match = url.match(/(?:vimeo\.com\/|video\/)(\d+)/);
+    const vimeoId = match?.[1];
     if (vimeoId) {
       return (
         <div className={`my-6 ${className || ''}`}>
@@ -52,36 +80,15 @@ export default function MediaEmbed({
       );
     }
   }
-  
-  // Generic iframe support for other embeds
-  if (url.includes('iframe') || url.includes('embed')) {
-    return (
-      <div className={`my-6 ${className || ''}`}>
-        <div className="relative w-full" style={{ paddingBottom: '56.25%' }}>
-          <iframe
-            src={url}
-            title={title || 'Embedded content'}
-            width={width || 560}
-            height={height || 315}
-            className="absolute top-0 left-0 w-full h-full rounded-lg"
-            frameBorder="0"
-            allowFullScreen
-            loading="lazy"
-          />
-        </div>
-      </div>
-    );
-  }
-  
-  // Fallback for unsupported URLs
+
   return (
     <div className={`bg-[var(--surface-hover)] p-4 rounded-lg text-center ${className || ''}`}>
       <p className="text-[var(--muted-2)] mb-2">
         Unsupported media URL
       </p>
-      <a 
-        href={url} 
-        target="_blank" 
+      <a
+        href={url}
+        target="_blank"
         rel="noopener noreferrer"
         className="text-[var(--link)] hover:underline"
       >

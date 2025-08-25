@@ -16,6 +16,10 @@ const nextConfig: NextConfig = {
         protocol: 'https',
         hostname: 'i.redd.it',
       },
+      {
+        protocol: 'https',
+        hostname: 'media.dndbeyond.com',
+      },
     ],
   },
   // Configure page extensions (MDX files will be handled by next-mdx-remote)

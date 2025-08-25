@@ -1,7 +1,10 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import fs from 'fs';
+import { render } from '@testing-library/react';
+import React from 'react';
 import { getAllPostsMeta, getPost, getPaginatedPosts } from '@/lib/content';
 import { performSearch } from '@/lib/search';
+import { SearchResults } from '@/components/SearchResults';
 import { generatePostUrl, parseDateToUTC } from '@/lib/utils';
 
 // Mock fs and dependencies for integration tests
@@ -362,6 +365,49 @@ This is a comprehensive guide to testing React components...`);
       // Verify that content processing and search index have compatible data
       expect(contentPosts.map(p => p.slug).sort()).toEqual(loadedIndex.map(p => p.slug).sort());
       expect(contentPosts.map(p => p.title).sort()).toEqual(loadedIndex.map(p => p.title).sort());
+    });
+  });
+
+  describe('Search results behavior', () => {
+    it('orders results by relevance and escapes query', async () => {
+      await vi.resetModules();
+      const { performSearch: freshPerformSearch } = await import('@/lib/search');
+      mockFetch.mockResolvedValueOnce({
+        ok: true,
+        json: () =>
+          Promise.resolve([
+            {
+              slug: 'react-guide',
+              title: 'React Guide',
+              excerpt: 'About React',
+              tags: ['react'],
+              content: 'React content',
+              date: '2024-01-01',
+              readingTime: 1,
+            },
+            {
+              slug: 'other',
+              title: 'Other Post',
+              excerpt: 'Mentions React',
+              tags: ['misc'],
+              content: 'React mentioned here',
+              date: '2024-01-02',
+              readingTime: 1,
+            },
+          ]),
+      });
+
+      const results = await freshPerformSearch({ query: 'React' });
+      expect(results.map(r => r.item.slug)).toEqual(['react-guide', 'other']);
+
+      const { container } = render(
+        React.createElement(SearchResults, {
+          results: [],
+          query: "<img src='x' onerror='alert(1)'>",
+        })
+      );
+      expect(container.querySelector('img')).toBeNull();
+      expect(container.innerHTML).toContain('&lt;img src=\'x\' onerror=\'alert(1)\'&gt;');
     });
   });
 });

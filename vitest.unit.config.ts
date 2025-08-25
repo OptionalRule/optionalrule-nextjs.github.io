@@ -24,7 +24,13 @@ export default defineConfig({
         'src/**/*.spec.{js,ts,tsx}',
         'src/**/*.stories.{js,ts,tsx}',
         'src/test-setup.ts'
-      ]
+      ],
+      thresholds: {
+        statements: 10,
+        branches: 5,
+        functions: 10,
+        lines: 10,
+      },
     },
     pool: 'forks',
     poolOptions: {
@@ -36,6 +42,7 @@ export default defineConfig({
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),
+      'zod': path.resolve(__dirname, './src/lib/zod.ts'),
     },
   },
 });

@@ -19,22 +19,26 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@b4ffde65a472b7d6dd3c7be3fac65d2eddbd6a08 # v4
         
       - name: Setup Node
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@8f66a113f04f52f6e1d788c8b4aeee855fd47571 # v4
         with:
           node-version: "20"
           cache: npm
           
       - name: Setup Pages
-        uses: actions/configure-pages@v4
+        uses: actions/configure-pages@6e0d80bcc8cd7ea4c3c07c36ce3741659c4a6b40 # v4
         
       - name: Install dependencies
         run: npm ci
+
+      - name: Audit dependencies
+        run: npm audit --production
+        continue-on-error: true
         
-      - name: Run tests
-        run: npm run test
+      - name: Run tests with coverage
+        run: npm run test:coverage
         
       - name: Run integration tests
         run: npm run test:integration
@@ -46,7 +50,7 @@ jobs:
         run: npm run build
         
       - name: Upload artifact
-        uses: actions/upload-pages-artifact@v3
+        uses: actions/upload-pages-artifact@c6bc1088c58945d4da751451bfbe4801bb74b932 # v3
         with:
           path: ./out
 
@@ -59,4 +63,4 @@ jobs:
     steps:
       - name: Deploy to GitHub Pages
         id: deployment
-        uses: actions/deploy-pages@v4
+        uses: actions/deploy-pages@49815636d341a5785cc1caa57bd9b464ee5acba1 # v4

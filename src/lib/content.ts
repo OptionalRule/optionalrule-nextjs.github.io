@@ -2,12 +2,31 @@ import fs from 'fs';
 import path from 'path';
 import matter from 'gray-matter';
 import readingTime from 'reading-time';
+import { z } from 'zod';
 import { Post, PostMeta, Page, PostFrontmatter, PageFrontmatter, PaginatedPosts, TagPage } from './types';
-import { extractHeadings, tagSlugToName } from './utils';
+import { extractHeadings, tagSlugToName, generateExcerpt } from './utils';
 
 const POSTS_DIR = path.join(process.cwd(), 'content', 'posts');
 const PAGES_DIR = path.join(process.cwd(), 'content', 'pages');
 const POSTS_PER_PAGE = 10;
+
+export const PostFrontmatterSchema = z.object({
+  title: z.string(),
+  date: z.string(),
+  excerpt: z.string().optional(),
+  tags: z.array(z.string()).optional(),
+  featured_image: z.string().optional(),
+  slug: z.string().optional(),
+  draft: z.boolean().optional(),
+  showToc: z.boolean().optional(),
+});
+
+export const PageFrontmatterSchema = z.object({
+  title: z.string(),
+  description: z.string().optional(),
+  draft: z.boolean().optional(),
+  showToc: z.boolean().optional(),
+});
 
 // Generate slug from filename
 function generateSlug(filename: string): string {
@@ -25,21 +44,6 @@ function generatePostSlug(filename: string, customSlug?: string): string {
   return generateSlug(filename);
 }
 
-// Generate excerpt from content if not provided in frontmatter
-function generateExcerpt(content: string, limit: number = 160): string {
-  const plainText = content
-    .replace(/#{1,6}\s+/g, '') // Remove markdown headers
-    .replace(/\*{1,2}(.*?)\*{1,2}/g, '$1') // Remove bold/italic
-    .replace(/\[(.*?)\]\(.*?\)/g, '$1') // Remove links, keep text
-    .replace(/`{1,3}(.*?)`{1,3}/g, '$1') // Remove code blocks
-    .replace(/^\s*[-*+]\s+/gm, '') // Remove list markers
-    .replace(/\n\s*\n/g, ' ') // Replace multiple newlines with space
-    .trim();
-
-  return plainText.length > limit 
-    ? `${plainText.substring(0, limit).trim()}...`
-    : plainText;
-}
 
 // Check if a post is a draft
 export function isPostDraft(filename: string): boolean {
@@ -154,8 +158,8 @@ export function getPostMeta(filename: string): PostMeta {
   const filePath = path.join(POSTS_DIR, filename);
   const fileContent = fs.readFileSync(filePath, 'utf8');
   const { data, content } = matter(fileContent);
-  
-  const frontmatter = data as PostFrontmatter;
+
+  const frontmatter: PostFrontmatter = PostFrontmatterSchema.parse(data);
   const slug = generatePostSlug(filename, frontmatter.slug);
   const readingTimeResult = readingTime(content);
   const headings = extractHeadings(content);
@@ -176,14 +180,14 @@ export function getPostMeta(filename: string): PostMeta {
 // Get full post content
 export function getPost(slug: string): Post | null {
   const files = getPostFiles();
-  const filename = files.find(file => {
-    const filePath = path.join(POSTS_DIR, file);
-    const fileContent = fs.readFileSync(filePath, 'utf8');
-    const { data } = matter(fileContent);
-    const frontmatter = data as PostFrontmatter;
-    const postSlug = generatePostSlug(file, frontmatter.slug);
-    return postSlug === slug;
-  });
+    const filename = files.find(file => {
+      const filePath = path.join(POSTS_DIR, file);
+      const fileContent = fs.readFileSync(filePath, 'utf8');
+      const { data } = matter(fileContent);
+      const frontmatter: PostFrontmatter = PostFrontmatterSchema.parse(data);
+      const postSlug = generatePostSlug(file, frontmatter.slug);
+      return postSlug === slug;
+    });
   
   if (!filename) {
     return null;
@@ -192,8 +196,7 @@ export function getPost(slug: string): Post | null {
   const filePath = path.join(POSTS_DIR, filename);
   const fileContent = fs.readFileSync(filePath, 'utf8');
   const { data, content } = matter(fileContent);
-  
-  const frontmatter = data as PostFrontmatter;
+  const frontmatter: PostFrontmatter = PostFrontmatterSchema.parse(data);
   const postSlug = generatePostSlug(filename, frontmatter.slug);
   const readingTimeResult = readingTime(content);
   
@@ -294,9 +297,8 @@ export function getPage(slug: string): Page | null {
   const filePath = path.join(PAGES_DIR, filename);
   const fileContent = fs.readFileSync(filePath, 'utf8');
   const { data, content } = matter(fileContent);
-  
-  const frontmatter = data as PageFrontmatter;
-  
+  const frontmatter: PageFrontmatter = PageFrontmatterSchema.parse(data);
+
   return {
     slug: generateSlug(filename),
     title: frontmatter.title,

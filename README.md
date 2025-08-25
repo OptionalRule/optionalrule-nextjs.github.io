@@ -125,6 +125,14 @@ All scripts use ESM loader pattern and are located in `scripts/` directory:
 - **Image optimization enabled**: Uses Next.js `<Image>` with static export; images require width and height in frontmatter
 - **Search runs client-side**: No server dependency for search functionality
 
+## Content Security Policy
+
+The application emits a strict Content Security Policy (CSP) using Next.js middleware. A unique nonce is generated for every request and applied to inline `<script>` tags, allowing them to execute while blocking injected scripts. The middleware sets the `Content-Security-Policy` header with:
+
+- `script-src 'self' 'nonce-<random>' https://www.googletagmanager.com https://platform.twitter.com https://s.imgur.com`
+
+This restricts script execution to the site itself and the trusted domains above. Server components can read the nonce via `headers().get('x-nonce')` and pass it to `<script>` or `next/script` elements.
+
 ## Theme Toggle
 
 - Behavior: A toggle in the header switches between Light/Dark and persists in `localStorage` under key `theme` (`light` | `dark`).
