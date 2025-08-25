@@ -119,3 +119,23 @@ export function createTagSlug(tag: string): string {
 export function tagSlugToName(slug: string): string {
   return slug.replace(/\-/g, ' ');
 }
+
+// Generate excerpt from content with basic markdown stripping
+export function generateExcerpt(content: string, limit: number = 160): string {
+  const plainText = content
+    .replace(/```[\s\S]*?```/g, '') // Remove fenced code blocks
+    .replace(/`[^`]*`/g, '') // Remove inline code
+    .replace(/#{1,6}\s+/g, '') // Remove markdown headers
+    .replace(/\*{1,2}(.*?)\*{1,2}/g, '$1') // Remove bold/italic
+    .replace(/\[(.*?)\]\(.*?\)/g, '$1') // Remove links but keep text
+    .replace(/^\s*[-*+]\s+/gm, '') // Remove bullet list markers
+    .replace(/^\s*\d+\.\s+/gm, '') // Remove numbered list markers
+    .replace(/<[^>]*>/g, '') // Remove HTML tags
+    .replace(/\n\s*\n/g, ' ') // Collapse multiple newlines
+    .replace(/\s+/g, ' ') // Collapse whitespace
+    .trim();
+
+  return plainText.length > limit
+    ? `${plainText.substring(0, limit).trim()}...`
+    : plainText;
+}

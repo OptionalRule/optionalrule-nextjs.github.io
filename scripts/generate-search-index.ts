@@ -4,6 +4,8 @@ import * as fs from 'fs';
 import * as path from 'path';
 import matter from 'gray-matter';
 import readingTime from 'reading-time';
+import { PostFrontmatterSchema } from '../src/lib/content';
+import { generateExcerpt } from '../src/lib/utils';
 
 interface SearchIndexItem {
   slug: string;
@@ -13,17 +15,6 @@ interface SearchIndexItem {
   content: string;
   date: string;
   readingTime: number;
-}
-
-interface PostFrontmatter {
-  title: string;
-  date: string;
-  excerpt?: string;
-  tags?: string[];
-  featured_image?: string;
-  slug?: string;
-  draft?: boolean;
-  showToc?: boolean;
 }
 
 // Generate slug from filename
@@ -39,25 +30,6 @@ function generatePostSlug(filename: string, customSlug?: string): string {
   return generateSlug(filename);
 }
 
-// Generate excerpt from content if not provided in frontmatter
-function generateExcerpt(content: string, limit: number = 160): string {
-  const plainText = content
-    .replace(/```[\s\S]*?```/g, '')
-    .replace(/`[^`]*`/g, '')
-    .replace(/#{1,6}\s+/g, '')
-    .replace(/\*{1,2}(.*?)\*{1,2}/g, '$1')
-    .replace(/\[(.*?)\]\(.*?\)/g, '$1')
-    .replace(/^\s*[-*+]\s+/gm, '')
-    .replace(/^\s*\d+\.\s+/gm, '')
-    .replace(/<[^>]*>/g, '')
-    .replace(/\n\s*\n/g, ' ')
-    .replace(/\s+/g, ' ')
-    .trim();
-
-  return plainText.length > limit 
-    ? `${plainText.substring(0, limit).trim()}...`
-    : plainText;
-}
 
 function buildSearchIndex(): SearchIndexItem[] {
   const POSTS_DIR = path.join(process.cwd(), 'content', 'posts');
@@ -76,7 +48,7 @@ function buildSearchIndex(): SearchIndexItem[] {
           const filePath = path.join(POSTS_DIR, file);
           const fileContent = fs.readFileSync(filePath, 'utf8');
           const { data } = matter(fileContent);
-          const frontmatter = data as PostFrontmatter;
+          const frontmatter = PostFrontmatterSchema.parse(data);
           return frontmatter.draft !== true;
         } catch (error) {
           console.warn(`Warning: Error reading post ${file}, excluding from search index:`, error);
@@ -91,8 +63,8 @@ function buildSearchIndex(): SearchIndexItem[] {
     const filePath = path.join(POSTS_DIR, filename);
     const fileContent = fs.readFileSync(filePath, 'utf8');
     const { data, content } = matter(fileContent);
-    
-    const frontmatter = data as PostFrontmatter;
+
+    const frontmatter = PostFrontmatterSchema.parse(data);
     const slug = generatePostSlug(filename, frontmatter.slug);
     const readingTimeResult = readingTime(content);
     
