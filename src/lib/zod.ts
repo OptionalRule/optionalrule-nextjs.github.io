@@ -55,27 +55,38 @@ export function array<T>(schema: Schema<T>): Schema<T[]> {
   return base;
 }
 
-export function object<T extends Record<string, Schema<any>>>(shape: T): Schema<{ [K in keyof T]: ReturnType<T[K]['parse']> }> {
+export function object<T extends Record<string, Schema<unknown>>>(
+  shape: T,
+): Schema<{ [K in keyof T]: ReturnType<T[K]['parse']> }> {
   const base: Schema<{ [K in keyof T]: ReturnType<T[K]['parse']> }> = {
     parse(input: unknown) {
       if (typeof input !== 'object' || input === null || Array.isArray(input)) {
         throw new Error('Expected object');
       }
+
       const obj = input as Record<string, unknown>;
-      const result: any = {};
-      for (const key of Object.keys(shape)) {
+      const result: Partial<{
+        [K in keyof T]: ReturnType<T[K]['parse']>;
+      }> = {};
+
+      for (const key of Object.keys(shape) as Array<keyof T>) {
         const schema = shape[key];
-        if (obj[key] === undefined) {
+        const value = obj[key as string];
+
+        if (value === undefined) {
           if (schema._optional) {
-            result[key] = undefined;
+            result[key] = undefined as ReturnType<T[typeof key]['parse']>;
           } else {
-            throw new Error(`Missing required key: ${key}`);
+            throw new Error(`Missing required key: ${String(key)}`);
           }
         } else {
-          result[key] = schema.parse(obj[key]);
+          result[key] = schema.parse(value) as ReturnType<
+            T[typeof key]['parse']
+          >;
         }
       }
-      return result;
+
+      return result as { [K in keyof T]: ReturnType<T[K]['parse']> };
     },
     optional: () => optional(base),
   };
