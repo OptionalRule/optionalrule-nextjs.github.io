@@ -39,6 +39,8 @@ export class AsteroidsEngine {
   private nextSaucerSpawn = 0
   private isThrusting = false
   private isProcessingShipDeath = false
+  private isFirstSaucerSpawnForLevel = true
+  private hasCalculatedFirstSpawn = false
 
   constructor(canvas: HTMLCanvasElement, events: AsteroidsEngineEvents) {
     this.canvas = canvas
@@ -374,6 +376,16 @@ export class AsteroidsEngine {
       return
     }
 
+    // Calculate first spawn time when first needed (not during initialization)
+    if (this.isFirstSaucerSpawnForLevel && !this.hasCalculatedFirstSpawn) {
+      const now = performance.now()
+      const randomizedFirstDelay = Math.max(5000, this.getRandomizedSaucerDelay(GAME_CONFIG.saucer.firstSpawnDelay))
+      this.nextSaucerSpawn = now + randomizedFirstDelay
+      this.hasCalculatedFirstSpawn = true
+      console.log(`First saucer spawn scheduled for level ${this.gameState.level} in ${randomizedFirstDelay}ms`)
+      return
+    }
+
     // Check if there's already a saucer on screen
     const existingSaucer = this.entities.find(e => e instanceof Saucer && e.getActive())
     if (existingSaucer) {
@@ -382,9 +394,16 @@ export class AsteroidsEngine {
 
     // Check if it's time to spawn a saucer
     const now = performance.now()
-    if (now >= this.nextSaucerSpawn) {
+    if (this.nextSaucerSpawn > 0 && now >= this.nextSaucerSpawn) {
       this.spawnSaucer()
-      this.nextSaucerSpawn = now + GAME_CONFIG.saucer.spawnInterval
+      
+      // Mark that first spawn is complete
+      this.isFirstSaucerSpawnForLevel = false
+      
+      // Schedule next spawn with regular interval
+      const randomizedInterval = Math.max(10000, this.getRandomizedSaucerDelay(GAME_CONFIG.saucer.spawnInterval))
+      this.nextSaucerSpawn = now + randomizedInterval
+      console.log(`Next saucer spawn scheduled in ${randomizedInterval}ms`)
     }
   }
 
@@ -425,6 +444,11 @@ export class AsteroidsEngine {
     return Math.random() < weights.small ? 'small' as SaucerSize : 'large' as SaucerSize
   }
 
+  private getRandomizedSaucerDelay(baseDelay: number): number {
+    const variance = GAME_CONFIG.saucer.spawnDelayVariance
+    return baseDelay + GameMath.randomFloat(-variance, variance)
+  }
+
   private completeLevel(): void {
     // Play level completion sound (before bonus display, non-blocking)
     this.soundSystem.playSound('levelCompletion')
@@ -443,6 +467,11 @@ export class AsteroidsEngine {
     
     this.gameState.level++
     this.events.onLevelChange(this.gameState.level)
+    
+    // Reset saucer spawn state for next level
+    this.isFirstSaucerSpawnForLevel = true
+    this.hasCalculatedFirstSpawn = false
+    this.nextSaucerSpawn = -1
     
     // Set game state to loading to show level loading screen
     const previousState = this.gameState.gameStatus
@@ -514,7 +543,11 @@ export class AsteroidsEngine {
 
     this.entities.push(...asteroids)
     this.levelStartTime = performance.now()
-    this.nextSaucerSpawn = this.levelStartTime + GAME_CONFIG.saucer.spawnInterval
+    
+    // Reset saucer spawn state for new level
+    this.isFirstSaucerSpawnForLevel = true
+    this.hasCalculatedFirstSpawn = false
+    this.nextSaucerSpawn = -1 // Indicates first spawn not calculated yet
   }
 
   private cleanupDeadEntities(): void {
@@ -665,6 +698,8 @@ export class AsteroidsEngine {
     this.lastShotTime = 0
     this.isThrusting = false
     this.isProcessingShipDeath = false
+    this.isFirstSaucerSpawnForLevel = true
+    this.hasCalculatedFirstSpawn = false
 
     // Stop all sounds
     this.soundSystem.stopAllSounds()

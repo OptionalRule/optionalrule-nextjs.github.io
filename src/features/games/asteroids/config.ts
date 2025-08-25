@@ -39,6 +39,8 @@ export const ASTEROIDS_CONFIG: GameConfig = {
       small: 1000,
     },
     spawnInterval: 30000,
+    firstSpawnDelay: 15000,
+    spawnDelayVariance: 5000,
     shootInterval: 2000,
     minLevel: 2,
     speeds: {

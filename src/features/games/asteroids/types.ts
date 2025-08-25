@@ -101,6 +101,8 @@ export interface GameConfig {
       small: number
     }
     spawnInterval: number
+    firstSpawnDelay: number
+    spawnDelayVariance: number
     shootInterval: number
     minLevel: number
     speeds: {
