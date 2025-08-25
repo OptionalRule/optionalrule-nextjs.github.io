@@ -9,7 +9,6 @@ import { MDXRemote } from 'next-mdx-remote/rsc';
 import { mdxOptions } from '@/lib/mdx-options';
 import TableOfContents from '@/components/TableOfContents';
 import { mdxComponents } from '@/stories/mdx-components';
-import { headers } from 'next/headers';
 
 interface PostPageProps {
   params: Promise<{
@@ -64,14 +63,12 @@ export default async function PostPage({ params }: PostPageProps) {
     notFound();
   }
 
-  const nonce = (await headers()).get('x-nonce') ?? undefined;
   const structuredData = generateBlogPostStructuredData(post);
 
   return (
     <>
       {/* JSON-LD Structured Data */}
       <script
-        nonce={nonce}
         type="application/ld+json"
         dangerouslySetInnerHTML={{
           __html: JSON.stringify(structuredData),
