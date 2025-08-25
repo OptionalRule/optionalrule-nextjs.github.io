@@ -19,6 +19,7 @@ export interface AsteroidsEngineEvents {
   onLivesChange: (lives: number) => void
   onLevelChange: (level: number) => void
   onGameOver: (finalScore: number) => void
+  onExtraLife: (threshold: number) => void
 }
 
 export class AsteroidsEngine {
@@ -53,6 +54,9 @@ export class AsteroidsEngine {
       gameStatus: 'menu',
       highScore: this.loadHighScore(),
       lastLevelBonus: undefined,
+      lastExtraLifeThreshold: 0,
+      pendingExtraLife: false,
+      extraLifeJustAwarded: false,
     }
 
     // Initialize ship at center
@@ -419,6 +423,11 @@ export class AsteroidsEngine {
     // Play level completion sound (before bonus display, non-blocking)
     this.soundSystem.playSound('levelCompletion')
     
+    // Check for pending extra life award
+    if (this.gameState.pendingExtraLife) {
+      this.awardExtraLife()
+    }
+    
     // Award bonus points for level completion (before incrementing level)
     const bonusPoints = this.gameState.level * GAMEPLAY.levelCompletionBonus
     this.addScore(bonusPoints)
@@ -454,9 +463,25 @@ export class AsteroidsEngine {
       if (this.gameState.gameStatus === 'loading') {
         this.initializeLevel()
         this.gameState.gameStatus = previousState
+        this.gameState.extraLifeJustAwarded = false // Reset extra life notification
         this.notifyStateChange()
       }
     }, GAMEPLAY.levelTransitionDelay)
+  }
+
+  private awardExtraLife(): void {
+    // Calculate the threshold that was crossed
+    const threshold = GAMEPLAY.extraLifeThreshold
+    const newThreshold = Math.floor(this.gameState.score / threshold) * threshold
+    
+    // Award the extra life
+    this.gameState.lives++
+    this.gameState.lastExtraLifeThreshold = newThreshold
+    this.gameState.pendingExtraLife = false
+    this.gameState.extraLifeJustAwarded = true
+    
+    // Notify UI of lives change
+    this.events.onLivesChange(this.gameState.lives)
   }
 
   private initializeLevel(): void {
@@ -531,7 +556,7 @@ export class AsteroidsEngine {
         this.gameState.lives,
         this.gameState.level
       )
-      this.renderSystem.drawLevelLoading(this.gameState.level, this.gameState.lastLevelBonus)
+      this.renderSystem.drawLevelLoading(this.gameState.level, this.gameState.lastLevelBonus, this.gameState.extraLifeJustAwarded)
     } else if (this.gameState.gameStatus === 'gameOver') {
       this.renderSystem.drawGameOver(this.gameState.score, this.gameState.highScore)
     } else if (this.gameState.gameStatus === 'menu') {
@@ -541,7 +566,11 @@ export class AsteroidsEngine {
   }
 
   private addScore(points: number, event?: ScoreEvent): void {
+    const previousScore = this.gameState.score
     this.gameState.score += points
+    
+    // Check for extra life threshold crossing
+    this.checkExtraLifeThreshold(previousScore, this.gameState.score)
     
     // Update high score
     if (this.gameState.score > this.gameState.highScore) {
@@ -550,6 +579,23 @@ export class AsteroidsEngine {
     }
     
     this.events.onScoreChange(this.gameState.score, event)
+  }
+
+  private checkExtraLifeThreshold(previousScore: number, currentScore: number): void {
+    const threshold = GAMEPLAY.extraLifeThreshold
+    
+    // Calculate which thresholds were crossed
+    const previousThreshold = Math.floor(previousScore / threshold) * threshold
+    const currentThreshold = Math.floor(currentScore / threshold) * threshold
+    
+    // If we crossed a new threshold
+    if (currentThreshold > previousThreshold && currentThreshold > this.gameState.lastExtraLifeThreshold) {
+      // Mark that an extra life is pending (to be awarded on next level completion)
+      this.gameState.pendingExtraLife = true
+      
+      // Trigger extra life notification event immediately for UI feedback
+      this.events.onExtraLife(currentThreshold)
+    }
   }
 
   private gameOver(): void {
@@ -596,6 +642,9 @@ export class AsteroidsEngine {
       gameStatus: 'playing',
       highScore: this.gameState.highScore,
       lastLevelBonus: undefined,
+      lastExtraLifeThreshold: 0,
+      pendingExtraLife: false,
+      extraLifeJustAwarded: false,
     }
 
     // Clear all entities and reset ship

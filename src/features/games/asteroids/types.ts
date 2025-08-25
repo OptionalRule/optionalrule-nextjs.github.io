@@ -10,6 +10,9 @@ export interface GameState {
   gameStatus: 'menu' | 'playing' | 'paused' | 'gameOver' | 'loading'
   highScore: number
   lastLevelBonus?: number
+  lastExtraLifeThreshold: number
+  pendingExtraLife: boolean
+  extraLifeJustAwarded: boolean
 }
 
 export interface EntityState {
@@ -121,7 +124,7 @@ export interface CollisionEvent {
 export interface ScoreEvent {
   points: number
   position: Vector2D
-  type: 'asteroid' | 'saucer'
+  type: 'asteroid' | 'saucer' | 'extraLife'
 }
 
 export interface GameEvent {

@@ -324,7 +324,7 @@ export class RenderSystem {
     this.ctx.restore()
   }
 
-  drawLevelLoading(level: number, levelBonus?: number): void {
+  drawLevelLoading(level: number, levelBonus?: number, extraLifeAwarded?: boolean): void {
     const centerX = this.canvas.width / 2
     const centerY = this.canvas.height / 2
     
@@ -362,6 +362,22 @@ export class RenderSystem {
         color: '#ffaa00',
         shadow: true
       })
+    }
+    
+    // Extra life notification (if awarded)
+    if (extraLifeAwarded) {
+      // Create blinking blue text for extra life
+      const blinkOpacity = Math.sin(time / 300 * Math.PI) * 0.5 + 0.5
+      this.ctx.save()
+      this.ctx.globalAlpha = 0.5 + blinkOpacity * 0.5
+      
+      this.drawText('EXTRA LIFE AWARDED!', { x: centerX, y: centerY + 100 }, {
+        font: `${RENDERING.gameOverScoreSize}px ${RENDERING.defaultFont}`,
+        color: '#4499ff',
+        shadow: true
+      })
+      
+      this.ctx.restore()
     }
     
     this.ctx.restore()

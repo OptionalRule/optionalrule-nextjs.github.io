@@ -73,6 +73,26 @@ export function ScorePanel({ gameState, className }: ScorePanelProps) {
             )}
           </div>
         </div>
+        
+        {/* Extra Life Progress */}
+        <div className="space-y-1">
+          <div className="flex justify-between items-center">
+            <span className="text-xs text-muted-foreground font-mono">
+              NEXT LIFE:
+            </span>
+            <span className="text-xs font-mono text-blue-400">
+              {Math.ceil((gameState.score + 1) / 10000) * 10000}
+            </span>
+          </div>
+          <div className="w-full h-1 bg-gray-700 rounded">
+            <div 
+              className="h-1 bg-blue-400 rounded transition-all duration-300"
+              style={{ 
+                width: `${Math.min(100, (gameState.score % 10000) / 100)}%` 
+              }}
+            />
+          </div>
+        </div>
       </div>
       
       {/* Game Status Indicator */}

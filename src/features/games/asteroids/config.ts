@@ -40,7 +40,7 @@ export const ASTEROIDS_CONFIG: GameConfig = {
     },
     spawnInterval: 30000,
     shootInterval: 2000,
-    minLevel: 1,
+    minLevel: 2,
     speeds: {
       large: 80,
       small: 120,
@@ -104,7 +104,7 @@ export const PHYSICS = {
 // Gameplay configuration
 export const GAMEPLAY = {
   // Level progression
-  baseAsteroidCount: 5,
+  baseAsteroidCount: 4,
   maxAsteroidCount: 12,
   asteroidIncrement: 1,
   levelCompletionBonus: 100,
@@ -126,6 +126,9 @@ export const GAMEPLAY = {
   thrustAnimationSpeed: 8,
   invulnerabilityFlashInterval: 300,
   invulnerabilityFlashSkip: 3,
+  
+  // Extra life system
+  extraLifeThreshold: 10000,
   
   // Performance settings
   assumedFramerate: 60, // For time-independent calculations
