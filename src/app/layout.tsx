@@ -4,6 +4,7 @@ import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { GoogleAnalytics } from "@/components/GoogleAnalytics";
 import { siteConfig } from "@/config/site";
+import { headers } from "next/headers";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -106,6 +107,7 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const nonce = headers().get('x-nonce') ?? undefined;
   // Build CSS variable overrides for light/dark from siteConfig.theme
   const light = siteConfig.theme?.light;
   const dark = siteConfig.theme?.dark;
@@ -121,6 +123,7 @@ export default function RootLayout({
       <head>
         {/* Pre-hydration theme script: apply user's theme choice before React mounts */}
         <script
+          nonce={nonce}
           dangerouslySetInnerHTML={{
             __html: `(() => {
   try {
@@ -149,7 +152,7 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased font-sans`}
       >
-        <GoogleAnalytics />
+        <GoogleAnalytics nonce={nonce} />
         <div className="min-h-screen flex flex-col">
           <Header />
           <main className="flex-1">
