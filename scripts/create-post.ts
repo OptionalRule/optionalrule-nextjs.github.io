@@ -204,7 +204,7 @@ function validateTitle(title: string): boolean {
 
 // Function to check if user wants to overwrite existing file
 async function confirmOverwrite(filename: string): Promise<boolean> {
-  const response = await promptUser(`Do you want to overwrite it? (y/N): `);
+  const response = await promptUser(`File "${filename}" exists. Overwrite? (y/N): `);
   return response.toLowerCase() === 'y' || response.toLowerCase() === 'yes';
 }
 

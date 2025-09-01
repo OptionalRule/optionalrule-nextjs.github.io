@@ -16,7 +16,6 @@ interface PostFrontmatter {
 
 // Configuration
 const POSTS_DIR = path.join(process.cwd(), 'content', 'posts');
-const DEFAULT_IMAGE = '/images/or_logo.png';
 const OLD_IMAGES = [
   '/images/optionalrule-escaping-fireball.png',
   '/images/optionalrule-escaping-wound.png',
@@ -41,42 +40,23 @@ function getRandomReplacementImage(): string {
 // Parse frontmatter from MDX content
 function parseFrontmatter(content: string): { frontmatter: PostFrontmatter; content: string } {
   const frontmatterMatch = content.match(/^---\s*\n([\s\S]*?)\n---\s*\n([\s\S]*)$/);
-  
   if (!frontmatterMatch) {
     return { frontmatter: { featured_image: '' }, content };
   }
-  
   const frontmatterText = frontmatterMatch[1];
   const postContent = frontmatterMatch[2];
-  
-  try {
-    const frontmatter: PostFrontmatter = { featured_image: '' };
-    const lines = frontmatterText.split('\n');
-    
-    for (const line of lines) {
-      const trimmedLine = line.trim();
-      if (trimmedLine && !trimmedLine.startsWith('#')) {
-        const colonIndex = trimmedLine.indexOf(':');
-        if (colonIndex > 0) {
-          const key = trimmedLine.substring(0, colonIndex).trim();
-          let value = trimmedLine.substring(colonIndex + 1).trim();
-          
-          // Handle quoted strings
-          if ((value.startsWith('"') && value.endsWith('"')) || 
-              (value.startsWith("'") && value.endsWith("'"))) {
-            value = value.slice(1, -1);
-          }
-          
-          (frontmatter as any)[key] = value;
-        }
-      }
+
+  // Extract only the featured_image field
+  const featMatch = frontmatterText.match(/^featured_image:\s*(.+)$/m);
+  let featured = '';
+  if (featMatch) {
+    let value = featMatch[1].trim();
+    if ((value.startsWith('"') && value.endsWith('"')) || (value.startsWith("'") && value.endsWith("'"))) {
+      value = value.slice(1, -1);
     }
-    
-    return { frontmatter, content: postContent };
-  } catch (error) {
-    console.warn('Warning: Could not parse frontmatter, using empty frontmatter');
-    return { frontmatter: { featured_image: '' }, content };
+    featured = value;
   }
+  return { frontmatter: { featured_image: featured }, content: postContent };
 }
 
 // Update frontmatter in content
