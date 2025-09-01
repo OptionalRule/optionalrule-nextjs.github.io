@@ -13,7 +13,29 @@ const compat = new FlatCompat({
 });
 
 const eslintConfig = [
+  // Ignore build artifacts and generated/static output
+  { ignores: [
+    'node_modules/**',
+    '.next/**',
+    'out/**',
+    'public/**',
+    'next-env.d.ts'
+  ] },
   ...compat.extends("next/core-web-vitals", "next/typescript"),
+  // Local rule overrides
+  {
+    rules: {
+      // Allow underscore-prefixed names for intentional unused vars/args (tests, mocks, destructuring)
+      '@typescript-eslint/no-unused-vars': [
+        'error',
+        {
+          argsIgnorePattern: '^_',
+          varsIgnorePattern: '^_',
+          caughtErrorsIgnorePattern: '^_',
+        },
+      ],
+    },
+  },
   ...storybook.configs["flat/recommended"]
 ];
 

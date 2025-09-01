@@ -1,7 +1,7 @@
-// Simple test to see what getAllPostsMeta() returns
-const fs = require('fs');
-const path = require('path');
-const matter = require('gray-matter');
+// Simple test to see what getAllPostsMeta() returns (ESM)
+import fs from 'node:fs';
+import path from 'node:path';
+import matter from 'gray-matter';
 
 const POSTS_DIR = path.join(process.cwd(), 'content', 'posts');
 
@@ -40,7 +40,7 @@ function getPostFiles() {
 function getPostMeta(filename) {
   const filePath = path.join(POSTS_DIR, filename);
   const fileContent = fs.readFileSync(filePath, 'utf8');
-  const { data, content } = matter(fileContent);
+  const { data } = matter(fileContent);
   
   // Generate slug from filename (simplified)
   const slug = filename.replace(/\.mdx?$/, '');

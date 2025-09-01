@@ -1,6 +1,5 @@
 import { globby } from 'globby';
 import { readFileSync } from 'fs';
-import { join } from 'path';
 
 interface EmptyLinkResult {
   file: string;

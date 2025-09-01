@@ -74,7 +74,7 @@ function pLimit(concurrency) {
     activeCount--;
     if (queue.length > 0) {
       const run = queue.shift();
-      run && run();
+      if (run) run();
     }
   };
   return fn => (...args) => new Promise((resolve, reject) => {
@@ -119,7 +119,7 @@ async function callOpenAI({ title, content, model, apiKey }) {
       const data = await res.json();
       try {
         return JSON.parse(data.choices[0].message.content);
-      } catch (err) {
+      } catch (_err) {
         throw new Error('Invalid JSON response from model');
       }
     }
@@ -221,7 +221,7 @@ async function main() {
   let pathStats;
   try {
     pathStats = await fs.stat(targetPath);
-  } catch (err) {
+  } catch {
     console.error(`Error: Path '${targetPath}' does not exist.`);
     process.exit(1);
   }
