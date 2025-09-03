@@ -13,7 +13,7 @@ function readTitle(filePath) {
     const html = fs.readFileSync(filePath, 'utf8');
     const m = html.match(/<title>(.*?)<\/title>/i);
     return m ? m[1].trim() : null;
-  } catch (e) {
+  } catch (_e) {
     return null;
   }
 }

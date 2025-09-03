@@ -25,8 +25,8 @@ function MDXImage({
   // If width/height are missing (common in Markdown images), fall back to a plain <img>
   // This avoids Next/Image throwing during dev/export while keeping images responsive.
   if (!parsedWidth || !parsedHeight) {
-    // eslint-disable-next-line @next/next/no-img-element
     return (
+      // eslint-disable-next-line @next/next/no-img-element
       <img
         src={src}
         alt={alt}
@@ -34,7 +34,6 @@ function MDXImage({
         decoding="async"
         className={`mx-auto my-6 rounded-lg shadow-md ${className ?? ''}`}
         style={{ maxWidth: '100%', height: 'auto' }}
-        {...(props as any)}
       />
     );
   }
@@ -269,7 +268,7 @@ export const mdxComponents: MDXComponents = {
   ),
 
   // Images wrapped with next/image for optimization
-  img: (props) => <MDXImage {...props as any} />,
+  img: (props: unknown) => <MDXImage {...(props as MDXImageProps)} />,
 
   // Custom components
   YouTubeEmbed,
