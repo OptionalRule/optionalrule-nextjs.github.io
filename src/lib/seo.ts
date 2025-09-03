@@ -27,15 +27,15 @@ export function generateMetadata(options: MetadataOptions = {}): Metadata {
     tags,
   } = options;
 
-  const pageTitle = title ? `${title} | ${siteConfig.name}` : siteConfig.title;
+  // Compute share titles (OpenGraph/Twitter) explicitly, while letting the
+  // root layout control the <title> template ("%s | Site").
+  const shareTitle = title ? `${title} | ${siteConfig.name}` : siteConfig.title;
   const absoluteImage = image.startsWith('http') ? image : `${siteConfig.url}${image}`;
   const canonicalUrl = canonical ? `${siteConfig.url}${canonical}` : siteConfig.url;
 
   const metadata: Metadata = {
-    title: {
-      default: pageTitle,
-      template: title ? pageTitle : `%s | ${siteConfig.name}`,
-    },
+    // Only set a bare page title here; the layout's template appends the site name.
+    ...(title ? { title } : {}),
     description,
     keywords: siteConfig.keywords,
     authors: [{ name: siteConfig.author.name, url: siteConfig.author.url }],
@@ -61,7 +61,7 @@ export function generateMetadata(options: MetadataOptions = {}): Metadata {
       locale: siteConfig.locale,
       url: canonicalUrl,
       siteName: siteConfig.name,
-      title: title || siteConfig.title,
+      title: shareTitle,
       description,
       images: [
         {
@@ -76,7 +76,7 @@ export function generateMetadata(options: MetadataOptions = {}): Metadata {
     },
     twitter: {
       card: 'summary_large_image',
-      title: title || siteConfig.title,
+      title: shareTitle,
       description,
       creator: siteConfig.social.twitter,
       site: siteConfig.social.twitter,
@@ -116,7 +116,7 @@ export function generatePostMetadata(post: Post): Metadata {
 // Generate metadata for the homepage
 export function generateHomeMetadata(): Metadata {
   return generateMetadata({
-    title: siteConfig.title,
+    title: 'Home',
     description: siteConfig.description,
     canonical: '/',
   });

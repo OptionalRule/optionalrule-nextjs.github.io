@@ -4,7 +4,7 @@ import Link from 'next/link';
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'All Tags | My Blog',
+  title: 'All Tags',
   description: 'Browse all tags used across the blog posts. Find content by topic and category.',
 };
 

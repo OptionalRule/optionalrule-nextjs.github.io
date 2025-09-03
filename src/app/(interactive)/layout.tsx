@@ -1,7 +1,7 @@
 import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
-  title: 'Interactive Features - Optional Rule Games',
+  title: 'Interactive Features',
   description: 'Games and tools for tabletop RPG enthusiasts',
 }
 
