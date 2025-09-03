@@ -121,7 +121,7 @@ URL pattern: /pages/slug/
 - Optional ToC from headings.
 
 ### 6.6 Interactive: Asteroids Game (Desktop MVP)
-- Client‑only (no SSR) dynamic import under `/games/asteroids/`.
+- Client-only (no SSR) dynamic import under `/games/asteroids/`.
 - HTML5 Canvas game loop; entities (Ship, Asteroid, Saucer, Bullet, Explosion).
 - Systems: Render, Collision, Sound; hooks for state and responsiveness.
 - Keyboard controls: Arrow keys (rotate/thrust), Space (shoot), Esc (pause), Enter (restart).
@@ -129,8 +129,9 @@ URL pattern: /pages/slug/
 - Mobile: not supported; show overlay notice.
 - Acceptance:
   - Start, pause/resume, restart flows function; lives/levels/score update.
-  - Asteroids split; saucers spawn with level‑based behavior; bullets expire.
+  - Asteroids split; saucers spawn with level-based behavior; bullets expire.
   - Sound events trigger (start, pause/unpause, thrust, fire, explosions, level).
+  - Detailed PRD: `documentation/asteroids/PRD.md`
 
 ### 6.7 Discovery & Feeds
 - RSS feed at `/rss.xml` generated from posts (title, link, pubDate, category).
