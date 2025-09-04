@@ -275,3 +275,21 @@ Phase 3 — Quality and Hardening
 ---
 This TDD reflects the repository state at the time of writing and is intended to guide incremental improvements that preserve the site’s static export model while increasing maintainability and correctness.
 
+## 20. Quick Fixes Applied (This Revision)
+
+- Robots sitemap URL now uses `siteConfig.url` in `src/app/robots.txt/route.ts`.
+- Internal search links normalized to include trailing slashes:
+  - `src/components/Header.tsx` utility link → `/search/`
+  - `src/components/SearchInput.tsx` navigation now pushes `/search/?q=...` and clears to `/search/`
+  - Updated tests in `src/components/__tests__/SearchInput.test.tsx` accordingly.
+- Centralized pagination constant by exporting `POSTS_PER_PAGE` from `src/lib/content.ts` and reusing in:
+  - `src/app/(content)/tags/page.tsx`
+  - `src/app/(content)/tag/[tag]/page.tsx`
+  - `src/app/(content)/test-pagination/page.tsx`
+- Search UX copy aligned with implementation (title, excerpt, tags) in:
+  - `src/app/(content)/search/page.tsx`
+  - `src/app/(content)/search/layout.tsx`
+- Feed script refactored to reuse shared logic/config:
+  - `scripts/generate-rss.ts` now imports from `src/lib/feeds.ts` instead of duplicating logic and config.
+- CNAME corrected for GitHub Pages:
+  - `public/CNAME` now contains `www.optionalrule.com` without extraneous characters.

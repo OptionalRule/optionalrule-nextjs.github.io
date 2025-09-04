@@ -1,4 +1,4 @@
-import { getAllTags, getPostsByTag } from '@/lib/content';
+import { getAllTags, getPostsByTag, POSTS_PER_PAGE } from '@/lib/content';
 import { capitalize, createTagSlug } from '@/lib/utils';
 import Link from 'next/link';
 import type { Metadata } from 'next';
@@ -12,11 +12,17 @@ export default function TagsPage() {
   const tags = getAllTags();
   
   // Get post count for each tag
-  const tagsWithCounts = tags.map(tag => ({
-    name: tag,
-    count: getPostsByTag(tag, 1).posts.length + (getPostsByTag(tag, 1).totalPages - 1) * 10,
-    slug: createTagSlug(tag),
-  })).sort((a, b) => b.count - a.count); // Sort by post count descending
+  const tagsWithCounts = tags
+    .map(tag => {
+      const firstPage = getPostsByTag(tag, 1);
+      const count = firstPage.posts.length + (firstPage.totalPages - 1) * POSTS_PER_PAGE;
+      return {
+        name: tag,
+        count,
+        slug: createTagSlug(tag),
+      };
+    })
+    .sort((a, b) => b.count - a.count); // Sort by post count descending
 
   return (
     <div className="min-h-screen bg-[var(--surface)]">

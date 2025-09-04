@@ -56,7 +56,7 @@ const navigationItems: NavigationGroup[] = [
 // Utility navigation items (icons only)
 const utilityItems: NavigationItem[] = [
   { 
-    href: '/search', 
+    href: '/search/', 
     label: 'Search',
     icon: (
       <svg

@@ -42,8 +42,8 @@ export function SearchInput({
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (query.trim()) {
-      // Navigate to search page with query
-      router.push(`/search?q=${encodeURIComponent(query.trim())}`);
+      // Navigate to search page with query (ensure trailing slash for static export)
+      router.push(`/search/?q=${encodeURIComponent(query.trim())}`);
     }
   };
 
@@ -55,7 +55,7 @@ export function SearchInput({
     setQuery('');
     inputRef.current?.focus();
     // Update URL to remove query parameter
-    router.push('/search');
+    router.push('/search/');
     if (onSearch) {
       onSearch('');
     }

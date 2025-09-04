@@ -1,9 +1,9 @@
-import { getPaginatedPosts, getAllPostsMeta } from '@/lib/content';
+import { getPaginatedPosts, getAllPostsMeta, POSTS_PER_PAGE } from '@/lib/content';
 import { Pagination } from '@/components/Pagination';
 
 export default function TestPaginationPage() {
   const allPosts = getAllPostsMeta();
-  const totalPages = Math.ceil(allPosts.length / 10);
+  const totalPages = Math.ceil(allPosts.length / POSTS_PER_PAGE);
   
   // Test different page numbers
   const testPages = [1, 2, 3].filter(page => page <= totalPages);
@@ -15,7 +15,7 @@ export default function TestPaginationPage() {
       <div className="mb-8 p-4 bg-[var(--surface-hover)] rounded">
         <h2 className="text-xl font-semibold mb-2">Debug Info:</h2>
         <p>Total posts: {allPosts.length}</p>
-        <p>Posts per page: 10</p>
+        <p>Posts per page: {POSTS_PER_PAGE}</p>
         <p>Total pages: {totalPages}</p>
         <p>Test pages: {testPages.join(', ')}</p>
       </div>

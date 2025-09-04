@@ -91,7 +91,7 @@ describe('SearchInput', () => {
       await user.type(input, 'test query');
       await user.keyboard('{Enter}');
       
-      expect(mockPush).toHaveBeenCalledWith('/search?q=test%20query');
+      expect(mockPush).toHaveBeenCalledWith('/search/?q=test%20query');
     });
 
     it('does not navigate with empty query', async () => {
@@ -133,7 +133,7 @@ describe('SearchInput', () => {
       await user.click(clearButton);
       
       expect(screen.getByRole('textbox')).toHaveValue('');
-      expect(mockPush).toHaveBeenCalledWith('/search');
+      expect(mockPush).toHaveBeenCalledWith('/search/');
     });
   });
 

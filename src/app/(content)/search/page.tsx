@@ -63,7 +63,7 @@ function SearchPageContent() {
             Search Posts
           </h1>
           <p className="text-lg text-[var(--muted-2)] mb-8">
-            Find blog posts by title, content, or tags
+            Find blog posts by title, excerpt, or tags
           </p>
           
           {/* Search Input */}
@@ -93,7 +93,7 @@ function SearchPageContent() {
               <ul className="space-y-2 text-sm text-[var(--muted-2)]">
                 <li className="flex items-start gap-2">
                   <span className="text-[var(--link)] mt-0.5">•</span>
-                  Use keywords from post titles, content, or tags
+                  Use keywords from post titles, excerpts, or tags
                 </li>
                 <li className="flex items-start gap-2">
                   <span className="text-[var(--link)] mt-0.5">•</span>

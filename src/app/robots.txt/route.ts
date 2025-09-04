@@ -1,10 +1,12 @@
+import { siteConfig } from '@/config/site';
+
 export const dynamic = 'force-static';
 
 export async function GET() {
   const robotsContent = `User-agent: *
 Allow: /
 
-Sitemap: https://yourdomain.github.io/sitemap.xml`;
+Sitemap: ${siteConfig.url}/sitemap.xml`;
 
   return new Response(robotsContent, {
     headers: {
@@ -12,3 +14,4 @@ Sitemap: https://yourdomain.github.io/sitemap.xml`;
     },
   });
 }
+

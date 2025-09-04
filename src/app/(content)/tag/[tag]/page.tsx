@@ -1,4 +1,4 @@
-import { getPostsByTag, getAllTags } from '@/lib/content';
+import { getPostsByTag, getAllTags, POSTS_PER_PAGE } from '@/lib/content';
 import { PostCard } from '@/components/PostCard';
 import { Pagination } from '@/components/Pagination';
 import { generateTagMetadata } from '@/lib/seo';
@@ -66,10 +66,10 @@ export default async function TagPage({ params }: TagPageProps) {
             Posts tagged with &ldquo;{capitalize(tag)}&rdquo;
           </h1>
           <p className="text-lg text-[var(--muted-2)] mb-6">
-            {posts.length === 1 
-              ? '1 post found'
-              : `${tagData.posts.length + (totalPages - 1) * 10} posts found`
-            }
+            {(() => {
+              const total = tagData.posts.length + (totalPages - 1) * POSTS_PER_PAGE;
+              return total === 1 ? '1 post found' : `${total} posts found`;
+            })()}
           </p>
           
           {totalPages > 1 && (

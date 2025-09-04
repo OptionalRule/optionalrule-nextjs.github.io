@@ -8,7 +8,7 @@ import { extractHeadings, tagSlugToName, generateExcerpt } from './utils';
 
 const POSTS_DIR = path.join(process.cwd(), 'content', 'posts');
 const PAGES_DIR = path.join(process.cwd(), 'content', 'pages');
-const POSTS_PER_PAGE = 10;
+export const POSTS_PER_PAGE = 10;
 
 export const PostFrontmatterSchema = z.object({
   title: z.string(),

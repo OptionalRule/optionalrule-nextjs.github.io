@@ -2,673 +2,697 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
-    <loc>https://optionalrule.com</loc>
+    <loc>https://www.optionalrule.com</loc>
     
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>https://optionalrule.com/pages/about/</loc>
+    <loc>https://www.optionalrule.com/pages/about/</loc>
     
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://optionalrule.com/tags/</loc>
+    <loc>https://www.optionalrule.com/tags/</loc>
     
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://optionalrule.com/2025/08/21/retro-classic-game-asteroids-available/</loc>
+    <loc>https://www.optionalrule.com/2025/08/22/retro-classic-game-asteroids-available/</loc>
     <lastmod>2025-08-22</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://optionalrule.com/2025/08/14/site-migration-complete/</loc>
+    <loc>https://www.optionalrule.com/2025/08/18/the-surprising-history-of-solo-ttrpg-play/</loc>
+    <lastmod>2025-08-18</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://www.optionalrule.com/2025/08/15/site-migration-complete/</loc>
     <lastmod>2025-08-15</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://optionalrule.com/2025/02/01/the-zero-sum-fallacy-of-ttrpgs/</loc>
+    <loc>https://www.optionalrule.com/2025/02/02/the-zero-sum-fallacy-of-ttrpgs/</loc>
     <lastmod>2025-02-02</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://optionalrule.com/2024/11/25/the-human-side-of-dnd-history/</loc>
+    <loc>https://www.optionalrule.com/2024/11/26/the-human-side-of-dnd-history/</loc>
     <lastmod>2024-11-26</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://optionalrule.com/2024/11/23/exception-based-dnd-design/</loc>
+    <loc>https://www.optionalrule.com/2024/11/24/exception-based-dnd-design/</loc>
     <lastmod>2024-11-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://optionalrule.com/2024/11/21/warfare-in-ttrpgs/</loc>
+    <loc>https://www.optionalrule.com/2024/11/22/warfare-in-ttrpgs/</loc>
     <lastmod>2024-11-22</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://optionalrule.com/2024/10/23/hasbro-q3-2024/</loc>
+    <loc>https://www.optionalrule.com/2024/10/24/hasbro-q3-2024/</loc>
     <lastmod>2024-10-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://optionalrule.com/2024/10/19/theater-of-the-mind-movement-in-5e/</loc>
+    <loc>https://www.optionalrule.com/2024/10/20/theater-of-the-mind-movement-in-5e/</loc>
     <lastmod>2024-10-20</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://optionalrule.com/2024/09/30/a-return-to-greyhawk/</loc>
+    <loc>https://www.optionalrule.com/2024/10/01/a-return-to-greyhawk/</loc>
     <lastmod>2024-10-01</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://optionalrule.com/2024/09/19/ethical-ai-in-ttrpgs/</loc>
+    <loc>https://www.optionalrule.com/2024/09/20/ethical-ai-in-ttrpgs/</loc>
     <lastmod>2024-09-20</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://optionalrule.com/2024/09/07/worldbuilding-through-food/</loc>
+    <loc>https://www.optionalrule.com/2024/09/08/worldbuilding-through-food/</loc>
     <lastmod>2024-09-08</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://optionalrule.com/2024/09/03/mounted-combat-in-shadowdark/</loc>
+    <loc>https://www.optionalrule.com/2024/09/04/mounted-combat-in-shadowdark/</loc>
     <lastmod>2024-09-04</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://optionalrule.com/2024/08/27/rolepalying-origins-of-dnd/</loc>
+    <loc>https://www.optionalrule.com/2024/08/28/rolepalying-origins-of-dnd/</loc>
     <lastmod>2024-08-28</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://optionalrule.com/2024/08/25/expanded-herb-list-for-shadowdark/</loc>
+    <loc>https://www.optionalrule.com/2024/08/26/expanded-herb-list-for-shadowdark/</loc>
     <lastmod>2024-08-26</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://optionalrule.com/2024/08/01/simplifying-runequests-critical-system/</loc>
+    <loc>https://www.optionalrule.com/2024/08/02/simplifying-runequests-critical-system/</loc>
     <lastmod>2024-08-02</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://optionalrule.com/2024/07/15/twelve-rules-for-players-to-live-by/</loc>
+    <loc>https://www.optionalrule.com/2024/07/16/twelve-rules-for-players-to-live-by/</loc>
     <lastmod>2024-07-16</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://optionalrule.com/2024/05/01/experience-matters-updated/</loc>
+    <loc>https://www.optionalrule.com/2024/05/02/experience-matters-updated/</loc>
     <lastmod>2024-05-02</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://optionalrule.com/2024/04/27/ttrpg-tools-for-collaboration/</loc>
+    <loc>https://www.optionalrule.com/2024/04/28/ttrpg-tools-for-collaboration/</loc>
     <lastmod>2024-04-28</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://optionalrule.com/2024/02/15/revised-exhausted-condition/</loc>
+    <loc>https://www.optionalrule.com/2024/02/16/revised-exhausted-condition/</loc>
     <lastmod>2024-02-16</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://optionalrule.com/2023/12/19/the-magic-of-yes-if/</loc>
+    <loc>https://www.optionalrule.com/2023/12/20/the-magic-of-yes-if/</loc>
     <lastmod>2023-12-20</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://optionalrule.com/2023/12/10/guidelines-for-great-ttrpg-design/</loc>
+    <loc>https://www.optionalrule.com/2023/12/11/guidelines-for-great-ttrpg-design/</loc>
     <lastmod>2023-12-11</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://optionalrule.com/2023/11/26/dming-isnt-a-conspiracy-to-control-you/</loc>
+    <loc>https://www.optionalrule.com/2023/11/27/dming-isnt-a-conspiracy-to-control-you/</loc>
     <lastmod>2023-11-27</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://optionalrule.com/2023/11/08/the-advantage-of-knowing-modifiers/</loc>
+    <loc>https://www.optionalrule.com/2023/11/09/the-advantage-of-knowing-modifiers/</loc>
     <lastmod>2023-11-09</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://optionalrule.com/2023/11/03/dungeon-of-the-grieving-mind/</loc>
+    <loc>https://www.optionalrule.com/2023/11/04/dungeon-of-the-grieving-mind/</loc>
     <lastmod>2023-11-04</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://optionalrule.com/2023/07/22/painting-geography-with-narrative/</loc>
+    <loc>https://www.optionalrule.com/2023/07/23/painting-geography-with-narrative/</loc>
     <lastmod>2023-07-23</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://optionalrule.com/2023/06/27/arcane-servant-spells/</loc>
+    <loc>https://www.optionalrule.com/2023/06/28/arcane-servant-spells/</loc>
     <lastmod>2023-06-28</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://optionalrule.com/2023/06/18/revisiting-death-saves-in-5e/</loc>
+    <loc>https://www.optionalrule.com/2023/06/19/revisiting-death-saves-in-5e/</loc>
     <lastmod>2023-06-19</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://optionalrule.com/2023/06/15/abstract-nature-of-ac/</loc>
+    <loc>https://www.optionalrule.com/2023/06/16/abstract-nature-of-ac/</loc>
     <lastmod>2023-06-16</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://optionalrule.com/2023/06/09/campaign-pitch-decks/</loc>
+    <loc>https://www.optionalrule.com/2023/06/10/campaign-pitch-decks/</loc>
     <lastmod>2023-06-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://optionalrule.com/2023/06/01/what-are-hit-points-in-dnd/</loc>
+    <loc>https://www.optionalrule.com/2023/06/02/what-are-hit-points-in-dnd/</loc>
     <lastmod>2023-06-02</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://optionalrule.com/2023/05/30/places-of-power/</loc>
+    <loc>https://www.optionalrule.com/2023/05/31/places-of-power/</loc>
     <lastmod>2023-05-31</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://optionalrule.com/2023/05/26/improved-mark-option/</loc>
+    <loc>https://www.optionalrule.com/2023/05/27/improved-mark-option/</loc>
     <lastmod>2023-05-27</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://optionalrule.com/2023/05/18/vathirond-city-of-wild-inspiration/</loc>
+    <loc>https://www.optionalrule.com/2023/05/19/vathirond-city-of-wild-inspiration/</loc>
     <lastmod>2023-05-19</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://optionalrule.com/2023/05/16/the-benefits-of-xp-in-5th-edition/</loc>
+    <loc>https://www.optionalrule.com/2023/05/17/the-benefits-of-xp-in-5th-edition/</loc>
     <lastmod>2023-05-17</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://optionalrule.com/2023/05/14/origins-of-the-astral-and-etherial-planes-in-dnd/</loc>
+    <loc>https://www.optionalrule.com/2023/05/15/origins-of-the-astral-and-etherial-planes-in-dnd/</loc>
     <lastmod>2023-05-15</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://optionalrule.com/2023/05/13/design-goals-of-etherea/</loc>
+    <loc>https://www.optionalrule.com/2023/05/14/design-goals-of-etherea/</loc>
     <lastmod>2023-05-14</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://optionalrule.com/2023/05/12/revised-injury-condition/</loc>
+    <loc>https://www.optionalrule.com/2023/05/13/the-world-of-etherea/</loc>
     <lastmod>2023-05-13</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://optionalrule.com/2023/05/12/the-world-of-etherea/</loc>
+    <loc>https://www.optionalrule.com/2023/05/13/revised-injury-condition/</loc>
     <lastmod>2023-05-13</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://optionalrule.com/2023/05/03/return-of-the-write-spell-in-dnd/</loc>
+    <loc>https://www.optionalrule.com/2023/05/04/return-of-the-write-spell-in-dnd/</loc>
     <lastmod>2023-05-04</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://optionalrule.com/2022/09/30/injured-condition-onednd/</loc>
+    <loc>https://www.optionalrule.com/2022/10/01/injured-condition-onednd/</loc>
     <lastmod>2022-10-01</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://optionalrule.com/2021/12/16/wotc-errata-debate/</loc>
+    <loc>https://www.optionalrule.com/2021/12/17/wotc-errata-debate/</loc>
     <lastmod>2021-12-17</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://optionalrule.com/2021/12/07/tavern-games-darts-minigame/</loc>
+    <loc>https://www.optionalrule.com/2021/12/08/tavern-games-darts-minigame/</loc>
     <lastmod>2021-12-08</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://optionalrule.com/2021/08/11/sampling-random-ability-scores/</loc>
+    <loc>https://www.optionalrule.com/2021/08/12/sampling-random-ability-scores/</loc>
     <lastmod>2021-08-12</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://optionalrule.com/2021/07/23/perilous-journeys-in-5e-p2/</loc>
+    <loc>https://www.optionalrule.com/2021/07/24/perilous-journeys-in-5e-p2/</loc>
     <lastmod>2021-07-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://optionalrule.com/2021/07/12/perilous-journeys-in-5e-p1/</loc>
+    <loc>https://www.optionalrule.com/2021/07/13/perilous-journeys-in-5e-p1/</loc>
     <lastmod>2021-07-13</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://optionalrule.com/2021/06/29/gritty-healing-part-2-spells/</loc>
+    <loc>https://www.optionalrule.com/2021/06/30/gritty-healing-part-2-spells/</loc>
     <lastmod>2021-06-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://optionalrule.com/2021/06/26/gritty-healing-and-survival-rules/</loc>
+    <loc>https://www.optionalrule.com/2021/06/27/gritty-healing-and-survival-rules/</loc>
     <lastmod>2021-06-27</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://optionalrule.com/2021/06/21/understanding-die-average-and-hitpoints/</loc>
+    <loc>https://www.optionalrule.com/2021/06/22/understanding-die-average-and-hitpoints/</loc>
     <lastmod>2021-06-22</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://optionalrule.com/2021/06/06/site-migration-deployed/</loc>
+    <loc>https://www.optionalrule.com/2021/06/07/site-migration-deployed/</loc>
     <lastmod>2021-06-07</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://optionalrule.com/2021/04/28/april-2021-experimental-house-rules/</loc>
+    <loc>https://www.optionalrule.com/2021/04/29/april-2021-experimental-house-rules/</loc>
     <lastmod>2021-04-29</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://optionalrule.com/2021/04/20/when-failure-isnt-an-option-in-5e/</loc>
+    <loc>https://www.optionalrule.com/2021/04/21/when-failure-isnt-an-option-in-5e/</loc>
     <lastmod>2021-04-21</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://optionalrule.com/2021/04/14/5e-spell-save-damage-breakdown/</loc>
+    <loc>https://www.optionalrule.com/2021/04/15/5e-spell-save-damage-breakdown/</loc>
     <lastmod>2021-04-15</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://optionalrule.com/2021/04/06/monster-resistance-totals-in-5e/</loc>
+    <loc>https://www.optionalrule.com/2021/04/07/monster-resistance-totals-in-5e/</loc>
     <lastmod>2021-04-07</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://optionalrule.com/2021/04/01/the-language-of-monsters-in-5e/</loc>
+    <loc>https://www.optionalrule.com/2021/04/02/the-language-of-monsters-in-5e/</loc>
     <lastmod>2021-04-02</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://optionalrule.com/2021/03/25/thinking-critically-on-agency/</loc>
+    <loc>https://www.optionalrule.com/2021/03/26/thinking-critically-on-agency/</loc>
     <lastmod>2021-03-26</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://optionalrule.com/2021/03/23/being-ready-for-surprise-in-5e/</loc>
+    <loc>https://www.optionalrule.com/2021/03/24/being-ready-for-surprise-in-5e/</loc>
     <lastmod>2021-03-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://optionalrule.com/2021/03/09/imagery-art-resources-for-rpg-creators/</loc>
+    <loc>https://www.optionalrule.com/2021/03/10/imagery-art-resources-for-rpg-creators/</loc>
     <lastmod>2021-03-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://optionalrule.com/2021/03/07/mounted-combat-in-5e/</loc>
+    <loc>https://www.optionalrule.com/2021/03/08/mounted-combat-in-5e/</loc>
     <lastmod>2021-03-08</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://optionalrule.com/2021/02/28/5e-advancement-difficulties/</loc>
+    <loc>https://www.optionalrule.com/2021/03/01/5e-advancement-difficulties/</loc>
     <lastmod>2021-03-01</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://optionalrule.com/2021/02/24/the-zen-of-awarding-experience-for-roleplaying/</loc>
+    <loc>https://www.optionalrule.com/2021/02/25/the-zen-of-awarding-experience-for-roleplaying/</loc>
     <lastmod>2021-02-25</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://optionalrule.com/2021/02/16/engaging-players-with-magic-item-creation/</loc>
+    <loc>https://www.optionalrule.com/2021/02/17/engaging-players-with-magic-item-creation/</loc>
     <lastmod>2021-02-17</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://optionalrule.com/2021/02/09/my-current-5e-house-rules/</loc>
+    <loc>https://www.optionalrule.com/2021/02/10/my-current-5e-house-rules/</loc>
     <lastmod>2021-02-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://optionalrule.com/2021/02/08/skill-challenges-in-5e/</loc>
+    <loc>https://www.optionalrule.com/2021/02/09/skill-challenges-in-5e/</loc>
     <lastmod>2021-02-09</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://optionalrule.com/2021/02/04/cavern-elevator-trap/</loc>
+    <loc>https://www.optionalrule.com/2021/02/05/cavern-elevator-trap/</loc>
     <lastmod>2021-02-05</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://optionalrule.com/2021/01/28/safety-consent-rpg-checklist/</loc>
+    <loc>https://www.optionalrule.com/2021/01/29/safety-consent-rpg-checklist/</loc>
     <lastmod>2021-01-29</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://optionalrule.com/2021/01/26/managing-dm-anxiety/</loc>
+    <loc>https://www.optionalrule.com/2021/01/27/managing-dm-anxiety/</loc>
     <lastmod>2021-01-27</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://optionalrule.com/2021/01/23/summary-of-5e-alchemy-rules/</loc>
+    <loc>https://www.optionalrule.com/2021/01/24/summary-of-5e-alchemy-rules/</loc>
     <lastmod>2021-01-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://optionalrule.com/2021/01/20/create-captivating-traps/</loc>
+    <loc>https://www.optionalrule.com/2021/01/21/create-captivating-traps/</loc>
     <lastmod>2021-01-21</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://optionalrule.com/2021/01/18/level-up-your-game-with-these-rpgs/</loc>
+    <loc>https://www.optionalrule.com/2021/01/19/level-up-your-game-with-these-rpgs/</loc>
     <lastmod>2021-01-19</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://optionalrule.com/2021/01/16/thoughts-on-the-first-issue-of-arcadia/</loc>
+    <loc>https://www.optionalrule.com/2021/01/17/thoughts-on-the-first-issue-of-arcadia/</loc>
     <lastmod>2021-01-17</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://optionalrule.com/2021/01/11/rotf-remix-foaming-mugs/</loc>
+    <loc>https://www.optionalrule.com/2021/01/12/rotf-remix-foaming-mugs/</loc>
     <lastmod>2021-01-12</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://optionalrule.com/2021/01/10/icewind-dale-npc-arnold-beitz/</loc>
+    <loc>https://www.optionalrule.com/2021/01/11/icewind-dale-npc-arnold-beitz/</loc>
     <lastmod>2021-01-11</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://optionalrule.com/2021/01/07/be-friends-with-your-roleplaying-group/</loc>
+    <loc>https://www.optionalrule.com/2021/01/08/be-friends-with-your-roleplaying-group/</loc>
     <lastmod>2021-01-08</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://optionalrule.com/2021/01/06/simulating-great-weapon-fighter-damage/</loc>
+    <loc>https://www.optionalrule.com/2021/01/07/simulating-great-weapon-fighter-damage/</loc>
     <lastmod>2021-01-07</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://optionalrule.com/2021/01/03/rotf-remix-heart-of-winter-supernatural-regions/</loc>
+    <loc>https://www.optionalrule.com/2021/01/04/rotf-remix-the-far-north-ten-towns/</loc>
     <lastmod>2021-01-04</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://optionalrule.com/2021/01/03/rotf-remix-the-far-north-ten-towns/</loc>
+    <loc>https://www.optionalrule.com/2021/01/04/rotf-remix-heart-of-winter-supernatural-regions/</loc>
     <lastmod>2021-01-04</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://optionalrule.com/2021/01/02/progressive-failures-and-rising-tension-in-5th-edition/</loc>
+    <loc>https://www.optionalrule.com/2021/01/03/progressive-failures-and-rising-tension-in-5th-edition/</loc>
     <lastmod>2021-01-03</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://optionalrule.com/2021/01/01/tools-for-effecting-rolls-in-dd/</loc>
+    <loc>https://www.optionalrule.com/2021/01/02/tools-for-effecting-rolls-in-dd/</loc>
     <lastmod>2021-01-02</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://optionalrule.com/2020/12/23/rotf-remix-lake-monster/</loc>
+    <loc>https://www.optionalrule.com/2020/12/24/rotf-remix-lake-monster/</loc>
     <lastmod>2020-12-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://optionalrule.com/2020/12/21/thrilling-heroics-rules-for-dd-5e/</loc>
+    <loc>https://www.optionalrule.com/2020/12/22/thrilling-heroics-rules-for-dd-5e/</loc>
     <lastmod>2020-12-22</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://optionalrule.com/2020/12/20/no-racism-is-not-required-in-a-fantasy-world/</loc>
+    <loc>https://www.optionalrule.com/2020/12/21/no-racism-is-not-required-in-a-fantasy-world/</loc>
     <lastmod>2020-12-21</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://optionalrule.com/2020/12/08/rime-of-the-frostmaiden-remixes/</loc>
+    <loc>https://www.optionalrule.com/2020/12/09/rime-of-the-frostmaiden-remixes/</loc>
     <lastmod>2020-12-09</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://optionalrule.com/2020/11/30/character-voices-reference/</loc>
+    <loc>https://www.optionalrule.com/2020/12/01/character-voices-reference/</loc>
     <lastmod>2020-12-01</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://optionalrule.com/2020/11/29/icewind-dale-npc-beldora-nine-dogs/</loc>
+    <loc>https://www.optionalrule.com/2020/11/30/icewind-dale-npc-beldora-nine-dogs/</loc>
     <lastmod>2020-11-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://optionalrule.com/2020/11/27/winter-camp-map/</loc>
+    <loc>https://www.optionalrule.com/2020/11/28/winter-camp-map/</loc>
     <lastmod>2020-11-28</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://optionalrule.com/2020/11/20/rotf-remix-the-inkwell-taphouse-termalaine/</loc>
+    <loc>https://www.optionalrule.com/2020/11/21/rotf-remix-the-inkwell-taphouse-termalaine/</loc>
     <lastmod>2020-11-21</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://optionalrule.com/2020/11/02/tresendar-manor-above-ground/</loc>
+    <loc>https://www.optionalrule.com/2020/11/03/tresendar-manor-above-ground/</loc>
     <lastmod>2020-11-03</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://optionalrule.com/2020/10/23/rotf-remix-houlens-tomb/</loc>
+    <loc>https://www.optionalrule.com/2020/10/24/rotf-remix-houlens-tomb/</loc>
     <lastmod>2020-10-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://optionalrule.com/page/2/</loc>
+    <loc>https://www.optionalrule.com/page/2/</loc>
     
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://optionalrule.com/page/3/</loc>
+    <loc>https://www.optionalrule.com/page/3/</loc>
     
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://optionalrule.com/page/4/</loc>
+    <loc>https://www.optionalrule.com/page/4/</loc>
     
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://optionalrule.com/page/5/</loc>
+    <loc>https://www.optionalrule.com/page/5/</loc>
     
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://optionalrule.com/page/6/</loc>
+    <loc>https://www.optionalrule.com/page/6/</loc>
     
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://optionalrule.com/page/7/</loc>
+    <loc>https://www.optionalrule.com/page/7/</loc>
     
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://optionalrule.com/page/8/</loc>
+    <loc>https://www.optionalrule.com/page/8/</loc>
     
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://optionalrule.com/page/9/</loc>
+    <loc>https://www.optionalrule.com/page/9/</loc>
     
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://optionalrule.com/tag/community/</loc>
+    <loc>https://www.optionalrule.com/tag/community/</loc>
     
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://optionalrule.com/tag/philosophy/</loc>
+    <loc>https://www.optionalrule.com/tag/philosophy/</loc>
     
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://optionalrule.com/tag/analysis/</loc>
+    <loc>https://www.optionalrule.com/tag/tag1/</loc>
     
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://optionalrule.com/tag/dnd 5e/</loc>
+    <loc>https://www.optionalrule.com/tag/tag2/</loc>
     
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://optionalrule.com/tag/dm advice/</loc>
+    <loc>https://www.optionalrule.com/tag/tag3/</loc>
     
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://optionalrule.com/tag/rpg resources/</loc>
+    <loc>https://www.optionalrule.com/tag/analysis/</loc>
     
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://optionalrule.com/tag/mechanics/</loc>
+    <loc>https://www.optionalrule.com/tag/dnd 5e/</loc>
     
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://optionalrule.com/tag/house rules/</loc>
+    <loc>https://www.optionalrule.com/tag/dm advice/</loc>
     
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://optionalrule.com/tag/lore/</loc>
+    <loc>https://www.optionalrule.com/tag/rpg resources/</loc>
     
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://optionalrule.com/tag/shadowdark/</loc>
+    <loc>https://www.optionalrule.com/tag/mechanics/</loc>
     
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://optionalrule.com/tag/encounters/</loc>
+    <loc>https://www.optionalrule.com/tag/house rules/</loc>
     
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://optionalrule.com/tag/monsters/</loc>
+    <loc>https://www.optionalrule.com/tag/lore/</loc>
     
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://optionalrule.com/tag/rime of the frostmaiden/</loc>
+    <loc>https://www.optionalrule.com/tag/shadowdark/</loc>
+    
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://www.optionalrule.com/tag/encounters/</loc>
+    
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://www.optionalrule.com/tag/monsters/</loc>
+    
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://www.optionalrule.com/tag/rime of the frostmaiden/</loc>
     
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
