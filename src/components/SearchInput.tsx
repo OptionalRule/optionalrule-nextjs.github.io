@@ -118,6 +118,8 @@ export function SearchInput({
         <input
           ref={inputRef}
           type="text"
+          id="search"
+          name="q"
           value={query}
           onChange={handleInputChange}
           onFocus={() => setIsFocused(true)}
