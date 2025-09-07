@@ -259,17 +259,7 @@ All routes must end with a trailing slash where applicable.
 - Version site content via git history; no database.
 
 
-## 19. Future Enhancements (Backlog)
-
-- Middleware‑issued nonce and formal CSP header generation for stronger inline script control.
-- Additional interactive tools/games (dice rollers, generators) under `(interactive)`.
-- Tag pages: descriptions and featured imagery per tag.
-- Enhanced search facets (filter by tag/date) and keyboard command palette.
-- Image pipeline for static optimization (pre‑processed responsive images at build time).
-- Author pages and series collections.
-
-
-## 20. Definitions & References
+## 19. Definitions & References
 
 - Code structure: see `src/app`, `src/components`, `src/lib`, `src/features`, `src/config`.
 - Types: `src/lib/types.ts` (Post, Page, PaginatedPosts, TagPage, Heading, etc.).
