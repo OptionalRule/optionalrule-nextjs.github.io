@@ -59,12 +59,12 @@ export default async function TagPage({ params }: TagPageProps) {
           <span className="mx-2">›</span>
           <span>Tags</span>
           <span className="mx-2">›</span>
-          <span className="text-[var(--foreground)]">{capitalize(tag)}</span>
+          <span className="text-[var(--foreground)]">{capitalize(tagData.tag)}</span>
         </nav>
 
         <header className="mb-12 text-center">
           <h1 className="text-4xl font-bold text-[var(--foreground)] mb-4">
-            Posts tagged with &ldquo;{capitalize(tag)}&rdquo;
+            Posts tagged with &ldquo;{capitalize(tagData.tag)}&rdquo;
           </h1>
           <p className="text-lg text-[var(--muted-2)] mb-6">
             {(() => {
@@ -78,7 +78,7 @@ export default async function TagPage({ params }: TagPageProps) {
               <Pagination 
                 currentPage={currentPage}
                 totalPages={totalPages}
-                basePath={`/tag/${createTagSlug(tag)}`}
+                basePath={`/tag/${createTagSlug(tagData.tag)}`}
               />
             </div>
           )}
@@ -104,7 +104,7 @@ export default async function TagPage({ params }: TagPageProps) {
           <Pagination 
             currentPage={currentPage}
             totalPages={totalPages}
-            basePath={`/tag/${createTagSlug(tag)}`}
+            basePath={`/tag/${createTagSlug(tagData.tag)}`}
           />
         </main>
       </div>
