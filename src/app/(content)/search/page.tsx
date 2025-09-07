@@ -11,18 +11,20 @@ function SearchPageContent() {
   const searchParams = useSearchParams();
   const [results, setResults] = useState<SearchResult[]>([]);
   const [isLoading, setIsLoading] = useState(false);
-  const [query, setQuery] = useState('');
+  const [currentQuery, setCurrentQuery] = useState('');
 
   // Initialize search from URL params
   useEffect(() => {
     const urlQuery = searchParams.get('q') || '';
+    setCurrentQuery(urlQuery);
     if (urlQuery) {
-      setQuery(urlQuery);
       handleSearch(urlQuery);
     }
   }, [searchParams]);
 
   const handleSearch = async (searchQuery: string) => {
+    setCurrentQuery(searchQuery);
+    
     if (!searchQuery.trim()) {
       setResults([]);
       return;
@@ -69,7 +71,6 @@ function SearchPageContent() {
           {/* Search Input */}
           <div className="max-w-2xl mx-auto">
             <SearchInput
-              defaultValue={query}
               onSearch={handleSearch}
               placeholder="Search for posts..."
               className="w-full"
@@ -80,12 +81,12 @@ function SearchPageContent() {
         <main>
           <SearchResults 
             results={results} 
-            query={query} 
+            query={currentQuery} 
             isLoading={isLoading}
           />
 
           {/* Search Tips */}
-          {!query && (
+          {!currentQuery && (
             <div className="mt-12 bg-[var(--card)] rounded-lg border border-[var(--border)] p-6">
               <h3 className="text-lg font-medium text-[var(--foreground)] mb-4">
                 Search Tips

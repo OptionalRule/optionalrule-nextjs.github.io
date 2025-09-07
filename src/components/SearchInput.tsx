@@ -16,17 +16,31 @@ export function SearchInput({
   onSearch,
   defaultValue = ""
 }: SearchInputProps) {
-  const [query, setQuery] = useState(defaultValue);
-  const [isFocused, setIsFocused] = useState(false);
-  const inputRef = useRef<HTMLInputElement>(null);
   const router = useRouter();
   const searchParams = useSearchParams();
+  const [isFocused, setIsFocused] = useState(false);
+  const inputRef = useRef<HTMLInputElement>(null);
+  
+  // Initialize query state with proper hydration handling
+  const [query, setQuery] = useState(() => {
+    // On server, use defaultValue
+    if (typeof window === 'undefined') {
+      return defaultValue;
+    }
+    // On client, prefer URL param over defaultValue
+    return searchParams.get('q') || defaultValue;
+  });
 
-  // Initialize with URL search param if available
+  // Handle hydration and URL param changes
   useEffect(() => {
+    // Sync with URL params after hydration
     const urlQuery = searchParams.get('q') || '';
-    setQuery(urlQuery);
-  }, [searchParams]);
+    // Only update if URL param is different and not empty
+    // (avoid overriding user input with empty URL param)
+    if (urlQuery && urlQuery !== query) {
+      setQuery(urlQuery);
+    }
+  }, [searchParams, query]);
 
   // Handle input changes with debouncing
   useEffect(() => {
