@@ -57,7 +57,12 @@ export default async function TagPage({ params }: TagPageProps) {
             Home
           </Link>
           <span className="mx-2">›</span>
-          <span>Tags</span>
+          <Link 
+            href={urlPaths.tags()}
+            className="hover:text-[var(--foreground)] transition-colors"
+          >
+            Tags
+          </Link>
           <span className="mx-2">›</span>
           <span className="text-[var(--foreground)]">{capitalize(tagData.tag)}</span>
         </nav>
