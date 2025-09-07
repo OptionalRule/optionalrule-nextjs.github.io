@@ -269,6 +269,16 @@ export function getPostsByTag(tagSlugOrName: string, page: number = 1): TagPage 
     post.tags && post.tags.some(t => t.toLowerCase() === tagName.toLowerCase())
   );
   
+  // Find the actual original tag name from the first matching post
+  let actualTagName = tagName;
+  if (tagPosts.length > 0) {
+    const firstPost = tagPosts[0];
+    const matchingTag = firstPost.tags?.find(t => t.toLowerCase() === tagName.toLowerCase());
+    if (matchingTag) {
+      actualTagName = matchingTag;
+    }
+  }
+  
   const totalPosts = tagPosts.length;
   const totalPages = Math.ceil(totalPosts / POSTS_PER_PAGE);
   const startIndex = (page - 1) * POSTS_PER_PAGE;
@@ -276,7 +286,7 @@ export function getPostsByTag(tagSlugOrName: string, page: number = 1): TagPage 
   const posts = tagPosts.slice(startIndex, endIndex);
 
   return {
-    tag: tagName, // Return the actual tag name, not the slug
+    tag: actualTagName, // Return the actual original tag name
     posts,
     totalPages,
     currentPage: page,
