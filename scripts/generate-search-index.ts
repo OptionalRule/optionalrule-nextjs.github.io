@@ -42,20 +42,17 @@ function buildSearchIndex(): SearchIndexItem[] {
   const files = fs.readdirSync(POSTS_DIR)
     .filter(file => /\.mdx?$/.test(file))
     .filter(file => {
-      // Filter out draft posts during production builds
-      if (process.env.NODE_ENV === 'production') {
-        try {
-          const filePath = path.join(POSTS_DIR, file);
-          const fileContent = fs.readFileSync(filePath, 'utf8');
-          const { data } = matter(fileContent);
-          const frontmatter = PostFrontmatterSchema.parse(data);
-          return frontmatter.draft !== true;
-        } catch (error) {
-          console.warn(`Warning: Error reading post ${file}, excluding from search index:`, error);
-          return false;
-        }
+      // Filter out draft posts from search index
+      try {
+        const filePath = path.join(POSTS_DIR, file);
+        const fileContent = fs.readFileSync(filePath, 'utf8');
+        const { data } = matter(fileContent);
+        const frontmatter = PostFrontmatterSchema.parse(data);
+        return frontmatter.draft !== true;
+      } catch (error) {
+        console.warn(`Warning: Error reading post ${file}, excluding from search index:`, error);
+        return false;
       }
-      return true;
     })
     .sort((a, b) => b.localeCompare(a));
 

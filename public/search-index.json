@@ -1,18 +1,5 @@
 [
   {
-    "slug": "ashlight-setting-primer",
-    "title": "Ashlight Setting Primer",
-    "excerpt": "A brief description of your post that will appear in previews and summaries.",
-    "tags": [
-      "tag1",
-      "tag2",
-      "tag3"
-    ],
-    "content": "",
-    "date": "2025-09-05",
-    "readingTime": 5
-  },
-  {
     "slug": "retro-classic-game-asteroids-available",
     "title": "Retro-Classic Game Asteroids Available",
     "excerpt": "I developed a browser version of Asteroids, sharing my high score hopes while exploring TTRPG tools post-site conversion.",
@@ -23,19 +10,6 @@
     "content": "",
     "date": "2025-08-22",
     "readingTime": 2
-  },
-  {
-    "slug": "the-surprising-history-of-solo-ttrpg-play",
-    "title": "The Surprising History of Solo TTRPG Play",
-    "excerpt": "A brief description of your post that will appear in previews and summaries.",
-    "tags": [
-      "tag1",
-      "tag2",
-      "tag3"
-    ],
-    "content": "",
-    "date": "2025-08-18",
-    "readingTime": 5
   },
   {
     "slug": "site-migration-complete",
