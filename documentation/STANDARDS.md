@@ -1,8 +1,13 @@
 # Coding Standards - Optional Rule Games
 
-Version: 1.0  
+Version: 1.1  
 Last Updated: September 2025
 Applies to: Optional Rule static site and interactive features
+
+**Recent Updates (v1.1):**
+- Updated Component Architecture standards to allow complex navigation components when properly organized
+- Clarified TAG URL Strategy to prefer direct tag-to-URL mapping over slug conversion
+- Added guidance for domain-specific constant organization
 
 ## Table of Contents
 
@@ -256,9 +261,36 @@ export function PostCard({ post, featured = false, className }: PostCardProps) {
   );
 }
 
-// ❌ AVOID: Components with multiple responsibilities
+// ✅ ACCEPTABLE: Complex navigation components with centralized responsibilities
+// Large components are acceptable when they serve as central system hubs (e.g., navigation)
+// and maintain clear internal organization through configuration and helper functions
+interface NavigationConfig {
+  primaryItems: NavigationGroup[];
+  utilityItems: NavigationItem[];
+}
+
+export function Header() {
+  // Centralized navigation configuration
+  const navigationConfig: NavigationConfig = {
+    primaryItems: [...],
+    utilityItems: [...]
+  };
+  
+  // Helper components for organization
+  const NavLink = ({ item }: { item: NavigationItem }) => { /* */ };
+  const DropdownMenu = ({ dropdown }: { dropdown: NavigationDropdown }) => { /* */ };
+  
+  // Complex navigation logic is acceptable when properly organized
+  return (
+    <header>
+      {/* Complex but organized navigation structure */}
+    </header>
+  );
+}
+
+// ❌ AVOID: Components with multiple unrelated responsibilities
 function PostCardWithAnalyticsAndSearch({ post, onSearch, trackEvent }) {
-  // Too many concerns in one component
+  // Too many unrelated concerns in one component
 }
 ```
 
@@ -486,7 +518,7 @@ const buttonStyles = {
 ### URL Helpers
 
 ```typescript
-// ✅ GOOD: Centralized URL generation
+// ✅ GOOD: Centralized URL generation with direct tag naming
 // src/lib/utils.ts
 export const urlPaths = {
   home: () => '/',
@@ -496,16 +528,28 @@ export const urlPaths = {
     const day = String(date.getDate()).padStart(2, '0');
     return `/${year}/${month}/${day}/${slug}/`;
   },
-  tag: (slug: string, page?: number) => 
-    page && page > 1 ? `/tag/${slug}/page/${page}/` : `/tag/${slug}/`,
+  tag: (tagName: string, page?: number) => 
+    page && page > 1 ? `/tag/${tagName}/page/${page}/` : `/tag/${tagName}/`,
   page: (n: number) => `/page/${n}/`,
   search: (query?: string) => 
     query ? `/search/?q=${encodeURIComponent(query)}` : '/search/'
 };
 
+// ✅ PREFERRED: Direct tag-to-URL mapping (simpler approach)
+// Uses tag names directly in URLs without slug conversion
+<Link href={`/tag/${tag}/`}>Gaming → /tag/Gaming/</Link>
+<Link href={`/tag/${tag.toLowerCase()}/`}>Gaming → /tag/gaming/</Link>
+
+// ✅ ALTERNATIVE: Slug-based approach (more complex but URL-safe)
+// Only use if tag names contain special characters or spaces
+export function createTagSlug(tag: string): string {
+  return tag.toLowerCase().trim().replace(/\s+/g, '-').replace(/[^\w\-]/g, '');
+}
+<Link href={`/tag/${createTagSlug(tag)}/`}>Role Playing → /tag/role-playing/</Link>
+
 // ❌ AVOID: Hardcoded URLs throughout codebase
 <Link href="/search">  // Should use urlPaths.search()
-<Link href={`/tag/${tag}`}>  // Should use urlPaths.tag(tag)
+<Link href={`/tag/${tag}`}>  // Missing trailing slash
 ```
 
 ### Trailing Slash Consistency
@@ -886,6 +930,11 @@ export const siteConfig = {
   defaultTheme: 'dark'
 } as const;
 
+// ✅ PREFERRED: Export constants directly from their domain modules
+// src/lib/content.ts
+export const POSTS_PER_PAGE = 10;
+
+// ✅ ALTERNATIVE: Reference from site config when needed globally
 // src/lib/content.ts
 export const POSTS_PER_PAGE = siteConfig.postsPerPage;
 
