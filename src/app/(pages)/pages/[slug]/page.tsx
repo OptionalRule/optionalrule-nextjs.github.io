@@ -1,5 +1,6 @@
 import { getPage, getAllPageSlugs } from '@/lib/content';
 import { generatePageMetadata } from '@/lib/seo';
+import { urlPaths } from '@/lib/urls';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import type { Metadata } from 'next';
@@ -40,7 +41,7 @@ export default async function StaticPage({ params }: PageProps) {
     <div className="container mx-auto px-4 py-8 max-w-4xl">
       <nav className="mb-8 text-sm text-[var(--muted-2)]">
         <Link
-          href="/"
+          href={urlPaths.home()}
           className="hover:text-[var(--foreground)] transition-colors"
         >
           Home
@@ -81,14 +82,14 @@ export default async function StaticPage({ params }: PageProps) {
 
       <div className="mt-12 flex justify-between items-center">
         <Link
-          href="/"
+          href={urlPaths.home()}
           className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
         >
           ← Back to Home
         </Link>
 
         <Link
-          href="/tags/"
+          href={urlPaths.tags()}
           className="text-[var(--muted-2)] hover:text-[var(--foreground)] transition-colors"
         >
           Browse by tags →

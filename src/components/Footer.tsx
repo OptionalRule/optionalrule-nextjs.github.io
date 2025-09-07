@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { urlPaths } from '@/lib/urls';
 
 export function Footer() {
   const currentYear = new Date().getFullYear();
@@ -15,25 +16,25 @@ export function Footer() {
           
           <div className="flex items-center space-x-6">
             <Link
-              href="/pages/about/"
+              href={urlPaths.staticPage('about')}
               className="text-[var(--muted-2)] hover:text-[var(--foreground)] text-sm transition-colors"
             >
               About
             </Link>
             <Link
-              href="/tags/"
+              href={urlPaths.tags()}
               className="text-[var(--muted-2)] hover:text-[var(--foreground)] text-sm transition-colors"
             >
               Tags
             </Link>
             <a
-              href="/rss.xml"
+              href={urlPaths.rss()}
               className="text-[var(--muted-2)] hover:text-[var(--foreground)] text-sm transition-colors"
             >
               RSS
             </a>
             <a
-              href="/sitemap.xml"
+              href={urlPaths.sitemap()}
               className="text-[var(--muted-2)] hover:text-[var(--foreground)] text-sm transition-colors"
             >
               Sitemap

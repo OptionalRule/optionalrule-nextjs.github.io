@@ -2,7 +2,6 @@ import { describe, it, expect } from 'vitest';
 import {
   formatDate,
   parseDateToUTC,
-  generatePostUrl,
   capitalize,
   generatePageTitle,
   generateMetaDescription,
@@ -36,15 +35,7 @@ describe('Date utilities', () => {
     });
   });
 
-  describe('generatePostUrl', () => {
-    it('creates correct URL format with zero-padded values', () => {
-      expect(generatePostUrl('2023-01-05', 'test-post')).toBe('/2023/01/05/test-post/');
-    });
-
-    it('handles double-digit months and days', () => {
-      expect(generatePostUrl('2023-12-25', 'holiday-post')).toBe('/2023/12/25/holiday-post/');
-    });
-  });
+  // generatePostUrl tests moved to urls.test.ts
 });
 
 describe('String utilities', () => {

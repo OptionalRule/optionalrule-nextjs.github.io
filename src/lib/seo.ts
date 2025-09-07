@@ -1,5 +1,5 @@
 import { Post, PostMeta } from './types';
-import { generatePostUrl } from './utils';
+import { urlPaths } from './urls';
 import { siteConfig } from '@/config/site';
 import type { Metadata } from 'next';
 
@@ -100,7 +100,7 @@ export function generateMetadata(options: MetadataOptions = {}): Metadata {
 
 // Generate metadata specifically for blog posts
 export function generatePostMetadata(post: Post): Metadata {
-  const canonicalUrl = generatePostUrl(post.date, post.slug);
+  const canonicalUrl = urlPaths.post(post.date, post.slug);
   
   return generateMetadata({
     title: post.title,
@@ -181,7 +181,7 @@ export function generateBlogPostStructuredData(post: Post, siteUrl: string = sit
     dateModified: post.date,
     mainEntityOfPage: {
       '@type': 'WebPage',
-      '@id': `${siteUrl}${generatePostUrl(post.date, post.slug)}`,
+      '@id': `${siteUrl}${urlPaths.post(post.date, post.slug)}`,
     },
     ...(post.featured_image && {
       image: {
@@ -220,7 +220,7 @@ export function generateBlogStructuredData(posts: PostMeta[], siteUrl: string = 
           '@type': 'BlogPosting',
           headline: post.title,
           description: post.excerpt,
-          url: `${siteUrl}${generatePostUrl(post.date, post.slug)}`,
+          url: `${siteUrl}${urlPaths.post(post.date, post.slug)}`,
           datePublished: post.date,
           author: {
             '@type': 'Person',

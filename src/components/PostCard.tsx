@@ -1,14 +1,15 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { PostMeta } from '@/lib/types';
-import { formatDate, generatePostUrl, normalizeImagePath } from '@/lib/utils';
+import { formatDate, normalizeImagePath } from '@/lib/utils';
+import { urlPaths } from '@/lib/urls';
 
 interface PostCardProps {
   post: PostMeta;
 }
 
 export function PostCard({ post }: PostCardProps) {
-  const postUrl = generatePostUrl(post.date, post.slug);
+  const postUrl = urlPaths.post(post.date, post.slug);
 
   return (
     <article className="bg-[var(--card)] rounded-lg border border-[var(--border)] overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-200">
@@ -57,7 +58,7 @@ export function PostCard({ post }: PostCardProps) {
             {post.tags?.map((tag) => (
               <Link
                 key={tag}
-                href={`/tag/${tag.toLowerCase()}/`}
+                href={urlPaths.tag(tag)}
                 className="inline-block px-3 py-1 bg-[var(--chip-bg)] text-[var(--chip-text)] rounded-full text-sm hover:bg-[var(--surface-hover)] transition-colors"
               >
                 {tag}

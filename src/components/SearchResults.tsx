@@ -2,7 +2,8 @@
 
 import Link from 'next/link';
 import { SearchResult } from '@/lib/search';
-import { formatDate, generatePostUrl } from '@/lib/utils';
+import { formatDate } from '@/lib/utils';
+import { urlPaths } from '@/lib/urls';
 import { HighlightedText } from './HighlightedText';
 
 interface SearchResultsProps {
@@ -104,7 +105,7 @@ export function SearchResults({ results, query, isLoading }: SearchResultsProps)
       {/* Results list */}
       <div className="space-y-4">
         {results.map((result) => {
-          const postUrl = generatePostUrl(result.item.date, result.item.slug);
+          const postUrl = urlPaths.post(result.item.date, result.item.slug);
           
           return (
             <article 
@@ -158,7 +159,7 @@ export function SearchResults({ results, query, isLoading }: SearchResultsProps)
                     {result.item.tags?.map((tag) => (
                       <Link
                         key={tag}
-                        href={`/tag/${tag.toLowerCase()}/`}
+                        href={urlPaths.tag(tag)}
                         className="inline-block px-3 py-1 bg-[var(--chip-bg)] text-[var(--chip-text)] rounded-full text-sm hover:bg-[var(--surface-hover)] transition-colors"
                       >
                         {tag}

@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { useEffect, useState, type ReactNode } from 'react';
+import { urlPaths } from '@/lib/urls';
 
 type NavigationItem = {
   href: string;
@@ -32,17 +33,17 @@ const isDropdown = (item: NavigationGroup): item is NavigationDropdown => {
 const navigationItems: NavigationGroup[] = [
   {
     label: 'Blog',
-    href: '/',
+    href: urlPaths.home(),
     items: [
-      { href: '/tags/', label: 'Tags' },
-      { href: '/search/', label: 'Search' },
-      { href: '/pages/about/', label: 'About' }
+      { href: urlPaths.tags(), label: 'Tags' },
+      { href: urlPaths.search(), label: 'Search' },
+      { href: urlPaths.staticPage('about'), label: 'About' }
     ]
   },
   {
     label: 'Games',
     items: [
-      { href: '/games/asteroids/', label: 'Asteroids' }
+      { href: urlPaths.game('asteroids'), label: 'Asteroids' }
     ]
   },
   {
@@ -56,7 +57,7 @@ const navigationItems: NavigationGroup[] = [
 // Utility navigation items (icons only)
 const utilityItems: NavigationItem[] = [
   { 
-    href: '/search/', 
+    href: urlPaths.search(), 
     label: 'Search',
     icon: (
       <svg
@@ -247,7 +248,7 @@ export function Header() {
       <div className="container mx-auto px-4 py-6 max-w-4xl">
         <nav className="flex items-center justify-between">
           <div className="flex items-center space-x-3">
-            <Link href="/" className="flex items-center space-x-3 hover:opacity-80 transition-opacity">
+            <Link href={urlPaths.home()} className="flex items-center space-x-3 hover:opacity-80 transition-opacity">
               <Image
                 src="/brand/OptionalRuleIcon50x50XparentBG.png"
                 alt="Optional Rule Logo"

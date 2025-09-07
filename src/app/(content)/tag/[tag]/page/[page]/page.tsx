@@ -3,6 +3,7 @@ import { PostCard } from '@/components/PostCard';
 import { Pagination } from '@/components/Pagination';
 import { generateTagMetadata } from '@/lib/seo';
 import { capitalize, createTagSlug } from '@/lib/utils';
+import { urlPaths } from '@/lib/urls';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import type { Metadata } from 'next';
@@ -63,7 +64,7 @@ export default async function TagPagePage({ params }: TagPageProps) {
         {/* Breadcrumb Navigation */}
         <nav className="mb-8 text-sm text-[var(--muted-2)]">
           <Link 
-            href="/"
+            href={urlPaths.home()}
             className="hover:text-[var(--foreground)] transition-colors"
           >
             Home
@@ -72,7 +73,7 @@ export default async function TagPagePage({ params }: TagPageProps) {
           <span>Tags</span>
           <span className="mx-2">›</span>
           <Link 
-            href={`/tag/${createTagSlug(tagData.tag)}/`}
+            href={urlPaths.tag(tagData.tag)}
             className="hover:text-[var(--foreground)] transition-colors"
           >
             {capitalize(tagData.tag)}
@@ -96,7 +97,7 @@ export default async function TagPagePage({ params }: TagPageProps) {
           {/* Tag Navigation */}
           <div className="flex justify-center">
             <Link
-              href="/tags/"
+              href={urlPaths.tags()}
               className="text-[var(--link)] hover:text-[var(--link-hover)] underline text-sm"
             >
               View all tags →

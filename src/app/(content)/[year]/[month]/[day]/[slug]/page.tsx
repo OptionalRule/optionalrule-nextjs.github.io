@@ -1,6 +1,7 @@
 import { getPost, getAllPostsMeta } from '@/lib/content';
 import { generateBlogPostStructuredData, generatePostMetadata } from '@/lib/seo';
 import { formatDate, normalizeImagePath, parseDateToUTC } from '@/lib/utils';
+import { urlPaths } from '@/lib/urls';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -80,7 +81,7 @@ export default async function PostPage({ params }: PostPageProps) {
         {/* Breadcrumb Navigation */}
         <nav className="mb-8 text-sm text-[var(--muted-2)]">
           <Link 
-            href="/"
+            href={urlPaths.home()}
             className="hover:text-[var(--foreground)] transition-colors"
           >
             Home
@@ -124,7 +125,7 @@ export default async function PostPage({ params }: PostPageProps) {
                   {post.tags.map((tag) => (
                     <Link
                       key={tag}
-                      href={`/tag/${tag.toLowerCase()}/`}
+                      href={urlPaths.tag(tag)}
                       className="inline-block px-3 py-1 bg-[var(--chip-bg)] text-[var(--chip-text)] rounded-full text-sm hover:bg-[var(--surface-hover)] transition-colors"
                     >
                       {tag}
@@ -161,14 +162,14 @@ export default async function PostPage({ params }: PostPageProps) {
         {/* Navigation */}
         <div className="mt-12 flex justify-between items-center">
           <Link
-            href="/"
+            href={urlPaths.home()}
             className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
           >
             ← Back to Home
           </Link>
           
           <Link
-            href="/pages/about/"
+            href={urlPaths.staticPage('about')}
             className="text-[var(--muted-2)] hover:text-[var(--foreground)] transition-colors"
           >
             About this blog →

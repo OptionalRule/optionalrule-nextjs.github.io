@@ -5,7 +5,8 @@ import React from 'react';
 import { getAllPostsMeta, getPost, getPaginatedPosts } from '@/lib/content';
 import { performSearch } from '@/lib/search';
 import { SearchResults } from '@/components/SearchResults';
-import { generatePostUrl, parseDateToUTC } from '@/lib/utils';
+import { parseDateToUTC } from '@/lib/utils';
+import { urlPaths } from '@/lib/urls';
 
 // Mock fs and dependencies for integration tests
 vi.mock('fs');
@@ -120,7 +121,7 @@ describe('Integration Tests', () => {
       ];
 
       testCases.forEach(({ date, slug, expected }) => {
-        const url = generatePostUrl(date, slug);
+        const url = urlPaths.post(date, slug);
         expect(url).toBe(expected);
         
         // Verify URL components are correctly parsed

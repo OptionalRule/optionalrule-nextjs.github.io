@@ -1,5 +1,5 @@
 import { getAllPostsMeta } from './content';
-import { generatePostUrl } from './utils';
+import { urlPaths } from './urls';
 import { siteConfig } from '../config/site';
 
 // Generate RSS feed XML
@@ -7,7 +7,7 @@ export function generateRSSFeed(): string {
   const posts = getAllPostsMeta();
   
   const rssItems = posts.map(post => {
-    const postUrl = `${siteConfig.url}${generatePostUrl(post.date, post.slug)}`;
+    const postUrl = `${siteConfig.url}${urlPaths.post(post.date, post.slug)}`;
     const pubDate = new Date(post.date).toUTCString();
     
     return `
@@ -56,7 +56,7 @@ export function generateSitemap(): string {
   
   // Dynamic post pages
   const postPages = posts.map(post => ({
-    url: generatePostUrl(post.date, post.slug),
+    url: urlPaths.post(post.date, post.slug),
     lastmod: post.date,
     priority: '0.9',
   }));

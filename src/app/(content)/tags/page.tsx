@@ -1,5 +1,6 @@
 import { getAllTags, getPostsByTag, POSTS_PER_PAGE } from '@/lib/content';
 import { capitalize, createTagSlug } from '@/lib/utils';
+import { urlPaths } from '@/lib/urls';
 import Link from 'next/link';
 import type { Metadata } from 'next';
 
@@ -30,7 +31,7 @@ export default function TagsPage() {
         {/* Breadcrumb Navigation */}
         <nav className="mb-8 text-sm text-[var(--muted-2)]">
           <Link 
-            href="/"
+            href={urlPaths.home()}
             className="hover:text-[var(--foreground)] transition-colors"
           >
             Home
@@ -60,7 +61,7 @@ export default function TagsPage() {
               {tagsWithCounts.map((tag) => (
                 <Link
                   key={tag.slug}
-                  href={`/tag/${tag.slug}/`}
+                  href={urlPaths.tag(tag.name)}
                   className="group block p-6 bg-[var(--card)] rounded-lg border border-[var(--border)] hover:shadow-lg hover:border-[var(--link)] transition-all duration-200"
                 >
                   <div className="flex items-center justify-between">
@@ -82,7 +83,7 @@ export default function TagsPage() {
           {/* Back to Home */}
           <div className="mt-12 text-center">
             <Link
-              href="/"
+              href={urlPaths.home()}
               className="inline-flex items-center px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
             >
               ← Back to Home

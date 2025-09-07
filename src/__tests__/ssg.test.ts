@@ -1,6 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import fs from 'fs';
-import { generatePostUrl, parseDateToUTC, normalizeImagePath } from '@/lib/utils';
+import { parseDateToUTC, normalizeImagePath } from '@/lib/utils';
+import { urlPaths } from '@/lib/urls';
 import { getAllPostsMeta, getAllTags, getPostsByTag } from '@/lib/content';
 
 // Mock fs for SSG testing
@@ -71,7 +72,7 @@ describe('Static Site Generation Tests', () => {
             day: day.toString().padStart(2, '0'),
             slug: post.slug
           },
-          expectedUrl: generatePostUrl(post.date, post.slug)
+          expectedUrl: urlPaths.post(post.date, post.slug)
         };
       });
 
@@ -161,7 +162,7 @@ describe('Static Site Generation Tests', () => {
       ];
 
       testUrls.forEach(({ date, slug }) => {
-        const url = generatePostUrl(date, slug);
+        const url = urlPaths.post(date, slug);
         expect(url).toMatch(/\/$/); // Must end with trailing slash
         expect(url).not.toMatch(/\/\/$/); // Should not have double slashes
       });
@@ -281,7 +282,7 @@ describe('Static Site Generation Tests', () => {
       ];
 
       specialCases.forEach(({ slug, expected }) => {
-        const url = generatePostUrl('2023-12-01', slug);
+        const url = urlPaths.post('2023-12-01', slug);
         expect(url).toContain(expected);
         expect(url).toMatch(/^\/\d{4}\/\d{2}\/\d{2}\/.*\/$/);
       });
@@ -302,7 +303,7 @@ describe('Static Site Generation Tests', () => {
         expect(reconstructed).toBe(dateStr);
         
         // Verify URL generation is consistent
-        const url = generatePostUrl(dateStr, 'test-slug');
+        const url = urlPaths.post(dateStr, 'test-slug');
         expect(url).toContain(`/${year}/${String(month).padStart(2, '0')}/${String(day).padStart(2, '0')}/`);
       });
     });
