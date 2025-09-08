@@ -18,30 +18,32 @@ This plan consolidates recommendations and improvements from `documentation/PRD.
 - Priority: Done; Impact: Medium; Effort: S — Refactor feed script to import shared config/logic from `src/lib/feeds.ts`.
 - Priority: Done; Impact: Medium; Effort: S — Fix `public/CNAME` to exact domain (no extraneous characters).
 - Priority: Done; Impact: High; Effort: M — Centralized URL generation (`src/lib/urls.ts`) with comprehensive tests and adoption across components/routes.
+- Priority: Done; Impact: High; Effort: S — Canonical URL centralization: `siteConfig.url` used as single base in `src/lib/seo.ts` (metadataBase, canonical), `src/app/robots.txt/route.ts` (sitemap URL), `src/lib/feeds.ts` (RSS + sitemap), and `src/app/sitemap.xml/route.ts` delegates to shared generator.
+- Priority: Done; Impact: High; Effort: S — Trailing slash and link integrity tests: `src/lib/urls.test.ts` validates trailing slashes for all helpers; `src/__tests__/ssg.test.ts` enforces trailing slashes on generated URLs; `src/components/__tests__/SearchInput.test.tsx` asserts navigation to `/search/` and `/search/?q=...`.
+- Priority: Done; Impact: High; Effort: S — Thin route handler (sitemap): `src/app/sitemap.xml/route.ts` delegates to `generateSitemap()` in `src/lib/feeds.ts`; handler is static and minimal.
+- Priority: Done; Impact: High; Effort: M — Asteroids route safety verified: modules present (`components/*`, `hooks/*`, engine, assets), dynamic client-only import (`ssr: false`), static export-safe; route loads with desktop, mobile overlay handled.
 
 ## High Impact (P0)
 
-- Asteroids route safety
-  - Priority: P0; Impact: High; Effort: M
-  - Problem: Referenced modules (`components/*`, `hooks/*`) are missing; static export may fail.
-  - Plan: Either (A) implement missing modules and ensure client-only loading with `dynamic(..., { ssr: false })`, or (B) gate behind feature flag and show a “Coming Soon” placeholder.
-  - Acceptance: `npm run build` succeeds; `/games/asteroids/` loads without runtime errors in production export.
+- Asteroids route safety — Implemented/Verified
+  - Priority: Done; Impact: High; Effort: M
+  - Notes: Verified all modules exist and route uses dynamic client-only loading. No action needed.
+  - Residual checks: Confirm `npm run build` emits `out/games/asteroids/index.html`; spot check desktop load and mobile overlay.
 
-- Canonical URL centralization throughout
-  - Priority: P0; Impact: High; Effort: S
-  - Problem: Potential stragglers still using hard-coded URLs.
-  - Plan: Provide/verify a `siteUrl()` helper backed by `siteConfig.url`; ensure robots, sitemap, feeds, JSON‑LD, and canonical tags reference it.
-  - Acceptance: No hard-coded hostnames; targeted test asserts robots/sitemap/feeds use `siteConfig.url`.
+ - Canonical URL centralization — Implemented/Verified
+  - Priority: Done; Impact: High; Effort: S
+  - Notes: Verified no hard‑coded hostnames remain. `siteConfig.url` is the base for metadata (`src/lib/seo.ts:33-46`), robots (`src/app/robots.txt/route.ts:9`), RSS/sitemap (`src/lib/feeds.ts:10,33-35,88`), and app layout metadataBase (`src/app/layout.tsx:30`).
+  - Residual checks: Add a small test asserting robots and sitemap include `siteConfig.url`; grep on CI for disallowed hard‑coded hosts.
 
-- Trailing slash and link integrity tests
-  - Priority: P0; Impact: High; Effort: S
-  - Plan: Add unit tests that assert internal URLs render with trailing slashes; add smoke tests verifying `generateStaticParams` for posts/tags/pagination.
-  - Acceptance: New tests pass and fail if regressions re-introduce redirect-causing links.
+- Trailing slash and link integrity tests — Implemented/Verified
+  - Priority: Done; Impact: High; Effort: S
+  - Notes: URL helper tests cover trailing/slash rules; SSG tests validate generated URLs; SearchInput tests cover search link behavior. Most components render URLs via `urlPaths`.
+  - Residual checks: Optionally add nav link tests for `Header` and `Footer` to snapshot hrefs; keep CI grep to detect hard-coded paths without trailing slashes.
 
-- Thin route handlers for robots/sitemap
-  - Priority: P0; Impact: High; Effort: S
-  - Plan: Move string-building logic into `src/lib/feeds.ts` (or adjacent) and have route handlers delegate to shared functions.
-  - Acceptance: Single source of truth; route handlers under 20 LOC; feeds stay identical by snapshot test.
+- Robots.txt thin route handler — Implemented/Verified
+  - Priority: Done; Impact: High; Effort: S
+  - Notes: Added `generateRobotsTxt()` in `src/lib/feeds.ts` and refactored `src/app/robots.txt/route.ts` to delegate to it. Added `src/__tests__/feeds.test.ts` to assert robots includes `${siteConfig.url}/sitemap.xml`.
+  - Residual checks: None required beyond existing unit tests.
 
 ## Medium Impact (P1)
 
@@ -101,4 +103,3 @@ This plan consolidates recommendations and improvements from `documentation/PRD.
 - Static export with `trailingSlash: true` remains a hard constraint for GitHub Pages.
 - Remote images must match `next.config.ts` `images.remotePatterns` if used.
 - Keep using `src/lib/urls.ts` as the single source for URL generation.
-

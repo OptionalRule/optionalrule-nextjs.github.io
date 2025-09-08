@@ -103,3 +103,10 @@ export function generateSitemap(): string {
   ${urlEntries}
 </urlset>`;
 }
+
+// Generate robots.txt content
+export function generateRobotsTxt(): string {
+  // Keep minimal, standards-compliant content
+  // See documentation/STANDARDS.md: URL & Routing Standards
+  return `User-agent: *\nAllow: /\n\nSitemap: ${siteConfig.url}/sitemap.xml`;
+}

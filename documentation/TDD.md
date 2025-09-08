@@ -206,6 +206,7 @@ See PRD sections “Purpose & Overview”, “Goals & Non‑Goals”, “System 
 - Static hosting constraints
   - No Next Image optimization API; whitelist remote hosts only if needed.
   - Trailing slashes required for GitHub Pages path semantics.
+  - Route handlers for sitemap and robots are thin and static; both delegate to shared generators in `src/lib/feeds.ts`.
 
 
 ## 19. Traceability to PRD

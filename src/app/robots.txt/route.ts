@@ -1,12 +1,9 @@
-import { siteConfig } from '@/config/site';
+import { generateRobotsTxt } from '@/lib/feeds';
 
 export const dynamic = 'force-static';
 
 export async function GET() {
-  const robotsContent = `User-agent: *
-Allow: /
-
-Sitemap: ${siteConfig.url}/sitemap.xml`;
+  const robotsContent = generateRobotsTxt();
 
   return new Response(robotsContent, {
     headers: {
