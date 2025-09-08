@@ -203,6 +203,7 @@ See PRD sections “Purpose & Overview”, “Goals & Non‑Goals”, “System 
   - Build: `npm run build` (generates search index + RSS, then Next export)
   - Serve prod: `npm start`
   - Lint/tests/storybook: see `package.json:1`
+  - Config audit: `npm run validate-config` (verifies `siteConfig.url` usage, CNAME, assets, robots/sitemap/feeds, GA ID)
 - Static hosting constraints
   - No Next Image optimization API; whitelist remote hosts only if needed.
   - Trailing slashes required for GitHub Pages path semantics.

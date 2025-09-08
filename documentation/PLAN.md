@@ -21,6 +21,8 @@ This plan consolidates recommendations and improvements from `documentation/PRD.
 - Priority: Done; Impact: High; Effort: S — Canonical URL centralization: `siteConfig.url` used as single base in `src/lib/seo.ts` (metadataBase, canonical), `src/app/robots.txt/route.ts` (sitemap URL), `src/lib/feeds.ts` (RSS + sitemap), and `src/app/sitemap.xml/route.ts` delegates to shared generator.
 - Priority: Done; Impact: High; Effort: S — Trailing slash and link integrity tests: `src/lib/urls.test.ts` validates trailing slashes for all helpers; `src/__tests__/ssg.test.ts` enforces trailing slashes on generated URLs; `src/components/__tests__/SearchInput.test.tsx` asserts navigation to `/search/` and `/search/?q=...`.
 - Priority: Done; Impact: High; Effort: S — Thin route handler (sitemap): `src/app/sitemap.xml/route.ts` delegates to `generateSitemap()` in `src/lib/feeds.ts`; handler is static and minimal.
+- Priority: Done; Impact: Medium; Effort: S — Config consistency audit: Added `scripts/validate-config.ts` and `npm run validate-config`; GA component now conditionally renders only when a valid GA ID is configured; test added in `src/__tests__/config.validation.test.ts`.
+  - CI: Wired into `.github/workflows/deploy.yml` in both `test` and `build` jobs.
 - Priority: Done; Impact: High; Effort: M — Asteroids route safety verified: modules present (`components/*`, `hooks/*`, engine, assets), dynamic client-only import (`ssr: false`), static export-safe; route loads with desktop, mobile overlay handled.
 
 ## High Impact (P0)
@@ -62,10 +64,10 @@ This plan consolidates recommendations and improvements from `documentation/PRD.
   - Plan: Support optional tag descriptions and featured imagery (config/json map) and render on tag index/detail.
   - Acceptance: Tag description/hero renders when provided; no layout regressions without data.
 
-- Config consistency audit
-  - Priority: P1; Impact: Medium; Effort: S
-  - Plan: Verify `siteConfig.url` and environment toggles are used across SEO, analytics, JSON‑LD, and feed routes; add a simple config validation script.
-  - Acceptance: Script passes on CI; any discrepancy fails CI with clear message.
+ - Config consistency audit — Implemented/Verified
+  - Priority: Done; Impact: Medium; Effort: S
+  - Notes: Validator checks site URL, CNAME, robots/sitemap/feeds usage of `siteConfig.url`, required assets, GA ID format, and warns on hard‑coded hosts. GA scripts are skipped when ID is unset or invalid.
+  - Usage: `npm run validate-config` (runs ESM script with tsx loader). Integrate into CI as a pre-build check if desired.
 
 ## Low Impact (P2)
 

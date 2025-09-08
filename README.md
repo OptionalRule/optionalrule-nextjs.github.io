@@ -12,6 +12,7 @@ This is a Next.js 15 static blog site for Optional Rule Games that deploys to Gi
 
 - `npm run dev` - Start development server with hot reloading (includes draft posts)
 - `npm run build` - Build static site for production (excludes draft posts)
+- `npm run validate-config` - Validate configuration (URL/CNAME/robots/sitemap/assets/GA)
 - `npm run start` - Start production server  
 - `npm run lint` - Run ESLint for code quality checks
 - `npm run generate-search-index` - Generate search index from all posts
