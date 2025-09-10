@@ -6,15 +6,15 @@
       "liquid": "Spirits",
       "items": [
         {
-          "id": "comfrey",
+          "name": "Comfrey",
           "quantity": 2
         },
         {
-          "id": "boars-tusk",
+          "name": "Boar’s Tusk",
           "quantity": 1
         },
         {
-          "id": "belladonna",
+          "name": "Belladonna",
           "quantity": 1
         }
       ]
@@ -80,11 +80,11 @@
       "liquid": "Water",
       "items": [
         {
-          "id": "dandelion",
+          "name": "Dandelion",
           "quantity": 2
         },
         {
-          "id": "marigold",
+          "name": "Marigold",
           "quantity": 1
         }
       ]
@@ -145,11 +145,11 @@
       "liquid": "Spirits",
       "items": [
         {
-          "id": "sage",
+          "name": "Sage",
           "quantity": 1
         },
         {
-          "id": "wormwood",
+          "name": "Wormwood",
           "quantity": 2
         }
       ]
@@ -209,15 +209,15 @@
       "liquid": "Wine",
       "items": [
         {
-          "id": "wormwood",
+          "name": "Wormwood",
           "quantity": 1
         },
         {
-          "id": "belladonna",
+          "name": "Belladonna",
           "quantity": 2
         },
         {
-          "id": "amanita-muscaria",
+          "name": "Amanita Muscaria",
           "quantity": 1
         }
       ]
@@ -282,11 +282,11 @@
       "liquid": "Spirits",
       "items": [
         {
-          "id": "eyebright",
+          "name": "Eyebright",
           "quantity": 2
         },
         {
-          "id": "st-johns-wort",
+          "name": "St. John’s Wort",
           "quantity": 1
         }
       ]
@@ -354,15 +354,15 @@
       "liquid": "Oil",
       "items": [
         {
-          "id": "st-johns-wort",
+          "name": "St. John’s Wort",
           "quantity": 1
         },
         {
-          "id": "comfrey",
+          "name": "Comfrey",
           "quantity": 1
         },
         {
-          "id": "dandelion",
+          "name": "Dandelion",
           "quantity": 1
         }
       ]
@@ -428,11 +428,11 @@
       "liquid": "Wine",
       "items": [
         {
-          "id": "sage",
+          "name": "Sage",
           "quantity": 1
         },
         {
-          "id": "chamomile",
+          "name": "Chamomile",
           "quantity": 2
         }
       ]
@@ -496,11 +496,11 @@
       "liquid": "Spirits",
       "items": [
         {
-          "id": "mint",
+          "name": "Mint",
           "quantity": 2
         },
         {
-          "id": "valerian",
+          "name": "Valerian",
           "quantity": 1
         }
       ]
@@ -562,15 +562,15 @@
       "liquid": "Water",
       "items": [
         {
-          "id": "thistle",
+          "name": "Thistle",
           "quantity": 2
         },
         {
-          "id": "nettle",
+          "name": "Nettle",
           "quantity": 1
         },
         {
-          "id": "charcoal",
+          "name": "Charcoal",
           "quantity": 1
         }
       ]
@@ -638,11 +638,11 @@
       "liquid": "Spirits",
       "items": [
         {
-          "id": "herb-paris",
+          "name": "Herb Paris",
           "quantity": 2
         },
         {
-          "id": "valerian",
+          "name": "Valerian",
           "quantity": 1
         }
       ]
@@ -704,19 +704,19 @@
       "liquid": "Oil",
       "items": [
         {
-          "id": "poppy",
+          "name": "Poppy",
           "quantity": 1
         },
         {
-          "id": "valerian",
+          "name": "Valerian",
           "quantity": 1
         },
         {
-          "id": "eyebright",
+          "name": "Eyebright",
           "quantity": 1
         },
         {
-          "id": "boars-tusk",
+          "name": "Boar’s Tusk",
           "quantity": 1
         }
       ]
@@ -782,15 +782,15 @@
       "liquid": "Wine",
       "items": [
         {
-          "id": "feverfew",
+          "name": "Feverfew",
           "quantity": 3
         },
         {
-          "id": "elderberry-leaves",
+          "name": "Elderberry Leaves",
           "quantity": 1
         },
         {
-          "id": "ginger",
+          "name": "Ginger",
           "quantity": 2
         }
       ]
@@ -832,19 +832,19 @@
       "liquid": "Oil",
       "items": [
         {
-          "id": "nettle",
+          "name": "Nettle",
           "quantity": 1
         },
         {
-          "id": "st-johns-wort",
+          "name": "St. John’s Wort",
           "quantity": 1
         },
         {
-          "id": "charcoal",
+          "name": "Charcoal",
           "quantity": 1
         },
         {
-          "id": "belladonna",
+          "name": "Belladonna",
           "quantity": 1
         }
       ]
@@ -912,15 +912,15 @@
       "liquid": "Water",
       "items": [
         {
-          "id": "sage",
+          "name": "Sage",
           "quantity": 1
         },
         {
-          "id": "st-johns-wort",
+          "name": "St. John’s Wort",
           "quantity": 1
         },
         {
-          "id": "mint",
+          "name": "Mint",
           "quantity": 1
         }
       ]
@@ -984,15 +984,15 @@
       "liquid": "Water",
       "items": [
         {
-          "id": "saltpetre",
+          "name": "Saltpetre",
           "quantity": 1
         },
         {
-          "id": "sulphur",
+          "name": "Sulphur",
           "quantity": 1
         },
         {
-          "id": "charcoal",
+          "name": "Charcoal",
           "quantity": 1
         }
       ]
@@ -1049,15 +1049,15 @@
       "liquid": "Spirits",
       "items": [
         {
-          "id": "wormwood",
+          "name": "Wormwood",
           "quantity": 2
         },
         {
-          "id": "belladonna",
+          "name": "Belladonna",
           "quantity": 1
         },
         {
-          "id": "henbane",
+          "name": "Henbane",
           "quantity": 1
         }
       ]
@@ -1110,11 +1110,11 @@
       "liquid": "Spirits",
       "items": [
         {
-          "id": "sage",
+          "name": "Sage",
           "quantity": 2
         },
         {
-          "id": "mint",
+          "name": "Mint",
           "quantity": 2
         }
       ]
@@ -1176,15 +1176,15 @@
       "liquid": "Oil",
       "items": [
         {
-          "id": "poppy",
+          "name": "Poppy",
           "quantity": 1
         },
         {
-          "id": "thistle",
+          "name": "Thistle",
           "quantity": 1
         },
         {
-          "id": "herb-paris",
+          "name": "Herb Paris",
           "quantity": 1
         }
       ]
@@ -1250,11 +1250,11 @@
       "liquid": "Water",
       "items": [
         {
-          "id": "nettle",
+          "name": "Nettle",
           "quantity": 1
         },
         {
-          "id": "marigold",
+          "name": "Marigold",
           "quantity": 2
         }
       ]
@@ -1316,15 +1316,15 @@
       "liquid": "Wine",
       "items": [
         {
-          "id": "dandelion",
+          "name": "Dandelion",
           "quantity": 3
         },
         {
-          "id": "mint",
+          "name": "Mint",
           "quantity": 1
         },
         {
-          "id": "marigold",
+          "name": "Marigold",
           "quantity": 1
         }
       ]
@@ -1388,11 +1388,11 @@
       "liquid": "Spirits",
       "items": [
         {
-          "id": "wormwood",
+          "name": "Wormwood",
           "quantity": 2
         },
         {
-          "id": "mint",
+          "name": "Mint",
           "quantity": 2
         }
       ]
@@ -1429,15 +1429,15 @@
       "liquid": "Water",
       "items": [
         {
-          "id": "eyebright",
+          "name": "Eyebright",
           "quantity": 2
         },
         {
-          "id": "belladonna",
+          "name": "Belladonna",
           "quantity": 1
         },
         {
-          "id": "chamomile",
+          "name": "Chamomile",
           "quantity": 1
         }
       ]
@@ -1505,15 +1505,15 @@
       "liquid": "Spirits",
       "items": [
         {
-          "id": "poppy",
+          "name": "Poppy",
           "quantity": 3
         },
         {
-          "id": "marigold",
+          "name": "Marigold",
           "quantity": 1
         },
         {
-          "id": "comfrey",
+          "name": "Comfrey",
           "quantity": 1
         }
       ]
@@ -1577,15 +1577,15 @@
       "liquid": "Water",
       "items": [
         {
-          "id": "cobweb",
+          "name": "Cobweb",
           "quantity": 1
         },
         {
-          "id": "eyebright",
+          "name": "Eyebright",
           "quantity": 2
         },
         {
-          "id": "valerian",
+          "name": "Valerian",
           "quantity": 2
         }
       ]
@@ -1648,11 +1648,11 @@
       "liquid": "Wine",
       "items": [
         {
-          "id": "nettle",
+          "name": "Nettle",
           "quantity": 1
         },
         {
-          "id": "belladonna",
+          "name": "Belladonna",
           "quantity": 2
         }
       ]
@@ -1713,15 +1713,15 @@
       "liquid": "Water",
       "items": [
         {
-          "id": "saltpetre",
+          "name": "Saltpetre",
           "quantity": 1
         },
         {
-          "id": "sulphur",
+          "name": "Sulphur",
           "quantity": 1
         },
         {
-          "id": "leached-coal",
+          "name": "Leached Coal",
           "quantity": 1
         }
       ]
@@ -1778,15 +1778,15 @@
       "liquid": "Oil",
       "items": [
         {
-          "id": "thistle",
+          "name": "Thistle",
           "quantity": 2
         },
         {
-          "id": "charcoal",
+          "name": "Charcoal",
           "quantity": 1
         },
         {
-          "id": "dandelion",
+          "name": "Dandelion",
           "quantity": 1
         }
       ]
