@@ -128,6 +128,17 @@ export const urlPaths = {
   game: (gameName: string): string => `/games/${gameName}/`,
 
   /**
+   * Generate interactive tool URL
+   * @param toolName - Name of the tool
+   * @returns Tool URL with trailing slash
+   * @example
+   * ```typescript
+   * urlPaths.tool('kcd2_alchemy') // "/tools/kcd2_alchemy/"
+   * ```
+   */
+  tool: (toolName: string): string => `/tools/${toolName}/`,
+
+  /**
    * RSS feed URL
    * @returns RSS feed path
    * @example

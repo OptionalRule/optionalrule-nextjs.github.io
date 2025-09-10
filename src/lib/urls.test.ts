@@ -116,6 +116,13 @@ describe('URL Helpers', () => {
     });
   });
 
+  describe('urlPaths.tool', () => {
+    it('should generate tool URLs', () => {
+      expect(urlPaths.tool('kcd2_alchemy')).toBe('/tools/kcd2_alchemy/');
+      expect(urlPaths.tool('builder')).toBe('/tools/builder/');
+    });
+  });
+
   describe('urlPaths.rss', () => {
     it('should return RSS feed URL', () => {
       expect(urlPaths.rss()).toBe('/rss.xml');
@@ -209,6 +216,7 @@ describe('URL Helpers', () => {
         urlPaths.search(),
         urlPaths.staticPage('about'),
         urlPaths.game('asteroids'),
+        urlPaths.tool('kcd2_alchemy'),
       ];
 
       urlsToTest.forEach(url => {

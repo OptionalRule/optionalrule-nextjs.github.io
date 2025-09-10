@@ -49,7 +49,7 @@ const navigationItems: NavigationGroup[] = [
   {
     label: 'Tools',
     items: [
-      { href: '#', label: 'Coming Soon' }
+      { href: urlPaths.tool('kcd2_alchemy'), label: 'KCD2 Alchemy Scholar' }
     ]
   }
 ];
