@@ -21,7 +21,7 @@ src/
         types.ts                   # Tool-local types matching JSON schema
         README.md                  # Dev notes and usage
         components/
-          FiltersPanel.tsx         # Level, ingredient, effect filters
+          FiltersPanel.tsx         # Ingredient and effect filters
           SearchBar.tsx            # Debounced search (URL-sync, no navigation)
           PotionList.tsx           # List, empty/loading states, result count
           PotionCard.tsx           # Recipe details + collapsible instructions
@@ -45,7 +45,8 @@ src/
 public/
   tools/
     kcd2_alchemy/
-      potions.json                 # Data source (static asset)
+      potions.json                 # Potions dataset (references ingredient IDs)
+      ingredients.json             # Controlled ingredient list (id -> name)
 ```
 
 Notes
@@ -63,24 +64,26 @@ Notes
 
 ## 3) Data & Schema
 
-- Source: `public/tools/kcd2_alchemy/potions.json` loaded client-side with `fetch`.
-- Given schema (from request), represented as TypeScript types in `types.ts`.
-- Validation: implement a narrow, dependency-free validator in `lib/schema.ts` (mirroring local `z` style but scoped to this tool). Avoid external deps to preserve static export and bundle hygiene.
-- Normalization: `lib/normalize.ts` performs case-folding (lowercase) for ingredients/effects, derives indices (ingredient set, effect keywords), and supplies safe defaults for optional fields.
-- Level filtering: the provided schema lacks a root-level brewing requirement. Proposal for optional extension:
-  - `requiredLevel?: number` on the recipe root for “filter by alchemy skill level”. If absent, default behavior includes the recipe regardless of selected level; the “Optimized” tab is enabled only when `instructions.optimized?.minLevel <= level`.
-  - Document this as an optional field in this tool’s PRD and README. The UI clearly indicates “N/A” for missing required level.
+- Sources:
+  - `public/tools/kcd2_alchemy/ingredients.json` — controlled ingredient catalog `{ id: string | number, name: string }[]`.
+  - `public/tools/kcd2_alchemy/potions.json` — potions dataset that references ingredient IDs.
+- Types (defined in `types.ts`):
+  - `Ingredient`: `{ id: string | number; name: string }`.
+  - `PotionItem`: `{ id: string | number; quantity: number }`.
+  - `PotionRecipe`: matches the provided schema with `ingredients.items: PotionItem[]` and no `requiredLevel`.
+- Relationship: each `PotionRecipe.ingredients.items[].id` must match an `Ingredient.id` from `ingredients.json`. The UI maps IDs to display names via the catalog.
+- Validation: implement a narrow, dependency-free validator in `lib/schema.ts` (scoped to this tool). Validate cross-file referential integrity (every item id exists in `ingredients.json`).
+- Normalization: `lib/normalize.ts` builds fast lookup maps (id -> Ingredient), lowercases effect text for filtering, and derives ingredient options for the multi-select.
 
 ## 4) UX & Components
 
 - Tool Root (`index.tsx`)
   - Header (title + description), controls row (SearchBar + FiltersPanel), results area (PotionList), and footnotes.
 - SearchBar
-  - Debounced input; updates `?q=` via `router.replace` (preserve trailing slash), no page navigation.
+  - Debounced input; updates `?q=` via `router.replace` (preserve trailing slash), no page navigation. Text search matches recipe `name` and `effects[].description` only.
 - FiltersPanel
-  - Level filter: numeric input or slider (0–20 default; configurable). Shows current selection.
-  - Ingredient multi-select: includes base `liquid` and item names; chip UI with clear individually and “Reset all”.
-  - Effect filter: free-text with suggestion chips derived from `effects[].description` and `effects[].quality`.
+  - Ingredient multi-select: built from `ingredients.json` (IDs mapped to names). Selecting IDs filters recipes where any `ingredients.items[].id` is selected. Chip UI with clear individually and "Reset all".
+  - Effect filter: selection or chips derived from `effects[].quality` and/or curated keywords. Text filter already covers `effects[].description`.
   - Results summary: count and active-filter summary; clear all action.
 - PotionList
   - Displays result count, empty state with guidance, and list of `PotionCard`s. Consider simple list first; virtualize later if dataset grows.
@@ -89,7 +92,7 @@ Notes
   - Ingredients: base liquid + items with quantities.
   - Effects: quality badge + description list.
   - QuantityTable: toggles for perks and computed quantity mode.
-  - Instructions: tabs or segmented control for Default vs Optimized (if present), with optimized requirement hint.
+  - Instructions: tabs or segmented control for Default vs Optimized (if present). If `instructions.optimized` exists, render the tab label as `Optimized (Lvl {minLevel})`.
   - Notes: collapsible area to keep the card compact.
 
 Accessibility
@@ -100,14 +103,13 @@ Accessibility
 ## 5) Filtering & URL State
 
 Filter semantics (implemented in `lib/filter.ts`, orchestrated by `usePotionFilters.ts`)
-- Text query: case-insensitive substring match across `name`, `ingredients.liquid`, `ingredients.items[].name`, `effects[].description`.
-- Level: include recipe if `requiredLevel` is undefined or `requiredLevel <= selectedLevel`.
-- Ingredients: include recipe if any selected ingredient matches base liquid or any item name (case-insensitive).
+- Text query: case-insensitive substring match across `name` and `effects[].description`.
+- Ingredients: include recipe if any selected ingredient ID matches any `ingredients.items[].id` in the recipe.
 - Effects: include recipe if any selected effect keyword or quality matches `effects` entries.
-- Sorting (initial): by name asc; optionally add “level asc” toggle in a later iteration.
+- Sorting (initial): by name asc.
 
 URL sync (implemented in `useQueryState.ts`)
-- Params: `q`, `level`, `ingredients` (comma-separated), `effects` (comma-separated).
+- Params: `q`, `ingredients` (comma-separated IDs), `effects` (comma-separated).
 - Read on mount; write on changes with `router.replace` to avoid history spam; always keep the route `/tools/kcd2_alchemy/` with trailing slash.
 - Default values produce a minimal URL (omit empty params).
 
@@ -121,8 +123,8 @@ URL sync (implemented in `useQueryState.ts`)
 ## 7) Testing Strategy
 
 Unit (Vitest)
-- `schema.test.ts`: valid/invalid shapes, optional fields handling, error messaging.
-- `filter.test.ts`: individual predicates + composition (query + level + ingredients + effects).
+- `schema.test.ts`: valid/invalid shapes, referential integrity with `ingredients.json`, optional fields handling, error messaging.
+- `filter.test.ts`: individual predicates + composition (query + ingredients + effects).
 - `query-state.test.ts`: query param round-trip (parse -> state -> URL string).
 
 A11y (jest-axe)
@@ -146,14 +148,14 @@ M1 — Scaffolding & Docs
 - [ ] Draft `docs/PRD.md` (skeleton) and `README.md` for the tool.
 - [ ] Add `urlPaths.tool()` and tests.
 
-M2 — Data Types, Validation, Normalization
-- [ ] Define `types.ts` from the provided schema.
-- [ ] Implement `lib/schema.ts` validator (no external deps); decide on `requiredLevel?` extension and document it.
-- [ ] Implement `lib/normalize.ts` and test derived indices.
+M2 - Data Types, Validation, Normalization
+- [ ] Define `types.ts` from the updated schema (items reference ingredient IDs; no `requiredLevel`).
+- [ ] Implement `lib/schema.ts` validator (no external deps) with cross-file ingredient ID checks.
+- [ ] Implement `lib/normalize.ts` and test derived indices from `ingredients.json`.
 
-M3 — UI & Filtering
-- [ ] Build `SearchBar`, `FiltersPanel`, `PotionList`, `PotionCard`, `QuantityTable`.
-- [ ] Implement `useAlchemyData`, `usePotionFilters`, `useQueryState`.
+M3 - UI & Filtering
+- [ ] Build `SearchBar`, `FiltersPanel` (ingredients + effects), `PotionList`, `PotionCard`, `QuantityTable`.
+- [ ] Implement `useAlchemyData` (load potions + ingredients), `usePotionFilters`, `useQueryState`.
 - [ ] Wire URL sync; ensure trailing slash semantics.
 
 M4 — Tests, A11y, Stories
@@ -173,9 +175,8 @@ M5 — Integration & Polish
   - Name, base liquid, ingredients with quantities, effects (quality + description), quantities table, notes.
   - Instructions tabbed: Default; Optimized when present with min level hint.
 - Filters function as specified:
-  - Text search narrows across name/ingredients/effects (case-insensitive).
-  - Level: when `requiredLevel` exists, recipes above selected level are excluded; when missing, recipes remain visible but “optimized” tab respects `minLevel`.
-  - Ingredient and effect filters include matching recipes; clear/reset restores defaults.
+  - Text search narrows results across `name` and `effects[].description` (case-insensitive).
+  - Ingredient multi-select includes recipes with any matching ingredient ID; effect filters include matching recipes; clear/reset restores defaults.
 - URL query params reflect filters; reload restores state.
 - A11y checks pass (keyboard operable, labeled controls, adequate contrast).
 - `urlPaths.tool('kcd2_alchemy')` returns `/tools/kcd2_alchemy/` and tests pass.
@@ -183,13 +184,13 @@ M5 — Integration & Polish
 
 ## 11) Risks & Mitigations
 
-- Schema ambiguity for level requirement: mitigate by optional `requiredLevel?` with clear UI/Docs; retain functionality without it.
+- Ingredient ID consistency: ensure data pipelines keep `ingredients.json` and `potions.json` in sync; validate cross-file references at runtime/load.
 - Large datasets: start with simple list; add virtualization when needed.
 - Effect taxonomy: if free-text descriptions are inconsistent, consider a curated effect tag map in a future iteration.
 
 ## 12) Future Enhancements (post-MVP)
 
-- Sorting controls (name, required level, base liquid).
+- Sorting controls (name, base liquid).
 - Saved presets (localStorage) for common filter combinations.
 - Tag chips for common effects with curated synonyms.
 - Print-friendly view of a recipe.

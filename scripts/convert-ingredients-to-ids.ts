@@ -97,9 +97,9 @@ async function main() {
   const missing: Array<{ potionId: string; potionName: string; ingredient: string }> = [];
 
   for (const potion of potions) {
-    for (const item of potion.ingredients.items as PotionItemByName[]) {
+    for (const item of potion.ingredients.items as Array<PotionItemByName | PotionItemById>) {
       // If already using id, skip
-      if ((item as any).id && !('name' in item)) continue;
+      if ('id' in item && !('name' in item)) continue;
       const name = (item as PotionItemByName).name;
       const key = normalizeName(name);
       if (!byName.has(key)) {
@@ -139,19 +139,19 @@ async function main() {
 
   // Transform items[].name -> items[].id
   const transformed: Potion[] = potions.map((p) => {
-    const items = (p.ingredients.items as PotionItemByName[]).map((item) => {
-      if ((item as any).id && !('name' in item)) {
-        return item as unknown as PotionItemById; // already converted
+    const items = (p.ingredients.items as Array<PotionItemByName | PotionItemById>).map((item) => {
+      if ('id' in item && !('name' in item)) {
+        return item as PotionItemById; // already converted
       }
-      const key = normalizeName(item.name);
+      const key = normalizeName((item as PotionItemByName).name);
       const ing = byName.get(key)!;
-      return { id: ing.id, quantity: item.quantity };
+      return { id: ing.id, quantity: (item as PotionItemByName).quantity };
     });
     return {
       ...p,
       ingredients: {
         ...p.ingredients,
-        items: items as unknown as PotionItemById[],
+        items: items as PotionItemById[],
       },
     };
   });
