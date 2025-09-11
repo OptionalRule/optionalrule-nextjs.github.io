@@ -143,25 +143,24 @@ Integration
 ## 9) Milestones & Tasks
 
 M1 — Scaffolding & Docs
-- [ ] Create directories (app route + feature module + docs).
-- [ ] Add `page.tsx` and `Kcd2AlchemyClient.tsx` with `ssr: false` dynamic import.
-- [ ] Draft `docs/PRD.md` (skeleton) and `README.md` for the tool.
-- [ ] Add `urlPaths.tool()` and tests.
+- [x] Create directories (app route + feature module + docs).
+- [x] Add `page.tsx` and `Kcd2AlchemyClient.tsx` with `ssr: false` dynamic import.
+- [x] Draft `docs/PRD.md` (skeleton) and `README.md` for the tool.
+- [x] Add `urlPaths.tool()` and tests.
 
 M2 - Data Types, Validation, Normalization
-- [ ] Define `types.ts` from the updated schema (items reference ingredient IDs; no `requiredLevel`).
-- [ ] Implement `lib/schema.ts` validator (no external deps) with cross-file ingredient ID checks.
-- [ ] Implement `lib/normalize.ts` and test derived indices from `ingredients.json`.
+- [x] Define `types.ts` from the updated schema (items reference ingredient IDs; no `requiredLevel`).
+- [x] Implement `lib/schema.ts` validator (no external deps) with cross-file ingredient ID checks.
+- [x] Implement `lib/normalize.ts` and test derived indices from `ingredients.json`.
 
 M3 - UI & Filtering
-- [ ] Build `SearchBar`, `FiltersPanel` (ingredients + effects), `PotionList`, `PotionCard`, `QuantityTable`.
-- [ ] Implement `useAlchemyData` (load potions + ingredients), `usePotionFilters`, `useQueryState`.
-- [ ] Wire URL sync; ensure trailing slash semantics.
+- [x] Build `SearchBar`, `FiltersPanel` (ingredients + effects), `PotionList`, `PotionCard`, `QuantityTable`.
+- [x] Implement `useAlchemyData` (load potions + ingredients), `usePotionFilters`, `useQueryState`.
+- [x] Wire URL sync; ensure trailing slash semantics.
 
-M4 — Tests, A11y, Stories
+M4 — Tests, A11y
 - [ ] Unit tests green for schema/filter/query-state.
 - [ ] A11y smoke tests pass with `jest-axe`.
-- [ ] Add Storybook stories; basic visual review.
 
 M5 — Integration & Polish
 - [ ] Update `Header.tsx` Tools menu to link to the tool.
