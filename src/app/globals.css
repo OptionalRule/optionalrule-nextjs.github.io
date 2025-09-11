@@ -38,6 +38,12 @@
   --warning: #d97706; /* amber-600 */
   --error: #dc2626; /* red-600 */
   --info: #0ea5e9; /* sky-500 */
+
+  /* Strength scale (light backgrounds for black text) */
+  --strength-weak: #eef2ff; /* indigo-50 */
+  --strength-standard: #e0e7ff; /* indigo-100 */
+  --strength-strong: #c7d2fe; /* indigo-200 */
+  --strength-superior: #a5b4fc; /* indigo-300 */
 }
 
 @theme inline {
@@ -68,6 +74,12 @@
   --color-warning: var(--warning);
   --color-error: var(--error);
   --color-info: var(--info);
+
+  /* Strength scale tokens */
+  --color-strength-weak: var(--strength-weak);
+  --color-strength-standard: var(--strength-standard);
+  --color-strength-strong: var(--strength-strong);
+  --color-strength-superior: var(--strength-superior);
 }
 
 /* Class-based dark mode overrides; toggled via .dark on <html> */
@@ -101,6 +113,12 @@
   --warning: #f59e0b; /* amber-500 */
   --error: #f87171; /* red-400 */
   --info: #38bdf8; /* sky-400 */
+
+  /* Strength scale (dark backgrounds for white text) */
+  --strength-weak: #4f46e5; /* indigo-600 */
+  --strength-standard: #4338ca; /* indigo-700 */
+  --strength-strong: #3730a3; /* indigo-800 */
+  --strength-superior: #312e81; /* indigo-900 */
 }
 
 body {
