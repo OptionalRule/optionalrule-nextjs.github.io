@@ -174,6 +174,31 @@ M6 - Filter & Search Improvements
 - [x] The Text Search box should include a small X inside the input that clears the search text when clicked.
 - [x] Update PRD.md as nessisary to relfect these changes and improvements.
 
+M7 - Improved Ingredient Filter
+- [ ] Ingredient 'any' option return all potions that contain at least one of the ingredients provided in the argument list.
+- [ ] ingredient 'only' option return all potions whose recipes are composed exclusively from the ingredients provided in the argument list. The potion's ingredient list must be a subset of the provided ingredients.
+- [ ] Ingredient 'any' and 'only' option is a slider button toggle instead of a clicked button.
+
+M8 - Instructions by Alchemy Skill 
+- [ ] Add a dropdown box to select the characters Alchemy Skill Level.
+- [ ] The default instructions are selected if the player's alchemy skill is below the instructions.optimized.minLevel.
+- [ ] The optimized instructions are selected if the players alchemy skill is at or above the instructions.optimized.minLevel.
+
+M9 - Local Save of State
+- [ ] Add toggle to save current filters.
+- [ ] Add feature to save locally.
+- [ ] Add ? icon to hover over for help text on feature.
+- [ ] Add option to clear all searcha nd filter.
+
+M10 - Data Enrichment
+- [ ]  Have AI summarize option effects briefly and add to card.
+- [ ]  Add base price data to potions and ingredients.
+- [ ]  Add data about where and how to find an ingredient to ingredients list.
+
+Other Tasks & Improvements
+- [ ] Give each potion card title a background color.
+- [ ] Effect pills should have some color scheme.
+
 ## 10) Acceptance Criteria (DoD)
 
 - Route `/tools/kcd2_alchemy/` renders client-side without SSR; no console errors.

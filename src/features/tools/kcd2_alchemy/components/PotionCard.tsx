@@ -16,8 +16,8 @@ export function PotionCard({ potion, highlightIngredientIds = [] }: { potion: No
   const quantitiesButtonId = `quantities-btn-${potion.id}`
 
   return (
-    <article className="border border-[var(--border)] rounded-md p-4 bg-[var(--card)]">
-      <header className="mb-3">
+    <article className="border border-[var(--border)] rounded-lg p-4 bg-[var(--card)]">
+      <header className="mb-3 bg-[var(--header-block-bg)]">
         <h3 className="text-xl font-semibold">{potion.name}</h3>
         <div className="mt-1 text-sm text-[var(--muted-2)]">Base liquid: {potion.ingredients.liquid}</div>
       </header>
