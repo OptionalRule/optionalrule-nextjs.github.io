@@ -67,7 +67,7 @@ export function PotionCard({ potion }: { potion: NormalizedPotionRecipe }) {
           )}
           </div>
         </div>
-        <ol className="list-decimal pl-6 text-sm bg-[var(--chip-bg)] border border-[var(--border)] rounded p-2">
+        <ol className="list-decimal pl-8 text-sm bg-[var(--chip-bg)] border border-[var(--border)] rounded-lg py-2">
           {(selectedTab === 'optimized' && potion.instructions.optimized
             ? potion.instructions.optimized.steps
             : potion.instructions.default
