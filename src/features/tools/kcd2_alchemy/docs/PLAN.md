@@ -185,12 +185,12 @@ M8 - Instructions Display by Alchemy Skill
 - [x] The optimized instructions are selected if the players alchemy skill is at or above the instructions.optimized.minLevel.
 
 M9 - Local Save of State
-- [ ] Add slider toggle to 'save view' that saves the current filter and search settings locally.
+- [x] Add slider toggle to 'save view' that saves the current filter and search settings locally.
       The toggle should appear in the upper right part of the tool page header. 
       The toggle should default to not active.
       The toggle should have a style similar to the Any/Only toggle in filters.
-- [ ] Add ? icon to hover over for help text on feature.
-- [ ] Turning the save toggle off should clear all local saved data.
+- [x] Add ? icon to hover over for help text on feature.
+- [x] Turning the save toggle off should clear all local saved data.
 
 M10 - Data Enrichment
 - [ ]  Have AI summarize option effects briefly and add to card.

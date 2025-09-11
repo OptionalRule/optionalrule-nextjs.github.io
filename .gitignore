@@ -56,3 +56,6 @@ storybook-static
 
 # VSCode
 .vscode
+ 
+# Avoid Windows reserved device filename accidentally committed
+/CON

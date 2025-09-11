@@ -3,10 +3,8 @@ import React from 'react'
 import { render, screen } from '@testing-library/react'
 import { FiltersPanel } from '../components/FiltersPanel'
 
-describe('FiltersPanel save toggle', () => {
-  it('renders save switch and calls toggle', async () => {
-    const { user } = await import('@testing-library/user-event').then((m) => ({ user: m.default.setup() }))
-    const onToggleSave = vi.fn()
+describe('FiltersPanel save toggle placement', () => {
+  it('does not render a local save switch (moved to header)', async () => {
     render(
       <FiltersPanel
         ingredientOptions={[{ id: 'mint', name: 'Mint' }]}
@@ -16,15 +14,9 @@ describe('FiltersPanel save toggle', () => {
         onChangeIngredientMode={() => {}}
         alchemyLevel={0}
         onChangeAlchemyLevel={() => {}}
-        saveEnabled={false}
-        onToggleSave={onToggleSave}
       />,
     )
-    const switchBtn = screen.getByRole('switch', { name: /saving filters/i })
-    expect(switchBtn).toHaveAttribute('aria-checked', 'false')
-    await user.click(switchBtn)
-    expect(onToggleSave).toHaveBeenCalled()
+    const switchBtn = screen.queryByRole('switch', { name: /save/i })
+    expect(switchBtn).toBeNull()
   })
-
-  // No separate clear button now; disabling the switch clears persisted data
 })

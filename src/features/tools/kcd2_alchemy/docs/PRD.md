@@ -67,8 +67,8 @@ Note: Recipes.ingredents.items.id is a foreign key to Ingredients.id
 - Results list: shows matching potions, count, empty state with guidance.
 - Details: each recipe card shows ingredients, effects, quantities with perk toggles, and instructions with Default/Optimized tabs. A global Alchemy Skill dropdown controls which instructions are selected by default and when changed: below `optimized.minLevel` shows Default; at or above shows Optimized (when present).
 - Ingredient highlight: when ingredient filters are active, matching ingredients in each card are highlighted.
-- URL state: `?q=&ingredients=&ingMode=`; reload/links preserve filters. `ingMode` defaults to `any` and may be omitted when at default. When present, `ingMode` is `only`. The Alchemy Skill selection is not encoded in the URL.
- - Local save: A "Save filters locally" switch in the Filters panel enables persistence via `localStorage`. The switch state itself is persisted. When enabled, the current `q`, `ingredients`, `ingMode`, and Alchemy Skill are saved and re-applied on next visit unless the URL provides explicit query params for those fields. A small help icon explains this behavior.
+- URL state: `?q=&ingredients=&ingMode=&alchLvl=`; reload/links preserve filters. `ingMode` defaults to `any` and may be omitted when at default; `alchLvl` defaults to `0` and is omitted when `0`.
+- Local save: A "Save view" switch in the header (upper right) enables persistence via `localStorage`. The switch state itself is persisted. When enabled, the current `q`, `ingredients`, `ingMode`, and Alchemy Skill are saved and re-applied on next visit unless the URL provides explicit query params for those fields. Turning the switch off clears any saved data. A small help icon explains this behavior. A tiny toast confirms enable/disable and restoration.
 
 ## 6. Accessibility
 
