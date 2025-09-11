@@ -15,8 +15,10 @@ export interface FiltersPanelProps {
 function ToggleChip({ active, label }: { active: boolean; label: string }) {
   return (
     <span
-      className={`text-sm px-2 py-1 rounded border ${
-        active ? 'bg-[var(--chipBg)] text-[var(--chipText)]' : 'bg-[var(--surfaceHover)] text-[var(--muted)]'
+      className={`text-sm px-2 py-1 rounded border transition-colors ${
+        active
+          ? 'border-[var(--link)] text-[var(--link)] bg-[color-mix(in_oklab,var(--link)_15%,transparent)]'
+          : 'border-[var(--border)] bg-[var(--surfaceHover)] text-[var(--muted)]'
       }`}
     >
       {label}
@@ -75,8 +77,9 @@ export function FiltersPanel({
                   key={String(opt.id)}
                   type="button"
                   onClick={() => toggleIngredient(opt.id)}
-                  className="focus:outline-none"
+                  className={`focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--link)] rounded ${active ? 'data-[active=true]' : ''}`}
                   aria-pressed={active}
+                  data-active={active}
                 >
                   <ToggleChip active={active} label={opt.name} />
                 </button>
@@ -95,8 +98,9 @@ export function FiltersPanel({
                   key={label}
                   type="button"
                   onClick={() => toggleEffect(label)}
-                  className="focus:outline-none"
+                  className="focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--link)] rounded"
                   aria-pressed={active}
+                  data-active={active}
                 >
                   <ToggleChip active={active} label={label} />
                 </button>
@@ -108,4 +112,3 @@ export function FiltersPanel({
     </section>
   )
 }
-

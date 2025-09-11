@@ -45,21 +45,31 @@ export function PotionCard({ potion }: { potion: NormalizedPotionRecipe }) {
       </section>
 
       <section className="mb-2">
-        <div className="flex items-center gap-2 mb-2 text-sm">
+        <div className="flex items-center gap-2 mb-2 text-sm" role="tablist" aria-label="Recipe instructions tabs">
           <button
             type="button"
-            className={`px-2 py-1 rounded border ${selectedTab === 'default' ? 'bg-[var(--surfaceHover)]' : ''}`}
+            className={`px-2 py-1 rounded border transition-colors focus-visible:ring-2 focus-visible:ring-[var(--link)] ${
+              selectedTab === 'default'
+                ? 'border-[var(--link)] text-[var(--link)] bg-[color-mix(in_oklab,var(--link)_12%,transparent)]'
+                : 'border-[var(--border)] text-[var(--muted)]'
+            }`}
             onClick={() => setTab('default')}
-            aria-pressed={selectedTab === 'default'}
+            role="tab"
+            aria-selected={selectedTab === 'default'}
           >
             Default
           </button>
           {hasOptimized && (
             <button
               type="button"
-              className={`px-2 py-1 rounded border ${selectedTab === 'optimized' ? 'bg-[var(--surfaceHover)]' : ''}`}
+              className={`px-2 py-1 rounded border transition-colors focus-visible:ring-2 focus-visible:ring-[var(--link)] ${
+                selectedTab === 'optimized'
+                  ? 'border-[var(--link)] text-[var(--link)] bg-[color-mix(in_oklab,var(--link)_12%,transparent)]'
+                  : 'border-[var(--border)] text-[var(--muted)]'
+              }`}
               onClick={() => setTab('optimized')}
-              aria-pressed={selectedTab === 'optimized'}
+              role="tab"
+              aria-selected={selectedTab === 'optimized'}
             >
               Optimized (Lvl {potion.instructions.optimized!.minLevel})
             </button>
@@ -83,4 +93,3 @@ export function PotionCard({ potion }: { potion: NormalizedPotionRecipe }) {
     </article>
   )
 }
-
