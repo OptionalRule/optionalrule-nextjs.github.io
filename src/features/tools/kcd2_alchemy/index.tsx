@@ -28,12 +28,13 @@ export default function Kcd2Alchemy({ className }: Kcd2AlchemyProps) {
 
   return (
     <div className={`min-h-screen bg-background text-foreground ${className || ''}`}>
-      <header className="border-b border-[var(--border)] p-4">
+      <header className="pt-4">
         <div className="container mx-auto">
           <h1 className="text-3xl font-bold">KCD2 Alchemy Scholar</h1>
           <p className="text-[var(--muted-2)] mt-1">
-            Browse and filter Kingdom Come: Deliverance 2 alchemy recipes.
+            Browse and filter Kingdom Come: Deliverance 2 alchemy recipes.<br />
           </p>
+          <p className="text-[var(--muted-2)] text-right italic">* Recipes by <a href="https://github.com/Omricon/Henrys-Moste-Potente-Potions" className="underline" target="_blank" rel="noopener noreferrer">Omricon</a>.</p>
         </div>
       </header>
 

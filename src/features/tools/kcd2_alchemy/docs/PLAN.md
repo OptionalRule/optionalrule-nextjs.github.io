@@ -163,9 +163,16 @@ M4 — Tests, A11y
 - [x] A11y smoke tests pass with `jest-axe`.
 
 M5 — Integration & Polish
-- [ ] Update `Header.tsx` Tools menu to link to the tool.
-- [ ] Add metadata image and finalize metadata.
-- [ ] Validate `npm run test:all` and `npm run build` locally per STANDARDS.md.
+- [x] Update `Header.tsx` Tools menu to link to the tool.
+- [x] Add metadata image and finalize metadata.
+- [x] Validate `npm run test:all` and `npm run build` locally per STANDARDS.md.
+
+M6 - Filter & Search Improvements
+- [ ] Remove filter Effect Quality functionality and remove the filter option.
+- [ ] Ingredients filter should have an option to filter for potions with all of the ingredients or any of the ingredients as a clickable toggle next to the Ingredients label.
+- [ ] When an ingredient filter is selected, the applicable ingredient in the potion card should be highlighted.
+- [ ] The Text Search box should include a small X inside the input that clears the search text when clicked.
+- [ ] Update PRD.md as nessisary to relfect these changes and improvements.
 
 ## 10) Acceptance Criteria (DoD)
 
