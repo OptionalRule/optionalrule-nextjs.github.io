@@ -185,15 +185,18 @@ M8 - Instructions Display by Alchemy Skill
 - [x] The optimized instructions are selected if the players alchemy skill is at or above the instructions.optimized.minLevel.
 
 M9 - Local Save of State
-- [ ] Add toggle to save current filters.
-- [ ] Add feature to save locally.
+- [ ] Add slider toggle to 'save view' that saves the current filter and search settings locally.
+      The toggle should appear in the upper right part of the tool page header. 
+      The toggle should default to not active.
+      The toggle should have a style similar to the Any/Only toggle in filters.
 - [ ] Add ? icon to hover over for help text on feature.
-- [ ] Add option to clear all searcha nd filter.
+- [ ] Turning the save toggle off should clear all local saved data.
 
 M10 - Data Enrichment
 - [ ]  Have AI summarize option effects briefly and add to card.
 - [ ]  Add base price data to potions and ingredients.
 - [ ]  Add data about where and how to find an ingredient to ingredients list.
+- [ ]  Add a Sort feature on base price.
 
 Other Tasks & Improvements
 - [ ] Give each potion card title a background color.

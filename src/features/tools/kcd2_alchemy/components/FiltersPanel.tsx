@@ -13,6 +13,8 @@ export interface FiltersPanelProps {
   onClearAll?: () => void
   alchemyLevel?: number
   onChangeAlchemyLevel?: (level: number) => void
+  saveEnabled?: boolean
+  onToggleSave?: () => void
 }
 
 function ToggleChip({ active, label }: { active: boolean; label: string }) {
@@ -38,6 +40,8 @@ export function FiltersPanel({
   onClearAll,
   alchemyLevel = 0,
   onChangeAlchemyLevel,
+  saveEnabled = false,
+  onToggleSave,
 }: FiltersPanelProps) {
   const toggleIngredient = (id: IngredientId) => {
     const set = new Set<string>(selectedIngredientIds.map(String))
@@ -107,8 +111,35 @@ export function FiltersPanel({
       </div>
 
       {/* Alchemy skill selector */}
-      <div className="pt-3 flex items-center">
+      <div className="pt-3 flex items-center justify-between gap-3 flex-wrap">
         <AlchemyLevelSelect value={alchemyLevel} onChange={(lvl) => onChangeAlchemyLevel?.(lvl)} min={0} max={30} size="sm" />
+
+        {/* Save filters locally toggle */}
+        <div className="flex items-center gap-2 text-xs">
+          <span className="text-[var(--muted-2)]">Save filters locally</span>
+          <button
+            type="button"
+            role="switch"
+            aria-checked={saveEnabled}
+            aria-label="Toggle saving filters locally"
+            onClick={() => onToggleSave?.()}
+            className={`relative inline-flex h-5 w-9 items-center rounded-full border-2 bg-[var(--chip-bg)] focus-visible:ring-2 focus-visible:ring-[var(--link)] transition-colors ${saveEnabled ? 'border-[var(--link)]' : 'border-[var(--border)]'}`}
+            title="When enabled, your current search, ingredient filters, and alchemy level are saved to this browser and re-applied next time."
+          >
+            <span
+              className="inline-block h-4 w-4 transform rounded-full bg-[var(--card)] border border-[var(--muted)] transition-transform"
+              style={{ transform: saveEnabled ? 'translateX(16px)' : 'translateX(1px)' }}
+            />
+          </button>
+          <button
+            type="button"
+            className="inline-flex items-center justify-center w-4 h-4 rounded-full border border-[var(--border)] text-[var(--muted-2)] hover:text-[var(--foreground)] bg-[var(--surface-hover)]"
+            aria-label="Help: Save filters locally"
+            title="Saves your current search, ingredient filters, and alchemy level to localStorage so they persist across visits."
+          >
+            ?
+          </button>
+        </div>
       </div>
     </section>
   )
