@@ -175,9 +175,9 @@ M6 - Filter & Search Improvements
 - [x] Update PRD.md as nessisary to relfect these changes and improvements.
 
 M7 - Improved Ingredient Filter
-- [ ] Ingredient 'any' option return all potions that contain at least one of the ingredients provided in the argument list.
-- [ ] ingredient 'only' option return all potions whose recipes are composed exclusively from the ingredients provided in the argument list. The potion's ingredient list must be a subset of the provided ingredients.
-- [ ] Ingredient 'any' and 'only' option is a slider button toggle instead of a clicked button.
+- [ ] Ingredient filter 'any' option return all potions that contain at least one of the ingredients provided in the argument list.
+- [ ] ingredient filter 'all' option should be renamed 'only' and return all potions whose recipes are composed exclusively from the ingredients provided in the argument list. The potion's ingredient list must be a subset of the provided ingredients.
+- [ ] Ingredient filter should use a toggle slider to select between 'any' or 'only' options instead of the current buttons and should default to 'any'.
 
 M8 - Instructions by Alchemy Skill 
 - [ ] Add a dropdown box to select the characters Alchemy Skill Level.
