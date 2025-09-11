@@ -139,7 +139,7 @@ export function PotionCard({ potion, highlightIngredientIds = [], playerAlchemyL
               {potion.effects.map((e, i) => (
                 <tr key={`${potion.id}-eff-${i}`}> 
                   <td className="text-right align-top pr-3 whitespace-nowrap">
-                    <span className="text-xs font-semibold px-2 py-0.5 rounded-full border border-[var(--border)] bg-[var(--strength-strong)]">
+                    <span className="text-xs font-semibold px-2 py-0.5 rounded-full border border-[var(--border)] bg-[var(--strength-superior)]">
                       {e.quality}
                     </span>
                   </td>
