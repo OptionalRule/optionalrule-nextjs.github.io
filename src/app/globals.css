@@ -17,6 +17,26 @@
   --chip-bg: #f3f4f6; /* gray-100 */
   --chip-text: #374151; /* gray-700 */
   --highlight-bg: #fde68a; /* yellow-200 */
+  
+  /* Header and typography hierarchy */
+  --header-primary: #111827; /* gray-900 - strong headings */
+  --header-secondary: #374151; /* gray-700 - subheadings */
+  --header-block-bg: #f8fafc; /* slate-50 - header section backgrounds */
+  
+  /* Card content and inner elements */
+  --card-content: #6b7280; /* gray-500 - secondary text in cards */
+  --card-accent: #e5e7eb; /* gray-200 - subtle dividers/borders */
+  --card-hover: #f9fafb; /* gray-50 - card hover state */
+  
+  /* Interactive elements */
+  --accent: #3b82f6; /* blue-500 - primary accent/CTA */
+  --accent-hover: #2563eb; /* blue-600 - accent hover */
+  --focus-ring: #93c5fd; /* blue-300 - focus outlines */
+  
+  /* Content semantic colors */
+  --success: #059669; /* emerald-600 */
+  --warning: #d97706; /* amber-600 */
+  --error: #dc2626; /* red-600 */
 }
 
 @theme inline {
@@ -33,6 +53,19 @@
   --color-game-neon-green: #00ff00;
   --color-game-space-blue: #001122;
   --color-game-retro-amber: #ffaa00;
+  /* New theme colors */
+  --color-header-primary: var(--header-primary);
+  --color-header-secondary: var(--header-secondary);
+  --color-header-block-bg: var(--header-block-bg);
+  --color-card-content: var(--card-content);
+  --color-card-accent: var(--card-accent);
+  --color-card-hover: var(--card-hover);
+  --color-accent: var(--accent);
+  --color-accent-hover: var(--accent-hover);
+  --color-focus-ring: var(--focus-ring);
+  --color-success: var(--success);
+  --color-warning: var(--warning);
+  --color-error: var(--error);
 }
 
 /* Class-based dark mode overrides; toggled via .dark on <html> */
@@ -51,6 +84,20 @@
   --chip-bg: #374151; /* gray-700 */
   --chip-text: #d1d5db; /* gray-300 */
   --highlight-bg: #854d0e; /* yellow-800 */
+  
+  /* Dark mode overrides for new variables */
+  --header-primary: #f9fafb; /* gray-50 */
+  --header-secondary: #d1d5db; /* gray-300 */
+  --header-block-bg: #1f2937; /* gray-800 */
+  --card-content: #9ca3af; /* gray-400 */
+  --card-accent: #4b5563; /* gray-600 */
+  --card-hover: #1f2937; /* gray-800 */
+  --accent: #60a5fa; /* blue-400 */
+  --accent-hover: #93c5fd; /* blue-300 */
+  --focus-ring: #60a5fa; /* blue-400 */
+  --success: #10b981; /* emerald-500 */
+  --warning: #f59e0b; /* amber-500 */
+  --error: #f87171; /* red-400 */
 }
 
 body {

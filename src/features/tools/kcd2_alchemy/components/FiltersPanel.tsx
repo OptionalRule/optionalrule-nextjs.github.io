@@ -15,7 +15,7 @@ export interface FiltersPanelProps {
 function ToggleChip({ active, label }: { active: boolean; label: string }) {
   return (
     <span
-      className={`text-sm px-2 py-1 rounded border transition-colors ${
+      className={`text-sm px-2 py-1 rounded-full border transition-colors ${
         active
           ? 'border-[var(--link)] text-[var(--link)] bg-[color-mix(in_oklab,var(--link)_15%,transparent)]'
           : 'border-[var(--border)] bg-[var(--surfaceHover)] text-[var(--muted)]'

@@ -8,6 +8,12 @@ export function PotionCard({ potion }: { potion: NormalizedPotionRecipe }) {
 
   // Ensure default selected tab exists
   const selectedTab: 'default' | 'optimized' = hasOptimized ? tab : 'default'
+  const [effectsOpen, setEffectsOpen] = useState(false)
+  const [quantitiesOpen, setQuantitiesOpen] = useState(false)
+  const effectsPanelId = `effects-${potion.id}`
+  const quantitiesPanelId = `quantities-${potion.id}`
+  const effectsButtonId = `effects-btn-${potion.id}`
+  const quantitiesButtonId = `quantities-btn-${potion.id}`
 
   return (
     <article className="border border-[var(--border)] rounded-md p-4 bg-[var(--card)]">
@@ -17,35 +23,20 @@ export function PotionCard({ potion }: { potion: NormalizedPotionRecipe }) {
       </header>
 
       <section className="mb-3">
-        <h4 className="font-medium">Ingredients</h4>
-        <ul className="list-disc pl-6 text-sm">
-          {potion.ingredients.items.map((it) => (
-            <li key={`${potion.id}-${String(it.id)}`}>{it.name} × {it.quantity}</li>
-          ))}
-        </ul>
+        <div className="flex items-baseline gap-2 flex-wrap">
+          <h4 className="font-medium shrink-0">Ingredients:</h4>
+          <ul className="list-none p-0 m-0 text-sm">
+            {potion.ingredients.items.map((it) => (
+              <li className="inline after:content-[',_'] last:after:content-['']" key={`${potion.id}-${String(it.id)}`}>{it.name} ({it.quantity})</li>
+            ))}
+          </ul>
+        </div>
       </section>
 
       <section className="mb-3">
-        <h4 className="font-medium">Effects</h4>
-        <ul className="pl-0 text-sm space-y-1">
-          {potion.effects.map((e, i) => (
-            <li key={`${potion.id}-eff-${i}`}>
-              <span className="inline-block text-xs font-semibold mr-2 px-2 py-0.5 rounded bg-[var(--surfaceHover)] border border-[var(--border)]">
-                {e.quality}
-              </span>
-              <span>{e.description}</span>
-            </li>
-          ))}
-        </ul>
-      </section>
-
-      <section className="mb-3">
-        <h4 className="font-medium mb-2">Quantities</h4>
-        <QuantityTable quantity={potion.quantity} />
-      </section>
-
-      <section className="mb-2">
-        <div className="flex items-center gap-2 mb-2 text-sm" role="tablist" aria-label="Recipe instructions tabs">
+        <div className="flex items-center gap-2 mb-2 flex-wrap">
+          <h4 className="font-medium shrink-0">Instructions:</h4>
+          <div className="flex items-center gap-2 text-sm" role="tablist" aria-label="Recipe instructions tabs">
           <button
             type="button"
             className={`px-2 py-1 rounded border transition-colors focus-visible:ring-2 focus-visible:ring-[var(--link)] ${
@@ -74,16 +65,100 @@ export function PotionCard({ potion }: { potion: NormalizedPotionRecipe }) {
               Optimized (Lvl {potion.instructions.optimized!.minLevel})
             </button>
           )}
+          </div>
         </div>
-        <ol className="list-decimal pl-6 text-sm space-y-1">
+        <ol className="list-decimal pl-6 text-sm bg-[var(--chip-bg)] border border-[var(--border)] rounded p-2">
           {(selectedTab === 'optimized' && potion.instructions.optimized
             ? potion.instructions.optimized.steps
             : potion.instructions.default
           ).map((step, i) => (
-            <li key={`${potion.id}-step-${selectedTab}-${i}`}>{step}</li>
+            <li key={`${potion.id}-step-${selectedTab}-${i}`} className="text-[var(--chip-text)] ml-2">{step}</li>
           ))}
         </ol>
       </section>
+
+      <section className="mb-3">
+        <button
+          id={effectsButtonId}
+          type="button"
+          className="w-full flex items-center gap-2 py-1 px-2 rounded border border-[var(--border)] bg-[var(--surfaceHover)] text-left focus-visible:ring-2 focus-visible:ring-[var(--link)]"
+          onClick={() => setEffectsOpen((v) => !v)}
+          aria-expanded={effectsOpen}
+          aria-controls={effectsPanelId}
+          role="heading"
+          aria-level={4}
+        >
+          <span className="font-medium">Effects</span>
+          <span className="inline-flex items-center justify-center w-5 h-5 rounded border border-[var(--border)] bg-[var(--card)] text-[var(--muted)]">
+            <svg
+              aria-hidden="true"
+              viewBox="0 0 20 20"
+              className="w-3.5 h-3.5"
+              style={{
+                transform: effectsOpen ? 'rotate(90deg)' : 'rotate(0deg)',
+                transition: 'transform 150ms ease',
+              }}
+            >
+              <path
+                fill="currentColor"
+                d="M7.293 14.707a1 1 0 0 1 0-1.414L9.586 11 7.293 8.707a1 1 0 0 1 1.414-1.414l3 3a1 1 0 0 1 0 1.414l-3 3a1 1 0 0 1-1.414 0z"
+              />
+            </svg>
+          </span>
+        </button>
+        <div id={effectsPanelId} role="region" aria-labelledby={effectsButtonId} hidden={!effectsOpen} className="shadow-lg p-4 rounded mx-2">
+          <table className="w-full text-sm border-separate" style={{ borderSpacing: '0 4px' }}>
+            <tbody>
+              {potion.effects.map((e, i) => (
+                <tr key={`${potion.id}-eff-${i}`}> 
+                  <td className="text-right align-top pr-3 whitespace-nowrap">
+                    <span className="text-xs font-semibold px-2 py-0.5 rounded-full border border-[var(--border)]">
+                      {e.quality}
+                    </span>
+                  </td>
+                  <td className="text-left align-top">{e.description}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section className="mb-3">
+        <button
+          id={quantitiesButtonId}
+          type="button"
+          className="w-full flex items-center gap-2 py-1 px-2 rounded border border-[var(--border)] bg-[var(--surfaceHover)] text-left focus-visible:ring-2 focus-visible:ring-[var(--link)]"
+          onClick={() => setQuantitiesOpen((v) => !v)}
+          aria-expanded={quantitiesOpen}
+          aria-controls={quantitiesPanelId}
+          role="heading"
+          aria-level={4}
+        >
+          <span className="font-medium">Quantities</span>
+          <span className="inline-flex items-center justify-center w-5 h-5 rounded border border-[var(--border)] bg-[var(--card)] text-[var(--muted)]">
+            <svg
+              aria-hidden="true"
+              viewBox="0 0 20 20"
+              className="w-3.5 h-3.5"
+              style={{
+                transform: quantitiesOpen ? 'rotate(90deg)' : 'rotate(0deg)',
+                transition: 'transform 150ms ease',
+              }}
+            >
+              <path
+                fill="currentColor"
+                d="M7.293 14.707a1 1 0 0 1 0-1.414L9.586 11 7.293 8.707a1 1 0 0 1 1.414-1.414l3 3a1 1 0 0 1 0 1.414l-3 3a1 1 0 0 1-1.414 0z"
+              />
+            </svg>
+          </span>
+        </button>
+        <div id={quantitiesPanelId} role="region" aria-labelledby={quantitiesButtonId} hidden={!quantitiesOpen}>
+          <QuantityTable quantity={potion.quantity} />
+        </div>
+      </section>
+
+      
 
       {potion.notes && (
         <section className="text-sm text-[var(--muted-2)] mt-2">
