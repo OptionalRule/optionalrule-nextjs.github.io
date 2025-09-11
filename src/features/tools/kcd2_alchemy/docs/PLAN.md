@@ -159,8 +159,8 @@ M3 - UI & Filtering
 - [x] Wire URL sync; ensure trailing slash semantics.
 
 M4 — Tests, A11y
-- [ ] Unit tests green for schema/filter/query-state.
-- [ ] A11y smoke tests pass with `jest-axe`.
+- [x] Unit tests green for schema/filter/query-state.
+- [x] A11y smoke tests pass with `jest-axe`.
 
 M5 — Integration & Polish
 - [ ] Update `Header.tsx` Tools menu to link to the tool.
