@@ -34,11 +34,29 @@ export default function Kcd2Alchemy({ className }: Kcd2AlchemyProps) {
     if (hasSaved) return true
     return getPersistFlag()
   })
-  const [appliedSavedOnce, setAppliedSavedOnce] = useState(false)
+  const [_appliedSavedOnce, setAppliedSavedOnce] = useState(false)
   const [toast, setToast] = useState<{ msg: string; type: 'info' | 'success' | 'error' } | null>(null)
   const showToast = (msg: string, type: 'info' | 'success' | 'error' = 'info') => {
     setToast({ msg, type })
     window.setTimeout(() => setToast(null), 2600)
+  }
+
+  // Persist immediately before URL change to avoid remount restoring stale saved state
+  const setStateAndPersist = (patch: Partial<QueryState>) => {
+    if (saveEnabled) {
+      const future: QueryState = { ...queryState }
+      if (patch.q !== undefined) future.q = patch.q
+      if (patch.ingredients !== undefined) future.ingredients = patch.ingredients
+      if (patch.ingMode !== undefined) future.ingMode = patch.ingMode
+      if (patch.alchLvl !== undefined) future.alchLvl = patch.alchLvl
+      writePersistedFilters({
+        q: future.q,
+        ingredients: future.ingredients,
+        ingMode: future.ingMode,
+        alchemyLevel: Number(future.alchLvl) || 0,
+      })
+    }
+    setQueryState(patch)
   }
 
   // Hydrate from saved once
@@ -60,23 +78,7 @@ export default function Kcd2Alchemy({ className }: Kcd2AlchemyProps) {
     }
   }, [setQueryState])
 
-  // Safety net for SPA nav timing: apply once if still default
-  useEffect(() => {
-    if (!saveEnabled || appliedSavedOnce) return
-    const isDefault = (queryState.q ?? '') === '' && (queryState.ingredients?.length ?? 0) === 0 && queryState.ingMode === 'any'
-    if (!isDefault) return
-    const saved = readPersistedFilters()
-    if (!saved) return
-    const patch: Partial<QueryState> = {}
-    if (saved.q !== undefined) patch.q = saved.q
-    if (saved.ingredients) patch.ingredients = saved.ingredients.map(String)
-    if (saved.ingMode) patch.ingMode = saved.ingMode
-    if (typeof saved.alchemyLevel === 'number') patch.alchLvl = saved.alchemyLevel
-    if (Object.keys(patch).length) {
-      setQueryState(patch)
-      setAppliedSavedOnce(true)
-    }
-  }, [saveEnabled, appliedSavedOnce, queryState, setQueryState])
+  // Removed safety net re-apply to allow intentional clearing of all filters/search when Save View is on.
 
   // Persist on changes (when enabled)
   useEffect(() => {
@@ -139,18 +141,18 @@ export default function Kcd2Alchemy({ className }: Kcd2AlchemyProps) {
 
       <main className="container mx-auto p-4 space-y-4">
         <section className="flex flex-col gap-3">
-          <SearchBar value={queryState.q} onChange={(q) => setQueryState({ q })} />
+          <SearchBar value={queryState.q} onChange={(q) => setStateAndPersist({ q })} />
           <FiltersPanel
             ingredientOptions={ingredientOptions}
             selectedIngredientIds={selectedIngredientIds}
             ingredientMode={ingredientMode}
-            onChangeIngredients={(ids) => setQueryState({ ingredients: ids.map(String) })}
-            onChangeIngredientMode={(mode) => setQueryState({ ingMode: mode })}
+            onChangeIngredients={(ids) => setStateAndPersist({ ingredients: ids.map(String) })}
+            onChangeIngredientMode={(mode) => setStateAndPersist({ ingMode: mode })}
             onClearAll={() => {
-              setQueryState({ q: '', ingredients: [], ingMode: 'any', alchLvl: 0 })
+              setStateAndPersist({ q: '', ingredients: [], ingMode: 'any', alchLvl: 0 })
             }}
             alchemyLevel={Number(queryState.alchLvl) || 0}
-            onChangeAlchemyLevel={(lvl) => setQueryState({ alchLvl: lvl })}
+            onChangeAlchemyLevel={(lvl) => setStateAndPersist({ alchLvl: lvl })}
           />
           <div className="text-sm text-[var(--muted-2)]">{count} result{count === 1 ? '' : 's'}</div>
         </section>
