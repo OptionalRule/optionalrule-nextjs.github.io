@@ -10,7 +10,7 @@ function Harness() {
       <div data-testid="q">{state.q}</div>
       <div data-testid="ingredients">{state.ingredients.join(',')}</div>
       <div data-testid="ingMode">{state.ingMode}</div>
-      <button onClick={() => setState({ q: 'mint', ingredients: ['mint'], ingMode: 'all' })}>set</button>
+      <button onClick={() => setState({ q: 'mint', ingredients: ['mint'], ingMode: 'only' })}>set</button>
     </div>
   )
 }
@@ -29,6 +29,6 @@ describe('useQueryState', () => {
     expect(screen.getByTestId('q').textContent).toBe('mint')
     expect(window.location.search).toContain('q=mint')
     expect(window.location.search).toContain('ingredients=mint')
-    expect(window.location.search).toContain('ingMode=all')
+    expect(window.location.search).toContain('ingMode=only')
   })
 })

@@ -45,14 +45,19 @@ describe('filter predicates', () => {
     expect(textMatch(sample[0], 'xyz')).toBe(false)
   })
 
-  it('ingredientMatch matches any or all selected ids', () => {
+  it('ingredientMatch matches any or only modes', () => {
     expect(ingredientMatch(sample[0], [], 'any')).toBe(true)
     expect(ingredientMatch(sample[0], ['marigold'], 'any')).toBe(true)
     expect(ingredientMatch(sample[0], ['wormwood'], 'any')).toBe(false)
 
-    // all mode
-    expect(ingredientMatch(sample[0], ['marigold', 'dandelion'], 'all')).toBe(true)
-    expect(ingredientMatch(sample[0], ['marigold', 'wormwood'], 'all')).toBe(false)
+    // only mode (potion ingredients must be subset of selected)
+    expect(ingredientMatch(sample[0], ['marigold', 'dandelion'], 'only')).toBe(true)
+    // Extra selected items are fine (still a superset of potion ingredients)
+    expect(ingredientMatch(sample[0], ['marigold', 'dandelion', 'sage'], 'only')).toBe(true)
+    // Missing one of potion's ingredients -> not a subset
+    expect(ingredientMatch(sample[0], ['marigold'], 'only')).toBe(false)
+    // Selecting unrelated ingredients only -> not a subset
+    expect(ingredientMatch(sample[0], ['wormwood'], 'only')).toBe(false)
   })
 })
 

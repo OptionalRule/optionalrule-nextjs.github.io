@@ -61,31 +61,24 @@ export function FiltersPanel({
         <div>
           <div className="flex items-center justify-between mb-2">
             <h3 className="text-sm font-medium m-0">Ingredients</h3>
-            <div className="flex items-center gap-1 text-xs" role="group" aria-label="Ingredient match mode">
+            {/* Match mode slider: Any <switch> Only */}
+            <div className="flex items-center gap-2 text-xs" aria-label="Ingredient match mode">
+              <span className={ingredientMode === 'any' ? 'text-[var(--link)] font-semibold' : 'text-[var(--muted)]'}>Any</span>
               <button
                 type="button"
-                className={`px-2 py-0.5 rounded border transition-colors ${
-                  ingredientMode === 'any'
-                    ? 'border-[var(--link)] text-[var(--link)] bg-[color-mix(in_oklab,var(--link)_12%,transparent)]'
-                    : 'border-[var(--border)] text-[var(--muted)]'
-                }`}
-                onClick={() => onChangeIngredientMode('any')}
-                aria-pressed={ingredientMode === 'any'}
+                role="switch"
+                aria-checked={ingredientMode === 'only'}
+                aria-label="Toggle ingredient match mode"
+                onClick={() => onChangeIngredientMode(ingredientMode === 'any' ? 'only' : 'any')}
+                className={`relative inline-flex h-5 w-9 items-center rounded-full border-2 bg-[var(--chip-bg)] focus-visible:ring-2 focus-visible:ring-[var(--link)] transition-colors
+                  ${ingredientMode === 'only' ? 'border-[var(--link)]' : 'border-[var(--border)]'}`}
               >
-                Any
+                <span
+                  className="inline-block h-4 w-4 transform rounded-full bg-[var(--card)] border border-[var(--muted)] transition-transform"
+                  style={{ transform: ingredientMode === 'only' ? 'translateX(16px)' : 'translateX(1px)' }}
+                />
               </button>
-              <button
-                type="button"
-                className={`px-2 py-0.5 rounded border transition-colors ${
-                  ingredientMode === 'all'
-                    ? 'border-[var(--link)] text-[var(--link)] bg-[color-mix(in_oklab,var(--link)_12%,transparent)]'
-                    : 'border-[var(--border)] text-[var(--muted)]'
-                }`}
-                onClick={() => onChangeIngredientMode('all')}
-                aria-pressed={ingredientMode === 'all'}
-              >
-                All
-              </button>
+              <span className={ingredientMode === 'only' ? 'text-[var(--link)] font-semibold' : 'text-[var(--muted)]'}>Only</span>
             </div>
           </div>
           <div className="flex flex-wrap gap-2">

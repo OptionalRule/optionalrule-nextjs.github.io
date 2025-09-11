@@ -1,6 +1,6 @@
 import type { IngredientId, NormalizedPotionRecipe } from '../types'
 
-export type IngredientMatchMode = 'any' | 'all'
+export type IngredientMatchMode = 'any' | 'only'
 
 export interface FilterState {
   query: string
@@ -30,11 +30,12 @@ export function ingredientMatch(
   if (!ingredientIds.length) return true
   const set = new Set<string>(ingredientIds.map(String))
   const has = (id: string | number) => set.has(String(id))
-  if (mode === 'all') {
-    // Every selected id must be present in the potion's items
-    return Array.from(set).every((sel) => p.ingredients.items.some((it) => has(it.id) && String(it.id) === sel))
+  if (mode === 'only') {
+    // Potion's ingredient list must be a subset of the provided ingredientIds
+    // i.e., every ingredient in the potion exists in the selected set
+    return p.ingredients.items.every((it) => has(it.id))
   }
-  // any
+  // any: at least one ingredient matches
   return p.ingredients.items.some((it) => has(it.id))
 }
 

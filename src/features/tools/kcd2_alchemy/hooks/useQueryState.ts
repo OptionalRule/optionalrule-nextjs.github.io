@@ -15,7 +15,7 @@ function toParamList(values: Array<string | number>): string | null {
 export interface QueryState {
   q: string
   ingredients: string[]
-  ingMode: 'any' | 'all'
+  ingMode: 'any' | 'only'
 }
 
 export function useQueryState(): [QueryState, (next: Partial<QueryState>) => void] {
@@ -25,7 +25,8 @@ export function useQueryState(): [QueryState, (next: Partial<QueryState>) => voi
     return {
       q: sp.get('q') ?? '',
       ingredients: parseList(sp.get('ingredients')),
-      ingMode: (sp.get('ingMode') === 'all' ? 'all' : 'any'),
+      // Back-compat: treat legacy 'all' as new 'only'
+      ingMode: (sp.get('ingMode') === 'only' || sp.get('ingMode') === 'all') ? 'only' : 'any',
     }
   })
 
@@ -36,7 +37,7 @@ export function useQueryState(): [QueryState, (next: Partial<QueryState>) => voi
       setLocalState({
         q: sp.get('q') ?? '',
         ingredients: parseList(sp.get('ingredients')),
-        ingMode: (sp.get('ingMode') === 'all' ? 'all' : 'any'),
+        ingMode: (sp.get('ingMode') === 'only' || sp.get('ingMode') === 'all') ? 'only' : 'any',
       })
     }
     window.addEventListener('popstate', handler)

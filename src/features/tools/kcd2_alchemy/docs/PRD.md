@@ -62,12 +62,12 @@ Note: Recipes.ingredents.items.id is a foreign key to Ingredients.id
 
 ## 5. UX & Flows
 
-- Search and filters: query (text), ingredients (multi‑select) with match mode toggle (Any/All).
+- Search and filters: query (text), ingredients (multi-select) with match mode slider (Any/Only).
 - Text search clear: input includes an inline clear (X) control.
 - Results list: shows matching potions, count, empty state with guidance.
 - Details: each recipe card shows ingredients, effects, quantities with perk toggles, and instructions with Default/Optimized tabs.
 - Ingredient highlight: when ingredient filters are active, matching ingredients in each card are highlighted.
-- URL state: `?q=&ingredients=&ingMode=`; reload/links preserve filters. `ingMode` defaults to `any` and may be omitted when at default.
+- URL state: `?q=&ingredients=&ingMode=`; reload/links preserve filters. `ingMode` defaults to `any` and may be omitted when at default. When present, `ingMode` is `only`.
 
 ## 6. Accessibility
 
@@ -83,7 +83,9 @@ Note: Recipes.ingredents.items.id is a foreign key to Ingredients.id
 
 - Tool loads client-side at `/tools/kcd2_alchemy/` without SSR.
 - Loads data from JSON and renders a list with basic fields.
-- Filters operate per spec, with URL query param sync. Effect quality filtering is removed. Ingredient filtering supports Any/All mode.
+- Filters operate per spec, with URL query param sync. Effect quality filtering is removed. Ingredient filtering supports Any/Only mode, where:
+  - Any: includes potions containing at least one selected ingredient.
+  - Only: includes potions whose recipe ingredients are a subset of the selected ingredients (no extras outside the selection).
 - A11y smoke tests pass; no console errors; build succeeds via `npm run build`.
 
 ## 9. Risks & Open Questions
