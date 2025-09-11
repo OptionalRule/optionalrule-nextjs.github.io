@@ -1,7 +1,7 @@
 import type { IngredientId, NormalizedPotionRecipe } from '../types'
 import { PotionCard } from './PotionCard'
 
-export function PotionList({ potions, selectedIngredientIds = [] }: { potions: NormalizedPotionRecipe[]; selectedIngredientIds?: IngredientId[] }) {
+export function PotionList({ potions, selectedIngredientIds = [], playerAlchemyLevel = 0 }: { potions: NormalizedPotionRecipe[]; selectedIngredientIds?: IngredientId[]; playerAlchemyLevel?: number }) {
   if (!potions.length) {
     return (
       <div className="text-sm text-[var(--muted-2)] border border-[var(--border)] rounded-md p-6 bg-[var(--card)]">
@@ -12,7 +12,7 @@ export function PotionList({ potions, selectedIngredientIds = [] }: { potions: N
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
       {potions.map((p) => (
-        <PotionCard key={p.id} potion={p} highlightIngredientIds={selectedIngredientIds} />
+        <PotionCard key={p.id} potion={p} highlightIngredientIds={selectedIngredientIds} playerAlchemyLevel={playerAlchemyLevel} />
       ))}
     </div>
   )

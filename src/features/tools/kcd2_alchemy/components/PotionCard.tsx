@@ -1,10 +1,21 @@
 import type { IngredientId, NormalizedPotionRecipe } from '../types'
-import { useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { QuantityTable } from './QuantityTable'
 
-export function PotionCard({ potion, highlightIngredientIds = [] }: { potion: NormalizedPotionRecipe; highlightIngredientIds?: IngredientId[] }) {
+export function PotionCard({ potion, highlightIngredientIds = [], playerAlchemyLevel = 0 }: { potion: NormalizedPotionRecipe; highlightIngredientIds?: IngredientId[]; playerAlchemyLevel?: number }) {
   const [tab, setTab] = useState<'default' | 'optimized'>('default')
   const hasOptimized = Boolean(potion.instructions.optimized)
+
+  const recommendedTab: 'default' | 'optimized' = useMemo(() => {
+    if (!hasOptimized) return 'default'
+    const min = potion.instructions.optimized!.minLevel
+    return playerAlchemyLevel >= min ? 'optimized' : 'default'
+  }, [hasOptimized, potion.instructions.optimized, playerAlchemyLevel])
+
+  // Follow player skill selection; if user clicks tabs, that manual selection stays
+  useEffect(() => {
+    setTab(recommendedTab)
+  }, [recommendedTab])
 
   // Ensure default selected tab exists
   const selectedTab: 'default' | 'optimized' = hasOptimized ? tab : 'default'

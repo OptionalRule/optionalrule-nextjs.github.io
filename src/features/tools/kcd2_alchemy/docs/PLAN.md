@@ -179,10 +179,10 @@ M7 - Improved Ingredient Filter
 - [x] ingredient filter 'all' option should be renamed 'only' and return all potions whose recipes are composed exclusively from the ingredients provided in the argument list. The potion's ingredient list must be a subset of the provided ingredients.
 - [x] Ingredient filter should use a toggle slider to select between 'any' or 'only' options instead of the current buttons and should default to 'any'.
 
-M8 - Instructions by Alchemy Skill 
-- [ ] Add a dropdown box to select the characters Alchemy Skill Level.
-- [ ] The default instructions are selected if the player's alchemy skill is below the instructions.optimized.minLevel.
-- [ ] The optimized instructions are selected if the players alchemy skill is at or above the instructions.optimized.minLevel.
+M8 - Instructions Display by Alchemy Skill 
+- [x] Add a dropdown box to select the characters Alchemy Skill Level.
+- [x] The default instructions are selected if the player's alchemy skill is below the instructions.optimized.minLevel.
+- [x] The optimized instructions are selected if the players alchemy skill is at or above the instructions.optimized.minLevel.
 
 M9 - Local Save of State
 - [ ] Add toggle to save current filters.

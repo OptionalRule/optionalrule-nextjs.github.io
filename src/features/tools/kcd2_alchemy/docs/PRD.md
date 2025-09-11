@@ -65,9 +65,9 @@ Note: Recipes.ingredents.items.id is a foreign key to Ingredients.id
 - Search and filters: query (text), ingredients (multi-select) with match mode slider (Any/Only).
 - Text search clear: input includes an inline clear (X) control.
 - Results list: shows matching potions, count, empty state with guidance.
-- Details: each recipe card shows ingredients, effects, quantities with perk toggles, and instructions with Default/Optimized tabs.
+- Details: each recipe card shows ingredients, effects, quantities with perk toggles, and instructions with Default/Optimized tabs. A global Alchemy Skill dropdown controls which instructions are selected by default and when changed: below `optimized.minLevel` shows Default; at or above shows Optimized (when present).
 - Ingredient highlight: when ingredient filters are active, matching ingredients in each card are highlighted.
-- URL state: `?q=&ingredients=&ingMode=`; reload/links preserve filters. `ingMode` defaults to `any` and may be omitted when at default. When present, `ingMode` is `only`.
+- URL state: `?q=&ingredients=&ingMode=`; reload/links preserve filters. `ingMode` defaults to `any` and may be omitted when at default. When present, `ingMode` is `only`. The Alchemy Skill selection is not encoded in the URL.
 
 ## 6. Accessibility
 
@@ -86,6 +86,7 @@ Note: Recipes.ingredents.items.id is a foreign key to Ingredients.id
 - Filters operate per spec, with URL query param sync. Effect quality filtering is removed. Ingredient filtering supports Any/Only mode, where:
   - Any: includes potions containing at least one selected ingredient.
   - Only: includes potions whose recipe ingredients are a subset of the selected ingredients (no extras outside the selection).
+  - Instruction selection: When the user sets the Alchemy Skill dropdown to a value >= a recipe's `instructions.optimized.minLevel`, the Optimized instructions are selected; otherwise Default instructions are selected.
 - A11y smoke tests pass; no console errors; build succeeds via `npm run build`.
 
 ## 9. Risks & Open Questions

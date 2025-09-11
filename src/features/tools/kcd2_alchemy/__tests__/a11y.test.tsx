@@ -22,6 +22,8 @@ describe('KCD2 Alchemy — Accessibility', () => {
         ingredientMode="any"
         onChangeIngredients={() => {}}
         onChangeIngredientMode={() => {}}
+        alchemyLevel={0}
+        onChangeAlchemyLevel={() => {}}
       />,
     )
     const results = await axe(container)

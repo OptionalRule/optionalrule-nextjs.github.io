@@ -2,6 +2,7 @@
 
 import type { IngredientId } from '../types'
 import type { IngredientMatchMode } from '../lib/filter'
+import { AlchemyLevelSelect } from './AlchemyLevelSelect'
 
 export interface FiltersPanelProps {
   ingredientOptions: { id: IngredientId; name: string }[]
@@ -10,6 +11,8 @@ export interface FiltersPanelProps {
   onChangeIngredients: (ids: IngredientId[]) => void
   onChangeIngredientMode: (mode: IngredientMatchMode) => void
   onClearAll?: () => void
+  alchemyLevel?: number
+  onChangeAlchemyLevel?: (level: number) => void
 }
 
 function ToggleChip({ active, label }: { active: boolean; label: string }) {
@@ -33,6 +36,8 @@ export function FiltersPanel({
   onChangeIngredients,
   onChangeIngredientMode,
   onClearAll,
+  alchemyLevel = 0,
+  onChangeAlchemyLevel,
 }: FiltersPanelProps) {
   const toggleIngredient = (id: IngredientId) => {
     const set = new Set<string>(selectedIngredientIds.map(String))
@@ -99,6 +104,11 @@ export function FiltersPanel({
             })}
           </div>
         </div>
+      </div>
+
+      {/* Alchemy skill selector */}
+      <div className="pt-3 flex items-center">
+        <AlchemyLevelSelect value={alchemyLevel} onChange={(lvl) => onChangeAlchemyLevel?.(lvl)} min={0} max={30} size="sm" />
       </div>
     </section>
   )

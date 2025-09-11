@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useMemo } from 'react'
+import React, { useMemo, useState } from 'react'
 import { useAlchemyData } from './hooks/useAlchemyData'
 import { useQueryState } from './hooks/useQueryState'
 import { usePotionFilters } from './hooks/usePotionFilters'
@@ -26,6 +26,8 @@ export default function Kcd2Alchemy({ className }: Kcd2AlchemyProps) {
     ingredientMode,
   })
 
+  const [alchemyLevel, setAlchemyLevel] = useState<number>(0)
+
   return (
     <div className={`min-h-screen bg-background text-foreground ${className || ''}`}>
       <header className="pt-4">
@@ -48,6 +50,8 @@ export default function Kcd2Alchemy({ className }: Kcd2AlchemyProps) {
             onChangeIngredients={(ids) => setQueryState({ ingredients: ids.map(String) })}
             onChangeIngredientMode={(mode) => setQueryState({ ingMode: mode })}
             onClearAll={() => setQueryState({ q: '', ingredients: [], ingMode: 'any' })}
+            alchemyLevel={alchemyLevel}
+            onChangeAlchemyLevel={setAlchemyLevel}
           />
           <div className="text-sm text-[var(--muted-2)]">{count} result{count === 1 ? '' : 's'}</div>
         </section>
@@ -60,7 +64,7 @@ export default function Kcd2Alchemy({ className }: Kcd2AlchemyProps) {
         )}
 
         {!loading && !error && (
-          <PotionList potions={results} selectedIngredientIds={selectedIngredientIds} />
+          <PotionList potions={results} selectedIngredientIds={selectedIngredientIds} playerAlchemyLevel={alchemyLevel} />
         )}
       </main>
     </div>
