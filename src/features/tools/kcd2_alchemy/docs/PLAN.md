@@ -168,11 +168,11 @@ M5 — Integration & Polish
 - [x] Validate `npm run test:all` and `npm run build` locally per STANDARDS.md.
 
 M6 - Filter & Search Improvements
-- [ ] Remove filter Effect Quality functionality and remove the filter option.
-- [ ] Ingredients filter should have an option to filter for potions with all of the ingredients or any of the ingredients as a clickable toggle next to the Ingredients label.
-- [ ] When an ingredient filter is selected, the applicable ingredient in the potion card should be highlighted.
-- [ ] The Text Search box should include a small X inside the input that clears the search text when clicked.
-- [ ] Update PRD.md as nessisary to relfect these changes and improvements.
+- [x] Remove filter Effect Quality functionality and remove the filter option.
+- [x] Ingredients filter should have an option to filter for potions with all of the ingredients or any of the ingredients as a clickable toggle next to the Ingredients label.
+- [x] When an ingredient filter is selected, the applicable ingredient in the potion card should be highlighted.
+- [x] The Text Search box should include a small X inside the input that clears the search text when clicked.
+- [x] Update PRD.md as nessisary to relfect these changes and improvements.
 
 ## 10) Acceptance Criteria (DoD)
 

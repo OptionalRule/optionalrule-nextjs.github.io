@@ -62,10 +62,12 @@ Note: Recipes.ingredents.items.id is a foreign key to Ingredients.id
 
 ## 5. UX & Flows
 
-- Search and filters: query (text), level, ingredients, effects.
+- Search and filters: query (text), ingredients (multi‑select) with match mode toggle (Any/All).
+- Text search clear: input includes an inline clear (X) control.
 - Results list: shows matching potions, count, empty state with guidance.
 - Details: each recipe card shows ingredients, effects, quantities with perk toggles, and instructions with Default/Optimized tabs.
-- URL state: `?q=&level=&ingredients=&effects=`; reload/links preserve filters.
+- Ingredient highlight: when ingredient filters are active, matching ingredients in each card are highlighted.
+- URL state: `?q=&ingredients=&ingMode=`; reload/links preserve filters. `ingMode` defaults to `any` and may be omitted when at default.
 
 ## 6. Accessibility
 
@@ -81,7 +83,7 @@ Note: Recipes.ingredents.items.id is a foreign key to Ingredients.id
 
 - Tool loads client-side at `/tools/kcd2_alchemy/` without SSR.
 - Loads data from JSON and renders a list with basic fields.
-- Filters operate per spec, with URL query param sync.
+- Filters operate per spec, with URL query param sync. Effect quality filtering is removed. Ingredient filtering supports Any/All mode.
 - A11y smoke tests pass; no console errors; build succeeds via `npm run build`.
 
 ## 9. Risks & Open Questions

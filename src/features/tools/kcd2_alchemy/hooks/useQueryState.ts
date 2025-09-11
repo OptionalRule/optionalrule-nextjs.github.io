@@ -15,17 +15,17 @@ function toParamList(values: Array<string | number>): string | null {
 export interface QueryState {
   q: string
   ingredients: string[]
-  effects: string[]
+  ingMode: 'any' | 'all'
 }
 
 export function useQueryState(): [QueryState, (next: Partial<QueryState>) => void] {
   const [state, setLocalState] = useState<QueryState>(() => {
-    if (typeof window === 'undefined') return { q: '', ingredients: [], effects: [] }
+    if (typeof window === 'undefined') return { q: '', ingredients: [], ingMode: 'any' }
     const sp = new URLSearchParams(window.location.search)
     return {
       q: sp.get('q') ?? '',
       ingredients: parseList(sp.get('ingredients')),
-      effects: parseList(sp.get('effects')),
+      ingMode: (sp.get('ingMode') === 'all' ? 'all' : 'any'),
     }
   })
 
@@ -36,7 +36,7 @@ export function useQueryState(): [QueryState, (next: Partial<QueryState>) => voi
       setLocalState({
         q: sp.get('q') ?? '',
         ingredients: parseList(sp.get('ingredients')),
-        effects: parseList(sp.get('effects')),
+        ingMode: (sp.get('ingMode') === 'all' ? 'all' : 'any'),
       })
     }
     window.addEventListener('popstate', handler)
@@ -48,7 +48,7 @@ export function useQueryState(): [QueryState, (next: Partial<QueryState>) => voi
     const nextState: QueryState = { ...state }
     if (next.q !== undefined) nextState.q = next.q
     if (next.ingredients !== undefined) nextState.ingredients = next.ingredients
-    if (next.effects !== undefined) nextState.effects = next.effects
+    if (next.ingMode !== undefined) nextState.ingMode = next.ingMode
 
     // Update URL params
     if (next.q !== undefined) {
@@ -60,10 +60,10 @@ export function useQueryState(): [QueryState, (next: Partial<QueryState>) => voi
       if (v) sp.set('ingredients', v)
       else sp.delete('ingredients')
     }
-    if (next.effects !== undefined) {
-      const v = toParamList(nextState.effects)
-      if (v) sp.set('effects', v)
-      else sp.delete('effects')
+    if (next.ingMode !== undefined) {
+      const v = nextState.ingMode
+      if (v && v !== 'any') sp.set('ingMode', v)
+      else sp.delete('ingMode')
     }
 
     const query = sp.toString()

@@ -1,14 +1,14 @@
 'use client'
 
 import type { IngredientId } from '../types'
+import type { IngredientMatchMode } from '../lib/filter'
 
 export interface FiltersPanelProps {
   ingredientOptions: { id: IngredientId; name: string }[]
-  effectOptions: string[]
   selectedIngredientIds: IngredientId[]
-  selectedEffects: string[]
+  ingredientMode: IngredientMatchMode
   onChangeIngredients: (ids: IngredientId[]) => void
-  onChangeEffects: (effects: string[]) => void
+  onChangeIngredientMode: (mode: IngredientMatchMode) => void
   onClearAll?: () => void
 }
 
@@ -28,11 +28,10 @@ function ToggleChip({ active, label }: { active: boolean; label: string }) {
 
 export function FiltersPanel({
   ingredientOptions,
-  effectOptions,
   selectedIngredientIds,
-  selectedEffects,
+  ingredientMode,
   onChangeIngredients,
-  onChangeEffects,
+  onChangeIngredientMode,
   onClearAll,
 }: FiltersPanelProps) {
   const toggleIngredient = (id: IngredientId) => {
@@ -41,14 +40,6 @@ export function FiltersPanel({
     if (set.has(key)) set.delete(key)
     else set.add(key)
     onChangeIngredients(Array.from(set))
-  }
-
-  const toggleEffect = (label: string) => {
-    const set = new Set(selectedEffects.map((s) => s.toLowerCase()))
-    const key = label.toLowerCase()
-    if (set.has(key)) set.delete(key)
-    else set.add(key)
-    onChangeEffects(Array.from(set))
   }
 
   return (
@@ -68,7 +59,35 @@ export function FiltersPanel({
 
       <div className="space-y-4">
         <div>
-          <h3 className="text-sm font-medium mb-2">Ingredients</h3>
+          <div className="flex items-center justify-between mb-2">
+            <h3 className="text-sm font-medium m-0">Ingredients</h3>
+            <div className="flex items-center gap-1 text-xs" role="group" aria-label="Ingredient match mode">
+              <button
+                type="button"
+                className={`px-2 py-0.5 rounded border transition-colors ${
+                  ingredientMode === 'any'
+                    ? 'border-[var(--link)] text-[var(--link)] bg-[color-mix(in_oklab,var(--link)_12%,transparent)]'
+                    : 'border-[var(--border)] text-[var(--muted)]'
+                }`}
+                onClick={() => onChangeIngredientMode('any')}
+                aria-pressed={ingredientMode === 'any'}
+              >
+                Any
+              </button>
+              <button
+                type="button"
+                className={`px-2 py-0.5 rounded border transition-colors ${
+                  ingredientMode === 'all'
+                    ? 'border-[var(--link)] text-[var(--link)] bg-[color-mix(in_oklab,var(--link)_12%,transparent)]'
+                    : 'border-[var(--border)] text-[var(--muted)]'
+                }`}
+                onClick={() => onChangeIngredientMode('all')}
+                aria-pressed={ingredientMode === 'all'}
+              >
+                All
+              </button>
+            </div>
+          </div>
           <div className="flex flex-wrap gap-2">
             {ingredientOptions.map((opt) => {
               const active = selectedIngredientIds.map(String).includes(String(opt.id))
@@ -82,27 +101,6 @@ export function FiltersPanel({
                   data-active={active}
                 >
                   <ToggleChip active={active} label={opt.name} />
-                </button>
-              )
-            })}
-          </div>
-        </div>
-
-        <div>
-          <h3 className="text-sm font-medium mb-2">Effect Quality</h3>
-          <div className="flex flex-wrap gap-2">
-            {effectOptions.map((label) => {
-              const active = selectedEffects.map((s) => s.toLowerCase()).includes(label.toLowerCase())
-              return (
-                <button
-                  key={label}
-                  type="button"
-                  onClick={() => toggleEffect(label)}
-                  className="focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--link)] rounded"
-                  aria-pressed={active}
-                  data-active={active}
-                >
-                  <ToggleChip active={active} label={label} />
                 </button>
               )
             })}

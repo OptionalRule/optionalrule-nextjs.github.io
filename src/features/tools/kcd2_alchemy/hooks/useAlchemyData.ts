@@ -3,12 +3,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import type { Ingredient, NormalizedPotionRecipe } from '../types'
 import { parseIngredients, parsePotions, validateReferentialIntegrity } from '../lib/schema'
-import {
-  buildIngredientIndex,
-  deriveEffectQualities,
-  deriveIngredientOptions,
-  resolvePotions,
-} from '../lib/normalize'
+import { buildIngredientIndex, deriveIngredientOptions, resolvePotions } from '../lib/normalize'
 
 export interface AlchemyDataState {
   loading: boolean
@@ -16,7 +11,6 @@ export interface AlchemyDataState {
   potions: NormalizedPotionRecipe[]
   ingredients: Ingredient[]
   ingredientOptions: { id: string | number; name: string }[]
-  effectQualities: string[]
 }
 
 export function useAlchemyData(): AlchemyDataState {
@@ -75,7 +69,5 @@ export function useAlchemyData(): AlchemyDataState {
   }, [])
 
   const ingredientOptions = useMemo(() => deriveIngredientOptions(ingredients), [ingredients])
-  const effectQualities = useMemo(() => deriveEffectQualities(potions), [potions])
-
-  return { loading, error, potions, ingredients, ingredientOptions, effectQualities }
+  return { loading, error, potions, ingredients, ingredientOptions }
 }

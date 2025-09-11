@@ -1,8 +1,8 @@
-import type { NormalizedPotionRecipe } from '../types'
+import type { IngredientId, NormalizedPotionRecipe } from '../types'
 import { useState } from 'react'
 import { QuantityTable } from './QuantityTable'
 
-export function PotionCard({ potion }: { potion: NormalizedPotionRecipe }) {
+export function PotionCard({ potion, highlightIngredientIds = [] }: { potion: NormalizedPotionRecipe; highlightIngredientIds?: IngredientId[] }) {
   const [tab, setTab] = useState<'default' | 'optimized'>('default')
   const hasOptimized = Boolean(potion.instructions.optimized)
 
@@ -26,9 +26,25 @@ export function PotionCard({ potion }: { potion: NormalizedPotionRecipe }) {
         <div className="flex items-baseline gap-2 flex-wrap">
           <h4 className="font-medium shrink-0">Ingredients:</h4>
           <ul className="list-none p-0 m-0 text-sm">
-            {potion.ingredients.items.map((it) => (
-              <li className="inline after:content-[',_'] last:after:content-['']" key={`${potion.id}-${String(it.id)}`}>{it.name} ({it.quantity})</li>
-            ))}
+            {potion.ingredients.items.map((it) => {
+              const isHighlighted = highlightIngredientIds.map(String).includes(String(it.id))
+              return (
+                <li
+                  className="inline after:content-[',_'] last:after:content-['']"
+                  key={`${potion.id}-${String(it.id)}`}
+                >
+                  <span
+                    className={
+                      isHighlighted
+                        ? 'px-1 rounded border border-[var(--link)] text-[var(--link)] bg-[color-mix(in_oklab,var(--link)_12%,transparent)]'
+                        : ''
+                    }
+                  >
+                    {it.name} ({it.quantity})
+                  </span>
+                </li>
+              )
+            })}
           </ul>
         </div>
       </section>

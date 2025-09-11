@@ -1,7 +1,7 @@
-import type { NormalizedPotionRecipe } from '../types'
+import type { IngredientId, NormalizedPotionRecipe } from '../types'
 import { PotionCard } from './PotionCard'
 
-export function PotionList({ potions }: { potions: NormalizedPotionRecipe[] }) {
+export function PotionList({ potions, selectedIngredientIds = [] }: { potions: NormalizedPotionRecipe[]; selectedIngredientIds?: IngredientId[] }) {
   if (!potions.length) {
     return (
       <div className="text-sm text-[var(--muted-2)] border border-[var(--border)] rounded-md p-6 bg-[var(--card)]">
@@ -12,9 +12,8 @@ export function PotionList({ potions }: { potions: NormalizedPotionRecipe[] }) {
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
       {potions.map((p) => (
-        <PotionCard key={p.id} potion={p} />
+        <PotionCard key={p.id} potion={p} highlightIngredientIds={selectedIngredientIds} />
       ))}
     </div>
   )
 }
-

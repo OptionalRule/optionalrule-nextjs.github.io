@@ -18,11 +18,10 @@ describe('KCD2 Alchemy — Accessibility', () => {
           { id: 'mint', name: 'Mint' },
           { id: 'belladonna', name: 'Belladonna' },
         ]}
-        effectOptions={['Weak', 'Strong']}
         selectedIngredientIds={['mint']}
-        selectedEffects={['weak']}
+        ingredientMode="any"
         onChangeIngredients={() => {}}
-        onChangeEffects={() => {}}
+        onChangeIngredientMode={() => {}}
       />,
     )
     const results = await axe(container)

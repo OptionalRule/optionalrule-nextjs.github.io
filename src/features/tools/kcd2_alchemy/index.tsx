@@ -13,17 +13,17 @@ export interface Kcd2AlchemyProps {
 }
 
 export default function Kcd2Alchemy({ className }: Kcd2AlchemyProps) {
-  const { loading, error, potions, ingredientOptions, effectQualities } = useAlchemyData()
+  const { loading, error, potions, ingredientOptions } = useAlchemyData()
   const [queryState, setQueryState] = useQueryState()
 
   const selectedIngredientIds = useMemo(() => queryState.ingredients, [queryState.ingredients])
-  const selectedEffects = useMemo(() => queryState.effects, [queryState.effects])
+  const ingredientMode = queryState.ingMode
 
   const { results, count } = usePotionFilters({
     potions,
     query: queryState.q,
     ingredientIds: selectedIngredientIds,
-    effectQualities: selectedEffects,
+    ingredientMode,
   })
 
   return (
@@ -43,12 +43,11 @@ export default function Kcd2Alchemy({ className }: Kcd2AlchemyProps) {
           <SearchBar value={queryState.q} onChange={(q) => setQueryState({ q })} />
           <FiltersPanel
             ingredientOptions={ingredientOptions}
-            effectOptions={effectQualities}
             selectedIngredientIds={selectedIngredientIds}
-            selectedEffects={selectedEffects}
+            ingredientMode={ingredientMode}
             onChangeIngredients={(ids) => setQueryState({ ingredients: ids.map(String) })}
-            onChangeEffects={(effects) => setQueryState({ effects })}
-            onClearAll={() => setQueryState({ q: '', ingredients: [], effects: [] })}
+            onChangeIngredientMode={(mode) => setQueryState({ ingMode: mode })}
+            onClearAll={() => setQueryState({ q: '', ingredients: [], ingMode: 'any' })}
           />
           <div className="text-sm text-[var(--muted-2)]">{count} result{count === 1 ? '' : 's'}</div>
         </section>
@@ -60,7 +59,9 @@ export default function Kcd2Alchemy({ className }: Kcd2AlchemyProps) {
           <div className="text-sm text-red-500">{error}</div>
         )}
 
-        {!loading && !error && <PotionList potions={results} />}
+        {!loading && !error && (
+          <PotionList potions={results} selectedIngredientIds={selectedIngredientIds} />
+        )}
       </main>
     </div>
   )

@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { applyFilters, textMatch, ingredientMatch, effectQualityMatch } from '../lib/filter'
+import { applyFilters, textMatch, ingredientMatch } from '../lib/filter'
 import type { NormalizedPotionRecipe } from '../types'
 
 const sample: NormalizedPotionRecipe[] = [
@@ -45,33 +45,29 @@ describe('filter predicates', () => {
     expect(textMatch(sample[0], 'xyz')).toBe(false)
   })
 
-  it('ingredientMatch matches any selected ingredient id', () => {
-    expect(ingredientMatch(sample[0], [])).toBe(true)
-    expect(ingredientMatch(sample[0], ['marigold'])).toBe(true)
-    expect(ingredientMatch(sample[0], ['wormwood'])).toBe(false)
-  })
+  it('ingredientMatch matches any or all selected ids', () => {
+    expect(ingredientMatch(sample[0], [], 'any')).toBe(true)
+    expect(ingredientMatch(sample[0], ['marigold'], 'any')).toBe(true)
+    expect(ingredientMatch(sample[0], ['wormwood'], 'any')).toBe(false)
 
-  it('effectQualityMatch matches any selected quality', () => {
-    expect(effectQualityMatch(sample[0], [])).toBe(true)
-    expect(effectQualityMatch(sample[0], ['weak'])).toBe(true)
-    expect(effectQualityMatch(sample[0], ['strong'])).toBe(true)
-    expect(effectQualityMatch(sample[0], ['standard'])).toBe(false)
+    // all mode
+    expect(ingredientMatch(sample[0], ['marigold', 'dandelion'], 'all')).toBe(true)
+    expect(ingredientMatch(sample[0], ['marigold', 'wormwood'], 'all')).toBe(false)
   })
 })
 
 describe('applyFilters', () => {
-  it('applies text + ingredient + effect filters and sorts by name', () => {
+  it('applies text + ingredient filters and sorts by name', () => {
     const results = applyFilters(sample, {
       query: 'increases',
       ingredientIds: ['wormwood'],
-      effectQualities: ['standard'],
+      ingredientMode: 'any',
     })
     expect(results.map((r) => r.id)).toEqual(['p2'])
   })
 
   it('returns all when filters are empty', () => {
-    const results = applyFilters(sample, { query: '', ingredientIds: [], effectQualities: [] })
+    const results = applyFilters(sample, { query: '', ingredientIds: [], ingredientMode: 'any' })
     expect(results.length).toBe(2)
   })
 })
-

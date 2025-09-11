@@ -1,9 +1,11 @@
 import type { IngredientId, NormalizedPotionRecipe } from '../types'
 
+export type IngredientMatchMode = 'any' | 'all'
+
 export interface FilterState {
   query: string
   ingredientIds: IngredientId[]
-  effectQualities: string[]
+  ingredientMode: IngredientMatchMode
 }
 
 function includesCaseInsensitive(haystack: string, needle: string): boolean {
@@ -23,30 +25,26 @@ export function textMatch(p: NormalizedPotionRecipe, query: string): boolean {
 export function ingredientMatch(
   p: NormalizedPotionRecipe,
   ingredientIds: IngredientId[],
+  mode: IngredientMatchMode,
 ): boolean {
   if (!ingredientIds.length) return true
   const set = new Set<string>(ingredientIds.map(String))
-  return p.ingredients.items.some((it) => set.has(String(it.id)))
-}
-
-export function effectQualityMatch(
-  p: NormalizedPotionRecipe,
-  qualities: string[],
-): boolean {
-  if (!qualities.length) return true
-  const set = new Set(qualities.map((q) => q.toLowerCase()))
-  return p.effects.some((e) => set.has(e.quality.toLowerCase()))
+  const has = (id: string | number) => set.has(String(id))
+  if (mode === 'all') {
+    // Every selected id must be present in the potion's items
+    return Array.from(set).every((sel) => p.ingredients.items.some((it) => has(it.id) && String(it.id) === sel))
+  }
+  // any
+  return p.ingredients.items.some((it) => has(it.id))
 }
 
 export function applyFilters(
   potions: NormalizedPotionRecipe[],
   filters: FilterState,
 ): NormalizedPotionRecipe[] {
-  const { query, ingredientIds, effectQualities } = filters
+  const { query, ingredientIds, ingredientMode } = filters
   return potions
     .filter((p) => textMatch(p, query))
-    .filter((p) => ingredientMatch(p, ingredientIds))
-    .filter((p) => effectQualityMatch(p, effectQualities))
+    .filter((p) => ingredientMatch(p, ingredientIds, ingredientMode))
     .sort((a, b) => a.name.localeCompare(b.name))
 }
-
