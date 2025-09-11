@@ -77,13 +77,26 @@ export function parsePotions(input: unknown): PotionRecipe[] {
     (def as unknown[]).forEach((s, k) => assert(isString(s), `potions[${idx}].instructions.default[${k}]: expected string`));
 
     const optimized = instObj.optimized as unknown;
-    if (optimized !== undefined) {
+    let optimizedParsed: { minLevel: number; steps: string[] } | undefined;
+    if (optimized !== undefined && optimized !== null) {
       assert(isObject(optimized), `potions[${idx}].instructions.optimized: expected object`);
       const optObj = optimized as Record<string, unknown>;
-      assert(isNumber(optObj.minLevel), `potions[${idx}].instructions.optimized.minLevel: expected number`);
+      assert(
+        isNumber(optObj.minLevel),
+        `potions[${idx}].instructions.optimized.minLevel: expected number`,
+      );
       const steps = optObj.steps as unknown;
-      assert(Array.isArray(steps), `potions[${idx}].instructions.optimized.steps: expected array`);
-      (steps as unknown[]).forEach((s: unknown, k: number) => assert(isString(s), `potions[${idx}].instructions.optimized.steps[${k}]: expected string`));
+      assert(
+        Array.isArray(steps),
+        `potions[${idx}].instructions.optimized.steps: expected array`,
+      );
+      (steps as unknown[]).forEach((s: unknown, k: number) =>
+        assert(
+          isString(s),
+          `potions[${idx}].instructions.optimized.steps[${k}]: expected string`,
+        ),
+      );
+      optimizedParsed = { minLevel: optObj.minLevel as number, steps: steps as string[] };
     }
 
     const quantity = obj.quantity as unknown;
@@ -114,14 +127,7 @@ export function parsePotions(input: unknown): PotionRecipe[] {
       ingredients: { liquid: liquid as string, items: parsedItems },
       instructions: {
         default: def as string[],
-        ...(optimized
-          ? {
-              optimized: {
-                minLevel: (optimized as Record<string, unknown>).minLevel as number,
-                steps: (optimized as Record<string, unknown>).steps as string[],
-              },
-            }
-          : {}),
+        ...(optimizedParsed ? { optimized: optimizedParsed } : {}),
       },
       quantity: {
         base: qtyObj.base as number,

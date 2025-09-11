@@ -44,6 +44,32 @@ describe('Schema validators', () => {
     expect(parsed[0].instructions.optimized?.minLevel).toBe(10);
   });
 
+  it('allows optimized to be null (treated as absent)', () => {
+    const potions = [
+      {
+        id: '01',
+        name: 'Null Optimized',
+        ingredients: {
+          liquid: 'Water',
+          items: [{ id: 'mint', quantity: 1 }],
+        },
+        instructions: {
+          default: ['Add water'],
+          optimized: null,
+        } as unknown as { default: string[] },
+        quantity: {
+          base: 1,
+          withSecretOfMatterI: 2,
+          withSecretOfMatterII: 3,
+          withBothSecrets: 4,
+        },
+        effects: [{ quality: 'Weak', description: 'x' }],
+      },
+    ]
+    const parsed = parsePotions(potions)
+    expect(parsed[0].instructions.optimized).toBeUndefined()
+  })
+
   it('detects missing ingredient references across files', () => {
     const ingredients = parseIngredients([{ id: 'mint', name: 'Mint' }]);
     const potions = parsePotions([
