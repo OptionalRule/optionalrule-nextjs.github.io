@@ -72,40 +72,40 @@ export function PotionCard({ potion }: { potion: NormalizedPotionRecipe }) {
             ? potion.instructions.optimized.steps
             : potion.instructions.default
           ).map((step, i) => (
-            <li key={`${potion.id}-step-${selectedTab}-${i}`} className="text-[var(--chip-text)] ml-2">{step}</li>
+            <li key={`${potion.id}-step-${selectedTab}-${i}`}>{step}</li>
           ))}
         </ol>
       </section>
 
       <section className="mb-3">
-        <button
-          id={effectsButtonId}
-          type="button"
-          className="w-full flex items-center gap-2 py-1 px-2 rounded border border-[var(--border)] bg-[var(--surfaceHover)] text-left focus-visible:ring-2 focus-visible:ring-[var(--link)]"
-          onClick={() => setEffectsOpen((v) => !v)}
-          aria-expanded={effectsOpen}
-          aria-controls={effectsPanelId}
-          role="heading"
-          aria-level={4}
-        >
-          <span className="font-medium">Effects</span>
-          <span className="inline-flex items-center justify-center w-5 h-5 rounded border border-[var(--border)] bg-[var(--card)] text-[var(--muted)]">
-            <svg
-              aria-hidden="true"
-              viewBox="0 0 20 20"
-              className="w-3.5 h-3.5"
-              style={{
-                transform: effectsOpen ? 'rotate(90deg)' : 'rotate(0deg)',
-                transition: 'transform 150ms ease',
-              }}
-            >
-              <path
-                fill="currentColor"
-                d="M7.293 14.707a1 1 0 0 1 0-1.414L9.586 11 7.293 8.707a1 1 0 0 1 1.414-1.414l3 3a1 1 0 0 1 0 1.414l-3 3a1 1 0 0 1-1.414 0z"
-              />
-            </svg>
-          </span>
-        </button>
+        <h4 className="m-0">
+          <button
+            id={effectsButtonId}
+            type="button"
+            className="w-full flex items-center gap-2 py-1 px-2 rounded border border-[var(--border)] bg-[var(--surfaceHover)] text-left focus-visible:ring-2 focus-visible:ring-[var(--link)]"
+            onClick={() => setEffectsOpen((v) => !v)}
+            aria-expanded={effectsOpen}
+            aria-controls={effectsPanelId}
+          >
+            <span className="font-medium">Effects</span>
+            <span className="inline-flex items-center justify-center w-5 h-5 rounded border border-[var(--border)] bg-[var(--card)] text-[var(--muted)]">
+              <svg
+                aria-hidden="true"
+                viewBox="0 0 20 20"
+                className="w-3.5 h-3.5"
+                style={{
+                  transform: effectsOpen ? 'rotate(90deg)' : 'rotate(0deg)',
+                  transition: 'transform 150ms ease',
+                }}
+              >
+                <path
+                  fill="currentColor"
+                  d="M7.293 14.707a1 1 0 0 1 0-1.414L9.586 11 7.293 8.707a1 1 0 0 1 1.414-1.414l3 3a1 1 0 0 1 0 1.414l-3 3a1 1 0 0 1-1.414 0z"
+                />
+              </svg>
+            </span>
+          </button>
+        </h4>
         <div id={effectsPanelId} role="region" aria-labelledby={effectsButtonId} hidden={!effectsOpen} className="shadow-lg p-4 rounded mx-2">
           <table className="w-full text-sm border-separate" style={{ borderSpacing: '0 4px' }}>
             <tbody>
@@ -125,34 +125,34 @@ export function PotionCard({ potion }: { potion: NormalizedPotionRecipe }) {
       </section>
 
       <section className="mb-3">
-        <button
-          id={quantitiesButtonId}
-          type="button"
-          className="w-full flex items-center gap-2 py-1 px-2 rounded border border-[var(--border)] bg-[var(--surfaceHover)] text-left focus-visible:ring-2 focus-visible:ring-[var(--link)]"
-          onClick={() => setQuantitiesOpen((v) => !v)}
-          aria-expanded={quantitiesOpen}
-          aria-controls={quantitiesPanelId}
-          role="heading"
-          aria-level={4}
-        >
-          <span className="font-medium">Quantities</span>
-          <span className="inline-flex items-center justify-center w-5 h-5 rounded border border-[var(--border)] bg-[var(--card)] text-[var(--muted)]">
-            <svg
-              aria-hidden="true"
-              viewBox="0 0 20 20"
-              className="w-3.5 h-3.5"
-              style={{
-                transform: quantitiesOpen ? 'rotate(90deg)' : 'rotate(0deg)',
-                transition: 'transform 150ms ease',
-              }}
-            >
-              <path
-                fill="currentColor"
-                d="M7.293 14.707a1 1 0 0 1 0-1.414L9.586 11 7.293 8.707a1 1 0 0 1 1.414-1.414l3 3a1 1 0 0 1 0 1.414l-3 3a1 1 0 0 1-1.414 0z"
-              />
-            </svg>
-          </span>
-        </button>
+        <h4 className="m-0">
+          <button
+            id={quantitiesButtonId}
+            type="button"
+            className="w-full flex items-center gap-2 py-1 px-2 rounded border border-[var(--border)] bg-[var(--surfaceHover)] text-left focus-visible:ring-2 focus-visible:ring-[var(--link)]"
+            onClick={() => setQuantitiesOpen((v) => !v)}
+            aria-expanded={quantitiesOpen}
+            aria-controls={quantitiesPanelId}
+          >
+            <span className="font-medium">Quantities</span>
+            <span className="inline-flex items-center justify-center w-5 h-5 rounded border border-[var(--border)] bg-[var(--card)] text-[var(--muted)]">
+              <svg
+                aria-hidden="true"
+                viewBox="0 0 20 20"
+                className="w-3.5 h-3.5"
+                style={{
+                  transform: quantitiesOpen ? 'rotate(90deg)' : 'rotate(0deg)',
+                  transition: 'transform 150ms ease',
+                }}
+              >
+                <path
+                  fill="currentColor"
+                  d="M7.293 14.707a1 1 0 0 1 0-1.414L9.586 11 7.293 8.707a1 1 0 0 1 1.414-1.414l3 3a1 1 0 0 1 0 1.414l-3 3a1 1 0 0 1-1.414 0z"
+                />
+              </svg>
+            </span>
+          </button>
+        </h4>
         <div id={quantitiesPanelId} role="region" aria-labelledby={quantitiesButtonId} hidden={!quantitiesOpen}>
           <QuantityTable quantity={potion.quantity} />
         </div>
