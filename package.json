@@ -7,6 +7,7 @@
     "dev": "next dev",
     "build": "npm run generate-search-index && npm run generate-rss && next build",
     "start": "next start",
+    "enhance-post": "node scripts/enhance-post.mjs",
     "verify-titles": "node scripts/verify-titles.js",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",

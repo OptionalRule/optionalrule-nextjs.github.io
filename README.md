@@ -227,15 +227,20 @@ Env configuration (.env):
 - `OPENAI_API_KEY`: Required API key
 - `OPENAI_MODEL`: Model name (e.g., `gpt-5-mini`, `gpt-4o-mini`)
 - `OPENAI_REASONING`: Reasoning effort (`low` | `medium` | `high`)
+  - Note: Used with `--responses-api` when supported; not sent to Chat Completions API.
 
 Options:
 - `--dry-run`: Preview changes without modifying files
 - `--path <path>`: Explicit path if you don’t use the positional arg
 - `--overwrite-excerpts`: Replace existing excerpts
 - `--overwrite-tags`: Replace existing tags
+- `--overwrite-all`: Replace both excerpts and tags
 - `--no-backup`: Skip `.bak` creation (default: true)
 - `--concurrency <n>`: Parallel processing limit (default: 3)
 - `--model <name>`: Override model from `.env`
+- `--responses-api`: Use the OpenAI Responses API (opt‑in). Enables `OPENAI_REASONING` when compatible and auto‑falls back to Chat Completions on errors.
+  - Note: For `OPENAI_MODEL` values matching `gpt-5*`, the script will prefer the Responses API automatically even without this flag.
+- `--debug`: Print raw API responses and request payload details (sanitized)
 
 Example usage:
 ```bash
@@ -250,4 +255,13 @@ node scripts/tag-and-excerpt.mjs content/drafts --concurrency 5
 
 # Override model defined in .env
 node scripts/tag-and-excerpt.mjs --model gpt-4o-mini
+
+# Use Responses API (with reasoning when supported)
+node scripts/tag-and-excerpt.mjs --responses-api
+
+# Overwrite both excerpts and tags
+node scripts/tag-and-excerpt.mjs --overwrite-all
+
+# Debug: show raw API responses
+node scripts/tag-and-excerpt.mjs --debug --responses-api content/posts/2025-09-12-kcd2-alchemy-tool-and-nostalgia-for-ttrpg-crafting.mdx
 ```
