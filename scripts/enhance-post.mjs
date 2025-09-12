@@ -338,7 +338,7 @@ async function analyzeWithOpenAI({ apiKey, model, title, content }) {
   // Try Responses API first, then fall back to Chat Completions
   try {
     return await callOpenAIResponses({ apiKey, model, title, content });
-  } catch (err) {
+  } catch (_err) {
     // console.warn('Responses API failed, falling back to Chat:', err?.message || err);
     return await callOpenAIChat({ apiKey, model, title, content });
   }
