@@ -42,9 +42,24 @@ export function PotionCard({ potion, highlightIngredientIds = [], playerAlchemyL
   const effectsButtonId = `effects-btn-${potion.id}`
   const quantitiesButtonId = `quantities-btn-${potion.id}`
 
+  const priceText = useMemo(() => {
+    const v = potion.baseValue ?? 0
+    return Number.isInteger(v) ? String(v) : v.toFixed(2).replace(/\.0+$/,'').replace(/(\.[1-9])0$/,'$1')
+  }, [potion.baseValue])
+
   return (
     <article id={`potion-${potion.id}`} className="border border-[var(--border-light)] rounded-xl p-0 bg-[var(--card)] shadow-sm hover:shadow-md transition-shadow duration-200">
-      <header className="p-6 pb-4 bg-gradient-to-br from-[var(--surface)] to-[var(--surface-2)] rounded-t-xl border-b border-[var(--border-light)]">
+      <header className="relative p-6 pb-4 bg-gradient-to-br from-[var(--surface)] to-[var(--surface-2)] rounded-t-xl border-b border-[var(--border-light)]">
+        {/* Base value badge in upper-right */}
+        <div className="absolute top-4 right-4">
+          <span
+            className="px-2 py-1 rounded-md bg-[var(--surface)] text-[var(--text-primary)] text-xs font-semibold border border-[var(--border)]"
+            aria-label={`Base value: ${priceText} groschen`}
+            title={`Base value: ${priceText} groschen`}
+          >
+            {priceText}g
+          </span>
+        </div>
         <h3 className="text-2xl font-bold text-[var(--text-primary)] mb-2">{potion.name}</h3>
         <div className="flex items-center gap-2 text-sm text-[var(--text-tertiary)]">
           <Droplet className="w-4 h-4" />
