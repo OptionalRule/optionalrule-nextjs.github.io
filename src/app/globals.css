@@ -1,43 +1,64 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
-  /* Ensure user-agent forms, scrollbars, etc., align with light by default */
+  --background: #fefefe; /* pure white with warmth */
+  --foreground: #0f172a; /* slate-900 - strong contrast */
   color-scheme: light;
-  /* Theming tokens for class-based dark mode */
-  --surface: #f1f5f9; /* slate-100 */
-  --card: #fafafa; /* zinc-50 */
-  --muted: #4b5563; /* gray-700 */
-  --muted-2: #6b7280; /* gray-600 */
-  --border: #e5e7eb; /* gray-200 */
-  --surface-hover: #f3f4f6; /* gray-100 */
-  --link: #2563eb; /* blue-600 */
-  --link-hover: #1e40af; /* blue-800 */
-  --chip-bg: #f3f4f6; /* gray-100 */
-  --chip-text: #374151; /* gray-700 */
-  --highlight-bg: #fde68a; /* yellow-200 */
   
-  /* Header and typography hierarchy */
-  --header-primary: #111827; /* gray-900 - strong headings */
-  --header-secondary: #374151; /* gray-700 - subheadings */
-  --header-block-bg: #f8fafc; /* slate-50 - header section backgrounds */
+  /* Base surfaces with clear hierarchy */
+  --surface: #f8fafc; /* slate-50 - light surface */
+  --surface-2: #f1f5f9; /* slate-100 - secondary surface */
+  --surface-3: #e2e8f0; /* slate-200 - tertiary surface */
+  --card: #ffffff; /* pure white cards */
+  --card-elevated: #f8fafc; /* slate-50 - elevated cards */
+  --card-section: #f1f5f9; /* slate-100 - card subsections */
+  --card-subsection: #e2e8f0; /* slate-200 - nested subsections */
   
-  /* Card content and inner elements */
-  --card-content: #6b7280; /* gray-500 - secondary text in cards */
-  --card-accent: #e5e7eb; /* gray-200 - subtle dividers/borders */
-  --card-hover: #f9fafb; /* gray-50 - card hover state */
+  /* Text hierarchy with clear contrast */
+  --text-primary: #0f172a; /* slate-900 - primary text */
+  --text-secondary: #475569; /* slate-600 - secondary text */
+  --text-tertiary: #64748b; /* slate-500 - tertiary text */
+  --text-muted: #94a3b8; /* slate-400 - muted text */
   
-  /* Interactive elements */
-  --accent: #3b82f6; /* blue-500 - primary accent/CTA */
-  --accent-hover: #2563eb; /* blue-600 - accent hover */
-  --focus-ring: #93c5fd; /* blue-300 - focus outlines */
+  /* Borders and dividers */
+  --border: #cbd5e1; /* slate-300 - primary borders */
+  --border-light: #e2e8f0; /* slate-200 - light borders */
+  --border-strong: #94a3b8; /* slate-400 - strong borders */
   
-  /* Content semantic colors */
+  /* Interactive states */
+  --surface-hover: #e2e8f0; /* slate-200 - hover state */
+  --surface-active: #cbd5e1; /* slate-300 - active state */
+  
+  /* Brand colors */
+  --link: #1d4ed8; /* blue-700 - links */
+  --link-hover: #1e3a8a; /* blue-800 - link hover */
+  --accent: #2563eb; /* blue-600 - primary accent */
+  --accent-hover: #1d4ed8; /* blue-700 - accent hover */
+  --accent-light: #dbeafe; /* blue-100 - light accent */
+  --focus-ring: #60a5fa; /* blue-400 - focus rings */
+  
+  /* Semantic colors */
   --success: #059669; /* emerald-600 */
+  --success-light: #d1fae5; /* emerald-100 */
   --warning: #d97706; /* amber-600 */
+  --warning-light: #fef3c7; /* amber-100 */
   --error: #dc2626; /* red-600 */
+  --error-light: #fee2e2; /* red-100 */
   --info: #0ea5e9; /* sky-500 */
+  --info-light: #e0f2fe; /* sky-100 */
+  
+  /* Legacy support (mapped to new variables) */
+  --muted: var(--text-secondary);
+  --muted-2: var(--text-tertiary);
+  --chip-bg: var(--surface-2);
+  --chip-text: var(--text-secondary);
+  --highlight-bg: #fef3c7; /* amber-100 */
+  --header-primary: var(--text-primary);
+  --header-secondary: var(--text-secondary);
+  --header-block-bg: var(--surface);
+  --card-content: var(--text-secondary);
+  --card-accent: var(--border-light);
+  --card-hover: var(--surface-hover);
 
   /* Strength scale (light backgrounds for black text) */
   --strength-weak: #fecaca; /* red-200 - pale red */
@@ -47,34 +68,69 @@
 }
 
 @theme inline {
+  /* Base theme tokens */
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-surface-3: var(--surface-3);
   --color-card: var(--card);
-  --color-muted: var(--muted);
-  --color-muted-foreground: var(--muted-2);
+  --color-card-elevated: var(--card-elevated);
+  --color-card-section: var(--card-section);
+  --color-card-subsection: var(--card-subsection);
+  
+  /* Text hierarchy */
+  --color-text-primary: var(--text-primary);
+  --color-text-secondary: var(--text-secondary);
+  --color-text-tertiary: var(--text-tertiary);
+  --color-text-muted: var(--text-muted);
+  
+  /* Borders */
   --color-border: var(--border);
+  --color-border-light: var(--border-light);
+  --color-border-strong: var(--border-strong);
+  
+  /* Interactive states */
+  --color-surface-hover: var(--surface-hover);
+  --color-surface-active: var(--surface-active);
+  
+  /* Brand colors */
+  --color-link: var(--link);
+  --color-link-hover: var(--link-hover);
+  --color-accent: var(--accent);
+  --color-accent-hover: var(--accent-hover);
+  --color-accent-light: var(--accent-light);
+  --color-focus-ring: var(--focus-ring);
+  
+  /* Semantic colors */
+  --color-success: var(--success);
+  --color-success-light: var(--success-light);
+  --color-warning: var(--warning);
+  --color-warning-light: var(--warning-light);
+  --color-error: var(--error);
+  --color-error-light: var(--error-light);
+  --color-info: var(--info);
+  --color-info-light: var(--info-light);
+  
+  /* Typography */
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+  
   /* Game-specific colors */
   --color-game-neon-green: #00ff00;
   --color-game-space-blue: #001122;
   --color-game-retro-amber: #ffaa00;
-  /* New theme colors */
+  
+  /* Legacy support */
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-2);
   --color-header-primary: var(--header-primary);
   --color-header-secondary: var(--header-secondary);
   --color-header-block-bg: var(--header-block-bg);
   --color-card-content: var(--card-content);
   --color-card-accent: var(--card-accent);
   --color-card-hover: var(--card-hover);
-  --color-accent: var(--accent);
-  --color-accent-hover: var(--accent-hover);
-  --color-focus-ring: var(--focus-ring);
-  --color-success: var(--success);
-  --color-warning: var(--warning);
-  --color-error: var(--error);
-  --color-info: var(--info);
-
+  
   /* Strength scale tokens */
   --color-strength-weak: var(--strength-weak);
   --color-strength-standard: var(--strength-standard);
@@ -84,35 +140,64 @@
 
 /* Class-based dark mode overrides; toggled via .dark on <html> */
 .dark {
-  --background: #0a0a0a;
-  --foreground: #ededed;
+  --background: #0f172a; /* slate-900 - warmer than pure black */
+  --foreground: #f1f5f9; /* slate-100 - crisp white text */
   color-scheme: dark;
-  --surface: #111827; /* gray-900 */
-  --card: #1f2937; /* gray-800 */
-  --muted: #d1d5db; /* gray-300 */
-  --muted-2: #9ca3af; /* gray-400 */
-  --border: #374151; /* gray-700 */
-  --surface-hover: #1f2937; /* gray-800 */
-  --link: #60a5fa; /* blue-400 */
-  --link-hover: #bfdbfe; /* blue-200 */
-  --chip-bg: #374151; /* gray-700 */
-  --chip-text: #d1d5db; /* gray-300 */
-  --highlight-bg: #854d0e; /* yellow-800 */
   
-  /* Dark mode overrides for new variables */
-  --header-primary: #f9fafb; /* gray-50 */
-  --header-secondary: #d1d5db; /* gray-300 */
-  --header-block-bg: #1f2937; /* gray-800 */
-  --card-content: #9ca3af; /* gray-400 */
-  --card-accent: #4b5563; /* gray-600 */
-  --card-hover: #1f2937; /* gray-800 */
-  --accent: #60a5fa; /* blue-400 */
-  --accent-hover: #93c5fd; /* blue-300 */
-  --focus-ring: #60a5fa; /* blue-400 */
+  /* Base surfaces with clear hierarchy */
+  --surface: #1e293b; /* slate-800 - primary surface */
+  --surface-2: #334155; /* slate-700 - secondary surface */
+  --surface-3: #475569; /* slate-600 - tertiary surface */
+  --card: #1e293b; /* slate-800 - card backgrounds */
+  --card-elevated: #334155; /* slate-700 - elevated cards */
+  --card-section: #475569; /* slate-600 - card subsections */
+  --card-subsection: #64748b; /* slate-500 - nested subsections */
+  
+  /* Text hierarchy with proper contrast */
+  --text-primary: #f1f5f9; /* slate-100 - primary text */
+  --text-secondary: #cbd5e1; /* slate-300 - secondary text */
+  --text-tertiary: #94a3b8; /* slate-400 - tertiary text */
+  --text-muted: #64748b; /* slate-500 - muted text */
+  
+  /* Borders and dividers */
+  --border: #475569; /* slate-600 - primary borders */
+  --border-light: #334155; /* slate-700 - light borders */
+  --border-strong: #64748b; /* slate-500 - strong borders */
+  
+  /* Interactive states */
+  --surface-hover: #475569; /* slate-600 - hover state */
+  --surface-active: #64748b; /* slate-500 - active state */
+  
+  /* Brand colors optimized for dark */
+  --link: #60a5fa; /* blue-400 - links */
+  --link-hover: #93c5fd; /* blue-300 - link hover */
+  --accent: #3b82f6; /* blue-500 - primary accent */
+  --accent-hover: #60a5fa; /* blue-400 - accent hover */
+  --accent-light: #1e3a8a; /* blue-800 - dark accent bg */
+  --focus-ring: #60a5fa; /* blue-400 - focus rings */
+  
+  /* Semantic colors for dark mode */
   --success: #10b981; /* emerald-500 */
+  --success-light: #064e3b; /* emerald-900 */
   --warning: #f59e0b; /* amber-500 */
+  --warning-light: #78350f; /* amber-900 */
   --error: #f87171; /* red-400 */
+  --error-light: #7f1d1d; /* red-900 */
   --info: #38bdf8; /* sky-400 */
+  --info-light: #0c4a6e; /* sky-900 */
+  
+  /* Legacy support (mapped to new variables) */
+  --muted: var(--text-secondary);
+  --muted-2: var(--text-tertiary);
+  --chip-bg: var(--surface-2);
+  --chip-text: var(--text-secondary);
+  --highlight-bg: #78350f; /* amber-900 */
+  --header-primary: var(--text-primary);
+  --header-secondary: var(--text-secondary);
+  --header-block-bg: var(--surface);
+  --card-content: var(--text-secondary);
+  --card-accent: var(--border-light);
+  --card-hover: var(--surface-hover);
 
   /* Strength scale (dark backgrounds for white text) */
   --strength-weak: #dc2626; /* red-600 - deep red */

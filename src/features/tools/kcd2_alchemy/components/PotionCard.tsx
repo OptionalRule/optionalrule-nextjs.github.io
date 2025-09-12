@@ -27,13 +27,13 @@ export function PotionCard({ potion, highlightIngredientIds = [], playerAlchemyL
   const quantitiesButtonId = `quantities-btn-${potion.id}`
 
   return (
-    <article className="border border-[var(--border)] rounded-lg p-4 bg-[var(--card)]">
+    <article id={`potion-${potion.id}`} className="border border-[var(--border)] rounded-lg p-4 bg-[var(--card)]">
       <header className="mb-3 bg-[var(--header-block-bg)]">
         <h3 className="text-xl font-semibold">{potion.name}</h3>
         <div className="mt-1 text-sm text-[var(--muted-2)]">Base liquid: {potion.ingredients.liquid}</div>
       </header>
 
-      <section className="mb-3">
+      <section id={`potion-${potion.id}-ingredients`} className="mb-3">
         <div className="flex items-baseline gap-2 flex-wrap">
           <h4 className="font-medium shrink-0">Ingredients:</h4>
           <ul className="list-none p-0 m-0 text-sm">
@@ -60,7 +60,7 @@ export function PotionCard({ potion, highlightIngredientIds = [], playerAlchemyL
         </div>
       </section>
 
-      <section className="mb-3">
+      <section id={`potion-${potion.id}-instructions`} className="mb-3">
         <div className="flex items-center gap-2 mb-2 flex-wrap">
           <h4 className="font-medium shrink-0">Instructions:</h4>
           <div className="flex items-center gap-2 text-sm" role="tablist" aria-label="Recipe instructions tabs">
@@ -104,7 +104,7 @@ export function PotionCard({ potion, highlightIngredientIds = [], playerAlchemyL
         </ol>
       </section>
 
-      <section className="mb-3">
+      <section id={`potion-${potion.id}-effects`} className="mb-3">
         <h4 className="m-0">
           <button
             id={effectsButtonId}
@@ -151,7 +151,7 @@ export function PotionCard({ potion, highlightIngredientIds = [], playerAlchemyL
         </div>
       </section>
 
-      <section className="mb-3">
+      <section id={`potion-${potion.id}-quantities`} className="mb-3">
         <h4 className="m-0">
           <button
             id={quantitiesButtonId}
@@ -188,7 +188,7 @@ export function PotionCard({ potion, highlightIngredientIds = [], playerAlchemyL
       
 
       {potion.notes && (
-        <section className="text-sm text-[var(--muted-2)] mt-2">
+        <section id={`potion-${potion.id}-notes`} className="text-sm text-[var(--muted-2)] mt-2">
           <strong>Notes:</strong> {potion.notes}
         </section>
       )}
