@@ -1,6 +1,6 @@
 import type { IngredientId, NormalizedPotionRecipe } from '../types'
 import { useEffect, useMemo, useState } from 'react'
-import { Droplet, Sprout, BookOpenText, Bolt, Hash, Info } from 'lucide-react'
+import { Droplet, Sprout, BookOpenText, Bolt, Hash, Info, Coins } from 'lucide-react'
 import { QuantityTable } from './QuantityTable'
 
 export function PotionCard({ potion, highlightIngredientIds = [], playerAlchemyLevel = 0 }: { potion: NormalizedPotionRecipe; highlightIngredientIds?: IngredientId[]; playerAlchemyLevel?: number }) {
@@ -49,22 +49,19 @@ export function PotionCard({ potion, highlightIngredientIds = [], playerAlchemyL
 
   return (
     <article id={`potion-${potion.id}`} className="border border-[var(--border-light)] rounded-xl p-0 bg-[var(--card)] shadow-sm hover:shadow-md transition-shadow duration-200">
-      <header className="relative p-6 pb-4 bg-gradient-to-br from-[var(--surface)] to-[var(--surface-2)] rounded-t-xl border-b border-[var(--border-light)]">
-        {/* Base value badge in upper-right */}
-        <div className="absolute top-4 right-4">
-          <span
-            className="px-2 py-1 rounded-md bg-[var(--surface)] text-[var(--text-primary)] text-xs font-semibold border border-[var(--border)]"
-            aria-label={`Base value: ${priceText} groschen`}
-            title={`Base value: ${priceText} groschen`}
-          >
-            {priceText}g
-          </span>
-        </div>
+      <header className="p-6 pb-4 bg-gradient-to-br from-[var(--surface)] to-[var(--surface-2)] rounded-t-xl border-b border-[var(--border-light)]">
         <h3 className="text-2xl font-bold text-[var(--text-primary)] mb-2">{potion.name}</h3>
-        <div className="flex items-center gap-2 text-sm text-[var(--text-tertiary)]">
-          <Droplet className="w-4 h-4" />
-          <span className="font-medium">Base liquid:</span>
-          <span className="px-2 py-1 rounded-md bg-[var(--surface-2)] text-[var(--text-primary)] text-xs font-semibold border border-[var(--border)]">{potion.ingredients.liquid}</span>
+        <div className="flex items-center justify-between gap-4">
+          <div className="flex items-center gap-2 text-sm text-[var(--text-tertiary)]">
+            <Droplet className="w-4 h-4" />
+            <span className="font-medium">Base liquid:</span>
+            <span className="px-2 py-1 rounded-md bg-[var(--surface-2)] text-[var(--text-primary)] text-xs font-semibold border border-[var(--border)]">{potion.ingredients.liquid}</span>
+          </div>
+          <div className="flex items-center gap-2 text-sm text-[var(--text-tertiary)]">
+            <Coins className="w-4 h-4" />
+            <span className="font-medium">Base value:</span>
+            <span className="px-2 py-1 rounded-md bg-[var(--surface-2)] text-[var(--text-primary)] text-xs font-semibold border border-[var(--border)]">{priceText}g</span>
+          </div>
         </div>
       </header>
 
