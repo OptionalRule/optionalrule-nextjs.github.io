@@ -2,6 +2,7 @@
 
 import type { IngredientId } from '../types'
 import type { IngredientMatchMode } from '../lib/filter'
+import { Sprout, TrendingUp } from 'lucide-react'
 import { AlchemyLevelSelect } from './AlchemyLevelSelect'
 
 export interface FiltersPanelProps {
@@ -18,10 +19,10 @@ export interface FiltersPanelProps {
 function ToggleChip({ active, label }: { active: boolean; label: string }) {
   return (
     <span
-      className={`text-sm px-2 py-1 rounded-full border transition-colors ${
+      className={`text-sm px-3 py-1.5 rounded-lg border transition-all duration-200 font-medium ${
         active
-          ? 'border-[var(--link)] text-[var(--link)] bg-[color-mix(in_oklab,var(--link)_15%,transparent)]'
-          : 'border-[var(--border)] bg-[var(--surfaceHover)] text-[var(--muted)]'
+          ? 'border-[var(--accent)] text-white bg-[var(--accent)] shadow-sm'
+          : 'border-[var(--border)] bg-[var(--surface)] text-[var(--text-secondary)] hover:bg-[var(--surface-2)] hover:border-[var(--border-strong)]'
       }`}
     >
       {label}
@@ -48,13 +49,13 @@ export function FiltersPanel({
   }
 
   return (
-    <section className="bg-[var(--card)] border border-[var(--border)] rounded-md p-4">
-      <div className="flex items-center justify-between mb-3">
-        <h2 className="text-lg font-semibold">Filters</h2>
+    <section className="bg-[var(--card)] border border-[var(--border-light)] rounded-xl p-4 shadow-sm">
+      <div className="flex items-center justify-between mb-4">
+        <h2 className="text-lg font-semibold text-[var(--text-primary)]">Filters</h2>
         {onClearAll && (
           <button
             type="button"
-            className="text-sm text-[var(--link)] hover:underline"
+            className="px-3 py-1.5 text-sm text-[var(--error)] hover:bg-[var(--error-light)] rounded-lg transition-colors font-medium"
             onClick={onClearAll}
           >
             Clear all
@@ -64,29 +65,39 @@ export function FiltersPanel({
 
       <div className="space-y-4">
         <div>
-          <div className="flex items-center justify-between mb-2">
-            <h3 className="text-sm font-medium m-0">Ingredients</h3>
-            {/* Match mode slider: Any <switch> Only */}
+          <div className="flex items-center justify-between mb-3">
+            <div className="flex items-center gap-2">
+              <Sprout className="w-4 h-4 text-[var(--success)]" />
+              <h3 className="font-medium text-[var(--text-primary)] text-sm">Ingredients</h3>
+              {selectedIngredientIds.length > 0 && (
+                <span className="px-1.5 py-0.5 rounded bg-[var(--accent-light)] text-[var(--accent)] text-xs font-medium">
+                  {selectedIngredientIds.length}
+                </span>
+              )}
+            </div>
+            {/* Compact match mode toggle */}
             <div className="flex items-center gap-2 text-xs" aria-label="Ingredient match mode">
-              <span className={ingredientMode === 'any' ? 'text-[var(--link)] font-semibold' : 'text-[var(--muted)]'}>Any</span>
+              <span className={ingredientMode === 'any' ? 'text-[var(--accent)] font-medium' : 'text-[var(--text-tertiary)]'}>Any</span>
               <button
                 type="button"
                 role="switch"
                 aria-checked={ingredientMode === 'only'}
                 aria-label="Toggle ingredient match mode"
                 onClick={() => onChangeIngredientMode(ingredientMode === 'any' ? 'only' : 'any')}
-                className={`relative inline-flex h-5 w-9 items-center rounded-full border-2 bg-[var(--chip-bg)] focus-visible:ring-2 focus-visible:ring-[var(--link)] transition-colors
-                  ${ingredientMode === 'only' ? 'border-[var(--link)]' : 'border-[var(--border)]'}`}
+                className={`relative inline-flex h-4 w-8 items-center rounded-full transition-colors focus-visible:ring-2 focus-visible:ring-[var(--focus-ring)] ${
+                  ingredientMode === 'only' ? 'bg-[var(--accent)]' : 'bg-[var(--surface-2)]'
+                }`}
               >
                 <span
-                  className="inline-block h-4 w-4 transform rounded-full bg-[var(--card)] border border-[var(--muted)] transition-transform"
-                  style={{ transform: ingredientMode === 'only' ? 'translateX(16px)' : 'translateX(1px)' }}
+                  className={`inline-block h-3 w-3 transform rounded-full transition-transform bg-white shadow-sm ${
+                    ingredientMode === 'only' ? 'translate-x-4' : 'translate-x-0.5'
+                  }`}
                 />
               </button>
-              <span className={ingredientMode === 'only' ? 'text-[var(--link)] font-semibold' : 'text-[var(--muted)]'}>Only</span>
+              <span className={ingredientMode === 'only' ? 'text-[var(--accent)] font-medium' : 'text-[var(--text-tertiary)]'}>Only</span>
             </div>
           </div>
-          <div className="flex flex-wrap gap-2">
+          <div className="flex flex-wrap gap-1.5">
             {ingredientOptions.map((opt) => {
               const active = selectedIngredientIds.map(String).includes(String(opt.id))
               return (
@@ -94,9 +105,8 @@ export function FiltersPanel({
                   key={String(opt.id)}
                   type="button"
                   onClick={() => toggleIngredient(opt.id)}
-                  className={`focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--link)] rounded ${active ? 'data-[active=true]' : ''}`}
+                  className="focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--focus-ring)] rounded-lg p-0.5"
                   aria-pressed={active}
-                  data-active={active}
                 >
                   <ToggleChip active={active} label={opt.name} />
                 </button>
@@ -106,9 +116,17 @@ export function FiltersPanel({
         </div>
       </div>
 
-      {/* Alchemy skill selector */}
-      <div className="pt-3 flex items-center">
-        <AlchemyLevelSelect value={alchemyLevel} onChange={(lvl) => onChangeAlchemyLevel?.(lvl)} min={0} max={30} size="sm" />
+      {/* Compact alchemy skill selector */}
+      <div className="flex items-center gap-3 pt-1">
+        <TrendingUp className="w-4 h-4 text-[var(--info)]" />
+        <h3 className="font-medium text-[var(--text-primary)] text-sm">Alchemy Level:</h3>
+        <AlchemyLevelSelect 
+          value={alchemyLevel} 
+          onChange={(lvl) => onChangeAlchemyLevel?.(lvl)} 
+          min={0} 
+          max={30} 
+          size="sm" 
+        />
       </div>
     </section>
   )
