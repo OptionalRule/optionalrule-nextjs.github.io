@@ -214,54 +214,42 @@ node --import tsx/esm scripts/replace-default-images.ts
 
 ### ECMAScript Modules
 
-**`tag-and-excerpt.mjs`** — AI-powered content enhancement  
-Generates concise excerpts and curated tags for MDX posts using OpenAI. Loads configuration from `.env`.
+**`enhance-post.mjs`** — AI-powered post enhancement  
+Generates a concise excerpt and curated tags for MDX posts using OpenAI. Requires `OPENAI_API_KEY` and `OPENAI_MODEL` in `.env`. Uses the OpenAI Responses API with an automatic fallback to Chat Completions.
 
+Usage (via npm alias):
 ```bash
-node scripts/tag-and-excerpt.mjs [<path>] [options]
+npm run enhance-post -- <path> [options]
 ```
 
-- Path: `<path>` may be a directory (recurses `**/*.mdx`) or a single `.mdx` file. If omitted, defaults to `content/posts`.
+Direct execution:
+```bash
+node scripts/enhance-post.mjs <path> [options]
+```
 
-Env configuration (.env):
-- `OPENAI_API_KEY`: Required API key
-- `OPENAI_MODEL`: Model name (e.g., `gpt-5-mini`, `gpt-4o-mini`)
-- `OPENAI_REASONING`: Reasoning effort (`low` | `medium` | `high`)
-  - Note: Used with `--responses-api` when supported; not sent to Chat Completions API.
+Behavior:
+- Requires a path (file or directory); errors if omitted.
+- Skips posts with `draft: true`.
+- Does not overwrite existing `excerpt`/`tags` unless overwrite flags are provided.
+- Tags are restricted to an internal whitelist (1–4 max, exact match).
+- Excerpt is post-processed to one sentence (100–160 chars), plain text, no quotes/backticks/ellipsis, and avoids repeating the title.
 
 Options:
-- `--dry-run`: Preview changes without modifying files
-- `--path <path>`: Explicit path if you don’t use the positional arg
-- `--overwrite-excerpts`: Replace existing excerpts
-- `--overwrite-tags`: Replace existing tags
-- `--overwrite-all`: Replace both excerpts and tags
-- `--no-backup`: Skip `.bak` creation (default: true)
-- `--concurrency <n>`: Parallel processing limit (default: 3)
+- `--dry-run`: Preview changes without writing files
+- `--overwrite-excerpt`: Overwrite existing excerpt
+- `--overwrite-tags`: Overwrite existing tags
+- `--overwrite-all`: Overwrite both excerpt and tags
+- `--backup`: Create a `<file>.bak` before writing
 - `--model <name>`: Override model from `.env`
-- `--responses-api`: Use the OpenAI Responses API (opt‑in). Enables `OPENAI_REASONING` when compatible and auto‑falls back to Chat Completions on errors.
-  - Note: For `OPENAI_MODEL` values matching `gpt-5*`, the script will prefer the Responses API automatically even without this flag.
-- `--debug`: Print raw API responses and request payload details (sanitized)
 
-Example usage:
+Examples:
 ```bash
-# Dry run to preview changes on all posts
-node scripts/tag-and-excerpt.mjs --dry-run
+# Single file dry run
+npm run enhance-post -- content/posts/2025-09-12-kcd2-alchemy-tool-and-nostalgia-for-ttrpg-crafting.mdx --dry-run
 
-# Process a specific post file (positional path)
-node scripts/tag-and-excerpt.mjs content/posts/2024-01-01-example-post.mdx
+# Enhance all posts in a directory, overwrite only excerpt
+npm run enhance-post -- content/posts --overwrite-excerpt
 
-# Process a directory with custom concurrency
-node scripts/tag-and-excerpt.mjs content/drafts --concurrency 5
-
-# Override model defined in .env
-node scripts/tag-and-excerpt.mjs --model gpt-4o-mini
-
-# Use Responses API (with reasoning when supported)
-node scripts/tag-and-excerpt.mjs --responses-api
-
-# Overwrite both excerpts and tags
-node scripts/tag-and-excerpt.mjs --overwrite-all
-
-# Debug: show raw API responses
-node scripts/tag-and-excerpt.mjs --debug --responses-api content/posts/2025-09-12-kcd2-alchemy-tool-and-nostalgia-for-ttrpg-crafting.mdx
+# Overwrite both excerpt and tags, create backups
+npm run enhance-post -- content/posts --overwrite-all --backup
 ```
