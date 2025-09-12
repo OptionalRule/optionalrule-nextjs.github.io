@@ -48,8 +48,22 @@ export function parsePotions(input: unknown): PotionRecipe[] {
     const obj = row as Record<string, unknown>;
     const id = obj.id;
     const name = obj.name;
+    const baseValueRaw = obj.baseValue as unknown;
     assert(isString(id), `potions[${idx}].id: expected string`);
     assert(isString(name) && name.trim().length > 0, `potions[${idx}].name: expected non-empty string`);
+
+    // baseValue is optional in input; normalize to a finite number (default 0)
+    let baseValue = 0;
+    if (baseValueRaw !== undefined && baseValueRaw !== null) {
+      if (isNumber(baseValueRaw)) {
+        baseValue = baseValueRaw as number;
+      } else if (typeof baseValueRaw === 'string') {
+        const parsed = Number.parseFloat(baseValueRaw);
+        baseValue = Number.isFinite(parsed) ? parsed : 0;
+      } else {
+        baseValue = 0;
+      }
+    }
 
     const ingredients = obj.ingredients as unknown;
     assert(isObject(ingredients), `potions[${idx}].ingredients: expected object`);
@@ -124,6 +138,7 @@ export function parsePotions(input: unknown): PotionRecipe[] {
     return {
       id: id as string,
       name: name as string,
+      baseValue,
       ingredients: { liquid: liquid as string, items: parsedItems },
       instructions: {
         default: def as string[],

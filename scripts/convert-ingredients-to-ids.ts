@@ -23,6 +23,7 @@ type PotionItemById = { id: string; quantity: number };
 type Potion = {
   id: string;
   name: string;
+  baseValue?: number; // optional for backward-compat; preserved via spread
   ingredients: {
     liquid: string; // unchanged in this conversion
     items: PotionItemByName[] | PotionItemById[];

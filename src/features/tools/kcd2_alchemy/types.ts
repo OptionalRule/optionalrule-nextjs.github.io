@@ -38,6 +38,8 @@ export interface PotionEffect {
 export interface PotionRecipe {
   id: string;
   name: string;
+  // Base shop price/value of the potion (from CSV). Defaults to 0 if unknown.
+  baseValue: number;
   ingredients: {
     liquid: string;
     items: PotionItem[];
