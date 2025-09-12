@@ -214,37 +214,40 @@ node --import tsx/esm scripts/replace-default-images.ts
 
 ### ECMAScript Modules
 
-**`tag-and-excerpt.mjs`** - AI-powered content enhancement  
-Uses OpenAI API to generate excerpts and categorize posts with appropriate tags.
+**`tag-and-excerpt.mjs`** — AI-powered content enhancement  
+Generates concise excerpts and curated tags for MDX posts using OpenAI. Loads configuration from `.env`.
 
 ```bash
-node scripts/tag-and-excerpt.mjs [options]
+node scripts/tag-and-excerpt.mjs [<path>] [options]
 ```
 
-**Required:**
-- `OPENAI_API_KEY` environment variable
+- Path: `<path>` may be a directory (recurses `**/*.mdx`) or a single `.mdx` file. If omitted, defaults to `content/posts`.
 
-**Options:**
-- `--dry-run` - Preview changes without modifying files
-- `--path <path>` - Target directory or specific .mdx file (default: `content/posts`)
-- `--overwrite-excerpts` - Replace existing excerpts (default: false)
-- `--overwrite-tags` - Replace existing tags (default: false)
-- `--no-backup` - Skip backup file creation (default: true)
-- `--concurrency <n>` - Parallel processing limit (default: 3)
-- `--model <name>` - OpenAI model (default: `gpt-4o-mini`)
-- `--api-key <key>` - Specify API key directly
+Env configuration (.env):
+- `OPENAI_API_KEY`: Required API key
+- `OPENAI_MODEL`: Model name (e.g., `gpt-5-mini`, `gpt-4o-mini`)
+- `OPENAI_REASONING`: Reasoning effort (`low` | `medium` | `high`)
 
-**Example usage:**
+Options:
+- `--dry-run`: Preview changes without modifying files
+- `--path <path>`: Explicit path if you don’t use the positional arg
+- `--overwrite-excerpts`: Replace existing excerpts
+- `--overwrite-tags`: Replace existing tags
+- `--no-backup`: Skip `.bak` creation (default: true)
+- `--concurrency <n>`: Parallel processing limit (default: 3)
+- `--model <name>`: Override model from `.env`
+
+Example usage:
 ```bash
 # Dry run to preview changes on all posts
 node scripts/tag-and-excerpt.mjs --dry-run
 
-# Process a specific post file
-node scripts/tag-and-excerpt.mjs --path content/posts/2024-01-01-example-post.mdx
+# Process a specific post file (positional path)
+node scripts/tag-and-excerpt.mjs content/posts/2024-01-01-example-post.mdx
 
-# Process custom directory with concurrency
-node scripts/tag-and-excerpt.mjs --path content/drafts --concurrency 5
+# Process a directory with custom concurrency
+node scripts/tag-and-excerpt.mjs content/drafts --concurrency 5
 
-# Use different model
-node scripts/tag-and-excerpt.mjs --model gpt-4o
+# Override model defined in .env
+node scripts/tag-and-excerpt.mjs --model gpt-4o-mini
 ```

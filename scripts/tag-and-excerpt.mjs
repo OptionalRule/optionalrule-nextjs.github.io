@@ -1,6 +1,38 @@
 #!/usr/bin/env node
+/*
+  tag-and-excerpt.mjs
+  Uses OpenAI to generate concise excerpts and curated tags for MDX posts.
+
+  Usage:
+    node scripts/tag-and-excerpt.mjs [<path>] [options]
+
+  Path:
+    - <path> can be a directory (scans .mdx) or a single .mdx file.
+    - If omitted, defaults to content/posts.
+
+  Environment (.env):
+    - OPENAI_API_KEY=...        (required)
+    - OPENAI_MODEL=gpt-5-mini   (optional; defaults applied if absent)
+    - OPENAI_REASONING=medium   (optional; low|medium|high)
+
+  Options:
+    --dry-run                Preview changes without writing files
+    --path <path>            Explicit path if you don't use positional arg
+    --overwrite-excerpts     Replace existing excerpts
+    --overwrite-tags         Replace existing tags
+    --no-backup              Do not create .bak files (default: true)
+    --concurrency <n>        Limit concurrent files (default: 3)
+    --model <name>           Override model from env
+
+  Examples:
+    node scripts/tag-and-excerpt.mjs --dry-run
+    node scripts/tag-and-excerpt.mjs content/posts/2025-01-01-example.mdx
+    node scripts/tag-and-excerpt.mjs content/drafts --concurrency 5
+    node scripts/tag-and-excerpt.mjs --model gpt-4o-mini
+*/
 import fs from 'fs/promises';
 import path from 'path';
+import { fileURLToPath } from 'url';
 import matter from 'gray-matter';
 import { globby } from 'globby';
 
@@ -21,7 +53,41 @@ const TAG_WHITELIST = [
 ];
 const TAG_SET = new Set(TAG_WHITELIST);
 
-function parseArgs(argv) {
+// Resolve repo root relative to this script
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const ROOT_DIR = path.resolve(__dirname, '..');
+
+// Simple .env parser inspired by tmp_local/article-enrichment.js
+async function loadEnvFromFile(fileName = '.env') {
+  const envPath = path.join(ROOT_DIR, fileName);
+  try {
+    const content = await fs.readFile(envPath, 'utf8');
+    const env = {};
+    for (const lineRaw of content.split('\n')) {
+      const line = lineRaw.trim();
+      if (!line || line.startsWith('#')) continue;
+      const eq = line.indexOf('=');
+      if (eq === -1) continue;
+      const key = line.slice(0, eq).trim();
+      const value = line.slice(eq + 1).trim().replace(/^["']|["']$/g, '');
+      if (key) env[key] = value;
+    }
+    return env;
+  } catch {
+    return {};
+  }
+}
+
+async function resolveOpenAIConfig() {
+  const fileEnv = await loadEnvFromFile('.env');
+  const apiKey = (process.env.OPENAI_API_KEY || process.env.OPENAI_APIKEY || fileEnv.OPENAI_API_KEY || '').trim();
+  const model = (process.env.OPENAI_MODEL || fileEnv.OPENAI_MODEL || 'gpt-4o-mini').trim();
+  const reasoningEffort = (process.env.OPENAI_REASONING || fileEnv.OPENAI_REASONING || 'medium').trim();
+  return { apiKey, model, reasoningEffort };
+}
+
+function parseArgs(argv, defaults) {
   const opts = {
     path: 'content/posts',
     dryRun: false,
@@ -29,11 +95,20 @@ function parseArgs(argv) {
     overwriteTags: false,
     noBackup: true,
     concurrency: 3,
-    model: 'gpt-4o-mini',
-    apiKey: process.env.OPENAI_API_KEY || process.env.OPENAI_APIKEY || ''
+    model: defaults.model,
+    apiKey: defaults.apiKey,
+    reasoningEffort: defaults.reasoningEffort,
   };
+
   for (let i = 0; i < argv.length; i++) {
     const arg = argv[i];
+    if (!arg) continue;
+    if (!arg.startsWith('-') && !opts._positionalConsumed) {
+      // First positional non-flag argument treated as path (file or dir)
+      opts.path = arg;
+      opts._positionalConsumed = true;
+      continue;
+    }
     switch (arg) {
       case '--dry-run':
         opts.dryRun = true;
@@ -54,16 +129,15 @@ function parseArgs(argv) {
         opts.concurrency = parseInt(argv[++i], 10) || opts.concurrency;
         break;
       case '--model':
+        // Allow override via CLI if provided, but prefer env by default
         opts.model = argv[++i] || opts.model;
         break;
-      case '--api-key':
-        opts.apiKey = argv[++i] || opts.apiKey;
-        break;
+      // Intentionally omit --api-key; we load from .env/env vars per request
       default:
         break;
     }
   }
-  // Remove problematic API key logic - handled in default value above
+  delete opts._positionalConsumed;
   return opts;
 }
 
@@ -92,7 +166,7 @@ function pLimit(concurrency) {
   });
 }
 
-async function callOpenAI({ title, content, model, apiKey }) {
+async function callOpenAI({ title, content, model, apiKey, reasoningEffort }) {
   const url = 'https://api.openai.com/v1/chat/completions';
   const messages = [
     {
@@ -113,7 +187,15 @@ async function callOpenAI({ title, content, model, apiKey }) {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${apiKey}`
       },
-      body: JSON.stringify({ model, messages, response_format: { type: 'json_object' } })
+      body: JSON.stringify({
+        model,
+        // For reasoning-capable models, allow tuning effort similar to tmp_local/article-enrichment.js
+        reasoning: { effort: reasoningEffort },
+        messages,
+        temperature: 0.3,
+        max_tokens: 500,
+        response_format: { type: 'json_object' }
+      })
     });
     if (res.ok) {
       const data = await res.json();
@@ -164,7 +246,7 @@ async function processFile(file, opts, stats) {
     }
 
     console.log(`  Calling OpenAI for analysis...`);
-    const analysis = await callOpenAI({ title, content: body, model: opts.model, apiKey: opts.apiKey });
+    const analysis = await callOpenAI({ title, content: body, model: opts.model, apiKey: opts.apiKey, reasoningEffort: opts.reasoningEffort });
     console.log(`  OpenAI response:`, analysis);
     
     const modelExcerpt = analysis.excerpt || '';
@@ -205,11 +287,16 @@ async function processFile(file, opts, stats) {
 }
 
 async function main() {
-  const opts = parseArgs(process.argv.slice(2));
-  
+  const envConfig = await resolveOpenAIConfig();
+  const opts = parseArgs(process.argv.slice(2), envConfig);
+
   // Validate required parameters
   if (!opts.apiKey) {
-    console.error('Error: OpenAI API key is required. Set OPENAI_API_KEY environment variable or use --api-key option.');
+    console.error('Error: OpenAI API key is required. Add OPENAI_API_KEY to .env or environment variables.');
+    process.exit(1);
+  }
+  if (!opts.model) {
+    console.error('Error: OpenAI model is required. Add OPENAI_MODEL to .env or pass --model.');
     process.exit(1);
   }
   console.log('Current working directory:', process.cwd());
