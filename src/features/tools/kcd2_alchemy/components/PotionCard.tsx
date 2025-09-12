@@ -6,6 +6,21 @@ export function PotionCard({ potion, highlightIngredientIds = [], playerAlchemyL
   const [tab, setTab] = useState<'default' | 'optimized'>('default')
   const hasOptimized = Boolean(potion.instructions.optimized)
 
+  const getQualityColorClass = (quality: string): string => {
+    switch (quality.toLowerCase()) {
+      case 'weak':
+        return 'bg-[var(--strength-weak)]'
+      case 'standard':
+        return 'bg-[var(--strength-standard)]'
+      case 'strong':
+        return 'bg-[var(--strength-strong)]'
+      case "henry's":
+        return 'bg-[var(--strength-superior)]'
+      default:
+        return 'bg-[var(--strength-weak)]'
+    }
+  }
+
   const recommendedTab: 'default' | 'optimized' = useMemo(() => {
     if (!hasOptimized) return 'default'
     const min = potion.instructions.optimized!.minLevel
@@ -139,7 +154,7 @@ export function PotionCard({ potion, highlightIngredientIds = [], playerAlchemyL
               {potion.effects.map((e, i) => (
                 <tr key={`${potion.id}-eff-${i}`}> 
                   <td className="text-right align-top pr-3 whitespace-nowrap">
-                    <span className="text-xs font-semibold px-2 py-0.5 rounded-full border border-[var(--border)] bg-[var(--strength-superior)]">
+                    <span className={`text-xs font-semibold px-2 py-0.5 rounded-full border border-[var(--border)] ${getQualityColorClass(e.quality)}`}>
                       {e.quality}
                     </span>
                   </td>
