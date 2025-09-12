@@ -1,6 +1,7 @@
 'use client'
 
 import React, { useEffect, useMemo, useState } from 'react'
+import { FlaskConical, HelpCircle } from 'lucide-react'
 import { useAlchemyData } from './hooks/useAlchemyData'
 import { useQueryState, type QueryState } from './hooks/useQueryState'
 import { usePotionFilters } from './hooks/usePotionFilters'
@@ -97,13 +98,32 @@ export default function Kcd2Alchemy({ className }: Kcd2AlchemyProps) {
 
   return (
     <div className={`min-h-screen bg-background text-foreground ${className || ''}`}>
-      <header className="pt-4">
-        <div className="container mx-auto">
+      <header className="py-3">
+        <div className="container mx-auto px-4">
           <div className="flex items-center justify-between">
-            <h1 className="text-3xl font-bold">KCD2 Alchemy Scholar</h1>
-            {/* Save view toggle in header */}
+            <div className="flex items-center gap-3">
+              <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-[var(--accent-light)] text-[var(--accent)]">
+                <FlaskConical className="w-5 h-5" />
+              </div>
+              <div>
+                <h1 className="text-2xl font-bold text-[var(--text-primary)]">KCD2 Alchemy Scholar</h1>
+                <p className="text-[var(--text-tertiary)] text-xs">
+                  Search and filter Kingdom Come: Deliverance 2 alchemy recipes • Recipes by{' '}
+                  <a 
+                    href="https://github.com/Omricon/Henrys-Moste-Potente-Potions" 
+                    className="text-[var(--link)] hover:text-[var(--link-hover)] underline" 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                  >
+                    Omricon
+                  </a>
+                </p>
+              </div>
+            </div>
+            
+            {/* Compact save view toggle */}
             <div className="flex items-center gap-2 text-xs">
-              <span className="text-[var(--muted-2)]">Save view</span>
+              <span className="text-[var(--text-secondary)] font-medium">Save view</span>
               <button
                 type="button"
                 role="switch"
@@ -114,32 +134,31 @@ export default function Kcd2Alchemy({ className }: Kcd2AlchemyProps) {
                   setSaveEnabled(next)
                   showToast(next ? 'Saving filters enabled.' : 'Saved filters cleared and disabled.', next ? 'success' : 'info')
                 }}
-                className={`relative inline-flex h-5 w-9 items-center rounded-full border-2 bg-[var(--chip-bg)] focus-visible:ring-2 focus-visible:ring-[var(--link)] transition-colors ${saveEnabled ? 'border-[var(--link)]' : 'border-[var(--border)]'}`}
+                className={`relative inline-flex h-4 w-8 items-center rounded-full transition-colors focus-visible:ring-2 focus-visible:ring-[var(--focus-ring)] ${
+                  saveEnabled ? 'bg-[var(--accent)]' : 'bg-[var(--surface-2)]'
+                }`}
                 title="When enabled, your current search, ingredient filters, and alchemy skill are saved and restored here."
               >
                 <span
-                  className="inline-block h-4 w-4 transform rounded-full bg-[var(--card)] border border-[var(--muted)] transition-transform"
-                  style={{ transform: saveEnabled ? 'translateX(16px)' : 'translateX(1px)' }}
+                  className={`inline-block h-3 w-3 transform rounded-full transition-transform bg-white shadow-sm ${
+                    saveEnabled ? 'translate-x-4' : 'translate-x-0.5'
+                  }`}
                 />
               </button>
               <button
                 type="button"
-                className="inline-flex items-center justify-center w-4 h-4 rounded-full border border-[var(--border)] text-[var(--muted-2)] hover:text-[var(--foreground)] bg-[var(--surface-hover)]"
+                className="flex items-center justify-center w-4 h-4 rounded-full bg-[var(--surface-2)] text-[var(--text-tertiary)] hover:bg-[var(--surface-3)] hover:text-[var(--text-secondary)] transition-colors"
                 aria-label="Help: Save view"
                 title="Saves your current search, ingredient filters, and alchemy level to this browser so they persist across visits."
               >
-                ?
+                <HelpCircle className="w-3 h-3" />
               </button>
             </div>
           </div>
-          <p className="text-[var(--muted-2)] mt-1">
-            Browse and filter Kingdom Come: Deliverance 2 alchemy recipes.<br />
-          </p>
-          <p className="text-[var(--muted-2)] text-right italic">* Recipes by <a href="https://github.com/Omricon/Henrys-Moste-Potente-Potions" className="underline" target="_blank" rel="noopener noreferrer">Omricon</a>.</p>
         </div>
       </header>
 
-      <main className="container mx-auto p-4 space-y-4">
+      <main className="container mx-auto p-4 space-y-3">
         <section className="flex flex-col gap-3">
           <SearchBar value={queryState.q} onChange={(q) => setStateAndPersist({ q })} />
           <FiltersPanel
@@ -183,4 +202,3 @@ export default function Kcd2Alchemy({ className }: Kcd2AlchemyProps) {
 }
 
 export { Kcd2Alchemy }
-

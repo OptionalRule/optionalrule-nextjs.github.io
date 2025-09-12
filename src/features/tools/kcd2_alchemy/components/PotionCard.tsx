@@ -49,7 +49,7 @@ export function PotionCard({ potion, highlightIngredientIds = [], playerAlchemyL
         <div className="flex items-center gap-2 text-sm text-[var(--text-tertiary)]">
           <Droplet className="w-4 h-4" />
           <span className="font-medium">Base liquid:</span>
-          <span className="px-2 py-1 rounded-md bg-[var(--accent-light)] text-[var(--accent)] text-xs font-semibold">{potion.ingredients.liquid}</span>
+          <span className="px-2 py-1 rounded-md bg-[var(--surface-2)] text-[var(--text-primary)] text-xs font-semibold border border-[var(--border)]">{potion.ingredients.liquid}</span>
         </div>
       </header>
 
