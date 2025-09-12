@@ -2,8 +2,12 @@
   {
     "slug": "kcd2-alchemy-tool",
     "title": "KCD2 Alchemy Tool and Why I Miss TTRPG Crafting",
-    "excerpt": "I've put up a new tool on the site to view, filter, and search alchemy recipes for the game Kingdom Come: Deliverance 2. As a hardcore fan of history and gritty...",
-    "tags": [],
+    "excerpt": "I built an interactive KCD2 alchemy tool to manage recipes and reflect on how modern TTRPG design has diminished meaningful crafting and earned progression.",
+    "tags": [
+      "RPG Resources",
+      "Analysis",
+      "Philosophy"
+    ],
     "content": "",
     "date": "2025-09-12",
     "readingTime": 6
