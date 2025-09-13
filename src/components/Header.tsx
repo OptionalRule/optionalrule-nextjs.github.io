@@ -163,7 +163,7 @@ export function Header() {
           item.isSpecial 
             ? 'text-[var(--muted-2)] hover:text-[var(--foreground)]'
             : 'text-[var(--muted)] hover:text-[var(--foreground)]'
-        } text-base font-medium transition-colors ${className}`}
+        } text-sm font-semibold transition-all duration-300 hover:scale-105 ${className}`}
         title={item.label}
       >
         {item.icon && (
@@ -182,7 +182,7 @@ export function Header() {
           item.isSpecial 
             ? 'text-[var(--muted-2)] hover:text-[var(--foreground)]'
             : 'text-[var(--muted)] hover:text-[var(--foreground)]'
-        } text-base font-medium transition-colors ${className}`}
+        } text-sm font-semibold transition-all duration-300 hover:scale-105 ${className}`}
         title={item.label}
         prefetch={false}
       >
@@ -209,7 +209,7 @@ export function Header() {
       >
         <button
           onClick={() => handleDropdownToggle(dropdown.label)}
-          className="text-[var(--muted)] hover:text-[var(--foreground)] text-base font-medium transition-colors inline-flex items-center space-x-1"
+          className="text-[var(--muted)] hover:text-[var(--foreground)] text-sm font-semibold transition-all duration-300 hover:scale-105 inline-flex items-center space-x-1"
         >
           {dropdown.href ? (
             <Link href={dropdown.href} className="hover:text-[var(--foreground)]">
@@ -244,24 +244,24 @@ export function Header() {
   };
 
   return (
-    <header className="bg-[var(--surface)] border-b border-[var(--border)] sticky top-0 z-[100] relative shadow-sm">
-      <div className="container mx-auto px-4 py-6 max-w-4xl">
-        <nav className="flex items-center justify-between">
-          <div className="flex items-center space-x-3">
-            <Link href={urlPaths.home()} className="flex items-center space-x-3 hover:opacity-80 transition-opacity">
+    <header className="bg-gradient-to-r from-[var(--surface)] to-[var(--surface-2)] border-b border-[var(--border)] sticky top-0 z-[100] relative shadow-lg backdrop-blur-sm">
+      <div className="container mx-auto px-4 py-4 max-w-4xl">
+        <nav className="flex items-center justify-between min-h-[4rem]">
+          <div className="flex items-center space-x-4">
+            <Link href={urlPaths.home()} className="flex items-center space-x-4 hover:opacity-80 transition-all duration-300 group">
               <Image
                 src="/brand/OptionalRuleIcon50x50XparentBG.png"
                 alt="Optional Rule Logo"
-                width={40}
-                height={40}
-                className="w-10 h-10"
+                width={44}
+                height={44}
+                className="w-11 h-11 group-hover:scale-105 transition-transform duration-300"
                 priority
               />
-              <div>
-                <h1 className="text-2xl font-bold text-[var(--foreground)]">
+              <div className="flex flex-col justify-center">
+                <h1 className="text-2xl font-semibold text-[var(--foreground)] leading-tight tracking-tight">
                   Optional Rule
                 </h1>
-                <p className="text-sm text-[var(--muted-2)] mt-1">
+                <p className="text-xs font-medium text-[var(--text-tertiary)] leading-tight">
                   TTRPGs, game design, and all that happy stuff!
                 </p>
               </div>
@@ -346,7 +346,7 @@ export function Header() {
                     {/* Mobile dropdown trigger */}
                     <button
                       onClick={() => handleDropdownToggle(`mobile-${item.label}`)}
-                      className="text-[var(--muted)] hover:text-[var(--foreground)] text-base font-medium py-2 flex items-center justify-between"
+                      className="text-[var(--muted)] hover:text-[var(--foreground)] text-sm font-semibold py-3 flex items-center justify-between transition-all duration-300"
                     >
                       <span className="flex items-center space-x-2">
                         {item.href ? (
@@ -385,7 +385,7 @@ export function Header() {
                     key={item.href} 
                     item={item} 
                     onClick={closeMenu}
-                    className="py-2"
+                    className="py-3"
                   />
                 )
               ))}
