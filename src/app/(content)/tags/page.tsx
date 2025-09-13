@@ -26,8 +26,7 @@ export default function TagsPage() {
     .sort((a, b) => b.count - a.count); // Sort by post count descending
 
   return (
-    <div className="min-h-screen bg-[var(--surface)]">
-      <div className="container mx-auto px-4 py-8 max-w-4xl">
+    <div className="container mx-auto px-4 py-8 max-w-4xl">
         {/* Breadcrumb Navigation */}
         <nav className="mb-8 text-sm text-[var(--muted-2)]">
           <Link 
@@ -84,13 +83,12 @@ export default function TagsPage() {
           <div className="mt-12 text-center">
             <Link
               href={urlPaths.home()}
-              className="inline-flex items-center px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+              className="btn-secondary"
             >
               ← Back to Home
             </Link>
           </div>
         </main>
       </div>
-    </div>
   );
 }

@@ -83,7 +83,7 @@ export default async function StaticPage({ params }: PageProps) {
       <div className="mt-12 flex justify-between items-center">
         <Link
           href={urlPaths.home()}
-          className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+          className="btn-secondary"
         >
           ← Back to Home
         </Link>

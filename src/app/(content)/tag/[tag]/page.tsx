@@ -46,8 +46,7 @@ export default async function TagPage({ params }: TagPageProps) {
   const { posts, totalPages, currentPage } = tagData;
 
   return (
-    <div className="min-h-screen bg-[var(--surface)]">
-      <div className="container mx-auto px-4 py-8 max-w-4xl">
+    <div className="container mx-auto px-4 py-8 max-w-4xl">
         {/* Breadcrumb Navigation */}
         <nav className="mb-8 text-sm text-[var(--muted-2)]">
           <Link 
@@ -113,6 +112,5 @@ export default async function TagPage({ params }: TagPageProps) {
           />
         </main>
       </div>
-    </div>
   );
 }

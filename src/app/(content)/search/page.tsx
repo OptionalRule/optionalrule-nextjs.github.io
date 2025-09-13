@@ -46,8 +46,7 @@ function SearchPageContent() {
   };
 
   return (
-    <div className="min-h-screen bg-[var(--surface)]">
-      <div className="container mx-auto px-4 py-8 max-w-4xl">
+    <div className="container mx-auto px-4 py-8 max-w-4xl">
         {/* Breadcrumb Navigation */}
         <nav className="mb-8 text-sm text-[var(--muted-2)]">
           <Link 
@@ -116,21 +115,20 @@ function SearchPageContent() {
           <div className="mt-12 text-center">
             <Link
               href="/"
-              className="inline-flex items-center px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+              className="btn-secondary"
             >
               ← Back to Home
             </Link>
           </div>
         </main>
       </div>
-    </div>
   );
 }
 
 export default function SearchPage() {
   return (
     <Suspense fallback={
-      <div className="min-h-screen bg-[var(--surface)] flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center">
         <div className="text-[var(--muted-2)]">Loading search...</div>
       </div>
     }>
