@@ -23,7 +23,7 @@ Key Recommendations:
 
 Phase 1 (Critical - Should implement first):
 
-- [ ] Unify color systems between site.ts and globals.css
+- [x] Unify color systems between site.ts and globals.css
 - [ ] Improve dark theme palette with warmer, higher-contrast colors
 - [ ] Add missing surface levels for better visual hierarchy
 

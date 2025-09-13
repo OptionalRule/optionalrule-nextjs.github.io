@@ -9,6 +9,7 @@
   --surface: #f8fafc; /* slate-50 - light surface */
   --surface-2: #f1f5f9; /* slate-100 - secondary surface */
   --surface-3: #e2e8f0; /* slate-200 - tertiary surface */
+  --surface-4: #cbd5e1; /* slate-300 - quaternary surface */
   --card: #ffffff; /* pure white cards */
   --card-elevated: #f8fafc; /* slate-50 - elevated cards */
   --card-section: #f1f5f9; /* slate-100 - card subsections */
@@ -74,6 +75,7 @@
   --color-surface: var(--surface);
   --color-surface-2: var(--surface-2);
   --color-surface-3: var(--surface-3);
+  --color-surface-4: var(--surface-4);
   --color-card: var(--card);
   --color-card-elevated: var(--card-elevated);
   --color-card-section: var(--card-section);
@@ -140,51 +142,51 @@
 
 /* Class-based dark mode overrides; toggled via .dark on <html> */
 .dark {
-  --background: #0f172a; /* slate-900 - warmer than pure black */
-  --foreground: #f1f5f9; /* slate-100 - crisp white text */
+  --background: #0c1220; /* Warmer dark blue-gray instead of pure slate */
+  --foreground: #f8fafc; /* Higher contrast for better readability */
   color-scheme: dark;
+
+  /* Base surfaces with enhanced hierarchy */
+  --surface: #1a2332; /* Subtle blue undertone - primary surface */
+  --surface-2: #243447; /* More layered depth - secondary surface */
+  --surface-3: #2e455c; /* Better progression - tertiary surface */
+  --surface-4: #3a5670; /* New intermediate level - quaternary surface */
+  --card: #1a2332; /* Match primary surface - card backgrounds */
+  --card-elevated: #243447; /* Secondary surface - elevated cards */
+  --card-section: #2e455c; /* Tertiary surface - card subsections */
+  --card-subsection: #3a5670; /* New level - nested subsections */
+
+  /* Text hierarchy with improved contrast ratios */
+  --text-primary: #f8fafc; /* Higher contrast for better readability */
+  --text-secondary: #d1d9e6; /* Warmer secondary text */
+  --text-tertiary: #a8b5c5; /* Better contrast (4.6:1) - tertiary text */
+  --text-muted: #7a8694; /* Better contrast (4.5:1) - muted text */
+  /* Borders and dividers - updated for warmer palette */
+  --border: #3a5670; /* Match surface-4 - primary borders */
+  --border-light: #2e455c; /* Match surface-3 - light borders */
+  --border-strong: #4a6584; /* Slightly stronger - strong borders */
+
+  /* Interactive states - updated for new surfaces */
+  --surface-hover: #2e455c; /* Match surface-3 - hover state */
+  --surface-active: #3a5670; /* Match surface-4 - active state */
+
+  /* Brand colors optimized for dark - less harsh blues */
+  --link: #5b9eff; /* Less harsh blue - links */
+  --link-hover: #7db3ff; /* Softer hover state - link hover */
+  --accent: #4285ff; /* Primary accent with better balance */
+  --accent-hover: #5b9eff; /* Consistent hover progression */
+  --accent-light: #1a3a5c; /* Dark accent background */
+  --focus-ring: #5b9eff; /* Match link color - focus rings */
   
-  /* Base surfaces with clear hierarchy */
-  --surface: #1e293b; /* slate-800 - primary surface */
-  --surface-2: #334155; /* slate-700 - secondary surface */
-  --surface-3: #475569; /* slate-600 - tertiary surface */
-  --card: #1e293b; /* slate-800 - card backgrounds */
-  --card-elevated: #334155; /* slate-700 - elevated cards */
-  --card-section: #475569; /* slate-600 - card subsections */
-  --card-subsection: #64748b; /* slate-500 - nested subsections */
-  
-  /* Text hierarchy with proper contrast */
-  --text-primary: #f1f5f9; /* slate-100 - primary text */
-  --text-secondary: #cbd5e1; /* slate-300 - secondary text */
-  --text-tertiary: #94a3b8; /* slate-400 - tertiary text */
-  --text-muted: #64748b; /* slate-500 - muted text */
-  
-  /* Borders and dividers */
-  --border: #475569; /* slate-600 - primary borders */
-  --border-light: #334155; /* slate-700 - light borders */
-  --border-strong: #64748b; /* slate-500 - strong borders */
-  
-  /* Interactive states */
-  --surface-hover: #475569; /* slate-600 - hover state */
-  --surface-active: #64748b; /* slate-500 - active state */
-  
-  /* Brand colors optimized for dark */
-  --link: #60a5fa; /* blue-400 - links */
-  --link-hover: #93c5fd; /* blue-300 - link hover */
-  --accent: #3b82f6; /* blue-500 - primary accent */
-  --accent-hover: #60a5fa; /* blue-400 - accent hover */
-  --accent-light: #1e3a8a; /* blue-800 - dark accent bg */
-  --focus-ring: #60a5fa; /* blue-400 - focus rings */
-  
-  /* Semantic colors for dark mode */
-  --success: #10b981; /* emerald-500 */
-  --success-light: #064e3b; /* emerald-900 */
-  --warning: #f59e0b; /* amber-500 */
-  --warning-light: #78350f; /* amber-900 */
-  --error: #f87171; /* red-400 */
-  --error-light: #7f1d1d; /* red-900 */
-  --info: #38bdf8; /* sky-400 */
-  --info-light: #0c4a6e; /* sky-900 */
+  /* Semantic colors for dark mode - enhanced visibility */
+  --success: #22c55e; /* green-500 - brighter for better visibility */
+  --success-light: #0f2a1a; /* darker green background */
+  --warning: #f59e0b; /* amber-500 - good as is */
+  --warning-light: #2d1b07; /* warmer amber background */
+  --error: #ef4444; /* red-500 - slightly more saturated */
+  --error-light: #2d1016; /* warmer red background */
+  --info: #3b82f6; /* blue-500 - match accent for consistency */
+  --info-light: #1a2a4d; /* warmer blue background */
   
   /* Legacy support (mapped to new variables) */
   --muted: var(--text-secondary);
