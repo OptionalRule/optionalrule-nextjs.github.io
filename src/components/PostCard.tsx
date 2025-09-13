@@ -12,7 +12,7 @@ export function PostCard({ post }: PostCardProps) {
   const postUrl = urlPaths.post(post.date, post.slug);
 
   return (
-    <article className="bg-[var(--card)] rounded-lg border border-[var(--border)] overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-200">
+    <article className="bg-[var(--card)] rounded-lg border border-[var(--border)] overflow-hidden post-card-glow transition-all duration-300 theme-transition">
       
       {post.featured_image && (
         <Link href={postUrl} className="block">
@@ -30,7 +30,7 @@ export function PostCard({ post }: PostCardProps) {
       )}
 
       <div className="p-6">
-        <div className="flex items-center gap-2 mb-3 text-sm text-[var(--muted-2)]">
+        <div className="flex items-center gap-2 mb-3 text-sm font-medium text-[var(--text-tertiary)]">
           <time dateTime={post.date}>
             {formatDate(post.date)}
           </time>
@@ -41,7 +41,7 @@ export function PostCard({ post }: PostCardProps) {
         <h2 className="text-xl font-semibold text-[var(--foreground)] mb-3">
           <Link 
             href={postUrl}
-            className="hover:text-[var(--link)] transition-colors"
+            className="hover:text-[var(--link)] transition-all duration-300"
           >
             {post.title}
           </Link>
@@ -59,7 +59,7 @@ export function PostCard({ post }: PostCardProps) {
               <Link
                 key={tag}
                 href={urlPaths.tag(tag)}
-                className="inline-block px-3 py-1 bg-[var(--chip-bg)] text-[var(--chip-text)] rounded-full text-sm hover:bg-[var(--surface-hover)] transition-colors"
+                className="inline-block px-3 py-1 bg-[var(--chip-bg)] text-[var(--chip-text)] rounded-full text-sm font-medium hover:bg-[var(--surface-hover)] transition-all duration-300"
               >
                 {tag}
               </Link>
@@ -68,7 +68,7 @@ export function PostCard({ post }: PostCardProps) {
 
           <Link
             href={postUrl}
-            className="text-[var(--link)] hover:text-[var(--link-hover)] font-medium text-sm transition-colors"
+            className="text-[var(--link)] hover:text-[var(--link-hover)] font-semibold text-sm transition-all duration-300 hover:scale-105"
           >
             Read more →
           </Link>

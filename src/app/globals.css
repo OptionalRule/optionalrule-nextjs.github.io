@@ -292,6 +292,24 @@ body {
     box-shadow var(--transition-normal);
 }
 
+/* Post card glow - default light mode shadows */
+.post-card-glow {
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
+.post-card-glow:hover {
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+}
+
+/* Dark mode amber glow override - balanced */
+.dark .post-card-glow {
+  box-shadow: 0 3px 12px rgba(255, 140, 66, 0.25);
+}
+
+.dark .post-card-glow:hover {
+  box-shadow: 0 4px 16px rgba(255, 140, 66, 0.3);
+}
+
 /* Accessibility: Respect user's motion preferences */
 @media (prefers-reduced-motion: reduce) {
   :root {
