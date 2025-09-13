@@ -76,7 +76,6 @@ export default async function PostPage({ params }: PostPageProps) {
         }}
       />
       
-      <div className="min-h-screen bg-[var(--surface)]">
       <div className="container mx-auto px-4 py-8 max-w-4xl">
         {/* Breadcrumb Navigation */}
         <nav className="mb-8 text-sm text-[var(--muted-2)]">
@@ -175,7 +174,6 @@ export default async function PostPage({ params }: PostPageProps) {
             About this blog →
           </Link>
         </div>
-      </div>
       </div>
     </>
   );
