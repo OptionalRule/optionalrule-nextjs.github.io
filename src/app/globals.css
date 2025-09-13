@@ -37,6 +37,14 @@
   --accent-hover: #1d4ed8; /* blue-700 - accent hover */
   --accent-light: #dbeafe; /* blue-100 - light accent */
   --focus-ring: #60a5fa; /* blue-400 - focus rings */
+
+  /* Warm accent colors for TTRPG personality */
+  --accent-warm: #ea580c; /* orange-600 - warm CTA accent */
+  --accent-warm-hover: #dc2626; /* red-600 - warm hover state */
+  --accent-warm-light: #fed7aa; /* orange-200 - light warm accent */
+  --accent-mystical: #7c3aed; /* violet-600 - mystical purple accent */
+  --accent-mystical-hover: #6d28d9; /* violet-700 - mystical hover */
+  --accent-mystical-light: #e0e7ff; /* indigo-100 - light mystical */
   
   /* Semantic colors */
   --success: #059669; /* emerald-600 */
@@ -60,6 +68,12 @@
   --card-content: var(--text-secondary);
   --card-accent: var(--border-light);
   --card-hover: var(--surface-hover);
+
+  /* State variables for UI elements */
+  --state-disabled: #9ca3af; /* gray-400 - disabled elements */
+  --state-loading: #f3f4f6; /* gray-100 - loading states */
+  --state-selected: #dbeafe; /* blue-100 - selected items */
+  --state-hover: #f8fafc; /* slate-50 - subtle hover overlay */
 
   /* Strength scale (light backgrounds for black text) */
   --strength-weak: #fecaca; /* red-200 - pale red */
@@ -103,6 +117,14 @@
   --color-accent-hover: var(--accent-hover);
   --color-accent-light: var(--accent-light);
   --color-focus-ring: var(--focus-ring);
+
+  /* Warm accent colors for Tailwind */
+  --color-accent-warm: var(--accent-warm);
+  --color-accent-warm-hover: var(--accent-warm-hover);
+  --color-accent-warm-light: var(--accent-warm-light);
+  --color-accent-mystical: var(--accent-mystical);
+  --color-accent-mystical-hover: var(--accent-mystical-hover);
+  --color-accent-mystical-light: var(--accent-mystical-light);
   
   /* Semantic colors */
   --color-success: var(--success);
@@ -133,6 +155,12 @@
   --color-card-accent: var(--card-accent);
   --color-card-hover: var(--card-hover);
   
+  /* State variables for Tailwind */
+  --color-state-disabled: var(--state-disabled);
+  --color-state-loading: var(--state-loading);
+  --color-state-selected: var(--state-selected);
+  --color-state-hover: var(--state-hover);
+
   /* Strength scale tokens */
   --color-strength-weak: var(--strength-weak);
   --color-strength-standard: var(--strength-standard);
@@ -177,6 +205,14 @@
   --accent-hover: #5b9eff; /* Consistent hover progression */
   --accent-light: #1a3a5c; /* Dark accent background */
   --focus-ring: #5b9eff; /* Match link color - focus rings */
+
+  /* Warm accent colors for TTRPG personality - dark mode */
+  --accent-warm: #ff8c42; /* Orange accent for CTAs */
+  --accent-warm-hover: #ff9d5c; /* Warm hover state */
+  --accent-warm-light: #3d2415; /* Dark warm background */
+  --accent-mystical: #8b5cf6; /* Violet-400 - mystical purple */
+  --accent-mystical-hover: #a78bfa; /* Violet-300 - mystical hover */
+  --accent-mystical-light: #2d1b4e; /* Dark mystical background */
   
   /* Semantic colors for dark mode - enhanced visibility */
   --success: #22c55e; /* green-500 - brighter for better visibility */
@@ -200,6 +236,12 @@
   --card-content: var(--text-secondary);
   --card-accent: var(--border-light);
   --card-hover: var(--surface-hover);
+
+  /* State variables for UI elements - dark mode */
+  --state-disabled: #4a5568; /* Disabled elements in dark mode */
+  --state-loading: #2d3748; /* Loading states in dark mode */
+  --state-selected: #2a4a6b; /* Selected items in dark mode */
+  --state-hover: #243447; /* Subtle hover overlay - match surface-2 */
 
   /* Strength scale (dark backgrounds for white text) */
   --strength-weak: #dc2626; /* red-600 - deep red */
