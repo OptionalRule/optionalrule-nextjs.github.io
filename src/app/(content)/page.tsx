@@ -23,14 +23,14 @@ export default function Home() {
           }}
         />
         
-        <div className="container mx-auto px-4 py-8 max-w-4xl">
+        <div className="container mx-auto px-4 py-6 max-w-4xl">
           {totalPages > 1 && (
-            <header className="mb-12 text-center">
-              <h1 className="text-4xl font-bold text-[var(--foreground)] mb-4">
+            <header className="mb-6 text-center">
+              <h1 className="text-3xl font-bold text-[var(--foreground)] mb-2">
                 Latest Posts
               </h1>
-              <div className="mb-6">
-                <Pagination 
+              <div className="mb-2">
+                <Pagination
                   currentPage={currentPage}
                   totalPages={totalPages}
                   basePath=""
@@ -54,11 +54,13 @@ export default function Home() {
                 </div>
               )}
 
-              <Pagination 
-                currentPage={currentPage}
-                totalPages={totalPages}
-                basePath=""
-              />
+              <div className="mt-12 mb-8">
+                <Pagination
+                  currentPage={currentPage}
+                  totalPages={totalPages}
+                  basePath=""
+                />
+              </div>
             </main>
           </div>
       </>

@@ -60,7 +60,7 @@ export function Pagination({ currentPage, totalPages, basePath }: PaginationProp
   const visiblePages = getVisiblePages(currentPage, totalPages, 5, false);
 
   return (
-    <nav className="flex justify-center items-center space-x-1 sm:space-x-2 mt-8 sm:mt-12" aria-label="Pagination">
+    <nav className="flex justify-center items-center space-x-1 sm:space-x-2 mt-3 sm:mt-4" aria-label="Pagination">
       {/* Previous button */}
       {currentPage > 1 && (
         <Link
