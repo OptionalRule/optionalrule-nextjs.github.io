@@ -188,7 +188,7 @@
 
 /* Class-based dark mode overrides; toggled via .dark on <html> */
 .dark {
-  --background: #0c1220; /* Warmer dark blue-gray instead of pure slate */
+  --background: #050a12; /* Much darker warmer blue-gray for maximum contrast */
   --foreground: #f8fafc; /* Higher contrast for better readability */
   color-scheme: dark;
 
