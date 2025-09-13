@@ -8,7 +8,8 @@
       "Bash(rm:*)",
       "Bash(npm run test:*)",
       "Bash(npm test)",
-      "Bash(npm test:*)"
+      "Bash(npm test:*)",
+      "mcp__playwright__browser_install"
     ],
     "deny": [],
     "ask": [],
