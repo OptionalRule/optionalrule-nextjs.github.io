@@ -54,13 +54,11 @@ export default function Home() {
                 </div>
               )}
 
-              <div className="mt-12 mb-8">
-                <Pagination
-                  currentPage={currentPage}
-                  totalPages={totalPages}
-                  basePath=""
-                />
-              </div>
+              <Pagination
+                currentPage={currentPage}
+                totalPages={totalPages}
+                basePath=""
+              />
             </main>
           </div>
       </>
