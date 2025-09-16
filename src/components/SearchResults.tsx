@@ -12,7 +12,10 @@ interface SearchResultsProps {
   isLoading?: boolean;
 }
 
-export function SearchResults({ results, query, isLoading }: SearchResultsProps) {
+export function SearchResults({ results, query, isLoading = false }: SearchResultsProps) {
+  const safeResults = Array.isArray(results) ? results : [];
+  const safeQuery = typeof query === 'string' ? query : '';
+
   if (isLoading) {
     return (
       <div className="space-y-4">
@@ -38,7 +41,7 @@ export function SearchResults({ results, query, isLoading }: SearchResultsProps)
     );
   }
 
-  if (!query.trim()) {
+  if (!safeQuery.trim()) {
     return (
       <div className="text-center py-12">
         <svg
@@ -65,7 +68,7 @@ export function SearchResults({ results, query, isLoading }: SearchResultsProps)
     );
   }
 
-  if (results.length === 0) {
+  if (safeResults.length === 0) {
     return (
       <div className="text-center py-12">
         <svg
@@ -86,7 +89,7 @@ export function SearchResults({ results, query, isLoading }: SearchResultsProps)
           No results found
         </h3>
         <p className="text-[var(--muted-2)] mb-4">
-          No posts match your search for &quot;<span className="font-medium">{query}</span>&quot;.
+          No posts match your search for &quot;<span className="font-medium">{safeQuery}</span>&quot;.
         </p>
         <p className="text-sm text-[var(--muted-2)]">
           Try different keywords or browse all posts.
@@ -99,12 +102,12 @@ export function SearchResults({ results, query, isLoading }: SearchResultsProps)
     <div className="space-y-6">
       {/* Results count */}
       <div className="text-sm text-[var(--muted-2)]">
-        Found {results.length} result{results.length === 1 ? '' : 's'} for &quot;<span className="font-medium text-[var(--foreground)]">{query}</span>&quot;
+        Found {safeResults.length} result{safeResults.length === 1 ? '' : 's'} for &quot;<span className="font-medium text-[var(--foreground)]">{safeQuery}</span>&quot;
       </div>
 
       {/* Results list */}
       <div className="space-y-4">
-        {results.map((result) => {
+        {safeResults.map((result) => {
           const postUrl = urlPaths.post(result.item.date, result.item.slug);
           
           return (
@@ -118,11 +121,11 @@ export function SearchResults({ results, query, isLoading }: SearchResultsProps)
                   <time dateTime={result.item.date}>
                     {formatDate(result.item.date)}
                   </time>
-                  <span>•</span>
+                  <span></span>
                   <span>{result.item.readingTime} min read</span>
                   {result.score && (
                     <>
-                      <span>•</span>
+                      <span></span>
                       <span className="text-xs">
                         {Math.round((1 - result.score) * 100)}% match
                       </span>
@@ -138,7 +141,7 @@ export function SearchResults({ results, query, isLoading }: SearchResultsProps)
                   >
                     <HighlightedText 
                       text={result.item.title}
-                      searchQuery={query}
+                      searchQuery={safeQuery}
                     />
                   </Link>
                 </h2>
@@ -148,7 +151,7 @@ export function SearchResults({ results, query, isLoading }: SearchResultsProps)
                   <p className="text-[var(--muted)] mb-4 leading-relaxed">
                     <HighlightedText 
                       text={result.item.excerpt}
-                      searchQuery={query}
+                      searchQuery={safeQuery}
                     />
                   </p>
                 )}
@@ -171,7 +174,7 @@ export function SearchResults({ results, query, isLoading }: SearchResultsProps)
                     href={postUrl}
                     className="text-[var(--link)] hover:text-[var(--link-hover)] font-medium text-sm transition-colors"
                   >
-                    Read more →
+                    Read more 
                   </Link>
                 </div>
               </div>
