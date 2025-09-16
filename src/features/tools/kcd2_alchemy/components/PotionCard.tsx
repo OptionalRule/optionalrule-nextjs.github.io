@@ -1,6 +1,6 @@
 import type { IngredientId, NormalizedPotionRecipe } from '../types'
 import { useEffect, useMemo, useState } from 'react'
-import { Droplet, Sprout, BookOpenText, Bolt, Hash, Info, Coins } from 'lucide-react'
+import { Droplet, Sprout, BookOpenText, Sparkles, TestTubes, Info, Coins } from 'lucide-react'
 import { QuantityTable } from './QuantityTable'
 
 export function PotionCard({ potion, highlightIngredientIds = [], playerAlchemyLevel = 0 }: { potion: NormalizedPotionRecipe; highlightIngredientIds?: IngredientId[]; playerAlchemyLevel?: number }) {
@@ -157,7 +157,7 @@ export function PotionCard({ potion, highlightIngredientIds = [], playerAlchemyL
           aria-controls={effectsPanelId}
         >
           <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-[var(--warning-light)] text-[var(--warning)]">
-            <Bolt className="w-5 h-5" />
+            <Sparkles className="w-5 h-5" />
           </div>
           <span className="text-lg font-semibold text-[var(--text-primary)] flex-grow text-left">Effects</span>
           <span className="px-2 py-1 rounded-md bg-[var(--accent-light)] text-[var(--accent)] text-sm font-medium">
@@ -204,7 +204,7 @@ export function PotionCard({ potion, highlightIngredientIds = [], playerAlchemyL
           aria-controls={quantitiesPanelId}
         >
           <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-[var(--accent-light)] text-[var(--accent)]">
-            <Hash className="w-5 h-5" />
+            <TestTubes className="w-5 h-5" />
           </div>
           <span className="text-lg font-semibold text-[var(--text-primary)] flex-grow text-left">Quantities</span>
           <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-[var(--card)] border border-[var(--border)]">

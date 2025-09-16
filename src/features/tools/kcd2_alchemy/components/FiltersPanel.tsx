@@ -2,7 +2,7 @@
 
 import type { IngredientId } from '../types'
 import type { IngredientMatchMode } from '../lib/filter'
-import { Sprout, TrendingUp } from 'lucide-react'
+import { Sprout, FlaskRound } from 'lucide-react'
 import { AlchemyLevelSelect } from './AlchemyLevelSelect'
 
 export interface FiltersPanelProps {
@@ -118,7 +118,7 @@ export function FiltersPanel({
 
       {/* Compact alchemy skill selector */}
       <div className="flex items-center gap-3 pt-1">
-        <TrendingUp className="w-4 h-4 text-[var(--info)]" />
+        <FlaskRound className="w-4 h-4 text-[var(--info)]" />
         <h3 className="font-medium text-[var(--text-primary)] text-sm">Alchemy Level:</h3>
         <AlchemyLevelSelect 
           value={alchemyLevel} 

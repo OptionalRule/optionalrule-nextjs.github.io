@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useEffect, useMemo, useState } from 'react'
-import { FlaskConical, HelpCircle } from 'lucide-react'
+import { FlaskRound, HelpCircle } from 'lucide-react'
 import { useAlchemyData } from './hooks/useAlchemyData'
 import { useQueryState, type QueryState } from './hooks/useQueryState'
 import { usePotionFilters } from './hooks/usePotionFilters'
@@ -103,7 +103,7 @@ export default function Kcd2Alchemy({ className }: Kcd2AlchemyProps) {
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-[var(--accent-light)] text-[var(--accent)]">
-                <FlaskConical className="w-5 h-5" />
+                <FlaskRound className="w-5 h-5" />
               </div>
               <div>
                 <h1 className="text-2xl font-bold text-[var(--text-primary)]">KCD2 Alchemy Scholar</h1>
