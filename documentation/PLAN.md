@@ -6,8 +6,8 @@ This plan consolidates recommendations and improvements from `documentation/PRD.
 
 ## Testing Strategy Overhaul (P1, Impact: High, Effort: M)
 
-- [ ] Expand React Testing Library coverage for App Router pages and src/features/tools/kcd2_alchemy hooks/components; render with mocked content to exercise Suspense fallbacks, query parameter initialisation, pagination, and post rendering paths.
-- [ ] Replace low-signal filesystem assertions in src/__tests__/build.test.ts with fixture-based tests that validate src/lib/content.ts and src/lib/feeds.ts end-to-end using in-memory file data, covering draft filtering and RSS generation.
+- [x] Expand React Testing Library coverage for App Router pages and src/features/tools/kcd2_alchemy hooks/components; render with mocked content to exercise Suspense fallbacks, query parameter initialisation, pagination, and post rendering paths.
+- [x] Replace low-signal filesystem assertions in src/__tests__/build.test.ts with fixture-based tests that validate src/lib/content.ts and src/lib/feeds.ts end-to-end using in-memory file data, covering draft filtering and RSS generation.
 - [ ] Increase Vitest coverage thresholds (for example 50% statements/lines as a first step, scaling toward 70%) and refine coverage.exclude so Storybook stories and generated files are ignored while critical application modules remain in scope.
 - [ ] Add integration tests for SearchPageContent and other composed views to confirm wiring between SearchInput, SearchResults, loading/error states, and sanitisation of untrusted input.
 - [ ] Centralise common mocks (Next.js router, global fetch) in shared helpers to keep new tests concise and consistent, and document the pattern in src/test-setup.ts.
@@ -113,6 +113,7 @@ This plan consolidates recommendations and improvements from `documentation/PRD.
 - Static export with `trailingSlash: true` remains a hard constraint for GitHub Pages.
 - Remote images must match `next.config.ts` `images.remotePatterns` if used.
 - Keep using `src/lib/urls.ts` as the single source for URL generation.
+
 
 
 

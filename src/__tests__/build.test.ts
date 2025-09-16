@@ -1,124 +1,204 @@
-import { describe, it, expect } from 'vitest';
-import fs from 'fs';
-import path from 'path';
+import path from "path";
+import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
+import { siteConfig } from "@/config/site";
 
-describe('Build Verification', () => {
-  const projectRoot = process.cwd();
-  
-  describe('Configuration files', () => {
-    it('should have required config files', () => {
-      const requiredFiles = [
-        'package.json',
-        'next.config.ts',
-        'tsconfig.json',
-        'vitest.config.ts',
-        'vitest.unit.config.ts'
-      ];
+const projectRoot = process.cwd();
+const virtualFiles = new Map<string, string>();
 
-      requiredFiles.forEach(file => {
-        const filePath = path.join(projectRoot, file);
-        expect(fs.existsSync(filePath)).toBe(true);
-      });
-    });
+const normalizePath = (target: string): string => {
+  const absolute = path.isAbsolute(target) ? target : path.join(projectRoot, target);
+  return path.normalize(absolute);
+};
 
-    it('should have valid package.json', () => {
-      const packageJsonPath = path.join(projectRoot, 'package.json');
-      const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf8'));
-      
-      // Check required dependencies
-      expect(packageJson.dependencies).toHaveProperty('next');
-      expect(packageJson.dependencies).toHaveProperty('react');
-      expect(packageJson.dependencies).toHaveProperty('react-dom');
-      
-      // Check required scripts
-      expect(packageJson.scripts).toHaveProperty('build');
-      expect(packageJson.scripts).toHaveProperty('test');
-      expect(packageJson.scripts).toHaveProperty('lint');
-    });
+const listDirectoryEntries = (dir: string): string[] => {
+  const normalizedDir = normalizePath(dir);
+  const prefix = normalizedDir.endsWith(path.sep) ? normalizedDir : normalizedDir + path.sep;
+  const entries = new Set<string>();
+
+  for (const filePath of virtualFiles.keys()) {
+    if (filePath.startsWith(prefix)) {
+      const remainder = filePath.slice(prefix.length);
+      const [entry] = remainder.split(path.sep);
+      if (entry) {
+        entries.add(entry);
+      }
+    }
+  }
+
+  return Array.from(entries);
+};
+
+type MockStats = {
+  isFile: () => boolean;
+  isDirectory: () => boolean;
+};
+
+vi.mock("fs", () => {
+  const fsMock = {
+    existsSync(target: string) {
+      const normalized = normalizePath(target);
+      return virtualFiles.has(normalized) || listDirectoryEntries(normalized).length > 0;
+    },
+    readdirSync(dir: string) {
+      const entries = listDirectoryEntries(dir);
+      if (!virtualFiles.has(normalizePath(dir)) && entries.length === 0) {
+        throw new Error(`ENOENT: no such file or directory, scandir '${dir}'`);
+      }
+      return entries;
+    },
+    readFileSync(file: string) {
+      const normalized = normalizePath(file);
+      const content = virtualFiles.get(normalized);
+      if (content === undefined) {
+        throw new Error(`ENOENT: no such file or directory, open '${file}'`);
+      }
+      return content;
+    },
+    statSync(target: string): MockStats {
+      const normalized = normalizePath(target);
+      const isFile = virtualFiles.has(normalized);
+      const isDirectory = !isFile && listDirectoryEntries(normalized).length > 0;
+
+      if (!isFile && !isDirectory) {
+        throw new Error(`ENOENT: no such file or directory, stat '${target}'`);
+      }
+
+      return {
+        isFile: () => isFile,
+        isDirectory: () => isDirectory,
+      } satisfies MockStats;
+    },
+  };
+
+  return {
+    default: fsMock,
+    ...fsMock,
+  };
+});
+
+const writeVirtualFile = (relativePath: string, content: string) => {
+  const absolute = normalizePath(relativePath);
+  virtualFiles.set(absolute, content);
+};
+
+const markdownWithFrontmatter = (
+  frontmatter: Record<string, unknown>,
+  body: string,
+): string => {
+  const lines: string[] = ["---"];
+
+  for (const [key, value] of Object.entries(frontmatter)) {
+    if (value === undefined) {
+      continue;
+    }
+
+    if (Array.isArray(value)) {
+      lines.push(`${key}: ${JSON.stringify(value)}`);
+      continue;
+    }
+
+    if (typeof value === "string") {
+      lines.push(`${key}: "${value.replace(/"/g, '\\"')}"`);
+      continue;
+    }
+
+    lines.push(`${key}: ${String(value)}`);
+  }
+
+  lines.push("---", body);
+  return `${lines.join("\n")}\n`;
+};
+
+const seedPosts = () => {
+  writeVirtualFile(
+    path.join("content", "posts", "2024-01-12-custom-post.mdx"),
+    markdownWithFrontmatter(
+      {
+        title: "Custom Post",
+        date: "2024-01-12",
+        excerpt: "Hand-written excerpt",
+        tags: ["Guides", "How-To"],
+        slug: "custom-slug",
+      },
+      "# Intro\nContent for the custom post.",
+    ),
+  );
+
+  writeVirtualFile(
+    path.join("content", "posts", "2024-01-11-draft-post.mdx"),
+    markdownWithFrontmatter(
+      {
+        title: "Draft Post",
+        date: "2024-01-11",
+        draft: true,
+      },
+      "Draft content that should not ship.",
+    ),
+  );
+
+  writeVirtualFile(
+    path.join("content", "posts", "2024-01-10-first-post.mdx"),
+    markdownWithFrontmatter(
+      {
+        title: "First Post",
+        date: "2024-01-10",
+        tags: ["News"],
+      },
+      "Introductory content for the first post.",
+    ),
+  );
+};
+
+const originalNodeEnv = process.env.NODE_ENV;
+
+describe("Content and feed integration", () => {
+  beforeEach(() => {
+    virtualFiles.clear();
+    vi.resetModules();
   });
 
-  describe('Source structure', () => {
-    it('should have required source directories', () => {
-      const requiredDirs = [
-        'src',
-        'src/app',
-        'src/lib',
-        'src/components',
-        'content',
-        'content/posts',
-        'content/pages'
-      ];
-
-      requiredDirs.forEach(dir => {
-        const dirPath = path.join(projectRoot, dir);
-        expect(fs.existsSync(dirPath)).toBe(true);
-      });
-    });
-
-    it('should have core library files', () => {
-      const coreFiles = [
-        'src/lib/content.ts',
-        'src/lib/search.ts',
-        'src/lib/utils.ts',
-        'src/lib/types.ts'
-      ];
-
-      coreFiles.forEach(file => {
-        const filePath = path.join(projectRoot, file);
-        expect(fs.existsSync(filePath)).toBe(true);
-      });
-    });
+  afterEach(() => {
+    process.env.NODE_ENV = originalNodeEnv;
   });
 
-  describe('Content validation', () => {
-    it('should have sample content files', () => {
-      const postsDir = path.join(projectRoot, 'content/posts');
-      const pagesDir = path.join(projectRoot, 'content/pages');
-      
-      if (fs.existsSync(postsDir)) {
-        const posts = fs.readdirSync(postsDir).filter(file => file.endsWith('.mdx') || file.endsWith('.md'));
-        expect(posts.length).toBeGreaterThan(0);
-      }
-      
-      if (fs.existsSync(pagesDir)) {
-        const pages = fs.readdirSync(pagesDir).filter(file => file.endsWith('.mdx') || file.endsWith('.md'));
-        expect(pages.length).toBeGreaterThan(0);
-      }
-    });
+  it("filters drafts in production while preserving post metadata", async () => {
+    seedPosts();
+    process.env.NODE_ENV = "production";
+
+    const { getAllPostsMeta, getPaginatedPosts } = await import("@/lib/content");
+
+    const published = getAllPostsMeta();
+    expect(published.map((post) => post.title)).toEqual(["Custom Post", "First Post"]);
+    expect(published.every((post) => post.title !== "Draft Post")).toBe(true);
+    expect(published[0].slug).toBe("custom-slug");
+    expect(published[0].excerpt).toBe("Hand-written excerpt");
+    expect(published[0].readingTime).toBeGreaterThanOrEqual(1);
+
+    const pagination = getPaginatedPosts(1);
+    expect(pagination.totalPages).toBe(1);
+    expect(pagination.posts).toHaveLength(2);
+    expect(pagination.hasNextPage).toBe(false);
+
+    process.env.NODE_ENV = "development";
+    const allPostsIncludingDrafts = getAllPostsMeta();
+    expect(allPostsIncludingDrafts.some((post) => post.title === "Draft Post")).toBe(true);
   });
 
-  describe('Build artifacts', () => {
-    it('should create out directory when built', () => {
-      const outDir = path.join(projectRoot, 'out');
-      
-      // This test only runs if build has been executed
-      if (fs.existsSync(outDir)) {
-        expect(fs.statSync(outDir).isDirectory()).toBe(true);
-        
-        // Check for essential build artifacts
-        const indexPath = path.join(outDir, 'index.html');
-        if (fs.existsSync(indexPath)) {
-          expect(fs.statSync(indexPath).isFile()).toBe(true);
-        }
-      }
-    });
+  it("generates RSS feed entries for published posts only", async () => {
+    seedPosts();
+    process.env.NODE_ENV = "production";
 
-    it('should generate search index', () => {
-      const searchIndexPath = path.join(projectRoot, 'public/search-index.json');
-      
-      // This test only runs if search index has been generated
-      if (fs.existsSync(searchIndexPath)) {
-        const searchIndex = JSON.parse(fs.readFileSync(searchIndexPath, 'utf8'));
-        expect(Array.isArray(searchIndex)).toBe(true);
-        
-        if (searchIndex.length > 0) {
-          const firstItem = searchIndex[0];
-          expect(firstItem).toHaveProperty('slug');
-          expect(firstItem).toHaveProperty('title');
-          expect(firstItem).toHaveProperty('excerpt');
-          expect(firstItem).toHaveProperty('tags');
-        }
-      }
-    });
+    const { generateRSSFeed } = await import("@/lib/feeds");
+    const rss = generateRSSFeed();
+
+    expect(rss).toContain("<title><![CDATA[Custom Post]]></title>");
+    expect(rss).toContain(`${siteConfig.url}/2024/01/12/custom-slug/`);
+    expect(rss).toContain("Guides, How-To");
+    expect(rss).not.toContain("Draft Post");
   });
 });
+
+
+
+
+
