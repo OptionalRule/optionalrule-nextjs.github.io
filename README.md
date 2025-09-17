@@ -25,6 +25,7 @@ This is a Next.js 15 static blog site for Optional Rule Games that deploys to Gi
 - `npm run test:watch` - Run tests in watch mode during development
 - `npm run test:ui` - Run tests with browser-based UI
 - `npm run test:build` - Build verification tests (includes build + static tests)
+- `npm run test:coverage` - Build a coverage report for tests through the site
 
 See [Testing Strategy Documentation](docs/testing-strategy.md) for comprehensive testing approach and upgrade protection details.
 
