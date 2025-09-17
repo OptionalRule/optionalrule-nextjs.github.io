@@ -202,6 +202,21 @@ The testing strategy is designed to work in CI environments:
 - **Search functionality**: 85%+ coverage
 - **Build verification**: Critical paths covered
 
+## Coverage Scope Updates
+
+- **Interactive experiences**: Treat the Asteroids bundle as an embedded app. Exclude `src/app/(interactive)/**` and `src/features/games/**` from the main coverage run so the core editorial stack is measured without the game engine skewing the report.
+- **Dedicated suite later**: Keep the option open to add a second Vitest config (for example `vitest.games.config.ts`) that targets the excluded files with thresholds that match their complexity and browser needs.
+- **Route integration focus**: Replace the removed E2E smoke checks with focused component or static-render tests that exercise `generateStaticParams`, pagination wiring, and fallback states using fixtures. This keeps confidence high without reintroducing brittle page-load tests.
+- **Navigation guarantees**: Expand RTL coverage for `Header`, `Footer`, `SmartLink`, `MarkdownLink`, and `MediaEmbed` so link integrity, analytics guards, and content sanitisation are locked in.
+
+## Immediate Development Plan
+
+1. Update `vitest.unit.config.ts` to exclude the interactive game paths and rerun `npm run test:coverage` to confirm the core stack sits near the 45-48% mark. - IMPLEMENTED
+2. Add targeted RTL suites for the navigation and content primitives listed above, asserting trailing slashes, GA opt-in/out, and external link handling. - IMPLEMENTED
+3. Introduce lightweight integration tests for representative paginated/tag routes that render the exported components with fixture content and validate metadata helpers.
+4. Re-assess the global thresholds once the new tests land; bump toward 55% if coverage rises accordingly, otherwise keep 50% and document the remaining gaps.
+5. Spin up the optional `vitest.games.config.ts` (or a Storybook-driven Playwright suite) when you are ready to harden the interactive bundle without impacting the primary CI gate.
+
 ## Future Enhancements
 
 As the project grows, consider adding:
@@ -213,3 +228,5 @@ As the project grows, consider adding:
 - Image optimization verification
 
 This testing strategy provides a solid foundation for catching breaking changes while remaining maintainable and focused on the most critical functionality.
+
+

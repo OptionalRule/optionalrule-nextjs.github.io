@@ -90,6 +90,14 @@ const mockReadPersistedFilters = vi.mocked(readPersistedFilters);
 const mockWritePersistedFilters = vi.mocked(writePersistedFilters);
 const mockClearPersistedFilters = vi.mocked(clearPersistedFilters);
 
+mockUseAlchemyData.mockReturnValue({
+  loading: false,
+  error: null,
+  potions: [],
+  ingredients: [],
+  ingredientOptions: [],
+});
+
 async function loadComponent() {
   const mod = await import('..');
   return mod.default;
@@ -109,6 +117,7 @@ describe('Kcd2Alchemy component', () => {
       loading: false,
       error: null,
       potions: [],
+      ingredients: [],
       ingredientOptions: [],
     });
     mockUsePotionFilters.mockReturnValue({ results: [], count: 0 });
@@ -201,6 +210,7 @@ describe('Kcd2Alchemy component', () => {
       loading: true,
       error: null,
       potions: [],
+      ingredients: [],
       ingredientOptions: [],
     });
 
@@ -212,6 +222,7 @@ describe('Kcd2Alchemy component', () => {
       loading: false,
       error: 'Something broke',
       potions: [],
+      ingredients: [],
       ingredientOptions: [],
     });
 

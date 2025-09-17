@@ -32,7 +32,7 @@ vi.mock('next/image', () => ({
 // Mock Next.js Link component
 vi.mock('next/link', () => ({
   default: vi.fn((props) => {
-    const { href, children, ...rest } = props;
+    const { href, children, prefetch: _prefetch, ...rest } = props;
     return React.createElement('a', { href, ...rest }, children);
   }),
 }));
@@ -49,3 +49,4 @@ afterEach(() => {
   // Clean up any mounted components
   document.body.innerHTML = '';
 });
+
