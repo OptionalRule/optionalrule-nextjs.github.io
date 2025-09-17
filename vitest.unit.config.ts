@@ -23,13 +23,16 @@ export default defineConfig({
         'src/**/*.test.{js,ts,tsx}',
         'src/**/*.spec.{js,ts,tsx}',
         'src/**/*.stories.{js,ts,tsx}',
-        'src/test-setup.ts'
+        'src/stories/**',
+        'src/test-setup.ts',
+        'src/**/__generated__/**',
+        'src/**/*.d.ts'
       ],
       thresholds: {
-        statements: 10,
-        branches: 5,
-        functions: 10,
-        lines: 10,
+        statements: 50,
+        branches: 30,
+        functions: 40,
+        lines: 50,
       },
     },
     pool: 'forks',
