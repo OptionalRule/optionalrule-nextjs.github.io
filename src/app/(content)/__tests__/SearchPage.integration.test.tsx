@@ -1,8 +1,8 @@
 import { describe, it, expect, beforeEach, vi } from "vitest";
 import { act, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { useSearchParams } from "next/navigation";
 import type { SearchResult as SearchHit } from "@/lib/search";
+import { setMockSearchParams } from "@/test-utils/mocks";
 
 vi.mock("@/lib/search", async () => {
   const actual = await vi.importActual<typeof import("@/lib/search")>("@/lib/search");
@@ -14,22 +14,16 @@ vi.mock("@/lib/search", async () => {
 
 const searchModule = await vi.importMock<typeof import("@/lib/search")>("@/lib/search");
 const performSearch = vi.mocked(searchModule.performSearch);
-const mockUseSearchParams = vi.mocked(useSearchParams);
-
 const loadSearchPage = async () => (await import("../search/page")).default;
-
-const createSearchParams = (query: string) =>
-  new URLSearchParams(query) as unknown as ReturnType<typeof useSearchParams>;
 
 describe("Search page integration", () => {
   beforeEach(() => {
     performSearch.mockReset();
-    mockUseSearchParams.mockReset();
-    mockUseSearchParams.mockReturnValue(createSearchParams(""));
+    setMockSearchParams();
   });
 
   it("renders sanitized results for the initial query", async () => {
-    mockUseSearchParams.mockReturnValue(createSearchParams("q=alchemy"));
+    setMockSearchParams({ q: 'alchemy' });
 
     const dangerousResult: SearchHit = {
       item: {

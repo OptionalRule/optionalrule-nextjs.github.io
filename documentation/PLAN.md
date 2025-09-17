@@ -10,7 +10,7 @@ This plan consolidates recommendations and improvements from `documentation/PRD.
 - [x] Replace low-signal filesystem assertions in src/__tests__/build.test.ts with fixture-based tests that validate src/lib/content.ts and src/lib/feeds.ts end-to-end using in-memory file data, covering draft filtering and RSS generation.
 - [ ] Increase Vitest coverage thresholds (for example 50% statements/lines as a first step, scaling toward 70%) and refine coverage.exclude so Storybook stories and generated files are ignored while critical application modules remain in scope.
 - [x] Add integration tests for SearchPageContent and other composed views to confirm wiring between SearchInput, SearchResults, loading/error states, and sanitisation of untrusted input.
-- [ ] Centralise common mocks (Next.js router, global fetch) in shared helpers to keep new tests concise and consistent, and document the pattern in src/test-setup.ts.
+- [x] Centralise common mocks (Next.js router, global fetch) in shared helpers to keep new tests concise and consistent, and document the pattern in src/test-setup.ts.
 
 ## Prioritization
 

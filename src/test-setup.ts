@@ -2,54 +2,34 @@ import '@testing-library/jest-dom';
 import { vi } from 'vitest';
 import React from 'react';
 
+import { createNextNavigationModuleMock, resetNextNavigationMocks } from '@/test-utils/mocks';
+
+// Shared testing helpers:
+// - Next navigation: call `setMockRouter`, `setMockSearchParams`, or `setMockPathname` from '@/test-utils/mocks'.
+// - Fetch: use `mockGlobalFetch()` from '@/test-utils/mocks' and reset via the returned helpers.
+
 // Make React available globally for JSX
 (globalThis as unknown as { React: typeof React }).React = React;
 
-// Mock Next.js router
-vi.mock('next/navigation', () => ({
-  useRouter: vi.fn(() => ({
-    push: vi.fn(),
-    replace: vi.fn(),
-    back: vi.fn(),
-    forward: vi.fn(),
-    refresh: vi.fn(),
-    prefetch: vi.fn(),
-  })),
-  useSearchParams: vi.fn(() => ({
-    get: vi.fn(),
-    getAll: vi.fn(),
-    has: vi.fn(),
-    keys: vi.fn(),
-    values: vi.fn(),
-    entries: vi.fn(),
-    forEach: vi.fn(),
-    append: vi.fn(),
-    delete: vi.fn(),
-    set: vi.fn(),
-    sort: vi.fn(),
-    toString: vi.fn(),
-  })),
-  usePathname: vi.fn(() => '/'),
-  notFound: vi.fn(),
-  redirect: vi.fn(),
-}));
+// Mock Next.js navigation helpers once; tests can customise via '@/test-utils/mocks'.
+vi.mock('next/navigation', () => createNextNavigationModuleMock());
 
 // Mock Next.js Image component
 vi.mock('next/image', () => ({
-    default: vi.fn(
-      (props: React.ComponentProps<'img'> & { fill?: boolean; priority?: boolean; sizes?: string }) => {
-        const { src, alt, className, fill: _fill, priority: _priority, sizes: _sizes, ...rest } = props;
-        return React.createElement('img', {
-          src,
-          alt,
-          className,
-          ...rest
-        });
-      }
-    ),
-  }));
+  default: vi.fn(
+    (props: React.ComponentProps<'img'> & { fill?: boolean; priority?: boolean; sizes?: string }) => {
+      const { src, alt, className, fill: _fill, priority: _priority, sizes: _sizes, ...rest } = props;
+      return React.createElement('img', {
+        src,
+        alt,
+        className,
+        ...rest
+      });
+    }
+  ),
+}));
 
-// Mock Next.js Link component  
+// Mock Next.js Link component
 vi.mock('next/link', () => ({
   default: vi.fn((props) => {
     const { href, children, ...rest } = props;
@@ -61,6 +41,7 @@ vi.mock('next/link', () => ({
 beforeEach(() => {
   // Clear all mocks before each test
   vi.clearAllMocks();
+  resetNextNavigationMocks();
 });
 
 // Global cleanup

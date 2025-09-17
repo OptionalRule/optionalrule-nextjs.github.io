@@ -24,8 +24,8 @@ const mockFs = vi.mocked(fs);
 const mockMatter = vi.mocked(grayMatter);
 
 // Mock fetch for search tests
-const mockFetch = vi.fn();
-global.fetch = mockFetch;
+const fetchMock = vi.fn();
+global.fetch = fetchMock;
 
 describe('Integration Tests', () => {
   beforeEach(() => {
@@ -100,7 +100,7 @@ describe('Integration Tests', () => {
         readingTime: post.readingTime
       }));
 
-      mockFetch.mockResolvedValue({
+      fetchMock.mockResolvedValue({
         ok: true,
         json: () => Promise.resolve(searchData)
       });
@@ -352,7 +352,7 @@ This is a comprehensive guide to testing React components...`);
         }
       ];
       
-      mockFetch.mockResolvedValue({
+      fetchMock.mockResolvedValue({
         ok: true,
         json: () => Promise.resolve(mockSearchIndex)
       });
@@ -373,7 +373,7 @@ This is a comprehensive guide to testing React components...`);
     it('orders results by relevance and escapes query', async () => {
       await vi.resetModules();
       const { performSearch: freshPerformSearch } = await import('@/lib/search');
-      mockFetch.mockResolvedValueOnce({
+      fetchMock.mockResolvedValueOnce({
         ok: true,
         json: () =>
           Promise.resolve([

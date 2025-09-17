@@ -1,10 +1,8 @@
 import { describe, it, expect, vi, beforeEach, afterAll } from 'vitest';
 import { performSearch, getSearchTags } from './search';
+import { mockGlobalFetch } from '@/test-utils/mocks';
 
-// Preserve original fetch and mock
-const originalFetch = global.fetch;
-const mockFetch = vi.fn();
-global.fetch = mockFetch;
+const { fetchMock, restore: restoreFetch } = mockGlobalFetch();
 
 // Mock console methods
 const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
@@ -18,7 +16,7 @@ describe('Search functionality', () => {
   });
 
   afterAll(() => {
-    global.fetch = originalFetch;
+    restoreFetch();
     consoleErrorSpy.mockRestore();
     consoleWarnSpy.mockRestore();
   });
@@ -46,7 +44,7 @@ describe('Search functionality', () => {
 
   describe('loadSearchIndex', () => {
     it('loads search index successfully', async () => {
-      mockFetch.mockResolvedValueOnce({
+      fetchMock.mockResolvedValueOnce({
         ok: true,
         json: () => Promise.resolve(mockSearchData)
       });
@@ -55,11 +53,11 @@ describe('Search functionality', () => {
       const { loadSearchIndex: freshLoadSearchIndex } = await import('./search');
       const result = await freshLoadSearchIndex();
       expect(result).toEqual(mockSearchData);
-      expect(mockFetch).toHaveBeenCalledWith('/search-index.json');
+      expect(fetchMock).toHaveBeenCalledWith('/search-index.json');
     });
 
     it('returns empty array on fetch failure', async () => {
-      mockFetch.mockResolvedValueOnce({
+      fetchMock.mockResolvedValueOnce({
         ok: false,
         status: 404
       });
@@ -74,7 +72,7 @@ describe('Search functionality', () => {
     });
 
     it('handles network errors', async () => {
-      mockFetch.mockRejectedValueOnce(new Error('Network error'));
+      fetchMock.mockRejectedValueOnce(new Error('Network error'));
 
       const { loadSearchIndex: freshLoadSearchIndex } = await import('./search');
       const result = await freshLoadSearchIndex();
@@ -92,7 +90,7 @@ describe('Search functionality', () => {
         mockSearchData[1]
       ];
 
-      mockFetch.mockResolvedValueOnce({
+      fetchMock.mockResolvedValueOnce({
         ok: true,
         json: () => Promise.resolve(invalidData)
       });
@@ -104,7 +102,7 @@ describe('Search functionality', () => {
     });
 
     it('handles non-array response', async () => {
-      mockFetch.mockResolvedValueOnce({
+      fetchMock.mockResolvedValueOnce({
         ok: true,
         json: () => Promise.resolve({ not: 'an array' })
       });
@@ -119,7 +117,7 @@ describe('Search functionality', () => {
     });
 
     it('caches the search index after first load', async () => {
-      mockFetch.mockResolvedValueOnce({
+      fetchMock.mockResolvedValueOnce({
         ok: true,
         json: () => Promise.resolve(mockSearchData)
       });
@@ -134,13 +132,13 @@ describe('Search functionality', () => {
 
       expect(result1).toEqual(mockSearchData);
       expect(result2).toEqual(mockSearchData);
-      expect(mockFetch).toHaveBeenCalledTimes(1); // Should only fetch once
+      expect(fetchMock).toHaveBeenCalledTimes(1); // Should only fetch once
     });
   });
 
   describe('performSearch', () => {
     beforeEach(() => {
-      mockFetch.mockResolvedValue({
+      fetchMock.mockResolvedValue({
         ok: true,
         json: () => Promise.resolve(mockSearchData)
       });
@@ -196,7 +194,7 @@ describe('Search functionality', () => {
 
   describe('getSearchTags', () => {
     beforeEach(() => {
-      mockFetch.mockResolvedValue({
+      fetchMock.mockResolvedValue({
         ok: true,
         json: () => Promise.resolve(mockSearchData)
       });
@@ -210,7 +208,7 @@ describe('Search functionality', () => {
     });
 
     it('handles empty search index', async () => {
-      mockFetch.mockResolvedValueOnce({
+      fetchMock.mockResolvedValueOnce({
         ok: true,
         json: () => Promise.resolve([])
       });
@@ -227,7 +225,7 @@ describe('Search functionality', () => {
         { ...mockSearchData[1], tags: ['React', 'TypeScript'] }
       ];
 
-      mockFetch.mockResolvedValue({
+      fetchMock.mockResolvedValue({
         ok: true,
         json: () => Promise.resolve(dataWithDuplicates)
       });
