@@ -31,10 +31,10 @@ export default defineConfig({
         'src/features/games/**'
       ],
       thresholds: {
-        statements: 50,
-        branches: 30,
-        functions: 40,
-        lines: 50,
+        statements: 60,
+        branches: 45,
+        functions: 55,
+        lines: 60,
       },
     },
     pool: 'forks',
@@ -51,4 +51,3 @@ export default defineConfig({
     },
   },
 });
-

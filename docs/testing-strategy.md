@@ -213,8 +213,8 @@ The testing strategy is designed to work in CI environments:
 
 1. Update `vitest.unit.config.ts` to exclude the interactive game paths and rerun `npm run test:coverage` to confirm the core stack sits near the 45-48% mark. - IMPLEMENTED
 2. Add targeted RTL suites for the navigation and content primitives listed above, asserting trailing slashes, GA opt-in/out, and external link handling. - IMPLEMENTED
-3. Introduce lightweight integration tests for representative paginated/tag routes that render the exported components with fixture content and validate metadata helpers.
-4. Re-assess the global thresholds once the new tests land; bump toward 55% if coverage rises accordingly, otherwise keep 50% and document the remaining gaps.
+3. Introduce lightweight integration tests for representative paginated/tag routes that render the exported components with fixture content and validate metadata helpers. - IMPLEMENTED
+4. Re-assess the global thresholds once the new tests land; bump toward 55% if coverage rises accordingly, otherwise keep 50% and document the remaining gaps. - IMPLEMENTED at 60% Revisit in the future
 5. Spin up the optional `vitest.games.config.ts` (or a Storybook-driven Playwright suite) when you are ready to harden the interactive bundle without impacting the primary CI gate.
 
 ## Future Enhancements
