@@ -28,6 +28,8 @@ The content should reflect my personality and style, based on the included Writi
 - Wrap up with a personal close that invites engagement (questions, feedback, or reflections).  
 - Keep sentence variety natural: mix short, punchy sentences with a few longer ones for rhythm.  
 
+---
+
 ## Writing Sample
 
 I've put up a new interactive tool on the site to view, filter, and search alchemy recipes for the game *Kingdom Come: Deliverance 2*. As a hardcore fan of history and gritty or "realistic" TTRPGs like *Harn* or *Pendragon*, KCD2 is the kind of game I particularly enjoy. I'm diving back in with the release of the new Forge DLC and wanted a better experience with potion crafting, so I created this tool. It also got me thinking about TTRPG design and how crafting is handled, so in the tradition of creating content nobody cares about, I thought I'd write a post about it.
