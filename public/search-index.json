@@ -1,5 +1,18 @@
 [
   {
+    "slug": "the-surprising-history-of-solo-ttrpg-play",
+    "title": "The Surprising History of Solo TTRPG Play",
+    "excerpt": "Solo TTRPG play has been part of the hobby since the 1970s, serving as practice space, a creative engine with oracles, and now evolving with AI.",
+    "tags": [
+      "Analysis",
+      "RPG Resources",
+      "Shadowdark"
+    ],
+    "content": "",
+    "date": "2025-09-20",
+    "readingTime": 6
+  },
+  {
     "slug": "kcd2-alchemy-tool",
     "title": "KCD2 Alchemy Tool and Why I Miss TTRPG Crafting",
     "excerpt": "I built an interactive KCD2 alchemy tool to manage recipes and reflect on how modern TTRPG design has diminished meaningful crafting and earned progression.",
