@@ -154,6 +154,7 @@ export default async function PostPage({ params }: PostPageProps) {
                 components={mdxComponents}
                 options={{ mdxOptions }}
               />
+              <p>Drop a <a href="https://x.com/optionalrule" target="_blank" rel="noopener noreferrer" className="text-[var(--link)] hover:text-[var(--link-hover)] underline transition-colors">comment on X</a> and let me know your thoughts!</p>
             </div>
           </div>
         </article>
