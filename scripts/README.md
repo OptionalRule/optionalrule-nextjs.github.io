@@ -6,29 +6,6 @@ This directory contains utility scripts for the Next.js blog project.
 
 A TypeScript command-line script to generate new blog posts with proper frontmatter and sample content. Built with full type safety and modern ES module syntax.
 
-## snyk-outdated.ts
-
-Runs `npm outdated` and executes `snyk test` against each dependency's wanted version to surface potential vulnerabilities before upgrading.
-
-### Usage
-
-```bash
-npm run snyk_outdated
-```
-
-### Requirements
-
-- Global [Snyk CLI](https://docs.snyk.io/snyk-cli/install-the-snyk-cli) installation (`npm install -g snyk`)
-- An authenticated Snyk session (`snyk auth`)
-
-### What it does
-
-1. Calls `npm outdated` and prints the standard table output for quick inspection.
-2. Parses the JSON output to identify the wanted version of each outdated dependency.
-3. Runs `snyk test npm:<package>@<wanted>` sequentially and records any reported issues.
-4. Summarises vulnerability counts by severity and highlights command failures (e.g., missing authentication).
-5. Exits with a non-zero status if vulnerabilities are detected or if Snyk cannot complete the scan.
-
 ## import-jekyll-posts.ts
 
 A TypeScript script to migrate Jekyll blog posts to NextJS MDX format. Converts Jekyll frontmatter to NextJS gray-matter fields and preserves post content. Generates properly formatted YAML frontmatter that's compatible with the gray-matter parser.
