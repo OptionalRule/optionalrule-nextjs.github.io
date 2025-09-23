@@ -31,7 +31,8 @@
     "download-external-images": "node --import tsx/esm scripts/download-external-images.ts",
     "find-empty-links": "node --import tsx/esm scripts/find-empty-links.ts",
     "generate-rss": "node --import tsx/esm scripts/generate-rss.ts",
-    "validate-config": "node --import tsx/esm scripts/validate-config.ts"
+    "validate-config": "node --import tsx/esm scripts/validate-config.ts",
+    "snyk_outdated": "node --import tsx/esm scripts/snyk-outdated.ts"
   },
   "dependencies": {
     "@mdx-js/loader": "^3.1.0",

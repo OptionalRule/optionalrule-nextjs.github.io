@@ -113,9 +113,15 @@ This plan consolidates recommendations and improvements from `documentation/PRD.
 - Remote images must match `next.config.ts` `images.remotePatterns` if used.
 - Keep using `src/lib/urls.ts` as the single source for URL generation.
 
+## Tooling Automation: `npm run snyk_outdated`
 
-
-
-
-
-
+- Priority: P1; Impact: Medium; Effort: S–M
+- Goal: Provide a single command that surfaces available dependency upgrades (via `npm outdated`) and immediately runs `snyk test` against each dependency's `wanted` version to highlight potential security regressions before upgrading.
+- Approach:
+  1. Create `scripts/snyk-outdated.ts` (ESM) that spawns `npm outdated --json` and preserves the original table output for the developer.
+  2. Parse the JSON payload to extract `{ name, current, wanted, latest }`, filtering out entries where `wanted` equals `current`.
+  3. For each outdated dependency, spawn `snyk test <name>@<wanted>` (respecting the globally installed CLI) and capture exit codes plus stderr/stdout for summarisation; run sequentially or with small concurrency to avoid API throttling.
+  4. Report a concise summary block after all tests complete, grouping vulnerabilities by dependency and noting any commands that failed (e.g., missing Snyk auth or unsupported package manager).
+  5. Wire the script into `package.json` with `"snyk_outdated": "node --import tsx/esm scripts/snyk-outdated.ts"` (or equivalent), and document prerequisites (global `snyk` binary, logged in) in the README/tooling docs.
+  6. Verify locally by running `npm run snyk_outdated`, ensuring it exits non-zero when any Snyk test reports vulnerabilities while still printing the `npm outdated` table for quick reference.
+- Follow-ups: consider caching `npm outdated --json` output for reuse, adding a `--json` flag passthrough, and supporting opt-in concurrency to reduce runtime without hitting rate limits.
