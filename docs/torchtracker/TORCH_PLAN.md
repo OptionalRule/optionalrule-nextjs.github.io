@@ -20,13 +20,13 @@
    - Implemented catalog controls (`CatalogButton`, `CatalogPanel`), active card (`ActiveLightCard`), expired tray, global header, and layout scaffolding with Tailwind tokens and accessible labelling.
    - Added component tests in `__tests__/components.test.tsx` to verify interaction callbacks, switch semantics, and empty states via Testing Library + Vitest.
 
-5. **Wire Feature Entry Point**
-   - Compose components in `index.tsx`, connect hooks, and implement global clock toolbar (play/pause, advance round, reset all, auto-advance toggle).
-   - Provide context provider if needed (`TorchTrackerProvider`) to share state across nested components while keeping reducer testable.
+5. **Wire Feature Entry Point** *(Status: Complete)*
+   - Composed the feature in `index.tsx`, wiring state hooks, catalog interactions, auto-advance clock integration, and insights output with the new components.
+   - `TorchTracker` exports a client component that manages add/pause/resume/reset/remove flows, global toolbar actions (play/pause, advance round, reset all, auto-advance toggle), and renders catalog/active/expired sections via `TorchTrackerLayout`.
 
-6. **Integrate With App Router**
-   - Create `src/app/(interactive)/tools/torch_tracker/page.tsx` with metadata from `generateMetadata` and canonical via `urlPaths.tool('torch_tracker')`.
-   - Add `TorchTrackerClient.tsx` wrapper that dynamically imports the feature with `ssr: false` and a loading placeholder respecting design tokens.
+6. **Integrate With App Router** *(Status: Complete)*
+   - Added `src/app/(interactive)/tools/torch_tracker/page.tsx` generating metadata via `generateMetadata` with canonical from `urlPaths.tool('torch_tracker')`.
+   - Implemented `TorchTrackerClient.tsx` to dynamically import the feature (`ssr: false`) with a lightweight loading fallback aligned to site styling.
 
 7. **Update Navigation & URLs**
    - Insert Tools link (or update existing section) in `src/components/Header.tsx` and `Footer.tsx` to surface the Torch Tracker.
