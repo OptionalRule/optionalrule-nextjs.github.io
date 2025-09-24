@@ -56,6 +56,7 @@
   - Burn timeline: stacked progress bars showing rounds remaining and total absolute time (minutes:seconds). Provide textual countdown for screen readers.
   - Controls: pause/resume (per source), advance one round, restore defaults, delete (with confirmation/undo pattern optional).
 - Expired sources shift to a secondary panel beneath the grid, highlighting the need to replace light with call to action.
+- UI primitives (e.g., `CatalogButton`, `CatalogPanel`, `ActiveLightCard`, `TorchTrackerHeader`, `ExpiredTray`, `TorchTrackerLayout`) are implemented under `src/features/tools/torch_tracker/components/` and designed for reuse across future contexts (story previews, docs) while preserving accessibility hooks.
 
 ### 4.4 Timekeeping & Automation
 - A shared timer service (e.g., `useGameClock` hook) runs via `requestAnimationFrame` or `setInterval` at 1-second resolution while active. When global clock is paused, per-source countdown halts.

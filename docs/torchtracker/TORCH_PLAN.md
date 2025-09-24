@@ -16,10 +16,9 @@
    - Added Vitest coverage for reducer transitions (`add`, `update`, `remove`, `expire`, `pause`, `resume`, `reset`, `tick`) under `__tests__/state.test.ts`, running through `npm run test` (Vitest unit suite).
    - Created `hooks/useGameClock.ts` to provide interval/requestAnimationFrame ticking helpers that integrate with the reducer’s timing semantics.
 
-4. **Construct UI Components**
-   - Create catalog controls (`CatalogButton`, `CatalogPanel`), active card (`ActiveLightCard`), expired tray, global header, and layout components using Tailwind tokens.
-   - Ensure accessible labels, keyboard handling, and responsive grid layout per standards.
-   - Add component-level tests validating interactions and ARIA properties.
+4. **Construct UI Components** *(Status: Complete)*
+   - Implemented catalog controls (`CatalogButton`, `CatalogPanel`), active card (`ActiveLightCard`), expired tray, global header, and layout scaffolding with Tailwind tokens and accessible labelling.
+   - Added component tests in `__tests__/components.test.tsx` to verify interaction callbacks, switch semantics, and empty states via Testing Library + Vitest.
 
 5. **Wire Feature Entry Point**
    - Compose components in `index.tsx`, connect hooks, and implement global clock toolbar (play/pause, advance round, reset all, auto-advance toggle).
