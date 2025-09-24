@@ -2,19 +2,19 @@
 
 ## Development Plan
 
-1. **Scaffold Feature Module**
+1. **Scaffold Feature Module** *(Status: Complete)*
    - Create `src/features/tools/torch_tracker/` with `components/`, `hooks/`, `lib/`, `data/`, and `__tests__/` subdirectories plus `index.tsx` entry point.
    - Stub `index.tsx` with client component wrapper exporting `<TorchTracker />` placeholder and default styles hook-up.
 
-2. **Author Data Models & Catalog**
+2. **Author Data Models & Catalog** *(Status: Complete)*
    - Implement `types.ts` defining `TorchCatalogEntry`, `ActiveLightSource`, reducer action types, and selectors.
    - Populate `data/lightSources.ts` with canonical Shadowdark light sources and a `createCustomLightSource` helper.
-   - Add `lib/catalog.ts` utilities (clone, defaults, validation) with unit tests.
+   - Add `lib/catalog.ts` utilities (clone, defaults, validation) with unit tests executed via the shared `vitest.unit.config.ts` configuration to stay aligned with `docs/testing-strategy.md`.
 
-3. **Build State Management Hooks**
-   - Implement `hooks/useTorchTrackerState.ts` containing reducer, action creators, and selectors.
-   - Write Vitest coverage for reducer transitions (add/remove/expire/pause/resume/edit).
-   - Add optional `hooks/useGameClock.ts` to encapsulate interval logic with pause/resume control and requestAnimationFrame fallbacks.
+3. **Build State Management Hooks** *(Status: Complete)*
+   - Implemented `hooks/useTorchTrackerState.ts` with a typed reducer, action controller helpers, and memoized selectors wired to catalog utilities.
+   - Added Vitest coverage for reducer transitions (`add`, `update`, `remove`, `expire`, `pause`, `resume`, `reset`, `tick`) under `__tests__/state.test.ts`, running through `npm run test` (Vitest unit suite).
+   - Created `hooks/useGameClock.ts` to provide interval/requestAnimationFrame ticking helpers that integrate with the reducer’s timing semantics.
 
 4. **Construct UI Components**
    - Create catalog controls (`CatalogButton`, `CatalogPanel`), active card (`ActiveLightCard`), expired tray, global header, and layout components using Tailwind tokens.
@@ -38,11 +38,10 @@
    - Place icons/sounds in `public/tools/torch_tracker/` and document usage in README.
 
 9. **Testing & QA Pass**
-   - Run `npm run lint`, `npm run test`, `npm run test:a11y` to confirm coverage.
+   - Run `npm run lint`, `npm run test` (Vitest unit suite via `vitest.unit.config.ts`), and `npm run test:a11y` per the repository testing cadence.
    - Execute manual QA: add/edit/remove lights, pause/resume, auto-advance toggle, expiration alert, navigation to/from other tools.
    - Capture screenshots/GIFs for release notes.
 
 10. **Documentation & Launch Prep**
     - Update `docs/torchtracker/README.md` (usage guide) and site changelog.
     - Prepare release announcement content, ensure sitemap includes the new route, and verify static export (`npm run build`) succeeds with the tool enabled.
-

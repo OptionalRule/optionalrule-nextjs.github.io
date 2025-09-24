@@ -43,6 +43,8 @@
 - Introduce an `ActiveLightSource` type composed of catalog data plus instance-level overrides: `instanceId`, `label`, `remainingSeconds`, `remainingRounds`, `isPaused`, `createdAt`, `notes?`, `isAffectingVisibility`.
 - Manage active sources with a reducer in `hooks/useTorchTrackerState.ts` to keep logic isolated and testable (actions: `add`, `remove`, `update`, `tick`, `pause`, `resume`, `reset`, `expire`). Persist state in memory only; session storage persistence can be an enhancement toggle.
 - Derive aggregate status (brightest radius, any light active, time to darkness) via memoized selectors housed in `lib/selectors.ts`.
+- The reducer is exported for testing alongside a `useTorchTrackerState` controller hook that exposes memoized helpers (catalog registration, ticking, pause/resume, reset) in compliance with `docs/testing-strategy.md` coverage expectations.
+- Time automation helpers live in `hooks/useGameClock.ts`, providing a requestAnimationFrame/setInterval bridge that respects global clock settings and supports manual tick advances.
 
 ### 4.3 User Interface & Layout
 - Use an outer layout wrapper with Tailwind utility classes consistent with site tokens (`bg-surface-1`, `text-foreground`, container max width).
@@ -79,7 +81,7 @@
 - Provide sample data and screenshots in `docs/torchtracker/README.md` for maintainers. Update `docs/torchtracker/PRD.md` later if deeper spec needed.
 
 ## 7. Testing & Quality Assurance
-- **Unit Tests**: `src/features/tools/torch_tracker/__tests__/` covering reducers, selectors, catalog helpers with Vitest.
+- **Unit Tests**: `src/features/tools/torch_tracker/__tests__/` covering reducers, selectors, catalog helpers with Vitest, executed through `npm run test` (`vitest.unit.config.ts`) to honour thresholds and practices outlined in `docs/testing-strategy.md` and `docs/STANDARDS.md`.
 - **Component Tests**: Use Testing Library to validate rendering, keyboard interactions, time tick logic (mock timers), and expiration alerts.
 - **Accessibility Tests**: Extend existing jest-axe suite with a scenario for `TorchTracker` to ensure no critical violations.
 - **Visual Review**: Optional Storybook stories for catalog button states, active card, and global header added under `src/stories/tools/TorchTracker.stories.tsx` (client-only, uses `next/dynamic` story pattern).
