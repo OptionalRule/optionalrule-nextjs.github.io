@@ -28,6 +28,17 @@
 - Provide helper functions in `lib/catalog.ts` to retrieve entries by `id`, compute default rounds (`baseDurationMinutes / turnLengthMinutes`), and clone entries into instance objects.
 - Support a "Custom" archetype that prompts for duration, radius, and optional note on instantiation while still flowing through standard state.
 
+- Type definitions now live in `src/features/tools/torch_tracker/types.ts` and codify the three core domains:
+  - `TorchCatalogEntry` captures canonical data (source type, category, duration, radius, iconography, theming metadata, and mishap guidance) with default guards for turn length and radius normalization.
+  - `ActiveLightSource` models instances on the table, including timer derivatives (`totalSeconds`, `remainingRounds`), visibility toggles, pause state, and timestamps for upcoming reducer hooks.
+  - `TorchTrackerState`, `TorchTrackerSettings`, and the `TorchTrackerReducerAction` union describe how catalog, active roster, expired tray, and global clock settings move through the reducer planned in Phase 3. Selector signatures (`TorchTrackerSelector<TResult>`) define memoizer contracts for aggregate reads (brightest radius, next expiration, etc.).
+- Catalog data is seeded via `baseLightSources` and `lightSourceCatalog` in `data/lightSources.ts`, incorporating Shadowdark archetypes (torch, oil lantern, light spell, campfire) plus a `createCustomLightSource` helper that sanitizes ids, enforces radius sanity, and ensures custom archetypes surface uniformly in the UI.
+- `src/features/tools/torch_tracker/lib/catalog.ts` implements reusable utilities:
+  - `ensureCatalogEntryDefaults` and `cloneCatalogEntry` normalize incoming data and produce immutable copies for state usage.
+  - `createCatalogIndex` and `findCatalogEntry` centralize lookups for upcoming reducers and hooks.
+  - `createActiveSourceFromCatalog` converts catalog entries into fully populated `ActiveLightSource` records with derived counters, pause/visibility flags, and status detection.
+  - `validateCatalogEntry` / `validateCatalog` surface structural issues (duplicate ids, invalid radii or durations) for use in unit tests and future build-time assertions.
+
 ### 4.2 State Management & Types
 - Introduce an `ActiveLightSource` type composed of catalog data plus instance-level overrides: `instanceId`, `label`, `remainingSeconds`, `remainingRounds`, `isPaused`, `createdAt`, `notes?`, `isAffectingVisibility`.
 - Manage active sources with a reducer in `hooks/useTorchTrackerState.ts` to keep logic isolated and testable (actions: `add`, `remove`, `update`, `tick`, `pause`, `resume`, `reset`, `expire`). Persist state in memory only; session storage persistence can be an enhancement toggle.

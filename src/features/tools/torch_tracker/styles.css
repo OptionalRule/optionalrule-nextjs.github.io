@@ -1,0 +1,44 @@
+.torch-tracker-surface {
+  min-height: 100vh;
+  padding: 4rem 1.5rem;
+  background: var(--surface-0, var(--background));
+  color: var(--text-primary, var(--foreground));
+}
+
+.torch-tracker-shell {
+  margin: 0 auto;
+  max-width: 42rem;
+  border-radius: 1.25rem;
+  border: 1px solid var(--surface-3, rgba(255, 255, 255, 0.08));
+  background: var(--surface-1, rgba(12, 12, 14, 0.85));
+  padding: 3rem;
+  text-align: center;
+  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.35);
+  backdrop-filter: blur(18px);
+}
+
+.torch-tracker-title {
+  font-size: clamp(2.5rem, 2.1rem + 1vw, 3.5rem);
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-primary, #f2f2f3);
+  text-shadow: 0 0 20px rgba(255, 204, 102, 0.35);
+}
+
+.torch-tracker-description {
+  margin-top: 1.5rem;
+  font-size: 1rem;
+  line-height: 1.6;
+  color: var(--text-secondary, rgba(242, 242, 243, 0.72));
+}
+
+@media (max-width: 640px) {
+  .torch-tracker-shell {
+    padding: 2rem;
+  }
+
+  .torch-tracker-title {
+    font-size: 2.25rem;
+  }
+}
