@@ -59,6 +59,7 @@
 - UI primitives (e.g., `CatalogButton`, `CatalogPanel`, `ActiveLightCard`, `TorchTrackerHeader`, `ExpiredTray`, `TorchTrackerLayout`) are implemented under `src/features/tools/torch_tracker/components/` and designed for reuse across future contexts (story previews, docs) while preserving accessibility hooks.
 - The feature entry (`src/features/tools/torch_tracker/index.tsx`) orchestrates catalog selection, active roster controls, auto-advance timing (via `useGameClock`), and insight banners, delivering a cohesive client-side experience ready for dynamic import in the App Router.
 - App Router integration lives under `src/app/(interactive)/tools/torch_tracker/`, where `page.tsx` wires metadata/canonical URLs and `TorchTrackerClient.tsx` dynamically imports the client bundle with `ssr: false` to preserve static export compatibility.
+- Global navigation (`Header`, `Footer`) now surfaces the Torch Tracker via `urlPaths.tool('torch_tracker')`, ensuring discoverability and consistent trailing-slash URLs across the site.
 
 ### 4.4 Timekeeping & Automation
 - A shared timer service (e.g., `useGameClock` hook) runs via `requestAnimationFrame` or `setInterval` at 1-second resolution while active. When global clock is paused, per-source countdown halts.

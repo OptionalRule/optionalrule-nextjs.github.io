@@ -49,7 +49,8 @@ const navigationItems: NavigationGroup[] = [
   {
     label: 'Tools',
     items: [
-      { href: urlPaths.tool('kcd2_alchemy'), label: 'KCD2 Alchemy Scholar' }
+      { href: urlPaths.tool('kcd2_alchemy'), label: 'KCD2 Alchemy Scholar' },
+      { href: urlPaths.tool('torch_tracker'), label: 'Shadowdark Torch Tracker' }
     ]
   }
 ];

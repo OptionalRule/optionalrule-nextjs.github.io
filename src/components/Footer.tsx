@@ -27,6 +27,12 @@ export function Footer() {
             >
               Tags
             </Link>
+            <Link
+              href={urlPaths.tool('torch_tracker')}
+              className="text-[var(--muted)] hover:text-[var(--foreground)] text-sm font-semibold transition-all duration-300 hover:scale-105"
+            >
+              Torch Tracker
+            </Link>
             <a
               href={urlPaths.rss()}
               className="text-[var(--muted)] hover:text-[var(--foreground)] text-sm font-semibold transition-all duration-300 hover:scale-105"

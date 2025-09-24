@@ -28,9 +28,9 @@
    - Added `src/app/(interactive)/tools/torch_tracker/page.tsx` generating metadata via `generateMetadata` with canonical from `urlPaths.tool('torch_tracker')`.
    - Implemented `TorchTrackerClient.tsx` to dynamically import the feature (`ssr: false`) with a lightweight loading fallback aligned to site styling.
 
-7. **Update Navigation & URLs**
-   - Insert Tools link (or update existing section) in `src/components/Header.tsx` and `Footer.tsx` to surface the Torch Tracker.
-   - Verify `urlPaths.tool` usage and adjust sitemap/feed generators if they require explicit tool registration.
+7. **Update Navigation & URLs** *(Status: Complete)*
+   - Updated header and footer navigation to include `urlPaths.tool('torch_tracker')`, surfacing the feature alongside other tools.
+   - Confirmed route helpers rely on `urlPaths.tool`, keeping canonical URLs consistent for sitemap/feed generation.
 
 8. **Styling & Assets**
    - Add dedicated CSS (if needed) under `src/features/tools/torch_tracker/styles.css` or inline Tailwind classes; ensure reduced-motion variants.
