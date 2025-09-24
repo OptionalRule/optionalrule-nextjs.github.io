@@ -1,63 +1,128 @@
-# Shadowdark Light Source Tracker — Product Requirements
+# Shadowdark Torch Tracker — Product & Technical Plan
 
 ## 1. Product Context
-- **Purpose**: Provide Shadowdark GMs with a lightweight web tool to monitor active light sources, visualize their attributes, and track remaining real-time burn duration during sessions.
-- **Form Factor**: Single-page React web application rendered within a Vite bundle; no backend services or persistence.
-- **Primary User**: Game Masters (GMs) running live Shadowdark sessions who need fast access to light source status.
+- **Purpose**: Deliver a focused Shadowdark Game Master tool that tracks active light sources, their burn time, and party visibility in real time during a session.
+- **Experience Type**: Client-only interactive feature rendered under the Optional Rule static site. The tool ships as a standalone React module dynamically imported at runtime (no SSR) to preserve the global static export.
+- **Placement**: `/tools/torch_tracker/` within the App Router `(interactive)` group. The route is backed by `src/app/(interactive)/tools/torch_tracker/page.tsx` and consumes a feature entry point in `src/features/tools/torch_tracker`.
+- **Primary Users**: Shadowdark GMs who need a fast, legible way to track torches/lanterns/spells without leaving the table. Secondary users include players checking light status on a companion display.
 
-## 2. Core Scenarios
-- **Add a light source**: GM selects a light type button to add a corresponding card to the active grid.
-- **Monitor burn time**: When at least one source is active, a one-hour countdown timer appears and begins running automatically.
-- **Pause or reset tracking**: GM can pause, resume, or reset the shared timer as table needs arise.
-- **Remove a spent source**: GM dismisses a light source card via its close control, automatically updating the active list (and hiding the timer if none remain).
+## 2. Integration With Optional Rule Site Architecture
+- Route metadata is generated with `generateMetadata` using `urlPaths.tool('torch_tracker')` for canonical URLs and trailing slashes, aligning with the SEO helpers defined in `src/lib/seo.ts`.
+- The page component renders a thin client wrapper (e.g., `TorchTrackerClient`) that dynamically imports the feature module with `ssr: false`, matching the `KCD2 Alchemy` pattern (`src/app/(interactive)/tools/kcd2_alchemy`).
+- Feature code lives in `src/features/tools/torch_tracker/` with subfolders for `components`, `hooks`, `lib` (logic utilities), and `data`. Shared types are exposed via a local `types.ts` file to encourage reuse and unit testing.
+- Static assets (icons, sounds if chosen) reside under `public/tools/torch_tracker/`; metadata should reference these assets via absolute paths to remain compatible with static export.
+- Site navigation updates use existing helpers in `src/components/Header.tsx` and `Footer.tsx` to add a Tools navigation item. Friendly name appears in nav while URLs always leverage `urlPaths.tool` to keep trailing slashes correct.
 
-## 3. Functional Requirements
-### 3.1 Light Source Catalog
-- **Catalog definition**: `src/types/LightSource.ts` exports the canonical catalog (`lightSources`) of four archetypes (Standard Torch, Oil Lantern, Light Spell, Fire) with metadata fields `id`, `name`, `type`, `brightness`, `duration`, `icon`, `description`, `color`.
-- **Extensibility**: Additional archetypes require catalog edits only; UI renders buttons/cards dynamically from the array.
+## 3. Primary User Scenarios
+1. **Add Light Source From Catalog** – GM selects a predefined archetype (torch, lantern, light spell, campfire, custom) and instantly sees it in the active roster with default burn duration and brightness range.
+2. **Monitor Burn Down** – Each active source shows remaining rounds/turns and real-time clock, decrementing automatically every 10 in-game minutes (Shadowdark dungeon turn) or via manual step controls.
+3. **Pause or Adjust** – GM can pause global time, hold individual sources (e.g., someone pockets a torch), or adjust remaining time when the party rests.
+4. **Handle Expiration** – When a source expires, the tool surfaces a prominent alert, dims the card, and optionally moves it to an "expired" tray until dismissed.
+5. **Customize & Annotate** – GM can rename instances ("Torch – Front rank"), edit duration for improvised light, and toggle whether a source affects global visibility (useful for hooded lanterns).
 
-### 3.2 Light Source Instantiation
-- **Add control**: `LightSourceManager` renders one primary button per catalog entry with the label `<icon> <name>` and the catalog `color` as background.
-- **Instance creation**: Clicking a button clones the archetype and assigns an instance-specific `id` of the form `${catalogId}-${Date.now()}` to guarantee uniqueness even for duplicates.
-- **State tracking**: Active instances live in the local React state array `activeLightSources`.
+## 4. Functional Requirements
 
-### 3.3 Active Light Source Grid
-- **Card rendering**: For every active instance, `LightSourceCard` displays a playing-card styled tile containing:
-  - icon, name header, and removable `×` button.
-  - catalog description paragraph.
-  - Brightness stat visualized as a horizontal progress bar with width equal to `brightness%` and bar color equal to the catalog `color`.
-  - Duration stat rendered as immutable text (`<duration> minutes`).
-- **Visual theme**: Cards share the `glow-background` class (see `src/App.css`) for a radial gradient and flicker animation, evoking torchlight.
-- **Layout**: Cards flow in a responsive CSS grid (`.active-light-sources`) with auto-fitting columns minimum 300px.
-- **Removal control**: The `×` button invokes `onRemove` with the instance id, removing it from `activeLightSources`.
+### 4.1 Light Source Catalog & Data Model
+- Define `lightSources` in `src/features/tools/torch_tracker/data/lightSources.ts` using strongly typed entries (`TorchCatalogEntry`). Base fields:
+  - `id`, `name`, `category` (`'mundane' | 'magical' | 'environmental' | 'custom'`), `baseDurationMinutes`, `turnLengthMinutes` (default 10), `radius` (bright/dim in feet), `icon`, `color`, `description`, `mishapNote?`.
+- Provide helper functions in `lib/catalog.ts` to retrieve entries by `id`, compute default rounds (`baseDurationMinutes / turnLengthMinutes`), and clone entries into instance objects.
+- Support a "Custom" archetype that prompts for duration, radius, and optional note on instantiation while still flowing through standard state.
 
-### 3.4 Countdown Timer Module
-- **Visibility rule**: Timer container renders only when `activeLightSources.length > 0`.
-- **Duration source**: Whenever the active list transitions between empty/non-empty, a `useEffect` sets `timerDuration` to `60` minutes when non-empty or `0` otherwise. Current implementation disregards individual light `duration` values—every stack shares a universal 60-minute timer.
-- **Component contract**: `CountdownTimer` accepts `initialTimeInMinutes` (defaults to `60` if omitted); here it is supplied via state (`timerDuration`).
-- **Initialization**: On mount or when `initialTimeInMinutes` changes, internal `timeLeft` is reset to `minutes * 60` seconds.
-- **Auto-start**: If the incoming duration is greater than zero, the timer calls `startTimer` immediately, beginning a one-second interval tick.
-- **Tick mechanics**: While running and not paused, `timeLeft` decrements by one second until reaching zero, at which point ticking stops without auto-reset.
-- **Controls**: UI exposes `Start` (when idle), `Pause`, `Resume`, and `Reset` buttons. `Reset` restores `timeLeft` to the current `initialTimeInMinutes` and stops the clock.
+### 4.2 State Management & Types
+- Introduce an `ActiveLightSource` type composed of catalog data plus instance-level overrides: `instanceId`, `label`, `remainingSeconds`, `remainingRounds`, `isPaused`, `createdAt`, `notes?`, `isAffectingVisibility`.
+- Manage active sources with a reducer in `hooks/useTorchTrackerState.ts` to keep logic isolated and testable (actions: `add`, `remove`, `update`, `tick`, `pause`, `resume`, `reset`, `expire`). Persist state in memory only; session storage persistence can be an enhancement toggle.
+- Derive aggregate status (brightest radius, any light active, time to darkness) via memoized selectors housed in `lib/selectors.ts`.
 
-### 3.5 App Header & Structure
-- `App.tsx` renders a static title "Shadowdark Light Source Tracker" above the `LightSourceManager`.
-- `main.tsx` boots the app within `<React.StrictMode>`; no routing or multi-page structure exists.
+### 4.3 User Interface & Layout
+- Use an outer layout wrapper with Tailwind utility classes consistent with site tokens (`bg-surface-1`, `text-foreground`, container max width).
+- Header section contains tool title, quick rules reminder, and controls for global time flow (start/pause, advance round, reset all). Provide optional "Tutorial" popover accessible via `aria-described` help button.
+- The catalog is rendered as responsive buttons or cards with accessible labels and consistent color tokens. Buttons use `aria-pressed` where toggled, support keyboard activation, and visually group by category.
+- Active source cards appear in a CSS grid (min 280px). Cards include:
+  - Label with editing inline control (`contentEditable` avoided; prefer input dialog or modal to stay accessible).
+  - Bright/dim radius badges using Tailwind tokens.
+  - Burn timeline: stacked progress bars showing rounds remaining and total absolute time (minutes:seconds). Provide textual countdown for screen readers.
+  - Controls: pause/resume (per source), advance one round, restore defaults, delete (with confirmation/undo pattern optional).
+- Expired sources shift to a secondary panel beneath the grid, highlighting the need to replace light with call to action.
 
-## 4. Non-functional Requirements
-- **Technology stack**: React 18 + TypeScript + Vite. Styling via local CSS modules; Tailwind/DaisyUI configuration is present but unused by current components.
-- **State scope**: All state is ephemeral and client-side; page refresh clears active light sources and resets the timer.
-- **Accessibility**: Buttons rely on text + emoji icons; no ARIA enhancements are present. Keyboard interaction defaults to native button behavior.
-- **Performance**: Minimal; operations confined to lightweight React state updates and CSS animations.
+### 4.4 Timekeeping & Automation
+- A shared timer service (e.g., `useGameClock` hook) runs via `requestAnimationFrame` or `setInterval` at 1-second resolution while active. When global clock is paused, per-source countdown halts.
+- Each source’s `remainingSeconds` decrements based on global clock ticks when `isPaused` is false. Manual adjustments (advance round, edit duration) dispatch reducer actions that update derived fields.
+- Provide optional "auto advance" toggle: if disabled, the GM must press "Advance Round" to reduce timers, aligning with tables that track turns manually.
+- When `remainingSeconds <= 0`, mark source `status: 'expired'`, trigger light loss alert (non-modal), play subtle sound if user has enabled audio (respect `prefers-reduced-motion`/`prefers-reduced-data`).
 
-## 5. Known Gaps vs. Design Intent
-- Cards lack ignited/extinguished toggles, per-light burn tracking, and customizable titles noted in `docs/DesignNotes.md`.
-- Theme does not auto-switch between lit/dark states based on active lights.
-- Timer length ignores each light source’s catalog `duration` and treats all active lights as a single 60-minute pool.
-- `Torch.tsx` and `src/Tourch.css` are unused remnants (no flame animation currently displayed).
+### 4.5 Accessibility & Internationalization
+- All interactive elements must meet WCAG 2.1 AA: focus outlines, ARIA labels for timers (announce time remaining), button names describing actions.
+- Support reduced motion by disabling animated glows when `prefers-reduced-motion` is true.
+- Copy lives in a `locales/en/tool_torch_tracker.ts` dictionary for future translations; strings pulled via lightweight helper `t()`.
 
-## 6. Future Enhancements (Examples)
-1. Allow per-card state (ignite/extinguish, accumulated burn time, editable label) and reflect state in visuals.
-2. Support different timer strategies (per-instance timers, staggered burn down, or stacked redundancy rules from Shadowdark).
-3. Integrate theme switching and ambient informational copy describing effects of total darkness vs. lit areas.
-4. Surface light mishap tables or quick-reference rules using contextual popovers.
+## 5. Non-Functional Requirements
+- **Static Export Compatibility**: No runtime APIs, database calls, or server components. All data is local to the bundle and JSON files under `public/`.
+- **Performance**: Defer loading heavy assets; dynamic import keeps bundle isolated. Keep feature initial JS < 80KB gzipped by splitting rarely used components (tutorial modal, sound toggles) via nested dynamic imports.
+- **Security**: Sanitize any user-entered notes using existing `sanitize-html` helpers or simple escape functions. No inline `<script>` or `dangerouslySetInnerHTML`.
+- **Theming**: Respect global light/dark tokens defined in `globals.css`. Provide consistent contrast ratios for card backgrounds.
+- **Analytics**: Optionally emit GA events (e.g., "torch_tracker_add_light") through existing analytics helper; wrap behind a feature flag to avoid tight coupling.
+
+## 6. Data & Asset Strategy
+- Catalog defined in TypeScript for type safety; seed data optionally mirrored as JSON for documentation but runtime uses TS modules.
+- Icons sourced from Lucide or custom SVG stored in `public/tools/torch_tracker/icons/`. Reference via `next/image` alternative? Because static export uses `<img>` with absolute path; follow existing pattern (no Next Image).
+- Provide sample data and screenshots in `docs/torchtracker/README.md` for maintainers. Update `docs/torchtracker/PRD.md` later if deeper spec needed.
+
+## 7. Testing & Quality Assurance
+- **Unit Tests**: `src/features/tools/torch_tracker/__tests__/` covering reducers, selectors, catalog helpers with Vitest.
+- **Component Tests**: Use Testing Library to validate rendering, keyboard interactions, time tick logic (mock timers), and expiration alerts.
+- **Accessibility Tests**: Extend existing jest-axe suite with a scenario for `TorchTracker` to ensure no critical violations.
+- **Visual Review**: Optional Storybook stories for catalog button states, active card, and global header added under `src/stories/tools/TorchTracker.stories.tsx` (client-only, uses `next/dynamic` story pattern).
+- **CI Hooks**: Ensure new tests run via `npm run test` and align with `npm run test:all` expectations.
+
+## 8. Documentation & Operational Notes
+- Extend `docs/torchtracker/` with README (usage, rules references) and keep this plan as living document.
+- Update changelog or release notes when feature ships. Ensure addition to sitemap via static route listing (Next export automatically picks page; confirm route included in sitemap generator tests).
+
+---
+
+## Detailed Implementation Plan
+
+1. **Scaffold Feature Module**
+   - Create `src/features/tools/torch_tracker/` with `components/`, `hooks/`, `lib/`, `data/`, and `__tests__/` subdirectories plus `index.tsx` entry point.
+   - Stub `index.tsx` with client component wrapper exporting `<TorchTracker />` placeholder and default styles hook-up.
+
+2. **Author Data Models & Catalog**
+   - Implement `types.ts` defining `TorchCatalogEntry`, `ActiveLightSource`, reducer action types, and selectors.
+   - Populate `data/lightSources.ts` with canonical Shadowdark light sources and a `createCustomLightSource` helper.
+   - Add `lib/catalog.ts` utilities (clone, defaults, validation) with unit tests.
+
+3. **Build State Management Hooks**
+   - Implement `hooks/useTorchTrackerState.ts` containing reducer, action creators, and selectors.
+   - Write Vitest coverage for reducer transitions (add/remove/expire/pause/resume/edit).
+   - Add optional `hooks/useGameClock.ts` to encapsulate interval logic with pause/resume control and requestAnimationFrame fallbacks.
+
+4. **Construct UI Components**
+   - Create catalog controls (`CatalogButton`, `CatalogPanel`), active card (`ActiveLightCard`), expired tray, global header, and layout components using Tailwind tokens.
+   - Ensure accessible labels, keyboard handling, and responsive grid layout per standards.
+   - Add component-level tests validating interactions and ARIA properties.
+
+5. **Wire Feature Entry Point**
+   - Compose components in `index.tsx`, connect hooks, and implement global clock toolbar (play/pause, advance round, reset all, auto-advance toggle).
+   - Provide context provider if needed (`TorchTrackerProvider`) to share state across nested components while keeping reducer testable.
+
+6. **Integrate With App Router**
+   - Create `src/app/(interactive)/tools/torch_tracker/page.tsx` with metadata from `generateMetadata` and canonical via `urlPaths.tool('torch_tracker')`.
+   - Add `TorchTrackerClient.tsx` wrapper that dynamically imports the feature with `ssr: false` and a loading placeholder respecting design tokens.
+
+7. **Update Navigation & URLs**
+   - Insert Tools link (or update existing section) in `src/components/Header.tsx` and `Footer.tsx` to surface the Torch Tracker.
+   - Verify `urlPaths.tool` usage and adjust sitemap/feed generators if they require explicit tool registration.
+
+8. **Styling & Assets**
+   - Add dedicated CSS (if needed) under `src/features/tools/torch_tracker/styles.css` or inline Tailwind classes; ensure reduced-motion variants.
+   - Place icons/sounds in `public/tools/torch_tracker/` and document usage in README.
+
+9. **Testing & QA Pass**
+   - Run `npm run lint`, `npm run test`, `npm run test:a11y` to confirm coverage.
+   - Execute manual QA: add/edit/remove lights, pause/resume, auto-advance toggle, expiration alert, navigation to/from other tools.
+   - Capture screenshots/GIFs for release notes.
+
+10. **Documentation & Launch Prep**
+    - Update `docs/torchtracker/README.md` (usage guide) and site changelog.
+    - Prepare release announcement content, ensure sitemap includes the new route, and verify static export (`npm run build`) succeeds with the tool enabled.
+
