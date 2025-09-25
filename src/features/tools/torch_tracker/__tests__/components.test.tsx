@@ -9,6 +9,7 @@ import { ActiveLightCard } from '../components/ActiveLightCard'
 import { ExpiredTray } from '../components/ExpiredTray'
 import { TorchTrackerHeader } from '../components/TorchTrackerHeader'
 import type { ActiveLightSource } from '../types'
+import type { CentralTimerSnapshot } from '../types'
 
 const sampleEntry = lightSourceCatalog[0]
 const buildActive = (overrides: Partial<ActiveLightSource> = {}): ActiveLightSource => ({
@@ -66,6 +67,7 @@ describe('ActiveLightCard', () => {
       />,
     )
 
+    expect(screen.getByText(/time active/i)).toBeInTheDocument()
     fireEvent.click(screen.getByRole('button', { name: /pause/i }))
     expect(onPause).toHaveBeenCalled()
 
@@ -131,12 +133,19 @@ describe('TorchTrackerHeader', () => {
     const advanceRound = vi.fn()
     const resetAll = vi.fn()
     const toggleAuto = vi.fn()
+    const centralTimer: CentralTimerSnapshot = {
+      isInitialized: true,
+      totalSeconds: 600,
+      remainingSeconds: 540,
+      elapsedSeconds: 60,
+    }
 
     render(
       <TorchTrackerHeader
         activeCount={2}
         expiredCount={1}
         isClockRunning={false}
+        centralTimer={centralTimer}
         autoAdvance={true}
         onToggleClock={toggleClock}
         onAdvanceRound={advanceRound}
@@ -144,6 +153,10 @@ describe('TorchTrackerHeader', () => {
         onToggleAutoAdvance={toggleAuto}
       />,
     )
+
+    expect(screen.getByText(/torch tracker/i)).toBeInTheDocument()
+    expect(screen.getAllByText(/central timer/i).length).toBeGreaterThan(0)
+    expect(screen.getByText(/9:00 remaining/i)).toBeInTheDocument()
 
     fireEvent.click(screen.getByRole('button', { name: /start clock/i }))
     expect(toggleClock).toHaveBeenCalledWith(true)

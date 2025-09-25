@@ -1,4 +1,11 @@
-import type { ActiveLightSource, LightRadius, TorchTrackerSelector, TorchTrackerSelectors, TorchTrackerState } from '../types'
+import type {
+  ActiveLightSource,
+  CentralTimerSnapshot,
+  LightRadius,
+  TorchTrackerSelector,
+  TorchTrackerSelectors,
+  TorchTrackerState,
+} from '../types'
 
 export const selectCatalog: TorchTrackerSelector<TorchTrackerState['catalog']> = (state) => state.catalog
 
@@ -42,6 +49,33 @@ export const selectBrightestRadius: TorchTrackerSelector<LightRadius | null> = (
   return brightest ? { ...brightest } : null
 }
 
+export const selectCentralTimer: TorchTrackerSelector<CentralTimerSnapshot> = (state) => {
+  if (!state.active.length) {
+    return {
+      isInitialized: false,
+      totalSeconds: 0,
+      remainingSeconds: 0,
+      elapsedSeconds: 0,
+    }
+  }
+
+  let maxTotal = 0
+  let maxRemaining = 0
+  for (const source of state.active) {
+    maxTotal = Math.max(maxTotal, source.totalSeconds)
+    maxRemaining = Math.max(maxRemaining, source.remainingSeconds)
+  }
+
+  const elapsed = Math.max(0, maxTotal - maxRemaining)
+
+  return {
+    isInitialized: true,
+    totalSeconds: maxTotal,
+    remainingSeconds: Math.max(0, maxRemaining),
+    elapsedSeconds: elapsed,
+  }
+}
+
 export const torchTrackerSelectors: TorchTrackerSelectors = {
   selectCatalog,
   selectActive,
@@ -51,5 +85,5 @@ export const torchTrackerSelectors: TorchTrackerSelectors = {
   selectAutoAdvance,
   selectNextExpiration,
   selectBrightestRadius,
+  selectCentralTimer,
 }
-

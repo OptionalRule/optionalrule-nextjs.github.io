@@ -2,22 +2,37 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
+const createDefaultAlchemyState = () => ({
+  loading: false,
+  error: null,
+  potions: [],
+  ingredients: [],
+  ingredientOptions: [],
+});
+
+const createDefaultQueryState = () => ({
+  q: '',
+  ingredients: [] as string[],
+  ingMode: 'any' as const,
+  alchLvl: 0,
+});
+
 vi.mock('../hooks/useAlchemyData', () => ({
-  useAlchemyData: vi.fn(),
+  useAlchemyData: vi.fn(() => createDefaultAlchemyState()),
 }));
 
 vi.mock('../hooks/useQueryState', () => ({
-  useQueryState: vi.fn(),
+  useQueryState: vi.fn(() => [createDefaultQueryState(), vi.fn()]),
 }));
 
 vi.mock('../hooks/usePotionFilters', () => ({
-  usePotionFilters: vi.fn(),
+  usePotionFilters: vi.fn(() => ({ results: [], count: 0 })),
 }));
 
 vi.mock('../lib/persist', () => ({
-  getSaveEnabled: vi.fn(),
+  getSaveEnabled: vi.fn(() => false),
   setSaveEnabled: vi.fn(),
-  readPersistedFilters: vi.fn(),
+  readPersistedFilters: vi.fn(() => null),
   writePersistedFilters: vi.fn(),
   clearPersistedFilters: vi.fn(),
 }));
@@ -103,12 +118,7 @@ async function loadComponent() {
   return mod.default;
 }
 
-const baseQueryState = {
-  q: '',
-  ingredients: [] as string[],
-  ingMode: 'any' as const,
-  alchLvl: 0,
-};
+const baseQueryState = createDefaultQueryState();
 
 describe('Kcd2Alchemy component', () => {
   beforeEach(() => {
@@ -231,7 +241,6 @@ describe('Kcd2Alchemy component', () => {
     expect(mockClearPersistedFilters).toHaveBeenCalled();
   });
 });
-
 
 
 

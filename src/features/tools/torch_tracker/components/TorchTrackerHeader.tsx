@@ -1,9 +1,13 @@
 'use client'
 
+import type { CentralTimerSnapshot } from '../types'
+import { formatSecondsAsClock } from '../utils/time'
+
 export interface TorchTrackerHeaderProps {
   activeCount: number
   expiredCount: number
   isClockRunning: boolean
+  centralTimer: CentralTimerSnapshot
   autoAdvance: boolean
   onToggleClock: (nextRunning: boolean) => void
   onAdvanceRound: () => void
@@ -17,6 +21,7 @@ export function TorchTrackerHeader({
   activeCount,
   expiredCount,
   isClockRunning,
+  centralTimer,
   autoAdvance,
   onToggleClock,
   onAdvanceRound,
@@ -25,6 +30,18 @@ export function TorchTrackerHeader({
   onOpenHelp,
   className,
 }: TorchTrackerHeaderProps) {
+  const timerIsActive = centralTimer.isInitialized && centralTimer.totalSeconds > 0
+  const remainingLabel = formatSecondsAsClock(centralTimer.remainingSeconds)
+  const totalLabel = formatSecondsAsClock(centralTimer.totalSeconds)
+  const elapsedLabel = formatSecondsAsClock(centralTimer.elapsedSeconds)
+  const timerStatusLabel = isClockRunning ? 'Running' : 'Paused'
+  const percentElapsed =
+    centralTimer.totalSeconds === 0
+      ? 0
+      : Math.max(
+          0,
+          Math.min(100, Math.round((centralTimer.elapsedSeconds / centralTimer.totalSeconds) * 100)),
+        )
   return (
     <header
       className={`flex flex-col gap-4 rounded-2xl border border-[var(--border)] bg-[var(--surface-0)]/70 p-6 shadow ${className ?? ''}`.trim()}
@@ -32,10 +49,10 @@ export function TorchTrackerHeader({
       <div className="flex flex-col gap-2 md:flex-row md:items-start md:justify-between">
         <div>
           <h1 className="text-2xl font-semibold uppercase tracking-wide text-[var(--text-primary)]">
-            Shadowdark Torch Tracker
+            Torch Tracker
           </h1>
           <p className="text-sm text-[var(--text-secondary)]">
-            Monitor torches, lanterns, spells, and fires with automatic turn tracking.
+            Monitor torches, lanterns, spells, and fires with unified turn tracking.
           </p>
         </div>
         <div className="flex items-center gap-3 text-xs text-[var(--text-tertiary)]">
@@ -49,6 +66,34 @@ export function TorchTrackerHeader({
           </span>
         </div>
       </div>
+
+      <section className="space-y-2" aria-label="Central torch timer">
+        {timerIsActive ? (
+          <>
+            <div className="flex flex-wrap items-baseline gap-3 text-sm text-[var(--text-secondary)]">
+              <span className="text-xs font-semibold uppercase tracking-wide text-[var(--text-tertiary)]">
+                Central Timer
+              </span>
+              <span aria-live="polite">{remainingLabel} remaining</span>
+              <span className="text-[var(--text-tertiary)]">/ {totalLabel} total</span>
+              <span className="text-[var(--text-tertiary)]">({timerStatusLabel})</span>
+              <span className="text-[var(--text-tertiary)]">{elapsedLabel} elapsed</span>
+            </div>
+            <div className="relative h-2 overflow-hidden rounded-full bg-[var(--surface-2)]">
+              <span
+                className="absolute left-0 top-0 h-full rounded-full bg-[var(--accent)] transition-[width]"
+                style={{ width: `${percentElapsed}%` }}
+                aria-hidden="true"
+              />
+              <span className="sr-only">Central timer {percentElapsed}% complete</span>
+            </div>
+          </>
+        ) : (
+          <p className="text-sm text-[var(--text-secondary)]">
+            Add a light source to start the central timer and track total party burn time.
+          </p>
+        )}
+      </section>
 
       <div className="flex flex-wrap items-center gap-3">
         <button

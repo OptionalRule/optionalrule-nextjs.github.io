@@ -1,6 +1,7 @@
 'use client'
 
 import type { ActiveLightSource } from '../types'
+import { formatSecondsAsClock } from '../utils/time'
 
 export interface ActiveLightCardProps {
   source: ActiveLightSource
@@ -11,13 +12,6 @@ export interface ActiveLightCardProps {
   onRemove: (source: ActiveLightSource) => void
   onToggleVisibility?: (source: ActiveLightSource) => void
   className?: string
-}
-
-const secondsToTimestamp = (seconds: number) => {
-  const safeSeconds = Math.max(0, Math.floor(seconds))
-  const minutes = Math.floor(safeSeconds / 60)
-  const remaining = safeSeconds % 60
-  return `${minutes}:${remaining.toString().padStart(2, '0')}`
 }
 
 export function ActiveLightCard({
@@ -32,8 +26,15 @@ export function ActiveLightCard({
 }: ActiveLightCardProps) {
   const isPaused = source.status === 'paused'
   const isExpired = source.status === 'expired'
-  const percent = source.totalSeconds === 0 ? 0 : Math.max(0, Math.min(100, Math.round((source.remainingSeconds / source.totalSeconds) * 100)))
-  const statusLabel = isExpired ? 'Expired' : isPaused ? 'Paused' : 'Active'
+  const remainingPercent =
+    source.totalSeconds === 0 ? 0 : Math.max(0, Math.min(100, Math.round((source.remainingSeconds / source.totalSeconds) * 100)))
+  const statusLabel = isExpired ? 'Expired' : isPaused ? 'Inactive' : 'Active'
+  const elapsedSeconds =
+    typeof source.elapsedSeconds === 'number'
+      ? source.elapsedSeconds
+      : Math.max(0, source.totalSeconds - source.remainingSeconds)
+  const timeActiveLabel = `${formatSecondsAsClock(elapsedSeconds)} / ${formatSecondsAsClock(source.totalSeconds)}`
+  const timeRemainingLabel = `${formatSecondsAsClock(source.remainingSeconds)} (${source.remainingRounds} rounds)`
 
   const handlePauseResume = () => {
     if (isExpired) return
@@ -80,16 +81,20 @@ export function ActiveLightCard({
 
       <div className="space-y-2">
         <div className="flex items-center justify-between text-sm text-[var(--text-secondary)]">
+          <span>Time active</span>
+          <span aria-live="polite">{timeActiveLabel}</span>
+        </div>
+        <div className="flex items-center justify-between text-sm text-[var(--text-secondary)]">
           <span>Time remaining</span>
-          <span aria-live="polite">{secondsToTimestamp(source.remainingSeconds)} ({source.remainingRounds} rounds)</span>
+          <span aria-live="polite">{timeRemainingLabel}</span>
         </div>
         <div className="relative h-2 overflow-hidden rounded-full bg-[var(--surface-2)]">
           <span
             className="absolute left-0 top-0 h-full rounded-full bg-[var(--accent)] transition-[width]"
-            style={{ width: `${percent}%` }}
+            style={{ width: `${remainingPercent}%` }}
             aria-hidden="true"
           />
-          <span className="sr-only">{percent}% of total duration remaining</span>
+          <span className="sr-only">{remainingPercent}% of total duration remaining</span>
         </div>
       </div>
 

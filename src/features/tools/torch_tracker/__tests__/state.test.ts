@@ -6,7 +6,7 @@ import {
   createInitialTorchTrackerState,
   torchTrackerReducer,
 } from '../hooks/useTorchTrackerState'
-import { selectBrightestRadius, selectNextExpiration } from '../lib/selectors'
+import { selectBrightestRadius, selectCentralTimer, selectNextExpiration } from '../lib/selectors'
 import type { TorchTrackerState } from '../types'
 
 const FIXED_DATE = new Date('2024-01-01T12:00:00Z').getTime()
@@ -41,6 +41,7 @@ describe('torchTrackerReducer', () => {
     expect(state.active.length).toBe(1)
     expect(state.active[0].catalogId).toBe(lightSourceCatalog[0].id)
     expect(state.active[0].status).toBe('active')
+    expect(state.active[0].elapsedSeconds).toBe(0)
   })
 
   it('pauses and resumes an active instance', () => {
@@ -69,6 +70,7 @@ describe('torchTrackerReducer', () => {
     expect(state.active.length).toBe(0)
     expect(state.expired.length).toBe(1)
     expect(state.expired[0].status).toBe('expired')
+    expect(state.expired[0].elapsedSeconds).toBe(state.expired[0].totalSeconds)
   })
 
   it('updates remaining time and clamps to totals', () => {
@@ -168,5 +170,24 @@ describe('selectors', () => {
 
     const radius = selectBrightestRadius(state)
     expect(radius).toEqual(state.active[1].radius)
+  })
+
+  it('aggregates central timer snapshot from active sources', () => {
+    let state = addInstance(getInitialState(), 0, { remainingSeconds: 600 })
+    state = addInstance(state, 1, { remainingSeconds: 900 })
+
+    const snapshot = selectCentralTimer(state)
+    expect(snapshot.isInitialized).toBe(true)
+    expect(snapshot.totalSeconds).toBeGreaterThanOrEqual(900)
+    expect(snapshot.remainingSeconds).toBe(900)
+
+    state = torchTrackerReducer(state, {
+      type: 'active/tick',
+      payload: { deltaSeconds: 300, now: FIXED_DATE + 300000 },
+    })
+
+    const updated = selectCentralTimer(state)
+    expect(updated.remainingSeconds).toBe(600)
+    expect(updated.elapsedSeconds).toBe(updated.totalSeconds - updated.remainingSeconds)
   })
 })

@@ -45,7 +45,8 @@
     - Update `docs/torchtracker/README.md` (usage guide) and site changelog.
     - Prepare release announcement content, ensure sitemap includes the new route, and verify static export (`npm run build`) succeeds with the tool enabled.
 
-11. **Central Timer**
+11. **Central Timer & Small Changes**
+   - The Header Title and link should remove mentions of Shadowrun and be called "Torch Tracker" instead.
    - A single timer should govern all of the light sources that begins when the first light soruce is added. The single timer should be presented in the Header.
    - When the central timer runs out, all light sources made inactive and moved to the expired. 
    - Each individual lightsource should track total time active for convienence.

@@ -4,7 +4,13 @@ import { useMemo, useReducer } from 'react'
 
 import { lightSourceCatalog } from '../data/lightSources'
 import { cloneCatalogEntry, createActiveSourceFromCatalog, createCatalogIndex } from '../lib/catalog'
-import { selectAutoAdvance, selectBrightestRadius, selectNextExpiration, selectSettings } from '../lib/selectors'
+import {
+  selectAutoAdvance,
+  selectBrightestRadius,
+  selectCentralTimer,
+  selectNextExpiration,
+  selectSettings,
+} from '../lib/selectors'
 import type {
   ActiveLightSource,
   LightInstanceStatus,
@@ -40,6 +46,7 @@ const normalizeActiveSource = (source: ActiveLightSource): ActiveLightSource => 
   const remainingSeconds = Math.max(0, Math.min(totalSeconds, source.remainingSeconds))
   const remainingRounds = deriveRoundsFromSeconds(remainingSeconds, source.turnLengthMinutes)
   const status = normalizeStatus({ ...source, remainingSeconds, totalSeconds, totalRounds })
+  const elapsedSeconds = Math.max(0, totalSeconds - remainingSeconds)
 
   return {
     ...source,
@@ -47,6 +54,7 @@ const normalizeActiveSource = (source: ActiveLightSource): ActiveLightSource => 
     totalRounds,
     remainingSeconds,
     remainingRounds,
+    elapsedSeconds,
     status,
   }
 }
@@ -64,6 +72,7 @@ const resetActiveSource = (source: ActiveLightSource, timestamp: number): Active
   ...source,
   remainingSeconds: source.totalSeconds,
   remainingRounds: source.totalRounds,
+  elapsedSeconds: 0,
   status: 'active',
   isPaused: false,
   lastTickTimestamp: null,
@@ -74,14 +83,15 @@ const expireActiveSource = (
   source: ActiveLightSource,
   expiredAt: number,
 ): ActiveLightSource => ({
-  ...source,
-  remainingSeconds: 0,
-  remainingRounds: 0,
-  status: 'expired',
-  isPaused: false,
-  updatedAt: expiredAt,
-  lastTickTimestamp: expiredAt,
-})
+    ...source,
+    remainingSeconds: 0,
+    remainingRounds: 0,
+    elapsedSeconds: source.totalSeconds,
+    status: 'expired',
+    isPaused: false,
+    updatedAt: expiredAt,
+    lastTickTimestamp: expiredAt,
+  })
 
 const updateCollection = (
   collection: ActiveLightSource[],
@@ -342,6 +352,7 @@ export interface TorchTrackerHookResult {
   controller: TorchTrackerController
   nextExpiration: ReturnType<typeof selectNextExpiration>
   brightestRadius: ReturnType<typeof selectBrightestRadius>
+  centralTimer: ReturnType<typeof selectCentralTimer>
 }
 
 export const useTorchTrackerState = (
@@ -402,8 +413,9 @@ export const useTorchTrackerState = (
 
   const nextExpiration = useMemo(() => selectNextExpiration(state), [state])
   const brightestRadius = useMemo(() => selectBrightestRadius(state), [state])
+  const centralTimer = useMemo(() => selectCentralTimer(state), [state])
 
-  return { state, controller, nextExpiration, brightestRadius }
+  return { state, controller, nextExpiration, brightestRadius, centralTimer }
 }
 
 export const useTorchTrackerSettings = (state: TorchTrackerState) => {

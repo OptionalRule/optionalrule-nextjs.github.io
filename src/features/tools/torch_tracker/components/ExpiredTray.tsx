@@ -32,16 +32,16 @@ export function ExpiredTray({ sources, onRestore, onRemove, className }: Expired
         </p>
       )}
 
-      {hasItems && (
-        <ul className="mt-4 space-y-3">
-          {sources.map((source) => (
-            <li key={source.instanceId} className="flex items-center gap-3 rounded-xl border border-[var(--surface-3)] bg-[var(--surface-1)]/80 p-3">
-              <div className="flex flex-1 flex-col">
-                <span className="text-sm font-medium text-[var(--text-primary)]">{source.label}</span>
-                <span className="text-xs text-[var(--text-secondary)]">
-                  Burned out after {source.totalRounds} rounds ({Math.round(source.totalSeconds / 60)} minutes)
-                </span>
-              </div>
+          {hasItems && (
+            <ul className="mt-4 space-y-3">
+              {sources.map((source) => (
+                <li key={source.instanceId} className="flex items-center gap-3 rounded-xl border border-[var(--surface-3)] bg-[var(--surface-1)]/80 p-3">
+                  <div className="flex flex-1 flex-col">
+                    <span className="text-sm font-medium text-[var(--text-primary)]">{source.label}</span>
+                    <span className="text-xs text-[var(--text-secondary)]">
+                      Burned out after {source.totalRounds} rounds ({Math.round((source.elapsedSeconds ?? source.totalSeconds) / 60)} minutes active)
+                    </span>
+                  </div>
               {onRestore && (
                 <button
                   type="button"

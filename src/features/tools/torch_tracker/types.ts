@@ -37,6 +37,8 @@ export interface ActiveLightSource {
   remainingSeconds: number
   totalRounds: number
   remainingRounds: number
+  /** Total elapsed burn time in seconds; derived from totalSeconds - remainingSeconds */
+  elapsedSeconds?: number
   radius: LightRadius
   icon: string
   color: string
@@ -65,6 +67,13 @@ export interface TorchTrackerState {
   active: ActiveLightSource[]
   expired: ActiveLightSource[]
   settings: TorchTrackerSettings
+}
+
+export interface CentralTimerSnapshot {
+  isInitialized: boolean
+  totalSeconds: number
+  remainingSeconds: number
+  elapsedSeconds: number
 }
 
 export type TorchTrackerActionType =
@@ -113,4 +122,5 @@ export interface TorchTrackerSelectors {
   selectAutoAdvance: TorchTrackerSelector<boolean>
   selectNextExpiration: TorchTrackerSelector<ActiveLightSource | null>
   selectBrightestRadius: TorchTrackerSelector<LightRadius | null>
+  selectCentralTimer: TorchTrackerSelector<CentralTimerSnapshot>
 }

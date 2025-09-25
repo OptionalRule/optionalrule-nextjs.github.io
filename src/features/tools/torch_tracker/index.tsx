@@ -1,6 +1,6 @@
 'use client'
 
-import { useCallback, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
 import { lightSourceCatalog, DEFAULT_TURN_MINUTES } from './data/lightSources'
 import { useTorchTrackerState } from './hooks/useTorchTrackerState'
@@ -23,8 +23,9 @@ export interface TorchTrackerProps {
 }
 
 export default function TorchTracker({ className }: TorchTrackerProps) {
-  const { state, controller, nextExpiration, brightestRadius } = useTorchTrackerState(lightSourceCatalog)
+  const { state, controller, nextExpiration, brightestRadius, centralTimer } = useTorchTrackerState(lightSourceCatalog)
   const [selectedCatalogId, setSelectedCatalogId] = useState<string | null>(null)
+  const centrallyPausedIdsRef = useRef<Set<string>>(new Set())
 
   const addEntry = useCallback(
     (entry: TorchCatalogEntry) => {
@@ -76,6 +77,48 @@ export default function TorchTracker({ className }: TorchTrackerProps) {
     [controller],
   )
 
+  const handleToggleClock = useCallback(
+    (nextRunning: boolean) => {
+      const now = Date.now()
+      if (!nextRunning) {
+        const pausedByCentral = new Set(centrallyPausedIdsRef.current)
+        state.active.forEach((source) => {
+          if (source.status === 'active') {
+            pausedByCentral.add(source.instanceId)
+            controller.pauseInstance(source.instanceId, now)
+          }
+        })
+        centrallyPausedIdsRef.current = pausedByCentral
+        controller.setClockRunning(false, null)
+        return
+      }
+
+      controller.setClockRunning(true, now)
+      if (centrallyPausedIdsRef.current.size === 0) return
+
+      const ids = Array.from(centrallyPausedIdsRef.current)
+      centrallyPausedIdsRef.current.clear()
+      ids.forEach((instanceId) => {
+        const target = state.active.find((source) => source.instanceId === instanceId)
+        if (target && target.status === 'paused') {
+          controller.resumeInstance(instanceId, now)
+        }
+      })
+    },
+    [controller, state.active],
+  )
+
+  useEffect(() => {
+    if (centrallyPausedIdsRef.current.size === 0) return
+    const activeIndex = new Map(state.active.map((source) => [source.instanceId, source]))
+    centrallyPausedIdsRef.current.forEach((id) => {
+      const target = activeIndex.get(id)
+      if (!target || target.status !== 'paused') {
+        centrallyPausedIdsRef.current.delete(id)
+      }
+    })
+  }, [state.active])
+
   useGameClock({
     isRunning: state.settings.isClockRunning,
     autoAdvance: state.settings.autoAdvance,
@@ -97,8 +140,9 @@ export default function TorchTracker({ className }: TorchTrackerProps) {
       activeCount={state.active.length}
       expiredCount={state.expired.length}
       isClockRunning={state.settings.isClockRunning}
+      centralTimer={centralTimer}
       autoAdvance={state.settings.autoAdvance}
-      onToggleClock={(next) => controller.setClockRunning(next, next ? Date.now() : null)}
+      onToggleClock={handleToggleClock}
       onAdvanceRound={() => controller.tick(ROUND_SECONDS)}
       onResetAll={() => controller.resetAll()}
       onToggleAutoAdvance={(next) => controller.toggleAutoAdvance(next)}

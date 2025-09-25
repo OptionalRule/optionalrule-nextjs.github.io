@@ -116,6 +116,7 @@ export const createActiveSourceFromCatalog = (
     turnLengthMinutes: normalized.turnLengthMinutes,
     totalSeconds: baseSeconds,
     remainingSeconds,
+    elapsedSeconds: baseSeconds - remainingSeconds,
     totalRounds,
     remainingRounds,
     radius: { ...normalized.radius },
