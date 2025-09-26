@@ -23,11 +23,9 @@ const buildActive = (overrides: Partial<ActiveLightSource> = {}): ActiveLightSou
 describe('CatalogButton', () => {
   it('calls onSelect when clicked and reflects selection state', () => {
     const handleSelect = vi.fn()
-    render(
-      <CatalogButton entry={sampleEntry} onSelect={handleSelect} selected />,
-    )
+    render(<CatalogButton entry={sampleEntry} onSelect={handleSelect} selected />)
 
-    const button = screen.getByRole('button', { name: /standard torch/i })
+    const button = screen.getByRole('button', { name: new RegExp(sampleEntry.name, 'i') })
     expect(button).toHaveAttribute('aria-pressed', 'true')
 
     fireEvent.click(button)
@@ -38,12 +36,10 @@ describe('CatalogButton', () => {
 describe('CatalogPanel', () => {
   it('renders grouped catalog entries and forwards selection', () => {
     const handleSelect = vi.fn()
-    render(
-      <CatalogPanel entries={lightSourceCatalog} onSelect={handleSelect} />,
-    )
+    render(<CatalogPanel entries={lightSourceCatalog} onSelect={handleSelect} />)
 
     expect(screen.getByRole('region', { name: /catalog/i })).toBeInTheDocument()
-    fireEvent.click(screen.getByRole('button', { name: /standard torch/i }))
+    fireEvent.click(screen.getByRole('button', { name: new RegExp(sampleEntry.name, 'i') }))
     expect(handleSelect).toHaveBeenCalled()
   })
 })

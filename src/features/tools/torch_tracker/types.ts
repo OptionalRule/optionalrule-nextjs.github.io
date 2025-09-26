@@ -1,7 +1,7 @@
 // Core types for the Shadowdark Torch Tracker feature
 
-export type TorchSourceType = 'torch' | 'lantern' | 'spell' | 'fire' | 'custom'
-export type TorchCatalogCategory = 'mundane' | 'magical' | 'environmental' | 'custom'
+export type TorchSourceType = 'torch' | 'lantern' | 'spell' | 'fire'
+export type TorchCatalogCategory = 'mundane' | 'magical' | 'environmental'
 
 export interface LightRadius {
   bright: number
@@ -22,7 +22,6 @@ export interface TorchCatalogEntry {
   brightness?: number
   mishapNote?: string
   tags?: string[]
-  isCustomArchetype?: boolean
 }
 
 export type LightInstanceStatus = 'active' | 'paused' | 'expired'

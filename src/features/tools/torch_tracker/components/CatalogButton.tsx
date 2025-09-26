@@ -14,7 +14,6 @@ const CATEGORY_LABELS: Record<TorchCatalogEntry['category'], string> = {
   mundane: 'Mundane',
   magical: 'Magical',
   environmental: 'Environmental',
-  custom: 'Custom',
 }
 
 export function CatalogButton({ entry, onSelect, disabled = false, selected = false, className }: CatalogButtonProps) {

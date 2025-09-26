@@ -1,6 +1,6 @@
 'use client'
 
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 
 import { lightSourceCatalog, DEFAULT_TURN_MINUTES } from './data/lightSources'
 import { useTorchTrackerState } from './hooks/useTorchTrackerState'
@@ -125,16 +125,6 @@ export default function TorchTracker({ className }: TorchTrackerProps) {
     onTick: (deltaSeconds, now) => controller.tick(deltaSeconds, now),
   })
 
-  const uniqueDisabledIds = useMemo(() => {
-    const disabled = new Set<string>()
-    state.active.forEach((source) => {
-      if (source.catalogId === 'custom-template') {
-        disabled.add(source.catalogId)
-      }
-    })
-    return Array.from(disabled)
-  }, [state.active])
-
   const header = (
     <TorchTrackerHeader
       activeCount={state.active.length}
@@ -153,7 +143,6 @@ export default function TorchTracker({ className }: TorchTrackerProps) {
     <CatalogPanel
       entries={state.catalog}
       selectedId={selectedCatalogId}
-      disabledIds={uniqueDisabledIds}
       onSelect={addEntry}
     />
   )

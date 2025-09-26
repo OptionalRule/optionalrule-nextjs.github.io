@@ -1,10 +1,6 @@
 import { describe, expect, it } from 'vitest'
 
-import {
-  baseLightSources,
-  createCustomLightSource,
-  DEFAULT_TURN_MINUTES,
-} from '../data/lightSources'
+import { baseLightSources, DEFAULT_TURN_MINUTES } from '../data/lightSources'
 import {
   cloneCatalogEntry,
   createActiveSourceFromCatalog,
@@ -112,16 +108,4 @@ describe('catalog utilities', () => {
     expect(torch).toBeDefined()
     expect(torch).not.toBe(catalog[0])
   })
-
-  it('builds custom light archetypes with sanitized ids and defaults', () => {
-    const custom = createCustomLightSource('Gleaming Crystal', 25, {
-      radius: { bright: 15 },
-    })
-
-    expect(custom.id.startsWith('custom-gleaming-crystal')).toBe(true)
-    expect(custom.radius.bright).toBe(15)
-    expect(custom.radius.dim).toBeGreaterThanOrEqual(custom.radius.bright)
-    expect(custom.isCustomArchetype).toBe(true)
-  })
 })
-

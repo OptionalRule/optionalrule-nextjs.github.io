@@ -4,18 +4,12 @@ import { useMemo } from 'react'
 import type { TorchCatalogEntry } from '../types'
 import { CatalogButton } from './CatalogButton'
 
-const CATEGORY_ORDER: Array<TorchCatalogEntry['category']> = [
-  'mundane',
-  'magical',
-  'environmental',
-  'custom',
-]
+const CATEGORY_ORDER: Array<TorchCatalogEntry['category']> = ['mundane', 'magical', 'environmental']
 
 const CATEGORY_HEADINGS: Record<TorchCatalogEntry['category'], string> = {
   mundane: 'Mundane Sources',
   magical: 'Magical Sources',
   environmental: 'Environmental Sources',
-  custom: 'Custom Templates',
 }
 
 export interface CatalogPanelProps {
@@ -82,4 +76,3 @@ export function CatalogPanel({ entries, selectedId = null, disabledIds = [], onS
     </section>
   )
 }
-
