@@ -1,12 +1,12 @@
-import { TorchCatalogEntry, TorchCatalogCategory, TorchSourceType, LightRadius } from '../types'
+import { TorchCatalogEntry, TorchCatalogCategory, TorchSourceType } from '../types'
 
 export const DEFAULT_TURN_MINUTES = 10
 
-const DEFAULT_RADIUS_BY_SOURCE: Record<TorchSourceType, LightRadius> = {
-  torch: { bright: 30, dim: 0 },
-  lantern: { bright: 60, dim: 0 },
-  spell: { bright: 30, dim: 0 },
-  fire: { bright: 30, dim: 0 },
+const DEFAULT_RADIUS_BY_SOURCE: Record<TorchSourceType, number> = {
+  torch: 30,
+  lantern: 60,
+  spell: 30,
+  fire: 30,
 }
 
 const CATEGORY_BY_SOURCE: Record<TorchSourceType, TorchCatalogCategory> = {
@@ -24,7 +24,7 @@ export const baseLightSources: TorchCatalogEntry[] = [
     category: CATEGORY_BY_SOURCE.torch,
     baseDurationMinutes: 60,
     turnLengthMinutes: DEFAULT_TURN_MINUTES,
-    radius: DEFAULT_RADIUS_BY_SOURCE.torch,
+    brightRadius: DEFAULT_RADIUS_BY_SOURCE.torch,
     icon: '🔥',
     color: '#FFA500',
     description: 'A reliable source of light that burns for about an hour.',
@@ -38,7 +38,7 @@ export const baseLightSources: TorchCatalogEntry[] = [
     category: CATEGORY_BY_SOURCE.lantern,
     baseDurationMinutes: 60,
     turnLengthMinutes: DEFAULT_TURN_MINUTES,
-    radius: DEFAULT_RADIUS_BY_SOURCE.lantern,
+    brightRadius: DEFAULT_RADIUS_BY_SOURCE.lantern,
     icon: '🏮',
     color: '#FFD700',
     description: 'A steady light source that lasts for several hours.',
@@ -53,7 +53,7 @@ export const baseLightSources: TorchCatalogEntry[] = [
     category: CATEGORY_BY_SOURCE.spell,
     baseDurationMinutes: 60,
     turnLengthMinutes: DEFAULT_TURN_MINUTES,
-    radius: DEFAULT_RADIUS_BY_SOURCE.spell,
+    brightRadius: DEFAULT_RADIUS_BY_SOURCE.spell,
     icon: '🌟',
     color: '#FFFACD',
     description: 'A gentle light spell perfect for ambient lighting.',
@@ -68,7 +68,7 @@ export const baseLightSources: TorchCatalogEntry[] = [
     category: CATEGORY_BY_SOURCE.fire,
     baseDurationMinutes: 60,
     turnLengthMinutes: DEFAULT_TURN_MINUTES,
-    radius: DEFAULT_RADIUS_BY_SOURCE.fire,
+    brightRadius: DEFAULT_RADIUS_BY_SOURCE.fire,
     icon: '🔥',
     color: '#FF4500',
     description: 'A powerful fire that provides warmth and bright light.',

@@ -4,16 +4,10 @@ import { useMemo, useReducer } from 'react'
 
 import { lightSourceCatalog } from '../data/lightSources'
 import { cloneCatalogEntry, createActiveSourceFromCatalog, createCatalogIndex } from '../lib/catalog'
-import {
-  selectAutoAdvance,
-  selectBrightestRadius,
-  selectCentralTimer,
-  selectNextExpiration,
-  selectSettings,
-} from '../lib/selectors'
+import { selectAutoAdvance, selectCentralTimer, selectSettings } from '../lib/selectors'
 import type {
   ActiveLightSource,
-  LightInstanceStatus,
+  CentralTimerSnapshot,
   TorchCatalogEntry,
   TorchTrackerReducerAction,
   TorchTrackerSettings,
@@ -28,32 +22,24 @@ const DEFAULT_SETTINGS: TorchTrackerSettings = {
 
 const minutesToSeconds = (minutes: number) => Math.max(0, Math.round(minutes * 60))
 
-const deriveRoundsFromSeconds = (seconds: number, turnLengthMinutes: number) => {
-  const turnSeconds = Math.max(1, minutesToSeconds(turnLengthMinutes))
-  if (seconds <= 0) return 0
-  return Math.max(0, Math.ceil(seconds / turnSeconds))
-}
-
-const normalizeStatus = (source: ActiveLightSource): LightInstanceStatus => {
-  if (source.remainingSeconds <= 0) return 'expired'
-  if (source.isPaused) return 'paused'
-  return 'active'
-}
+const createInitialCentralTimer = (): CentralTimerSnapshot => ({
+  isInitialized: false,
+  totalSeconds: 0,
+  remainingSeconds: 0,
+  elapsedSeconds: 0,
+})
 
 const normalizeActiveSource = (source: ActiveLightSource): ActiveLightSource => {
   const totalSeconds = minutesToSeconds(source.baseDurationMinutes)
-  const totalRounds = deriveRoundsFromSeconds(totalSeconds, source.turnLengthMinutes)
   const remainingSeconds = Math.max(0, Math.min(totalSeconds, source.remainingSeconds))
-  const remainingRounds = deriveRoundsFromSeconds(remainingSeconds, source.turnLengthMinutes)
-  const status = normalizeStatus({ ...source, remainingSeconds, totalSeconds, totalRounds })
   const elapsedSeconds = Math.max(0, totalSeconds - remainingSeconds)
+  const isPaused = source.isPaused
+  const status: ActiveLightSource['status'] = isPaused ? 'paused' : 'active'
 
   return {
     ...source,
     totalSeconds,
-    totalRounds,
     remainingSeconds,
-    remainingRounds,
     elapsedSeconds,
     status,
   }
@@ -64,33 +50,19 @@ export const createInitialTorchTrackerState = (
 ): TorchTrackerState => ({
   catalog: catalogEntries.map((entry) => cloneCatalogEntry(entry)),
   active: [],
-  expired: [],
   settings: { ...DEFAULT_SETTINGS },
+  centralTimer: createInitialCentralTimer(),
 })
 
-const resetActiveSource = (source: ActiveLightSource, timestamp: number): ActiveLightSource => ({
-  ...source,
-  remainingSeconds: source.totalSeconds,
-  remainingRounds: source.totalRounds,
-  elapsedSeconds: 0,
-  status: 'active',
-  isPaused: false,
-  lastTickTimestamp: null,
-  updatedAt: timestamp,
-})
-
-const expireActiveSource = (
-  source: ActiveLightSource,
-  expiredAt: number,
-): ActiveLightSource => ({
+const resetActiveSource = (source: ActiveLightSource, timestamp: number): ActiveLightSource =>
+  normalizeActiveSource({
     ...source,
-    remainingSeconds: 0,
-    remainingRounds: 0,
-    elapsedSeconds: source.totalSeconds,
-    status: 'expired',
+    remainingSeconds: source.totalSeconds,
+    elapsedSeconds: 0,
+    status: 'active',
     isPaused: false,
-    updatedAt: expiredAt,
-    lastTickTimestamp: expiredAt,
+    lastTickTimestamp: null,
+    updatedAt: timestamp,
   })
 
 const updateCollection = (
@@ -117,9 +89,20 @@ export const torchTrackerReducer = (
     }
     case 'active/add': {
       const normalized = normalizeActiveSource(action.payload)
+      const timerSeed = normalized.remainingSeconds > 0 ? normalized.remainingSeconds : normalized.totalSeconds
+      const nextCentralTimer = state.centralTimer.isInitialized
+        ? state.centralTimer
+        : {
+            isInitialized: true,
+            totalSeconds: timerSeed,
+            remainingSeconds: timerSeed,
+            elapsedSeconds: 0,
+          }
+
       return {
         ...state,
         active: [...state.active, normalized],
+        centralTimer: nextCentralTimer,
       }
     }
     case 'active/update': {
@@ -135,56 +118,28 @@ export const torchTrackerReducer = (
         }
         if (patch.baseDurationMinutes !== undefined) {
           merged.totalSeconds = minutesToSeconds(merged.baseDurationMinutes)
-          merged.totalRounds = deriveRoundsFromSeconds(
-            merged.totalSeconds,
-            merged.turnLengthMinutes,
-          )
         }
         if (patch.remainingSeconds !== undefined) {
           merged.remainingSeconds = patch.remainingSeconds
-        }
-        if (patch.remainingRounds !== undefined) {
-          merged.remainingRounds = patch.remainingRounds
-          merged.remainingSeconds = Math.min(
-            merged.totalSeconds,
-            Math.max(0, patch.remainingRounds * minutesToSeconds(merged.turnLengthMinutes)),
-          )
         }
         return normalizeActiveSource(merged)
       }
       return {
         ...state,
         active: updateCollection(state.active, instanceId, updateFn),
-        expired: updateCollection(state.expired, instanceId, updateFn),
       }
     }
     case 'active/remove': {
       const { instanceId } = action.payload
-      return {
-        ...state,
-        active: removeFromCollection(state.active, instanceId),
-        expired: removeFromCollection(state.expired, instanceId),
-      }
-    }
-    case 'active/expire': {
-      const { instanceId, expiredAt } = action.payload
-      let expiredSource: ActiveLightSource | null = null
-      const nextActive = state.active.filter((source) => {
-        if (source.instanceId !== instanceId) return true
-        expiredSource = expireActiveSource(source, expiredAt)
-        return false
-      })
-      if (!expiredSource) {
-        return {
-          ...state,
-          expired: updateCollection(state.expired, instanceId, (item) => expireActiveSource(item, expiredAt)),
-        }
-      }
-      const filteredExpired = removeFromCollection(state.expired, instanceId)
+      const nextActive = removeFromCollection(state.active, instanceId)
+      const shouldResetTimer = nextActive.length === 0
       return {
         ...state,
         active: nextActive,
-        expired: [...filteredExpired, expiredSource],
+        centralTimer: shouldResetTimer ? createInitialCentralTimer() : state.centralTimer,
+        settings: shouldResetTimer
+          ? { ...state.settings, isClockRunning: false, lastTickTimestamp: null }
+          : state.settings,
       }
     }
     case 'active/reset': {
@@ -193,16 +148,15 @@ export const torchTrackerReducer = (
         if (action.payload.scope !== 'all') {
           return state
         }
-        const restored = [...state.active, ...state.expired].map((source) =>
-          normalizeActiveSource(resetActiveSource(source, timestamp)),
-        )
+        const restored = state.active.map((source) => resetActiveSource(source, timestamp))
         return {
           ...state,
           active: restored,
-          expired: [],
+          centralTimer: createInitialCentralTimer(),
           settings: {
             ...state.settings,
             lastTickTimestamp: null,
+            isClockRunning: false,
           },
         }
       }
@@ -210,9 +164,8 @@ export const torchTrackerReducer = (
       return {
         ...state,
         active: updateCollection(state.active, instanceId, (source) =>
-          normalizeActiveSource(resetActiveSource(source, timestamp)),
+          resetActiveSource(source, timestamp),
         ),
-        expired: removeFromCollection(state.expired, instanceId),
       }
     }
     case 'active/pause': {
@@ -256,33 +209,61 @@ export const torchTrackerReducer = (
           },
         }
       }
-      const nextActive: ActiveLightSource[] = []
-      const newlyExpired: ActiveLightSource[] = []
+
+      let nextActive: ActiveLightSource[] = []
       for (const source of state.active) {
         if (source.isPaused || source.status === 'paused') {
-          nextActive.push({ ...source })
+          nextActive.push({ ...source, lastTickTimestamp: now })
           continue
         }
         const nextRemaining = Math.max(0, source.remainingSeconds - deltaSeconds)
+        if (nextRemaining <= 0) {
+          continue
+        }
         const updated: ActiveLightSource = normalizeActiveSource({
           ...source,
           remainingSeconds: nextRemaining,
           updatedAt: now,
           lastTickTimestamp: now,
         })
-        if (updated.status === 'expired') {
-          newlyExpired.push(expireActiveSource(updated, now))
-        } else {
-          nextActive.push(updated)
+        nextActive.push(updated)
+      }
+
+      let nextCentral: CentralTimerSnapshot = state.centralTimer
+      if (state.centralTimer.isInitialized) {
+        const remaining = Math.max(0, state.centralTimer.remainingSeconds - deltaSeconds)
+        const elapsed = Math.max(0, state.centralTimer.totalSeconds - remaining)
+        nextCentral = {
+          ...state.centralTimer,
+          remainingSeconds: remaining,
+          elapsedSeconds: elapsed,
         }
       }
+
+      let isClockRunning = state.settings.isClockRunning
+      if (nextCentral.isInitialized && nextCentral.remainingSeconds <= 0) {
+        nextActive = []
+        isClockRunning = false
+        nextCentral = {
+          ...nextCentral,
+          remainingSeconds: 0,
+          elapsedSeconds: nextCentral.totalSeconds,
+        }
+      }
+
+      if (nextActive.length === 0) {
+        nextCentral = createInitialCentralTimer()
+        isClockRunning = false
+      }
+
       return {
         ...state,
         active: nextActive,
-        expired: [...state.expired, ...newlyExpired],
+        centralTimer: nextCentral,
         settings: {
           ...state.settings,
           lastTickTimestamp: now,
+          isClockRunning,
         },
       }
     }
@@ -336,7 +317,6 @@ export interface TorchTrackerController {
     patch: Partial<ActiveLightSource>,
   ) => void
   removeInstance: (instanceId: string) => void
-  expireInstance: (instanceId: string, expiredAt?: number) => void
   resetInstance: (instanceId: string) => void
   resetAll: () => void
   pauseInstance: (instanceId: string, pausedAt?: number) => void
@@ -350,8 +330,6 @@ export interface TorchTrackerController {
 export interface TorchTrackerHookResult {
   state: TorchTrackerState
   controller: TorchTrackerController
-  nextExpiration: ReturnType<typeof selectNextExpiration>
-  brightestRadius: ReturnType<typeof selectBrightestRadius>
   centralTimer: ReturnType<typeof selectCentralTimer>
 }
 
@@ -382,9 +360,6 @@ export const useTorchTrackerState = (
     removeInstance(instanceId) {
       dispatch({ type: 'active/remove', payload: { instanceId } })
     },
-    expireInstance(instanceId, expiredAt = Date.now()) {
-      dispatch({ type: 'active/expire', payload: { instanceId, expiredAt } })
-    },
     resetInstance(instanceId) {
       dispatch({ type: 'active/reset', payload: { instanceId } })
     },
@@ -411,23 +386,19 @@ export const useTorchTrackerState = (
     },
   }), [catalogIndex])
 
-  const nextExpiration = useMemo(() => selectNextExpiration(state), [state])
-  const brightestRadius = useMemo(() => selectBrightestRadius(state), [state])
   const centralTimer = useMemo(() => selectCentralTimer(state), [state])
 
-  return { state, controller, nextExpiration, brightestRadius, centralTimer }
+  return { state, controller, centralTimer }
 }
 
 export const useTorchTrackerSettings = (state: TorchTrackerState) => {
   const settings = selectSettings(state)
   const autoAdvance = selectAutoAdvance(state)
-  const nextExpiration = selectNextExpiration(state)
   return useMemo(
     () => ({
       settings,
       autoAdvance,
-      nextExpiration,
     }),
-    [settings, autoAdvance, nextExpiration],
+    [settings, autoAdvance],
   )
 }

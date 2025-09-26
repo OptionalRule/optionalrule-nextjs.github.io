@@ -18,8 +18,7 @@ describe('catalog utilities', () => {
     const cloned = cloneCatalogEntry(original)
 
     expect(cloned).not.toBe(original)
-    expect(cloned.radius).not.toBe(original.radius)
-    expect(cloned.radius).toEqual(original.radius)
+    expect(cloned.brightRadius).toEqual(original.brightRadius)
 
     expect(cloned.tags).toEqual(original.tags)
     if (cloned.tags) {
@@ -32,14 +31,13 @@ describe('catalog utilities', () => {
       ...getSampleEntry(),
       baseDurationMinutes: 0,
       turnLengthMinutes: 0,
-      radius: { bright: -5, dim: 0 },
+      brightRadius: -5,
       description: '  Light with extra whitespace.  ',
     })
 
     expect(entry.baseDurationMinutes).toBe(DEFAULT_TURN_MINUTES)
     expect(entry.turnLengthMinutes).toBe(DEFAULT_TURN_MINUTES)
-    expect(entry.radius.bright).toBeGreaterThanOrEqual(0)
-    expect(entry.radius.dim).toBeGreaterThanOrEqual(entry.radius.bright)
+    expect(entry.brightRadius).toBeGreaterThanOrEqual(0)
     expect(entry.description).toBe('Light with extra whitespace.')
   })
 
@@ -55,22 +53,20 @@ describe('catalog utilities', () => {
     expect(active.catalogId).toBe(catalogEntry.id)
     expect(active.label).toBe('Front rank torch')
     expect(active.totalSeconds).toBe(3600)
-    expect(active.totalRounds).toBe(6)
     expect(active.remainingSeconds).toBe(active.totalSeconds)
-    expect(active.remainingRounds).toBe(active.totalRounds)
     expect(active.status).toBe('active')
     expect(active.isPaused).toBe(false)
     expect(active.isAffectingVisibility).toBe(true)
   })
 
-  it('marks new instances as expired when remainingSeconds start at zero', () => {
+  it('allows explicit zero remaining seconds without pausing the instance', () => {
     const catalogEntry = getSampleEntry()
     const active = createActiveSourceFromCatalog(catalogEntry, {
       remainingSeconds: 0,
     })
 
-    expect(active.status).toBe('expired')
-    expect(active.remainingRounds).toBe(0)
+    expect(active.status).toBe('active')
+    expect(active.remainingSeconds).toBe(0)
     expect(active.isPaused).toBe(false)
   })
 
@@ -81,7 +77,7 @@ describe('catalog utilities', () => {
       name: '',
       baseDurationMinutes: 0,
       turnLengthMinutes: 0,
-      radius: { bright: 20, dim: 10 },
+      brightRadius: -10,
       icon: '',
       color: '',
     }

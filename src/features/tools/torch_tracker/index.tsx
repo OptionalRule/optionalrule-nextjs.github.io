@@ -2,28 +2,19 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react'
 
-import { lightSourceCatalog, DEFAULT_TURN_MINUTES } from './data/lightSources'
+import { lightSourceCatalog } from './data/lightSources'
 import { useTorchTrackerState } from './hooks/useTorchTrackerState'
 import { useGameClock } from './hooks/useGameClock'
-import {
-  CatalogPanel,
-  ActiveLightCard,
-  ExpiredTray,
-  TorchTrackerHeader,
-  TorchTrackerLayout,
-} from './components'
+import { CatalogPanel, ActiveLightCard, TorchTrackerHeader, TorchTrackerLayout } from './components'
 import type { ActiveLightSource, TorchCatalogEntry } from './types'
-import { formatSourceSummary } from './utils/accessibility'
 import './styles.css'
-
-const ROUND_SECONDS = DEFAULT_TURN_MINUTES * 60
 
 export interface TorchTrackerProps {
   className?: string
 }
 
 export default function TorchTracker({ className }: TorchTrackerProps) {
-  const { state, controller, nextExpiration, brightestRadius, centralTimer } = useTorchTrackerState(lightSourceCatalog)
+  const { state, controller, centralTimer } = useTorchTrackerState(lightSourceCatalog)
   const [selectedCatalogId, setSelectedCatalogId] = useState<string | null>(null)
   const centrallyPausedIdsRef = useRef<Set<string>>(new Set())
 
@@ -47,20 +38,6 @@ export default function TorchTracker({ className }: TorchTrackerProps) {
 
   const handleResume = useCallback(
     (source: ActiveLightSource) => controller.resumeInstance(source.instanceId),
-    [controller],
-  )
-
-  const handleAdvanceSingle = useCallback(
-    (source: ActiveLightSource) => {
-      controller.updateInstance(source.instanceId, {
-        remainingSeconds: Math.max(0, source.remainingSeconds - source.turnLengthMinutes * 60),
-      })
-    },
-    [controller],
-  )
-
-  const handleReset = useCallback(
-    (source: ActiveLightSource) => controller.resetInstance(source.instanceId),
     [controller],
   )
 
@@ -137,12 +114,10 @@ export default function TorchTracker({ className }: TorchTrackerProps) {
   const header = (
     <TorchTrackerHeader
       activeCount={state.active.length}
-      expiredCount={state.expired.length}
       isClockRunning={state.settings.isClockRunning}
       centralTimer={centralTimer}
       autoAdvance={state.settings.autoAdvance}
       onToggleClock={handleToggleClock}
-      onAdvanceRound={() => controller.tick(ROUND_SECONDS)}
       onResetAll={() => controller.resetAll()}
       onToggleAutoAdvance={(next) => controller.toggleAutoAdvance(next)}
       catalog={catalogBar}
@@ -163,8 +138,6 @@ export default function TorchTracker({ className }: TorchTrackerProps) {
             source={source}
             onPause={handlePause}
             onResume={handleResume}
-            onAdvanceRound={handleAdvanceSingle}
-            onReset={handleReset}
             onRemove={handleRemove}
             onToggleVisibility={handleToggleVisibility}
           />
@@ -173,38 +146,9 @@ export default function TorchTracker({ className }: TorchTrackerProps) {
     </section>
   )
 
-  const expiredSection = (
-    <ExpiredTray
-      sources={state.expired}
-      onRestore={(source) => controller.resetInstance(source.instanceId)}
-      onRemove={(source) => controller.removeInstance(source.instanceId)}
-    />
-  )
-
-  const nextExpirationSummary = nextExpiration ? formatSourceSummary(nextExpiration) : 'No active expiration pending'
-  const brightestSummary = brightestRadius ? `${brightestRadius.bright}/${brightestRadius.dim} ft` : 'No light radius'
-
-  const insights = (
-    <section aria-live="polite" className="rounded-2xl border border-[var(--border)] bg-[var(--surface-0)]/60 p-4 text-sm text-[var(--text-secondary)]">
-      <div className="flex flex-wrap items-center gap-4">
-        <span>Next expiration: {nextExpirationSummary}</span>
-        <span>Brightest radius: {brightestSummary}</span>
-      </div>
-    </section>
-  )
-
   return (
     <div className={`torch-tracker-surface ${className ?? ''}`}>
-      <TorchTrackerLayout
-        header={header}
-        activeList={
-          <div className="space-y-4">
-            {insights}
-            {activeSection}
-          </div>
-        }
-        expired={expiredSection}
-      />
+      <TorchTrackerLayout header={header} main={<div className="space-y-4">{activeSection}</div>} />
     </div>
   )
 }

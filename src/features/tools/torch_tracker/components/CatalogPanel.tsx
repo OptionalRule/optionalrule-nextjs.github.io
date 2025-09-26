@@ -14,7 +14,7 @@ export interface CatalogPanelProps {
 
 export function CatalogPanel({ entries, selectedId = null, disabledIds = [], onSelect, className }: CatalogPanelProps) {
   const sortedEntries = useMemo(() => {
-    return [...entries].sort((a, b) => a.name.localeCompare(b.name))
+    return [...entries].sort((a, b) => b.name.localeCompare(a.name))
   }, [entries])
 
   return (

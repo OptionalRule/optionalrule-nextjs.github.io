@@ -6,7 +6,6 @@ import { createActiveSourceFromCatalog } from '../lib/catalog'
 import { CatalogButton } from '../components/CatalogButton'
 import { CatalogPanel } from '../components/CatalogPanel'
 import { ActiveLightCard } from '../components/ActiveLightCard'
-import { ExpiredTray } from '../components/ExpiredTray'
 import { TorchTrackerHeader } from '../components/TorchTrackerHeader'
 import type { ActiveLightSource } from '../types'
 import type { CentralTimerSnapshot } from '../types'
@@ -45,11 +44,9 @@ describe('CatalogPanel', () => {
 })
 
 describe('ActiveLightCard', () => {
-  it('fires pause, advance, reset, and remove callbacks', () => {
+  it('fires pause, resume, and remove callbacks', () => {
     const onPause = vi.fn()
     const onResume = vi.fn()
-    const onAdvance = vi.fn()
-    const onReset = vi.fn()
     const onRemove = vi.fn()
 
     render(
@@ -57,8 +54,6 @@ describe('ActiveLightCard', () => {
         source={buildActive()}
         onPause={onPause}
         onResume={onResume}
-        onAdvanceRound={onAdvance}
-        onReset={onReset}
         onRemove={onRemove}
       />,
     )
@@ -66,12 +61,6 @@ describe('ActiveLightCard', () => {
     expect(screen.getByText(/time active/i)).toBeInTheDocument()
     fireEvent.click(screen.getByRole('button', { name: /pause/i }))
     expect(onPause).toHaveBeenCalled()
-
-    fireEvent.click(screen.getByRole('button', { name: /advance round/i }))
-    expect(onAdvance).toHaveBeenCalled()
-
-    fireEvent.click(screen.getByRole('button', { name: /restore defaults/i }))
-    expect(onReset).toHaveBeenCalled()
 
     fireEvent.click(screen.getByRole('button', { name: /remove/i }))
     expect(onRemove).toHaveBeenCalled()
@@ -87,8 +76,6 @@ describe('ActiveLightCard', () => {
         source={pausedSource}
         onPause={vi.fn()}
         onResume={onResume}
-        onAdvanceRound={vi.fn()}
-        onReset={vi.fn()}
         onRemove={vi.fn()}
         onToggleVisibility={onToggleVisibility}
       />,
@@ -102,31 +89,9 @@ describe('ActiveLightCard', () => {
   })
 })
 
-describe('ExpiredTray', () => {
-  it('renders empty state message when no sources provided', () => {
-    render(<ExpiredTray sources={[]} />)
-    expect(screen.getByText(/no expired lights/i)).toBeInTheDocument()
-  })
-
-  it('calls restore handler for expired entries', () => {
-    const onRestore = vi.fn()
-    const expiredSource = buildActive({
-      instanceId: 'expired-1',
-      status: 'expired',
-      remainingSeconds: 0,
-      remainingRounds: 0,
-    })
-
-    render(<ExpiredTray sources={[expiredSource]} onRestore={onRestore} />)
-    fireEvent.click(screen.getByRole('button', { name: /restore/i }))
-    expect(onRestore).toHaveBeenCalledWith(expiredSource)
-  })
-})
-
 describe('TorchTrackerHeader', () => {
   it('exposes clock and auto advance controls', () => {
     const toggleClock = vi.fn()
-    const advanceRound = vi.fn()
     const resetAll = vi.fn()
     const toggleAuto = vi.fn()
     const centralTimer: CentralTimerSnapshot = {
@@ -139,12 +104,10 @@ describe('TorchTrackerHeader', () => {
     render(
       <TorchTrackerHeader
         activeCount={2}
-        expiredCount={1}
         isClockRunning={false}
         centralTimer={centralTimer}
         autoAdvance={true}
         onToggleClock={toggleClock}
-        onAdvanceRound={advanceRound}
         onResetAll={resetAll}
         onToggleAutoAdvance={toggleAuto}
         catalog={<div>catalog</div>}
@@ -157,9 +120,6 @@ describe('TorchTrackerHeader', () => {
 
     fireEvent.click(screen.getByRole('button', { name: /start clock/i }))
     expect(toggleClock).toHaveBeenCalledWith(true)
-
-    fireEvent.click(screen.getByRole('button', { name: /advance round/i }))
-    expect(advanceRound).toHaveBeenCalled()
 
     fireEvent.click(screen.getByRole('button', { name: /reset all/i }))
     expect(resetAll).toHaveBeenCalled()

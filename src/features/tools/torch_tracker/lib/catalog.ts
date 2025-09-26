@@ -1,4 +1,4 @@
-import { ActiveLightSource, LightInstanceStatus, LightRadius, TorchCatalogEntry } from '../types'
+import { ActiveLightSource, LightInstanceStatus, TorchCatalogEntry } from '../types'
 import { DEFAULT_TURN_MINUTES } from '../data/lightSources'
 
 export interface CatalogValidationIssue {
@@ -13,23 +13,10 @@ export interface CatalogValidationReport {
   warnings: CatalogValidationIssue[]
 }
 
-const DEFAULT_LIGHT_RADIUS: LightRadius = { bright: 20, dim: 40 }
-
-const ensureRadius = (radius?: LightRadius): LightRadius => {
-  const brightValue = radius?.bright
-  const bright = Number.isFinite(brightValue)
-    ? Math.max(0, Number(brightValue))
-    : DEFAULT_LIGHT_RADIUS.bright
-  const dimValue = radius?.dim
-  const dimRaw = Number.isFinite(dimValue)
-    ? Math.max(0, Number(dimValue))
-    : DEFAULT_LIGHT_RADIUS.dim
-  const dim = Math.max(bright, dimRaw)
-  return { bright, dim }
-}
-
 export const ensureCatalogEntryDefaults = (entry: TorchCatalogEntry): TorchCatalogEntry => {
-  const normalizedRadius = ensureRadius(entry.radius)
+  const brightRadius = Number.isFinite(entry.brightRadius)
+    ? Math.max(0, Number(entry.brightRadius))
+    : 20
   const baseDuration = entry.baseDurationMinutes > 0 ? entry.baseDurationMinutes : DEFAULT_TURN_MINUTES
   const turnLength = entry.turnLengthMinutes > 0 ? entry.turnLengthMinutes : DEFAULT_TURN_MINUTES
 
@@ -37,7 +24,7 @@ export const ensureCatalogEntryDefaults = (entry: TorchCatalogEntry): TorchCatal
     ...entry,
     baseDurationMinutes: baseDuration,
     turnLengthMinutes: turnLength,
-    radius: normalizedRadius,
+    brightRadius,
     description: entry.description?.trim() ?? '',
     tags: entry.tags ? [...entry.tags] : undefined,
   }
@@ -47,7 +34,6 @@ export const cloneCatalogEntry = (entry: TorchCatalogEntry): TorchCatalogEntry =
   const normalized = ensureCatalogEntryDefaults(entry)
   return {
     ...normalized,
-    radius: { ...normalized.radius },
     tags: normalized.tags ? [...normalized.tags] : undefined,
   }
 }
@@ -71,11 +57,6 @@ export const findCatalogEntry = (
   return catalog.find((entry) => entry.id === id)
 }
 
-const roundsFromMinutes = (durationMinutes: number, turnLengthMinutes: number) => {
-  if (turnLengthMinutes <= 0) return 0
-  return Math.max(0, Math.ceil(durationMinutes / turnLengthMinutes))
-}
-
 const secondsFromMinutes = (minutes: number) => Math.max(0, Math.round(minutes * 60))
 
 export interface CreateActiveSourceOptions {
@@ -96,16 +77,12 @@ export const createActiveSourceFromCatalog = (
   const normalized = cloneCatalogEntry(entry)
   const createdAt = options.createdAt ?? Date.now()
   const baseSeconds = secondsFromMinutes(normalized.baseDurationMinutes)
-  const turnSeconds = secondsFromMinutes(normalized.turnLengthMinutes)
-  const totalRounds = roundsFromMinutes(normalized.baseDurationMinutes, normalized.turnLengthMinutes)
 
   const remainingSeconds = Math.max(
     0,
     Math.min(baseSeconds, options.remainingSeconds ?? baseSeconds),
   )
-  const remainingRounds = turnSeconds > 0 ? Math.max(0, Math.ceil(remainingSeconds / turnSeconds)) : 0
-  const status: LightInstanceStatus = options.status
-    ?? (remainingSeconds <= 0 ? 'expired' : options.isPaused ? 'paused' : 'active')
+  const status: LightInstanceStatus = options.status ?? (options.isPaused ? 'paused' : 'active')
   const isPaused = options.isPaused ?? status === 'paused'
 
   return {
@@ -117,9 +94,7 @@ export const createActiveSourceFromCatalog = (
     totalSeconds: baseSeconds,
     remainingSeconds,
     elapsedSeconds: baseSeconds - remainingSeconds,
-    totalRounds,
-    remainingRounds,
-    radius: { ...normalized.radius },
+    brightRadius: normalized.brightRadius,
     icon: normalized.icon,
     color: normalized.color,
     description: normalized.description,
@@ -162,10 +137,6 @@ export const validateCatalogEntry = (entry: TorchCatalogEntry): CatalogValidatio
   }
   if (entry.turnLengthMinutes <= 0) {
     pushIssue('error', 'turnLengthMinutes', 'Turn length must be a positive number of minutes.')
-  }
-  const radius = ensureRadius(entry.radius)
-  if (radius.dim < radius.bright) {
-    pushIssue('error', 'radius', 'Dim radius must be greater than or equal to bright radius.')
   }
   if (!entry.icon.trim()) {
     pushIssue('warning', 'icon', 'Icon is empty; consider providing an emoji or asset path.')

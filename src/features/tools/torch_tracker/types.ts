@@ -3,11 +3,6 @@
 export type TorchSourceType = 'torch' | 'lantern' | 'spell' | 'fire'
 export type TorchCatalogCategory = 'mundane' | 'magical' | 'environmental'
 
-export interface LightRadius {
-  bright: number
-  dim: number
-}
-
 export interface TorchCatalogEntry {
   id: string
   name: string
@@ -15,7 +10,7 @@ export interface TorchCatalogEntry {
   category: TorchCatalogCategory
   baseDurationMinutes: number
   turnLengthMinutes: number
-  radius: LightRadius
+  brightRadius: number
   icon: string
   color: string
   description: string
@@ -24,7 +19,7 @@ export interface TorchCatalogEntry {
   tags?: string[]
 }
 
-export type LightInstanceStatus = 'active' | 'paused' | 'expired'
+export type LightInstanceStatus = 'active' | 'paused'
 
 export interface ActiveLightSource {
   instanceId: string
@@ -34,11 +29,9 @@ export interface ActiveLightSource {
   turnLengthMinutes: number
   totalSeconds: number
   remainingSeconds: number
-  totalRounds: number
-  remainingRounds: number
   /** Total elapsed burn time in seconds; derived from totalSeconds - remainingSeconds */
-  elapsedSeconds?: number
-  radius: LightRadius
+  elapsedSeconds: number
+  brightRadius: number
   icon: string
   color: string
   description: string
@@ -64,8 +57,8 @@ export interface TorchTrackerSettings {
 export interface TorchTrackerState {
   catalog: TorchCatalogEntry[]
   active: ActiveLightSource[]
-  expired: ActiveLightSource[]
   settings: TorchTrackerSettings
+  centralTimer: CentralTimerSnapshot
 }
 
 export interface CentralTimerSnapshot {
@@ -81,7 +74,6 @@ export type TorchTrackerActionType =
   | 'active/add'
   | 'active/update'
   | 'active/remove'
-  | 'active/expire'
   | 'active/reset'
   | 'active/pause'
   | 'active/resume'
@@ -101,7 +93,6 @@ export type TorchTrackerReducerAction =
   | TorchTrackerBaseAction<'active/add', ActiveLightSource>
   | TorchTrackerBaseAction<'active/update', Partial<ActiveLightSource> & { instanceId: string }>
   | TorchTrackerBaseAction<'active/remove', { instanceId: string }>
-  | TorchTrackerBaseAction<'active/expire', { instanceId: string; expiredAt: number }>
   | TorchTrackerBaseAction<'active/reset', { instanceId: string } | { scope: 'all' }>
   | TorchTrackerBaseAction<'active/pause', { instanceId: string; pausedAt: number }>
   | TorchTrackerBaseAction<'active/resume', { instanceId: string; resumedAt: number }>
@@ -115,11 +106,8 @@ export type TorchTrackerSelector<TResult> = (state: TorchTrackerState) => TResul
 export interface TorchTrackerSelectors {
   selectCatalog: TorchTrackerSelector<TorchCatalogEntry[]>
   selectActive: TorchTrackerSelector<ActiveLightSource[]>
-  selectExpired: TorchTrackerSelector<ActiveLightSource[]>
   selectSettings: TorchTrackerSelector<TorchTrackerSettings>
   selectIsClockRunning: TorchTrackerSelector<boolean>
   selectAutoAdvance: TorchTrackerSelector<boolean>
-  selectNextExpiration: TorchTrackerSelector<ActiveLightSource | null>
-  selectBrightestRadius: TorchTrackerSelector<LightRadius | null>
   selectCentralTimer: TorchTrackerSelector<CentralTimerSnapshot>
 }

@@ -7,8 +7,6 @@ export interface ActiveLightCardProps {
   source: ActiveLightSource
   onPause: (source: ActiveLightSource) => void
   onResume: (source: ActiveLightSource) => void
-  onAdvanceRound: (source: ActiveLightSource) => void
-  onReset: (source: ActiveLightSource) => void
   onRemove: (source: ActiveLightSource) => void
   onToggleVisibility?: (source: ActiveLightSource) => void
   className?: string
@@ -18,35 +16,23 @@ export function ActiveLightCard({
   source,
   onPause,
   onResume,
-  onAdvanceRound,
-  onReset,
   onRemove,
   onToggleVisibility,
   className,
 }: ActiveLightCardProps) {
   const isPaused = source.status === 'paused'
-  const isExpired = source.status === 'expired'
-  const remainingPercent =
-    source.totalSeconds === 0 ? 0 : Math.max(0, Math.min(100, Math.round((source.remainingSeconds / source.totalSeconds) * 100)))
-  const statusLabel = isExpired ? 'Expired' : isPaused ? 'Inactive' : 'Active'
-  const elapsedSeconds =
-    typeof source.elapsedSeconds === 'number'
-      ? source.elapsedSeconds
-      : Math.max(0, source.totalSeconds - source.remainingSeconds)
-  const timeActiveLabel = `${formatSecondsAsClock(elapsedSeconds)} / ${formatSecondsAsClock(source.totalSeconds)}`
-  const timeRemainingLabel = `${formatSecondsAsClock(source.remainingSeconds)} (${source.remainingRounds} rounds)`
+  const statusLabel = isPaused ? 'Paused' : 'Active'
+  const elapsedSeconds = source.elapsedSeconds
+  const timeActiveLabel = formatSecondsAsClock(elapsedSeconds)
 
   const handlePauseResume = () => {
-    if (isExpired) return
     if (isPaused) onResume(source)
     else onPause(source)
   }
 
   return (
     <article
-      className={`flex flex-col gap-4 rounded-2xl border border-[var(--border)] bg-[var(--surface-0)]/75 p-5 shadow-sm transition ${
-        isExpired ? 'opacity-70' : 'hover:border-[var(--accent)] hover:shadow-md'
-      } ${className ?? ''}`.trim()}
+      className={`flex flex-col gap-4 rounded-2xl border border-[var(--border)] bg-[var(--surface-0)]/75 p-5 shadow-sm transition hover:border-[var(--accent)] hover:shadow-md ${className ?? ''}`.trim()}
       aria-label={`${source.label} light source card`}
     >
       <header className="flex items-start justify-between gap-3">
@@ -64,12 +50,10 @@ export function ActiveLightCard({
         <div className="flex items-center gap-2">
           <span className="inline-flex items-center gap-1 rounded-full border border-[var(--surface-3)] bg-[var(--surface-2)] px-2 py-0.5 text-xs text-[var(--text-secondary)]">
             <span className="h-2 w-2 rounded-full" style={{ backgroundColor: source.color }} aria-hidden="true" />
-            <span>{source.radius.bright}/{source.radius.dim} ft</span>
+            <span>{source.brightRadius} ft</span>
           </span>
           <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${
-            isExpired
-              ? 'bg-[color-mix(in_oklab,var(--destructive)_18%,transparent)] text-[var(--destructive)]'
-              : isPaused
+            isPaused
               ? 'bg-[color-mix(in_oklab,var(--warning)_18%,transparent)] text-[var(--warning)]'
               : 'bg-[color-mix(in_oklab,var(--accent)_15%,transparent)] text-[var(--accent)]'
           }`}
@@ -83,18 +67,6 @@ export function ActiveLightCard({
         <div className="flex items-center justify-between text-sm text-[var(--text-secondary)]">
           <span>Time active</span>
           <span aria-live="polite">{timeActiveLabel}</span>
-        </div>
-        <div className="flex items-center justify-between text-sm text-[var(--text-secondary)]">
-          <span>Time remaining</span>
-          <span aria-live="polite">{timeRemainingLabel}</span>
-        </div>
-        <div className="relative h-2 overflow-hidden rounded-full bg-[var(--surface-2)]">
-          <span
-            className="absolute left-0 top-0 h-full rounded-full bg-[var(--accent)] transition-[width]"
-            style={{ width: `${remainingPercent}%` }}
-            aria-hidden="true"
-          />
-          <span className="sr-only">{remainingPercent}% of total duration remaining</span>
         </div>
       </div>
 
@@ -110,24 +82,8 @@ export function ActiveLightCard({
           type="button"
           className="inline-flex items-center rounded-md border border-[var(--border)] bg-[var(--surface-1)] px-3 py-1.5 text-sm font-medium text-[var(--text-primary)] transition hover:border-[var(--accent)] hover:text-[var(--accent)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--focus-ring)]"
           onClick={handlePauseResume}
-          disabled={isExpired}
         >
           {isPaused ? 'Resume' : 'Pause'}
-        </button>
-        <button
-          type="button"
-          className="inline-flex items-center rounded-md border border-[var(--border)] bg-[var(--surface-1)] px-3 py-1.5 text-sm text-[var(--text-primary)] transition hover:border-[var(--accent)] hover:text-[var(--accent)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--focus-ring)]"
-          onClick={() => onAdvanceRound(source)}
-          disabled={isExpired}
-        >
-          Advance Round
-        </button>
-        <button
-          type="button"
-          className="inline-flex items-center rounded-md border border-[var(--border)] bg-[var(--surface-1)] px-3 py-1.5 text-sm text-[var(--text-primary)] transition hover:border-[var(--accent)] hover:text-[var(--accent)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--focus-ring)]"
-          onClick={() => onReset(source)}
-        >
-          Restore Defaults
         </button>
         <button
           type="button"

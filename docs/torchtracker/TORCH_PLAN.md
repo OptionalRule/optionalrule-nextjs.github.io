@@ -59,7 +59,7 @@
    - The Catalog section should be moved into the header as a bar to save space.  We want the main content of the page to be the light soruce cards. 
    - The Header buttonss should use lucide-react icons instead of text and the text should appear as mouseover help text.  Start Clock should use circle-start, Pause Clock should use circle-pause, Advance Round use skip-forward, Reset All use timer-reset.
 
-13. **Removed Unused Features & Data**
+13. **Removed Unused Features & Data** *(Status: Complete)*
    - When a light source is Removed either manually or by expiring, just remove it entirely from the tracker.  We do not need the Expired Sources tracking functionality. Also remove the expired indicator from the header.
    - Light source cast no Dim light so we want to remove that from the lightsource type, and all relevant data entries. We also want to dremove that from the UI display so only the bright distance shows as the range.  This includes the Brightness Radius test display.
    - Rounds are not a concept in 60 minute timers.  Remove the features that track or advance rounds from the app including in the header, in th expiration explaination text, and from each light source card.  

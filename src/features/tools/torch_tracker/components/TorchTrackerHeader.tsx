@@ -1,19 +1,17 @@
 'use client'
 
 import type { ReactNode } from 'react'
-import { CirclePause, CirclePlay as CircleStart, SkipForward, TimerReset } from 'lucide-react'
+import { CirclePause, CirclePlay as CircleStart, TimerReset } from 'lucide-react'
 
 import type { CentralTimerSnapshot } from '../types'
 import { formatSecondsAsClock } from '../utils/time'
 
 export interface TorchTrackerHeaderProps {
   activeCount: number
-  expiredCount: number
   isClockRunning: boolean
   centralTimer: CentralTimerSnapshot
   autoAdvance: boolean
   onToggleClock: (nextRunning: boolean) => void
-  onAdvanceRound: () => void
   onResetAll: () => void
   onToggleAutoAdvance: (nextValue: boolean) => void
   onOpenHelp?: () => void
@@ -23,12 +21,10 @@ export interface TorchTrackerHeaderProps {
 
 export function TorchTrackerHeader({
   activeCount,
-  expiredCount,
   isClockRunning,
   centralTimer,
   autoAdvance,
   onToggleClock,
-  onAdvanceRound,
   onResetAll,
   onToggleAutoAdvance,
   onOpenHelp,
@@ -64,10 +60,6 @@ export function TorchTrackerHeader({
           <span className="inline-flex items-center gap-1 rounded-full border border-[var(--surface-3)] bg-[var(--surface-1)] px-2 py-1">
             <span className="h-2 w-2 rounded-full bg-[var(--accent)]" aria-hidden="true" />
             <span>{activeCount} active</span>
-          </span>
-          <span className="inline-flex items-center gap-1 rounded-full border border-[var(--surface-3)] bg-[var(--surface-1)] px-2 py-1">
-            <span className="h-2 w-2 rounded-full bg-[var(--text-tertiary)]" aria-hidden="true" />
-            <span>{expiredCount} expired</span>
           </span>
         </div>
       </div>
@@ -114,15 +106,6 @@ export function TorchTrackerHeader({
           ) : (
             <CircleStart className="h-5 w-5" aria-hidden="true" />
           )}
-        </button>
-        <button
-          type="button"
-          className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-[var(--border)] bg-[var(--surface-1)] text-[var(--text-primary)] transition hover:border-[var(--accent)] hover:text-[var(--accent)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--focus-ring)]"
-          onClick={onAdvanceRound}
-          aria-label="Advance Round"
-          title="Advance Round"
-        >
-          <SkipForward className="h-5 w-5" aria-hidden="true" />
         </button>
         <button
           type="button"
