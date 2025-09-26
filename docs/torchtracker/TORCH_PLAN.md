@@ -58,3 +58,13 @@
    - The Catalog section should be simplified.  Give it an ID of catalog so it can be differentiated. It should contain only only the label 'Add:' Followed by buttons for each type of light source by title.  Other details abouit time burning, short description, and notes should appear as a mouseover popup.
    - The Catalog section should be moved into the header as a bar to save space.  We want the main content of the page to be the light soruce cards. 
    - The Header buttonss should use lucide-react icons instead of text and the text should appear as mouseover help text.  Start Clock should use circle-start, Pause Clock should use circle-pause, Advance Round use skip-forward, Reset All use timer-reset.
+
+13. **Removed Unused Features & Data**
+   - When a light source is Removed either manually or by expiring, just remove it entirely from the tracker.  We do not need the Expired Sources tracking functionality. Also remove the expired indicator from the header.
+   - Light source cast no Dim light so we want to remove that from the lightsource type, and all relevant data entries. We also want to dremove that from the UI display so only the bright distance shows as the range.  This includes the Brightness Radius test display.
+   - Rounds are not a concept in 60 minute timers.  Remove the features that track or advance rounds from the app including in the header, in th expiration explaination text, and from each light source card.  
+   - Restore Defaults button on each light card should be removed. We do not need this on each card, it should only be controlled from the header Reset All button.
+   - The 'Time active' line in the light source card should only show the time elapsed and not the duration.  
+   - The 'Time remaining' display in each light source card should be removed including the values and progress bar.
+   - The Next expiration bar is not needed and should be removed. 
+   - The central timer should start when the first light source is added and not reset when a new light source is added.
