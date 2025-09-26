@@ -54,7 +54,7 @@
    - When an individual lightsource reaches it's total time active, it becomes inactive and moved to expended.
    - Pausing the central timer extinguishes all light sources.
 
-12. **Consolodated Header & Catalog**
+12. **Consolodated Header & Catalog** *(Status: Complete)*
    - The Catalog section should be simplified.  Give it an ID of catalog so it can be differentiated. It should contain only only the label 'Add:' Followed by buttons for each type of light source by title.  Other details abouit time burning, short description, and notes should appear as a mouseover popup.
    - The Catalog section should be moved into the header as a bar to save space.  We want the main content of the page to be the light soruce cards. 
    - The Header buttonss should use lucide-react icons instead of text and the text should appear as mouseover help text.  Start Clock should use circle-start, Pause Clock should use circle-pause, Advance Round use skip-forward, Reset All use timer-reset.

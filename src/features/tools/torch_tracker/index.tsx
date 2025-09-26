@@ -125,6 +125,15 @@ export default function TorchTracker({ className }: TorchTrackerProps) {
     onTick: (deltaSeconds, now) => controller.tick(deltaSeconds, now),
   })
 
+  const catalogBar = (
+    <CatalogPanel
+      entries={state.catalog}
+      selectedId={selectedCatalogId}
+      onSelect={addEntry}
+      className="w-full"
+    />
+  )
+
   const header = (
     <TorchTrackerHeader
       activeCount={state.active.length}
@@ -136,14 +145,7 @@ export default function TorchTracker({ className }: TorchTrackerProps) {
       onAdvanceRound={() => controller.tick(ROUND_SECONDS)}
       onResetAll={() => controller.resetAll()}
       onToggleAutoAdvance={(next) => controller.toggleAutoAdvance(next)}
-    />
-  )
-
-  const catalog = (
-    <CatalogPanel
-      entries={state.catalog}
-      selectedId={selectedCatalogId}
-      onSelect={addEntry}
+      catalog={catalogBar}
     />
   )
 
@@ -195,7 +197,6 @@ export default function TorchTracker({ className }: TorchTrackerProps) {
     <div className={`torch-tracker-surface ${className ?? ''}`}>
       <TorchTrackerLayout
         header={header}
-        catalog={catalog}
         activeList={
           <div className="space-y-4">
             {insights}

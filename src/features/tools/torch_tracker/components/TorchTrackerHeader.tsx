@@ -1,5 +1,8 @@
 'use client'
 
+import type { ReactNode } from 'react'
+import { CirclePause, CirclePlay as CircleStart, SkipForward, TimerReset } from 'lucide-react'
+
 import type { CentralTimerSnapshot } from '../types'
 import { formatSecondsAsClock } from '../utils/time'
 
@@ -14,6 +17,7 @@ export interface TorchTrackerHeaderProps {
   onResetAll: () => void
   onToggleAutoAdvance: (nextValue: boolean) => void
   onOpenHelp?: () => void
+  catalog?: ReactNode
   className?: string
 }
 
@@ -28,6 +32,7 @@ export function TorchTrackerHeader({
   onResetAll,
   onToggleAutoAdvance,
   onOpenHelp,
+  catalog,
   className,
 }: TorchTrackerHeaderProps) {
   const timerIsActive = centralTimer.isInitialized && centralTimer.totalSeconds > 0
@@ -98,25 +103,35 @@ export function TorchTrackerHeader({
       <div className="flex flex-wrap items-center gap-3">
         <button
           type="button"
-          className="inline-flex items-center rounded-md border border-[var(--border)] bg-[var(--surface-1)] px-4 py-2 text-sm font-medium text-[var(--text-primary)] transition hover:border-[var(--accent)] hover:text-[var(--accent)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--focus-ring)]"
+          className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-[var(--border)] bg-[var(--surface-1)] text-[var(--text-primary)] transition hover:border-[var(--accent)] hover:text-[var(--accent)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--focus-ring)]"
           onClick={() => onToggleClock(!isClockRunning)}
           aria-pressed={isClockRunning}
+          aria-label={isClockRunning ? 'Pause Clock' : 'Start Clock'}
+          title={isClockRunning ? 'Pause Clock' : 'Start Clock'}
         >
-          {isClockRunning ? 'Pause Clock' : 'Start Clock'}
+          {isClockRunning ? (
+            <CirclePause className="h-5 w-5" aria-hidden="true" />
+          ) : (
+            <CircleStart className="h-5 w-5" aria-hidden="true" />
+          )}
         </button>
         <button
           type="button"
-          className="inline-flex items-center rounded-md border border-[var(--border)] bg-[var(--surface-1)] px-4 py-2 text-sm text-[var(--text-primary)] transition hover:border-[var(--accent)] hover:text-[var(--accent)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--focus-ring)]"
+          className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-[var(--border)] bg-[var(--surface-1)] text-[var(--text-primary)] transition hover:border-[var(--accent)] hover:text-[var(--accent)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--focus-ring)]"
           onClick={onAdvanceRound}
+          aria-label="Advance Round"
+          title="Advance Round"
         >
-          Advance Round
+          <SkipForward className="h-5 w-5" aria-hidden="true" />
         </button>
         <button
           type="button"
-          className="inline-flex items-center rounded-md border border-[var(--border)] bg-[var(--surface-1)] px-4 py-2 text-sm text-[var(--text-primary)] transition hover:border-[var(--accent)] hover:text-[var(--accent)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--focus-ring)]"
+          className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-[var(--border)] bg-[var(--surface-1)] text-[var(--text-primary)] transition hover:border-[var(--accent)] hover:text-[var(--accent)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--focus-ring)]"
           onClick={onResetAll}
+          aria-label="Reset All"
+          title="Reset All"
         >
-          Reset All
+          <TimerReset className="h-5 w-5" aria-hidden="true" />
         </button>
         <button
           type="button"
@@ -145,6 +160,7 @@ export function TorchTrackerHeader({
           </button>
         )}
       </div>
+      {catalog ? <div className="pt-1">{catalog}</div> : null}
     </header>
   )
 }

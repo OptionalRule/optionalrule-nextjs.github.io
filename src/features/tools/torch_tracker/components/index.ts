@@ -11,4 +11,3 @@ export type { ActiveLightCardProps } from './ActiveLightCard'
 export type { ExpiredTrayProps } from './ExpiredTray'
 export type { TorchTrackerHeaderProps } from './TorchTrackerHeader'
 export type { TorchTrackerLayoutProps } from './TorchTrackerLayout'
-

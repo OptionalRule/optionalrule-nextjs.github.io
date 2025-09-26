@@ -38,7 +38,7 @@ describe('CatalogPanel', () => {
     const handleSelect = vi.fn()
     render(<CatalogPanel entries={lightSourceCatalog} onSelect={handleSelect} />)
 
-    expect(screen.getByRole('region', { name: /catalog/i })).toBeInTheDocument()
+    expect(screen.getByRole('navigation', { name: /catalog/i })).toBeInTheDocument()
     fireEvent.click(screen.getByRole('button', { name: new RegExp(sampleEntry.name, 'i') }))
     expect(handleSelect).toHaveBeenCalled()
   })
@@ -147,6 +147,7 @@ describe('TorchTrackerHeader', () => {
         onAdvanceRound={advanceRound}
         onResetAll={resetAll}
         onToggleAutoAdvance={toggleAuto}
+        catalog={<div>catalog</div>}
       />,
     )
 
