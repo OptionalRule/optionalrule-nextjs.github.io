@@ -1,4 +1,23 @@
-# Shadowdark Torch Tracker - Development Plan
+# Torch Tracker - Development Plan
+
+Goal: Torch Tracker is a real-time light source management tool for TTRPG groups playing Shadowdark RPG. The app features a unified central timer that governs all active light sources, starting when the first light is added. Players can quickly add light sources (torch, lantern, spell, campfire) from a streamlined catalog in the header, with each source displaying its bright light radius and elapsed time. Individual light sources can be paused/resumed independently while tracking their total active time, and automatically expire when reaching their duration limit. The central timer controls the overall session - when paused, all lights are extinguished; when it reaches zero, all active lights expire and are removed. The interface emphasizes the active light source cards as the primary content, with icon-based controls in a compact header for starting/pausing the clock, and resetting all sources.
+
+For Product Requirements see `docs/torchtracker/TORCH_PRD.md`
+
+## Need Planning
+
+1. **Styling & Assets**
+   - Add dedicated CSS (if needed) under `src/features/tools/torch_tracker/styles.css` or inline Tailwind classes; ensure reduced-motion variants.
+   - Place icons/sounds in `public/tools/torch_tracker/` and document usage in README.*
+
+2. **Testing & QA Pass**
+   - Run `npm run lint`, `npm run test` (Vitest unit suite via `vitest.unit.config.ts`), and `npm run test:a11y` per the repository testing cadence.
+   - Execute manual QA: add/edit/remove lights, pause/resume, auto-advance toggle, expiration alert, navigation to/from other tools.
+   - Capture screenshots/GIFs for release notes.
+
+3. **Documentation & Launch Prep**
+    - Update `docs/torchtracker/README.md` (usage guide) and site changelog.
+    - Prepare release announcement content, ensure sitemap includes the new route, and verify static export (`npm run build`) succeeds with the tool enabled.
 
 ## Development Plan
 
@@ -31,19 +50,6 @@
 7. **Update Navigation & URLs** *(Status: Complete)*
    - Updated header and footer navigation to include `urlPaths.tool('torch_tracker')`, surfacing the feature alongside other tools.
    - Confirmed route helpers rely on `urlPaths.tool`, keeping canonical URLs consistent for sitemap/feed generation.
-
-8. **Styling & Assets**
-   - Add dedicated CSS (if needed) under `src/features/tools/torch_tracker/styles.css` or inline Tailwind classes; ensure reduced-motion variants.
-   - Place icons/sounds in `public/tools/torch_tracker/` and document usage in README.
-
-9. **Testing & QA Pass**
-   - Run `npm run lint`, `npm run test` (Vitest unit suite via `vitest.unit.config.ts`), and `npm run test:a11y` per the repository testing cadence.
-   - Execute manual QA: add/edit/remove lights, pause/resume, auto-advance toggle, expiration alert, navigation to/from other tools.
-   - Capture screenshots/GIFs for release notes.
-
-10. **Documentation & Launch Prep**
-    - Update `docs/torchtracker/README.md` (usage guide) and site changelog.
-    - Prepare release announcement content, ensure sitemap includes the new route, and verify static export (`npm run build`) succeeds with the tool enabled.
 
 11. **Central Timer & Small Changes** *(Status: Complete)*
    - The Header Title and link should remove mentions of Shadowrun and be called "Torch Tracker" instead.
