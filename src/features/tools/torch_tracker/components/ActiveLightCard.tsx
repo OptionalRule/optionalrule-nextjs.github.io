@@ -1,108 +1,137 @@
 'use client'
 
+import { useEffect, useMemo, useState } from 'react'
+import type { KeyboardEvent as ReactKeyboardEvent, MouseEvent as ReactMouseEvent } from 'react'
+
 import type { ActiveLightSource } from '../types'
 import { formatSecondsAsClock } from '../utils/time'
+import { getImageAlt, getImagePath, type LightImageStatus } from '../utils/images'
 
 export interface ActiveLightCardProps {
   source: ActiveLightSource
   onPause: (source: ActiveLightSource) => void
   onResume: (source: ActiveLightSource) => void
   onRemove: (source: ActiveLightSource) => void
-  onToggleVisibility?: (source: ActiveLightSource) => void
   className?: string
 }
 
-export function ActiveLightCard({
-  source,
-  onPause,
-  onResume,
-  onRemove,
-  onToggleVisibility,
-  className,
-}: ActiveLightCardProps) {
-  const isPaused = source.status === 'paused'
-  const statusLabel = isPaused ? 'Paused' : 'Active'
-  const elapsedSeconds = source.elapsedSeconds
-  const timeActiveLabel = formatSecondsAsClock(elapsedSeconds)
+type ImageState = 'ready' | 'fallback'
 
-  const handlePauseResume = () => {
-    if (isPaused) onResume(source)
-    else onPause(source)
+type CardFaceVariant = 'active' | 'inactive'
+
+const statusText: Record<CardFaceVariant, string> = {
+  active: 'Active',
+  inactive: 'Inactive',
+}
+
+export function ActiveLightCard({ source, onPause, onResume, onRemove, className }: ActiveLightCardProps) {
+  const isPaused = source.status === 'paused' || source.isPaused
+  const cardState: CardFaceVariant = isPaused ? 'inactive' : 'active'
+  const labelId = useMemo(() => `light-card-${source.instanceId}-label`, [source.instanceId])
+  const descriptionId = useMemo(() => `${labelId}-description`, [labelId])
+  const imageStatus: LightImageStatus = cardState
+  const timeActiveLabel = formatSecondsAsClock(source.elapsedSeconds)
+  const [imageState, setImageState] = useState<ImageState>('ready')
+  const [announcement, setAnnouncement] = useState('')
+
+  useEffect(() => {
+    setAnnouncement(`${source.label} ${statusText[cardState]}`)
+  }, [cardState, source.label])
+
+  const handleToggle = () => {
+    if (cardState === 'active') {
+      onPause(source)
+    } else {
+      onResume(source)
+    }
   }
+
+  const handleKeyDown = (event: ReactKeyboardEvent<HTMLElement>) => {
+    if (event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault()
+      handleToggle()
+    }
+  }
+
+  const handleRemove = (event: ReactMouseEvent<HTMLButtonElement>) => {
+    event.stopPropagation()
+    onRemove(source)
+  }
+
+  const handleImageError = () => {
+    setImageState('fallback')
+  }
+
+  const sharedFaceContent = (variant: CardFaceVariant) => (
+    <div className={`torch-card-face ${variant === 'active' ? 'torch-card-face--active' : 'torch-card-face--inactive'}`}>
+      {variant === 'active' && <div className="torch-card-glow" aria-hidden="true" />}
+      <div className="flex items-start justify-between gap-3">
+        <span id={labelId} className="torch-card-label">
+          {source.label}
+        </span>
+        <span className="torch-card-metric" aria-label={`Bright radius ${source.brightRadius} feet`}>
+          {source.brightRadius} ft
+        </span>
+      </div>
+      <div className="torch-card-image-shell" aria-hidden={variant !== cardState}>
+        {imageState === 'ready' ? (
+          <img
+            src={getImagePath(source.sourceType, variant)}
+            alt={variant === cardState ? getImageAlt(source.label, variant) : ''}
+            onError={handleImageError}
+          />
+        ) : (
+          <span
+            role={variant === cardState ? 'img' : undefined}
+            aria-label={variant === cardState ? getImageAlt(source.label, variant) : undefined}
+            className="text-5xl"
+          >
+            {source.icon || '🔥'}
+          </span>
+        )}
+      </div>
+      <div className="flex items-end justify-between">
+        <span className="torch-card-metric">{statusText[variant]}</span>
+        <span className="torch-card-timer" aria-live={variant === cardState ? 'polite' : undefined}>
+          {timeActiveLabel}
+        </span>
+      </div>
+    </div>
+  )
 
   return (
     <article
-      className={`flex flex-col gap-4 rounded-2xl border border-[var(--border)] bg-[var(--surface-0)]/75 p-5 shadow-sm transition hover:border-[var(--accent)] hover:shadow-md ${className ?? ''}`.trim()}
-      aria-label={`${source.label} light source card`}
+      className={`torch-card aspect-[5/7] w-full max-w-sm cursor-pointer select-none ${className ?? ''}`.trim()}
+      data-state={cardState}
+      data-image-state={imageState === 'fallback' ? 'fallback' : 'ready'}
+      role="button"
+      tabIndex={0}
+      aria-pressed={cardState === 'active'}
+      aria-labelledby={labelId}
+      aria-describedby={descriptionId}
+      onClick={handleToggle}
+      onKeyDown={handleKeyDown}
     >
-      <header className="flex items-start justify-between gap-3">
-        <div className="flex items-center gap-3">
-          <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-[color-mix(in_oklab,var(--accent)_18%,transparent)] text-xl">
-            {source.icon || '🔥'}
-          </span>
-          <div>
-            <h3 className="text-lg font-semibold leading-tight text-[var(--text-primary)]">{source.label}</h3>
-            <p className="text-xs uppercase tracking-wide text-[var(--text-tertiary)]">
-              {statusLabel} • {source.category}
-            </p>
-          </div>
-        </div>
-        <div className="flex items-center gap-2">
-          <span className="inline-flex items-center gap-1 rounded-full border border-[var(--surface-3)] bg-[var(--surface-2)] px-2 py-0.5 text-xs text-[var(--text-secondary)]">
-            <span className="h-2 w-2 rounded-full" style={{ backgroundColor: source.color }} aria-hidden="true" />
-            <span>{source.brightRadius} ft</span>
-          </span>
-          <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${
-            isPaused
-              ? 'bg-[color-mix(in_oklab,var(--warning)_18%,transparent)] text-[var(--warning)]'
-              : 'bg-[color-mix(in_oklab,var(--accent)_15%,transparent)] text-[var(--accent)]'
-          }`}
-          >
-            {statusLabel}
-          </span>
-        </div>
-      </header>
-
-      <div className="space-y-2">
-        <div className="flex items-center justify-between text-sm text-[var(--text-secondary)]">
-          <span>Time active</span>
-          <span aria-live="polite">{timeActiveLabel}</span>
-        </div>
+      <div className="sr-only" id={descriptionId}>
+        Press Space or Enter to toggle this light source. Remove button appears at the bottom of the card.
+      </div>
+      <div className="sr-only" aria-live="polite">
+        {announcement}
       </div>
 
-      {source.description && (
-        <p className="text-sm leading-5 text-[var(--text-secondary)]">{source.description}</p>
-      )}
-      {source.mishapNote && (
-        <p className="text-xs leading-5 text-[var(--text-tertiary)]">{source.mishapNote}</p>
-      )}
+      <div className="torch-card-inner">
+        {sharedFaceContent('active')}
+        {sharedFaceContent('inactive')}
+      </div>
 
-      <footer className="flex flex-wrap items-center gap-2 pt-2">
-        <button
-          type="button"
-          className="inline-flex items-center rounded-md border border-[var(--border)] bg-[var(--surface-1)] px-3 py-1.5 text-sm font-medium text-[var(--text-primary)] transition hover:border-[var(--accent)] hover:text-[var(--accent)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--focus-ring)]"
-          onClick={handlePauseResume}
-        >
-          {isPaused ? 'Resume' : 'Pause'}
-        </button>
-        <button
-          type="button"
-          className="inline-flex items-center rounded-md border border-transparent bg-[var(--destructive)] px-3 py-1.5 text-sm text-white transition hover:brightness-110 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-[var(--destructive)]"
-          onClick={() => onRemove(source)}
-        >
-          Remove
-        </button>
-        {onToggleVisibility && (
-          <button
-            type="button"
-            className="ml-auto inline-flex items-center rounded-md border border-[var(--border)] bg-[var(--surface-1)] px-3 py-1.5 text-sm text-[var(--text-secondary)] transition hover:border-[var(--accent)] hover:text-[var(--accent)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--focus-ring)]"
-            onClick={() => onToggleVisibility(source)}
-            aria-pressed={source.isAffectingVisibility}
-          >
-            {source.isAffectingVisibility ? 'Affects Visibility' : 'Lone Light'}
-          </button>
-        )}
-      </footer>
+      <button
+        type="button"
+        className="torch-card-remove"
+        onClick={handleRemove}
+        aria-label={`Remove ${source.label}`}
+      >
+        ×
+      </button>
     </article>
   )
 }

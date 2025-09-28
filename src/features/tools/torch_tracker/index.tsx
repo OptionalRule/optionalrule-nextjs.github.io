@@ -7,6 +7,7 @@ import { useTorchTrackerState } from './hooks/useTorchTrackerState'
 import { useGameClock } from './hooks/useGameClock'
 import { CatalogPanel, ActiveLightCard, TorchTrackerHeader, TorchTrackerLayout } from './components'
 import type { ActiveLightSource, TorchCatalogEntry } from './types'
+import { getAllImageVariants } from './utils/images'
 import './styles.css'
 
 export interface TorchTrackerProps {
@@ -43,14 +44,6 @@ export default function TorchTracker({ className }: TorchTrackerProps) {
 
   const handleRemove = useCallback(
     (source: ActiveLightSource) => controller.removeInstance(source.instanceId),
-    [controller],
-  )
-
-  const handleToggleVisibility = useCallback(
-    (source: ActiveLightSource) =>
-      controller.updateInstance(source.instanceId, {
-        isAffectingVisibility: !source.isAffectingVisibility,
-      }),
     [controller],
   )
 
@@ -102,6 +95,23 @@ export default function TorchTracker({ className }: TorchTrackerProps) {
     onTick: (deltaSeconds, now) => controller.tick(deltaSeconds, now),
   })
 
+  useEffect(() => {
+    if (typeof window === 'undefined') return
+    const preloadSources = getAllImageVariants()
+    const images: HTMLImageElement[] = []
+    preloadSources.forEach((src) => {
+      const img = new Image()
+      img.src = src
+      images.push(img)
+    })
+    return () => {
+      images.forEach((img) => {
+        img.onload = null
+        img.onerror = null
+      })
+    }
+  }, [])
+
   const catalogBar = (
     <CatalogPanel
       entries={state.catalog}
@@ -139,7 +149,6 @@ export default function TorchTracker({ className }: TorchTrackerProps) {
             onPause={handlePause}
             onResume={handleResume}
             onRemove={handleRemove}
-            onToggleVisibility={handleToggleVisibility}
           />
         ))}
       </div>

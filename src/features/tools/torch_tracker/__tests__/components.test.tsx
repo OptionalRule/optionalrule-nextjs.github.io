@@ -44,31 +44,27 @@ describe('CatalogPanel', () => {
 })
 
 describe('ActiveLightCard', () => {
-  it('fires pause, resume, and remove callbacks', () => {
+  it('toggles pause via click and reports pressed state', () => {
     const onPause = vi.fn()
     const onResume = vi.fn()
     const onRemove = vi.fn()
+    const source = buildActive()
 
     render(
-      <ActiveLightCard
-        source={buildActive()}
-        onPause={onPause}
-        onResume={onResume}
-        onRemove={onRemove}
-      />,
+      <ActiveLightCard source={source} onPause={onPause} onResume={onResume} onRemove={onRemove} />,
     )
 
-    expect(screen.getByText(/time active/i)).toBeInTheDocument()
-    fireEvent.click(screen.getByRole('button', { name: /pause/i }))
-    expect(onPause).toHaveBeenCalled()
+    const card = screen.getByRole('button', { name: source.label })
+    expect(card).toHaveAttribute('aria-pressed', 'true')
+    expect(card).toHaveAttribute('data-state', 'active')
 
-    fireEvent.click(screen.getByRole('button', { name: /remove/i }))
-    expect(onRemove).toHaveBeenCalled()
+    fireEvent.click(card)
+    expect(onPause).toHaveBeenCalledWith(source)
+    expect(onResume).not.toHaveBeenCalled()
   })
 
-  it('shows resume button and visibility control when paused and handler provided', () => {
+  it('resumes a paused light when triggering keyboard interaction', () => {
     const onResume = vi.fn()
-    const onToggleVisibility = vi.fn()
     const pausedSource = buildActive({ status: 'paused', isPaused: true })
 
     render(
@@ -77,15 +73,45 @@ describe('ActiveLightCard', () => {
         onPause={vi.fn()}
         onResume={onResume}
         onRemove={vi.fn()}
-        onToggleVisibility={onToggleVisibility}
       />,
     )
 
-    fireEvent.click(screen.getByRole('button', { name: /resume/i }))
-    expect(onResume).toHaveBeenCalledWith(pausedSource)
+    const card = screen.getByRole('button', { name: pausedSource.label })
+    expect(card).toHaveAttribute('aria-pressed', 'false')
+    expect(card).toHaveAttribute('data-state', 'inactive')
 
-    fireEvent.click(screen.getByRole('button', { name: /affects visibility|lone light/i }))
-    expect(onToggleVisibility).toHaveBeenCalledWith(pausedSource)
+    fireEvent.keyDown(card, { key: 'Enter' })
+    expect(onResume).toHaveBeenCalledWith(pausedSource)
+  })
+
+  it('exposes remove control without toggling the card state', () => {
+    const onPause = vi.fn()
+    const onRemove = vi.fn()
+    const source = buildActive()
+
+    render(
+      <ActiveLightCard source={source} onPause={onPause} onResume={vi.fn()} onRemove={onRemove} />,
+    )
+
+    const removeButton = screen.getByRole('button', { name: `Remove ${source.label}` })
+    fireEvent.click(removeButton)
+    expect(onRemove).toHaveBeenCalledWith(source)
+    expect(onPause).not.toHaveBeenCalled()
+  })
+
+  it('falls back to icon display when the image fails to load', () => {
+    const source = buildActive()
+
+    render(
+      <ActiveLightCard source={source} onPause={vi.fn()} onResume={vi.fn()} onRemove={vi.fn()} />,
+    )
+
+    const image = screen.getByAltText(`Lit ${source.label}`)
+    fireEvent.error(image)
+
+    const card = screen.getByRole('button', { name: source.label })
+    expect(card).toHaveAttribute('data-image-state', 'fallback')
+    expect(screen.getByRole('img', { name: `Lit ${source.label}` })).toBeInTheDocument()
   })
 })
 
