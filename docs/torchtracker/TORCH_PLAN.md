@@ -74,3 +74,9 @@ For Product Requirements see `docs/torchtracker/TORCH_PRD.md`
    - **Interaction & Timing Notes**: Clicking or pressing Space/Enter flips the card, resumes the light when reactivated, and restarts the central timer if no other sources are active. Remove actions delay briefly to allow the fade-out before dispatching state updates.
    - **Image Optimization**: Render center art with `next/image` for lint compliance while retaining icon fallback when assets fail to load. Asset preloading covers all active/inactive variants for smooth state changes.
    - **Regression Coverage**: Extend component tests to cover removal timing, hidden radius metrics on inactive faces, image fallback, and the new accessibility attributes introduced during implementation.
+
+15. **App Header Improvements**
+    1. Remove the span from the app header containing the count of active sources, the cards show the number.
+    2. Remove the Auto Advance functionality and toggle. The behavior should always be that the timer advances by default.
+    3. On mobile, the ADD buttons can be circular and contain only the symbol.
+    4. The timer display in the header should completely change.  Instead of a progress bar showing elapsed time, it should be a countdown timer showing remaining time.  Also, it only needs to show remaining time, do no show total or elapsed time.  The countdown timer should be a circle and not a bar, and the time remaining should display in the center of the circle.  The countdown timer should appear on the right side of the Header.
