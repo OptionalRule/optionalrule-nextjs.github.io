@@ -75,8 +75,15 @@ For Product Requirements see `docs/torchtracker/TORCH_PRD.md`
    - **Image Optimization**: Render center art with `next/image` for lint compliance while retaining icon fallback when assets fail to load. Asset preloading covers all active/inactive variants for smooth state changes.
    - **Regression Coverage**: Extend component tests to cover removal timing, hidden radius metrics on inactive faces, image fallback, and the new accessibility attributes introduced during implementation.
 
-15. **App Header Improvements**
-    1. Remove the span from the app header containing the count of active sources, the cards show the number.
-    2. Remove the Auto Advance functionality and toggle. The behavior should always be that the timer advances by default.
-    3. On mobile, the ADD buttons can be circular and contain only the symbol.
-    4. The timer display in the header should completely change.  Instead of a progress bar showing elapsed time, it should be a countdown timer showing remaining time.  Also, it only needs to show remaining time, do no show total or elapsed time.  The countdown timer should be a circle and not a bar, and the time remaining should display in the center of the circle.  The countdown timer should appear on the right side of the Header.
+15. **App Header Improvements** *(Status: Not Started)*
+   - **Header Cleanup & Structure**: Remove active sources count span and auto-advance toggle functionality. Simplify header layout to: Title + Play/Pause controls + ADD buttons + Countdown timer. Remove all `autoAdvance` state, toggle controls, and related logic from components and state management.
+   
+   - **Circular Countdown Timer Implementation**: Create new `CircularCountdownTimer` component with SVG-based circular progress ring displaying remaining time from central timer. Use fiery red color (`text-red-600` equivalent) for progress ring that shrinks as time decreases. Display remaining time in MM:SS format centered within circle. Show "00:00" when no timer is active. Implement smooth animation for progress ring updates.
+   
+   - **Mobile Responsiveness & Layout**: Implement responsive design using existing app mobile breakpoint (`md:` in Tailwind). Desktop: Timer positioned on right side of header row. Mobile: Timer moves below header/helper text area (similar to current count span positioning). ADD buttons become circular with Unicode symbols only on mobile, retain current desktop text style. Ensure both ADD buttons and countdown timer scale appropriately for small screens.
+   
+   - **Accessibility Enhancements**: Add proper ARIA labels and screen reader support. Mobile circular ADD buttons use `title` attribute with full desktop text for hover tooltips. Implement timer announcements via `aria-live` region that announces remaining time every 10 minutes. Ensure countdown text respects dark/light mode for readability while progress ring maintains consistent fiery red color.
+   
+   - **State Management Updates**: Remove `autoAdvance` from state interface, reducer actions, and all related conditional logic. Add countdown calculation helper `getRemainingTime(centralTimer)` for converting elapsed time to remaining time display. Maintain existing central timer behavior: starts with first active light source, expires all lights when reaching zero.
+   
+   - **Component Integration & Testing**: Add comprehensive test coverage for new `CircularCountdownTimer` component including rendering, time updates, responsive behavior, and accessibility features. Update existing header tests to reflect removed elements (count span, auto-advance toggle). Test responsive layout switching between desktop and mobile views. Verify timer state handling for active/inactive/expired scenarios and proper screen reader announcements.
