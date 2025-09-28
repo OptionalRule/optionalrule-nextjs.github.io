@@ -75,7 +75,7 @@ For Product Requirements see `docs/torchtracker/TORCH_PRD.md`
    - **Image Optimization**: Render center art with `next/image` for lint compliance while retaining icon fallback when assets fail to load. Asset preloading covers all active/inactive variants for smooth state changes.
    - **Regression Coverage**: Extend component tests to cover removal timing, hidden radius metrics on inactive faces, image fallback, and the new accessibility attributes introduced during implementation.
 
-15. **App Header Improvements** *(Status: Not Started)*
+15. **App Header Improvements** *(Status: Completed)*
    - **Header Cleanup & Structure**: Remove active sources count span and auto-advance toggle functionality. Simplify header layout to: Title + Play/Pause controls + ADD buttons + Countdown timer. Remove all `autoAdvance` state, toggle controls, and related logic from components and state management.
    
    - **Circular Countdown Timer Implementation**: Create new `CircularCountdownTimer` component with SVG-based circular progress ring displaying remaining time from central timer. Use fiery red color (`text-red-600` equivalent) for progress ring that shrinks as time decreases. Display remaining time in MM:SS format centered within circle. Show "00:00" when no timer is active. Implement smooth animation for progress ring updates.
@@ -88,7 +88,7 @@ For Product Requirements see `docs/torchtracker/TORCH_PRD.md`
    
    - **Component Integration & Testing**: Add comprehensive test coverage for new `CircularCountdownTimer` component including rendering, time updates, responsive behavior, and accessibility features. Update existing header tests to reflect removed elements (count span, auto-advance toggle). Test responsive layout switching between desktop and mobile views. Verify timer state handling for active/inactive/expired scenarios and proper screen reader announcements.
 
-16. **Start & Reset Button Changes** *(Status: Not Started)*
+16. **Start & Reset Button Changes** *(Status: Completed)*
    - **Icon Updates**: Replace the Start button's current double-circle icon with the Lucide React `Play` icon to provide clearer visual indication of the play function. Maintain the same circular button styling and size for consistency with existing header controls.
    
    - **Skip Forward Button Implementation**: Add new circular button using Lucide React `FastForward` icon positioned after the Reset All button in the control group. Button should match existing control button styling (same size, circular design, visual grouping). Implement "Skip 1 min" functionality with tooltip text on mouseover.
