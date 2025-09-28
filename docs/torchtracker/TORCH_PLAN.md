@@ -87,3 +87,16 @@ For Product Requirements see `docs/torchtracker/TORCH_PRD.md`
    - **State Management Updates**: Remove `autoAdvance` from state interface, reducer actions, and all related conditional logic. Add countdown calculation helper `getRemainingTime(centralTimer)` for converting elapsed time to remaining time display. Maintain existing central timer behavior: starts with first active light source, expires all lights when reaching zero.
    
    - **Component Integration & Testing**: Add comprehensive test coverage for new `CircularCountdownTimer` component including rendering, time updates, responsive behavior, and accessibility features. Update existing header tests to reflect removed elements (count span, auto-advance toggle). Test responsive layout switching between desktop and mobile views. Verify timer state handling for active/inactive/expired scenarios and proper screen reader announcements.
+
+16. **Start & Reset Button Changes** *(Status: Not Started)*
+   - **Icon Updates**: Replace the Start button's current double-circle icon with the Lucide React `Play` icon to provide clearer visual indication of the play function. Maintain the same circular button styling and size for consistency with existing header controls.
+   
+   - **Skip Forward Button Implementation**: Add new circular button using Lucide React `FastForward` icon positioned after the Reset All button in the control group. Button should match existing control button styling (same size, circular design, visual grouping). Implement "Skip 1 min" functionality with tooltip text on mouseover.
+   
+   - **Skip Forward Functionality**: Create `advanceTimer` action in reducer that simultaneously reduces central timer remaining time by 60 seconds AND advances elapsed time on each active light source by 60 seconds. If advancing would make central timer reach zero or go negative, set timer to zero and trigger normal expiration behavior (extinguish and remove all active lights).
+   
+   - **Button State Management**: Implement conditional button states - disable Skip Forward button when no lights are active or when central timer is paused. Button remains enabled even when less than 1 minute remains (will trigger immediate expiration). Ensure proper visual feedback for disabled states using existing Tailwind disabled styling patterns.
+   
+   - **Visual Grouping & Layout**: Group all three control buttons (Play/Pause, Reset All, Skip Forward) together visually in header using consistent spacing and styling. Maintain existing responsive behavior where buttons use icon-only display on both desktop and mobile. Ensure proper keyboard navigation order through the control group.
+   
+   - **State Integration & Testing**: Add `advanceTimer` action to reducer with comprehensive test coverage for edge cases (timer expiration, disabled states, light source elapsed time updates). Update existing header component tests to include new button interactions and state management. Verify proper tooltip display and accessibility attributes for the new Skip Forward button.
