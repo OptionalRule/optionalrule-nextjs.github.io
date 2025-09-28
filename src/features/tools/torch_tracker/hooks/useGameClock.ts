@@ -4,7 +4,6 @@ import { useCallback, useEffect, useRef } from 'react'
 
 export interface UseGameClockOptions {
   isRunning: boolean
-  autoAdvance: boolean
   tickIntervalMs?: number
   onTick: (deltaSeconds: number, now: number) => void
 }
@@ -19,7 +18,6 @@ const ONE_SECOND_MS = 1000
 
 export function useGameClock({
   isRunning,
-  autoAdvance,
   tickIntervalMs = ONE_SECOND_MS,
   onTick,
 }: UseGameClockOptions): GameClockControls {
@@ -83,14 +81,13 @@ export function useGameClock({
   }, [handleTick, tickIntervalMs])
 
   useEffect(() => {
-    const shouldRun = isRunning && autoAdvance
-    if (!shouldRun) {
+    if (!isRunning) {
       cleanup()
       return
     }
     startInterval()
     return cleanup
-  }, [autoAdvance, cleanup, isRunning, startInterval])
+  }, [cleanup, isRunning, startInterval])
 
   const reset = useCallback(() => {
     cleanup()
@@ -99,6 +96,6 @@ export function useGameClock({
   return {
     tickOnce,
     reset,
-    isRunning: isRunning && autoAdvance,
+    isRunning,
   }
 }

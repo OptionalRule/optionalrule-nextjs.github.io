@@ -24,12 +24,12 @@ export default function TorchTracker({ className }: TorchTrackerProps) {
       const instance = controller.addFromCatalog(entry.id)
       if (instance) {
         setSelectedCatalogId(entry.id)
-        if (state.settings.autoAdvance && !state.settings.isClockRunning) {
+        if (!state.settings.isClockRunning) {
           controller.setClockRunning(true, Date.now())
         }
       }
     },
-    [controller, state.settings.autoAdvance, state.settings.isClockRunning],
+    [controller, state.settings.isClockRunning],
   )
 
   const handlePause = useCallback(
@@ -97,7 +97,6 @@ export default function TorchTracker({ className }: TorchTrackerProps) {
 
   useGameClock({
     isRunning: state.settings.isClockRunning,
-    autoAdvance: state.settings.autoAdvance,
     onTick: (deltaSeconds, now) => controller.tick(deltaSeconds, now),
   })
 
@@ -136,13 +135,10 @@ export default function TorchTracker({ className }: TorchTrackerProps) {
 
   const header = (
     <TorchTrackerHeader
-      activeCount={state.active.length}
       isClockRunning={state.settings.isClockRunning}
       centralTimer={centralTimer}
-      autoAdvance={state.settings.autoAdvance}
       onToggleClock={handleToggleClock}
       onResetAll={() => controller.resetAll()}
-      onToggleAutoAdvance={(next) => controller.toggleAutoAdvance(next)}
       catalog={catalogBar}
     />
   )

@@ -6,6 +6,7 @@ import { createActiveSourceFromCatalog } from '../lib/catalog'
 import { CatalogButton } from '../components/CatalogButton'
 import { CatalogPanel } from '../components/CatalogPanel'
 import { ActiveLightCard } from '../components/ActiveLightCard'
+import { CircularCountdownTimer } from '../components/CircularCountdownTimer'
 import { TorchTrackerHeader } from '../components/TorchTrackerHeader'
 import type { ActiveLightSource } from '../types'
 import type { CentralTimerSnapshot } from '../types'
@@ -145,10 +146,9 @@ describe('ActiveLightCard', () => {
 })
 
 describe('TorchTrackerHeader', () => {
-  it('exposes clock and auto advance controls', () => {
+  it('renders clock controls, catalog bar, and countdown timer', () => {
     const toggleClock = vi.fn()
     const resetAll = vi.fn()
-    const toggleAuto = vi.fn()
     const centralTimer: CentralTimerSnapshot = {
       isInitialized: true,
       totalSeconds: 600,
@@ -158,28 +158,48 @@ describe('TorchTrackerHeader', () => {
 
     render(
       <TorchTrackerHeader
-        activeCount={2}
         isClockRunning={false}
         centralTimer={centralTimer}
-        autoAdvance={true}
         onToggleClock={toggleClock}
         onResetAll={resetAll}
-        onToggleAutoAdvance={toggleAuto}
         catalog={<div>catalog</div>}
       />,
     )
 
     expect(screen.getByText(/torch tracker/i)).toBeInTheDocument()
-    expect(screen.getAllByText(/central timer/i).length).toBeGreaterThan(0)
-    expect(screen.getByText(/9:00 remaining/i)).toBeInTheDocument()
+    expect(screen.getByText(/add:/i)).toBeInTheDocument()
+    expect(screen.getByText('9:00')).toBeInTheDocument()
+    expect(screen.queryByRole('switch')).not.toBeInTheDocument()
 
     fireEvent.click(screen.getByRole('button', { name: /start clock/i }))
     expect(toggleClock).toHaveBeenCalledWith(true)
 
-    fireEvent.click(screen.getByRole('button', { name: /reset all/i }))
+    fireEvent.click(screen.getByRole('button', { name: /reset all light sources/i }))
     expect(resetAll).toHaveBeenCalled()
+  })
+})
 
-    fireEvent.click(screen.getByRole('switch', { name: /auto advance/i }))
-    expect(toggleAuto).toHaveBeenCalledWith(false)
+describe('CircularCountdownTimer', () => {
+  it('announces progress and displays formatted time', async () => {
+    const initialTimer: CentralTimerSnapshot = {
+      isInitialized: true,
+      totalSeconds: 1200,
+      remainingSeconds: 1200,
+      elapsedSeconds: 0,
+    }
+
+    const { rerender } = render(<CircularCountdownTimer timer={initialTimer} />)
+
+    expect(screen.getByText('20:00')).toBeInTheDocument()
+
+    await screen.findByText(/20 minutes remaining/i)
+
+    rerender(
+      <CircularCountdownTimer
+        timer={{ ...initialTimer, remainingSeconds: 0, elapsedSeconds: 1200 }}
+      />,
+    )
+
+    await screen.findByText(/timer expired/i)
   })
 })

@@ -49,7 +49,6 @@ export interface ActiveLightSource {
 }
 
 export interface TorchTrackerSettings {
-  autoAdvance: boolean
   isClockRunning: boolean
   lastTickTimestamp: number | null
 }
@@ -78,7 +77,6 @@ export type TorchTrackerActionType =
   | 'active/pause'
   | 'active/resume'
   | 'active/tick'
-  | 'settings/toggleAutoAdvance'
   | 'settings/setClockRunning'
   | 'settings/syncTimestamp'
 
@@ -97,7 +95,6 @@ export type TorchTrackerReducerAction =
   | TorchTrackerBaseAction<'active/pause', { instanceId: string; pausedAt: number }>
   | TorchTrackerBaseAction<'active/resume', { instanceId: string; resumedAt: number }>
   | TorchTrackerBaseAction<'active/tick', { deltaSeconds: number; now: number }>
-  | TorchTrackerBaseAction<'settings/toggleAutoAdvance', { value?: boolean }>
   | TorchTrackerBaseAction<'settings/setClockRunning', { isRunning: boolean; now: number | null }>
   | TorchTrackerBaseAction<'settings/syncTimestamp', { now: number | null }>
 
@@ -108,6 +105,5 @@ export interface TorchTrackerSelectors {
   selectActive: TorchTrackerSelector<ActiveLightSource[]>
   selectSettings: TorchTrackerSelector<TorchTrackerSettings>
   selectIsClockRunning: TorchTrackerSelector<boolean>
-  selectAutoAdvance: TorchTrackerSelector<boolean>
   selectCentralTimer: TorchTrackerSelector<CentralTimerSnapshot>
 }

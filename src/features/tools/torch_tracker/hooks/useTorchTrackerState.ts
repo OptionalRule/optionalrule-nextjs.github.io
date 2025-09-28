@@ -4,7 +4,7 @@ import { useMemo, useReducer } from 'react'
 
 import { lightSourceCatalog } from '../data/lightSources'
 import { cloneCatalogEntry, createActiveSourceFromCatalog, createCatalogIndex } from '../lib/catalog'
-import { selectAutoAdvance, selectCentralTimer, selectSettings } from '../lib/selectors'
+import { selectCentralTimer, selectSettings } from '../lib/selectors'
 import type {
   ActiveLightSource,
   CentralTimerSnapshot,
@@ -15,7 +15,6 @@ import type {
 } from '../types'
 
 const DEFAULT_SETTINGS: TorchTrackerSettings = {
-  autoAdvance: true,
   isClockRunning: false,
   lastTickTimestamp: null,
 }
@@ -267,19 +266,6 @@ export const torchTrackerReducer = (
         },
       }
     }
-    case 'settings/toggleAutoAdvance': {
-      const nextValue =
-        action.payload.value !== undefined
-          ? Boolean(action.payload.value)
-          : !state.settings.autoAdvance
-      return {
-        ...state,
-        settings: {
-          ...state.settings,
-          autoAdvance: nextValue,
-        },
-      }
-    }
     case 'settings/setClockRunning': {
       const { isRunning, now } = action.payload
       return {
@@ -322,7 +308,6 @@ export interface TorchTrackerController {
   pauseInstance: (instanceId: string, pausedAt?: number) => void
   resumeInstance: (instanceId: string, resumedAt?: number) => void
   tick: (deltaSeconds: number, now?: number) => void
-  toggleAutoAdvance: (value?: boolean) => void
   setClockRunning: (isRunning: boolean, now?: number | null) => void
   syncTimestamp: (now: number | null) => void
 }
@@ -375,9 +360,6 @@ export const useTorchTrackerState = (
     tick(deltaSeconds, now = Date.now()) {
       dispatch({ type: 'active/tick', payload: { deltaSeconds, now } })
     },
-    toggleAutoAdvance(value) {
-      dispatch({ type: 'settings/toggleAutoAdvance', payload: { value } })
-    },
     setClockRunning(isRunning, now = isRunning ? Date.now() : null) {
       dispatch({ type: 'settings/setClockRunning', payload: { isRunning, now } })
     },
@@ -393,12 +375,10 @@ export const useTorchTrackerState = (
 
 export const useTorchTrackerSettings = (state: TorchTrackerState) => {
   const settings = selectSettings(state)
-  const autoAdvance = selectAutoAdvance(state)
   return useMemo(
     () => ({
       settings,
-      autoAdvance,
     }),
-    [settings, autoAdvance],
+    [settings],
   )
 }

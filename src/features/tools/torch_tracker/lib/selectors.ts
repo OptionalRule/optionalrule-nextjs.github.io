@@ -14,8 +14,6 @@ export const selectSettings: TorchTrackerSelector<TorchTrackerState['settings']>
 
 export const selectIsClockRunning: TorchTrackerSelector<boolean> = (state) => state.settings.isClockRunning
 
-export const selectAutoAdvance: TorchTrackerSelector<boolean> = (state) => state.settings.autoAdvance
-
 export const selectCentralTimer: TorchTrackerSelector<CentralTimerSnapshot> = (state) => state.centralTimer
 
 export const torchTrackerSelectors: TorchTrackerSelectors = {
@@ -23,6 +21,5 @@ export const torchTrackerSelectors: TorchTrackerSelectors = {
   selectActive,
   selectSettings,
   selectIsClockRunning,
-  selectAutoAdvance,
   selectCentralTimer,
 }

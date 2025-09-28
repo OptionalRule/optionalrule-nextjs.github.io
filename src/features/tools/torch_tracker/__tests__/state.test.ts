@@ -134,14 +134,8 @@ describe('torchTrackerReducer', () => {
     expect(state.settings.isClockRunning).toBe(false)
   })
 
-  it('toggles auto advance and clock running state', () => {
+  it('updates clock running state', () => {
     let state = getInitialState()
-    state = torchTrackerReducer(state, {
-      type: 'settings/toggleAutoAdvance',
-      payload: {},
-    })
-    expect(state.settings.autoAdvance).toBe(false)
-
     state = torchTrackerReducer(state, {
       type: 'settings/setClockRunning',
       payload: { isRunning: true, now: FIXED_DATE + 2000 },
