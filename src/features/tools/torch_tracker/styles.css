@@ -79,6 +79,11 @@
   transform: rotateY(180deg);
 }
 
+.torch-card--removing {
+  animation: torch-card-remove 160ms ease forwards;
+  pointer-events: none;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .torch-card-inner {
     transition: opacity 220ms ease;
@@ -146,6 +151,13 @@
   pointer-events: none;
 }
 
+@keyframes torch-card-remove {
+  to {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .torch-card-glow {
     animation: none;
@@ -205,6 +217,7 @@
   font-size: 1.35rem;
   letter-spacing: 0.12em;
   background: rgba(0, 0, 0, 0.65);
+  margin: 0 auto;
 }
 
 .torch-card-remove {
@@ -239,5 +252,9 @@
 @media (prefers-reduced-motion: reduce) {
   .torch-card-remove {
     transition: opacity 150ms ease;
+  }
+
+  .torch-card--removing {
+    animation: torch-card-remove 120ms ease forwards;
   }
 }

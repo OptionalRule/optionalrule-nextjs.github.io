@@ -85,18 +85,25 @@ describe('ActiveLightCard', () => {
   })
 
   it('exposes remove control without toggling the card state', () => {
-    const onPause = vi.fn()
-    const onRemove = vi.fn()
-    const source = buildActive()
+    vi.useFakeTimers()
+    try {
+      const onPause = vi.fn()
+      const onRemove = vi.fn()
+      const source = buildActive()
 
-    render(
-      <ActiveLightCard source={source} onPause={onPause} onResume={vi.fn()} onRemove={onRemove} />,
-    )
+      render(
+        <ActiveLightCard source={source} onPause={onPause} onResume={vi.fn()} onRemove={onRemove} />,
+      )
 
-    const removeButton = screen.getByRole('button', { name: `Remove ${source.label}` })
-    fireEvent.click(removeButton)
-    expect(onRemove).toHaveBeenCalledWith(source)
-    expect(onPause).not.toHaveBeenCalled()
+      const removeButton = screen.getByRole('button', { name: `Remove ${source.label}` })
+      fireEvent.click(removeButton)
+      expect(onRemove).not.toHaveBeenCalled()
+      vi.runAllTimers()
+      expect(onRemove).toHaveBeenCalledWith(source)
+      expect(onPause).not.toHaveBeenCalled()
+    } finally {
+      vi.useRealTimers()
+    }
   })
 
   it('falls back to icon display when the image fails to load', () => {
@@ -112,6 +119,28 @@ describe('ActiveLightCard', () => {
     const card = screen.getByRole('button', { name: source.label })
     expect(card).toHaveAttribute('data-image-state', 'fallback')
     expect(screen.getByRole('img', { name: `Lit ${source.label}` })).toBeInTheDocument()
+  })
+
+  it('hides bright radius metric on inactive face', () => {
+    const pausedSource = buildActive({ status: 'paused', isPaused: true })
+
+    render(
+      <ActiveLightCard
+        source={pausedSource}
+        onPause={vi.fn()}
+        onResume={vi.fn()}
+        onRemove={vi.fn()}
+      />,
+    )
+
+    const metrics = screen.getAllByLabelText(/Bright radius/i, {
+      selector: '.torch-card-metric',
+      hidden: true,
+    })
+
+    metrics.forEach((metric) => {
+      expect(metric).toHaveAttribute('aria-hidden', 'true')
+    })
   })
 })
 

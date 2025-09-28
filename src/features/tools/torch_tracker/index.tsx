@@ -38,8 +38,14 @@ export default function TorchTracker({ className }: TorchTrackerProps) {
   )
 
   const handleResume = useCallback(
-    (source: ActiveLightSource) => controller.resumeInstance(source.instanceId),
-    [controller],
+    (source: ActiveLightSource) => {
+      controller.resumeInstance(source.instanceId)
+      centrallyPausedIdsRef.current.delete(source.instanceId)
+      if (!state.settings.isClockRunning) {
+        controller.setClockRunning(true, Date.now())
+      }
+    },
+    [controller, state.settings.isClockRunning],
   )
 
   const handleRemove = useCallback(
@@ -94,6 +100,13 @@ export default function TorchTracker({ className }: TorchTrackerProps) {
     autoAdvance: state.settings.autoAdvance,
     onTick: (deltaSeconds, now) => controller.tick(deltaSeconds, now),
   })
+
+  useEffect(() => {
+    const hasActive = state.active.some((source) => source.status === 'active')
+    if (!hasActive && state.settings.isClockRunning) {
+      controller.setClockRunning(false, null)
+    }
+  }, [state.active, state.settings.isClockRunning, controller])
 
   useEffect(() => {
     if (typeof window === 'undefined') return

@@ -5,7 +5,7 @@ import type { KeyboardEvent as ReactKeyboardEvent, MouseEvent as ReactMouseEvent
 
 import type { ActiveLightSource } from '../types'
 import { formatSecondsAsClock } from '../utils/time'
-import { getImageAlt, getImagePath, type LightImageStatus } from '../utils/images'
+import { getImageAlt, getImagePath } from '../utils/images'
 
 export interface ActiveLightCardProps {
   source: ActiveLightSource
@@ -24,21 +24,30 @@ const statusText: Record<CardFaceVariant, string> = {
   inactive: 'Inactive',
 }
 
+const REMOVE_ANIMATION_DURATION_MS = 160
+
 export function ActiveLightCard({ source, onPause, onResume, onRemove, className }: ActiveLightCardProps) {
   const isPaused = source.status === 'paused' || source.isPaused
   const cardState: CardFaceVariant = isPaused ? 'inactive' : 'active'
   const labelId = useMemo(() => `light-card-${source.instanceId}-label`, [source.instanceId])
   const descriptionId = useMemo(() => `${labelId}-description`, [labelId])
-  const imageStatus: LightImageStatus = cardState
   const timeActiveLabel = formatSecondsAsClock(source.elapsedSeconds)
   const [imageState, setImageState] = useState<ImageState>('ready')
   const [announcement, setAnnouncement] = useState('')
+  const [isRemoving, setIsRemoving] = useState(false)
 
   useEffect(() => {
     setAnnouncement(`${source.label} ${statusText[cardState]}`)
   }, [cardState, source.label])
 
+  useEffect(() => {
+    if (!isRemoving) return
+    const timeout = window.setTimeout(() => onRemove(source), REMOVE_ANIMATION_DURATION_MS)
+    return () => window.clearTimeout(timeout)
+  }, [isRemoving, onRemove, source])
+
   const handleToggle = () => {
+    if (isRemoving) return
     if (cardState === 'active') {
       onPause(source)
     } else {
@@ -47,6 +56,7 @@ export function ActiveLightCard({ source, onPause, onResume, onRemove, className
   }
 
   const handleKeyDown = (event: ReactKeyboardEvent<HTMLElement>) => {
+    if (isRemoving) return
     if (event.key === 'Enter' || event.key === ' ') {
       event.preventDefault()
       handleToggle()
@@ -55,7 +65,8 @@ export function ActiveLightCard({ source, onPause, onResume, onRemove, className
 
   const handleRemove = (event: ReactMouseEvent<HTMLButtonElement>) => {
     event.stopPropagation()
-    onRemove(source)
+    if (isRemoving) return
+    setIsRemoving(true)
   }
 
   const handleImageError = () => {
@@ -63,15 +74,24 @@ export function ActiveLightCard({ source, onPause, onResume, onRemove, className
   }
 
   const sharedFaceContent = (variant: CardFaceVariant) => (
-    <div className={`torch-card-face ${variant === 'active' ? 'torch-card-face--active' : 'torch-card-face--inactive'}`}>
+    <div
+      className={`torch-card-face ${variant === 'active' ? 'torch-card-face--active' : 'torch-card-face--inactive'}`}
+      aria-hidden={variant !== cardState}
+    >
       {variant === 'active' && <div className="torch-card-glow" aria-hidden="true" />}
-      <div className="flex items-start justify-between gap-3">
+      <div className={`flex items-start ${variant === 'active' ? 'justify-between' : 'justify-center'} gap-3`}>
         <span id={labelId} className="torch-card-label">
           {source.label}
         </span>
-        <span className="torch-card-metric" aria-label={`Bright radius ${source.brightRadius} feet`}>
-          {source.brightRadius} ft
-        </span>
+        {variant === 'active' && (
+          <span
+            className="torch-card-metric"
+            aria-label={`Bright radius ${source.brightRadius} feet`}
+            aria-hidden={variant !== cardState}
+          >
+            {source.brightRadius} ft
+          </span>
+        )}
       </div>
       <div className="torch-card-image-shell" aria-hidden={variant !== cardState}>
         {imageState === 'ready' ? (
@@ -90,9 +110,12 @@ export function ActiveLightCard({ source, onPause, onResume, onRemove, className
           </span>
         )}
       </div>
-      <div className="flex items-end justify-between">
-        <span className="torch-card-metric">{statusText[variant]}</span>
-        <span className="torch-card-timer" aria-live={variant === cardState ? 'polite' : undefined}>
+      <div className="flex items-end justify-center">
+        <span
+          className="torch-card-timer"
+          aria-live={variant === cardState ? 'polite' : undefined}
+          aria-hidden={variant !== cardState}
+        >
           {timeActiveLabel}
         </span>
       </div>
@@ -101,7 +124,9 @@ export function ActiveLightCard({ source, onPause, onResume, onRemove, className
 
   return (
     <article
-      className={`torch-card aspect-[5/7] w-full max-w-sm cursor-pointer select-none ${className ?? ''}`.trim()}
+      className={`torch-card aspect-[5/7] w-full max-w-sm cursor-pointer select-none ${
+        isRemoving ? 'torch-card--removing' : ''
+      } ${className ?? ''}`.trim()}
       data-state={cardState}
       data-image-state={imageState === 'fallback' ? 'fallback' : 'ready'}
       role="button"
