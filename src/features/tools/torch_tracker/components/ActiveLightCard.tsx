@@ -78,7 +78,19 @@ export function ActiveLightCard({ source, onPause, onResume, onRemove, className
       className={`torch-card-face ${variant === 'active' ? 'torch-card-face--active' : 'torch-card-face--inactive'}`}
       aria-hidden={variant !== cardState}
     >
-      {variant === 'active' && <div className="torch-card-glow" aria-hidden="true" />}
+      {variant === 'active' && (
+        <>
+          <div className="torch-card-glow" aria-hidden="true" />
+          <div className="torch-card-flare torch-card-flare--primary" aria-hidden="true" />
+          <div className="torch-card-flare torch-card-flare--secondary" aria-hidden="true" />
+        </>
+      )}
+      {variant === 'inactive' && (
+        <>
+          <div className="torch-card-smoke" aria-hidden="true" />
+          <div className="torch-card-smoke torch-card-smoke--secondary" aria-hidden="true" />
+        </>
+      )}
       <div className={`flex items-start ${variant === 'active' ? 'justify-between' : 'justify-center'} gap-3`}>
         <span id={labelId} className="torch-card-label">
           {source.label}

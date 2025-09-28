@@ -151,6 +151,58 @@
   pointer-events: none;
 }
 
+.torch-card-flare {
+  position: absolute;
+  inset: 12% 22% auto 22%;
+  height: 45%;
+  border-radius: 50% 50% 40% 40%;
+  background: radial-gradient(circle at 50% 18%, rgba(255, 223, 142, 0.58), rgba(255, 140, 62, 0.16) 62%, transparent 74%);
+  filter: blur(10px);
+  mix-blend-mode: screen;
+  animation: torch-card-flicker 2.1s ease-in-out infinite;
+  pointer-events: none;
+}
+
+.torch-card-flare--primary {
+  animation-duration: 2.4s;
+  animation-timing-function: steps(5, end);
+}
+
+.torch-card-flare--secondary {
+  inset: 24% 30% auto 30%;
+  height: 38%;
+  opacity: 0.65;
+  animation-duration: 1.8s;
+  animation-delay: -0.6s;
+}
+
+@keyframes torch-card-flicker {
+  0% {
+    transform: scale(0.95) translateY(2%);
+    opacity: 0.45;
+  }
+  20% {
+    transform: scale(1.06) translateY(-2%);
+    opacity: 0.78;
+  }
+  40% {
+    transform: scale(0.9) translateY(1%);
+    opacity: 0.52;
+  }
+  60% {
+    transform: scale(1.08) translateY(-3%);
+    opacity: 0.88;
+  }
+  80% {
+    transform: scale(0.92) translateY(2%);
+    opacity: 0.58;
+  }
+  100% {
+    transform: scale(1.02) translateY(-1%);
+    opacity: 0.74;
+  }
+}
+
 @keyframes torch-card-remove {
   to {
     opacity: 0;
@@ -160,6 +212,10 @@
 
 @media (prefers-reduced-motion: reduce) {
   .torch-card-glow {
+    animation: none;
+  }
+
+  .torch-card-flare {
     animation: none;
   }
 }
