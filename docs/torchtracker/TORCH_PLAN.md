@@ -4,21 +4,6 @@ Goal: Torch Tracker is a real-time light source management tool for TTRPG groups
 
 For Product Requirements see `docs/torchtracker/TORCH_PRD.md`
 
-## Need Planning
-
-1. **Styling & Assets**
-   - Add dedicated CSS (if needed) under `src/features/tools/torch_tracker/styles.css` or inline Tailwind classes; ensure reduced-motion variants.
-   - Place icons/sounds in `public/tools/torch_tracker/` and document usage in README.*
-
-2. **Testing & QA Pass**
-   - Run `npm run lint`, `npm run test` (Vitest unit suite via `vitest.unit.config.ts`), and `npm run test:a11y` per the repository testing cadence.
-   - Execute manual QA: add/edit/remove lights, pause/resume, auto-advance toggle, expiration alert, navigation to/from other tools.
-   - Capture screenshots/GIFs for release notes.
-
-3. **Documentation & Launch Prep**
-    - Update `docs/torchtracker/README.md` (usage guide) and site changelog.
-    - Prepare release announcement content, ensure sitemap includes the new route, and verify static export (`npm run build`) succeeds with the tool enabled.
-
 ## Development Plan
 
 1. **Scaffold Feature Module** *(Status: Complete)*
@@ -75,7 +60,7 @@ For Product Requirements see `docs/torchtracker/TORCH_PRD.md`
    - The Next expiration bar is not needed and should be removed. 
    - The central timer should start when the first light source is added and not reset when a new light source is added.
 
-14. **Light Source Card** *(Status: Pending)*
+14. **Light Source Card** *(Status: Complete)*
    - **Card Structure & Styling**: Implement playing card dimensions (2.5:3.5 aspect ratio) with dramatic beveled CSS borders and rounded edges using Tailwind classes. Add subtle CSS pattern texture to simulate aged playing card appearance.
    - **Dual-State Design**: Create two visual states - active side with soft animated glow background, inactive side with dark gradient background. Background colors render behind the center image to indicate card state.
    - **Center Images**: Integrate 8 preloaded WebP images from `public/tools/torch_tracker/` following `<type>_<status>.webp` naming convention (campfire, lantern, spell, torch × active/inactive). Create `getImagePath(type, status)` utility function for dynamic path generation. Images take up most card space with text overlays.
@@ -85,3 +70,7 @@ For Product Requirements see `docs/torchtracker/TORCH_PRD.md`
    - **Accessibility**: Add descriptive alt text for images ("Extinguished Torch", "Lit Campfire"). Screen reader announces "Active"/"Inactive" state changes during transitions.
    - **Technical Implementation**: Use pure CSS transforms with Tailwind to avoid additional dependencies. Preload all 8 images on component mount for smooth state transitions. Handle image loading failures with background color fallback.
    - **Testing**: Add component tests for flip animations, state transitions, keyboard interactions, hover states, and image loading scenarios under `__tests__/components.test.tsx`.
+   - **Visual Polish**: Add layered glow and flare animations to the lit face plus drifting smoke on the unlit face, all with `prefers-reduced-motion` fallbacks. Apply a fast fade-out animation when removing a card.
+   - **Interaction & Timing Notes**: Clicking or pressing Space/Enter flips the card, resumes the light when reactivated, and restarts the central timer if no other sources are active. Remove actions delay briefly to allow the fade-out before dispatching state updates.
+   - **Image Optimization**: Render center art with `next/image` for lint compliance while retaining icon fallback when assets fail to load. Asset preloading covers all active/inactive variants for smooth state changes.
+   - **Regression Coverage**: Extend component tests to cover removal timing, hidden radius metrics on inactive faces, image fallback, and the new accessibility attributes introduced during implementation.
