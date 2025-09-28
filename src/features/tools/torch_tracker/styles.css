@@ -176,6 +176,29 @@
   animation-delay: -0.6s;
 }
 
+.torch-card-smoke {
+  position: absolute;
+  inset: 18% 28% auto 28%;
+  height: 50%;
+  border-radius: 50%;
+  background: radial-gradient(circle at 50% 20%, rgba(168, 160, 150, 0.28), rgba(60, 58, 56, 0.08) 60%, transparent 75%);
+  filter: blur(14px);
+  mix-blend-mode: screen;
+  opacity: 0.45;
+  transform-origin: 50% 90%;
+  animation: torch-card-smoke-drift 5.5s ease-in-out infinite;
+  pointer-events: none;
+}
+
+.torch-card-smoke--secondary {
+  inset: 28% 34% auto 34%;
+  height: 42%;
+  opacity: 0.35;
+  animation-duration: 6.8s;
+  animation-delay: -2.4s;
+  filter: blur(18px);
+}
+
 @keyframes torch-card-flicker {
   0% {
     transform: scale(0.95) translateY(2%);
@@ -203,6 +226,29 @@
   }
 }
 
+@keyframes torch-card-smoke-drift {
+  0% {
+    transform: scale(0.9) translate3d(0, 0, 0) skewX(-2deg);
+    opacity: 0.3;
+  }
+  25% {
+    transform: scale(1.05) translate3d(-2%, -4%, 0) skewX(1.5deg);
+    opacity: 0.45;
+  }
+  50% {
+    transform: scale(1.12) translate3d(3%, -6%, 0) skewX(-1deg);
+    opacity: 0.28;
+  }
+  75% {
+    transform: scale(1.08) translate3d(-1%, -9%, 0) skewX(2deg);
+    opacity: 0.42;
+  }
+  100% {
+    transform: scale(1.2) translate3d(2%, -12%, 0) skewX(-1deg);
+    opacity: 0.18;
+  }
+}
+
 @keyframes torch-card-remove {
   to {
     opacity: 0;
@@ -218,6 +264,11 @@
   .torch-card-flare {
     animation: none;
   }
+
+  .torch-card-smoke {
+    animation: none;
+    opacity: 0.25;
+  }
 }
 
 .torch-card-image-shell {
@@ -230,6 +281,12 @@
 }
 
 .torch-card-image-shell img {
+  width: 85%;
+  height: auto;
+  object-fit: contain;
+}
+
+.torch-card-image {
   width: 85%;
   height: auto;
   object-fit: contain;

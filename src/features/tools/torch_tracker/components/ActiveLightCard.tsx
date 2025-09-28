@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from 'react'
 import type { KeyboardEvent as ReactKeyboardEvent, MouseEvent as ReactMouseEvent } from 'react'
+import Image from 'next/image'
 
 import type { ActiveLightSource } from '../types'
 import { formatSecondsAsClock } from '../utils/time'
@@ -107,10 +108,14 @@ export function ActiveLightCard({ source, onPause, onResume, onRemove, className
       </div>
       <div className="torch-card-image-shell" aria-hidden={variant !== cardState}>
         {imageState === 'ready' ? (
-          <img
+          <Image
             src={getImagePath(source.sourceType, variant)}
             alt={variant === cardState ? getImageAlt(source.label, variant) : ''}
+            width={480}
+            height={640}
+            className="torch-card-image"
             onError={handleImageError}
+            priority={variant === 'active'}
           />
         ) : (
           <span
