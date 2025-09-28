@@ -74,3 +74,14 @@ For Product Requirements see `docs/torchtracker/TORCH_PRD.md`
    - The 'Time remaining' display in each light source card should be removed including the values and progress bar.
    - The Next expiration bar is not needed and should be removed. 
    - The central timer should start when the first light source is added and not reset when a new light source is added.
+
+14. **Light Source Card** *(Status: Pending)*
+   - **Card Structure & Styling**: Implement playing card dimensions (2.5:3.5 aspect ratio) with dramatic beveled CSS borders and rounded edges using Tailwind classes. Add subtle CSS pattern texture to simulate aged playing card appearance.
+   - **Dual-State Design**: Create two visual states - active side with soft animated glow background, inactive side with dark gradient background. Background colors render behind the center image to indicate card state.
+   - **Center Images**: Integrate 8 preloaded WebP images from `public/tools/torch_tracker/` following `<type>_<status>.webp` naming convention (campfire, lantern, spell, torch × active/inactive). Create `getImagePath(type, status)` utility function for dynamic path generation. Images take up most card space with text overlays.
+   - **Content Layout**: Position title in centered outlined box at top, light radius in cutout box (upper left), timer value in bordered box near bottom. All text elements use solid colored "cutout" boxes with borders overlaying the center image for readability.
+   - **Flip Animation**: Implement horizontal card flip (500ms duration) using CSS transforms and Tailwind classes when toggling active/inactive state. Provide fade transition fallback for `prefers-reduced-motion` users.
+   - **Interactions**: Card click toggles active/inactive state (removes separate pause controls). Circular X remove button appears at bottom edge on hover. Support keyboard navigation (Space/Enter on focus).
+   - **Accessibility**: Add descriptive alt text for images ("Extinguished Torch", "Lit Campfire"). Screen reader announces "Active"/"Inactive" state changes during transitions.
+   - **Technical Implementation**: Use pure CSS transforms with Tailwind to avoid additional dependencies. Preload all 8 images on component mount for smooth state transitions. Handle image loading failures with background color fallback.
+   - **Testing**: Add component tests for flip animations, state transitions, keyboard interactions, hover states, and image loading scenarios under `__tests__/components.test.tsx`.
