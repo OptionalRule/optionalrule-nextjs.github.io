@@ -86,6 +86,38 @@ describe('torchTrackerReducer', () => {
     expect(state.settings.isClockRunning).toBe(false)
   })
 
+  it('advances timer when skipping forward and expires lights at zero', () => {
+    let state = addInstance(getInitialState(), 0, { remainingSeconds: 180 })
+    state = torchTrackerReducer(state, {
+      type: 'settings/setClockRunning',
+      payload: { isRunning: true, now: FIXED_DATE },
+    })
+
+    state = torchTrackerReducer(state, {
+      type: 'timer/advance',
+      payload: { deltaSeconds: 60, now: FIXED_DATE + 60000 },
+    })
+    expect(state.centralTimer.remainingSeconds).toBe(120)
+    expect(state.active[0].remainingSeconds).toBe(120)
+
+    state = torchTrackerReducer(state, {
+      type: 'timer/advance',
+      payload: { deltaSeconds: 60, now: FIXED_DATE + 120000 },
+    })
+    expect(state.centralTimer.remainingSeconds).toBe(60)
+    expect(state.active[0].remainingSeconds).toBe(60)
+
+    state = torchTrackerReducer(state, {
+      type: 'timer/advance',
+      payload: { deltaSeconds: 60, now: FIXED_DATE + 180000 },
+    })
+
+    expect(state.active.length).toBe(0)
+    expect(state.centralTimer.isInitialized).toBe(false)
+    expect(state.settings.isClockRunning).toBe(false)
+    expect(state.settings.lastTickTimestamp).toBe(FIXED_DATE + 180000)
+  })
+
   it('updates remaining time and clamps to totals', () => {
     let state = addInstance(getInitialState())
     const instanceId = state.active[0].instanceId

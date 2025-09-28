@@ -53,6 +53,10 @@ export default function TorchTracker({ className }: TorchTrackerProps) {
     [controller],
   )
 
+  const handleAdvanceTimer = useCallback(() => {
+    controller.advanceTimer()
+  }, [controller])
+
   const handleToggleClock = useCallback(
     (nextRunning: boolean) => {
       const now = Date.now()
@@ -133,12 +137,17 @@ export default function TorchTracker({ className }: TorchTrackerProps) {
     />
   )
 
+  const hasActiveRunning = state.active.some((source) => source.status === 'active')
+  const canAdvance = hasActiveRunning && state.settings.isClockRunning
+
   const header = (
     <TorchTrackerHeader
       isClockRunning={state.settings.isClockRunning}
       centralTimer={centralTimer}
       onToggleClock={handleToggleClock}
       onResetAll={() => controller.resetAll()}
+      onAdvance={handleAdvanceTimer}
+      canAdvance={canAdvance}
       catalog={catalogBar}
     />
   )

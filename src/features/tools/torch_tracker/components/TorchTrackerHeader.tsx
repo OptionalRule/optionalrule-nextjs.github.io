@@ -1,7 +1,7 @@
 'use client'
 
 import type { ReactNode } from 'react'
-import { CirclePause, CirclePlay as CircleStart, TimerReset } from 'lucide-react'
+import { CirclePause, FastForward, Play, TimerReset } from 'lucide-react'
 
 import type { CentralTimerSnapshot } from '../types'
 import { CircularCountdownTimer } from './CircularCountdownTimer'
@@ -11,6 +11,8 @@ export interface TorchTrackerHeaderProps {
   centralTimer: CentralTimerSnapshot
   onToggleClock: (nextRunning: boolean) => void
   onResetAll: () => void
+  onAdvance: () => void
+  canAdvance: boolean
   onOpenHelp?: () => void
   catalog?: ReactNode
   className?: string
@@ -21,6 +23,8 @@ export function TorchTrackerHeader({
   centralTimer,
   onToggleClock,
   onResetAll,
+  onAdvance,
+  canAdvance,
   onOpenHelp,
   catalog,
   className,
@@ -71,7 +75,7 @@ export function TorchTrackerHeader({
             {isClockRunning ? (
               <CirclePause className="h-5 w-5" aria-hidden="true" />
             ) : (
-              <CircleStart className="h-5 w-5" aria-hidden="true" />
+              <Play className="h-5 w-5" aria-hidden="true" />
             )}
           </button>
           <button
@@ -82,6 +86,16 @@ export function TorchTrackerHeader({
             title="Reset all light sources"
           >
             <TimerReset className="h-5 w-5" aria-hidden="true" />
+          </button>
+          <button
+            type="button"
+            className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-[var(--border)] bg-[var(--surface-1)] text-[var(--text-primary)] transition hover:border-[var(--accent)] hover:text-[var(--accent)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--focus-ring)] disabled:cursor-not-allowed disabled:opacity-60"
+            onClick={onAdvance}
+            aria-label="Skip 1 minute"
+            title="Skip 1 min"
+            disabled={!canAdvance}
+          >
+            <FastForward className="h-5 w-5" aria-hidden="true" />
           </button>
         </div>
         {catalog ? <div className="w-full md:w-auto">{catalog}</div> : null}

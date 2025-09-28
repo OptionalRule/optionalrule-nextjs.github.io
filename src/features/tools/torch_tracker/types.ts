@@ -77,6 +77,7 @@ export type TorchTrackerActionType =
   | 'active/pause'
   | 'active/resume'
   | 'active/tick'
+  | 'timer/advance'
   | 'settings/setClockRunning'
   | 'settings/syncTimestamp'
 
@@ -95,6 +96,7 @@ export type TorchTrackerReducerAction =
   | TorchTrackerBaseAction<'active/pause', { instanceId: string; pausedAt: number }>
   | TorchTrackerBaseAction<'active/resume', { instanceId: string; resumedAt: number }>
   | TorchTrackerBaseAction<'active/tick', { deltaSeconds: number; now: number }>
+  | TorchTrackerBaseAction<'timer/advance', { deltaSeconds: number; now: number }>
   | TorchTrackerBaseAction<'settings/setClockRunning', { isRunning: boolean; now: number | null }>
   | TorchTrackerBaseAction<'settings/syncTimestamp', { now: number | null }>
 

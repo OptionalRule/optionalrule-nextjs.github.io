@@ -149,6 +149,7 @@ describe('TorchTrackerHeader', () => {
   it('renders clock controls, catalog bar, and countdown timer', () => {
     const toggleClock = vi.fn()
     const resetAll = vi.fn()
+    const advanceTimer = vi.fn()
     const centralTimer: CentralTimerSnapshot = {
       isInitialized: true,
       totalSeconds: 600,
@@ -162,6 +163,8 @@ describe('TorchTrackerHeader', () => {
         centralTimer={centralTimer}
         onToggleClock={toggleClock}
         onResetAll={resetAll}
+        onAdvance={advanceTimer}
+        canAdvance={true}
         catalog={<div>catalog</div>}
       />,
     )
@@ -176,6 +179,12 @@ describe('TorchTrackerHeader', () => {
 
     fireEvent.click(screen.getByRole('button', { name: /reset all light sources/i }))
     expect(resetAll).toHaveBeenCalled()
+
+    const skipButton = screen.getByRole('button', { name: /skip 1 minute/i })
+    expect(skipButton).not.toBeDisabled()
+    expect(skipButton).toHaveAttribute('title', 'Skip 1 min')
+    fireEvent.click(skipButton)
+    expect(advanceTimer).toHaveBeenCalled()
   })
 })
 
@@ -201,5 +210,23 @@ describe('CircularCountdownTimer', () => {
     )
 
     await screen.findByText(/timer expired/i)
+  })
+})
+
+describe('TorchTrackerHeader disabled states', () => {
+  it('disables skip forward when cannot advance', () => {
+    render(
+      <TorchTrackerHeader
+        isClockRunning={true}
+        centralTimer={{ isInitialized: true, totalSeconds: 600, remainingSeconds: 600, elapsedSeconds: 0 }}
+        onToggleClock={vi.fn()}
+        onResetAll={vi.fn()}
+        onAdvance={vi.fn()}
+        canAdvance={false}
+        catalog={<div>catalog</div>}
+      />,
+    )
+
+    expect(screen.getByRole('button', { name: /skip 1 minute/i })).toBeDisabled()
   })
 })

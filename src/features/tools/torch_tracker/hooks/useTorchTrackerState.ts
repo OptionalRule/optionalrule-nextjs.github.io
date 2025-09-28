@@ -73,6 +73,79 @@ const updateCollection = (
 const removeFromCollection = (collection: ActiveLightSource[], instanceId: string) =>
   collection.filter((item) => item.instanceId !== instanceId)
 
+const applyDeltaToTorchState = (
+  state: TorchTrackerState,
+  deltaSeconds: number,
+  now: number,
+): TorchTrackerState => {
+  if (deltaSeconds <= 0) {
+    return {
+      ...state,
+      settings: {
+        ...state.settings,
+        lastTickTimestamp: now,
+      },
+    }
+  }
+
+  let nextActive: ActiveLightSource[] = []
+  for (const source of state.active) {
+    if (source.isPaused || source.status === 'paused') {
+      nextActive.push({ ...source, lastTickTimestamp: now })
+      continue
+    }
+    const nextRemaining = Math.max(0, source.remainingSeconds - deltaSeconds)
+    if (nextRemaining <= 0) {
+      continue
+    }
+    const updated: ActiveLightSource = normalizeActiveSource({
+      ...source,
+      remainingSeconds: nextRemaining,
+      updatedAt: now,
+      lastTickTimestamp: now,
+    })
+    nextActive.push(updated)
+  }
+
+  let nextCentral: CentralTimerSnapshot = state.centralTimer
+  if (state.centralTimer.isInitialized) {
+    const remaining = Math.max(0, state.centralTimer.remainingSeconds - deltaSeconds)
+    const elapsed = Math.max(0, state.centralTimer.totalSeconds - remaining)
+    nextCentral = {
+      ...state.centralTimer,
+      remainingSeconds: remaining,
+      elapsedSeconds: elapsed,
+    }
+  }
+
+  let isClockRunning = state.settings.isClockRunning
+  if (nextCentral.isInitialized && nextCentral.remainingSeconds <= 0) {
+    nextActive = []
+    isClockRunning = false
+    nextCentral = {
+      ...nextCentral,
+      remainingSeconds: 0,
+      elapsedSeconds: nextCentral.totalSeconds,
+    }
+  }
+
+  if (nextActive.length === 0) {
+    nextCentral = createInitialCentralTimer()
+    isClockRunning = false
+  }
+
+  return {
+    ...state,
+    active: nextActive,
+    centralTimer: nextCentral,
+    settings: {
+      ...state.settings,
+      lastTickTimestamp: now,
+      isClockRunning,
+    },
+  }
+}
+
 export const torchTrackerReducer = (
   state: TorchTrackerState,
   action: TorchTrackerReducerAction,
@@ -199,72 +272,11 @@ export const torchTrackerReducer = (
     }
     case 'active/tick': {
       const { deltaSeconds, now } = action.payload
-      if (deltaSeconds <= 0) {
-        return {
-          ...state,
-          settings: {
-            ...state.settings,
-            lastTickTimestamp: now,
-          },
-        }
-      }
-
-      let nextActive: ActiveLightSource[] = []
-      for (const source of state.active) {
-        if (source.isPaused || source.status === 'paused') {
-          nextActive.push({ ...source, lastTickTimestamp: now })
-          continue
-        }
-        const nextRemaining = Math.max(0, source.remainingSeconds - deltaSeconds)
-        if (nextRemaining <= 0) {
-          continue
-        }
-        const updated: ActiveLightSource = normalizeActiveSource({
-          ...source,
-          remainingSeconds: nextRemaining,
-          updatedAt: now,
-          lastTickTimestamp: now,
-        })
-        nextActive.push(updated)
-      }
-
-      let nextCentral: CentralTimerSnapshot = state.centralTimer
-      if (state.centralTimer.isInitialized) {
-        const remaining = Math.max(0, state.centralTimer.remainingSeconds - deltaSeconds)
-        const elapsed = Math.max(0, state.centralTimer.totalSeconds - remaining)
-        nextCentral = {
-          ...state.centralTimer,
-          remainingSeconds: remaining,
-          elapsedSeconds: elapsed,
-        }
-      }
-
-      let isClockRunning = state.settings.isClockRunning
-      if (nextCentral.isInitialized && nextCentral.remainingSeconds <= 0) {
-        nextActive = []
-        isClockRunning = false
-        nextCentral = {
-          ...nextCentral,
-          remainingSeconds: 0,
-          elapsedSeconds: nextCentral.totalSeconds,
-        }
-      }
-
-      if (nextActive.length === 0) {
-        nextCentral = createInitialCentralTimer()
-        isClockRunning = false
-      }
-
-      return {
-        ...state,
-        active: nextActive,
-        centralTimer: nextCentral,
-        settings: {
-          ...state.settings,
-          lastTickTimestamp: now,
-          isClockRunning,
-        },
-      }
+      return applyDeltaToTorchState(state, deltaSeconds, now)
+    }
+    case 'timer/advance': {
+      const { deltaSeconds, now } = action.payload
+      return applyDeltaToTorchState(state, deltaSeconds, now)
     }
     case 'settings/setClockRunning': {
       const { isRunning, now } = action.payload
@@ -308,6 +320,7 @@ export interface TorchTrackerController {
   pauseInstance: (instanceId: string, pausedAt?: number) => void
   resumeInstance: (instanceId: string, resumedAt?: number) => void
   tick: (deltaSeconds: number, now?: number) => void
+  advanceTimer: (deltaSeconds?: number, now?: number) => void
   setClockRunning: (isRunning: boolean, now?: number | null) => void
   syncTimestamp: (now: number | null) => void
 }
@@ -359,6 +372,9 @@ export const useTorchTrackerState = (
     },
     tick(deltaSeconds, now = Date.now()) {
       dispatch({ type: 'active/tick', payload: { deltaSeconds, now } })
+    },
+    advanceTimer(deltaSeconds = 60, now = Date.now()) {
+      dispatch({ type: 'timer/advance', payload: { deltaSeconds, now } })
     },
     setClockRunning(isRunning, now = isRunning ? Date.now() : null) {
       dispatch({ type: 'settings/setClockRunning', payload: { isRunning, now } })
