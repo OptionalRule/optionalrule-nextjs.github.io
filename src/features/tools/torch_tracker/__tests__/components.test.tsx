@@ -167,7 +167,7 @@ describe('TorchTrackerHeader', () => {
     )
 
     expect(screen.getByText(/torch tracker/i)).toBeInTheDocument()
-    expect(screen.getByText(/add:/i)).toBeInTheDocument()
+    expect(screen.getByText(/catalog/i)).toBeInTheDocument()
     expect(screen.getByText('9:00')).toBeInTheDocument()
     expect(screen.queryByRole('switch')).not.toBeInTheDocument()
 
