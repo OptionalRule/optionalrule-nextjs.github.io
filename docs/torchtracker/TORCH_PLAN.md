@@ -100,3 +100,26 @@ For Product Requirements see `docs/torchtracker/TORCH_PRD.md`
    - **Visual Grouping & Layout**: Group all three control buttons (Play/Pause, Reset All, Skip Forward) together visually in header using consistent spacing and styling. Maintain existing responsive behavior where buttons use icon-only display on both desktop and mobile. Ensure proper keyboard navigation order through the control group.
    
    - **State Integration & Testing**: Add `advanceTimer` action to reducer with comprehensive test coverage for edge cases (timer expiration, disabled states, light source elapsed time updates). Update existing header component tests to include new button interactions and state management. Verify proper tooltip display and accessibility attributes for the new Skip Forward button.
+
+17. **Local Persistence & Small Changes** *(Status: Pending)*
+    - **Header Text Update**: Change subtitle text to "Manage your party's light sources in real time. Add a light to begin." for clearer action-oriented messaging.
+
+    - **Persistent State Implementation**: Add localStorage-based state persistence to prevent data loss on page refresh/close during active sessions. All active light sources, central timer state, and settings should be saved and restored automatically.
+
+    - **Persistence Toggle Control**: Add toggle button in header (suggest: "Save Session" or "Auto-Save") that controls localStorage persistence. Toggle should be active by default. When deactivated, immediately clear all saved state from localStorage. Button should use appropriate Lucide icon (e.g., `Save` when active, `SaveOff` when inactive).
+
+    - **State Management Integration**: Implement `useEffect` hooks to sync state changes to localStorage when persistence toggle is enabled. On component mount, check for saved state and restore if valid. Add state versioning to handle future schema changes gracefully.
+
+    - **Button State Logic - Start/Pause Button**:
+      - **Disabled when**: No light sources exist in tracker
+      - **Enabled when**: Light sources exist AND (tracker is paused OR inactive lights can be restarted)
+      - Button shows `Play` icon when paused/stopped, `CirclePause` icon when running
+
+    - **Button State Logic - Reset Button**:
+      - **Disabled when**: No light sources exist in tracker
+      - **Enabled when**: One or more light sources are present (active or inactive)
+      - Clicking should prompt confirmation before clearing all state
+
+    - **Visual Feedback**: Ensure disabled buttons use appropriate opacity and cursor styles. Add tooltip text explaining why buttons are disabled when applicable (e.g., "No lights to reset" when Reset is disabled).
+
+    - **Testing Coverage**: Add tests for localStorage persistence (save/restore/clear), button enable/disable logic for various state combinations, persistence toggle behavior, and edge cases (corrupted localStorage data, quota exceeded errors).
