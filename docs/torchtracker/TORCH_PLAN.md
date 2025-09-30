@@ -395,3 +395,9 @@ Based on design analysis of the current implementation, the following phased imp
 - Browser compatibility (Chrome, Firefox, Safari, Edge)
 
 **Rollback Strategy**: Each phase is independent and can be reverted without affecting other changes. Use git commits per phase for easy rollback if issues arise.
+
+## Bugs
+
+The following bugs have been noticed.
+
+- Reset button leaves lightsources on the board, all timers are at 0, do not restart, and cannot be started.
