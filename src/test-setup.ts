@@ -44,9 +44,13 @@ beforeEach(() => {
   resetNextNavigationMocks();
 });
 
+// Some environments omit the Node constructor, which React checks via `instanceof`.
+if (typeof window !== 'undefined' && typeof window.Node !== 'function') {
+  (window as unknown as { Node: typeof window.HTMLElement }).Node = window.HTMLElement;
+}
+
 // Global cleanup
 afterEach(() => {
   // Clean up any mounted components
   document.body.innerHTML = '';
 });
-
