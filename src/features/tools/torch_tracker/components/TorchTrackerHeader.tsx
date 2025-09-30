@@ -84,7 +84,11 @@ export function TorchTrackerHeader({
         <div className="flex items-center gap-3">
           <button
             type="button"
-            className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-[var(--border)] bg-[var(--surface-1)] text-[var(--text-primary)] transition hover:border-[var(--accent)] hover:text-[var(--accent)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--focus-ring)] disabled:cursor-not-allowed disabled:opacity-60"
+            className={
+              canToggleClock
+                ? 'inline-flex h-14 w-14 items-center justify-center rounded-full bg-[var(--accent-warm)] border-2 border-[var(--accent-warm-hover)] text-white shadow-lg transition-all duration-200 hover:bg-[var(--accent-warm-hover)] hover:scale-105 hover:shadow-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-warm)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--surface-0)]'
+                : 'inline-flex h-14 w-14 items-center justify-center rounded-full bg-[var(--state-disabled)] border-2 border-[var(--border)] text-[var(--text-muted)] shadow-none cursor-not-allowed opacity-50'
+            }
             onClick={() => onToggleClock(!isClockRunning)}
             aria-pressed={isClockRunning}
             aria-label={clockLabel}
@@ -92,14 +96,14 @@ export function TorchTrackerHeader({
             disabled={!canToggleClock}
           >
             {isClockRunning ? (
-              <Pause className="h-5 w-5" aria-hidden="true" />
+              <Pause className="h-6 w-6" aria-hidden="true" />
             ) : (
-              <Play className="h-5 w-5" aria-hidden="true" />
+              <Play className="h-6 w-6" aria-hidden="true" />
             )}
           </button>
           <button
             type="button"
-            className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-[var(--border)] bg-[var(--surface-1)] text-[var(--text-primary)] transition hover:border-[var(--accent)] hover:text-[var(--accent)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--focus-ring)] disabled:cursor-not-allowed disabled:opacity-60"
+            className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-[var(--border)] bg-[var(--surface-1)] text-[var(--text-primary)] transition-all duration-200 hover:border-[var(--error)] hover:text-[var(--error)] hover:bg-[var(--error-light)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--focus-ring)] disabled:cursor-not-allowed disabled:opacity-50"
             onClick={onResetAll}
             aria-label="Reset all light sources"
             title={resetTitle}
@@ -109,7 +113,7 @@ export function TorchTrackerHeader({
           </button>
           <button
             type="button"
-            className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-[var(--border)] bg-[var(--surface-1)] text-[var(--text-primary)] transition hover:border-[var(--accent)] hover:text-[var(--accent)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--focus-ring)] disabled:cursor-not-allowed disabled:opacity-60"
+            className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-[var(--border)] bg-[var(--surface-1)] text-[var(--text-primary)] transition-all duration-200 hover:border-[var(--accent)] hover:text-[var(--accent)] hover:bg-[var(--accent-light)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--focus-ring)] disabled:cursor-not-allowed disabled:opacity-50"
             onClick={onAdvance}
             aria-label="Skip 1 minute"
             title="Skip 1 min"
@@ -119,7 +123,11 @@ export function TorchTrackerHeader({
           </button>
           <button
             type="button"
-            className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-[var(--border)] bg-[var(--surface-1)] text-[var(--text-primary)] transition hover:border-[var(--accent)] hover:text-[var(--accent)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--focus-ring)]"
+            className={
+              isPersistenceEnabled
+                ? 'inline-flex h-11 w-11 items-center justify-center rounded-full border border-[var(--success)] bg-[var(--success-light)] text-[var(--success)] transition-all duration-200 hover:border-[var(--success)] hover:brightness-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--focus-ring)]'
+                : 'inline-flex h-11 w-11 items-center justify-center rounded-full border border-[var(--border)] bg-[var(--surface-1)] text-[var(--text-primary)] transition-all duration-200 hover:border-[var(--text-tertiary)] hover:text-[var(--text-tertiary)] hover:bg-[var(--surface-hover)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--focus-ring)]'
+            }
             onClick={() => onTogglePersistence(!isPersistenceEnabled)}
             aria-pressed={isPersistenceEnabled}
             aria-label={persistenceLabel}
