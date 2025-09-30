@@ -1,6 +1,7 @@
 'use client'
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { Flame } from 'lucide-react'
 
 import { lightSourceCatalog } from './data/lightSources'
 import { useTorchTrackerState } from './hooks/useTorchTrackerState'
@@ -246,8 +247,20 @@ export default function TorchTracker({ className }: TorchTrackerProps) {
   const activeSection = (
     <section aria-label="Active light sources" className="space-y-4">
       {state.active.length === 0 && (
-        <div className="rounded-2xl border border-dashed border-[var(--border)] bg-[var(--surface-0)]/40 p-6 text-sm text-[var(--text-secondary)]">
-          No active lights yet. Add one from the catalog to begin tracking.
+        <div
+          role="status"
+          aria-live="polite"
+          className="rounded-2xl border border-dashed border-[var(--border)] hover:border-[var(--accent-warm)]/30 bg-gradient-to-br from-[var(--background)] to-[var(--surface-2)] p-12 md:p-16 text-center flex flex-col items-center justify-center gap-6 min-h-[320px] transition-all duration-300"
+        >
+          <div className="flame-icon-wrapper relative mb-2" aria-hidden="true">
+            <Flame className="h-12 w-12 text-[var(--accent-warm)] animate-flame-flicker" />
+          </div>
+          <h3 className="text-2xl md:text-3xl font-bold text-[var(--text-primary)] tracking-tight leading-tight">
+            No Active Lights
+          </h3>
+          <p className="text-base md:text-lg text-[var(--text-secondary)] max-w-md leading-relaxed">
+            Add a light source from the catalog above to begin tracking
+          </p>
         </div>
       )}
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
