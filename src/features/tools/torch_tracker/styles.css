@@ -125,7 +125,7 @@
 }
 
 .torch-card-face--inactive {
-  background: radial-gradient(circle at 60% 30%, rgba(44, 32, 28, 0.95), rgba(8, 6, 5, 0.95));
+  background: radial-gradient(circle at 60% 30%, rgba(28, 32, 44, 0.95), rgba(5, 6, 8, 0.95));
   transform: rotateY(180deg);
 }
 

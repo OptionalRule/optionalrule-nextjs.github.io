@@ -182,7 +182,7 @@ Based on design analysis of the current implementation, the following phased imp
 
 **Goal**: Create a more inviting and instructional empty state that guides new users toward their first action.
 
-#### 2.1 Enhanced Empty State Design
+#### 2.1 Enhanced Empty State Design *(Status: Complete)*
 - **Visual Elements**:
   - Add flame icon (🔥 or Lucide `Flame` icon) centered above text
   - Increase icon size to 48px for better visual presence
@@ -202,18 +202,11 @@ Based on design analysis of the current implementation, the following phased imp
 
 **Testing**: Verify empty state appears correctly on initial load. Test responsive behavior on mobile devices.
 
-#### 2.2 Tutorial Button Enhancement
-- **Positioning**: Ensure "Quick Tutorial" button is visually distinct
-- **Styling**: Consider subtle pulsing animation on first visit (using localStorage flag)
-- **Content**: Link tutorial to comprehensive help documentation when available
-
-**Implementation**: Enhance tutorial button in [TorchTrackerHeader.tsx](src/features/tools/torch_tracker/components/TorchTrackerHeader.tsx:66-74).
-
 ### Phase 3: Card Design Refinements *(Priority: Medium)*
 
 **Goal**: Improve card readability, color balance, and responsive spacing for better visual flow.
 
-#### 3.1 Card Typography & Contrast
+#### 3.1 Card Typography & Contrast *(Status: Complete)*
 - **Background Opacity Enhancement**:
   - Increase opacity on `.torch-card-label`, `.torch-card-metric`, and `.torch-card-timer` backgrounds
   - Change from `rgba(8, 5, 3, 0.75)` to `rgba(8, 5, 3, 0.85)` for better text contrast
@@ -228,7 +221,7 @@ Based on design analysis of the current implementation, the following phased imp
 
 **Testing**: Test contrast ratios using browser dev tools. Verify readability in both light and dark modes.
 
-#### 3.2 Inactive Card Visual Distinction
+#### 3.2 Inactive Card Visual Distinction *(Status: Complete)*
 - **Color Temperature Shift**:
   - Adjust inactive card gradient from warm browns to cooler grays/blues
   - Change `.torch-card-face--inactive` background gradient:
