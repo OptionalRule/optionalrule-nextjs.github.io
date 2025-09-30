@@ -60,7 +60,7 @@ export function TorchTrackerHeader({
               Torch Tracker
             </h1>
             <p className="text-sm text-[var(--text-secondary)]">
-              Manage your party's light sources in real time. Add a light to begin.
+              Manage your party&apos;s light sources in real time. Add a light to begin.
             </p>
           </div>
           {onOpenHelp && (
