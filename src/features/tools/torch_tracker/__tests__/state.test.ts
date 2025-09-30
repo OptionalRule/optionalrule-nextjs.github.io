@@ -7,7 +7,7 @@ import {
   torchTrackerReducer,
 } from '../hooks/useTorchTrackerState'
 import { selectCentralTimer } from '../lib/selectors'
-import type { TorchTrackerState } from '../types'
+import type { TorchTrackerHydrationSnapshot, TorchTrackerState } from '../types'
 
 const FIXED_DATE = new Date('2024-01-01T12:00:00Z').getTime()
 
@@ -174,6 +174,76 @@ describe('torchTrackerReducer', () => {
     })
     expect(state.settings.isClockRunning).toBe(true)
     expect(state.settings.lastTickTimestamp).toBe(FIXED_DATE + 2000)
+  })
+
+  it('hydrates persisted state snapshots and respects timer values', () => {
+    const instance = createActiveSourceFromCatalog(lightSourceCatalog[0], {
+      instanceId: 'hydrate-1',
+      remainingSeconds: 420,
+      status: 'active',
+      isPaused: false,
+      createdAt: FIXED_DATE,
+    })
+    const snapshot: TorchTrackerHydrationSnapshot = {
+      active: [instance],
+      settings: {
+        isClockRunning: true,
+        lastTickTimestamp: FIXED_DATE,
+      },
+      centralTimer: {
+        isInitialized: true,
+        totalSeconds: 600,
+        remainingSeconds: 420,
+        elapsedSeconds: 180,
+      },
+    }
+
+    const state = torchTrackerReducer(getInitialState(), {
+      type: 'state/replace',
+      payload: snapshot,
+    })
+
+    expect(state.active).toHaveLength(1)
+    expect(state.active[0].remainingSeconds).toBe(420)
+    expect(state.centralTimer.totalSeconds).toBe(600)
+    expect(state.centralTimer.remainingSeconds).toBe(420)
+    expect(state.settings.isClockRunning).toBe(true)
+    expect(state.settings.lastTickTimestamp).toBe(FIXED_DATE)
+  })
+
+  it('clears clock state when hydration data is incomplete', () => {
+    const instance = createActiveSourceFromCatalog(lightSourceCatalog[1], {
+      instanceId: 'hydrate-2',
+      remainingSeconds: 180,
+      status: 'paused',
+      isPaused: true,
+      createdAt: FIXED_DATE,
+    })
+
+    const snapshot: TorchTrackerHydrationSnapshot = {
+      active: [instance],
+      settings: {
+        isClockRunning: true,
+        lastTickTimestamp: FIXED_DATE,
+      },
+      centralTimer: {
+        isInitialized: false,
+        totalSeconds: 0,
+        remainingSeconds: 0,
+        elapsedSeconds: 0,
+      },
+    }
+
+    const state = torchTrackerReducer(getInitialState(), {
+      type: 'state/replace',
+      payload: snapshot,
+    })
+
+    expect(state.settings.isClockRunning).toBe(false)
+    expect(state.settings.lastTickTimestamp).toBeNull()
+    expect(state.centralTimer.isInitialized).toBe(true)
+    expect(state.centralTimer.totalSeconds).toBeGreaterThan(0)
+    expect(state.centralTimer.remainingSeconds).toBeGreaterThan(0)
   })
 })
 

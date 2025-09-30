@@ -9,6 +9,7 @@ import type {
   ActiveLightSource,
   CentralTimerSnapshot,
   TorchCatalogEntry,
+  TorchTrackerHydrationSnapshot,
   TorchTrackerReducerAction,
   TorchTrackerSettings,
   TorchTrackerState,
@@ -27,6 +28,25 @@ const createInitialCentralTimer = (): CentralTimerSnapshot => ({
   remainingSeconds: 0,
   elapsedSeconds: 0,
 })
+
+const normalizeCentralTimer = (timer: CentralTimerSnapshot | null | undefined): CentralTimerSnapshot => {
+  if (!timer || !timer.isInitialized) {
+    return createInitialCentralTimer()
+  }
+  const total = Math.max(0, Math.round(timer.totalSeconds))
+  if (total <= 0) {
+    return createInitialCentralTimer()
+  }
+  const remainingRaw = Math.max(0, Math.round(timer.remainingSeconds))
+  const remainingSeconds = Math.min(total, remainingRaw)
+  const elapsedSeconds = total - remainingSeconds
+  return {
+    isInitialized: true,
+    totalSeconds: total,
+    remainingSeconds,
+    elapsedSeconds,
+  }
+}
 
 const normalizeActiveSource = (source: ActiveLightSource): ActiveLightSource => {
   const totalSeconds = minutesToSeconds(source.baseDurationMinutes)
@@ -298,6 +318,48 @@ export const torchTrackerReducer = (
         },
       }
     }
+    case 'state/replace': {
+      const nextActive = action.payload.active.map((source) => normalizeActiveSource(source))
+      const normalizedTimer = normalizeCentralTimer(action.payload.centralTimer)
+      const hasLights = nextActive.length > 0
+      const hasActiveRunning = nextActive.some((source) => source.status === 'active')
+
+      let centralTimer = normalizedTimer
+      if (hasLights) {
+        if (centralTimer.totalSeconds <= 0) {
+          const totalSeconds = nextActive.reduce((max, source) => Math.max(max, source.totalSeconds), 0)
+          const remainingSeconds = nextActive.reduce((max, source) => Math.max(max, source.remainingSeconds), 0)
+          centralTimer = {
+            isInitialized: totalSeconds > 0,
+            totalSeconds,
+            remainingSeconds,
+            elapsedSeconds: Math.max(0, totalSeconds - remainingSeconds),
+          }
+        } else {
+          centralTimer = {
+            ...centralTimer,
+            isInitialized: true,
+          }
+        }
+      } else {
+        centralTimer = createInitialCentralTimer()
+      }
+
+      const lastTickTimestamp = action.payload.settings.lastTickTimestamp ?? null
+      const canRunClock =
+        hasActiveRunning && centralTimer.isInitialized && centralTimer.remainingSeconds > 0
+      const nextSettings: TorchTrackerSettings = {
+        isClockRunning: canRunClock ? Boolean(action.payload.settings.isClockRunning) : false,
+        lastTickTimestamp: canRunClock ? lastTickTimestamp : null,
+      }
+
+      return {
+        ...state,
+        active: nextActive,
+        centralTimer,
+        settings: nextSettings,
+      }
+    }
     default:
       return state
   }
@@ -323,6 +385,7 @@ export interface TorchTrackerController {
   advanceTimer: (deltaSeconds?: number, now?: number) => void
   setClockRunning: (isRunning: boolean, now?: number | null) => void
   syncTimestamp: (now: number | null) => void
+  replaceState: (payload: TorchTrackerHydrationSnapshot) => void
 }
 
 export interface TorchTrackerHookResult {
@@ -381,6 +444,9 @@ export const useTorchTrackerState = (
     },
     syncTimestamp(now) {
       dispatch({ type: 'settings/syncTimestamp', payload: { now } })
+    },
+    replaceState(payload) {
+      dispatch({ type: 'state/replace', payload })
     },
   }), [catalogIndex])
 

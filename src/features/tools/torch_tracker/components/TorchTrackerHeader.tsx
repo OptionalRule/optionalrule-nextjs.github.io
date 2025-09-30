@@ -1,7 +1,7 @@
 'use client'
 
 import type { ReactNode } from 'react'
-import { CirclePause, FastForward, Play, TimerReset } from 'lucide-react'
+import { FastForward, Pause, Play, Save, SaveOff, TimerReset } from 'lucide-react'
 
 import type { CentralTimerSnapshot } from '../types'
 import { CircularCountdownTimer } from './CircularCountdownTimer'
@@ -13,6 +13,13 @@ export interface TorchTrackerHeaderProps {
   onResetAll: () => void
   onAdvance: () => void
   canAdvance: boolean
+  canToggleClock: boolean
+  clockDisabledReason?: string
+  canReset: boolean
+  resetDisabledReason?: string
+  isPersistenceEnabled: boolean
+  onTogglePersistence: (nextEnabled: boolean) => void
+  persistenceTooltip?: string
   onOpenHelp?: () => void
   catalog?: ReactNode
   className?: string
@@ -25,11 +32,22 @@ export function TorchTrackerHeader({
   onResetAll,
   onAdvance,
   canAdvance,
+  canToggleClock,
+  clockDisabledReason,
+  canReset,
+  resetDisabledReason,
+  isPersistenceEnabled,
+  onTogglePersistence,
+  persistenceTooltip,
   onOpenHelp,
   catalog,
   className,
 }: TorchTrackerHeaderProps) {
   const clockLabel = isClockRunning ? 'Pause clock' : 'Start clock'
+  const clockTitle = !canToggleClock && clockDisabledReason ? clockDisabledReason : clockLabel
+  const resetTitle = !canReset && resetDisabledReason ? resetDisabledReason : 'Reset all light sources'
+  const persistenceLabel = isPersistenceEnabled ? 'Auto-save enabled' : 'Auto-save disabled'
+  const persistenceTitle = persistenceTooltip ?? persistenceLabel
 
   return (
     <header
@@ -42,7 +60,7 @@ export function TorchTrackerHeader({
               Torch Tracker
             </h1>
             <p className="text-sm text-[var(--text-secondary)]">
-              Coordinate every flame from one countdown. Add a light to begin the shared burn timer.
+              Manage your party's light sources in real time. Add a light to begin.
             </p>
           </div>
           {onOpenHelp && (
@@ -66,24 +84,26 @@ export function TorchTrackerHeader({
         <div className="flex items-center gap-3">
           <button
             type="button"
-            className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-[var(--border)] bg-[var(--surface-1)] text-[var(--text-primary)] transition hover:border-[var(--accent)] hover:text-[var(--accent)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--focus-ring)]"
+            className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-[var(--border)] bg-[var(--surface-1)] text-[var(--text-primary)] transition hover:border-[var(--accent)] hover:text-[var(--accent)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--focus-ring)] disabled:cursor-not-allowed disabled:opacity-60"
             onClick={() => onToggleClock(!isClockRunning)}
             aria-pressed={isClockRunning}
             aria-label={clockLabel}
-            title={clockLabel}
+            title={clockTitle}
+            disabled={!canToggleClock}
           >
             {isClockRunning ? (
-              <CirclePause className="h-5 w-5" aria-hidden="true" />
+              <Pause className="h-5 w-5" aria-hidden="true" />
             ) : (
               <Play className="h-5 w-5" aria-hidden="true" />
             )}
           </button>
           <button
             type="button"
-            className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-[var(--border)] bg-[var(--surface-1)] text-[var(--text-primary)] transition hover:border-[var(--accent)] hover:text-[var(--accent)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--focus-ring)]"
+            className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-[var(--border)] bg-[var(--surface-1)] text-[var(--text-primary)] transition hover:border-[var(--accent)] hover:text-[var(--accent)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--focus-ring)] disabled:cursor-not-allowed disabled:opacity-60"
             onClick={onResetAll}
             aria-label="Reset all light sources"
-            title="Reset all light sources"
+            title={resetTitle}
+            disabled={!canReset}
           >
             <TimerReset className="h-5 w-5" aria-hidden="true" />
           </button>
@@ -96,6 +116,20 @@ export function TorchTrackerHeader({
             disabled={!canAdvance}
           >
             <FastForward className="h-5 w-5" aria-hidden="true" />
+          </button>
+          <button
+            type="button"
+            className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-[var(--border)] bg-[var(--surface-1)] text-[var(--text-primary)] transition hover:border-[var(--accent)] hover:text-[var(--accent)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--focus-ring)]"
+            onClick={() => onTogglePersistence(!isPersistenceEnabled)}
+            aria-pressed={isPersistenceEnabled}
+            aria-label={persistenceLabel}
+            title={persistenceTitle}
+          >
+            {isPersistenceEnabled ? (
+              <Save className="h-5 w-5" aria-hidden="true" />
+            ) : (
+              <SaveOff className="h-5 w-5" aria-hidden="true" />
+            )}
           </button>
         </div>
         {catalog ? <div className="w-full md:w-auto">{catalog}</div> : null}

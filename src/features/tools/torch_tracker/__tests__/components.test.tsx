@@ -165,6 +165,11 @@ describe('TorchTrackerHeader', () => {
         onResetAll={resetAll}
         onAdvance={advanceTimer}
         canAdvance={true}
+        canToggleClock={true}
+        canReset={true}
+        isPersistenceEnabled
+        onTogglePersistence={vi.fn()}
+        persistenceTooltip="Auto-save stores this session in your browser"
         catalog={<div>catalog</div>}
       />,
     )
@@ -185,6 +190,51 @@ describe('TorchTrackerHeader', () => {
     expect(skipButton).toHaveAttribute('title', 'Skip 1 min')
     fireEvent.click(skipButton)
     expect(advanceTimer).toHaveBeenCalled()
+
+    const persistenceButton = screen.getByRole('button', { name: /auto-save enabled/i })
+    expect(persistenceButton).toHaveAttribute('aria-pressed', 'true')
+  })
+
+  it('disables clock and reset controls with explanatory tooltips', () => {
+    const centralTimer: CentralTimerSnapshot = {
+      isInitialized: false,
+      totalSeconds: 0,
+      remainingSeconds: 0,
+      elapsedSeconds: 0,
+    }
+
+    render(
+      <TorchTrackerHeader
+        isClockRunning={false}
+        centralTimer={centralTimer}
+        onToggleClock={vi.fn()}
+        onResetAll={vi.fn()}
+        onAdvance={vi.fn()}
+        canAdvance={false}
+        canToggleClock={false}
+        clockDisabledReason="Add a light to use the clock"
+        canReset={false}
+        resetDisabledReason="No lights to reset"
+        isPersistenceEnabled={false}
+        onTogglePersistence={vi.fn()}
+        persistenceTooltip="Auto-save is off for this session"
+      />,
+    )
+
+    const clockButton = screen.getByRole('button', { name: /start clock/i })
+    expect(clockButton).toBeDisabled()
+    expect(clockButton).toHaveAttribute('title', 'Add a light to use the clock')
+
+    const resetButton = screen.getByRole('button', { name: /reset all light sources/i })
+    expect(resetButton).toBeDisabled()
+    expect(resetButton).toHaveAttribute('title', 'No lights to reset')
+
+    const persistenceButton = screen.getByRole('button', { name: /auto-save disabled/i })
+    expect(persistenceButton).toHaveAttribute('aria-pressed', 'false')
+    expect(persistenceButton).toHaveAttribute('title', 'Auto-save is off for this session')
+
+    const skipButton = screen.getByRole('button', { name: /skip 1 minute/i })
+    expect(skipButton).toBeDisabled()
   })
 })
 

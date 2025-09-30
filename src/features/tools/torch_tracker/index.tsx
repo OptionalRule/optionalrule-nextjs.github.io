@@ -1,6 +1,6 @@
 'use client'
 
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
 import { lightSourceCatalog } from './data/lightSources'
 import { useTorchTrackerState } from './hooks/useTorchTrackerState'
@@ -8,6 +8,11 @@ import { useGameClock } from './hooks/useGameClock'
 import { CatalogPanel, ActiveLightCard, TorchTrackerHeader, TorchTrackerLayout } from './components'
 import type { ActiveLightSource, TorchCatalogEntry } from './types'
 import { getAllImageVariants } from './utils/images'
+import {
+  clearTorchTrackerState,
+  loadTorchTrackerState,
+  persistTorchTrackerState,
+} from './lib/persistence'
 import './styles.css'
 
 export interface TorchTrackerProps {
@@ -17,6 +22,8 @@ export interface TorchTrackerProps {
 export default function TorchTracker({ className }: TorchTrackerProps) {
   const { state, controller, centralTimer } = useTorchTrackerState(lightSourceCatalog)
   const [selectedCatalogId, setSelectedCatalogId] = useState<string | null>(null)
+  const [isPersistenceEnabled, setIsPersistenceEnabled] = useState(true)
+  const [hasHydratedPersistence, setHasHydratedPersistence] = useState(false)
   const centrallyPausedIdsRef = useRef<Set<string>>(new Set())
 
   const addEntry = useCallback(
@@ -57,8 +64,25 @@ export default function TorchTracker({ className }: TorchTrackerProps) {
     controller.advanceTimer()
   }, [controller])
 
+  const handleResetAll = useCallback(() => {
+    if (typeof window !== 'undefined') {
+      const confirmed = window.confirm('Reset all tracked light sources?')
+      if (!confirmed) {
+        return
+      }
+    }
+
+    centrallyPausedIdsRef.current.clear()
+    controller.resetAll()
+  }, [controller])
+
   const handleToggleClock = useCallback(
     (nextRunning: boolean) => {
+      const hasLights = state.active.length > 0
+      if (!hasLights) {
+        return
+      }
+
       const now = Date.now()
       if (!nextRunning) {
         const pausedByCentral = new Set(centrallyPausedIdsRef.current)
@@ -99,6 +123,44 @@ export default function TorchTracker({ className }: TorchTrackerProps) {
     })
   }, [state.active])
 
+  useEffect(() => {
+    if (hasHydratedPersistence) return
+    if (typeof window === 'undefined') {
+      setHasHydratedPersistence(true)
+      return
+    }
+
+    if (isPersistenceEnabled) {
+      const snapshot = loadTorchTrackerState(window.localStorage)
+      if (snapshot) {
+        controller.replaceState(snapshot)
+        centrallyPausedIdsRef.current.clear()
+      }
+    }
+
+    setHasHydratedPersistence(true)
+  }, [controller, hasHydratedPersistence, isPersistenceEnabled])
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return
+    if (!isPersistenceEnabled) {
+      clearTorchTrackerState(window.localStorage)
+    }
+  }, [isPersistenceEnabled])
+
+  useEffect(() => {
+    if (!hasHydratedPersistence) return
+    if (!isPersistenceEnabled) return
+    if (typeof window === 'undefined') return
+
+    if (state.active.length === 0) {
+      clearTorchTrackerState(window.localStorage)
+      return
+    }
+
+    persistTorchTrackerState(window.localStorage, state)
+  }, [hasHydratedPersistence, isPersistenceEnabled, state])
+
   useGameClock({
     isRunning: state.settings.isClockRunning,
     onTick: (deltaSeconds, now) => controller.tick(deltaSeconds, now),
@@ -137,17 +199,46 @@ export default function TorchTracker({ className }: TorchTrackerProps) {
     />
   )
 
+  const hasLights = state.active.length > 0
   const hasActiveRunning = state.active.some((source) => source.status === 'active')
+  const hasInactive = state.active.some((source) => source.status === 'paused')
   const canAdvance = hasActiveRunning && state.settings.isClockRunning
+  const canToggleClock = hasLights && (state.settings.isClockRunning || hasInactive)
+  const clockDisabledReason = useMemo(
+    () => (hasLights ? undefined : 'Add a light to use the clock'),
+    [hasLights],
+  )
+  const canReset = hasLights
+  const resetDisabledReason = useMemo(
+    () => (hasLights ? undefined : 'No lights to reset'),
+    [hasLights],
+  )
+  const persistenceTooltip = isPersistenceEnabled
+    ? 'Auto-save stores this session in your browser'
+    : 'Auto-save is off for this session'
+
+  const handleTogglePersistence = useCallback(
+    (nextEnabled: boolean) => {
+      setIsPersistenceEnabled(nextEnabled)
+    },
+    [],
+  )
 
   const header = (
     <TorchTrackerHeader
       isClockRunning={state.settings.isClockRunning}
       centralTimer={centralTimer}
       onToggleClock={handleToggleClock}
-      onResetAll={() => controller.resetAll()}
+      onResetAll={handleResetAll}
       onAdvance={handleAdvanceTimer}
       canAdvance={canAdvance}
+      canToggleClock={canToggleClock}
+      clockDisabledReason={clockDisabledReason}
+      canReset={canReset}
+      resetDisabledReason={resetDisabledReason}
+      isPersistenceEnabled={isPersistenceEnabled}
+      onTogglePersistence={handleTogglePersistence}
+      persistenceTooltip={persistenceTooltip}
       catalog={catalogBar}
     />
   )

@@ -60,6 +60,12 @@ export interface TorchTrackerState {
   centralTimer: CentralTimerSnapshot
 }
 
+export interface TorchTrackerHydrationSnapshot {
+  active: ActiveLightSource[]
+  settings: TorchTrackerSettings
+  centralTimer: CentralTimerSnapshot
+}
+
 export interface CentralTimerSnapshot {
   isInitialized: boolean
   totalSeconds: number
@@ -80,6 +86,7 @@ export type TorchTrackerActionType =
   | 'timer/advance'
   | 'settings/setClockRunning'
   | 'settings/syncTimestamp'
+  | 'state/replace'
 
 export interface TorchTrackerBaseAction<TType extends TorchTrackerActionType, TPayload> {
   type: TType
@@ -99,6 +106,7 @@ export type TorchTrackerReducerAction =
   | TorchTrackerBaseAction<'timer/advance', { deltaSeconds: number; now: number }>
   | TorchTrackerBaseAction<'settings/setClockRunning', { isRunning: boolean; now: number | null }>
   | TorchTrackerBaseAction<'settings/syncTimestamp', { now: number | null }>
+  | TorchTrackerBaseAction<'state/replace', TorchTrackerHydrationSnapshot>
 
 export type TorchTrackerSelector<TResult> = (state: TorchTrackerState) => TResult
 

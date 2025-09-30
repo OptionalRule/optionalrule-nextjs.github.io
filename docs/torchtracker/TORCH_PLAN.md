@@ -113,7 +113,7 @@ For Product Requirements see `docs/torchtracker/TORCH_PRD.md`
     - **Button State Logic - Start/Pause Button**:
       - **Disabled when**: No light sources exist in tracker
       - **Enabled when**: Light sources exist AND (tracker is paused OR inactive lights can be restarted)
-      - Button shows `Play` icon when paused/stopped, `CirclePause` icon when running
+      - Button shows `Play` icon when paused/stopped, `Pause` icon when running
 
     - **Button State Logic - Reset Button**:
       - **Disabled when**: No light sources exist in tracker
