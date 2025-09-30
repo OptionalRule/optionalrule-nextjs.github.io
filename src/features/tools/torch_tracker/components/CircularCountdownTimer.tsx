@@ -12,11 +12,24 @@ export interface CircularCountdownTimerProps {
   strokeWidth?: number
 }
 
-const FIRE_RED = '#dc2626'
 const TRACK_COLOR = 'var(--surface-3)'
 const TEXT_COLOR = 'var(--text-primary)'
 
+const COLOR_BLUE = 'var(--accent)'
+const COLOR_AMBER = 'var(--accent-warm)'
+const COLOR_RED = 'var(--error)'
+
 const TEN_MINUTES_SECONDS = 600
+
+const getTimerColor = (percentRemaining: number): string => {
+  if (percentRemaining > 50) {
+    return COLOR_BLUE
+  }
+  if (percentRemaining > 25) {
+    return COLOR_AMBER
+  }
+  return COLOR_RED
+}
 
 const formatAnnouncement = (remainingSeconds: number) => {
   if (remainingSeconds <= 0) {
@@ -35,7 +48,7 @@ const formatAnnouncement = (remainingSeconds: number) => {
 export function CircularCountdownTimer({
   timer,
   className,
-  size = 96,
+  size = 120,
   strokeWidth = 6,
 }: CircularCountdownTimerProps) {
   const remainingSeconds = getRemainingTime(timer)
@@ -52,6 +65,10 @@ export function CircularCountdownTimer({
     }
     return Math.max(0, Math.min(1, remainingSeconds / totalSeconds))
   }, [remainingSeconds, totalSeconds])
+
+  const percentRemaining = useMemo(() => progress * 100, [progress])
+  const timerColor = useMemo(() => getTimerColor(percentRemaining), [percentRemaining])
+  const isCritical = percentRemaining < 10 && timer.isInitialized && remainingSeconds > 0
 
   const radius = useMemo(() => (size - strokeWidth) / 2, [size, strokeWidth])
   const circumference = useMemo(() => 2 * Math.PI * radius, [radius])
@@ -106,8 +123,12 @@ export function CircularCountdownTimer({
             cy={size / 2}
           />
           <circle
-            className="transition-[stroke-dashoffset] duration-300 ease-out"
-            stroke={FIRE_RED}
+            className={`transition-all duration-300 ease-out ${
+              isCritical
+                ? 'motion-safe:animate-pulse motion-reduce:animate-none'
+                : ''
+            }`}
+            stroke={timerColor}
             strokeWidth={strokeWidth}
             strokeLinecap="round"
             fill="transparent"

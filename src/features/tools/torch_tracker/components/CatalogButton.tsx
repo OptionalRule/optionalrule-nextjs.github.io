@@ -33,7 +33,7 @@ export function CatalogButton({ entry, onSelect, disabled = false, selected = fa
   const iconLabel = entry.icon || '🔥'
 
   const baseClasses =
-    'inline-flex h-11 w-11 items-center justify-center rounded-full border border-[var(--border)] bg-[color-mix(in_oklab,var(--surface-1)_92%,transparent)] text-base font-medium transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--focus-ring)] md:h-auto md:w-auto md:justify-start md:gap-2 md:px-3 md:py-1.5 md:text-sm'
+    'inline-flex h-11 w-11 items-center justify-center rounded-full border border-[var(--border)] bg-[color-mix(in_oklab,var(--surface-1)_92%,transparent)] text-base font-medium transition focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[var(--focus-ring)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--background)] md:h-auto md:w-auto md:justify-start md:gap-2 md:px-3 md:py-1.5 md:text-sm'
   const stateClasses = selected
     ? 'border-[var(--accent)] text-[var(--accent)] shadow-sm'
     : 'hover:border-[var(--accent)]'

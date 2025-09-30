@@ -151,31 +151,32 @@ Based on design analysis of the current implementation, the following phased imp
 
 **Testing**: ✓ Button hierarchy is clear in both light and dark modes. Disabled states remain visually distinct.
 
-#### 1.2 Countdown Timer Enhancement
-- **Dynamic Color States**: Implement urgency-based color coding for the timer progress ring
-  - **>50% remaining**: Blue/neutral (`var(--accent)` - #2563eb)
-  - **25-50% remaining**: Amber warning (`var(--accent-warm)` - #ea580c)
-  - **<25% remaining**: Red alert (`var(--error)` - #dc2626)
-  - **<10% remaining**: Add subtle pulsing animation to red state (respects `prefers-reduced-motion`)
+#### 1.2 Countdown Timer Enhancement *(Status: Complete)*
+- **Dynamic Color States**: Implement urgency-based color coding for the timer progress ring ✓
+  - **>50% remaining**: Blue/neutral (`var(--accent)` - #2563eb) ✓
+  - **25-50% remaining**: Amber warning (`var(--accent-warm)` - #ea580c) ✓
+  - **<25% remaining**: Red alert (`var(--error)` - #dc2626) ✓
+  - **<10% remaining**: Add subtle pulsing animation to red state (respects `prefers-reduced-motion`) ✓
 
-- **Size Adjustment**: Increase default timer size from 104px to 120px on desktop for better prominence
-  - Keep mobile size responsive and appropriate for smaller screens
-  - Ensure timer remains visually balanced in header layout
+- **Size Adjustment**: Increase default timer size from 104px to 120px on desktop for better prominence ✓
+  - Keep mobile size responsive and appropriate for smaller screens ✓
+  - Ensure timer remains visually balanced in header layout ✓
 
-**Implementation**: Modify [CircularCountdownTimer.tsx](src/features/tools/torch_tracker/components/CircularCountdownTimer.tsx:15-19) color logic and size props.
+**Implementation**: Modified [CircularCountdownTimer.tsx](src/features/tools/torch_tracker/components/CircularCountdownTimer.tsx:18-58) with color state logic, pulsing animation, and size increase to 120px default.
 
-**Testing**: Test color transitions at various time thresholds. Verify pulsing animation has proper reduced-motion fallback.
+**Testing**: ✓ Color transitions smooth at all thresholds (50%, 25%, 10%). Pulsing animation respects reduced-motion preferences. Timer visually balanced in header at 120px.
 
-#### 1.3 Focus Ring Enhancement
-- **Visibility Improvement**: Strengthen keyboard focus indicators across all interactive elements
-  - Increase focus ring width from default to 3px
-  - Use higher contrast color (`--focus-ring` with increased opacity)
-  - Ensure focus rings are visible against all background colors
-  - Add focus-visible states to all catalog buttons, control buttons, and cards
+#### 1.3 Focus Ring Enhancement *(Status: Complete)*
+- **Visibility Improvement**: Strengthen keyboard focus indicators across all interactive elements ✓
+  - Increase focus ring width from 2px to 4px (using `ring-4`) ✓
+  - Use higher contrast color (`--focus-ring` blue for consistency) ✓
+  - Ensure focus rings are visible against all background colors ✓
+  - Add focus-visible states to all catalog buttons, control buttons, and cards ✓
+  - Fixed CSS variable references (`--background` instead of invalid `--surface-0`/`--surface-1`) ✓
 
-**Implementation**: Update focus-visible styles in [TorchTrackerHeader.tsx](src/features/tools/torch_tracker/components/TorchTrackerHeader.tsx), [CatalogButton.tsx](src/features/tools/torch_tracker/components/CatalogButton.tsx), and [ActiveLightCard.tsx](src/features/tools/torch_tracker/components/ActiveLightCard.tsx).
+**Implementation**: Updated focus-visible styles in [TorchTrackerHeader.tsx](src/features/tools/torch_tracker/components/TorchTrackerHeader.tsx:69-128), [CatalogButton.tsx](src/features/tools/torch_tracker/components/CatalogButton.tsx:36), [ActiveLightCard.tsx](src/features/tools/torch_tracker/components/ActiveLightCard.tsx:144), and [styles.css](src/features/tools/torch_tracker/styles.css:360-363).
 
-**Testing**: Navigate entire interface with keyboard only. Verify focus indicators are always visible and properly positioned.
+**Testing**: ✓ All interactive elements have 4px blue focus rings with proper offsets (2px for buttons, 4px for cards). Focus indicators clearly visible on all background colors including orange primary button. WCAG 2.4.7 Level AA compliant. Verified working via keyboard navigation.
 
 ### Phase 2: Empty State & First-Time Experience *(Priority: High)*
 
@@ -396,8 +397,10 @@ Based on design analysis of the current implementation, the following phased imp
 
 **Rollback Strategy**: Each phase is independent and can be reverted without affecting other changes. Use git commits per phase for easy rollback if issues arise.
 
-## Bugs
+## Bugs & Enhancements
 
 The following bugs have been noticed.
 
-- Reset button leaves lightsources on the board, all timers are at 0, do not restart, and cannot be started.
+- (B) Reset button leaves lightsources on the board, all timers are at 0, do not restart, and cannot be started.
+
+- (E) Option to toggle the view of exact timers on and off, leaving only the ring.

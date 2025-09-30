@@ -141,7 +141,7 @@ export function ActiveLightCard({ source, onPause, onResume, onRemove, className
 
   return (
     <article
-      className={`torch-card aspect-[5/7] w-full max-w-sm cursor-pointer select-none ${
+      className={`torch-card aspect-[5/7] w-full max-w-sm cursor-pointer select-none focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[var(--focus-ring)] focus-visible:ring-offset-4 focus-visible:ring-offset-[var(--background)] ${
         isRemoving ? 'torch-card--removing' : ''
       } ${className ?? ''}`.trim()}
       data-state={cardState}
