@@ -6,7 +6,7 @@ import Link from 'next/link';
 import type { Metadata } from 'next';
 import { MDXRemote } from 'next-mdx-remote/rsc';
 import { mdxOptions } from '@/lib/mdx-options';
-import { mdxComponents } from '@/stories/mdx-components';
+import { mdxComponents } from '@/lib/mdx-components';
 import TableOfContents from '@/components/TableOfContents';
 
 interface PageProps {

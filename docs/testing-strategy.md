@@ -85,15 +85,6 @@ The testing strategy focuses on critical functionality that could break during d
 - Color contrast (semantic verification)
 - Screen reader compatibility
 
-### 6. Component Tests (Storybook + Vitest)
-**Purpose**: Visual component testing and interaction verification  
-**Config**: `vitest.config.ts` (Storybook integration)
-
-**Coverage**:
-- Component rendering
-- User interactions  
-- Visual regression detection
-
 ## Test Commands
 
 ```bash
@@ -173,7 +164,7 @@ Tests use mocked data and file system operations to ensure:
 
 ### Adding New Tests
 1. **New utility functions**: Add tests to respective `.test.ts` files
-2. **New components**: Create Storybook stories with interaction tests
+2. **New components**: Add component tests using Testing Library and Vitest
 3. **New content features**: Extend `content.test.ts` coverage
 
 ### Test Hygiene
@@ -215,7 +206,7 @@ The testing strategy is designed to work in CI environments:
 2. Add targeted RTL suites for the navigation and content primitives listed above, asserting trailing slashes, GA opt-in/out, and external link handling. - IMPLEMENTED
 3. Introduce lightweight integration tests for representative paginated/tag routes that render the exported components with fixture content and validate metadata helpers. - IMPLEMENTED
 4. Re-assess the global thresholds once the new tests land; bump toward 55% if coverage rises accordingly, otherwise keep 50% and document the remaining gaps. - IMPLEMENTED at 60% Revisit in the future
-5. Spin up the optional `vitest.games.config.ts` (or a Storybook-driven Playwright suite) when you are ready to harden the interactive bundle without impacting the primary CI gate.
+5. Spin up the optional `vitest.games.config.ts` (or a Playwright test suite) when you are ready to harden the interactive bundle without impacting the primary CI gate.
 
 ## Future Enhancements
 

@@ -138,7 +138,7 @@ Integration
 
 - Tool PRD: `src/features/tools/kcd2_alchemy/docs/PRD.md` covering overview, users, goals, schema, UX flows, performance, a11y, acceptance criteria, and risks. Model after `documentation/asteroids/PRD.md` and repository `documentation/PRD.md`.
 - README: quickstart, JSON contract, known limitations, and contribution notes.
-- Storybook: stories for `PotionCard` (default/optimized/missing fields), `FiltersPanel` (interactive), and `SearchBar`.
+- Component tests: tests for `PotionCard` (default/optimized/missing fields), `FiltersPanel` (interactive), and `SearchBar` using Testing Library.
 
 ## 9) Milestones & Tasks
 

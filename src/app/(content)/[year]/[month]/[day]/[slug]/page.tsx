@@ -9,7 +9,7 @@ import type { Metadata } from 'next';
 import { MDXRemote } from 'next-mdx-remote/rsc';
 import { mdxOptions } from '@/lib/mdx-options';
 import TableOfContents from '@/components/TableOfContents';
-import { mdxComponents } from '@/stories/mdx-components';
+import { mdxComponents } from '@/lib/mdx-components';
 
 interface PostPageProps {
   params: Promise<{

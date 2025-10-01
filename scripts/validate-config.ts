@@ -114,7 +114,7 @@ function checkHardcodedHosts(): Finding[] {
         const content = readFileSafe(full) || '';
         const matches = content.match(hostRegex) || [];
         for (const m of matches) {
-          // Allow common external references in SVGs or storybook; we’ve filtered those directories already
+          // Allow common external references in SVGs; we've filtered those directories already
           if (m.startsWith(siteConfig.url)) continue;
           // Allow GA script URL in GA component
           if (m.startsWith('https://www.googletagmanager.com/')) continue;
