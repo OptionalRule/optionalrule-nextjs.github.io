@@ -17,7 +17,7 @@
     "test:watch": "vitest --config vitest.unit.config.ts",
     "test:ui": "vitest --ui --config vitest.unit.config.ts",
     "test:coverage": "vitest run --coverage --config vitest.unit.config.ts",
-    "test:ci": "npm run typecheck && npm run lint && npm run test && npm run test:coverage",
+    "test:ci": "npm run typecheck && npm run lint && npm run test:coverage",
     "test:integration": "vitest run --config vitest.unit.config.ts --run src/__tests__/integration.test.ts",
     "test:ssg": "vitest run --config vitest.unit.config.ts --run src/__tests__/ssg.test.ts",
     "test:a11y": "vitest run --config vitest.unit.config.ts --run src/__tests__/accessibility.test.tsx",
