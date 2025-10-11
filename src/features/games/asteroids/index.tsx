@@ -19,6 +19,7 @@ export default function AsteroidsGame({ className }: AsteroidsGameProps) {
     pauseGame,
     resumeGame,
     restartGame,
+    clearHighScore,
   } = useAsteroids()
 
   return (
@@ -57,6 +58,7 @@ export default function AsteroidsGame({ className }: AsteroidsGameProps) {
               onPause={pauseGame}
               onResume={resumeGame}
               onRestart={restartGame}
+              onResetHighScore={clearHighScore}
             />
           </div>
         </div>

@@ -12,6 +12,7 @@ export interface UseAsteroidsReturn {
   pauseGame: () => void
   resumeGame: () => void
   restartGame: () => void
+  clearHighScore: () => void
   extraLifeNotification: { show: boolean; threshold: number }
   dismissExtraLifeNotification: () => void
 }
@@ -192,6 +193,10 @@ export function useAsteroids(): UseAsteroidsReturn {
       engineRef.current.restart()
     }
   }, [])
+
+  const clearHighScore = useCallback(() => {
+    engineRef.current?.clearHighScore()
+  }, [])
   
   const dismissExtraLifeNotification = useCallback(() => {
     setExtraLifeNotification({ show: false, threshold: 0 })
@@ -206,6 +211,7 @@ export function useAsteroids(): UseAsteroidsReturn {
     pauseGame,
     resumeGame,
     restartGame,
+    clearHighScore,
     extraLifeNotification,
     dismissExtraLifeNotification,
   }

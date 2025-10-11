@@ -769,6 +769,17 @@ export class AsteroidsEngine {
     return { ...this.gameState }
   }
 
+  clearHighScore(): void {
+    try {
+      localStorage.removeItem('asteroids_highscore')
+    } catch {
+      // Ignore storage errors gracefully
+    }
+
+    this.gameState.highScore = 0
+    this.events.onGameStateChange(this.getGameState())
+  }
+
   private notifyStateChange(): void {
     this.events.onGameStateChange(this.getGameState())
   }
