@@ -142,7 +142,7 @@ describe('torchTrackerReducer', () => {
     expect(state.centralTimer.isInitialized).toBe(false)
   })
 
-  it('resets single instances and clears the central timer when resetting all', () => {
+  it('resets single instances back to full duration', () => {
     let state = addInstance(getInitialState())
     const instanceId = state.active[0].instanceId
 
@@ -157,13 +157,48 @@ describe('torchTrackerReducer', () => {
       payload: { instanceId },
     })
     expect(state.active[0].remainingSeconds).toBe(state.active[0].totalSeconds)
+  })
 
+  it('resets all instances, re-seeds the central timer, and keeps the clock running when active', () => {
+    let state = addInstance(getInitialState())
+    const previousTotal = state.centralTimer.totalSeconds
+
+    state = torchTrackerReducer(state, {
+      type: 'settings/setClockRunning',
+      payload: { isRunning: true, now: FIXED_DATE },
+    })
+
+    vi.setSystemTime(FIXED_DATE + 5000)
     state = torchTrackerReducer(state, {
       type: 'active/reset',
       payload: { scope: 'all' },
     })
-    expect(state.centralTimer.isInitialized).toBe(false)
+
+    expect(state.centralTimer.isInitialized).toBe(true)
+    expect(state.centralTimer.totalSeconds).toBe(previousTotal)
+    expect(state.centralTimer.remainingSeconds).toBe(previousTotal)
+    expect(state.settings.isClockRunning).toBe(true)
+    expect(state.settings.lastTickTimestamp).toBe(FIXED_DATE + 5000)
+    expect(state.active.every((source) => source.status === 'active')).toBe(true)
+  })
+
+  it('resets all instances while keeping the clock paused when it was not running', () => {
+    let state = addInstance(getInitialState())
+    state = torchTrackerReducer(state, {
+      type: 'settings/setClockRunning',
+      payload: { isRunning: false, now: null },
+    })
+
+    vi.setSystemTime(FIXED_DATE + 8000)
+    state = torchTrackerReducer(state, {
+      type: 'active/reset',
+      payload: { scope: 'all' },
+    })
+
+    expect(state.centralTimer.isInitialized).toBe(true)
+    expect(state.centralTimer.remainingSeconds).toBe(state.centralTimer.totalSeconds)
     expect(state.settings.isClockRunning).toBe(false)
+    expect(state.settings.lastTickTimestamp).toBeNull()
   })
 
   it('updates clock running state', () => {

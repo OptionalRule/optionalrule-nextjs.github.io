@@ -99,14 +99,10 @@ export default function TorchTracker({ className }: TorchTrackerProps) {
       }
 
       controller.setClockRunning(true, now)
-      if (centrallyPausedIdsRef.current.size === 0) return
-
-      const ids = Array.from(centrallyPausedIdsRef.current)
       centrallyPausedIdsRef.current.clear()
-      ids.forEach((instanceId) => {
-        const target = state.active.find((source) => source.instanceId === instanceId)
-        if (target && target.status === 'paused') {
-          controller.resumeInstance(instanceId, now)
+      state.active.forEach((source) => {
+        if (source.status === 'paused') {
+          controller.resumeInstance(source.instanceId, now)
         }
       })
     },

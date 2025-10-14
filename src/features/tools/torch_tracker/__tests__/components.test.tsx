@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from 'vitest'
-import { render, screen, fireEvent } from '@testing-library/react'
+import { render, screen, fireEvent, waitFor } from '@testing-library/react'
 
 import { lightSourceCatalog } from '../data/lightSources'
 import { createActiveSourceFromCatalog } from '../lib/catalog'
@@ -10,6 +10,7 @@ import { CircularCountdownTimer } from '../components/CircularCountdownTimer'
 import { TorchTrackerHeader } from '../components/TorchTrackerHeader'
 import type { ActiveLightSource } from '../types'
 import type { CentralTimerSnapshot } from '../types'
+import TorchTracker from '../index'
 
 const sampleEntry = lightSourceCatalog[0]
 const buildActive = (overrides: Partial<ActiveLightSource> = {}): ActiveLightSource => ({
@@ -235,6 +236,45 @@ describe('TorchTrackerHeader', () => {
 
     const skipButton = screen.getByRole('button', { name: /skip 1 minute/i })
     expect(skipButton).toBeDisabled()
+  })
+})
+
+describe('TorchTracker interactions', () => {
+  beforeEach(() => {
+    vi.stubGlobal(
+      'Image',
+      class MockImage {
+        onload: (() => void) | null = null
+        onerror: (() => void) | null = null
+        set src(_value: string) {
+          this.onload?.()
+        }
+      },
+    )
+    window.localStorage.clear()
+  })
+
+  afterEach(() => {
+    vi.unstubAllGlobals()
+    window.localStorage.clear()
+  })
+
+  it('restores all paused lights when the global play control is pressed', async () => {
+    render(<TorchTracker />)
+
+    const addTorchButton = await screen.findByRole('button', { name: /^add torch$/i })
+    fireEvent.click(addTorchButton)
+
+    const lightCard = await screen.findByRole('button', { name: /^torch$/i })
+    expect(lightCard).toHaveAttribute('aria-pressed', 'true')
+
+    fireEvent.click(lightCard)
+    await waitFor(() => expect(lightCard).toHaveAttribute('aria-pressed', 'false'))
+
+    const playButton = await screen.findByRole('button', { name: /start clock/i })
+    fireEvent.click(playButton)
+
+    await waitFor(() => expect(lightCard).toHaveAttribute('aria-pressed', 'true'))
   })
 })
 

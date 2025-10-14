@@ -241,14 +241,34 @@ export const torchTrackerReducer = (
           return state
         }
         const restored = state.active.map((source) => resetActiveSource(source, timestamp))
+        const hasRestored = restored.length > 0
+        let nextCentral = state.centralTimer
+        if (hasRestored) {
+          const existingTotal = nextCentral.totalSeconds
+          const derivedTotal = restored.reduce((max, source) => Math.max(max, source.totalSeconds), 0)
+          const totalSeconds = existingTotal > 0 ? existingTotal : derivedTotal
+          if (totalSeconds > 0) {
+            nextCentral = {
+              isInitialized: true,
+              totalSeconds,
+              remainingSeconds: totalSeconds,
+              elapsedSeconds: 0,
+            }
+          } else {
+            nextCentral = createInitialCentralTimer()
+          }
+        } else {
+          nextCentral = createInitialCentralTimer()
+        }
+        const wasRunning = state.settings.isClockRunning
         return {
           ...state,
           active: restored,
-          centralTimer: createInitialCentralTimer(),
+          centralTimer: nextCentral,
           settings: {
             ...state.settings,
-            lastTickTimestamp: null,
-            isClockRunning: false,
+            lastTickTimestamp: wasRunning && hasRestored ? timestamp : null,
+            isClockRunning: wasRunning && hasRestored,
           },
         }
       }
