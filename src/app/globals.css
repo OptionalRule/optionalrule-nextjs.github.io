@@ -397,9 +397,9 @@ html {
   transition: max-height 0.3s ease-in-out, opacity 0.3s ease-in-out;
 }
 
-/* Prose typography customization for light and dark modes */
+/* Prose typography customization with subtle TTRPG personality and optimal readability */
 .prose {
-  --tw-prose-body: var(--text-primary);
+  --tw-prose-body: var(--text-secondary);
   --tw-prose-headings: var(--text-primary);
   --tw-prose-lead: var(--text-secondary);
   --tw-prose-links: var(--link);
@@ -407,14 +407,143 @@ html {
   --tw-prose-counters: var(--text-secondary);
   --tw-prose-bullets: var(--text-secondary);
   --tw-prose-hr: var(--border);
-  --tw-prose-quotes: var(--text-primary);
-  --tw-prose-quote-borders: var(--border);
+  --tw-prose-quotes: var(--text-secondary);
+  --tw-prose-quote-borders: var(--accent-mystical);
   --tw-prose-captions: var(--text-tertiary);
-  --tw-prose-code: var(--text-primary);
+  --tw-prose-code: var(--accent-mystical);
   --tw-prose-pre-code: var(--text-primary);
   --tw-prose-pre-bg: var(--surface-2);
   --tw-prose-th-borders: var(--border);
   --tw-prose-td-borders: var(--border-light);
+}
+
+.prose h1 {
+  color: var(--text-primary);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  margin-bottom: 1em;
+}
+
+.prose h2 {
+  color: color-mix(in srgb, var(--accent-warm) 8%, var(--text-primary));
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  margin-top: 1.75em;
+  margin-bottom: 0.75em;
+}
+
+.prose h3 {
+  color: var(--text-primary);
+  font-weight: 600;
+  margin-top: 1.5em;
+  margin-bottom: 0.625em;
+}
+
+.prose h4,
+.prose h5,
+.prose h6 {
+  color: var(--text-primary);
+  font-weight: 600;
+  margin-top: 1.25em;
+  margin-bottom: 0.5em;
+}
+
+.prose strong {
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.prose blockquote {
+  font-style: italic;
+  color: var(--text-secondary);
+  border-left-width: 4px;
+  border-left-color: var(--accent-mystical);
+  padding-left: 1.5em;
+  background: linear-gradient(
+    to right,
+    color-mix(in srgb, var(--accent-mystical) 5%, transparent),
+    transparent 50%
+  );
+  padding-top: 1em;
+  padding-bottom: 1em;
+  border-radius: 0 0.375rem 0.375rem 0;
+}
+
+.prose blockquote p:first-of-type::before {
+  content: none;
+}
+
+.prose blockquote p:last-of-type::after {
+  content: none;
+}
+
+.prose a {
+  color: var(--link);
+  text-decoration-color: color-mix(in srgb, var(--link) 30%, transparent);
+  text-underline-offset: 0.15em;
+  transition: all var(--transition-fast);
+}
+
+.prose a:hover {
+  color: var(--link-hover);
+  text-decoration-color: var(--link-hover);
+}
+
+.prose code {
+  color: var(--accent-mystical);
+  background-color: color-mix(in srgb, var(--accent-mystical) 8%, var(--surface-2));
+  padding: 0.2em 0.4em;
+  border-radius: 0.25rem;
+  font-size: 0.9em;
+  font-weight: 500;
+}
+
+.prose pre {
+  background-color: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 0.5rem;
+  padding: 1.5em;
+}
+
+.prose pre code {
+  background-color: transparent;
+  color: var(--text-primary);
+  padding: 0;
+  font-weight: 400;
+}
+
+.prose ul,
+.prose ol {
+  color: var(--text-secondary);
+}
+
+.prose li {
+  margin-top: 0.5em;
+  margin-bottom: 0.5em;
+}
+
+.prose li::marker {
+  color: var(--accent-warm);
+}
+
+.prose hr {
+  border-color: var(--border);
+  margin-top: 3em;
+  margin-bottom: 3em;
+}
+
+.prose table {
+  font-size: 0.9em;
+}
+
+.prose thead {
+  color: var(--text-primary);
+  font-weight: 600;
+  border-bottom-color: var(--border-strong);
+}
+
+.prose tbody tr {
+  border-bottom-color: var(--border-light);
 }
 
 .prose img {
@@ -423,4 +552,13 @@ html {
   margin-left: auto;
   margin-right: auto;
   border-radius: 0.5rem;
+  border: 1px solid var(--border-light);
+}
+
+.prose figcaption {
+  color: var(--text-tertiary);
+  font-size: 0.875em;
+  text-align: center;
+  margin-top: 0.75em;
+  font-style: italic;
 }
