@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@plugin "@tailwindcss/typography";
 
 :root {
   --background: #fefefe; /* pure white with warmth */
@@ -394,4 +395,32 @@ html {
 /* Smooth transitions for collapsible content */
 .toc [id="toc-content"] {
   transition: max-height 0.3s ease-in-out, opacity 0.3s ease-in-out;
+}
+
+/* Prose typography customization for light and dark modes */
+.prose {
+  --tw-prose-body: var(--text-primary);
+  --tw-prose-headings: var(--text-primary);
+  --tw-prose-lead: var(--text-secondary);
+  --tw-prose-links: var(--link);
+  --tw-prose-bold: var(--text-primary);
+  --tw-prose-counters: var(--text-secondary);
+  --tw-prose-bullets: var(--text-secondary);
+  --tw-prose-hr: var(--border);
+  --tw-prose-quotes: var(--text-primary);
+  --tw-prose-quote-borders: var(--border);
+  --tw-prose-captions: var(--text-tertiary);
+  --tw-prose-code: var(--text-primary);
+  --tw-prose-pre-code: var(--text-primary);
+  --tw-prose-pre-bg: var(--surface-2);
+  --tw-prose-th-borders: var(--border);
+  --tw-prose-td-borders: var(--border-light);
+}
+
+.prose img {
+  margin-top: 2rem;
+  margin-bottom: 2rem;
+  margin-left: auto;
+  margin-right: auto;
+  border-radius: 0.5rem;
 }
