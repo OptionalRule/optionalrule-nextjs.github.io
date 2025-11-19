@@ -8,6 +8,7 @@ vi.mock('@/lib/content', async () => {
   const actual = await vi.importActual<typeof import('@/lib/content')>('@/lib/content');
   return {
     ...actual,
+    POSTS_PER_PAGE: actual.POSTS_PER_PAGE ?? 10,
     getPaginatedPosts: vi.fn(),
     getAllPostsMeta: vi.fn(),
     getPostsByTag: vi.fn(),

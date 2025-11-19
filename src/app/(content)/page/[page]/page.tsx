@@ -1,4 +1,4 @@
-import { getPaginatedPosts, getAllPostsMeta } from '@/lib/content';
+import { getPaginatedPosts, getAllPostsMeta, POSTS_PER_PAGE } from '@/lib/content';
 import { PostCard } from '@/components/PostCard';
 import { Pagination } from '@/components/Pagination';
 import { generatePaginationMetadata } from '@/lib/seo';
@@ -13,7 +13,7 @@ interface PageProps {
 
 export async function generateStaticParams() {
   const allPosts = getAllPostsMeta();
-  const totalPages = Math.ceil(allPosts.length / 10);
+  const totalPages = Math.ceil(allPosts.length / POSTS_PER_PAGE);
   
   // Generate params for all pagination pages
   const pages = [];

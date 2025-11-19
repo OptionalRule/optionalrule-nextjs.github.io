@@ -27,6 +27,7 @@ const loadPageModule = async (): Promise<PageModule> => {
 
   vi.doMock("@/lib/content", () => ({
     __esModule: true,
+    POSTS_PER_PAGE: 10,
     getPaginatedPosts: mockGetPaginatedPosts,
     getAllPostsMeta: mockGetAllPostsMeta,
   }));

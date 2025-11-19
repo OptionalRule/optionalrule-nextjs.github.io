@@ -5,7 +5,25 @@ import { urlPaths } from '@/lib/urls';
 import { getAllPostsMeta, getAllTags, getPostsByTag } from '@/lib/content';
 
 // Mock fs for SSG testing
-vi.mock('fs');
+vi.mock('fs', () => {
+  const existsSync = vi.fn();
+  const readdirSync = vi.fn();
+  const readFileSync = vi.fn();
+  const statSync = vi.fn();
+
+  return {
+    default: {
+      existsSync,
+      readdirSync,
+      readFileSync,
+      statSync,
+    },
+    existsSync,
+    readdirSync,
+    readFileSync,
+    statSync,
+  };
+});
 vi.mock('gray-matter', () => ({
   default: vi.fn(),
 }));

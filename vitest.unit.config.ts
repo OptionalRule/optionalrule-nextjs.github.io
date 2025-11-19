@@ -1,3 +1,4 @@
+// Trivial change to invalidate cache
 import { defineConfig } from 'vitest/config';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -37,12 +38,9 @@ export default defineConfig({
         lines: 60,
       },
     },
-    pool: 'forks',
-    poolOptions: {
-      forks: {
-        singleFork: true
-      }
-    }
+    pool: 'threads',
+    maxWorkers: 1,
+    isolate: true
   },
   resolve: {
     alias: {

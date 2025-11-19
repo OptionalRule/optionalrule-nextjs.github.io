@@ -9,7 +9,22 @@ import { parseDateToUTC } from '@/lib/utils';
 import { urlPaths } from '@/lib/urls';
 
 // Mock fs and dependencies for integration tests
-vi.mock('fs');
+vi.mock('fs', () => {
+  const existsSync = vi.fn();
+  const readdirSync = vi.fn();
+  const readFileSync = vi.fn();
+
+  return {
+    default: {
+      existsSync,
+      readdirSync,
+      readFileSync,
+    },
+    existsSync,
+    readdirSync,
+    readFileSync,
+  };
+});
 vi.mock('gray-matter', () => ({
   default: vi.fn(),
 }));

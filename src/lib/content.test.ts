@@ -2,7 +2,13 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import fs from 'fs';
 
 // Mock fs module
-vi.mock('fs');
+vi.mock('fs', () => ({
+  default: {
+    readFileSync: vi.fn(),
+    existsSync: vi.fn(),
+    readdirSync: vi.fn(),
+  },
+}));
 const mockFs = vi.mocked(fs);
 
 // Mock gray-matter
