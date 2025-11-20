@@ -1,39 +1,37 @@
-import { dirname } from "path";
-import { fileURLToPath } from "url";
-import { FlatCompat } from "@eslint/eslintrc";
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
-
-const compat = new FlatCompat({
-  baseDirectory: __dirname,
-});
+import nextConfig from "eslint-config-next";
+import tsEslintPlugin from "@typescript-eslint/eslint-plugin";
 
 const eslintConfig = [
-  // Ignore build artifacts and generated/static output
-  { ignores: [
-    'node_modules/**',
-    '.next/**',
-    'out/**',
-    'coverage/**',
-    'public/**',
-    'next-env.d.ts'
-  ] },
-  ...compat.extends("next/core-web-vitals", "next/typescript"),
-  // Local rule overrides
+  // Project-specific ignores (Next config already ignores .next/out/build)
   {
+    ignores: [
+      "node_modules/**",
+      "coverage/**",
+      "public/**",
+      "next-env.d.ts",
+    ],
+  },
+  ...nextConfig,
+  {
+    plugins: {
+      "@typescript-eslint": tsEslintPlugin,
+    },
     rules: {
       // Allow underscore-prefixed names for intentional unused vars/args (tests, mocks, destructuring)
-      '@typescript-eslint/no-unused-vars': [
-        'error',
+      "@typescript-eslint/no-unused-vars": [
+        "error",
         {
-          argsIgnorePattern: '^_',
-          varsIgnorePattern: '^_',
-          caughtErrorsIgnorePattern: '^_',
+          argsIgnorePattern: "^_",
+          varsIgnorePattern: "^_",
+          caughtErrorsIgnorePattern: "^_",
         },
       ],
+      // The new React Hooks rules in eslint-config-next 16 are too strict for our current patterns
+      "react-hooks/error-boundaries": "off",
+      "react-hooks/set-state-in-effect": "off",
+      "react-hooks/immutability": "off",
     },
-  }
+  },
 ];
 
 export default eslintConfig;
