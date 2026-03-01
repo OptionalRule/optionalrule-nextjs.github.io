@@ -1,0 +1,101 @@
+---
+slug: "im-buiding-a-mud"
+title: "I'm buiding a MUD, and it's the most fun I've had in years"
+date: "2026-01-20"
+excerpt: "I've always wanted to build a MUD. After 30 years as a software engineer, AI coding tools finally closed the gap between skillset and available time. This is the first dev log for Iron, Blood & Omens, a gritty text-based RPG built on a custom engine and a game system of my own design."
+tags: ["IBO","GameDev","Dev Log"]
+featured_image: "/images/wytford_ferry.webp"
+draft: false
+showToc: false
+---
+*Iron, Blood & Omens, dev log #1*
+
+I've always wanted to build a MUD. That probably won't surprise anyone who reads this blog, because playing around with game design concepts is genuinely one of my favorite things to do. I've designed and contributed to a few TTRPG supplements over the years, but I've never actually made a CRPG. I've played some MUDs in my day and always wanted to create one built around a system of my own design. As a software engineer of over 30 years, it's within my skillset. It has never been within my available time.
+
+That's changed. And I want to tell you about what I'm building.
+
+## What's a MUD and why bother?
+
+For those who don't know, a MUD (Multi-User Dungeon) is a text-based online roleplaying game. You type commands, read richly described prose, and share a living world with other players. No graphics. No minimap. Just text on a screen and whatever your imagination builds from it.
+
+MUDs were the original online roleplaying games. Before MMOs, before graphical RPGs with voiced dialogue and cutscenes, there were MUDs. Servers you connected to through a terminal, worlds described in paragraphs, communities built around shared imagination. The genre produced some of the earliest and most deeply social gaming experiences ever created, and shaped the MMO genre as a whole. 
+
+The game is called *Iron, Blood & Omens* (IBO), and it's running on a custom engine I've built called PogoMUD. It's set in a mythic late medieval world where omens are real, survival is earned, and every scar your character carries has a story behind it.
+
+## How AI made this possible
+
+I want to be upfront about something, because it's a real part of this story. AI coding assistants are what made this project possible. Not because they're doing the design work or the creative thinking, but because they've removed the barrier that kept me from starting for decades: time.
+
+When you're a solo developer with a full-time career, the gap between "I could build this" and "I have time to build this" is enormous. AI tools have changed that equation. They let me focus on what I actually care about, which is the design, the systems, the feel of the game, while offloading the time-consuming implementation tasks that would have taken me months to grind through on my own.
+
+I created the system design, the architecture, and the engineering approach. The underlying game system is completely my own (though inspired by classic systems I love). But I've found AI helpful in ways I didn't expect. It can generate statistical models to show the implications of my design choices, helping me refine systems faster than I ever could with spreadsheets alone. Perhaps the most surprising thing is that I can have AI agents actually play the game as a QA step, logging in and running through commands and subsystems under all kinds of iterative scenarios to make sure things work.
+
+In particular, the ability to iterate quickly through options and implementations has been a godsend. When I first started coding this, I used a [Shadowdark](https://www.thearcanelibrary.com/pages/shadowdark)-like system of classes and HP. That's a fine system, but for an online game you want much more in terms of itemization, character development, and combat depth. So I pivoted and iterated through skill-based subsystems inspired by OSR TTRPGs I love like *[Harnmaster](https://www.kelestia.com/harnmaster)*, *[Basic Roleplaying](https://www.chaosium.com/basic-roleplaying/)*, and more modern systems like *[Sword Chronicle](https://greenroninstore.com/products/sword-chronicle-feudal-fantasy-roleplaying-pdf)*. A few weeks of iterating later I had tried out some rough concepts and departed even further from those designs into something wholly its own. I don't think I could have done that without the ability to quickly test and iterate through options.
+
+AI isn't particularly good at the aesthetics or the "fun" part of game design, but it doesn't need to be. I'm managing all of that directly. The creative judgment, the feel of a wound system that creates real tension without being punishingly lethal, the calibration of a lockpick failure that punishes without being arbitrary, the decision to give a locked crypt in a tavern basement a door with scratch marks on the inside. Those are human decisions. The tools help me execute them faster.
+
+I'm also interested in experimenting with small AI models inside the MUD itself. Things like interactive NPC dialog or whatever else catches my attention as I go. No promises on that front, but it's the kind of thing I want to play around with when the opportunity is right.
+
+It's been a surprisingly large amount of fun.
+
+## The game: what makes IBO different
+
+Taking a page from the old-school gritty medieval TTRPGs I love, life is fragile and heroes are rare in IBO. If you want it, you have to go out and earn it in the game. There are no experience points dripped into your level bar after you kill enough rats. There are no character classes telling you who you are and what you're allowed to do. You define yourself by your history, your labor, your choices, and eventually by what you survive.
+
+If you've read my writing on this blog about what modern TTRPGs have gotten wrong with advancement systems, IBO is my attempt to put my money where my mouth is. The design is built around a few core ideas.
+
+First, skill over archetype. Your character is defined by what they know and what they can do, not by a class assigned at creation. A former soldier who spent years as a hedge physician is possible. A noble-born scoundrel with a talent for reading locks is possible. Your combination of background, trade, and hard-won experience produces something that belongs to no existing template.
+
+Second, combat is dangerous. Every fight is a negotiation with injury, not a stat check you expect to win. Wounds accumulate. They slow you down. They stack penalties that don't go away when the fight ends. A blade to the arm isn't a small HP deduction. It's a problem you'll be dealing with for days if you don't find someone to bind it. Death is permanent. Make good decisions.
+
+Third, active defense. You don't just absorb hits and heal them back. Every incoming attack demands a choice. Block with your shield, parry with your weapon, or dodge out of the way. Each option has tradeoffs. Block and your shield takes the punishment. Parry and both weapons risk degrading. Dodge in heavy armor and you'll find out quickly why knights don't dance. Every exchange is a decision.
+
+## Roll under, dig in
+
+IBO runs on a percentile skill system. You roll two ten-sided dice, read the result as a number from 1 to 100, and try to roll equal to or under your skill. That's the whole engine.
+
+But within that simplicity there's real texture. The ones-digit of your roll matters. Land on a 0 or a 5 and your result is critical, either a perfect execution that earns a development mark, or a catastrophic error that marks you for a hard lesson. Most of the time, success is just success and failure is just failure. But those critical moments produce outcomes that change the shape of a fight and leave impressions on your skills.
+
+Skills have natural ceilings that push you toward specialization. Your broad weapon training has limits. You can swing a sword and an axe both competently, but mastery in either requires a deliberate choice to go deeper. Every character develops a distinct silhouette over time, and that silhouette is earned through play, not selected from a menu.
+
+## Where you come from matters
+
+Character creation happens in two steps before you ever see the world. Your background is where you were born and how you were raised. It shapes instincts, gives you skills rooted in your origins, and produces narrative hooks, unresolved threads from before your story began. There are eleven backgrounds available, ranging from peasants and townsfolk to nobles, outcasts, performers, and rovers. Each one comes with specific, grounded fragments of backstory. The reeve who seized your family's grain. The sealed letter your master burned without reading. The cousin who's been making quiet conversation with people who owe your family loyalty.
+
+Your apprenticeship is how you survived before adventure found you. This is your trade, the thing you did for years before something changed and you started walking toward trouble instead of away from it. There are seventeen apprenticeships across combat, wilderness, scholarly, trade, and subterfuge categories. A Man-at-Arms who knows formation fighting and how to take a hit. A Physician who learned medicine from surgeons and battlefield medics. A Scoundrel who lived by light fingers and faster exits.
+
+When you combine a background and an apprenticeship, you get something that doesn't fit neatly into a box. That's the idea.
+
+## A grim, small world
+
+The world of IBO is not an epic fantasy setting. There are no world-saving quests handed down from on high. The scale is deliberately human.
+
+It has a mythic Eurasian late medieval vibe. Seasons matter. The church is powerful and probably corrupt. Lords levy taxes that break the people paying them. Roads are dangerous. Knowledge is hoarded. Medicine is imperfect and sometimes lethal. Omens are taken seriously because strange things happen in the dark, and the people who dismiss them tend to not finish their stories.
+
+NPCs remember you. Your reputation in a settlement is a real thing that affects how people talk to you. The Foaming Flagon in Thornfield has a common room where you can hear what's happening and a cellar where things are stored that weren't meant to be found. The Infirmary smells of herbs and iron. The Armory door off the Village Square is reinforced and locked, and whoever holds the key may not want to say where it came from.
+
+Thornfield is the starting zone. A village that has seen better days, large enough to offer multiple paths through it, small enough to feel real. It's the first location in a world that's meant to grow.
+
+## What's already built
+
+This is a passion project in active development. It's not ready for general players yet. But it's further along than a concept.
+
+The full combat engine is running with the complete attack matrix: attack versus defense, clash resolution, hit locations, brutal hits, fumbles, weapon parry, shield block, dodge. All of it live and producing real mechanical consequences. The wound system tracks injuries at specific body locations with severity, penalty degradation, adrenaline buffers, and a dying state where someone needs to scramble to stabilize you or you're counting down alone on a dungeon floor.
+
+The grappling subsystem is complete, covering everything from initiating a hold to armed grapple penalties. Item durability is in, with weapons and armor degrading through use and a mend system for field repairs. The skill advancement system grows through play, with stress marks triggering development opportunities over time.
+
+Beyond combat, there's a working economy of social skills (intimidate, perform, lore research), a full lockpicking system with multi-stage picking and five tiers of lock quality, and an herbalism system with resource nodes scattered through the wild areas around Thornfield. There's a custom calendar system, offline rest that accounts for healing while you're logged out, and over two dozen searchable help topics covering everything currently implemented.
+
+Thornfield itself has an expanding footprint with a tavern, multiple floors, a cellar, a sealed crypt below, a garrison armory, an infirmary, training dummies, and a herbwoman's cottage on the village edge.
+
+It's a lot. And I'm having a blast building it.
+
+## What's next
+
+The road from here goes through systems that are designed and waiting for their turn: a range and engagement system that changes how fights begin based on positioning, a full economy with vendors and supply chains, crafting that turns raw materials into things worth having, and reputation systems that track your standing across factions and settlements.
+
+As I work through interesting progress updates and design decisions, I'll be posting reflections here about it. I expect some of these dev logs will wander into TTRPG design philosophy, because that's just how my brain works. You've been warned.
+
+When the game is available for testing, I'll let people know, so please drop me a note if you're interested in trying it out. If you have thoughts on the design, opinions about what MUDs got right that modern games have forgotten, or just want to tell me I'm crazy for building a text game in 2026, I'd love to hear it.
+
+The world is building. I'll keep you posted.
