@@ -23,7 +23,8 @@
       "Bash(node -e:*)",
       "WebFetch(domain:github.com)",
       "Bash(git log:*)",
-      "Bash(git merge:*)"
+      "Bash(git merge:*)",
+      "Bash(grep:*)"
     ],
     "deny": [],
     "ask": [],
