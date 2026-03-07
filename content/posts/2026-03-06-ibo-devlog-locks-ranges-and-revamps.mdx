@@ -1,0 +1,51 @@
+---
+slug: "ibo-devlog-locks-ranges-and-revamps"
+title: "IBO Devlog: Locks, Ranges, and Revamps"
+date: "2026-03-06"
+excerpt: "Lockpicking, ranged combat simplification, grapple redesign, and a dev environment rebuild in the latest Iron, Blood & Omens devlog."
+tags: ["IBO", "Game Development", "Dev Log", "Mechanics"]
+featured_image: "/images/ibo-locks-ranges-revamps.webp"
+draft: false
+showToc: false
+---
+This week has been a different kind of productive in developing Iron, Blood & Omens, a text-based MUD set in a dark, low-fantasy world. If you're new here, you can read more about the project in the [reveal devlog](/2026/02/20/ibo-devlog-reveal/). Less raw implementation this time around, more stepping back to look at what I've built and figuring out what needs to change. That's the rhythm of game development, honestly. You build something, test it, realize it doesn't quite work the way you imagined, and then you redesign. Rinse, repeat. The good news is the game is better for it every time.
+
+## Unlocking the lockpicking system
+
+The lockpicking system is now in the game and working. It's built on the same Progressive Resolution System I've been using for herbalism gathering, and the implementation was pretty straightforward. Characters with the Mechanisms skill can attempt to pick locks if they have the right equipment. Lock quality ranges from crude all the way up to legendary, and each tier demands more skill to defeat. Failed attempts can break your lockpicks, and if you really botch the roll, you might jam the lock entirely. No second chances on that one.
+
+What surprised me was how much a couple of locked doors changed the feel of the game. Exploration immediately felt more real. Instead of just walking room to room, players now hit obstacles that make them think. Do I have the skill? Do I have the picks? Is it worth the risk of jamming this thing? Or do I need to find the key? It's a small system but it adds a layer of decision-making that makes moving through the world feel less like a tour and more like an adventure.
+
+The tedious part was testing. Lockpicking involves a lot of edge cases. Objects without explicit flags need to default to being pickable. Command aliases between combat verbs and door verbs were colliding. Door interactions needed better feedback and had to handle direction aliases correctly. Three bugfix passes later and it's solid, but manual testing for this kind of thing is slow going.
+
+## Closing the gaps in ranged combat
+
+Ranged combat has been the bigger design story this week, and it's a good example of why I test systems before committing to them.
+
+My first pass was ambitious. I set up four range increments: close, melee, extended, and long. Weapons and maneuvers each had meaningful differences at each range. On paper it looked great. In practice it was confusing and tedious. Players had to track too much, and the tactical depth I was going for just turned into bookkeeping.
+
+So I scrapped it and went simpler. Ranged combat now only matters in outdoor zones or large rooms. In those spaces, archers can get a shot or two off before an opponent closes the distance. For most melee fighters this won't make a big difference in how they play. But mix ranged weapons with the ambush system and things get very deadly, very fast. An ambush with bows in the right terrain is exactly the kind of tactical setup that should feel devastating, and now it does.
+
+More testing is needed, but the simplified version already feels better. Sometimes less really is more in game design, even when "more" seems cooler on a whiteboard.
+
+## Getting ahold of Grappling
+
+Grapple also got a refit this week. The old version was too safe. You could attempt a grapple without much risk, which made it feel like just another option rather than a real tactical commitment.
+
+Now, trying to grapple an armed opponent is genuinely dangerous. You're closing distance on someone with a weapon, and they're going to make you pay for it. But if the grappler can actually land the hold, the advantage shifts hard. Score a pin on an armored opponent and you can work a dagger past their armor into the gaps. At that point, it's game over.
+
+That risk/reward tension is exactly what I want combat in IBO to feel like. Every choice should have weight. Grappling is no longer a safe fallback. It's a gamble, and when it pays off, it pays off big.
+
+## Reencarnating the dev environment
+
+I also took some time this week to completely scrap and rebuild my development environment. Over the past few months, layers of technical debt had accumulated in the tooling around the engine. Quick fixes, experimental branches that got half-merged, configuration that made sense three iterations ago but not anymore. It was slowing me down more than I wanted to admit.
+
+Starting fresh cleared all of that out. The environment is cleaner, the workflow is faster, and I'm not fighting my own tools anymore. It's one of those investments that doesn't show up as a game feature but makes everything else move quicker going forward.
+
+## The Road Ahead
+
+The weeks ahead are going to bring some interesting changes. The biggest one is a combat revamp that moves away from the attack matrix system and leans into the Progressive Resolution System. I've been using PRS for lockpicking, herbalism, and other skill checks for a few weeks now, and it's been a fantastic addition to the game. Applying it to combat is the natural next step, and I think it's going to make fights feel more dynamic and less formulaic. I'll go into the details in a future devlog, but I'm excited about where it's heading.
+
+There's also a Phase 2 integration polish milestone coming up that covers a lot of surface area. Scoping that tightly will be important so it doesn't turn into a feature creep black hole.
+
+What do you think about the ranged combat simplification? I'm curious whether other developers have run into similar situations where a more complex system looked better on paper but fell apart in testing. And for any potential players reading this, does the lockpicking and grappling sound like the kind of systems you'd enjoy engaging with? I'd love to hear your thoughts.

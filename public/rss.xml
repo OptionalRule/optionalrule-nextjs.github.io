@@ -9,9 +9,25 @@
     <managingEditor>scott@optionalrule.com (Scott Turnbull)</managingEditor>
     <webMaster>scott@optionalrule.com (Scott Turnbull)</webMaster>
     <copyright>Copyright 2026 Optional Rule Games</copyright>
-    <lastBuildDate>Tue, 30 Sep 2025 00:00:00 GMT</lastBuildDate>
+    <lastBuildDate>Fri, 06 Mar 2026 00:00:00 GMT</lastBuildDate>
     <ttl>60</ttl>
     
+    <item>
+      <title><![CDATA[IBO Devlog: Locks, Ranges, and Revamps]]></title>
+      <description><![CDATA[Lockpicking, ranged combat simplification, grapple redesign, and a dev environment rebuild in the latest Iron, Blood & Omens devlog.]]></description>
+      <link>https://www.optionalrule.com/2026/03/06/ibo-devlog-locks-ranges-and-revamps/</link>
+      <guid isPermaLink="true">https://www.optionalrule.com/2026/03/06/ibo-devlog-locks-ranges-and-revamps/</guid>
+      <pubDate>Fri, 06 Mar 2026 00:00:00 GMT</pubDate>
+      <category><![CDATA[IBO, Game Development, Dev Log, Mechanics]]></category>
+    </item>
+    <item>
+      <title><![CDATA[I'm buiding a MUD, and it's the most fun I've had in years]]></title>
+      <description><![CDATA[I've always wanted to build a MUD. After 30 years as a software engineer, AI coding tools finally closed the gap between skillset and available time. This is the first dev log for Iron, Blood & Omens, a gritty text-based RPG built on a custom engine and a game system of my own design.]]></description>
+      <link>https://www.optionalrule.com/2026/01/20/im-buiding-a-mud/</link>
+      <guid isPermaLink="true">https://www.optionalrule.com/2026/01/20/im-buiding-a-mud/</guid>
+      <pubDate>Tue, 20 Jan 2026 00:00:00 GMT</pubDate>
+      <category><![CDATA[IBO, Game Development, Dev Log]]></category>
+    </item>
     <item>
       <title><![CDATA[Shedding Light on Darkness in DnD]]></title>
       <description><![CDATA[A brief description of your post that will appear in previews and summaries.]]></description>

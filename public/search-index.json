@@ -1,5 +1,32 @@
 [
   {
+    "slug": "ibo-devlog-locks-ranges-and-revamps",
+    "title": "IBO Devlog: Locks, Ranges, and Revamps",
+    "excerpt": "Lockpicking, ranged combat simplification, grapple redesign, and a dev environment rebuild in the latest Iron, Blood & Omens devlog.",
+    "tags": [
+      "IBO",
+      "Game Development",
+      "Dev Log",
+      "Mechanics"
+    ],
+    "content": "",
+    "date": "2026-03-06",
+    "readingTime": 5
+  },
+  {
+    "slug": "im-buiding-a-mud",
+    "title": "I'm buiding a MUD, and it's the most fun I've had in years",
+    "excerpt": "I've always wanted to build a MUD. After 30 years as a software engineer, AI coding tools finally closed the gap between skillset and available time. This is the first dev log for Iron, Blood & Omens, a gritty text-based RPG built on a custom engine and a game system of my own design.",
+    "tags": [
+      "IBO",
+      "Game Development",
+      "Dev Log"
+    ],
+    "content": "",
+    "date": "2026-01-20",
+    "readingTime": 11
+  },
+  {
     "slug": "the-surprising-history-of-solo-ttrpg-play",
     "title": "The Surprising History of Solo TTRPG Play",
     "excerpt": "Solo TTRPG play has been part of the hobby since the 1970s, serving as practice space, a creative engine with oracles, and now evolving with AI.",
