@@ -1,5 +1,19 @@
 [
   {
+    "slug": "ibo-design-diary-characters",
+    "title": "IBO Design Diary: What your character is made of",
+    "excerpt": "A deep dive into IBO's character system: nine characteristics, d100 skill rolls, backgrounds, apprenticeships, and the Rule of 5.",
+    "tags": [
+      "IBO",
+      "Game Development",
+      "Dev Log",
+      "Mechanics"
+    ],
+    "content": "",
+    "date": "2026-03-12",
+    "readingTime": 17
+  },
+  {
     "slug": "ibo-devlog-locks-ranges-and-revamps",
     "title": "IBO Devlog: Locks, Ranges, and Revamps",
     "excerpt": "Lockpicking, ranged combat simplification, grapple redesign, and a dev environment rebuild in the latest Iron, Blood & Omens devlog.",

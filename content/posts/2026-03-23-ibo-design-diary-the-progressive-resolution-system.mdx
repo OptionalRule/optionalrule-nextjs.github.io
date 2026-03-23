@@ -1,0 +1,87 @@
+---
+slug: "ibo-design-diary-the-progressive-resolution-system"
+title: "IBO Design Diary - The Progressive Resolution System"
+date: "2026-03-23"
+excerpt: "How IBO's Progressive Resolution System turns every skill check into a multi-stage risk decision, from sword fights to lockpicking to crafting legendary gear."
+tags: ["IBO", "Game Development", "Dev Log", "Mechanics"]
+featured_image: "/images/ibo-design-diary-the-progressive-resolution-system.webp"
+draft: false
+showToc: false
+---
+In my [last post](https://www.optionalrule.com/2026/03/10/ibo-design-log-what-your-character-is-made-of/), I laid out the foundation of how characters work in *Iron, Blood & Omens*. Nine characteristics, percentile skills, backgrounds and apprenticeships, the Rule of 5. All the raw materials that define who your character is and what they can do.
+
+But I ended that post with a promise. I said there was a system sitting on top of that foundation that makes combat, lockpicking, herbalism, and eventually crafting all feel connected and meaningful. Today I want to deliver on that promise.
+
+The Progressive Resolution System is the mechanical spine of IBO. It's the piece that ties everything together, and I think it's the thing that makes the whole game work.
+
+## A five-year-old idea finally finds a home
+
+The core principle behind PRS goes back to something I wrote about in 2021 in a post called [Progressive Failures and Rising Tension in 5th Edition](/2021/01/03/progressive-failures-and-rising-tension-in-5th-edition/). The idea was simple but often ignored in TTRPG design.
+
+A single roll on a d20 or d100 is arbitrary. Players use the word "swingy," and what they mean is that any individual roll is shaped more by the whim of the dice than by the character's skill. It's only over a series of rolls that the odds begin to emerge and outcomes start reflecting what a character can actually do. Combat systems in most games mitigate for this with hit points, meaning you need to succeed over multiple rolls to take down an opponent. But as single rolls for saving throws and skill checks became the standard, the system lost that safety net. Too many players ended up in "roll or die" situations, their character's fate hanging on one arbitrary number.
+
+I wanted IBO to feel like a gritty, skill-based medieval TTRPG (think [HarnMaster](https://en.wikipedia.org/wiki/H%C3%A2rnMaster), [Pendragon](https://www.chaosium.com/pendragon-rpg/), or [Burning Wheel](https://www.burningwheel.com/)) but without the arbitrary outcomes those systems sometimes produce. You've already seen the percentile roll-under core from the last post. Roll d100, try to get under your skill, and the Rule of 5 gives 20% of all rolls critical potential. PRS builds on that foundation by asking a simple question. What if one roll isn't the whole story?
+
+## How it works
+
+Instead of one roll deciding everything, PRS gives you multiple rolls that accumulate into a quality result. If you remember the skill rank thresholds from the character post, those same ranks determine how many rolls you get. A Novice (skill 5-24%) gets one stage. An Apprentice (25-49%) gets two. A Journeyman (50-79%) gets three. A Master (80%+) gets four.
+
+Each roll earns Success Points. A critical success is worth 5, a regular success 3, a failure 0, and a critical failure costs you 1 point. Your total SP across all stages determines the quality of what you accomplished, from Catastrophic (negative SP) all the way up to Legendary (15+). Normal sits at 6-8 SP. Masterwork at 12-14.
+
+In practice, a Master doesn't just succeed more often than a Novice. They succeed *better*. More rolls at a higher percentage means their results cluster around excellence. A Master at 90% skill produces Masterwork outcomes more than half the time. A Novice at 15% is going to fail most attempts, but the system doesn't waste their time either. One stage, move on. The math respects both ends of the progression curve.
+
+One thing worth noting is that wound penalties and environmental modifiers affect your effective skill (making each individual roll harder) but never change your stage count. That's always based on your base skill. So a wounded Master still rolls four times. They're just rolling at worse odds. This matters because it means injuries degrade your performance without erasing your expertise. A Master swordsman with a broken rib is still a Master swordsman. He's just fighting through pain.
+
+There's one more piece that matters across every PRS application: the voluntary abort. At any point between stages, a player can choose to stop rolling and lock in their current SP total. This turns every multi-stage roll into a risk decision. You're two stages into a four-stage attempt with a solid result in hand. Do you keep rolling and risk a critical failure dragging you down? Or do you take what you've got? That tension between greed and caution shows up everywhere PRS is used, and it's one of my favorite things about the system.
+
+## An advantage of building a MUD
+
+One thing I love about building a MUD is that I can design with the feel of tabletop systems but use a level of mechanical complexity that would grind a table session to a halt. Nobody wants to sit at a table and watch someone roll four times, add up Success Points, compare them to a quality tier chart, and then apply the result. That kills the momentum of a game night.
+
+A computer handles all of that instantly. The player types a command, the system runs their stages, and they get the result with flavor text describing what happened. All the depth of a multi-roll system with none of the bookkeeping overhead. It lets me design a game with the vibe of *Harn* or *Pendragon* and the mechanical depth of something like *Kingdom Come: Deliverance 2*. Or at least I hope.
+
+## Combat and the decision layer
+
+Combat is where PRS gets intense, and it's where the system has evolved the most since I first prototyped it.
+
+Both attacker and defender roll their PRS stages simultaneously. The attacker rolls their weapon skill. The defender rolls their chosen defense: Block, Parry, or Dodge. The difference between their SP totals (the Net SP) determines the outcome, and the outcome spectrum is wide. On the attacker's side, results range from a Glancing Blow that barely scratches armor all the way up to a Ruinous Blow that puts someone down hard. The difference between those tiers isn't flavor text. It's real mechanical consequences that make every exchange feel like it matters.
+
+But the defender isn't just a passive target. When the Net SP goes negative, the defender wins the exchange. A strong enough defensive result creates an Opening, an automatic counter-response based on how you defended. Block well enough and you get a shield bash. Parry with enough margin and you riposte. Dodge far enough and you exploit the gap. Defense in IBO isn't about absorbing punishment. It's about turning your opponent's aggression against them.
+
+### Stances and momentum
+
+Layered on top of the contested rolls are combat stances and momentum. Stances (Guarded, Steady, Bold, or Reckless) modify every PRS roll in an exchange. A Bold stance gives you +10% to attack but costs -10% on defense, and across three or four stages those modifiers compound. You're not just choosing to be aggressive. You're betting on each of those rolls going your way, knowing that if enough go wrong, your opponent gets a free shot.
+
+Momentum rewards sustained pressure. Land significant hits and you accumulate points that you can burn for a major bonus on a future exchange. So there's always a rhythm to fights. Build pressure, look for the right moment to commit, or play it safe and let your opponent overextend into a defensive Opening. Where many MUDs give you fire-and-forget attacks, IBO makes each exchange a decision point with consequences on both sides.
+
+## Beyond combat
+
+Combat was the first PRS application, but the whole point of building a general-purpose resolution system is that it works everywhere. Here's where things stand today.
+
+**Stealth** runs as a contested PRS check, your Stealth skill against the observer's Awareness. Instead of mapping Net SP to damage tiers, it maps to detection tiers ranging from Ghost (completely invisible) down to Detected (cover blown). The interesting space is the middle. A Suspicious result means the observer hasn't spotted you, but something feels off. They start running periodic re-checks with escalating bonuses, so a character lingering near a suspicious guard is on borrowed time. Do you hold still and hope the next check goes your way? Reposition while they're distracted? Go loud? Stealth becomes a series of real decisions instead of a binary pass/fail.
+
+**Lockpicking** uses PRS as a threshold check. Your SP total accumulates against the lock's quality rating. A crude lock needs 3 SP. A masterwork lock needs 12. Fall short and your pick breaks. Go catastrophically negative and the pick snaps off inside, jamming the lock for everyone. A skilled lockpick doesn't just open more doors. They open them cleanly, with less risk and less noise.
+
+**Herbalism** determines both yield and specimen quality through PRS. A master herbalist pulling a Legendary result finds rare varieties. A novice fumbling to a Catastrophic failure doesn't just come back empty-handed, they damage the herb patch, reducing what's available for anyone who comes after. There's a social cost to incompetence, which feels right for a shared world.
+
+**Climbing** is the one PRS application where stages play out over real time instead of resolving in a single moment. Each stage gives you progress feedback as you work your way up, and a failure mid-climb means you're looking at a fall. The voluntary abort matters here too. Sometimes the smart play is to stop halfway and find another route rather than risk that last stage.
+
+The list goes on for skill after skill, you get the idea. I'm excited to build out more applications of PRS as I continue development. The goal is that every time you interact with the world, you're engaging with the same underlying system that rewards skill, risk-taking, and meaningful choices.
+
+## Why I'm excited about crafting
+
+This is the part that has me genuinely excited, and it's the reason I built PRS as a general-purpose system rather than a combat-specific one.
+
+Crafting in most TTRPGs is either a single roll (boring and arbitrary) or a complex mini-game bolted onto the side (interesting but inconsistent with everything else). PRS handles crafting the same way it handles everything else. Roll your stages, accumulate SP, and the quality tier of your result becomes the quality of the item you produce. No separate crafting rules, no separate quality system, no separate progression mechanics.
+
+A novice blacksmith with one stage and a 15% skill is going to produce crude work most of the time. That's not a punishment. It's an honest reflection of where they are. A master with four stages at 85% is turning out masterwork items more often than not, with the occasional legendary piece that becomes something special. The same math that makes a master lockpick reliable also makes a master armorsmith reliable.
+
+And the voluntary abort is where crafting gets interesting as a play experience. Three stages into a four-stage attempt with masterwork quality already in hand? You can risk the fourth roll for a shot at legendary, or you can lock in what you have. A critical failure on that last stage would drop you to fine. Is the chance worth it? That kind of decision is what makes crafting interesting instead of a progress bar you watch fill up.
+
+## The thread that runs through everything
+
+The original idea from my 2021 post was about giving players meaningful feedback during resolution instead of collapsing everything into a single binary moment. IBO takes that principle and builds an entire game around it. Every time a player picks a lock, swings a sword, sneaks past a guard, or hammers out a breastplate, the same engine tells a story about skill, risk, and the choices that matter in between.
+
+I'm sure there are folks who'd say I'm overcomplicating things. They might be right. But I've been designing games long enough to know that the systems you don't see are what make the ones you do see feel good. Watching a character grow from a novice fumbling through their first attempt to a master producing legendary work, all on the same progression curve, is the kind of thing that keeps me up past midnight working on this.
+
+What do you think? Is multi-stage resolution something that appeals to you, or does it sound like extra complexity for no real gain? I'd especially love to hear from anyone who's played *Harnmaster*, *BRP*, or similar percentile systems. Does a contested PRS stealth check sound more interesting than a flat "roll Stealth vs. Perception?" And if you know a game that handles crafting in a way that actually feels satisfying, tell me about it. I'm always looking for good ideas to steal.
