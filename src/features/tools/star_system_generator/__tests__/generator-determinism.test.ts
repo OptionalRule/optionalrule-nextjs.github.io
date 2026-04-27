@@ -311,6 +311,7 @@ describe('generateSystem', () => {
       expect(settlement.aiSituation.value).toBeTruthy()
       expect(settlement.condition.value).toBeTruthy()
       expect(settlement.tags).toHaveLength(2)
+      expect(settlement.tags[0].value).not.toBe(settlement.tags[1].value)
       expect(settlement.tagHook.value).toContain(settlement.tags[0].value)
       expect(settlement.tagHook.source).toContain('MASS-GU 18.9')
       expect(settlement.methodNotes.some((note) => note.value.includes('MASS-GU section 18'))).toBe(true)
@@ -321,6 +322,15 @@ describe('generateSystem', () => {
     expect(system.ruins.length).toBeGreaterThan(0)
     expect(system.phenomena.length).toBeGreaterThan(0)
     expect(JSON.stringify(system.ruins).toLowerCase()).not.toContain('alien')
+  })
+
+  it('does not generate duplicate settlement tag pairs', () => {
+    for (let index = 0; index < 120; index++) {
+      const system = generateSystem({ ...options, seed: `f93f9c2e41b8${index.toString(16).padStart(4, '0')}` })
+      for (const settlement of system.settlements) {
+        expect(settlement.tags[0].value).not.toBe(settlement.tags[1].value)
+      }
+    }
   })
 
   it('uses expanded section 18 settlement table sources', () => {

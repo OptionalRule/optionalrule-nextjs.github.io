@@ -1151,6 +1151,13 @@ function settlementTagHook(obviousTag: string, deeperTag: string): string {
   return `${obviousTag} is what visitors notice first; ${deeperPressures[deeperTag] ?? `${deeperTag.toLowerCase()} is the deeper pressure driving the site.`}`
 }
 
+function chooseSettlementTags(rng: SeededRng): [string, string] {
+  const obviousTag = pickOne(rng, settlementTags)
+  const deeperOptions = settlementTags.filter((tag) => tag !== obviousTag)
+  const deeperTag = deeperOptions.length ? pickOne(rng, deeperOptions) : settlementTags[(settlementTags.indexOf(obviousTag) + 1) % settlementTags.length]
+  return [obviousTag, deeperTag]
+}
+
 function scoreSettlementPresence(body: OrbitingBody, guOverlay: ReturnType<typeof generateGuOverlay>, reachability: ReturnType<typeof generateReachability>) {
   const resource = clampScore(
     (body.category.value === 'belt' || body.category.value === 'gas-giant' || body.category.value === 'ice-giant' ? 2 : 0) +
@@ -1511,7 +1518,7 @@ function generateSettlements(
     const builtForm = chooseBuiltForm(rng, locationOption, settlementFunction)
     const anchor = chooseSettlementAnchor(rng, systemName, body, locationOption)
     const whyHere = settlementWhyHere(body, presence, guOverlay, reachability, anchor)
-    const tags = [pickOne(rng, settlementTags), pickOne(rng, settlementTags)]
+    const tags = chooseSettlementTags(rng)
     const tagHook = settlementTagHook(tags[0], tags[1])
     return {
       id: `settlement-${index + 1}`,
