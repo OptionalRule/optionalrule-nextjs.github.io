@@ -1,4 +1,5 @@
 import type { Settlement } from '../types'
+import type { ReactNode } from 'react'
 import { ConfidenceBadge } from './ConfidenceBadge'
 
 export function SettlementCard({ settlement }: { settlement: Settlement }) {
@@ -13,78 +14,68 @@ export function SettlementCard({ settlement }: { settlement: Settlement }) {
         </div>
         <ConfidenceBadge confidence={settlement.name.confidence} />
       </div>
-      <dl className="mt-3 space-y-2 text-sm">
-        <div>
-          <dt className="inline font-semibold text-[var(--text-secondary)]">Presence score: </dt>
-          <dd className="inline text-[var(--text-primary)]">
-            {settlement.presence.score.value} ({presenceLabel(settlement.presence.score.value)})
-          </dd>
+
+      <div className="mt-4 space-y-4 text-sm">
+        <Section title="Why It Exists">
+          <dl className="space-y-2">
+            <InlineDetail label="Presence" value={`${settlement.presence.score.value} (${presenceLabel(settlement.presence.score.value)})`} />
+            <InlineDetail label="Anchor" value={`${settlement.anchorName.value} (${settlement.anchorKind.value})`} />
+            <InlineDetail label="Placement" value={settlement.anchorDetail.value} />
+            <InlineDetail label="Why here" value={settlement.whyHere.value} />
+          </dl>
+        </Section>
+
+        <div className="grid gap-4 lg:grid-cols-2">
+          <Section title="Operations">
+            <dl className="space-y-2">
+              <InlineDetail label="Function" value={settlement.function.value} />
+              <InlineDetail label="Scale" value={settlement.scale.value} />
+              <InlineDetail label="Authority" value={settlement.authority.value} />
+              <InlineDetail label="Built form" value={settlement.builtForm.value} />
+            </dl>
+          </Section>
+
+          <Section title="Trouble">
+            <dl className="space-y-2">
+              <InlineDetail label="Condition" value={settlement.condition.value} />
+              <InlineDetail label="Current crisis" value={settlement.crisis.value} />
+              <InlineDetail label="Hidden truth" value={settlement.hiddenTruth.value} />
+              <InlineDetail label="AI" value={settlement.aiSituation.value} />
+            </dl>
+          </Section>
         </div>
-        <div>
-          <dt className="inline font-semibold text-[var(--text-secondary)]">Anchor: </dt>
-          <dd className="inline text-[var(--text-primary)]">
-            {settlement.anchorName.value} ({settlement.anchorKind.value})
-          </dd>
-        </div>
-        <div>
-          <dt className="inline font-semibold text-[var(--text-secondary)]">Placement: </dt>
-          <dd className="inline text-[var(--text-primary)]">{settlement.anchorDetail.value}</dd>
-        </div>
-        <div>
-          <dt className="inline font-semibold text-[var(--text-secondary)]">Why here: </dt>
-          <dd className="inline text-[var(--text-primary)]">{settlement.whyHere.value}</dd>
-        </div>
-        <div>
-          <dt className="inline font-semibold text-[var(--text-secondary)]">Function: </dt>
-          <dd className="inline text-[var(--text-primary)]">{settlement.function.value}</dd>
-        </div>
-        <div>
-          <dt className="inline font-semibold text-[var(--text-secondary)]">Scale: </dt>
-          <dd className="inline text-[var(--text-primary)]">{settlement.scale.value}</dd>
-        </div>
-        <div>
-          <dt className="inline font-semibold text-[var(--text-secondary)]">Authority: </dt>
-          <dd className="inline text-[var(--text-primary)]">{settlement.authority.value}</dd>
-        </div>
-        <div>
-          <dt className="inline font-semibold text-[var(--text-secondary)]">Built form: </dt>
-          <dd className="inline text-[var(--text-primary)]">{settlement.builtForm.value}</dd>
-        </div>
-        <div>
-          <dt className="inline font-semibold text-[var(--text-secondary)]">AI: </dt>
-          <dd className="inline text-[var(--text-primary)]">{settlement.aiSituation.value}</dd>
-        </div>
-        <div>
-          <dt className="inline font-semibold text-[var(--text-secondary)]">Condition: </dt>
-          <dd className="inline text-[var(--text-primary)]">{settlement.condition.value}</dd>
-        </div>
-        <div>
-          <dt className="inline font-semibold text-[var(--text-secondary)]">Tags: </dt>
-          <dd className="inline text-[var(--text-primary)]">
-            {settlement.tags.map((tag) => tag.value).join(' + ')}
-          </dd>
-        </div>
-        <div>
-          <dt className="inline font-semibold text-[var(--text-secondary)]">Tag hook: </dt>
-          <dd className="inline text-[var(--text-primary)]">{settlement.tagHook.value}</dd>
-        </div>
-        <div>
-          <dt className="inline font-semibold text-[var(--text-secondary)]">Current crisis: </dt>
-          <dd className="inline text-[var(--text-primary)]">{settlement.crisis.value}</dd>
-        </div>
-        <div>
-          <dt className="inline font-semibold text-[var(--text-secondary)]">Hidden truth: </dt>
-          <dd className="inline text-[var(--text-primary)]">{settlement.hiddenTruth.value}</dd>
-        </div>
-      </dl>
-      <div className="mt-3 text-sm">
-        <h4 className="text-xs font-semibold uppercase tracking-wide text-[var(--text-tertiary)]">Local Sites</h4>
-        <p className="mt-1 text-[var(--text-primary)]">{settlement.encounterSites.map((site) => site.value).join(', ')}</p>
+
+        <Section title="Adventure Texture">
+          <dl className="space-y-2">
+            <InlineDetail label="Tags" value={settlement.tags.map((tag) => tag.value).join(' + ')} />
+            <InlineDetail label="Tag hook" value={settlement.tagHook.value} />
+            <InlineDetail label="Local sites" value={settlement.encounterSites.map((site) => site.value).join(', ')} />
+          </dl>
+        </Section>
       </div>
+
       <p className="mt-3 border-t border-[var(--border)] pt-3 text-xs leading-relaxed text-[var(--text-tertiary)]">
         {settlement.methodNotes.map((note) => note.value).join(' ')}
       </p>
     </article>
+  )
+}
+
+function Section({ title, children }: { title: string; children: ReactNode }) {
+  return (
+    <section className="rounded-md border border-[var(--border)] bg-[var(--card-elevated)] p-3">
+      <h4 className="text-xs font-semibold uppercase tracking-wide text-[var(--text-tertiary)]">{title}</h4>
+      <div className="mt-2 text-[var(--text-primary)]">{children}</div>
+    </section>
+  )
+}
+
+function InlineDetail({ label, value }: { label: string; value: string }) {
+  return (
+    <div>
+      <dt className="inline font-semibold text-[var(--text-secondary)]">{label}: </dt>
+      <dd className="inline text-[var(--text-primary)]">{value}</dd>
+    </div>
   )
 }
 
