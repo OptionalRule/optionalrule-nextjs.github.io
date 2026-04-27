@@ -16,6 +16,8 @@ export function BodyDetailPanel({ body }: { body: OrbitingBody }) {
 
       <dl className="mt-4 grid gap-3 text-sm sm:grid-cols-2 lg:grid-cols-3">
         <Detail label="Radius" value={`${body.physical.radiusEarth.value} Earth radii`} />
+        <Detail label="Mass" value={body.physical.massEarth.value === null ? 'Not applicable' : `${body.physical.massEarth.value} Earth masses`} />
+        <Detail label="Gravity" value={body.physical.gravityLabel.value} />
         <Detail label="Period" value={`${body.physical.periodDays.value} days`} />
         <Detail label="Atmosphere" value={body.detail.atmosphere.value} />
         <Detail label="Volatiles" value={body.detail.hydrosphere.value} />

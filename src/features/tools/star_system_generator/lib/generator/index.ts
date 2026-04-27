@@ -344,6 +344,29 @@ function estimateRadiusEarth(rng: SeededRng, category: BodyCategory): number {
   return roundTo(rng.float(min, max), 2)
 }
 
+function estimateMassEarth(radiusEarth: number, category: BodyCategory): number | null {
+  if (category === 'belt') return null
+  if (category === 'rocky-planet') return roundTo(radiusEarth ** 3.7, 2)
+  if (category === 'super-earth') return roundTo(Math.min(12, radiusEarth ** 3.4), 2)
+  if (category === 'dwarf-body') return roundTo(Math.max(0.001, radiusEarth ** 3 * 0.2), 3)
+  if (category === 'rogue-captured') return roundTo(Math.max(0.05, radiusEarth ** 2.7), 2)
+  if (category === 'sub-neptune') return roundTo(Math.max(2, radiusEarth ** 2.1), 2)
+  if (category === 'ice-giant') return roundTo(radiusEarth ** 1.85, 2)
+  if (category === 'gas-giant') return roundTo(radiusEarth ** 1.4, 2)
+  if (category === 'anomaly') return null
+  return null
+}
+
+function gravityLabel(category: BodyCategory, gravityG: number | null): string {
+  if (category === 'belt') return 'Not applicable: distributed belt or swarm.'
+  if (category === 'anomaly' || gravityG === null) return 'Unreliable: anomaly or artificial structure.'
+  const prefix =
+    category === 'gas-giant' || category === 'ice-giant' || category === 'sub-neptune'
+      ? 'Cloud-top/envelope estimate'
+      : 'Estimated surface gravity'
+  return `${prefix}: ${gravityG}g`
+}
+
 function hasVolatileEnvelope(category: BodyCategory): boolean {
   return category === 'sub-neptune' || category === 'gas-giant' || category === 'ice-giant'
 }
@@ -355,8 +378,14 @@ function buildPhysicalHints(
   primary: Star
 ): BodyPhysicalHints {
   const periodDays = estimateOrbitalPeriodDays(orbitAu, primary.massSolar.value)
+  const radiusEarth = estimateRadiusEarth(rng, bodyClass.category)
+  const massEarth = estimateMassEarth(radiusEarth, bodyClass.category)
+  const surfaceGravityG = massEarth === null ? null : roundTo(massEarth / radiusEarth ** 2, 2)
   return {
-    radiusEarth: fact(estimateRadiusEarth(rng, bodyClass.category), 'inferred', 'Category-based radius estimate'),
+    radiusEarth: fact(radiusEarth, 'inferred', 'Category-based radius estimate'),
+    massEarth: fact(massEarth, 'inferred', 'Mass estimate from category and radius'),
+    surfaceGravityG: fact(surfaceGravityG, massEarth === null ? 'inferred' : 'derived', 'Estimated mass divided by radius squared'),
+    gravityLabel: fact(gravityLabel(bodyClass.category, surfaceGravityG), 'derived', 'Surface gravity estimate'),
     periodDays: fact(periodDays, 'derived', 'Kepler approximation from orbit and stellar mass'),
     closeIn: fact(periodDays < 100, 'derived', 'Period under 100 days'),
     volatileEnvelope: fact(hasVolatileEnvelope(bodyClass.category), 'inferred', 'Category-based volatile envelope flag'),
@@ -375,6 +404,9 @@ function applyRadiusValleyFilter(rng: SeededRng, input: FilteredWorldClass): Fil
       physical: {
         ...physical,
         radiusEarth: fact(roundTo(Math.min(1.45, physical.radiusEarth.value - 0.15), 2), 'inferred', 'Radius valley filter'),
+        massEarth: fact(null, 'inferred', 'Recomputed after exoplanet filters'),
+        surfaceGravityG: fact(null, 'inferred', 'Recomputed after exoplanet filters'),
+        gravityLabel: fact('Pending recomputation after exoplanet filters.', 'inferred', 'Recomputed after exoplanet filters'),
         volatileEnvelope: fact(false, 'inferred', 'Radius valley filter'),
       },
       filterNotes: [...filterNotes, fact('Radius valley: volatile envelope stripped or reduced.', 'inferred', 'Modern exoplanet filter')],
@@ -386,6 +418,9 @@ function applyRadiusValleyFilter(rng: SeededRng, input: FilteredWorldClass): Fil
       physical: {
         ...physical,
         radiusEarth: fact(roundTo(Math.max(2.05, physical.radiusEarth.value + 0.25), 2), 'inferred', 'Radius valley filter'),
+        massEarth: fact(null, 'inferred', 'Recomputed after exoplanet filters'),
+        surfaceGravityG: fact(null, 'inferred', 'Recomputed after exoplanet filters'),
+        gravityLabel: fact('Pending recomputation after exoplanet filters.', 'inferred', 'Recomputed after exoplanet filters'),
         volatileEnvelope: fact(true, 'inferred', 'Radius valley filter'),
       },
       filterNotes: [...filterNotes, fact('Radius valley: expanded into volatile-rich sub-Neptune regime.', 'inferred', 'Modern exoplanet filter')],
@@ -415,6 +450,9 @@ function applyHotNeptuneDesertFilter(rng: SeededRng, thermalZone: string, input:
       physical: {
         ...physical,
         radiusEarth: fact(roundTo(rng.float(1.25, 1.9), 2), 'inferred', 'Hot Neptune desert filter'),
+        massEarth: fact(null, 'inferred', 'Recomputed after exoplanet filters'),
+        surfaceGravityG: fact(null, 'inferred', 'Recomputed after exoplanet filters'),
+        gravityLabel: fact('Pending recomputation after exoplanet filters.', 'inferred', 'Recomputed after exoplanet filters'),
         volatileEnvelope: fact(false, 'inferred', 'Hot Neptune desert filter'),
       },
       filterNotes: [...filterNotes, fact('Hot Neptune desert: rerolled as hot super-Earth.', 'inferred', 'Modern exoplanet filter')],
@@ -426,6 +464,9 @@ function applyHotNeptuneDesertFilter(rng: SeededRng, thermalZone: string, input:
       physical: {
         ...physical,
         radiusEarth: fact(roundTo(rng.float(1.1, 1.65), 2), 'inferred', 'Hot Neptune desert filter'),
+        massEarth: fact(null, 'inferred', 'Recomputed after exoplanet filters'),
+        surfaceGravityG: fact(null, 'inferred', 'Recomputed after exoplanet filters'),
+        gravityLabel: fact('Pending recomputation after exoplanet filters.', 'inferred', 'Recomputed after exoplanet filters'),
         volatileEnvelope: fact(false, 'inferred', 'Hot Neptune desert filter'),
       },
       filterNotes: [...filterNotes, fact('Hot Neptune desert: converted to stripped core.', 'inferred', 'Modern exoplanet filter')],
@@ -468,6 +509,9 @@ function applyPeasInPodFilter(
       physical: {
         ...input.physical,
         radiusEarth: fact(radius, 'inferred', 'Peas-in-a-pod filter'),
+        massEarth: fact(null, 'inferred', 'Recomputed after exoplanet filters'),
+        surfaceGravityG: fact(null, 'inferred', 'Recomputed after exoplanet filters'),
+        gravityLabel: fact('Pending recomputation after exoplanet filters.', 'inferred', 'Recomputed after exoplanet filters'),
         volatileEnvelope: fact(previous.physical.volatileEnvelope.value, 'inferred', 'Peas-in-a-pod filter'),
       },
       filterNotes: [...input.filterNotes, fact('Peas-in-a-pod: adjacent planet made similar in size/composition.', 'inferred', 'Modern exoplanet filter')],
@@ -532,6 +576,21 @@ function applyModernExoplanetFilters(
   current = applyRadiusValleyFilter(rng, current)
   current = applyHotNeptuneDesertFilter(rng, thermalZone, current)
   return current
+}
+
+function withRecomputedGravity(input: FilteredWorldClass): FilteredWorldClass {
+  const massEarth = estimateMassEarth(input.physical.radiusEarth.value, input.bodyClass.category)
+  const surfaceGravityG = massEarth === null ? null : roundTo(massEarth / input.physical.radiusEarth.value ** 2, 2)
+
+  return {
+    ...input,
+    physical: {
+      ...input.physical,
+      massEarth: fact(massEarth, 'inferred', 'Mass estimate from category and filtered radius'),
+      surfaceGravityG: fact(surfaceGravityG, massEarth === null ? 'inferred' : 'derived', 'Estimated mass divided by radius squared'),
+      gravityLabel: fact(gravityLabel(input.bodyClass.category, surfaceGravityG), 'derived', 'Surface gravity estimate'),
+    },
+  }
 }
 
 
@@ -979,7 +1038,7 @@ function generateBodies(rng: SeededRng, primary: Star, bodyCount: number, archit
     const thermalZone = classifyThermalZone(insolation)
     const baseBodyClass = selectWorldClassForArchitecture(rng, thermalZone, architectureName, index, bodyCount)
     const basePhysical = buildPhysicalHints(rng, baseBodyClass, orbitAu, primary)
-    const filtered = applyModernExoplanetFilters(rng, baseBodyClass, basePhysical, thermalZone, architectureName, previousFiltered)
+    const filtered = withRecomputedGravity(applyModernExoplanetFilters(rng, baseBodyClass, basePhysical, thermalZone, architectureName, previousFiltered))
     const habitabilityNotes = mDwarfHabitabilityNotes(rng, primary, thermalZone, filtered.bodyClass.category)
     const siteCount = rng.chance(0.55) ? 1 : 0
     const detail = generateDetail(rng, filtered.bodyClass.category, thermalZone, primary)

@@ -85,6 +85,9 @@ export interface RingSystem {
 
 export interface BodyPhysicalHints {
   radiusEarth: Fact<number>
+  massEarth: Fact<number | null>
+  surfaceGravityG: Fact<number | null>
+  gravityLabel: Fact<string>
   periodDays: Fact<number>
   closeIn: Fact<boolean>
   volatileEnvelope: Fact<boolean>

@@ -290,6 +290,7 @@ Implemented close to source method
 - Extreme-hot environment constraints: furnace/inferno worlds avoid seas, mild atmospheres, biospheres, and moons.
 - Broad body categories: rocky planet, super-Earth, sub-Neptune, gas giant, ice giant, belt, dwarf body, rogue/captured body, anomaly.
 - First body detail fields: atmosphere, hydrosphere/volatiles, geology, climate tags, radiation, biosphere.
+- First mass and gravity estimates derived from radius and body category, with cloud-top/envelope labeling for gas and sub-Neptune worlds.
 - First body-level interest summaries and belt/minor-body/anomaly profile notes.
 - First moon/ring generation for suitable body categories.
 - First playable moon detail layer: moon scale, resource, hazard, use note, and giant-planet moon economy note.
@@ -304,6 +305,7 @@ First-pass approximations
 - Architecture affects body mix, but not yet with the full source procedure for each architecture.
 - Orbital slot spacing is a simple geometric progression; known planet placement and gap filling are not implemented.
 - Atmosphere/hydrosphere/geology/radiation use constrained pick lists rather than full d12 modifier math.
+- Mass and gravity are approximate category/radius estimates, not density-modeled planetary interiors.
 - Biosphere uses a rough habitability score, not the full source scoring rules.
 - Moon generation uses category-based counts, not the full terrestrial/giant moon tables.
 - Moon-base settlements attach to generated major moons when available and prefer moon types that fit the site location.

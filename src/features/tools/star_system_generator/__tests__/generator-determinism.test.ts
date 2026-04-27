@@ -36,6 +36,7 @@ describe('generateSystem', () => {
     expect(system.bodies[0].detail.atmosphere.value).toBeTruthy()
     expect(system.bodies[0].detail.hydrosphere.value).toBeTruthy()
     expect(system.bodies[0].physical.radiusEarth.value).toBeGreaterThan(0)
+    expect(system.bodies[0].physical.gravityLabel.value).toBeTruthy()
     expect(system.bodies[0].physical.periodDays.value).toBeGreaterThan(0)
     expect(Array.isArray(system.bodies[0].filterNotes)).toBe(true)
     expect(Array.isArray(system.bodies[0].moons)).toBe(true)
@@ -163,6 +164,30 @@ describe('generateSystem', () => {
         if (body.category.value === 'belt') {
           expect(body.detail.geology.value).toBe('Minor-body rubble and collision families')
           expect(body.detail.atmosphere.value).toBe('None / dispersed volatiles')
+          expect(body.physical.massEarth.value).toBeNull()
+          expect(body.physical.surfaceGravityG.value).toBeNull()
+          expect(body.physical.gravityLabel.value).toContain('Not applicable')
+        }
+      }
+    }
+  })
+
+  it('estimates surface gravity where gravity is meaningful', () => {
+    for (let index = 0; index < 50; index++) {
+      const system = generateSystem({ ...options, seed: `e93f9c2e41b8${index.toString(16).padStart(4, '0')}` })
+      for (const body of system.bodies) {
+        if (body.category.value === 'belt' || body.category.value === 'anomaly') continue
+
+        expect(body.physical.massEarth.value).toBeGreaterThan(0)
+        expect(body.physical.surfaceGravityG.value).toBeGreaterThan(0)
+        expect(body.physical.gravityLabel.value).toContain('g')
+
+        if (body.category.value === 'rocky-planet' || body.category.value === 'super-earth') {
+          expect(body.physical.gravityLabel.value).toContain('Estimated surface gravity')
+        }
+
+        if (body.category.value === 'gas-giant' || body.category.value === 'ice-giant' || body.category.value === 'sub-neptune') {
+          expect(body.physical.gravityLabel.value).toContain('Cloud-top/envelope estimate')
         }
       }
     }
