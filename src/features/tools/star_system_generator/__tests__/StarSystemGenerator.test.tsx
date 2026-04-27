@@ -10,6 +10,9 @@ describe('StarSystemGenerator', () => {
     render(<StarSystemGenerator />)
 
     expect(screen.getByText('Sci-Fi TTRPG Star System Generator')).toBeInTheDocument()
+    expect(screen.getByRole('region', { name: 'System summary' })).toBeInTheDocument()
+    expect(screen.getByRole('navigation', { name: 'Star system sections' })).toBeInTheDocument()
+    expect(screen.getByText('Confidence labels')).toBeInTheDocument()
     expect(screen.getByText('Orbital Profile')).toBeInTheDocument()
     expect(screen.getByText('Geometric Unity Overlay')).toBeInTheDocument()
     expect(screen.getByText('Sites & Settlements')).toBeInTheDocument()
