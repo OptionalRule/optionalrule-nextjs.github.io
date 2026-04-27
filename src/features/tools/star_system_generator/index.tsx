@@ -13,6 +13,7 @@ import { SettlementCard } from './components/SettlementCard'
 import { SystemOverview } from './components/SystemOverview'
 import { useGeneratedSystem } from './hooks/useGeneratedSystem'
 import { useGeneratorQueryState } from './hooks/useGeneratorQueryState'
+import { formatStellarClass } from './lib/stellarLabels'
 import type { GeneratedSystem } from './types'
 
 export interface StarSystemGeneratorProps {
@@ -111,7 +112,7 @@ export default function StarSystemGenerator({ className }: StarSystemGeneratorPr
 
 function SystemSummaryStrip({ system }: { system: GeneratedSystem }) {
   const items = [
-    ['Star', system.primary.spectralType.value],
+    ['Star', formatStellarClass(system.primary.spectralType.value)],
     ['Architecture', system.architecture.name.value],
     ['Reachability', system.reachability.className.value],
     ['Bodies', String(system.bodies.length)],

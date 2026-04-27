@@ -1,9 +1,10 @@
 import type { GeneratedSystem } from '../types'
 import { ConfidenceBadge } from './ConfidenceBadge'
+import { formatStellarClass, stellarClassNote } from '../lib/stellarLabels'
 
 export function SystemOverview({ system }: { system: GeneratedSystem }) {
   const rows = [
-    ['Primary', system.primary.spectralType.value],
+    ['Primary', formatStellarClass(system.primary.spectralType.value)],
     ['Mass', `${system.primary.massSolar.value} solar`],
     ['Luminosity', `${system.primary.luminositySolar.value} solar`],
     ['Age', system.primary.ageState.value],
@@ -43,6 +44,10 @@ export function SystemOverview({ system }: { system: GeneratedSystem }) {
         <div>HZ outer: {system.zones.habitableOuterAu.value} AU</div>
         <div>Snow line: {system.zones.snowLineAu.value} AU</div>
       </div>
+
+      <p className="mt-3 text-sm text-[var(--text-tertiary)]">
+        Stellar class note: {stellarClassNote(system.primary.spectralType.value)}
+      </p>
     </section>
   )
 }
