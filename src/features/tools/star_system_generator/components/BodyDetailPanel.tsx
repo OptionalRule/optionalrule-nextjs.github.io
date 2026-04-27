@@ -25,6 +25,14 @@ export function BodyDetailPanel({ body }: { body: OrbitingBody }) {
         <Detail label="Climate" value={body.detail.climate.map((tag) => tag.value).join(', ')} />
       </dl>
 
+      <div className="mt-4 rounded-md border border-[var(--border)] bg-[var(--card-elevated)] p-3 text-sm">
+        <h3 className="text-xs font-semibold uppercase tracking-wide text-[var(--text-tertiary)]">Why It Matters</h3>
+        <p className="mt-1 text-[var(--text-primary)]">{body.whyInteresting.value}</p>
+        {body.bodyProfile ? (
+          <p className="mt-2 text-[var(--text-secondary)]">{body.bodyProfile.value}</p>
+        ) : null}
+      </div>
+
       <div className="mt-4 grid gap-4 text-sm lg:grid-cols-4">
         <ListBlock
           title="Exoplanet Notes"

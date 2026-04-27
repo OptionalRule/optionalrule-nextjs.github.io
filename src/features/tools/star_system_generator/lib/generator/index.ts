@@ -74,46 +74,101 @@ interface SettlementAnchor {
 const worldClassesByThermalZone: Record<string, readonly WorldClassOption[]> = {
   Furnace: [
     { className: 'Iron remnant core', category: 'rocky-planet', massClass: 'Mercury-scale remnant' },
+    { className: 'Ultra-dense super-Mercury', category: 'rocky-planet', massClass: 'Dense terrestrial' },
     { className: 'Lava planet', category: 'rocky-planet', massClass: 'Terrestrial' },
     { className: 'Magma ocean world', category: 'super-earth', massClass: 'Super-Earth' },
+    { className: 'Dayside glass world', category: 'rocky-planet', massClass: 'Terrestrial' },
     { className: 'Stripped mini-Neptune core', category: 'super-earth', massClass: 'Stripped core' },
+    { className: 'Hot Neptune desert survivor', category: 'sub-neptune', massClass: 'Rare close-in Neptunian' },
+    { className: 'Hot Jupiter', category: 'gas-giant', massClass: 'Hot gas giant' },
+    { className: 'Artificially shielded human facility world', category: 'anomaly', massClass: 'Shielded facility world' },
+    { className: 'GU-scarred chiral furnace world', category: 'anomaly', massClass: 'Chiral furnace anomaly' },
   ],
   Inferno: [
     { className: 'Rock-vapor atmosphere world', category: 'rocky-planet', massClass: 'Terrestrial' },
     { className: 'Hot super-Earth', category: 'super-earth', massClass: 'Super-Earth' },
     { className: 'Ultra-dense super-Mercury', category: 'rocky-planet', massClass: 'Dense terrestrial' },
+    { className: 'Tidally stretched volcanic world', category: 'rocky-planet', massClass: 'Tidal volcanic terrestrial' },
+    { className: 'Evaporating rocky planet with dust tail', category: 'rocky-planet', massClass: 'Ablating terrestrial' },
+    { className: 'Hot sub-Neptune, unstable atmosphere', category: 'sub-neptune', massClass: 'Unstable sub-Neptune' },
     { className: 'Roche-distorted world', category: 'anomaly', massClass: 'Tidal remnant' },
   ],
   Hot: [
+    { className: 'Airless scorched rock', category: 'rocky-planet', massClass: 'Terrestrial' },
+    { className: 'Basaltic super-Earth', category: 'super-earth', massClass: 'Super-Earth' },
     { className: 'Venus-like greenhouse', category: 'rocky-planet', massClass: 'Terrestrial' },
+    { className: 'Steam greenhouse', category: 'rocky-planet', massClass: 'Terrestrial' },
+    { className: 'Sulfur-cloud world', category: 'rocky-planet', massClass: 'Toxic terrestrial' },
     { className: 'Dry supercontinent world', category: 'rocky-planet', massClass: 'Terrestrial' },
     { className: 'Hot ocean remnant', category: 'super-earth', massClass: 'Super-Earth' },
+    { className: 'Dense-atmosphere pressure world', category: 'super-earth', massClass: 'High-pressure super-Earth' },
     { className: 'Mini-Neptune', category: 'sub-neptune', massClass: 'Sub-Neptune' },
+    { className: 'Puffy low-density sub-Neptune', category: 'sub-neptune', massClass: 'Low-density sub-Neptune' },
+    { className: 'Warm Neptune', category: 'ice-giant', massClass: 'Warm Neptunian' },
+    { className: 'Migrated giant', category: 'gas-giant', massClass: 'Migrated gas giant' },
+    { className: 'Chiral mineral harvest world', category: 'anomaly', massClass: 'Chiral resource world' },
+    { className: 'Corporate solar-furnace industry world', category: 'anomaly', massClass: 'Industrial facility world' },
+    { className: 'Bleed-heated geological anomaly', category: 'anomaly', massClass: 'GU geological anomaly' },
   ],
   'Temperate band': [
+    { className: 'Airless rock in nominal HZ', category: 'rocky-planet', massClass: 'Terrestrial' },
+    { className: 'Mars-like cold desert', category: 'rocky-planet', massClass: 'Terrestrial' },
+    { className: 'Dry terrestrial', category: 'rocky-planet', massClass: 'Terrestrial' },
     { className: 'Thin-atmosphere terrestrial', category: 'rocky-planet', massClass: 'Terrestrial' },
+    { className: 'Earth-sized terrestrial', category: 'rocky-planet', massClass: 'Terrestrial' },
     { className: 'Ocean-continent world', category: 'rocky-planet', massClass: 'Terrestrial' },
+    { className: 'Waterworld', category: 'rocky-planet', massClass: 'Ocean terrestrial' },
+    { className: 'Ice-capped ocean world', category: 'rocky-planet', massClass: 'Ocean terrestrial' },
     { className: 'Tidally locked terminator world', category: 'rocky-planet', massClass: 'Terrestrial' },
+    { className: 'High-pressure super-Earth', category: 'super-earth', massClass: 'High-pressure super-Earth' },
+    { className: 'Volatile-rich sub-Neptune', category: 'sub-neptune', massClass: 'Sub-Neptune' },
     { className: 'Terraforming candidate', category: 'super-earth', massClass: 'Super-Earth' },
+    { className: 'Failed terraforming site', category: 'rocky-planet', massClass: 'Human-altered terrestrial' },
+    { className: 'Native microbial biosphere world', category: 'rocky-planet', massClass: 'Biosphere terrestrial' },
+    { className: 'GU-active habitable-zone anomaly', category: 'anomaly', massClass: 'GU habitable-zone anomaly' },
   ],
   Cold: [
+    { className: 'Airless ice-rock', category: 'rocky-planet', massClass: 'Ice-rock terrestrial' },
+    { className: 'Frozen Mars-like world', category: 'rocky-planet', massClass: 'Ice-rock terrestrial' },
     { className: 'Buried-ocean ice world', category: 'rocky-planet', massClass: 'Ice-rock terrestrial' },
     { className: 'Nitrogen glacier world', category: 'dwarf-body', massClass: 'Dwarf planet' },
+    { className: 'Methane frost world', category: 'dwarf-body', massClass: 'Dwarf planet' },
+    { className: 'Ammonia-water cryoworld', category: 'rocky-planet', massClass: 'Ice-rock terrestrial' },
+    { className: 'Ice-shell ocean world', category: 'rocky-planet', massClass: 'Ice-shell world' },
+    { className: 'Cryovolcanic world', category: 'rocky-planet', massClass: 'Cryovolcanic terrestrial' },
+    { className: 'Captured dwarf planet', category: 'dwarf-body', massClass: 'Captured dwarf planet' },
     { className: 'Cold super-Earth', category: 'super-earth', massClass: 'Super-Earth' },
     { className: 'Ice-rich asteroid belt', category: 'belt', massClass: 'Minor-body belt' },
+    { className: 'Cometary swarm', category: 'belt', massClass: 'Comet reservoir' },
     { className: 'Neptune-like ice giant', category: 'ice-giant', massClass: 'Ice giant' },
     { className: 'Ringed giant with moons', category: 'gas-giant', massClass: 'Gas giant' },
+    { className: 'Trojan settlement zone', category: 'belt', massClass: 'Trojan swarm' },
+    { className: 'Dark-sector density anomaly', category: 'anomaly', massClass: 'Dark-sector anomaly' },
+    { className: 'Moving bleed node nursery', category: 'anomaly', massClass: 'Moving GU node' },
   ],
   Cryogenic: [
     { className: 'Dwarf planet', category: 'dwarf-body', massClass: 'Dwarf planet' },
     { className: 'Kuiper-like belt', category: 'belt', massClass: 'Outer debris belt' },
+    { className: 'Scattered disk object', category: 'dwarf-body', massClass: 'Scattered disk object' },
     { className: 'Ice giant', category: 'ice-giant', massClass: 'Ice giant' },
     { className: 'Cometary swarm', category: 'belt', massClass: 'Comet reservoir' },
+    { className: 'Rogue captured planet', category: 'rogue-captured', massClass: 'Captured planet' },
+    { className: 'Frozen super-Earth', category: 'super-earth', massClass: 'Frozen super-Earth' },
+    { className: 'Hydrogen-atmosphere rogue world', category: 'rogue-captured', massClass: 'Hydrogen rogue world' },
+    { className: 'Cold gas giant', category: 'gas-giant', massClass: 'Cold gas giant' },
+    { className: 'Ancient impact family', category: 'belt', massClass: 'Impact-family debris' },
+    { className: 'Smuggler ice depot', category: 'dwarf-body', massClass: 'Hidden depot body' },
+    { className: 'Black-lab platform', category: 'anomaly', massClass: 'Hidden facility platform' },
   ],
   Dark: [
     { className: 'Comet reservoir', category: 'belt', massClass: 'Outer comet cloud' },
     { className: 'Rogue captured planet', category: 'rogue-captured', massClass: 'Captured planet' },
+    { className: 'Free-floating planet bound at extreme distance', category: 'rogue-captured', massClass: 'Distant bound rogue' },
+    { className: 'Brown-dwarf companion', category: 'anomaly', massClass: 'Brown-dwarf companion' },
     { className: 'Dark refueling body', category: 'dwarf-body', massClass: 'Dwarf planet' },
+    { className: 'Long-period comet storm source', category: 'belt', massClass: 'Comet storm source' },
+    { className: 'Exile habitat', category: 'dwarf-body', massClass: 'Hidden habitat body' },
+    { className: 'Gardener-shadowed forbidden zone', category: 'anomaly', massClass: 'Interdicted zone' },
     { className: 'Deep observerse fracture', category: 'anomaly', massClass: 'Metric anomaly' },
   ],
 }
@@ -789,6 +844,82 @@ function generateGiantEconomy(bodyClass: WorldClassOption, moons: Moon[], rings?
   return fact(`${traffic}.${moonNote}${resourceNote}${ringNote}`, 'human-layer', 'Generated giant-planet moon economy note')
 }
 
+function generateBodyProfile(bodyClass: WorldClassOption, detail: PlanetaryDetail, moons: Moon[], rings?: RingSystem): Fact<string> | undefined {
+  if (bodyClass.category === 'belt') {
+    const profile =
+      bodyClass.className.includes('Trojan') ? 'Trojan swarm with stable co-orbital traffic lanes and hidden habitat potential.' :
+      bodyClass.className.includes('Chiral') ? 'Chiral ore belt with high extraction value and contamination risk.' :
+      bodyClass.className.includes('Comet') ? 'Cometary reservoir with volatiles, fuel value, and unpredictable inbound traffic.' :
+      bodyClass.className.includes('impact') || bodyClass.className.includes('Impact') ? 'Ancient impact family with mixed metals, rubble hazards, and salvage rights disputes.' :
+      bodyClass.className.includes('Kuiper') ? 'Outer icy belt with long-cycle claims, comet capture, and cold storage sites.' :
+      bodyClass.className.includes('Ice-rich') ? 'Ice-rich asteroid belt with volatile extraction and refueling infrastructure.' :
+      'Minor-body belt with mining, navigation hazards, and distributed claims.'
+    return fact(profile, profile.includes('Chiral') ? 'gu-layer' : 'inferred', 'MASS-GU 17 belt type interpretation')
+  }
+
+  if (bodyClass.category === 'dwarf-body' || bodyClass.category === 'rogue-captured') {
+    const profile =
+      bodyClass.className.includes('Smuggler') ? 'Small cold body used as a hidden logistics depot or illicit harbor.' :
+      bodyClass.className.includes('Exile') ? 'Remote body suitable for political refuge, outlaw courts, or abandoned habitats.' :
+      bodyClass.className.includes('Dark refueling') ? 'Cold refueling body with valuable volatiles and poor oversight.' :
+      bodyClass.className.includes('Rogue') || bodyClass.className.includes('Free-floating') ? 'Captured or distant rogue world with unusual orbit history and survey value.' :
+      `${bodyClass.className} with ${detail.hydrosphere.value.toLowerCase()} and low-traffic frontier value.`
+    return fact(profile, 'inferred', 'MASS-GU minor-body interpretation')
+  }
+
+  if (bodyClass.category === 'anomaly') {
+    const profile =
+      bodyClass.className.includes('GU') || bodyClass.className.includes('observerse') || bodyClass.className.includes('bleed')
+        ? 'GU-active body where metric behavior matters as much as normal geology.'
+        : bodyClass.className.includes('facility') || bodyClass.className.includes('platform')
+          ? 'Human-altered facility world where infrastructure is the main point of interest.'
+          : 'Anomalous body with unusual survey, hazard, or setting-layer value.'
+    return fact(profile, profile.includes('GU') ? 'gu-layer' : 'human-layer', 'MASS-GU anomaly interpretation')
+  }
+
+  if (moons.length > 0 || rings) {
+    return fact(`${bodyClass.className} with ${moons.length} major moon${moons.length === 1 ? '' : 's'}${rings ? ' and notable rings' : ''}.`, 'inferred', 'Generated orbital companion summary')
+  }
+
+  return undefined
+}
+
+function generateBodyInterest(
+  bodyClass: WorldClassOption,
+  thermalZone: string,
+  detail: PlanetaryDetail,
+  moons: Moon[],
+  filterNotes: Array<Fact<string>>,
+  bodyProfile?: Fact<string>,
+  giantEconomy?: Fact<string>
+): Fact<string> {
+  const reasons: string[] = []
+
+  if (bodyProfile) reasons.push(bodyProfile.value)
+  if (giantEconomy) reasons.push(giantEconomy.value)
+  if (detail.biosphere.value !== 'Sterile') reasons.push(`${detail.biosphere.value} creates science, quarantine, or settlement pressure`)
+  if (detail.hydrosphere.value.includes('ocean') || detail.hydrosphere.value.includes('ice') || detail.hydrosphere.value.includes('volatiles')) {
+    reasons.push(`${detail.hydrosphere.value} makes local volatiles important`)
+  }
+  if (detail.radiation.value.includes('Severe') || detail.radiation.value.includes('Flare-lethal') || detail.radiation.value.includes('Only deep')) {
+    reasons.push(`${detail.radiation.value} makes operations dangerous`)
+  }
+  if (filterNotes.some((note) => note.value.includes('Hot Neptune desert') || note.value.includes('Radius valley') || note.value.includes('M-dwarf'))) {
+    reasons.push('modern exoplanet filters make this a notable survey target')
+  }
+  if (moons.some((moon) => moon.resource.confidence === 'gu-layer') || bodyClass.className.includes('GU') || bodyClass.className.includes('Chiral') || bodyClass.className.includes('bleed')) {
+    reasons.push('GU value may attract research, extraction, or interdiction')
+  }
+  if (thermalZone === 'Temperate band' && (bodyClass.category === 'rocky-planet' || bodyClass.category === 'super-earth')) {
+    reasons.push('its nominal habitable-zone position gives it political and survey value even if conditions are harsh')
+  }
+
+  const selected = reasons.slice(0, 3)
+  if (selected.length === 0) selected.push(`${bodyClass.className} is mainly useful as orbital context and navigation terrain`)
+
+  return fact(selected.join(' '), selected.some((reason) => reason.includes('GU')) ? 'gu-layer' : 'inferred', 'Generated body interest summary')
+}
+
 function selectWorldClassForArchitecture(
   rng: SeededRng,
   thermalZone: string,
@@ -855,6 +986,8 @@ function generateBodies(rng: SeededRng, primary: Star, bodyCount: number, archit
     const moons = generateMoons(rng, filtered.bodyClass.category, index, thermalZone)
     const rings = generateRingSystem(rng, filtered.bodyClass.category)
     const giantEconomy = generateGiantEconomy(filtered.bodyClass, moons, rings)
+    const bodyProfile = generateBodyProfile(filtered.bodyClass, detail, moons, rings)
+    const whyInteresting = generateBodyInterest(filtered.bodyClass, thermalZone, detail, moons, [...filtered.filterNotes, ...habitabilityNotes], bodyProfile, giantEconomy)
     bodies.push({
       id: `body-${index + 1}`,
       orbitAu: fact(orbitAu, 'derived', 'Generated orbital spacing'),
@@ -862,6 +995,8 @@ function generateBodies(rng: SeededRng, primary: Star, bodyCount: number, archit
       category: fact(filtered.bodyClass.category, 'inferred', 'Thermal-zone body class table'),
       massClass: fact(filtered.bodyClass.massClass, 'inferred', 'Thermal-zone body class table'),
       bodyClass: fact(filtered.bodyClass.className, 'inferred', 'Thermal-zone, architecture, and exoplanet filters'),
+      bodyProfile,
+      whyInteresting,
       thermalZone: fact(thermalZone, 'derived', `Insolation ${roundTo(insolation, 3)} S`),
       physical: filtered.physical,
       detail,
@@ -1431,6 +1566,8 @@ function runNoAlienGuard(system: Omit<GeneratedSystem, 'noAlienCheck'>): Generat
     name: guardFactText(body.name, conversions),
     massClass: guardFactText(body.massClass, conversions),
     bodyClass: guardFactText(body.bodyClass, conversions),
+    bodyProfile: body.bodyProfile ? guardFactText(body.bodyProfile, conversions) : undefined,
+    whyInteresting: guardFactText(body.whyInteresting, conversions),
     thermalZone: guardFactText(body.thermalZone, conversions),
     detail: {
       atmosphere: guardFactText(body.detail.atmosphere, conversions),

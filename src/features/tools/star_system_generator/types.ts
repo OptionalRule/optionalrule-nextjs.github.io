@@ -97,6 +97,8 @@ export interface OrbitingBody {
   category: Fact<BodyCategory>
   massClass: Fact<string>
   bodyClass: Fact<string>
+  bodyProfile?: Fact<string>
+  whyInteresting: Fact<string>
   thermalZone: Fact<string>
   physical: BodyPhysicalHints
   detail: PlanetaryDetail

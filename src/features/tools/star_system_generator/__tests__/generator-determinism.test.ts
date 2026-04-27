@@ -31,6 +31,8 @@ describe('generateSystem', () => {
     expect(system.bodies.length).toBeGreaterThanOrEqual(2)
     expect(system.bodies[0].category.value).toBeTruthy()
     expect(system.bodies[0].massClass.value).toBeTruthy()
+    expect(system.bodies[0].whyInteresting.value).toBeTruthy()
+    expect(system.bodies[0].whyInteresting.source).toContain('body interest')
     expect(system.bodies[0].detail.atmosphere.value).toBeTruthy()
     expect(system.bodies[0].detail.hydrosphere.value).toBeTruthy()
     expect(system.bodies[0].physical.radiusEarth.value).toBeGreaterThan(0)
@@ -164,6 +166,37 @@ describe('generateSystem', () => {
         }
       }
     }
+  })
+
+  it('adds richer body profiles for belts, minor bodies, and anomalies', () => {
+    const systems = Array.from({ length: 80 }, (_, index) =>
+      generateSystem({ ...options, seed: `c93f9c2e41b8${index.toString(16).padStart(4, '0')}` })
+    )
+    const profiledBodies = systems.flatMap((system) =>
+      system.bodies.filter((body) =>
+        body.category.value === 'belt' ||
+        body.category.value === 'dwarf-body' ||
+        body.category.value === 'rogue-captured' ||
+        body.category.value === 'anomaly'
+      )
+    )
+
+    expect(profiledBodies.length).toBeGreaterThan(0)
+    for (const body of profiledBodies) {
+      expect(body.bodyProfile?.value).toBeTruthy()
+      expect(body.whyInteresting.value.length).toBeGreaterThan(20)
+    }
+  })
+
+  it('includes expanded source-derived world classes across sampled seeds', () => {
+    const classes = new Set(
+      Array.from({ length: 120 }, (_, index) =>
+        generateSystem({ ...options, seed: `d93f9c2e41b8${index.toString(16).padStart(4, '0')}` })
+      ).flatMap((system) => system.bodies.map((body) => body.bodyClass.value))
+    )
+
+    expect(classes.has('Failed terraforming site') || classes.has('Trojan settlement zone') || classes.has('GU-active habitable-zone anomaly')).toBe(true)
+    expect(classes.has('Cometary swarm') || classes.has('Ancient impact family') || classes.has('Dark refueling body')).toBe(true)
   })
 
   it('generates a fuller orbital profile across frontier seeds', () => {

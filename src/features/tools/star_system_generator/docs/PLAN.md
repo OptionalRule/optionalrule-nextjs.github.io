@@ -286,9 +286,11 @@ Implemented close to source method
 - Reachability class.
 - Architecture roll with first-pass modifiers for metallicity, K/G/F stars, very low-mass M dwarfs, resource/reachability bias, and tone.
 - Thermal-zone constrained body selection.
+- Expanded first-pass planet class lists drawn from MASS-GU section 12, including human facility worlds, failed terraforming sites, Trojan settlement zones, dark-sector anomalies, and distant human/route sites.
 - Extreme-hot environment constraints: furnace/inferno worlds avoid seas, mild atmospheres, biospheres, and moons.
 - Broad body categories: rocky planet, super-Earth, sub-Neptune, gas giant, ice giant, belt, dwarf body, rogue/captured body, anomaly.
 - First body detail fields: atmosphere, hydrosphere/volatiles, geology, climate tags, radiation, biosphere.
+- First body-level interest summaries and belt/minor-body/anomaly profile notes.
 - First moon/ring generation for suitable body categories.
 - First playable moon detail layer: moon scale, resource, hazard, use note, and giant-planet moon economy note.
 - First GU overlay with modifiers for active M dwarfs, compact systems, gas giants, and quiet G/K stars.
@@ -298,7 +300,7 @@ Implemented close to source method
 - Final no-alien guard converts old alien-style mystery labels into MASS-GU replacements and records the check result.
 
 First-pass approximations
-- Planet class tables are compressed from the source writeup, not complete d20 tables yet.
+- Planet class tables are expanded from the source writeup but still use compressed equal-choice lists rather than exact d20 weighting and architecture-specific modifiers.
 - Architecture affects body mix, but not yet with the full source procedure for each architecture.
 - Orbital slot spacing is a simple geometric progression; known planet placement and gap filling are not implemented.
 - Atmosphere/hydrosphere/geology/radiation use constrained pick lists rather than full d12 modifier math.
@@ -307,6 +309,7 @@ First-pass approximations
 - Moon-base settlements attach to generated major moons when available and prefer moon types that fit the site location.
 - Moon details include first-pass scale/resource/hazard/use notes, but do not yet use full moon-specific environment generation.
 - Ring generation is simplified.
+- Belt, minor-body, and anomaly profiles are interpretive summaries, not full independent generation procedures.
 - Settlement presence scoring is implemented as a simplified numeric approximation, not the complete source formula/table coverage.
 - Settlement/base generation now follows MASS-GU section 18 location, function, authority, built-form, AI situation, condition, tag, crisis, hidden-truth, and local-site concepts, but adds implementation constraints so physical site category, function, built form, and anchor remain compatible.
 - Settlement cards include a physical anchor and a first-pass "why here" line generated from MASS-GU 18.1 presence score components.

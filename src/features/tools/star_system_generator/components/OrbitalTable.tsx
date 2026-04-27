@@ -24,6 +24,7 @@ export function OrbitalTable({ system, selectedBodyId, onSelectBody }: OrbitalTa
               <th className="py-2 pr-3">Mass Class</th>
               <th className="py-2 pr-3">Thermal Zone</th>
               <th className="py-2 pr-3">Environment</th>
+              <th className="py-2 pr-3">Interest</th>
               <th className="py-2 pr-3">Moons/Sites</th>
             </tr>
           </thead>
@@ -52,6 +53,7 @@ export function OrbitalTable({ system, selectedBodyId, onSelectBody }: OrbitalTa
                 <td className="py-3 pr-3 text-[var(--text-secondary)]">
                   {body.detail.atmosphere.value}; {body.detail.hydrosphere.value}
                 </td>
+                <td className="max-w-[24rem] py-3 pr-3 text-[var(--text-secondary)]">{body.whyInteresting.value}</td>
                 <td className="py-3 pr-3 text-[var(--text-secondary)]">
                   {body.moons.length} moon{body.moons.length === 1 ? '' : 's'}
                   {body.sites.length ? `; ${body.sites.length} site${body.sites.length === 1 ? '' : 's'}` : ''}
