@@ -1,5 +1,19 @@
 [
   {
+    "slug": "ibo-design-diary-the-progressive-resolution-system",
+    "title": "IBO Design Diary - The Progressive Resolution System",
+    "excerpt": "How IBO's Progressive Resolution System turns every skill check into a multi-stage risk decision, from sword fights to lockpicking to crafting legendary gear.",
+    "tags": [
+      "IBO",
+      "Game Development",
+      "Dev Log",
+      "Mechanics"
+    ],
+    "content": "",
+    "date": "2026-03-23",
+    "readingTime": 11
+  },
+  {
     "slug": "ibo-design-diary-characters",
     "title": "IBO Design Diary: What your character is made of",
     "excerpt": "A deep dive into IBO's character system: nine characteristics, d100 skill rolls, backgrounds, apprenticeships, and the Rule of 5.",

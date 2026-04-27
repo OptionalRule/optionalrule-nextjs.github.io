@@ -9,9 +9,17 @@
     <managingEditor>scott@optionalrule.com (Scott Turnbull)</managingEditor>
     <webMaster>scott@optionalrule.com (Scott Turnbull)</webMaster>
     <copyright>Copyright 2026 Optional Rule Games</copyright>
-    <lastBuildDate>Thu, 12 Mar 2026 00:00:00 GMT</lastBuildDate>
+    <lastBuildDate>Mon, 23 Mar 2026 00:00:00 GMT</lastBuildDate>
     <ttl>60</ttl>
     
+    <item>
+      <title><![CDATA[IBO Design Diary - The Progressive Resolution System]]></title>
+      <description><![CDATA[How IBO's Progressive Resolution System turns every skill check into a multi-stage risk decision, from sword fights to lockpicking to crafting legendary gear.]]></description>
+      <link>https://www.optionalrule.com/2026/03/23/ibo-design-diary-the-progressive-resolution-system/</link>
+      <guid isPermaLink="true">https://www.optionalrule.com/2026/03/23/ibo-design-diary-the-progressive-resolution-system/</guid>
+      <pubDate>Mon, 23 Mar 2026 00:00:00 GMT</pubDate>
+      <category><![CDATA[IBO, Game Development, Dev Log, Mechanics]]></category>
+    </item>
     <item>
       <title><![CDATA[IBO Design Diary: What your character is made of]]></title>
       <description><![CDATA[A deep dive into IBO's character system: nine characteristics, d100 skill rolls, backgrounds, apprenticeships, and the Rule of 5.]]></description>

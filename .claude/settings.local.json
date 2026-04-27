@@ -24,7 +24,13 @@
       "WebFetch(domain:github.com)",
       "Bash(git log:*)",
       "Bash(git merge:*)",
-      "Bash(grep:*)"
+      "Bash(grep:*)",
+      "Bash(npm update:*)",
+      "Bash(npx tsc:*)",
+      "mcp__context7__resolve-library-id",
+      "mcp__context7__query-docs",
+      "WebFetch(domain:devblogs.microsoft.com)",
+      "WebFetch(domain:gist.github.com)"
     ],
     "deny": [],
     "ask": [],
