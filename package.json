@@ -30,6 +30,7 @@
     "download-external-images": "node --import tsx/esm scripts/download-external-images.ts",
     "find-empty-links": "node --import tsx/esm scripts/find-empty-links.ts",
     "generate-rss": "node --import tsx/esm scripts/generate-rss.ts",
+    "audit:star-system-generator": "node --import tsx/esm scripts/audit-star-system-generator.ts",
     "validate-config": "node --import tsx/esm scripts/validate-config.ts"
   },
   "dependencies": {

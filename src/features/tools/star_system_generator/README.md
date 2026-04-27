@@ -15,3 +15,5 @@ The generator should be deterministic from a seed and options object. Future kno
 Initial implementation should be client-only and static-export compatible, following the existing interactive tool pattern used by KCD2 Alchemy Scholar.
 
 Commit work at logical checkpoints during development. For this feature, good checkpoints include completed generation-rule passes, UI/card readability passes, query-state fixes, and documentation/status updates after focused verification.
+
+Run `npm run audit:star-system-generator` after generator-rule changes. The audit generates a deterministic corpus across frontier and realistic distributions, fails on hard contradictions or missing fields, and reports warnings for coverage or tuning gaps that are useful during iterative table work.

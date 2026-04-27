@@ -76,6 +76,7 @@ Development cadence
 - Commit at logical checkpoints during development, not only at the end of a long session.
 - Good checkpoints for this tool include completed generator-rule passes, UI readability passes, URL/query-state fixes, documentation/status updates, and test additions.
 - Run focused verification for the touched surface before each checkpoint commit when practical, then broaden to lint/build before larger or user-facing commits.
+- Run `npm run audit:star-system-generator` after generator-rule changes to scan a deterministic corpus for missing fields, repeated tags, impossible body details, settlement anchor contradictions, no-alien guard regressions, and distribution coverage warnings.
 
 ## 2. Architecture
 
@@ -213,6 +214,7 @@ M5 - Geometric Unity and Human Layer
 - [x] Implement first-pass human ruins/derelicts and expanded phenomena.
 - [x] Implement no-alien guard and conversion rules.
 - [x] Add tests that forbidden alien outputs cannot survive first-pass human-layer generation.
+- [x] Add scripted deterministic corpus audit for missing, contradictory, repeated, and coverage-defect outputs.
 
 M6 - UI MVP
 - [x] Build `SeedControl`.
