@@ -37,6 +37,12 @@ describe('generateSystem', () => {
     expect(system.bodies[0].physical.periodDays.value).toBeGreaterThan(0)
     expect(Array.isArray(system.bodies[0].filterNotes)).toBe(true)
     expect(Array.isArray(system.bodies[0].moons)).toBe(true)
+    for (const moon of system.bodies.flatMap((body) => body.moons)) {
+      expect(moon.scale.value).toBeTruthy()
+      expect(moon.resource.value).toBeTruthy()
+      expect(moon.hazard.value).toBeTruthy()
+      expect(moon.use.value).toBeTruthy()
+    }
     expect(system.guOverlay.hazard.confidence).toBe('gu-layer')
     expect(system.noAlienCheck.passed).toBe(true)
     expect(system.bodies.map((body) => body.bodyClass.value.toLowerCase())).not.toContain('alien artifact')
@@ -138,6 +144,7 @@ describe('generateSystem', () => {
       const giants = system.bodies.filter((body) => body.category.value === 'gas-giant' || body.category.value === 'ice-giant')
       expect(giants.length).toBeGreaterThanOrEqual(1)
       expect(giants.some((body) => body.moons.length >= 2)).toBe(true)
+      expect(giants.every((body) => body.giantEconomy?.value)).toBe(true)
     }
   })
 
@@ -272,5 +279,25 @@ describe('generateSystem', () => {
         expect(settlement.whyHere.value.length).toBeGreaterThan(20)
       }
     }
+  })
+
+  it('adds playable moon details and giant economy notes', () => {
+    const systems = Array.from({ length: 80 }, (_, index) =>
+      generateSystem({ ...options, seed: `b93f9c2e41b8${index.toString(16).padStart(4, '0')}` })
+    )
+    const moons = systems.flatMap((system) => system.bodies.flatMap((body) => body.moons))
+    const giants = systems.flatMap((system) => system.bodies.filter((body) => body.category.value === 'gas-giant' || body.category.value === 'ice-giant'))
+
+    expect(moons.length).toBeGreaterThan(0)
+    for (const moon of moons) {
+      expect(moon.moonType.source).toContain('MASS-GU 17')
+      expect(moon.scale.source).toContain('moon scale')
+      expect(moon.resource.source).toContain('moon resource')
+      expect(moon.hazard.source).toContain('moon hazard')
+      expect(moon.use.source).toContain('moon playable-use')
+    }
+
+    expect(giants.length).toBeGreaterThan(0)
+    expect(giants.every((body) => body.giantEconomy?.value.includes('traffic'))).toBe(true)
   })
 })

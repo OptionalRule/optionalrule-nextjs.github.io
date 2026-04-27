@@ -34,7 +34,7 @@ export function BodyDetailPanel({ body }: { body: OrbitingBody }) {
         <ListBlock
           title="Moons"
           empty="No major moons generated."
-          items={body.moons.map((moon) => `${moon.name.value}: ${moon.moonType.value}`)}
+          items={body.moons.map((moon) => `${moon.name.value}: ${moon.scale.value} ${moon.moonType.value}. ${moon.use.value}. Resource: ${moon.resource.value}. Hazard: ${moon.hazard.value}.`)}
         />
         <ListBlock
           title="Rings"
@@ -42,9 +42,9 @@ export function BodyDetailPanel({ body }: { body: OrbitingBody }) {
           items={body.rings ? [body.rings.type.value] : []}
         />
         <ListBlock
-          title="Sites"
+          title="Economy & Sites"
           empty="No human sites logged."
-          items={body.sites.map((site) => site.value)}
+          items={[...(body.giantEconomy ? [body.giantEconomy.value] : []), ...body.sites.map((site) => site.value)]}
         />
       </div>
     </section>

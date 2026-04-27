@@ -73,6 +73,10 @@ export interface Moon {
   id: string
   name: Fact<string>
   moonType: Fact<string>
+  scale: Fact<string>
+  resource: Fact<string>
+  hazard: Fact<string>
+  use: Fact<string>
 }
 
 export interface RingSystem {
@@ -98,6 +102,7 @@ export interface OrbitingBody {
   detail: PlanetaryDetail
   moons: Moon[]
   rings?: RingSystem
+  giantEconomy?: Fact<string>
   filterNotes: Array<Fact<string>>
   traits: Array<Fact<string>>
   sites: Array<Fact<string>>

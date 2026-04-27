@@ -290,6 +290,7 @@ Implemented close to source method
 - Broad body categories: rocky planet, super-Earth, sub-Neptune, gas giant, ice giant, belt, dwarf body, rogue/captured body, anomaly.
 - First body detail fields: atmosphere, hydrosphere/volatiles, geology, climate tags, radiation, biosphere.
 - First moon/ring generation for suitable body categories.
+- First playable moon detail layer: moon scale, resource, hazard, use note, and giant-planet moon economy note.
 - First GU overlay with modifiers for active M dwarfs, compact systems, gas giants, and quiet G/K stars.
 - First modern exoplanet filters: radius valley, hot Neptune desert, peas-in-a-pod, and M-dwarf habitability notes.
 - First settlement presence scoring tied to body resources, access, strategic value, GU value, habitability, hazards, and legal heat.
@@ -302,7 +303,8 @@ First-pass approximations
 - Atmosphere/hydrosphere/geology/radiation use constrained pick lists rather than full d12 modifier math.
 - Biosphere uses a rough habitability score, not the full source scoring rules.
 - Moon generation uses category-based counts, not the full terrestrial/giant moon tables.
-- Moon-base settlements attach to generated major moons when available, but moons still have only names and broad type labels.
+- Moon-base settlements attach to generated major moons when available and prefer moon types that fit the site location.
+- Moon details include first-pass scale/resource/hazard/use notes, but do not yet use full moon-specific environment generation.
 - Ring generation is simplified.
 - Settlement presence scoring is implemented as a simplified numeric approximation, not the complete source formula/table coverage.
 - Settlement/base generation now follows MASS-GU section 18 location, function, authority, built-form, AI situation, condition, tag, crisis, hidden-truth, and local-site concepts, but adds implementation constraints so physical site category, function, built form, and anchor remain compatible.

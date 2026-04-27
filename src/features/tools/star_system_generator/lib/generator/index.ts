@@ -158,7 +158,8 @@ const envelopeClimateTags = ['Permanent storm tracks', 'Hypercanes', 'Methane cy
 const radiationEnvironments = ['Benign', 'Manageable', 'Chronic exposure', 'Storm-dependent hazard', 'Severe radiation belts', 'Flare-lethal surface', 'Electronics-disruptive metric/radiation mix'] as const
 const highRadiationEnvironments = ['Chronic exposure', 'Storm-dependent hazard', 'Severe radiation belts', 'Flare-lethal surface', 'Electronics-disruptive metric/radiation mix', 'Only deep shielded habitats survive'] as const
 const biospheres = ['Sterile', 'Prebiotic chemistry', 'Ambiguous biosignatures', 'Microbial life', 'Extremophile microbial ecology', 'Simple macroscopic non-sapient life'] as const
-const moonTypes = ['Airless rock', 'Cratered ice-rock', 'Captured asteroid', 'Subsurface ocean moon', 'Cryovolcanic moon', 'Radiation-scorched inner moon', 'Active mining moon', 'Moving bleed node moon'] as const
+const moonTypes = ['Airless rock', 'Cratered ice-rock', 'Captured asteroid', 'Captured dwarf', 'Subsurface ocean moon', 'Thick ice-shell moon', 'Cryovolcanic moon', 'Volcanic tidal moon', 'Dense-atmosphere moon', 'Hydrocarbon moon', 'Habitable-zone moon', 'Radiation-scorched inner moon', 'Ring-shepherd moon', 'Chiral ice moon', 'Dark-sector density moon', 'Programmable regolith moon', 'Former settlement moon', 'Active mining moon', 'Quarantine moon', 'Moving bleed node moon'] as const
+const moonScales = ['minor captured moonlet', 'small major moon', 'mid-sized icy moon', 'large differentiated moon', 'planet-scale major moon'] as const
 const ringTypes = ['None or faint', 'Dust ring', 'Ice ring', 'Rocky ring', 'Shepherded bright rings', 'Radiation-charged rings', 'GU-reactive ring lattice'] as const
 const surveyFunctions = ['Survey station', 'Astrometry/nav beacon', 'Sensor picket', 'Weather/flare monitoring', 'Planetology lab'] as const
 const extractionFunctions = ['Metal mine', 'Volatile mine', 'Chiral harvesting site', 'Dark-sector ore extraction', 'Refinery'] as const
@@ -610,6 +611,122 @@ function generateDetail(rng: SeededRng, category: BodyCategory, thermalZone: str
   }
 }
 
+function moonProfile(moonType: string): Pick<Moon, 'resource' | 'hazard' | 'use'> {
+  const profiles: Record<string, { resource: string; hazard: string; use: string }> = {
+    'Airless rock': {
+      resource: 'metals, regolith, and vacuum construction sites',
+      hazard: 'hard radiation and thermal cycling',
+      use: 'mines, mass drivers, or bare-rock observatories',
+    },
+    'Cratered ice-rock': {
+      resource: 'accessible ice mixed with rocky feedstock',
+      hazard: 'fractured terrain and weak anchoring',
+      use: 'volatile depots, buried habitats, and repair yards',
+    },
+    'Captured asteroid': {
+      resource: 'metal-rich rubble and unusual impact history',
+      hazard: 'irregular gravity and unstable debris',
+      use: 'prospecting camps, salvage claims, and hidden docks',
+    },
+    'Captured dwarf': {
+      resource: 'deep volatiles and differentiated mineral layers',
+      hazard: 'distant, cold, and hard to police',
+      use: 'bunkers, long-term archives, or high-autonomy settlements',
+    },
+    'Subsurface ocean moon': {
+      resource: 'ocean chemistry, plumes, and protected volatiles',
+      hazard: 'biosafety risk and ice-shell access failures',
+      use: 'bore stations, biosafety labs, and plume harvesters',
+    },
+    'Thick ice-shell moon': {
+      resource: 'massive water ice reserves',
+      hazard: 'deep drilling risk and pressure faults',
+      use: 'water monopolies, shielded habitats, and fuel production',
+    },
+    'Cryovolcanic moon': {
+      resource: 'fresh volatiles and plume chemistry',
+      hazard: 'eruptive ice terrain and corrosive deposits',
+      use: 'plume skimmers, chemistry labs, and hazard-pay mines',
+    },
+    'Volcanic tidal moon': {
+      resource: 'sulfur, metals, heat, and tidal power',
+      hazard: 'surface eruptions and extreme tidal stress',
+      use: 'power sites, hardened bunkers, and dangerous extraction towns',
+    },
+    'Dense-atmosphere moon': {
+      resource: 'atmospheric feedstock and protected aerostat sites',
+      hazard: 'weather, corrosive chemistry, and difficult evacuation',
+      use: 'aerostats, research stations, and atmospheric harvesters',
+    },
+    'Hydrocarbon moon': {
+      resource: 'hydrocarbon lakes and organic feedstock',
+      hazard: 'cryogenic weather and flammable chemistry',
+      use: 'fuel chemistry, frontier ports, and cold industrial settlements',
+    },
+    'Habitable-zone moon': {
+      resource: 'temperate real estate and accessible volatiles',
+      hazard: 'planetary radiation belts and contamination politics',
+      use: 'treaty colonies, farms under shielding, and high-value research',
+    },
+    'Radiation-scorched inner moon': {
+      resource: 'inner-system access and magnetospheric data',
+      hazard: 'severe radiation belts',
+      use: 'fortresses, listening posts, and automated observatories',
+    },
+    'Ring-shepherd moon': {
+      resource: 'ring access and traffic-control leverage',
+      hazard: 'debris lanes and collision risk',
+      use: 'ring ports, customs posts, and shepherding stations',
+    },
+    'Chiral ice moon': {
+      resource: 'chiral ice and metric-sensitive volatiles',
+      hazard: 'chiral contamination and claim wars',
+      use: 'sealed harvest sites, quarantine labs, and cartel enclaves',
+    },
+    'Dark-sector density moon': {
+      resource: 'dark-sector doped ore and anomalous gravity gradients',
+      hazard: 'navigation errors and instrumentation drift',
+      use: 'black-budget extraction, observiverse labs, and interdicted mines',
+    },
+    'Programmable regolith moon': {
+      resource: 'programmable-matter regolith deposits',
+      hazard: 'containment failure and illegal replication claims',
+      use: 'containment sites, forensic labs, and military contractors',
+    },
+    'Former settlement moon': {
+      resource: 'first-wave infrastructure and buried records',
+      hazard: 'structural decay and legal ghosts',
+      use: 'salvage towns, reoccupied ruins, and disputed inheritance claims',
+    },
+    'Active mining moon': {
+      resource: 'proven industrial ore or volatile extraction',
+      hazard: 'labor conflict and industrial accidents',
+      use: 'mines, refineries, and company towns',
+    },
+    'Quarantine moon': {
+      resource: 'sealed research value and forbidden records',
+      hazard: 'biosafety, AI, or chiral quarantine',
+      use: 'cordons, medical boards, and illegal entry jobs',
+    },
+    'Moving bleed node moon': {
+      resource: 'mobile GU extraction and route prediction value',
+      hazard: 'metric storms and unstable navigation baselines',
+      use: 'bleed-chaser fleets, observiverse AIs, and high-risk harvest crews',
+    },
+  }
+  const profile = profiles[moonType] ?? {
+    resource: 'survey value and local materials',
+    hazard: 'ordinary frontier risk',
+    use: 'survey crews and small outposts',
+  }
+
+  return {
+    resource: fact(profile.resource, moonType.includes('Chiral') || moonType.includes('Dark-sector') || moonType.includes('Moving bleed') || moonType.includes('Programmable') ? 'gu-layer' : 'inferred', 'MASS-GU moon resource interpretation'),
+    hazard: fact(profile.hazard, moonType.includes('Chiral') || moonType.includes('Dark-sector') || moonType.includes('Moving bleed') ? 'gu-layer' : 'inferred', 'MASS-GU moon hazard interpretation'),
+    use: fact(profile.use, 'human-layer', 'MASS-GU moon playable-use interpretation'),
+  }
+}
+
 function generateMoons(rng: SeededRng, category: BodyCategory, bodyIndex: number, thermalZone: string): Moon[] {
   if (thermalZone === 'Furnace' || thermalZone === 'Inferno') return []
   const moonCount =
@@ -620,11 +737,17 @@ function generateMoons(rng: SeededRng, category: BodyCategory, bodyIndex: number
     (category === 'dwarf-body' || category === 'rogue-captured') && rng.chance(0.2) ? 1 :
     0
 
-  return Array.from({ length: moonCount }, (_, index) => ({
-    id: `body-${bodyIndex + 1}-moon-${index + 1}`,
-    name: fact(moonNames[(bodyIndex + index) % moonNames.length], 'human-layer', 'Generated moon name'),
-    moonType: fact(pickOne(rng, moonTypes), 'inferred', 'MASS-GU moon table'),
-  }))
+  return Array.from({ length: moonCount }, (_, index) => {
+    const moonType = pickOne(rng, moonTypes)
+    const profile = moonProfile(moonType)
+    return {
+      id: `body-${bodyIndex + 1}-moon-${index + 1}`,
+      name: fact(moonNames[(bodyIndex + index) % moonNames.length], 'human-layer', 'Generated moon name'),
+      moonType: fact(moonType, moonType.includes('Chiral') || moonType.includes('Dark-sector') || moonType.includes('Moving bleed') || moonType.includes('Programmable') ? 'gu-layer' : 'inferred', 'MASS-GU 17 moon type table'),
+      scale: fact(category === 'gas-giant' || category === 'ice-giant' ? pickOne(rng, moonScales.slice(1)) : pickOne(rng, moonScales.slice(0, 3)), 'inferred', 'MASS-GU moon scale approximation'),
+      ...profile,
+    }
+  })
 }
 
 function generateRingSystem(rng: SeededRng, category: BodyCategory): RingSystem | undefined {
@@ -632,6 +755,38 @@ function generateRingSystem(rng: SeededRng, category: BodyCategory): RingSystem 
   const type = pickOne(rng, ringTypes)
   if (type === 'None or faint') return undefined
   return { type: fact(type, 'inferred', 'MASS-GU ring table') }
+}
+
+function generateGiantEconomy(bodyClass: WorldClassOption, moons: Moon[], rings?: RingSystem): Fact<string> | undefined {
+  if (bodyClass.category !== 'gas-giant' && bodyClass.category !== 'ice-giant') return undefined
+
+  const moonResources = moons
+    .map((moon) => moon.resource.value)
+    .filter((value, index, values) => values.indexOf(value) === index)
+    .slice(0, 2)
+  const activeMoons = moons
+    .filter((moon) =>
+      moon.moonType.value.includes('ocean') ||
+      moon.moonType.value.includes('mining') ||
+      moon.moonType.value.includes('Chiral') ||
+      moon.moonType.value.includes('Quarantine') ||
+      moon.moonType.value.includes('Moving bleed')
+    )
+    .map((moon) => moon.name.value)
+    .slice(0, 2)
+
+  const traffic = bodyClass.category === 'gas-giant'
+    ? 'fuel skimming, radiation-belt logistics, and moon-to-moon traffic'
+    : 'cold volatile extraction, shielded depots, and slow outer-system traffic'
+  const ringNote = rings ? ` ${rings.type.value} add ring traffic and collision-control work.` : ''
+  const moonNote = activeMoons.length
+    ? ` Key moons: ${activeMoons.join(', ')}.`
+    : moons.length
+      ? ` ${moons.length} major moons support a dispersed service economy.`
+      : ' The economy is orbital rather than moon-led.'
+  const resourceNote = moonResources.length ? ` Main draws: ${moonResources.join('; ')}.` : ''
+
+  return fact(`${traffic}.${moonNote}${resourceNote}${ringNote}`, 'human-layer', 'Generated giant-planet moon economy note')
 }
 
 function selectWorldClassForArchitecture(
@@ -699,6 +854,7 @@ function generateBodies(rng: SeededRng, primary: Star, bodyCount: number, archit
     const detail = generateDetail(rng, filtered.bodyClass.category, thermalZone, primary)
     const moons = generateMoons(rng, filtered.bodyClass.category, index, thermalZone)
     const rings = generateRingSystem(rng, filtered.bodyClass.category)
+    const giantEconomy = generateGiantEconomy(filtered.bodyClass, moons, rings)
     bodies.push({
       id: `body-${index + 1}`,
       orbitAu: fact(orbitAu, 'derived', 'Generated orbital spacing'),
@@ -711,6 +867,7 @@ function generateBodies(rng: SeededRng, primary: Star, bodyCount: number, archit
       detail,
       moons,
       rings,
+      giantEconomy,
       filterNotes: [...filtered.filterNotes, ...habitabilityNotes],
       traits: [fact(pickOne(rng, traitOptions), 'inferred', 'Generated world trait')],
       sites: Array.from({ length: siteCount }, () => fact(pickOne(rng, siteOptions), 'human-layer', 'Generated site')),
@@ -1019,12 +1176,12 @@ function chooseSettlementAnchor(
   const bodyName = body.name.value
 
   if (locationOption.category === 'Moon base') {
-    const moon = body.moons.length > 0 ? pickOne(rng, body.moons) : undefined
+    const moon = chooseMoonForLocation(rng, body.moons, locationOption.label)
     if (moon) {
       return {
         kind: 'major moon',
         name: `${moon.name.value}, moon of ${bodyName}`,
-        detail: `${locationOption.label} on a ${moon.moonType.value.toLowerCase()} orbiting ${bodyName}.`,
+        detail: `${locationOption.label} on ${moon.name.value}, a ${moon.scale.value} ${moon.moonType.value.toLowerCase()} orbiting ${bodyName}. ${moon.use.value}.`,
         moonId: moon.id,
       }
     }
@@ -1089,6 +1246,21 @@ function chooseSettlementAnchor(
     name: bodyName,
     detail: `${locationOption.label} associated with ${bodyName}, but its exact footprint is politically or legally obscured.`,
   }
+}
+
+function chooseMoonForLocation(rng: SeededRng, moons: Moon[], locationLabel: string): Moon | undefined {
+  if (moons.length === 0) return undefined
+
+  const preferred = moons.filter((moon) => {
+    const moonType = moon.moonType.value
+    if (locationLabel === 'Subsurface ocean bore station') return moonType.includes('ocean') || moonType.includes('ice-shell') || moonType.includes('Cryovolcanic')
+    if (locationLabel === 'Tidal-volcanic power site') return moonType.includes('Volcanic') || moonType.includes('tidal')
+    if (locationLabel === 'Magnetic-pole observatory' || locationLabel === 'Radiation-belt fortress') return moonType.includes('Radiation') || moonType.includes('Ring-shepherd') || moonType.includes('Dark-sector')
+    if (locationLabel === 'Moon crater base') return moonType.includes('Airless') || moonType.includes('Cratered') || moonType.includes('Captured') || moonType.includes('Former settlement') || moonType.includes('Active mining')
+    return true
+  })
+
+  return pickOne(rng, preferred.length ? preferred : moons)
 }
 
 function settlementWhyHere(
