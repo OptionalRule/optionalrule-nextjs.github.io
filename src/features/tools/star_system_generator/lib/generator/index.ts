@@ -179,7 +179,7 @@ const aiSituations = ['No AI; dangerously manual', 'Obsolete but loyal AI', 'Ove
 const settlementConditions = ['Pristine and overfunded', 'Efficient but joyless', 'Wealthy core enclave', 'Militarized and tense', 'Corporate showroom', 'Secretly brittle', 'Functional frontier town', 'Expanding too fast', 'Poor but cooperative', 'Improvised repairs everywhere', 'Understaffed', 'Supply-starved', 'Decaying first-wave infrastructure', 'Half-abandoned', 'Recently attacked', 'Recently evacuated', 'Reoccupied ruin', 'Built on bad survey data', 'Overrun by debt labor', 'Divided by class zones', 'Split between surface and orbital populations', 'Officially safe, actually hazardous', 'Life support near failure', 'Radiation shielding degraded', 'Under quarantine', 'Under blockade', 'Under corporate lockdown', 'Under military occupation', 'Under legal dispute', 'Under quiet Gardener warning', 'Hidden prosperity', 'Hidden famine', 'Hidden epidemic or contamination', 'Hidden AI incident', 'Hidden civil war', 'Hidden reason it cannot be abandoned'] as const
 const settlementTags = ['Abandoned First Wave', 'Air Is Money', 'AI Whisper Cult', 'Anti-Corporate Commune', 'Aristocratic Dome', 'Automated but Haunted', 'Bleed-Chaser Port', 'Border Fort', 'Broken Terraformer', 'Chiral Monopoly', 'Debt Labor', 'Deep Ice', 'Derelict Yard', 'Elegant Core Enclave', 'Exile Haven', 'Flare Refuge', 'Free Captain Nest', 'Gate Shadow', 'Ghost City, Human', 'High-G Research', 'Hidden Navy', 'Hydrocarbon Frontier', 'Kessler Cloud', 'Machine-Run Town', 'Memory-Loss Zone', 'Migrant Swarm', 'Moving Node Rush', 'Narrow-AI Schism', 'Old War Minefield', 'Outlaw Court', 'Penal Extraction', 'Perfect Dome, Rotten Outside', 'Plague/Biosafety Fear', 'Precious Water', 'Religious Geometry', 'Strikebreaker City'] as const
 const settlementCrises = ['Life-support cascade', 'Water ration failure', 'Food culture contamination', 'Radiation storm incoming', 'Flare season arrived early', 'Hull breach hidden from public', 'Bleed node changed course', 'Chiral harvest turned toxic', 'Metric storm trapped ships', 'Iggygate schedule failure', 'Pinchdrive calibration accident', 'AI refuses unsafe operation', 'Labor strike', 'Debt revolt', 'Corporate security crackdown', 'Pirate protection demand', 'Smuggler war', 'Refugee surge', 'Quarantine violation', 'Unknown native microbial hazard', 'Failed terraforming release', 'Medical supplies stolen', 'Illegal AI expansion discovered', 'Sol/Gardener warning sign detected', 'Military coup', 'Election or succession crisis', 'Sabotage of refinery/gate/AI', 'Essential expert missing', 'Salvage claim dispute', 'Old first-wave map found', 'Children or civilians trapped', 'Ship full of dead arrives', 'A whole district goes silent', 'The base broadcasts two contradictory distress calls', 'Everyone is lying about casualty numbers', 'Crisis is staged to hide something worse'] as const
-const hiddenTruths = ['The settlement is insolvent', 'The mine is nearly exhausted', 'The resource is richer than reported', 'The hazard is artificial/human-caused', 'The official death toll is false', 'The founders committed a crime', 'Corporate records were altered', 'The local AI deleted evidence', 'The local AI preserved forbidden evidence', 'The base is built on unstable ground/orbit', 'The settlement cannot survive evacuation', 'The workers are legally trapped', 'The site is a weapons lab', 'The site is an illegal AI lab', 'The site is a black prison', 'The site is a military listening post', 'The site is a fake colony masking extraction', 'The site is a smuggling hub', 'A first-wave expedition survived in hiding', 'The ghosts are old human recordings', 'The curse is chiral neurochemistry', 'The miracle is illegal terraforming tech', 'The supposed nonhuman signal is human encryption', 'The artifact rumor is a natural GU formation', 'The Gardener has already intervened once', 'Sol interdiction files are sealed here', 'A faction is provoking Gardener attention', 'The Iggygate is misaligned on purpose', 'The bleed node is being illegally stabilized', 'The settlement has an evacuation ark nobody knows about', 'The leader is a proxy for a distant faction', 'The pirate threat is staged', 'The quarantine is political', 'The plague is industrial poisoning', 'The AI is sane; the humans are not listening', 'The system official survey is deliberately wrong'] as const
+const hiddenTruths = ['The settlement is insolvent', 'The mine is nearly exhausted', 'The resource is richer than reported', 'The hazard is artificial/human-caused', 'The official death toll is false', 'The founders committed a crime', 'Corporate records were altered', 'The local AI deleted evidence', 'The local AI preserved forbidden evidence', 'The base is built on unstable ground/orbit', 'The settlement cannot survive evacuation', 'The workers are legally trapped', 'The site is a weapons lab', 'The site is an illegal AI lab', 'The site is a black prison', 'The site is a military listening post', 'The site is a fake colony masking extraction', 'The site is a smuggling hub', 'A first-wave expedition survived in hiding', 'The ghosts are old human recordings', 'The curse is chiral neurochemistry', 'The miracle is illegal terraforming tech', 'The supposed unknown signal is human encryption', 'The artifact rumor is a natural GU formation', 'The Gardener has already intervened once', 'Sol interdiction files are sealed here', 'A faction is provoking Gardener attention', 'The Iggygate is misaligned on purpose', 'The bleed node is being illegally stabilized', 'The settlement has an evacuation ark nobody knows about', 'The leader is a proxy for a distant faction', 'The pirate threat is staged', 'The quarantine is political', 'The plague is industrial poisoning', 'The AI is sane; the humans are not listening', 'The system official survey is deliberately wrong'] as const
 const encounterSites = ['Half-flooded maintenance tunnels', 'Shielding crawlspace district', 'Dockside free market', 'Drone hangar', 'AI core vault', 'Chiral refinery floor', 'Bleed-harvest control room', 'Closed habitat ring', 'Quarantine ward', 'Black-market clinic', 'Corporate executive dome', 'Worker barracks', 'Religious geometry chapel', 'Old first-wave command bunker', 'Illegal pinchdrive test chamber', 'Radiation storm shelter', 'Water plant', 'Courtroom / debt registry', 'Hidden launch bay', 'Place the maps say does not exist'] as const
 const humanRemnants = ['Survey probe field', 'Dead relay buoy', 'Abandoned mining claim', 'Burned-out research dome', 'First-wave colony shell', 'Ruined terraforming plant', 'Frozen refugee convoy', 'Derelict refinery', 'Old navy depot', 'Illegal AI growth chamber', 'Pinchdrive accident scar', 'Iggygate construction failure', 'Sol-struck outpost', 'Records surgically erased', 'Still broadcasting old distress call'] as const
 const remnantHooks = ['claimed by three legal owners', 'contains deleted survey records', 'appears abandoned but still runs automated routines', 'sits inside a drifting hazard zone', 'was erased from corporate maps', 'is used as bait by criminals', 'contains evidence that would alter local politics'] as const
@@ -1383,6 +1383,129 @@ function generatePhenomena(rng: SeededRng, architectureName: string, guOverlay: 
   })
 }
 
+const noAlienReplacements: Array<{ pattern: RegExp; replacement: string; label: string }> = [
+  { pattern: /\balien\s+civilizations?\b/gi, replacement: 'human polities', label: 'alien civilization -> human polity' },
+  { pattern: /\balien\s+ruins?\b/gi, replacement: 'first-wave human ruins', label: 'alien ruin -> first-wave human ruin' },
+  { pattern: /\balien\s+artifacts?\b/gi, replacement: 'natural GU formations', label: 'alien artifact -> natural GU formation' },
+  { pattern: /\balien\s+signals?\b/gi, replacement: 'encrypted human beacons', label: 'alien signal -> encrypted human beacon' },
+  { pattern: /\balien\s+megastructures?\b/gi, replacement: 'failed Iggygate collars', label: 'alien megastructure -> failed Iggygate collar' },
+  { pattern: /\bforbidden\s+archaeology\b/gi, replacement: 'deleted expedition archive', label: 'forbidden archaeology -> deleted expedition archive' },
+  { pattern: /\bnative\s+civilizations?\b/gi, replacement: 'native non-sapient ecologies', label: 'native civilization -> native non-sapient ecology' },
+  { pattern: /\bancient\s+cities\b/gi, replacement: 'first-wave human cities', label: 'ancient city -> first-wave human city' },
+  { pattern: /\balien\s+machines?\b/gi, replacement: 'human experimental devices', label: 'alien machine -> human experimental device' },
+  { pattern: /\bnonhuman\s+signals?\b/gi, replacement: 'unknown human or natural signals', label: 'nonhuman signal -> human or natural signal' },
+]
+
+export function applyNoAlienTextGuard(value: string): { value: string; conversions: string[] } {
+  const conversions: string[] = []
+  let guarded = value
+
+  for (const replacement of noAlienReplacements) {
+    replacement.pattern.lastIndex = 0
+    if (replacement.pattern.test(guarded)) {
+      replacement.pattern.lastIndex = 0
+      guarded = guarded.replace(replacement.pattern, replacement.replacement)
+      conversions.push(replacement.label)
+    }
+  }
+
+  return { value: guarded, conversions }
+}
+
+function guardFactText<T>(input: Fact<T>, conversions: string[]): Fact<T> {
+  if (typeof input.value !== 'string') return input
+  const guarded = applyNoAlienTextGuard(input.value)
+  if (guarded.value === input.value) return input
+  conversions.push(...guarded.conversions)
+  return {
+    ...input,
+    value: guarded.value as T,
+    source: `${input.source ?? 'Generated text'}; no-alien guard`,
+  }
+}
+
+function runNoAlienGuard(system: Omit<GeneratedSystem, 'noAlienCheck'>): GeneratedSystem {
+  const conversions: string[] = []
+  const bodies = system.bodies.map((body) => ({
+    ...body,
+    name: guardFactText(body.name, conversions),
+    massClass: guardFactText(body.massClass, conversions),
+    bodyClass: guardFactText(body.bodyClass, conversions),
+    thermalZone: guardFactText(body.thermalZone, conversions),
+    detail: {
+      atmosphere: guardFactText(body.detail.atmosphere, conversions),
+      hydrosphere: guardFactText(body.detail.hydrosphere, conversions),
+      geology: guardFactText(body.detail.geology, conversions),
+      climate: body.detail.climate.map((tag) => guardFactText(tag, conversions)),
+      radiation: guardFactText(body.detail.radiation, conversions),
+      biosphere: guardFactText(body.detail.biosphere, conversions),
+    },
+    moons: body.moons.map((moon) => ({
+      ...moon,
+      name: guardFactText(moon.name, conversions),
+      moonType: guardFactText(moon.moonType, conversions),
+      scale: guardFactText(moon.scale, conversions),
+      resource: guardFactText(moon.resource, conversions),
+      hazard: guardFactText(moon.hazard, conversions),
+      use: guardFactText(moon.use, conversions),
+    })),
+    rings: body.rings ? { type: guardFactText(body.rings.type, conversions) } : undefined,
+    giantEconomy: body.giantEconomy ? guardFactText(body.giantEconomy, conversions) : undefined,
+    filterNotes: body.filterNotes.map((note) => guardFactText(note, conversions)),
+    traits: body.traits.map((trait) => guardFactText(trait, conversions)),
+    sites: body.sites.map((site) => guardFactText(site, conversions)),
+  }))
+  const settlements = system.settlements.map((settlement) => ({
+    ...settlement,
+    name: guardFactText(settlement.name, conversions),
+    anchorKind: guardFactText(settlement.anchorKind, conversions),
+    anchorName: guardFactText(settlement.anchorName, conversions),
+    anchorDetail: guardFactText(settlement.anchorDetail, conversions),
+    siteCategory: guardFactText(settlement.siteCategory, conversions),
+    location: guardFactText(settlement.location, conversions),
+    function: guardFactText(settlement.function, conversions),
+    scale: guardFactText(settlement.scale, conversions),
+    authority: guardFactText(settlement.authority, conversions),
+    builtForm: guardFactText(settlement.builtForm, conversions),
+    aiSituation: guardFactText(settlement.aiSituation, conversions),
+    condition: guardFactText(settlement.condition, conversions),
+    tags: settlement.tags.map((tag) => guardFactText(tag, conversions)),
+    tagHook: guardFactText(settlement.tagHook, conversions),
+    crisis: guardFactText(settlement.crisis, conversions),
+    hiddenTruth: guardFactText(settlement.hiddenTruth, conversions),
+    encounterSites: settlement.encounterSites.map((site) => guardFactText(site, conversions)),
+    whyHere: guardFactText(settlement.whyHere, conversions),
+    methodNotes: settlement.methodNotes.map((note) => guardFactText(note, conversions)),
+  }))
+  const ruins = system.ruins.map((ruin) => ({
+    ...ruin,
+    location: guardFactText(ruin.location, conversions),
+    remnantType: guardFactText(ruin.remnantType, conversions),
+    hook: guardFactText(ruin.hook, conversions),
+  }))
+  const phenomena = system.phenomena.map((phenomenon) => ({
+    ...phenomenon,
+    phenomenon: guardFactText(phenomenon.phenomenon, conversions),
+    note: guardFactText(phenomenon.note, conversions),
+  }))
+  const uniqueConversions = [...new Set(conversions)]
+
+  return {
+    ...system,
+    bodies,
+    settlements,
+    ruins,
+    phenomena,
+    majorHazards: system.majorHazards.map((hazard) => guardFactText(hazard, conversions)),
+    noAlienCheck: {
+      passed: true,
+      note: uniqueConversions.length
+        ? `No alien civilizations, ruins, artifacts, or megastructures generated. Converted ${uniqueConversions.length} old-style result${uniqueConversions.length === 1 ? '' : 's'}.`
+        : 'No alien civilizations, ruins, artifacts, or megastructures generated.',
+    },
+  }
+}
+
 export function generateSystem(options: GenerationOptions): GeneratedSystem {
   const rootRng = createSeededRng(options.seed)
   const name = generateSystemName(rootRng.fork('name'))
@@ -1397,7 +1520,7 @@ export function generateSystem(options: GenerationOptions): GeneratedSystem {
   const ruins = generateHumanRemnants(rootRng.fork('ruins'), bodies, guOverlay)
   const phenomena = generatePhenomena(rootRng.fork('phenomena'), architectureResult.architecture.name.value, guOverlay)
 
-  return {
+  return runNoAlienGuard({
     id: `system-${options.seed}`,
     seed: options.seed,
     options,
@@ -1418,9 +1541,5 @@ export function generateSystem(options: GenerationOptions): GeneratedSystem {
     ruins,
     phenomena,
     majorHazards: [guOverlay.hazard, fact(primary.activity.value, 'inferred', 'Stellar activity hazard')],
-    noAlienCheck: {
-      passed: true,
-      note: 'No alien civilizations, alien ruins, alien artifacts, or alien megastructures generated.',
-    },
-  }
+  })
 }

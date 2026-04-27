@@ -211,7 +211,7 @@ M5 - Geometric Unity and Human Layer
 - [x] Implement first-pass settlement presence scoring.
 - [x] Implement settlement scale, site category, location, physical anchor, reason-for-existence, function, authority, built form, AI situation, condition, tags, current crisis, hidden truth, local encounter sites.
 - [x] Implement first-pass human ruins/derelicts and expanded phenomena.
-- [ ] Implement no-alien guard and conversion rules.
+- [x] Implement no-alien guard and conversion rules.
 - [x] Add tests that forbidden alien outputs cannot survive first-pass human-layer generation.
 
 M6 - UI MVP
@@ -295,6 +295,7 @@ Implemented close to source method
 - First modern exoplanet filters: radius valley, hot Neptune desert, peas-in-a-pod, and M-dwarf habitability notes.
 - First settlement presence scoring tied to body resources, access, strategic value, GU value, habitability, hazards, and legal heat.
 - First human playable layer: settlement site category, location, physical anchor, reason-for-existence, function, authority, built form, AI situation, condition, tags, crisis, hidden truth, encounter sites, human remnants, and system phenomena.
+- Final no-alien guard converts old alien-style mystery labels into MASS-GU replacements and records the check result.
 
 First-pass approximations
 - Planet class tables are compressed from the source writeup, not complete d20 tables yet.
@@ -321,7 +322,6 @@ Not implemented yet
 - Exact d66/d20 roll weighting for every settlement/base table; current arrays include the full source entries for section 18 support tables but use constrained equal-choice subsets by site category.
 - More bespoke settlement tag interaction explanation text for every pair.
 - Markdown and JSON export.
-- Full no-alien conversion guard for old alien-style mystery results.
 
 ## 7. Testing Strategy
 

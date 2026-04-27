@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import type { GenerationOptions } from '../types'
-import { generateSystem } from '../lib/generator'
+import { applyNoAlienTextGuard, generateSystem } from '../lib/generator'
 
 const options: GenerationOptions = {
   seed: '7f3a9c2e41b8d09a',
@@ -46,6 +46,49 @@ describe('generateSystem', () => {
     expect(system.guOverlay.hazard.confidence).toBe('gu-layer')
     expect(system.noAlienCheck.passed).toBe(true)
     expect(system.bodies.map((body) => body.bodyClass.value.toLowerCase())).not.toContain('alien artifact')
+  })
+
+  it('converts old alien-style mystery labels into MASS-GU sources', () => {
+    const guarded = applyNoAlienTextGuard('Alien ruin, alien artifact, alien signal, alien megastructure, and forbidden archaeology.')
+
+    expect(guarded.value).toBe('first-wave human ruins, natural GU formations, encrypted human beacons, failed Iggygate collars, and deleted expedition archive.')
+    expect(guarded.conversions).toEqual([
+      'alien ruin -> first-wave human ruin',
+      'alien artifact -> natural GU formation',
+      'alien signal -> encrypted human beacon',
+      'alien megastructure -> failed Iggygate collar',
+      'forbidden archaeology -> deleted expedition archive',
+    ])
+  })
+
+  it('does not leave forbidden alien mystery phrases in generated playable layers', () => {
+    const forbiddenPhrases = [
+      'alien civilization',
+      'alien ruin',
+      'alien artifact',
+      'alien signal',
+      'alien megastructure',
+      'forbidden archaeology',
+      'native civilization',
+      'ancient cities',
+      'alien machine',
+      'nonhuman signal',
+    ]
+
+    for (let index = 0; index < 80; index++) {
+      const system = generateSystem({ ...options, seed: `aa3f9c2e41b8${index.toString(16).padStart(4, '0')}` })
+      const playableOutput = JSON.stringify({
+        bodies: system.bodies,
+        settlements: system.settlements,
+        ruins: system.ruins,
+        phenomena: system.phenomena,
+        majorHazards: system.majorHazards,
+      }).toLowerCase()
+
+      for (const phrase of forbiddenPhrases) {
+        expect(playableOutput).not.toContain(phrase)
+      }
+    }
   })
 
   it('constrains furnace and inferno world environments', () => {
