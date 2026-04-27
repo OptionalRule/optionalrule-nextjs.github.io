@@ -33,27 +33,46 @@ export function BodyDetailPanel({ body }: { body: OrbitingBody }) {
         ) : null}
       </div>
 
-      <div className="mt-4 grid gap-4 text-sm lg:grid-cols-4">
-        <ListBlock
-          title="Exoplanet Notes"
-          empty="No modern exoplanet filter notes."
-          items={body.filterNotes.map((note) => note.value)}
-        />
-        <ListBlock
-          title="Moons"
-          empty="No major moons generated."
-          items={body.moons.map((moon) => `${moon.name.value}: ${moon.scale.value} ${moon.moonType.value}. ${moon.use.value}. Resource: ${moon.resource.value}. Hazard: ${moon.hazard.value}.`)}
-        />
-        <ListBlock
-          title="Rings"
-          empty="No notable ring system."
-          items={body.rings ? [body.rings.type.value] : []}
-        />
-        <ListBlock
-          title="Economy & Sites"
-          empty="No human sites logged."
-          items={[...(body.giantEconomy ? [body.giantEconomy.value] : []), ...body.sites.map((site) => site.value)]}
-        />
+      <div className="mt-5 space-y-5 text-sm">
+        <section>
+          <h3 className="text-xs font-semibold uppercase tracking-wide text-[var(--text-tertiary)]">Orbital Companions</h3>
+          {body.moons.length ? (
+            <div className="mt-2 space-y-3">
+              {body.moons.map((moon) => (
+                <div key={moon.id} className="border-l-2 border-[var(--border)] pl-3">
+                  <p className="font-semibold text-[var(--text-primary)]">
+                    {moon.name.value}
+                    <span className="font-normal text-[var(--text-tertiary)]"> · {moon.scale.value} · {moon.moonType.value}</span>
+                  </p>
+                  <dl className="mt-1 grid gap-x-4 gap-y-1 text-[var(--text-secondary)] sm:grid-cols-3">
+                    <InlineDetail label="Use" value={moon.use.value} />
+                    <InlineDetail label="Resource" value={moon.resource.value} />
+                    <InlineDetail label="Hazard" value={moon.hazard.value} />
+                  </dl>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <p className="mt-2 text-[var(--text-tertiary)]">No major moons generated.</p>
+          )}
+        </section>
+
+        <div className="grid gap-5 lg:grid-cols-2">
+          <ListBlock
+            title="Survey Notes"
+            empty="No modern exoplanet filter notes."
+            items={body.filterNotes.map((note) => note.value)}
+          />
+          <ListBlock
+            title="Rings, Economy, Sites"
+            empty="No notable rings, economy note, or human sites logged."
+            items={[
+              ...(body.rings ? [`Ring system: ${body.rings.type.value}`] : []),
+              ...(body.giantEconomy ? [body.giantEconomy.value] : []),
+              ...body.sites.map((site) => site.value),
+            ]}
+          />
+        </div>
       </div>
     </section>
   )
@@ -64,6 +83,15 @@ function Detail({ label, value }: { label: string; value: string }) {
     <div className="rounded-md border border-[var(--border)] bg-[var(--card-elevated)] p-3">
       <dt className="text-xs font-semibold uppercase tracking-wide text-[var(--text-tertiary)]">{label}</dt>
       <dd className="mt-1 text-[var(--text-primary)]">{value}</dd>
+    </div>
+  )
+}
+
+function InlineDetail({ label, value }: { label: string; value: string }) {
+  return (
+    <div>
+      <dt className="inline font-semibold text-[var(--text-secondary)]">{label}: </dt>
+      <dd className="inline">{value}</dd>
     </div>
   )
 }
