@@ -72,6 +72,11 @@ Notes
 - Import support gets a small scaffold early (`import/locks.ts`, `import/schema.ts`) so the core model supports locked facts from day one, even if public import UI comes later.
 - If a route image is added, place it under `public/tools/star_system_generator/`.
 
+Development cadence
+- Commit at logical checkpoints during development, not only at the end of a long session.
+- Good checkpoints for this tool include completed generator-rule passes, UI readability passes, URL/query-state fixes, documentation/status updates, and test additions.
+- Run focused verification for the touched surface before each checkpoint commit when practical, then broaden to lint/build before larger or user-facing commits.
+
 ## 2. Architecture
 
 The generator should be deterministic and staged.

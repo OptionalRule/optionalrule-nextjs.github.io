@@ -13,3 +13,5 @@ Planned client-side tool for generating astronomy-grounded, game-facing star sys
 The generator should be deterministic from a seed and options object. Future known-system import is a core design constraint, so generated and imported facts should carry confidence labels and imported facts should be lockable.
 
 Initial implementation should be client-only and static-export compatible, following the existing interactive tool pattern used by KCD2 Alchemy Scholar.
+
+Commit work at logical checkpoints during development. For this feature, good checkpoints include completed generation-rule passes, UI/card readability passes, query-state fixes, and documentation/status updates after focused verification.

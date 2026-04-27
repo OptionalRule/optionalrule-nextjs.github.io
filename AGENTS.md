@@ -32,6 +32,7 @@
 
 ## Commit & Pull Request Guidelines
 - Commits: Conventional Commits style (e.g., `feat:`, `fix:`, `chore:`, `test:`) as seen in history.
+- During multi-step development, commit at logical checkpoints after focused verification passes. Prefer small, coherent commits that leave the working tree in a reviewable state over one large end-of-session commit.
 - PRs: Describe intent, link issues, include screenshots for UI changes, and add/update tests as needed.
 - Checklist: `npm run lint`, `npm run test:all`, and `npm run build` should pass locally. Update docs and regenerate `public/search-index.json`/`public/rss.xml` when content changes.
 
@@ -39,4 +40,3 @@
 - Static export with `trailingSlash` is required for GitHub Pages; avoid server-only features.
 - CSP and analytics are applied via components; only add scripts from trusted domains. Update GA ID in `src/config/site.ts`.
 - Remote images must match `next.config.ts` `images.remotePatterns`. Don’t commit secrets.
-

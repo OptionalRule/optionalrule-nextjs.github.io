@@ -876,6 +876,13 @@ fix bug
 WIP
 ```
 
+### Commit Cadence
+
+- Commit during development at logical checkpoints, especially after completing a coherent feature slice, bug fix, rule pass, or documentation update.
+- Run focused verification before each checkpoint commit when practical, such as targeted tests for the touched feature plus lint/typecheck when code shape changed.
+- Keep commits reviewable and reversible. Avoid bundling unrelated UI, generator logic, documentation, and generated assets into one commit unless they are required for the same change.
+- Leave the working tree clean at handoff points unless there is a clear reason to pause with uncommitted work.
+
 ### Branch Strategy
 
 ```bash
