@@ -8,6 +8,7 @@ Planned client-side tool for generating astronomy-grounded, game-facing star sys
 - Requirements: `docs/PRD.md`
 - Implementation plan: `docs/PLAN.md`
 - Audit fix plan: `docs/AUDIT_FIX_PLAN.md`
+- Post-audit procedural remodel plan: `docs/POST_AUDIT_REMODEL_PLAN.md`
 
 ## Development Notes
 
