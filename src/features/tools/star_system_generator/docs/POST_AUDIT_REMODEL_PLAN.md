@@ -14,6 +14,22 @@ Deep audit findings to address:
 - 268 desert hydrosphere contradictions.
 - 126 systems with duplicate settlement names.
 
+## Implementation Status
+
+Implemented through the procedural remodel checkpoint series on `develop`:
+
+- Phase 0: `refactor: expose star system generator domain contracts`.
+- Phase 1: `test: share star system validation contracts`.
+- Phase 2: `fix: normalize star system environment details`.
+- Phase 3: `refactor: add star system architecture slot contracts`.
+- Phase 4: `refactor: add world class compatibility metadata`.
+- Phase 5: `fix: repair duplicate star system settlement names`.
+- Phase 6: `feat: improve star system narrative coherence`.
+- Phase 7: `feat: report star system locked fact conflicts`.
+- Phase 8: `docs: document star system procedural contracts`.
+
+The current acceptance baseline is: focused star-system generator tests pass, quick and deep star-system audits report zero generated errors and zero warnings, and locked imported contradictions are reported separately as locked-fact conflicts instead of being silently rewritten.
+
 ## Design Principles
 
 - Make validity a first-class generation artifact, not an after-the-fact cleanup pass.

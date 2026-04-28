@@ -46,6 +46,8 @@ Primary flows
 - Real astronomy creates the skeleton.
 - Geometric Unity creates the pressure points.
 - Human history creates the adventure sites.
+- Validity is a first-class generation contract, not a cleanup pass.
+- Source tables provide weighted inspiration; compatibility contracts override generated rolls that would produce impossible or incoherent results.
 - A habitable-zone planet is not automatically habitable.
 - A super-Earth is not automatically Earth-like.
 - Interesting systems do not require garden worlds.
@@ -83,11 +85,16 @@ The generator should follow this ordered pipeline:
 6. Fill plausible orbital gaps.
 7. Generate planets, moons, belts, rings, dwarf bodies, and rogue/captured bodies.
 8. Apply modern exoplanet filters.
-9. Apply Geometric Unity overlays.
-10. Generate resources, hazards, routes, settlements, bases, wrecks, and factions.
-11. Assign mystery sources and run a no-alien check.
+9. Apply environment policy and shared validation contracts to generated facts.
+10. Apply Geometric Unity overlays.
+11. Generate resources, hazards, routes, settlements, bases, wrecks, and factions.
+12. Repair deterministic generated names and synthesize play-facing hooks.
+13. Report locked-fact conflicts without rewriting locked imported data.
+14. Assign mystery sources and run a no-alien check.
 
 Each stage should be implemented as a pure function that receives an RNG and the current draft system, then returns a new or updated draft. This keeps generation testable, deterministic, and compatible with future partial imports.
+
+Generated facts should be normalized by policy when needed. Locked imported facts should be preserved exactly; if a locked atmosphere, hydrosphere, class, or related detail conflicts with generator policy, validation should emit a locked-fact conflict rather than silently changing the imported value.
 
 ## 7. Input Controls
 
@@ -204,6 +211,8 @@ GenerationOptions
 ```
 
 Known-system import should use `locked: true` facts where the user or imported dataset supplied the value. Generator stages must respect locked facts and only fill missing or fictional layers unless explicitly asked to reroll them.
+
+Validation diagnostics use a shared `ValidationFinding` shape with severity, code, path, source, and optional `policyCode`. Generated contradictions are hard generated errors. Incompatible locked imported facts are reported with `source: 'locked-conflict'` and `code: 'LOCKED_FACT_CONFLICT'` so UI and audit can distinguish import problems from generator failures.
 
 ## 10. UX & Layout
 
