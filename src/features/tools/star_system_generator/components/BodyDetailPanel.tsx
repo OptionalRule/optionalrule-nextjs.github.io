@@ -1,6 +1,6 @@
 import type { GeneratedSystem, OrbitingBody } from '../types'
 import { ConfidenceBadge } from './ConfidenceBadge'
-import { formatOrbitContext } from './OrbitalTable'
+import { formatNearestOrbitSpacing, formatOrbitContext } from './OrbitalTable'
 
 export function BodyDetailPanel({ body, system }: { body: OrbitingBody; system: GeneratedSystem }) {
   const isAnomaly = body.category.value === 'anomaly'
@@ -22,6 +22,7 @@ export function BodyDetailPanel({ body, system }: { body: OrbitingBody; system: 
         <Detail label="Mass" value={body.physical.massEarth.value === null ? 'Not applicable' : `${body.physical.massEarth.value} Earth masses`} />
         <Detail label="Gravity" value={body.physical.gravityLabel.value} />
         <Detail label="Orbit" value={`${body.orbitAu.value} AU · ${formatOrbitContext(body.orbitAu.value, system)}`} />
+        <Detail label="Spacing" value={formatNearestOrbitSpacing(body.id, system)} />
         <Detail label="Period" value={`${body.physical.periodDays.value} days`} />
         <Detail label="Atmosphere" value={body.detail.atmosphere.value} />
         <Detail label="Volatiles" value={body.detail.hydrosphere.value} />

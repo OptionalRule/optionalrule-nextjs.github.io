@@ -789,7 +789,13 @@ interface OrbitAssignment {
   outOfBandKnown?: boolean
 }
 
+interface OccupiedOrbit {
+  orbitAu: number
+  massEarth: number
+}
+
 const orbitBands: OrbitBand[] = ['inner', 'habitable', 'snowline', 'outer', 'deepOuter', 'extremeOuter']
+const earthMassesPerSolarMass = 332946
 
 function defaultOrbitBand(planKind: BodyPlanKind): OrbitBand {
   if (planKind === 'gas-giant' || planKind === 'ice-giant') return 'snowline'
@@ -843,26 +849,79 @@ function orbitSeparation(orbitAu: number): number {
   return Math.max(0.015, orbitAu * 0.035)
 }
 
-function collidesWithOccupied(orbitAu: number, occupied: number[]): boolean {
-  return occupied.some((existing) => Math.abs(existing - orbitAu) < Math.max(orbitSeparation(existing), orbitSeparation(orbitAu)))
+function estimatedPlanMassEarth(planKind: BodyPlanKind, known?: PartialKnownBody, slot?: ArchitectureSlot): number {
+  const knownMass = known?.physical?.massEarth?.value
+  if (typeof knownMass === 'number' && knownMass > 0) return knownMass
+
+  const compactChainSlot = slot?.id.startsWith('compact-') || slot?.id.startsWith('peas-')
+  if (compactChainSlot && planKind === 'sub-neptune') return 8
+  if (compactChainSlot && planKind === 'super-earth') return 4
+
+  if (known?.category?.value === 'rocky-planet') return 1.5
+  if (known?.category?.value === 'super-earth') return 6
+  if (known?.category?.value === 'sub-neptune') return 14
+  if (known?.category?.value === 'gas-giant') return 120
+  if (known?.category?.value === 'ice-giant') return 17
+  if (known?.category?.value === 'belt') return 0.001
+  if (known?.category?.value === 'dwarf-body') return 0.05
+  if (known?.category?.value === 'rogue-captured') return 2
+
+  const masses: Record<BodyPlanKind, number> = {
+    rocky: 1.5,
+    'super-earth': 6,
+    'sub-neptune': 14,
+    belt: 0.001,
+    'ice-belt': 0.001,
+    'gas-giant': 120,
+    'ice-giant': 17,
+    dwarf: 0.05,
+    rogue: 2,
+    anomaly: 0.01,
+    thermal: 1,
+  }
+  return masses[planKind]
 }
 
-function pushPastCollision(candidate: number, occupied: number[]): number {
+function mutualHillRadius(orbitAu: number, massEarth: number, otherOrbitAu: number, otherMassEarth: number, stellarMassSolar: number): number {
+  const stellarMassEarth = Math.max(stellarMassSolar * earthMassesPerSolarMass, 1)
+  const averageOrbit = (orbitAu + otherOrbitAu) / 2
+  return averageOrbit * ((massEarth + otherMassEarth) / (3 * stellarMassEarth)) ** (1 / 3)
+}
+
+function massAwareSeparation(orbitAu: number, massEarth: number, otherOrbitAu: number, otherMassEarth: number, stellarMassSolar: number): number {
+  const hillSpacing = targetMutualHillRadii(massEarth, otherMassEarth) * mutualHillRadius(orbitAu, massEarth, otherOrbitAu, otherMassEarth, stellarMassSolar)
+  return Math.max(orbitSeparation(orbitAu), orbitSeparation(otherOrbitAu), hillSpacing)
+}
+
+function targetMutualHillRadii(massEarth: number, otherMassEarth: number): number {
+  if (massEarth >= 40 && otherMassEarth >= 40) return 6
+  if (massEarth >= 40 || otherMassEarth >= 40) return 8
+  return 15
+}
+
+function collidesWithOccupied(orbitAu: number, massEarth: number, occupied: OccupiedOrbit[], stellarMassSolar: number): boolean {
+  return occupied.some((existing) =>
+    Math.abs(existing.orbitAu - orbitAu) < massAwareSeparation(orbitAu, massEarth, existing.orbitAu, existing.massEarth, stellarMassSolar)
+  )
+}
+
+function pushPastCollision(candidate: number, massEarth: number, occupied: OccupiedOrbit[], stellarMassSolar: number): number {
   let pushed = candidate
   for (const existing of occupied) {
-    if (Math.abs(existing - pushed) < Math.max(orbitSeparation(existing), orbitSeparation(pushed))) {
-      pushed = Math.max(pushed, existing + orbitSeparation(existing))
+    const separation = massAwareSeparation(pushed, massEarth, existing.orbitAu, existing.massEarth, stellarMassSolar)
+    if (Math.abs(existing.orbitAu - pushed) < separation) {
+      pushed = Math.max(pushed, existing.orbitAu + separation)
     }
   }
   return pushed
 }
 
-function fitOrbitInBand(preferred: number, range: OrbitRange, occupied: number[]): number | undefined {
+function fitOrbitInBand(preferred: number, range: OrbitRange, massEarth: number, occupied: OccupiedOrbit[], stellarMassSolar: number): number | undefined {
   let candidate = Math.max(preferred, range.min)
   for (let attempt = 0; attempt < 64; attempt += 1) {
     if (candidate > range.max) return undefined
-    if (!collidesWithOccupied(candidate, occupied)) return roundTo(candidate, 3)
-    const pushed = pushPastCollision(candidate, occupied)
+    if (!collidesWithOccupied(candidate, massEarth, occupied, stellarMassSolar)) return roundTo(candidate, 3)
+    const pushed = pushPastCollision(candidate, massEarth, occupied, stellarMassSolar)
     if (pushed <= candidate) return undefined
     candidate = pushed
   }
@@ -877,18 +936,20 @@ function widerOrbitBands(band: OrbitBand): OrbitBand[] {
 function placeGeneratedOrbit(
   rng: SeededRng,
   luminositySolar: number,
+  stellarMassSolar: number,
   preferredBand: OrbitBand,
   preferredOrbit: number,
-  occupied: number[]
+  massEarth: number,
+  occupied: OccupiedOrbit[]
 ): number {
   for (const band of widerOrbitBands(preferredBand)) {
     const range = orbitRangeForBand(luminositySolar, band)
     const preferred = band === preferredBand ? preferredOrbit : sampleOrbitInBand(rng, luminositySolar, band)
-    const fitted = fitOrbitInBand(preferred, range, occupied)
+    const fitted = fitOrbitInBand(preferred, range, massEarth, occupied, stellarMassSolar)
     if (fitted !== undefined) return fitted
   }
 
-  const outermost = occupied.at(-1) ?? sampleOrbitInBand(rng, luminositySolar, preferredBand)
+  const outermost = occupied.at(-1)?.orbitAu ?? sampleOrbitInBand(rng, luminositySolar, preferredBand)
   return roundTo(outermost + orbitSeparation(outermost) * rng.float(1.1, 2.2), 3)
 }
 
@@ -900,6 +961,7 @@ function isOrbitInBand(luminositySolar: number, band: OrbitBand, orbitAu: number
 function generateOrbitAssignments(
   rng: SeededRng,
   luminositySolar: number,
+  stellarMassSolar: number,
   slots: ArchitectureSlot[],
   knownBodies: PartialKnownBody[]
 ): OrbitAssignment[] {
@@ -918,23 +980,26 @@ function generateOrbitAssignments(
 
   rawAssignments.sort((left, right) => left.preferredOrbit - right.preferredOrbit)
 
-  const occupied: number[] = []
+  const occupied: OccupiedOrbit[] = []
   const assignments: OrbitAssignment[] = []
 
   for (const assignment of rawAssignments) {
     const band = assignment.slot.orbitBand ?? defaultOrbitBand(assignment.slot.planKind)
+    const massEarth = estimatedPlanMassEarth(assignment.slot.planKind, assignment.known, assignment.slot)
     const orbitAu = assignment.known
       ? assignment.known.orbitAu.value
       : placeGeneratedOrbit(
           rng.fork(`slot-${assignment.slot.id}:place-orbit`),
           luminositySolar,
+          stellarMassSolar,
           band,
           assignment.preferredOrbit,
+          massEarth,
           occupied
         )
 
-    occupied.push(orbitAu)
-    occupied.sort((left, right) => left - right)
+    occupied.push({ orbitAu, massEarth })
+    occupied.sort((left, right) => left.orbitAu - right.orbitAu)
     assignments.push({
       slot: assignment.slot,
       orbitAu,
@@ -950,11 +1015,11 @@ function estimateOrbitalPeriodDays(orbitAu: number, stellarMassSolar: number): n
   return roundTo(365.25 * Math.sqrt(orbitAu ** 3 / Math.max(stellarMassSolar, 0.01)), 1)
 }
 
-function estimateRadiusEarth(rng: SeededRng, category: BodyCategory): number {
+function estimateRadiusEarth(rng: SeededRng, category: BodyCategory, architectureName?: string): number {
   const range: Record<BodyCategory, [number, number]> = {
     'rocky-planet': [0.45, 1.35],
     'super-earth': [1.25, 1.95],
-    'sub-neptune': [2.05, 3.8],
+    'sub-neptune': architectureName === 'Compact inner system' || architectureName === 'Peas-in-a-pod chain' ? [2.05, 2.75] : [2.05, 3.8],
     'gas-giant': [8.0, 13.0],
     'ice-giant': [3.5, 5.5],
     belt: [0.01, 0.25],
@@ -997,10 +1062,11 @@ function buildPhysicalHints(
   rng: SeededRng,
   bodyClass: WorldClassOption,
   orbitAu: number,
-  primary: Star
+  primary: Star,
+  architectureName?: string
 ): BodyPhysicalHints {
   const periodDays = estimateOrbitalPeriodDays(orbitAu, primary.massSolar.value)
-  const radiusEarth = estimateRadiusEarth(rng, bodyClass.category)
+  const radiusEarth = estimateRadiusEarth(rng, bodyClass.category, architectureName)
   const massEarth = estimateMassEarth(radiusEarth, bodyClass.category)
   const surfaceGravityG = massEarth === null ? null : roundTo(massEarth / radiusEarth ** 2, 2)
   return {
@@ -1160,6 +1226,7 @@ function applyPeasInPodFilter(
 ): FilteredWorldClass {
   if (!(architectureName === 'Compact inner system' || architectureName === 'Peas-in-a-pod chain') || !previous) return input
   if (input.bodyClass.category === 'belt' || previous.bodyClass.category === 'belt') return input
+  if (input.bodyClass.category === 'anomaly' || previous.bodyClass.category === 'anomaly') return input
   if (
     input.bodyClass.category === 'gas-giant' ||
     input.bodyClass.category === 'ice-giant' ||
@@ -1169,11 +1236,13 @@ function applyPeasInPodFilter(
 
   const roll = rng.int(1, 6)
   if (roll >= 2 && roll <= 4) {
-    const radius = roundTo(previous.physical.radiusEarth.value * rng.float(0.85, 1.18), 2)
     const canReusePreviousClass = isClassAvailableInThermalZone(thermalZone, previous.bodyClass)
+    const bodyClass = canReusePreviousClass ? previous.bodyClass : input.bodyClass
+    const rawRadius = previous.physical.radiusEarth.value * rng.float(0.85, 1.18)
+    const radius = roundTo(bodyClass.category === 'sub-neptune' ? Math.min(rawRadius, 2.75) : rawRadius, 2)
 
     return {
-      bodyClass: canReusePreviousClass ? previous.bodyClass : input.bodyClass,
+      bodyClass,
       physical: {
         ...input.physical,
         radiusEarth: fact(radius, 'inferred', 'Peas-in-a-pod filter'),
@@ -1867,7 +1936,7 @@ function generatedBody(
   const insolation = calculateInsolation(primary.luminositySolar.value, orbitAu)
   const thermalZone = classifyThermalZone(insolation)
   const baseBodyClass = knownBodyClass(known, selectWorldClassForPlanKind(rng, thermalZone, planKind))
-  const basePhysical = mergeKnownPhysicalHints(buildPhysicalHints(rng, baseBodyClass, orbitAu, primary), known?.physical, baseBodyClass.category)
+  const basePhysical = mergeKnownPhysicalHints(buildPhysicalHints(rng, baseBodyClass, orbitAu, primary, architectureName), known?.physical, baseBodyClass.category)
   const filtered = hasLockedBodyClass(known)
     ? {
         bodyClass: baseBodyClass,
@@ -1949,14 +2018,23 @@ function expandSlotsForKnownBodies(slots: ArchitectureSlot[], knownBodies: Parti
   return expanded
 }
 
-function replacementOrbitAu(rng: SeededRng, luminositySolar: number, bodies: OrbitingBody[], slot: ArchitectureSlot): number {
-  const occupied = bodies.map((body) => body.orbitAu.value).sort((left, right) => left - right)
+function replacementOrbitAu(rng: SeededRng, primary: Star, bodies: OrbitingBody[], slot: ArchitectureSlot): number {
+  const occupied = bodies
+    .map((body) => ({
+      orbitAu: body.orbitAu.value,
+      massEarth: typeof body.physical.massEarth.value === 'number' && body.physical.massEarth.value > 0
+        ? body.physical.massEarth.value
+        : estimatedPlanMassEarth(slot.planKind, undefined, slot),
+    }))
+    .sort((left, right) => left.orbitAu - right.orbitAu)
   const band = slot.orbitBand ?? defaultOrbitBand(slot.planKind)
   return placeGeneratedOrbit(
     rng,
-    luminositySolar,
+    primary.luminositySolar.value,
+    primary.massSolar.value,
     band,
-    sampleOrbitInBand(rng.fork('preferred-replacement-orbit'), luminositySolar, band),
+    sampleOrbitInBand(rng.fork('preferred-replacement-orbit'), primary.luminositySolar.value, band),
+    estimatedPlanMassEarth(slot.planKind, undefined, slot),
     occupied
   )
 }
@@ -1991,7 +2069,7 @@ function addKnownOrbitBandNote(body: OrbitingBody, slot: ArchitectureSlot): Orbi
 
 function generateBodies(rng: SeededRng, primary: Star, architectureName: string, systemName: string, knownBodies: PartialKnownBody[] = []): OrbitingBody[] {
   const slots = expandSlotsForKnownBodies(buildArchitectureSlots(rng.fork('body-plan'), architectureName), knownBodies)
-  const orbitAssignments = generateOrbitAssignments(rng, primary.luminositySolar.value, slots, knownBodies)
+  const orbitAssignments = generateOrbitAssignments(rng, primary.luminositySolar.value, primary.massSolar.value, slots, knownBodies)
   const bodies: OrbitingBody[] = []
   let previousFiltered: FilteredWorldClass | null = null
 
@@ -2021,7 +2099,7 @@ function generateBodies(rng: SeededRng, primary: Star, architectureName: string,
       primary,
       architectureName,
       systemName,
-      replacementOrbitAu(rng.fork(`slot-${slot.id}:orbit`), primary.luminositySolar.value, bodies, slot),
+      replacementOrbitAu(rng.fork(`slot-${slot.id}:orbit`), primary, bodies, slot),
       replacementIndex,
       slot.planKind,
       previousFiltered,

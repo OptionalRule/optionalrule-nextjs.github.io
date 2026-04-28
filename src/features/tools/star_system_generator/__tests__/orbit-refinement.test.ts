@@ -31,6 +31,20 @@ function median(values: number[]): number {
   return sorted[Math.floor((sorted.length - 1) / 2)]
 }
 
+function mutualHillSpacingRatio(system: GeneratedSystem, leftIndex: number): number | null {
+  const left = system.bodies[leftIndex]
+  const right = system.bodies[leftIndex + 1]
+  if (!left || !right) return null
+  const leftMass = left.physical.massEarth.value
+  const rightMass = right.physical.massEarth.value
+  if (typeof leftMass !== 'number' || typeof rightMass !== 'number') return null
+
+  const stellarMassEarth = system.primary.massSolar.value * 332946
+  const averageOrbit = (left.orbitAu.value + right.orbitAu.value) / 2
+  const mutualHillRadius = averageOrbit * ((leftMass + rightMass) / (3 * stellarMassEarth)) ** (1 / 3)
+  return (right.orbitAu.value - left.orbitAu.value) / mutualHillRadius
+}
+
 describe('orbit refinement', () => {
   it('keeps generated orbit lists sorted and separated', () => {
     for (const system of corpus.slice(0, 160)) {
@@ -70,7 +84,26 @@ describe('orbit refinement', () => {
     const compactSystems = [...systemsFor('Compact inner system'), ...systemsFor('Peas-in-a-pod chain')]
     expect(compactSystems.length).toBeGreaterThan(80)
 
-    expect(median(compactSystems.map(outerSnowRatio))).toBeLessThan(1.4)
+    expect(median(compactSystems.map(outerSnowRatio))).toBeLessThan(2)
+  })
+
+  it('keeps compact-chain sub-Neptunes modest and adjacent full planets well spaced by mutual Hill radius', () => {
+    const compactSystems = [...systemsFor('Compact inner system'), ...systemsFor('Peas-in-a-pod chain')]
+    const compactSubNeptunes = compactSystems.flatMap((system) =>
+      system.bodies.filter((body) => body.category.value === 'sub-neptune')
+    )
+
+    expect(compactSubNeptunes.length).toBeGreaterThan(0)
+    expect(compactSubNeptunes.every((body) => typeof body.physical.massEarth.value === 'number' && body.physical.massEarth.value <= 9)).toBe(true)
+
+    const exemplar = generateSystem({ ...options, seed: 'ce3684a2efa38103' })
+    expect(exemplar.architecture.name.value).toBe('Compact inner system')
+    expect(exemplar.bodies.at(-1)?.physical.massEarth.value).toBeLessThan(9)
+
+    for (let index = 0; index < exemplar.bodies.length - 1; index += 1) {
+      const ratio = mutualHillSpacingRatio(exemplar, index)
+      if (ratio !== null) expect(ratio).toBeGreaterThan(14)
+    }
   })
 
   it('allows sparse, debris-dominated, and failed systems to produce outer remnants', () => {
