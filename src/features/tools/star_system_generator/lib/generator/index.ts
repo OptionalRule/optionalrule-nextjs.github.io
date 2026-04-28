@@ -9,6 +9,9 @@ import type {
   Moon,
   OrbitingBody,
   PlanetaryDetail,
+  PartialKnownBody,
+  PartialKnownStar,
+  PartialKnownSystem,
   RingSystem,
   Settlement,
   Star,
@@ -520,6 +523,10 @@ function fact<T>(value: T, confidence: Fact<T>['confidence'], source?: string): 
   return { value, confidence, source }
 }
 
+export function mergeLockedFact<T>(generated: Fact<T>, known?: Fact<T>): Fact<T> {
+  return known?.locked ? known : generated
+}
+
 function generateSystemName(rng: SeededRng): string {
   const core = pickOne(rng, systemNameCores)
   const form = pickOne(rng, systemNameForms)
@@ -537,8 +544,24 @@ function activityFromRoll(roll: number): string {
   return activityLabels.find((entry) => roll <= entry.max)?.value ?? activityLabels[activityLabels.length - 1].value
 }
 
-function generatePrimaryStar(rng: SeededRng, options: GenerationOptions, systemName: string): Star {
-  const profile = pickTable(
+function knownStarProfile(knownPrimary?: PartialKnownStar) {
+  if (!knownPrimary?.spectralType?.locked) return undefined
+  const knownType = knownPrimary.spectralType.value.trim().toUpperCase()
+  const normalizedType =
+    /^[OBA]/.test(knownType) ? 'O/B/A bright star' :
+    knownType.startsWith('F') ? 'F star' :
+    knownType.startsWith('G') ? 'G star' :
+    knownType.startsWith('K') ? 'K star' :
+    knownType.startsWith('M') ? 'M dwarf' :
+    knownType.includes('WHITE') || knownType.startsWith('WD') ? 'White dwarf/remnant' :
+    knownType.includes('BROWN') || /^[LTY]/.test(knownType) ? 'Brown dwarf/substellar primary' :
+    knownPrimary.spectralType.value
+  const tables = [...realisticStarTypes, ...frontierStarTypes]
+  return tables.find((entry) => entry.value.type === normalizedType)?.value
+}
+
+function generatePrimaryStar(rng: SeededRng, options: GenerationOptions, systemName: string, knownPrimary?: PartialKnownStar): Star {
+  const profile = knownStarProfile(knownPrimary) ?? pickTable(
     rng,
     d100(rng),
     options.distribution === 'realistic' ? realisticStarTypes : frontierStarTypes
@@ -579,14 +602,14 @@ function generatePrimaryStar(rng: SeededRng, options: GenerationOptions, systemN
 
   return {
     id: 'primary',
-    name: fact(`${systemName} Primary`, 'inferred', 'Generated fictional star'),
-    spectralType: fact(profile.type, 'inferred', 'MASS-GU stellar distribution'),
-    massSolar: fact(massSolar, 'inferred', 'Generated stellar profile'),
-    luminositySolar: fact(luminositySolar, 'inferred', 'Generated stellar profile'),
-    ageState: fact(ageState, 'inferred', 'MASS-GU stellar age table'),
-    metallicity: fact(metallicity, 'inferred', 'MASS-GU metallicity table'),
-    activity: fact(activity, 'inferred', 'MASS-GU activity modifiers'),
-    activityRoll: fact(activityRoll, 'derived', 'Modified 2d6 stellar activity roll'),
+    name: mergeLockedFact(fact(`${systemName} Primary`, 'inferred', 'Generated fictional star'), knownPrimary?.name),
+    spectralType: mergeLockedFact(fact(profile.type, knownPrimary?.spectralType?.locked ? 'confirmed' : 'inferred', knownPrimary?.spectralType?.locked ? 'Known-system import locked stellar type' : 'MASS-GU stellar distribution'), knownPrimary?.spectralType),
+    massSolar: mergeLockedFact(fact(massSolar, knownPrimary?.massSolar?.locked ? 'confirmed' : 'inferred', knownPrimary?.massSolar?.locked ? 'Known-system import locked stellar mass' : 'Generated stellar profile'), knownPrimary?.massSolar),
+    luminositySolar: mergeLockedFact(fact(luminositySolar, knownPrimary?.luminositySolar?.locked ? 'confirmed' : 'inferred', knownPrimary?.luminositySolar?.locked ? 'Known-system import locked stellar luminosity' : 'Generated stellar profile'), knownPrimary?.luminositySolar),
+    ageState: mergeLockedFact(fact(ageState, 'inferred', 'MASS-GU stellar age table'), knownPrimary?.ageState),
+    metallicity: mergeLockedFact(fact(metallicity, 'inferred', 'MASS-GU metallicity table'), knownPrimary?.metallicity),
+    activity: mergeLockedFact(fact(activity, 'inferred', 'MASS-GU activity modifiers'), knownPrimary?.activity),
+    activityRoll: mergeLockedFact(fact(activityRoll, 'derived', 'Modified 2d6 stellar activity roll'), knownPrimary?.activityRoll),
     activityModifiers,
   }
 }
@@ -605,6 +628,7 @@ function hasCloseBinary(companions: StellarCompanion[]): boolean {
 
 function applyCompanionActivityModifier(primary: Star, companions: StellarCompanion[]): Star {
   if (!hasCloseBinary(companions)) return primary
+  if (primary.activity.locked || primary.activityRoll.locked) return primary
 
   const activityRoll = primary.activityRoll.value + 1
   return {
@@ -821,6 +845,31 @@ function buildPhysicalHints(
     closeIn: fact(periodDays < 100, 'derived', 'Period under 100 days'),
     volatileEnvelope: fact(hasVolatileEnvelope(bodyClass.category), 'inferred', 'Category-based volatile envelope flag'),
   }
+}
+
+function mergeKnownPhysicalHints(
+  generated: BodyPhysicalHints,
+  known: PartialKnownBody['physical'] | undefined,
+  category: BodyCategory
+): BodyPhysicalHints {
+  const merged = {
+    radiusEarth: mergeLockedFact(generated.radiusEarth, known?.radiusEarth),
+    massEarth: mergeLockedFact(generated.massEarth, known?.massEarth),
+    surfaceGravityG: mergeLockedFact(generated.surfaceGravityG, known?.surfaceGravityG),
+    gravityLabel: mergeLockedFact(generated.gravityLabel, known?.gravityLabel),
+    periodDays: mergeLockedFact(generated.periodDays, known?.periodDays),
+    closeIn: mergeLockedFact(generated.closeIn, known?.closeIn),
+    volatileEnvelope: mergeLockedFact(generated.volatileEnvelope, known?.volatileEnvelope),
+  }
+
+  if (!known?.surfaceGravityG?.locked && merged.massEarth.value !== null) {
+    merged.surfaceGravityG = fact(roundTo(merged.massEarth.value / merged.radiusEarth.value ** 2, 2), 'derived', 'Estimated mass divided by radius squared')
+  }
+  if (!known?.gravityLabel?.locked) {
+    merged.gravityLabel = fact(gravityLabel(category, merged.surfaceGravityG.value), 'derived', 'Surface gravity estimate')
+  }
+
+  return merged
 }
 
 function applyRadiusValleyFilter(rng: SeededRng, input: FilteredWorldClass): FilteredWorldClass {
@@ -1291,6 +1340,17 @@ function generateDetail(
       'inferred',
       'MASS-GU biosphere score'
     ),
+  }
+}
+
+function mergeKnownDetail(generated: PlanetaryDetail, known?: PartialKnownBody['detail']): PlanetaryDetail {
+  return {
+    atmosphere: mergeLockedFact(generated.atmosphere, known?.atmosphere),
+    hydrosphere: mergeLockedFact(generated.hydrosphere, known?.hydrosphere),
+    geology: mergeLockedFact(generated.geology, known?.geology),
+    climate: known?.climate?.some((entry) => entry.locked) ? known.climate as Array<Fact<string>> : generated.climate,
+    radiation: mergeLockedFact(generated.radiation, known?.radiation),
+    biosphere: mergeLockedFact(generated.biosphere, known?.biosphere),
   }
 }
 
@@ -1923,34 +1983,57 @@ function bodyNameForIndex(
   return `${core} ${form} ${orbitMark}`
 }
 
-function generateBodies(rng: SeededRng, primary: Star, architectureName: string, systemName: string): OrbitingBody[] {
-  const bodyPlan = generateBodyPlan(rng.fork('body-plan'), architectureName)
-  const orbits = generateOrbitSeries(rng, primary.luminositySolar.value, bodyPlan.length)
-  const bodies: OrbitingBody[] = []
-  let previousFiltered: FilteredWorldClass | null = null
+function knownBodyClass(known: PartialKnownBody | undefined, generated: WorldClassOption): WorldClassOption {
+  if (!known) return generated
+  return {
+    className: known.bodyClass?.locked ? known.bodyClass.value : generated.className,
+    category: known.category?.locked ? known.category.value : generated.category,
+    massClass: known.massClass?.locked ? known.massClass.value : generated.massClass,
+  }
+}
 
-  for (let index = 0; index < orbits.length; index++) {
-    const orbitAu = orbits[index]
-    const insolation = calculateInsolation(primary.luminositySolar.value, orbitAu)
-    const thermalZone = classifyThermalZone(insolation)
-    const baseBodyClass = selectWorldClassForPlanKind(rng, thermalZone, bodyPlan[index])
-    const basePhysical = buildPhysicalHints(rng, baseBodyClass, orbitAu, primary)
-    const filtered = withRecomputedGravity(applyModernExoplanetFilters(rng, baseBodyClass, basePhysical, thermalZone, architectureName, previousFiltered))
-    const habitabilityNotes = mDwarfHabitabilityNotes(rng, primary, thermalZone, filtered.bodyClass.category)
-    const siteCount = rng.chance(0.55) ? 1 : 0
-    const detail = generateDetail(rng, filtered.bodyClass, filtered.physical, thermalZone, primary)
-    const moons = generateMoons(rng, filtered.bodyClass, filtered.physical, index, thermalZone, primary, architectureName)
-    const rings = generateRingSystem(rng, filtered.bodyClass.category)
-    const giantEconomy = generateGiantEconomy(filtered.bodyClass, moons, rings)
-    const bodyProfile = generateBodyProfile(filtered.bodyClass, detail, moons, rings)
-    const whyInteresting = generateBodyInterest(rng.fork(`body-interest-${index + 1}`), filtered.bodyClass, thermalZone, detail, moons, [...filtered.filterNotes, ...habitabilityNotes], bodyProfile, giantEconomy)
-    bodies.push({
-      id: `body-${index + 1}`,
-      orbitAu: fact(orbitAu, 'derived', 'Generated orbital spacing'),
-      name: fact(bodyNameForIndex(rng.fork(`body-name-${index + 1}`), systemName, index, architectureName, filtered.bodyClass), 'human-layer', 'Generated body name from system, architecture, category, and orbit'),
-      category: fact(filtered.bodyClass.category, 'inferred', 'Thermal-zone body class table'),
-      massClass: fact(filtered.bodyClass.massClass, 'inferred', 'Thermal-zone body class table'),
-      bodyClass: fact(filtered.bodyClass.className, 'inferred', 'Thermal-zone, architecture, and exoplanet filters'),
+function hasLockedBodyClass(known: PartialKnownBody | undefined): boolean {
+  return Boolean(known?.bodyClass?.locked || known?.category?.locked || known?.massClass?.locked)
+}
+
+function generatedBody(
+  rng: SeededRng,
+  primary: Star,
+  architectureName: string,
+  systemName: string,
+  orbitAu: number,
+  index: number,
+  planKind: BodyPlanKind,
+  previousFiltered: FilteredWorldClass | null,
+  known?: PartialKnownBody
+): { body: OrbitingBody; filtered: FilteredWorldClass } {
+  const insolation = calculateInsolation(primary.luminositySolar.value, orbitAu)
+  const thermalZone = classifyThermalZone(insolation)
+  const baseBodyClass = knownBodyClass(known, selectWorldClassForPlanKind(rng, thermalZone, planKind))
+  const basePhysical = mergeKnownPhysicalHints(buildPhysicalHints(rng, baseBodyClass, orbitAu, primary), known?.physical, baseBodyClass.category)
+  const filtered = hasLockedBodyClass(known)
+    ? {
+        bodyClass: baseBodyClass,
+        physical: basePhysical,
+        filterNotes: [fact('Known body class locked; exoplanet demographic filters did not overwrite imported facts.', 'confirmed', 'Known-system import lock')],
+      }
+    : withRecomputedGravity(applyModernExoplanetFilters(rng, baseBodyClass, basePhysical, thermalZone, architectureName, previousFiltered))
+  const habitabilityNotes = mDwarfHabitabilityNotes(rng, primary, thermalZone, filtered.bodyClass.category)
+  const siteCount = rng.chance(0.55) ? 1 : 0
+  const detail = mergeKnownDetail(generateDetail(rng, filtered.bodyClass, filtered.physical, thermalZone, primary), known?.detail)
+  const moons = generateMoons(rng, filtered.bodyClass, filtered.physical, index, thermalZone, primary, architectureName)
+  const rings = generateRingSystem(rng, filtered.bodyClass.category)
+  const giantEconomy = generateGiantEconomy(filtered.bodyClass, moons, rings)
+  const bodyProfile = generateBodyProfile(filtered.bodyClass, detail, moons, rings)
+  const whyInteresting = generateBodyInterest(rng.fork(`body-interest-${index + 1}`), filtered.bodyClass, thermalZone, detail, moons, [...filtered.filterNotes, ...habitabilityNotes], bodyProfile, giantEconomy)
+  return {
+    body: {
+      id: known?.id ?? `body-${index + 1}`,
+      orbitAu: mergeLockedFact(fact(orbitAu, 'derived', 'Generated orbital spacing'), known?.orbitAu),
+      name: mergeLockedFact(fact(bodyNameForIndex(rng.fork(`body-name-${index + 1}`), systemName, index, architectureName, filtered.bodyClass), 'human-layer', 'Generated body name from system, architecture, category, and orbit'), known?.name),
+      category: mergeLockedFact(fact(filtered.bodyClass.category, 'inferred', 'Thermal-zone body class table'), known?.category),
+      massClass: mergeLockedFact(fact(filtered.bodyClass.massClass, 'inferred', 'Thermal-zone body class table'), known?.massClass),
+      bodyClass: mergeLockedFact(fact(filtered.bodyClass.className, 'inferred', 'Thermal-zone, architecture, and exoplanet filters'), known?.bodyClass),
       bodyProfile,
       whyInteresting,
       thermalZone: fact(thermalZone, 'derived', `Insolation ${roundTo(insolation, 3)} S`),
@@ -1962,11 +2045,50 @@ function generateBodies(rng: SeededRng, primary: Star, architectureName: string,
       filterNotes: [...filtered.filterNotes, ...habitabilityNotes],
       traits: [fact(pickOne(rng, traitOptions), 'inferred', 'Generated world trait')],
       sites: Array.from({ length: siteCount }, () => fact(pickOne(rng, siteOptions), 'human-layer', 'Generated site')),
+    },
+    filtered,
+  }
+}
+
+function reservedKnownSlots(orbits: number[], knownBodies: PartialKnownBody[]): Map<number, PartialKnownBody> {
+  const slots = new Map<number, PartialKnownBody>()
+  const used = new Set<number>()
+
+  for (const known of [...knownBodies].sort((left, right) => left.orbitAu.value - right.orbitAu.value)) {
+    let bestIndex = -1
+    let bestDistance = Number.POSITIVE_INFINITY
+    orbits.forEach((orbit, index) => {
+      if (used.has(index)) return
+      const distance = Math.abs(orbit - known.orbitAu.value)
+      if (distance < bestDistance) {
+        bestDistance = distance
+        bestIndex = index
+      }
     })
-    previousFiltered = filtered
+    if (bestIndex >= 0) {
+      used.add(bestIndex)
+      slots.set(bestIndex, known)
+    }
   }
 
-  return bodies
+  return slots
+}
+
+function generateBodies(rng: SeededRng, primary: Star, architectureName: string, systemName: string, knownBodies: PartialKnownBody[] = []): OrbitingBody[] {
+  const bodyPlan = generateBodyPlan(rng.fork('body-plan'), architectureName)
+  const orbits = generateOrbitSeries(rng, primary.luminositySolar.value, bodyPlan.length)
+  const knownSlots = reservedKnownSlots(orbits, knownBodies)
+  const bodies: OrbitingBody[] = []
+  let previousFiltered: FilteredWorldClass | null = null
+
+  for (let index = 0; index < orbits.length; index++) {
+    const known = knownSlots.get(index)
+    const generated = generatedBody(rng, primary, architectureName, systemName, known?.orbitAu.value ?? orbits[index], index, bodyPlan[index], previousFiltered, known)
+    bodies.push(generated.body)
+    previousFiltered = generated.filtered
+  }
+
+  return bodies.sort((left, right) => left.orbitAu.value - right.orbitAu.value)
 }
 
 function intensityFromRoll(roll: number): string {
@@ -2737,6 +2859,7 @@ function guardGeneratedText<T>(input: T, conversions: string[]): T {
   if (!isRecord(input)) return input
 
   const output: Record<string, unknown> = { ...input }
+  if (input.locked === true) return output as T
   if (typeof input.value === 'string') {
     const guarded = applyNoAlienTextGuard(input.value)
     if (guarded.value !== input.value) {
@@ -2770,28 +2893,31 @@ function runNoAlienGuard(system: Omit<GeneratedSystem, 'noAlienCheck'>): Generat
   }
 }
 
-export function generateSystem(options: GenerationOptions): GeneratedSystem {
+export function generateSystem(options: GenerationOptions, knownSystem?: PartialKnownSystem): GeneratedSystem {
   const rootRng = createSeededRng(options.seed)
-  const name = generateSystemName(rootRng.fork('name'))
-  const basePrimary = generatePrimaryStar(rootRng.fork('star'), options, name)
+  const name = mergeLockedFact(fact(generateSystemName(rootRng.fork('name')), 'human-layer', 'Generated system name'), knownSystem?.name)
+  const basePrimary = generatePrimaryStar(rootRng.fork('star'), options, name.value, knownSystem?.primary)
   const companions = generateStellarCompanions(rootRng.fork('companions'), basePrimary)
   const primary = applyCompanionActivityModifier(basePrimary, companions)
   const reachability = generateReachability(rootRng.fork('reachability'), options, primary, companions)
   const architectureResult = generateArchitecture(rootRng.fork('architecture'), options, primary, reachability.className.value)
   const hz = calculateHabitableZone(primary.luminositySolar.value)
   const snowLine = calculateSnowLine(primary.luminositySolar.value)
-  const bodies = generateBodies(rootRng.fork('bodies'), primary, architectureResult.architecture.name.value, name)
+  const bodies = generateBodies(rootRng.fork('bodies'), primary, architectureResult.architecture.name.value, name.value, knownSystem?.bodies)
   const guOverlay = generateGuOverlay(rootRng.fork('gu'), options.gu, primary, companions, bodies, architectureResult.architecture.name.value)
-  const settlements = generateSettlements(rootRng.fork('settlements'), options, name, bodies, guOverlay, reachability, architectureResult.architecture.name.value)
+  const settlements = generateSettlements(rootRng.fork('settlements'), options, name.value, bodies, guOverlay, reachability, architectureResult.architecture.name.value)
   const ruins = generateHumanRemnants(rootRng.fork('ruins'), bodies, guOverlay)
   const phenomena = generatePhenomena(rootRng.fork('phenomena'), architectureResult.architecture.name.value, guOverlay)
 
   return runNoAlienGuard({
-    id: `system-${options.seed}`,
+    id: knownSystem?.id ?? `system-${options.seed}`,
     seed: options.seed,
     options,
-    name: fact(name, 'human-layer', 'Generated system name'),
-    dataBasis: fact('Fictional generated system', 'human-layer', 'MVP fictional generation'),
+    name,
+    dataBasis: mergeLockedFact(
+      fact(knownSystem ? 'Partial known system with generated fictional layers' : 'Fictional generated system', knownSystem ? 'confirmed' : 'human-layer', knownSystem ? 'Known-system import plus procedural completion' : 'MVP fictional generation'),
+      knownSystem?.dataBasis
+    ),
     primary,
     companions,
     reachability,

@@ -20,6 +20,17 @@ export interface GenerationOptions {
   settlements: SettlementDensity
 }
 
+export interface PartialKnownStar {
+  name?: Fact<string>
+  spectralType?: Fact<string>
+  massSolar?: Fact<number>
+  luminositySolar?: Fact<number>
+  ageState?: Fact<string>
+  metallicity?: Fact<string>
+  activity?: Fact<string>
+  activityRoll?: Fact<number>
+}
+
 export interface Star {
   id: string
   name: Fact<string>
@@ -124,6 +135,25 @@ export interface OrbitingBody {
   filterNotes: Array<Fact<string>>
   traits: Array<Fact<string>>
   sites: Array<Fact<string>>
+}
+
+export interface PartialKnownBody {
+  id?: string
+  orbitAu: Fact<number>
+  name?: Fact<string>
+  category?: Fact<BodyCategory>
+  massClass?: Fact<string>
+  bodyClass?: Fact<string>
+  physical?: Partial<BodyPhysicalHints>
+  detail?: Partial<PlanetaryDetail>
+}
+
+export interface PartialKnownSystem {
+  id?: string
+  name?: Fact<string>
+  dataBasis?: Fact<string>
+  primary?: PartialKnownStar
+  bodies?: PartialKnownBody[]
 }
 
 export interface GuOverlay {

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import type { GenerationOptions } from '../types'
+import type { GenerationOptions, PartialKnownSystem } from '../types'
 import { applyNoAlienTextGuard, architectureBodyPlanRules, generateSystem } from '../lib/generator'
 import { architectures, frontierStarTypes, realisticStarTypes } from '../lib/generator/tables'
 
@@ -59,6 +59,75 @@ describe('generateSystem', () => {
 
   it('returns identical systems for the same seed and options', () => {
     expect(generateSystem(options)).toEqual(generateSystem(options))
+  })
+
+  it('preserves locked known star facts while filling generated layers', () => {
+    const knownSystem: PartialKnownSystem = {
+      id: 'known-sol-analog',
+      name: { value: 'Known Lantern', confidence: 'confirmed', source: 'Test catalog', locked: true },
+      dataBasis: { value: 'Partial known-system fixture', confidence: 'confirmed', source: 'Test catalog', locked: true },
+      primary: {
+        name: { value: 'Known Lantern A', confidence: 'confirmed', source: 'Test catalog', locked: true },
+        spectralType: { value: 'G2V', confidence: 'confirmed', source: 'Test catalog', locked: true },
+        massSolar: { value: 1.03, confidence: 'confirmed', source: 'Test catalog', locked: true },
+        luminositySolar: { value: 1.12, confidence: 'confirmed', source: 'Test catalog', locked: true },
+      },
+    }
+
+    const system = generateSystem({ ...options, seed: 'known-star-lock-test' }, knownSystem)
+
+    expect(system.id).toBe('known-sol-analog')
+    expect(system.name).toEqual(knownSystem.name)
+    expect(system.dataBasis).toEqual(knownSystem.dataBasis)
+    expect(system.primary.name).toEqual(knownSystem.primary?.name)
+    expect(system.primary.spectralType).toEqual(knownSystem.primary?.spectralType)
+    expect(system.primary.massSolar).toEqual(knownSystem.primary?.massSolar)
+    expect(system.primary.luminositySolar).toEqual(knownSystem.primary?.luminositySolar)
+    expect(system.zones.habitableCenterAu.value).toBeCloseTo(Math.sqrt(1.12), 3)
+    expect(system.bodies.length).toBeGreaterThan(0)
+    expect(generateSystem({ ...options, seed: 'known-star-lock-test' }, knownSystem)).toEqual(system)
+  })
+
+  it('reserves orbital slots for locked known bodies and fills the rest', () => {
+    const knownSystem: PartialKnownSystem = {
+      name: { value: 'Known Body Test', confidence: 'confirmed', source: 'Test catalog', locked: true },
+      primary: {
+        spectralType: { value: 'K star', confidence: 'confirmed', source: 'Test catalog', locked: true },
+        massSolar: { value: 0.78, confidence: 'confirmed', source: 'Test catalog', locked: true },
+        luminositySolar: { value: 0.41, confidence: 'confirmed', source: 'Test catalog', locked: true },
+      },
+      bodies: [
+        {
+          id: 'known-b',
+          orbitAu: { value: 0.72, confidence: 'confirmed', source: 'Test catalog', locked: true },
+          name: { value: 'Known Body b', confidence: 'confirmed', source: 'Test catalog', locked: true },
+          category: { value: 'rocky-planet', confidence: 'confirmed', source: 'Test catalog', locked: true },
+          bodyClass: { value: 'Earth-sized terrestrial', confidence: 'confirmed', source: 'Test catalog', locked: true },
+          massClass: { value: 'Terrestrial', confidence: 'confirmed', source: 'Test catalog', locked: true },
+          physical: {
+            radiusEarth: { value: 1.08, confidence: 'confirmed', source: 'Test catalog', locked: true },
+            massEarth: { value: 1.23, confidence: 'confirmed', source: 'Test catalog', locked: true },
+          },
+          detail: {
+            atmosphere: { value: 'Thin but usable with pressure gear', confidence: 'confirmed', source: 'Test catalog', locked: true },
+          },
+        },
+      ],
+    }
+
+    const system = generateSystem({ ...options, seed: 'known-body-lock-test' }, knownSystem)
+    const knownBody = system.bodies.find((body) => body.id === 'known-b')
+
+    expect(knownBody).toBeTruthy()
+    expect(knownBody?.orbitAu).toEqual(knownSystem.bodies?.[0].orbitAu)
+    expect(knownBody?.name).toEqual(knownSystem.bodies?.[0].name)
+    expect(knownBody?.category).toEqual(knownSystem.bodies?.[0].category)
+    expect(knownBody?.bodyClass).toEqual(knownSystem.bodies?.[0].bodyClass)
+    expect(knownBody?.massClass).toEqual(knownSystem.bodies?.[0].massClass)
+    expect(knownBody?.physical.radiusEarth).toEqual(knownSystem.bodies?.[0].physical?.radiusEarth)
+    expect(knownBody?.physical.massEarth).toEqual(knownSystem.bodies?.[0].physical?.massEarth)
+    expect(knownBody?.detail.atmosphere).toEqual(knownSystem.bodies?.[0].detail?.atmosphere)
+    expect(system.bodies.length).toBeGreaterThan(1)
   })
 
   it('changes output for a different seed', () => {

@@ -187,18 +187,20 @@ Checkpoint commit:
 
 Purpose: keep future known-system imports from being bolted on after the generator hardens.
 
+Status: completed in checkpoint `feat: add star system import-ready generation contract`.
+
 Work items:
-- Define a minimal `PartialKnownSystem` input contract.
-- Add locked-fact merge helpers.
-- Ensure imported star facts skip stellar type rolls.
-- Ensure imported planets can reserve orbital slots and generated bodies fill gaps.
-- Add tests proving locked facts are not overwritten.
-- Keep public import UI hidden until the schema is stable.
+- Define a minimal `PartialKnownSystem` input contract. Completed.
+- Add locked-fact merge helpers. Completed.
+- Ensure imported star facts skip stellar type rolls. Completed for locked stellar type facts.
+- Ensure imported planets can reserve orbital slots and generated bodies fill gaps. Completed for locked known bodies assigned to generated orbital slots.
+- Add tests proving locked facts are not overwritten. Completed.
+- Keep public import UI hidden until the schema is stable. Completed; the contract is generator-only.
 
 Acceptance checks:
-- Generator accepts fictional-only and partial-known inputs.
-- Locked fields survive all generation stages.
-- URL seed/options behavior remains deterministic.
+- Generator accepts fictional-only and partial-known inputs. Completed.
+- Locked fields survive all generation stages. Completed for locked primary-star and known-body facts.
+- URL seed/options behavior remains deterministic. Completed.
 
 Checkpoint commit:
 - `feat: add star system import-ready generation contract`
