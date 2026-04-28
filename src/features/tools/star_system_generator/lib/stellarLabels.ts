@@ -1,5 +1,5 @@
 const labels: Record<string, string> = {
-  'M dwarf': 'M-type main-sequence star',
+  'M dwarf': 'M dwarf',
   'K star': 'K-type star',
   'G star': 'G-type star',
   'F star': 'F-type star',
