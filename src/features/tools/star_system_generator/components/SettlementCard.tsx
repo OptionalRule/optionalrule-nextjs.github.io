@@ -18,8 +18,7 @@ export function SettlementCard({ settlement }: { settlement: Settlement }) {
       <div className="mt-4 space-y-4 text-sm">
         <Section title="Why It Exists">
           <dl className="space-y-2">
-            <InlineDetail label="Presence" value={`${settlement.presence.score.value} (${settlement.presence.tier.value})`} />
-            <InlineDetail label="Presence roll" value={`${settlement.presence.roll.value}`} />
+            <InlineDetail label="Activity level" value={settlement.presence.tier.value} />
             <InlineDetail label="Anchor" value={`${settlement.anchorName.value} (${settlement.anchorKind.value})`} />
             <InlineDetail label="Placement" value={settlement.anchorDetail.value} />
             <InlineDetail label="Why here" value={settlement.whyHere.value} />

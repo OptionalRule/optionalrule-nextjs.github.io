@@ -24,6 +24,8 @@ describe('StarSystemGenerator', () => {
     expect(screen.getByText('Survey Notes')).toBeInTheDocument()
     expect(screen.getByText('Rings, Economy, Sites')).toBeInTheDocument()
     expect(screen.getAllByText('Why It Exists').length).toBeGreaterThan(0)
+    expect(screen.getAllByText('Activity level:').length).toBeGreaterThan(0)
+    expect(screen.queryByText('Presence roll:')).not.toBeInTheDocument()
     expect(screen.getAllByText('Operations').length).toBeGreaterThan(0)
     expect(screen.getAllByText('Trouble').length).toBeGreaterThan(0)
     expect(screen.getAllByText('Adventure Texture').length).toBeGreaterThan(0)
