@@ -34,7 +34,32 @@ import {
 
 const systemPrefixes = ['Keid', 'Vesper', 'Lumen', 'Harrow', 'Sable', 'Marrow', 'Orison', 'Nadir', 'Calder', 'Pale']
 const systemSuffixes = ['Ladder', 'Verge', 'Crown', 'Breach', 'Harbor', 'Glass', 'Wake', 'Cairn', 'Tide', 'Gate']
-const bodyNames = ['Ashkey', 'Red Vane', 'Sable', 'Harrowglass', 'Cinder', 'Pale Belt', 'Mourn', 'Chime', 'Vey', 'Dross', 'Siren', 'Gath']
+const bodyNames = [
+  'Ashkey',
+  'Red Vane',
+  'Sable',
+  'Harrowglass',
+  'Cinder',
+  'Pale Belt',
+  'Mourn',
+  'Chime',
+  'Vey',
+  'Dross',
+  'Siren',
+  'Gath',
+  'Low Lantern',
+  'Blackwater',
+  'Pilgrim',
+  'Rook',
+  'Kestrel',
+  'Vigilance',
+  'Old Copper',
+  'Ninth Choir',
+  'Cold Chapel',
+  'Ravel',
+  'Warden',
+  'Glasswake',
+]
 const moonNames = ['Silt', 'Brine', 'Kettle', 'Palehook', 'Vigil', 'Thresh', 'Low Bell', 'Cairnlet']
 
 interface WorldClassOption {
@@ -48,6 +73,19 @@ interface FilteredWorldClass {
   physical: BodyPhysicalHints
   filterNotes: Array<Fact<string>>
 }
+
+type BodyPlanKind =
+  | 'rocky'
+  | 'super-earth'
+  | 'sub-neptune'
+  | 'belt'
+  | 'ice-belt'
+  | 'gas-giant'
+  | 'ice-giant'
+  | 'dwarf'
+  | 'rogue'
+  | 'anomaly'
+  | 'thermal'
 
 type SettlementSiteCategory =
   | 'Surface settlement'
@@ -182,6 +220,7 @@ const forcedWorldClasses = {
   gasGiant: { className: 'Ringed giant with moons', category: 'gas-giant', massClass: 'Gas giant' },
   iceGiant: { className: 'Neptune-like ice giant', category: 'ice-giant', massClass: 'Ice giant' },
   dwarf: { className: 'Dwarf planet', category: 'dwarf-body', massClass: 'Dwarf planet' },
+  rogue: { className: 'Rogue captured planet', category: 'rogue-captured', massClass: 'Captured planet' },
 } satisfies Record<string, WorldClassOption>
 
 const traitOptions = [
@@ -298,21 +337,21 @@ function generateReachability(rng: SeededRng) {
 }
 
 function generateArchitecture(rng: SeededRng, options: GenerationOptions, primary: Star, reachabilityClass: string) {
-  let roll = d100(rng)
-  if (options.tone === 'cinematic') roll = Math.min(100, roll + 12)
-  if (options.tone === 'astronomy') roll = Math.max(1, roll - 6)
-  if (primary.metallicity.value === 'Metal-rich') roll += 10
-  if (primary.metallicity.value === 'Very metal-rich') roll += 20
-  if (['K star', 'G star', 'F star'].includes(primary.spectralType.value)) roll += 5
-  if (primary.metallicity.value === 'Metal-poor') roll -= 10
-  if (primary.massSolar.value < 0.18 && primary.spectralType.value === 'M dwarf') roll -= 10
-  if (reachabilityClass === 'Resource corridor' || reachabilityClass === 'Resonance hub') roll += 10
-  roll = Math.max(1, Math.min(100, roll))
+  let roll = twoD6(rng)
+  if (options.tone === 'cinematic') roll += 1
+  if (options.tone === 'astronomy') roll -= 1
+  if (primary.metallicity.value === 'Metal-rich') roll += 1
+  if (primary.metallicity.value === 'Very metal-rich') roll += 2
+  if (['K star', 'G star', 'F star'].includes(primary.spectralType.value)) roll += 1
+  if (primary.metallicity.value === 'Metal-poor' || primary.metallicity.value === 'Very metal-poor') roll -= 1
+  if (primary.massSolar.value < 0.18 && primary.spectralType.value === 'M dwarf') roll -= 1
+  if (reachabilityClass === 'Resource corridor' || reachabilityClass === 'Resonance hub') roll += 1
+  roll = Math.max(2, Math.min(13, roll))
   const result = pickTable(rng, roll, architectures)
   return {
     architecture: {
       name: fact(result.name, 'inferred', 'MASS-GU architecture table'),
-      description: fact(result.description, 'inferred', 'System architecture roll'),
+      description: fact(result.description, 'inferred', `Modified 2d6 architecture roll ${roll}`),
     },
     bodyCount: rng.int(result.bodyCount[0], result.bodyCount[1]),
   }
@@ -496,16 +535,20 @@ function applyPeasInPodFilter(
   previous: FilteredWorldClass | null,
   input: FilteredWorldClass
 ): FilteredWorldClass {
-  if (!architectureName.includes('Compact') || !previous) return input
+  if (!(architectureName === 'Compact inner system' || architectureName === 'Peas-in-a-pod chain') || !previous) return input
   if (input.bodyClass.category === 'belt' || previous.bodyClass.category === 'belt') return input
+  if (
+    input.bodyClass.category === 'gas-giant' ||
+    input.bodyClass.category === 'ice-giant' ||
+    previous.bodyClass.category === 'gas-giant' ||
+    previous.bodyClass.category === 'ice-giant'
+  ) return input
 
   const roll = rng.int(1, 6)
   if (roll >= 2 && roll <= 4) {
     const radius = roundTo(previous.physical.radiusEarth.value * rng.float(0.85, 1.18), 2)
     return {
-      bodyClass: input.bodyClass.category === 'gas-giant' || input.bodyClass.category === 'ice-giant'
-        ? input.bodyClass
-        : previous.bodyClass,
+      bodyClass: previous.bodyClass,
       physical: {
         ...input.physical,
         radiusEarth: fact(radius, 'inferred', 'Peas-in-a-pod filter'),
@@ -979,56 +1022,183 @@ function generateBodyInterest(
   return fact(selected.join(' '), selected.some((reason) => reason.includes('GU')) ? 'gu-layer' : 'inferred', 'Generated body interest summary')
 }
 
-function selectWorldClassForArchitecture(
-  rng: SeededRng,
-  thermalZone: string,
-  architectureName: string,
-  index: number,
-  bodyCount: number
-): WorldClassOption {
-  const isOuter = index >= bodyCount - 2
-  const isFinal = index === bodyCount - 1
-  const isMid = index === Math.floor(bodyCount / 2)
+function weightedPick<T>(rng: SeededRng, entries: Array<{ weight: number; value: T }>): T {
+  const total = entries.reduce((sum, entry) => sum + entry.weight, 0)
+  let roll = rng.float(0, total)
+  for (const entry of entries) {
+    roll -= entry.weight
+    if (roll <= 0) return entry.value
+  }
+  return entries[entries.length - 1].value
+}
+
+function pushRepeated(plan: BodyPlanKind[], count: number, create: () => BodyPlanKind): void {
+  for (let index = 0; index < count; index++) {
+    plan.push(create())
+  }
+}
+
+function planetLikeKind(rng: SeededRng): BodyPlanKind {
+  return weightedPick(rng, [
+    { weight: 45, value: 'rocky' },
+    { weight: 35, value: 'super-earth' },
+    { weight: 18, value: 'sub-neptune' },
+    { weight: 2, value: 'anomaly' },
+  ])
+}
+
+function rockySurvivorKind(rng: SeededRng): BodyPlanKind {
+  return weightedPick(rng, [
+    { weight: 55, value: 'rocky' },
+    { weight: 25, value: 'super-earth' },
+    { weight: 10, value: 'sub-neptune' },
+    { weight: 7, value: 'belt' },
+    { weight: 3, value: 'anomaly' },
+  ])
+}
+
+function debrisKind(rng: SeededRng): BodyPlanKind {
+  return weightedPick(rng, [
+    { weight: 42, value: 'belt' },
+    { weight: 30, value: 'ice-belt' },
+    { weight: 18, value: 'dwarf' },
+    { weight: 6, value: 'rogue' },
+    { weight: 4, value: 'anomaly' },
+  ])
+}
+
+function giantKind(rng: SeededRng): BodyPlanKind {
+  return rng.chance(0.62) ? 'gas-giant' : 'ice-giant'
+}
+
+function weightedCount(rng: SeededRng, entries: Array<{ weight: number; value: number }>): number {
+  return weightedPick(rng, entries)
+}
+
+function generateBodyPlan(rng: SeededRng, architectureName: string): BodyPlanKind[] {
+  const plan: BodyPlanKind[] = []
+
+  if (architectureName === 'Failed system') {
+    pushRepeated(plan, weightedCount(rng, [
+      { weight: 40, value: 0 },
+      { weight: 45, value: 1 },
+      { weight: 15, value: 2 },
+    ]), () => rockySurvivorKind(rng))
+    pushRepeated(plan, rng.int(3, 6), () => debrisKind(rng))
+    if (rng.chance(0.12)) plan.push('rogue')
+    return plan
+  }
 
   if (architectureName === 'Debris-dominated') {
-    if (index === 0 && thermalZone !== 'Furnace' && thermalZone !== 'Inferno') return forcedWorldClasses.rocky
-    if (thermalZone === 'Cold') return rng.chance(0.7) ? forcedWorldClasses.belt : forcedWorldClasses.dwarf
-    if (thermalZone === 'Cryogenic' || thermalZone === 'Dark') return rng.chance(0.75) ? forcedWorldClasses.iceBelt : forcedWorldClasses.dwarf
+    pushRepeated(plan, rng.int(1, 3), () => rockySurvivorKind(rng))
+    pushRepeated(plan, rng.int(3, 7), () => debrisKind(rng))
+    if (rng.chance(0.15)) plan.push(giantKind(rng))
+    if (rng.chance(0.1)) plan.push('anomaly')
+    return plan
   }
 
-  if (architectureName === 'Compact rocky chain') {
-    if (thermalZone === 'Furnace' || thermalZone === 'Inferno') return pickOne(rng, worldClassesByThermalZone[thermalZone])
-    return rng.chance(0.65) ? forcedWorldClasses.rocky : forcedWorldClasses.superEarth
+  if (architectureName === 'Sparse rocky') {
+    pushRepeated(plan, rng.int(2, 5), () => rng.chance(0.82) ? planetLikeKind(rng) : rockySurvivorKind(rng))
+    pushRepeated(plan, rng.int(0, 3), () => debrisKind(rng))
+    if (rng.chance(0.18)) plan.push(giantKind(rng))
+    if (rng.chance(0.12)) plan.push('sub-neptune')
+    return plan
   }
 
-  if (architectureName === 'Compact mixed chain') {
-    if (isOuter && thermalZone !== 'Furnace' && thermalZone !== 'Inferno') return rng.chance(0.55) ? forcedWorldClasses.subNeptune : forcedWorldClasses.superEarth
-    return rng.chance(0.55) ? forcedWorldClasses.rocky : forcedWorldClasses.superEarth
+  if (architectureName === 'Compact inner system') {
+    pushRepeated(plan, rng.int(4, 9), () => planetLikeKind(rng))
+    pushRepeated(plan, rng.int(0, 2), () => rng.chance(0.7) ? 'belt' : 'dwarf')
+    if (rng.chance(0.12)) plan.push(giantKind(rng))
+    return plan
+  }
+
+  if (architectureName === 'Peas-in-a-pod chain') {
+    const family = weightedPick(rng, [
+      { weight: 45, value: 'rocky' as const },
+      { weight: 35, value: 'super-earth' as const },
+      { weight: 20, value: 'sub-neptune' as const },
+    ])
+    pushRepeated(plan, rng.int(5, 8), () => rng.chance(0.82) ? family : planetLikeKind(rng))
+    pushRepeated(plan, rng.int(0, 2), () => debrisKind(rng))
+    if (rng.chance(0.1)) plan.push(giantKind(rng))
+    return plan
   }
 
   if (architectureName === 'Solar-ish mixed') {
-    if (isMid) return forcedWorldClasses.belt
-    if (isOuter) return isFinal ? forcedWorldClasses.iceGiant : forcedWorldClasses.gasGiant
+    pushRepeated(plan, rng.int(3, 7), () => planetLikeKind(rng))
+    pushRepeated(plan, weightedCount(rng, [
+      { weight: 12, value: 0 },
+      { weight: 48, value: 1 },
+      { weight: 30, value: 2 },
+      { weight: 10, value: 3 },
+    ]), () => rng.chance(0.7) ? 'belt' : 'ice-belt')
+    pushRepeated(plan, weightedCount(rng, [
+      { weight: 8, value: 0 },
+      { weight: 34, value: 1 },
+      { weight: 36, value: 2 },
+      { weight: 18, value: 3 },
+      { weight: 4, value: 4 },
+    ]), () => giantKind(rng))
+    pushRepeated(plan, rng.int(1, 5), () => debrisKind(rng))
+    if (rng.chance(0.14)) plan.push('rogue')
+    if (rng.chance(0.08)) plan.push('anomaly')
+    return plan
   }
 
-  if (architectureName === 'Giant-bearing system') {
-    if (isOuter) return rng.chance(0.65) ? forcedWorldClasses.gasGiant : forcedWorldClasses.iceGiant
+  if (architectureName === 'Migrated giant') {
+    plan.push(giantKind(rng))
+    pushRepeated(plan, rng.int(2, 5), () => rockySurvivorKind(rng))
+    pushRepeated(plan, rng.int(1, 4), () => rng.chance(0.35) ? giantKind(rng) : debrisKind(rng))
+    if (rng.chance(0.25)) plan.splice(rng.int(0, plan.length - 1), 0, 'belt')
+    if (rng.chance(0.15)) plan.push('anomaly')
+    return plan
   }
 
-  if (architectureName === 'Major GU fracture system') {
-    if (isMid) return forcedWorldClasses.belt
-    if (isOuter && rng.chance(0.6)) return rng.chance(0.5) ? forcedWorldClasses.gasGiant : forcedWorldClasses.iceGiant
-  }
+  pushRepeated(plan, rng.int(2, 6), () => rockySurvivorKind(rng))
+  pushRepeated(plan, rng.int(2, 5), () => giantKind(rng))
+  pushRepeated(plan, rng.int(2, 5), () => debrisKind(rng))
+  if (rng.chance(0.25)) plan.splice(0, 0, giantKind(rng))
+  if (rng.chance(0.25)) plan.push('rogue')
+  if (rng.chance(0.28)) plan.push('anomaly')
+  return plan
+}
 
-  if (architectureName === 'Relic or dark-sector system') {
-    if (isOuter) return rng.chance(0.5) ? forcedWorldClasses.iceBelt : forcedWorldClasses.dwarf
-  }
+function pickWorldClassByCategory(
+  rng: SeededRng,
+  thermalZone: string,
+  categories: BodyCategory[],
+  fallback: WorldClassOption
+): WorldClassOption {
+  const options = worldClassesByThermalZone[thermalZone].filter((option) => categories.includes(option.category))
+  return options.length ? pickOne(rng, options) : fallback
+}
 
+function selectWorldClassForPlanKind(rng: SeededRng, thermalZone: string, planKind: BodyPlanKind): WorldClassOption {
+  if (planKind === 'rocky') return pickWorldClassByCategory(rng, thermalZone, ['rocky-planet'], forcedWorldClasses.rocky)
+  if (planKind === 'super-earth') return pickWorldClassByCategory(rng, thermalZone, ['super-earth'], forcedWorldClasses.superEarth)
+  if (planKind === 'sub-neptune') return pickWorldClassByCategory(rng, thermalZone, ['sub-neptune'], forcedWorldClasses.subNeptune)
+  if ((planKind === 'belt' || planKind === 'ice-belt') && (thermalZone === 'Furnace' || thermalZone === 'Inferno')) {
+    return pickWorldClassByCategory(rng, thermalZone, ['rocky-planet', 'super-earth', 'anomaly'], forcedWorldClasses.rocky)
+  }
+  if (planKind === 'belt') return thermalZone === 'Cold' || thermalZone === 'Cryogenic' || thermalZone === 'Dark' || rng.chance(0.25) ? forcedWorldClasses.iceBelt : forcedWorldClasses.belt
+  if (planKind === 'ice-belt') return thermalZone === 'Hot' ? forcedWorldClasses.belt : forcedWorldClasses.iceBelt
+  if (planKind === 'gas-giant') return pickWorldClassByCategory(rng, thermalZone, ['gas-giant'], forcedWorldClasses.gasGiant)
+  if (planKind === 'ice-giant') return pickWorldClassByCategory(rng, thermalZone, ['ice-giant'], forcedWorldClasses.iceGiant)
+  if (planKind === 'dwarf') return forcedWorldClasses.dwarf
+  if (planKind === 'rogue') return forcedWorldClasses.rogue
+  if (planKind === 'anomaly') return pickWorldClassByCategory(rng, thermalZone, ['anomaly'], { className: 'Dark-sector density anomaly', category: 'anomaly', massClass: 'Dark-sector anomaly' })
   return pickOne(rng, worldClassesByThermalZone[thermalZone])
 }
 
-function generateBodies(rng: SeededRng, primary: Star, bodyCount: number, architectureName: string): OrbitingBody[] {
-  const orbits = generateOrbitSeries(rng, primary.luminositySolar.value, bodyCount)
+function bodyNameForIndex(index: number): string {
+  const baseName = bodyNames[index % bodyNames.length]
+  const cycle = Math.floor(index / bodyNames.length)
+  return cycle === 0 ? baseName : `${baseName} ${cycle + 1}`
+}
+
+function generateBodies(rng: SeededRng, primary: Star, architectureName: string): OrbitingBody[] {
+  const bodyPlan = generateBodyPlan(rng.fork('body-plan'), architectureName)
+  const orbits = generateOrbitSeries(rng, primary.luminositySolar.value, bodyPlan.length)
   const bodies: OrbitingBody[] = []
   let previousFiltered: FilteredWorldClass | null = null
 
@@ -1036,7 +1206,7 @@ function generateBodies(rng: SeededRng, primary: Star, bodyCount: number, archit
     const orbitAu = orbits[index]
     const insolation = calculateInsolation(primary.luminositySolar.value, orbitAu)
     const thermalZone = classifyThermalZone(insolation)
-    const baseBodyClass = selectWorldClassForArchitecture(rng, thermalZone, architectureName, index, bodyCount)
+    const baseBodyClass = selectWorldClassForPlanKind(rng, thermalZone, bodyPlan[index])
     const basePhysical = buildPhysicalHints(rng, baseBodyClass, orbitAu, primary)
     const filtered = withRecomputedGravity(applyModernExoplanetFilters(rng, baseBodyClass, basePhysical, thermalZone, architectureName, previousFiltered))
     const habitabilityNotes = mDwarfHabitabilityNotes(rng, primary, thermalZone, filtered.bodyClass.category)
@@ -1050,7 +1220,7 @@ function generateBodies(rng: SeededRng, primary: Star, bodyCount: number, archit
     bodies.push({
       id: `body-${index + 1}`,
       orbitAu: fact(orbitAu, 'derived', 'Generated orbital spacing'),
-      name: fact(bodyNames[index % bodyNames.length], 'human-layer', 'Generated system nomenclature'),
+      name: fact(bodyNameForIndex(index), 'human-layer', 'Generated system nomenclature'),
       category: fact(filtered.bodyClass.category, 'inferred', 'Thermal-zone body class table'),
       massClass: fact(filtered.bodyClass.massClass, 'inferred', 'Thermal-zone body class table'),
       bodyClass: fact(filtered.bodyClass.className, 'inferred', 'Thermal-zone, architecture, and exoplanet filters'),
@@ -1275,7 +1445,7 @@ function targetSettlementCount(
   if ((reachability.className.value.includes('Iggygate') || reachability.className.value.includes('hub')) && averageTopScore >= 13) count += 1
   if (reachability.className.value.includes('Dead-end') || reachability.className.value.includes('Marginal')) count -= 1
   if (guOverlay.intensity.value.includes('Rich') || guOverlay.intensity.value.includes('fracture') || guOverlay.intensity.value.includes('shear')) count += 1
-  if (architectureName === 'Major GU fracture system') count += 1
+  if (architectureName === 'Giant-rich or chaotic') count += 1
   if (averageTopScore >= 14) count += 1
   if (topScore < 9) count -= 1
   if (scored.slice(0, 3).every((entry) => entry.presence.hazard >= 4)) count -= 1
@@ -1793,7 +1963,7 @@ export function generateSystem(options: GenerationOptions): GeneratedSystem {
   const architectureResult = generateArchitecture(rootRng.fork('architecture'), options, primary, reachability.className.value)
   const hz = calculateHabitableZone(primary.luminositySolar.value)
   const snowLine = calculateSnowLine(primary.luminositySolar.value)
-  const bodies = generateBodies(rootRng.fork('bodies'), primary, architectureResult.bodyCount, architectureResult.architecture.name.value)
+  const bodies = generateBodies(rootRng.fork('bodies'), primary, architectureResult.architecture.name.value)
   const guOverlay = generateGuOverlay(rootRng.fork('gu'), options.gu, primary, bodies, architectureResult.architecture.name.value)
   const settlements = generateSettlements(rootRng.fork('settlements'), options, name, bodies, guOverlay, reachability, architectureResult.architecture.name.value)
   const ruins = generateHumanRemnants(rootRng.fork('ruins'), bodies, guOverlay)

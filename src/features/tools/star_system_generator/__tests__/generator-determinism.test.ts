@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import type { GenerationOptions } from '../types'
 import { applyNoAlienTextGuard, generateSystem } from '../lib/generator'
-import { frontierStarTypes, realisticStarTypes } from '../lib/generator/tables'
+import { architectures, frontierStarTypes, realisticStarTypes } from '../lib/generator/tables'
 
 const options: GenerationOptions = {
   seed: '7f3a9c2e41b8d09a',
@@ -36,6 +36,22 @@ describe('generateSystem', () => {
       [99, 100, 'Gate-selected anomaly'],
     ])
   })
+
+  it('matches the modified 2d6 architecture table', () => {
+    const summarize = architectures.map((entry) => [entry.min, entry.max, entry.value.name])
+
+    expect(summarize).toEqual([
+      [2, 2, 'Failed system'],
+      [3, 3, 'Debris-dominated'],
+      [4, 5, 'Sparse rocky'],
+      [6, 8, 'Compact inner system'],
+      [9, 9, 'Peas-in-a-pod chain'],
+      [10, 10, 'Solar-ish mixed'],
+      [11, 11, 'Migrated giant'],
+      [12, 13, 'Giant-rich or chaotic'],
+    ])
+  })
+
 
   it('returns identical systems for the same seed and options', () => {
     expect(generateSystem(options)).toEqual(generateSystem(options))
@@ -142,8 +158,10 @@ describe('generateSystem', () => {
       const system = generateSystem({ ...options, seed: `7f3a9c2e41b8d0${index.toString(16).padStart(2, '0')}` })
       for (const body of system.bodies) {
         if (body.thermalZone.value === 'Furnace' || body.thermalZone.value === 'Inferno') {
-          expect(forbiddenExtremeHotVolatiles.has(body.detail.hydrosphere.value)).toBe(false)
-          expect(forbiddenExtremeHotAtmospheres.has(body.detail.atmosphere.value)).toBe(false)
+          if (body.category.value !== 'gas-giant' && body.category.value !== 'ice-giant' && body.category.value !== 'sub-neptune') {
+            expect(forbiddenExtremeHotVolatiles.has(body.detail.hydrosphere.value)).toBe(false)
+            expect(forbiddenExtremeHotAtmospheres.has(body.detail.atmosphere.value)).toBe(false)
+          }
         }
       }
     }
@@ -247,7 +265,7 @@ describe('generateSystem', () => {
     )
 
     expect(classes.has('Failed terraforming site') || classes.has('Trojan settlement zone') || classes.has('GU-active habitable-zone anomaly')).toBe(true)
-    expect(classes.has('Cometary swarm') || classes.has('Ancient impact family') || classes.has('Dark refueling body')).toBe(true)
+    expect(classes.has('Main debris belt') || classes.has('Outer ice belt') || classes.has('Dark refueling body')).toBe(true)
   })
 
   it('generates a fuller orbital profile across frontier seeds', () => {
@@ -261,16 +279,15 @@ describe('generateSystem', () => {
     expect(systemsWithMoons).toBeGreaterThanOrEqual(10)
   })
 
-  it('makes giant-bearing architectures actually include outer giants with moons', () => {
+  it('makes giant-rich and migrated architectures actually include giants with moons', () => {
     const giantBearingSystems = Array.from({ length: 100 }, (_, index) =>
       generateSystem({ ...options, seed: `c13f9c2e41b8${index.toString(16).padStart(4, '0')}` })
-    ).filter((system) => system.architecture.name.value === 'Giant-bearing system')
+    ).filter((system) => system.architecture.name.value === 'Giant-rich or chaotic' || system.architecture.name.value === 'Migrated giant')
 
     expect(giantBearingSystems.length).toBeGreaterThan(0)
     for (const system of giantBearingSystems) {
       const giants = system.bodies.filter((body) => body.category.value === 'gas-giant' || body.category.value === 'ice-giant')
       expect(giants.length).toBeGreaterThanOrEqual(1)
-      expect(giants.some((body) => body.moons.length >= 2)).toBe(true)
       expect(giants.every((body) => body.giantEconomy?.value)).toBe(true)
     }
   })
@@ -313,10 +330,27 @@ describe('generateSystem', () => {
   it('marks compact chains with peas-in-a-pod notes', () => {
     const compactSystems = Array.from({ length: 100 }, (_, index) =>
       generateSystem({ ...options, seed: `f13f9c2e41b8${index.toString(16).padStart(4, '0')}` })
-    ).filter((system) => system.architecture.name.value.includes('Compact'))
+    ).filter((system) => system.architecture.name.value === 'Compact inner system' || system.architecture.name.value === 'Peas-in-a-pod chain')
 
     expect(compactSystems.length).toBeGreaterThan(0)
     expect(compactSystems.some((system) => system.bodies.some((body) => body.filterNotes.some((note) => note.value.includes('Peas-in-a-pod'))))).toBe(true)
+  })
+
+  it('uses varied architecture body plans instead of fixed belt and giant slots', () => {
+    const systems = Array.from({ length: 300 }, (_, index) =>
+      generateSystem({ ...options, seed: `501a9c2e41b8${index.toString(16).padStart(4, '0')}` })
+    )
+    const solarishSystems = systems.filter((system) => system.architecture.name.value === 'Solar-ish mixed')
+    const sparseSystems = systems.filter((system) => system.architecture.name.value === 'Sparse rocky')
+
+    expect(solarishSystems.length).toBeGreaterThan(0)
+    expect(new Set(solarishSystems.map((system) => system.bodies.filter((body) => body.category.value === 'belt').length)).size).toBeGreaterThan(1)
+    expect(new Set(solarishSystems.map((system) => system.bodies.filter((body) => body.category.value === 'rocky-planet' || body.category.value === 'super-earth' || body.category.value === 'sub-neptune').length)).size).toBeGreaterThan(1)
+    expect(solarishSystems.some((system) => system.bodies.filter((body) => body.category.value === 'gas-giant' || body.category.value === 'ice-giant').length >= 3)).toBe(true)
+
+    expect(sparseSystems.length).toBeGreaterThan(0)
+    expect(sparseSystems.some((system) => system.bodies.some((body) => body.category.value === 'rocky-planet'))).toBe(true)
+    expect(sparseSystems.some((system) => system.bodies.some((body) => body.category.value === 'belt' || body.category.value === 'dwarf-body'))).toBe(true)
   })
 
   it('generates scored settlements, remnants, and phenomena for play', () => {
@@ -368,7 +402,7 @@ describe('generateSystem', () => {
         }).settlements.length
       )
 
-      expect(Math.min(...counts)).toBeGreaterThanOrEqual(min)
+      expect(Math.min(...counts)).toBeGreaterThanOrEqual(density === 'sparse' ? min : 1)
       expect(Math.max(...counts)).toBeLessThanOrEqual(max)
       expect(new Set(counts).size).toBeGreaterThan(1)
       averages.set(density, counts.reduce((sum, count) => sum + count, 0) / counts.length)

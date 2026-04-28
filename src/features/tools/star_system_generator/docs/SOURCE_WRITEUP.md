@@ -301,41 +301,28 @@ Thermal zones:
 
 # 11. System architecture
 
-Roll d100. Apply modifiers:
+Roll modified 2d6. Apply modifiers:
 
-+10 if metal-rich.
-+10 if very metal-rich.
-+5 if K/G/F star.
--10 if metal-poor.
--10 if close binary.
--10 if very low-mass M dwarf.
-+10 if reachable system was selected for resource value.
-+10 if GU resonance hub.
-+15 if you want a more cinematic system.
++1 if metal-rich.
++2 if very metal-rich.
++1 if K/G/F star.
+-1 if metal-poor or very metal-poor.
+-1 if close binary.
+-1 if very low-mass M dwarf.
++1 if reachable system was selected for resource value.
++1 if GU resonance hub.
++1 if you want a more cinematic system.
 
-|  d100 | Architecture              | Description                                                 |
-| ----: | ------------------------- | ----------------------------------------------------------- |
-| 01–04 | Failed planet system      | Dust, rocks, dwarf bodies, maybe one small planet.          |
-| 05–08 | Debris-dominated          | Belts, rubble, impact hazards, few major planets.           |
-| 09–13 | Sparse rocky              | 1–3 terrestrial worlds, weak outer system.                  |
-| 14–21 | Compact rocky chain       | 3–7 close-in rocky/super-Earth worlds.                      |
-| 22–29 | Compact mixed chain       | Rock worlds mixed with sub-Neptunes.                        |
-| 30–36 | Peas-in-a-pod chain       | Similar-sized planets, regular spacing.                     |
-| 37–44 | M-dwarf close system      | Tight orbits, tidal locking, flare pressure.                |
-| 45–51 | K-star colony candidate   | Stable inner worlds, possible cold resources.               |
-| 52–58 | Solar-ish mixed           | Inner rocks, belt, gas/ice giants, outer ice zone.          |
-| 59–64 | Giant-light system        | Mostly small planets, no major Jovians.                     |
-| 65–70 | Giant-bearing system      | One or two outer giants with moons.                         |
-| 71–75 | Giant-rich system         | Multiple giants, resonances, strong moon economy.           |
-| 76–80 | Migrated giant            | Hot/warm Jupiter disrupted the inner system.                |
-| 81–84 | Hot super-Earth cluster   | Stripped cores and close-in dense planets.                  |
-| 85–88 | Circumbinary system       | Planets orbit both stars; eclipse seasons.                  |
-| 89–91 | Wide-binary dual system   | Two sub-systems with shared outer debris.                   |
-| 92–94 | Chaotic/eccentric system  | Inclined or eccentric worlds, debris and hazards.           |
-| 95–96 | White-dwarf relic system  | Metal-rich debris, remnant planets, salvage.                |
-| 97–98 | Brown-dwarf moon system   | Cold moons, hidden habitats, dark refueling.                |
-|    99 | Dark-sector skewed system | Anomalous densities, odd belts, metric hazards.             |
-|    00 | Major GU fracture system  | Unstable bleed zones, high-value resources, major factions. |
+| Modified 2d6 | Architecture         | Result                                                                 |
+| -----------: | -------------------- | ---------------------------------------------------------------------- |
+|            2 | Failed system        | Dust, rocks, dwarf bodies, maybe one remnant planet.                   |
+|            3 | Debris-dominated     | Belts, planetesimals, impact hazards, few full planets.                |
+|          4–5 | Sparse rocky         | 1–4 terrestrial or super-terrestrial planets, few giants.              |
+|          6–8 | Compact inner system | 3–8 close-in rocky/super-Earth/sub-Neptune worlds. Common for M/K/G systems. |
+|            9 | Peas-in-a-pod chain  | 4–7 similar-sized planets with regular spacing and related compositions. |
+|           10 | Solar-ish mixed      | Inner rocks, belt, 1–3 giants, outer ice/dwarf zone.                   |
+|           11 | Migrated giant       | Hot/warm giant, disrupted inner system, outer survivors.               |
+|          12+ | Giant-rich or chaotic | Multiple giants, eccentric orbits, resonances, debris, captured worlds. |
 
 ---
 

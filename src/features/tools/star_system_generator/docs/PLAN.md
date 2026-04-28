@@ -192,13 +192,13 @@ M3 - Astronomy Skeleton
 - [x] Implement age, metallicity, and activity.
 - [ ] Implement multiplicity.
 - [x] Implement luminosity-derived HZ, snow line, insolation, and thermal zones.
-- [x] Implement system architecture and orbital slot placement.
+- [x] Implement modified-2d6 system architecture and orbital slot placement.
 - [x] Apply first-pass architecture modifiers for metallicity, star type, low-mass M dwarfs, and reachability.
 - [x] Add tests for calculations and deterministic system skeletons.
 
 M4 - Worlds and Modern Exoplanet Filters
 - [x] Implement first-pass planet/body class selection by thermal zone.
-- [x] Apply first-pass architecture-aware body mix so giant-bearing/solar-ish systems include belts or giants.
+- [x] Apply architecture-specific weighted body plans with variable rocks, belts, giants, debris, and occasional crossover bodies.
 - [x] Increase orbital body and moon density toward the source writeup's playable-system expectations.
 - [x] Implement first-pass atmosphere, hydrosphere, geology, climate tags, radiation, and biosphere.
 - [x] Add first-pass thermal-zone/body-category constraints to prevent impossible environment combinations.
@@ -305,8 +305,8 @@ Implemented close to source method
 - Final no-alien guard converts old alien-style mystery labels into MASS-GU replacements and records the check result.
 
 First-pass approximations
-- Planet class tables are expanded from the source writeup but still use compressed equal-choice lists rather than exact d20 weighting and architecture-specific modifiers.
-- Architecture affects body mix, but not yet with the full source procedure for each architecture.
+- Planet class tables are expanded from the source writeup but still use compressed equal-choice lists rather than exact d20 weighting.
+- Architecture now affects body mix through weighted body plans, but individual body class tables still need deeper source-table weighting.
 - Orbital slot spacing is a simple geometric progression; known planet placement and gap filling are not implemented.
 - Atmosphere/hydrosphere/geology/radiation use constrained pick lists rather than full d12 modifier math.
 - Mass and gravity are approximate category/radius estimates, not density-modeled planetary interiors.

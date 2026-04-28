@@ -21,3 +21,5 @@ Run `npm run audit:star-system-generator` after generator-rule changes. The audi
 Settlement density is intentionally variable. The density control chooses a range, then reachability, GU intensity, architecture, hazards, and top presence scores nudge the final number so normal systems do not all show the same count.
 
 Stellar generation should preserve the labels and d100 ranges in `docs/SOURCE_WRITEUP.md`. The audit reports star-type counts separately for realistic and frontier distributions so aggregate samples do not hide table drift.
+
+Architecture generation uses the modified 2d6 table from the source writeup. Each architecture builds a weighted body plan from variable groups, with occasional crossovers, instead of forcing a single fixed belt/giant pattern.

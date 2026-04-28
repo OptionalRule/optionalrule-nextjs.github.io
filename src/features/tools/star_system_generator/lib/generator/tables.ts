@@ -60,15 +60,14 @@ export const reachabilityClasses: Array<TableEntry<{ className: string; routeNot
 ]
 
 export const architectures: Array<TableEntry<{ name: string; description: string; bodyCount: [number, number] }>> = [
-  { min: 1, max: 8, value: { name: 'Debris-dominated', description: 'Belts, rubble, impact hazards, and few major planets.', bodyCount: [4, 7] } },
-  { min: 9, max: 21, value: { name: 'Compact rocky chain', description: 'Close-in rocky and super-Earth worlds in tight orbits.', bodyCount: [5, 8] } },
-  { min: 22, max: 36, value: { name: 'Compact mixed chain', description: 'Rock worlds mixed with sub-Neptunes and regular spacing.', bodyCount: [5, 8] } },
-  { min: 37, max: 51, value: { name: 'K-star colony candidate', description: 'Stable inner worlds with cold outer resources.', bodyCount: [6, 9] } },
-  { min: 52, max: 64, value: { name: 'Solar-ish mixed', description: 'Inner rocks, belt, outer giants, and ice-zone resources.', bodyCount: [7, 10] } },
-  { min: 65, max: 75, value: { name: 'Giant-bearing system', description: 'One or two outer giants with moon economies.', bodyCount: [7, 10] } },
-  { min: 76, max: 88, value: { name: 'Disrupted inner system', description: 'Migration, heat, or binary forcing has scarred the inner orbits.', bodyCount: [5, 8] } },
-  { min: 89, max: 98, value: { name: 'Relic or dark-sector system', description: 'Remnants, cold bodies, and unusual metric hazards dominate.', bodyCount: [5, 8] } },
-  { min: 99, max: 100, value: { name: 'Major GU fracture system', description: 'High-value resources, unstable bleed zones, and major factions.', bodyCount: [7, 10] } },
+  { min: 2, max: 2, value: { name: 'Failed system', description: 'Dust, rocks, dwarf bodies, and maybe one remnant planet.', bodyCount: [2, 6] } },
+  { min: 3, max: 3, value: { name: 'Debris-dominated', description: 'Belts, planetesimals, impact hazards, and few full planets.', bodyCount: [4, 9] } },
+  { min: 4, max: 5, value: { name: 'Sparse rocky', description: 'A small number of terrestrial, super-terrestrial, or rocky survivor worlds.', bodyCount: [2, 7] } },
+  { min: 6, max: 8, value: { name: 'Compact inner system', description: 'Close-in rocky, super-Earth, and sub-Neptune worlds.', bodyCount: [4, 10] } },
+  { min: 9, max: 9, value: { name: 'Peas-in-a-pod chain', description: 'Similar-sized planets with regular spacing and related compositions.', bodyCount: [5, 9] } },
+  { min: 10, max: 10, value: { name: 'Solar-ish mixed', description: 'Inner rocks, belts, giants, and outer ice or dwarf zones.', bodyCount: [7, 15] } },
+  { min: 11, max: 11, value: { name: 'Migrated giant', description: 'A hot or warm giant has disrupted the inner system and left survivors.', bodyCount: [5, 12] } },
+  { min: 12, max: 13, value: { name: 'Giant-rich or chaotic', description: 'Multiple giants, eccentric orbits, resonances, debris, and captured worlds.', bodyCount: [8, 16] } },
 ]
 
 export const guIntensities = ['Geometrically quiet', 'Low bleed', 'Useful bleed', 'Rich bleed', 'Dangerous fracture system', 'Major observerse shear zone'] as const
