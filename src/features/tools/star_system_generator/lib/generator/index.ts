@@ -29,6 +29,7 @@ import { calculateHabitableZone, calculateInsolation, calculateSnowLine, classif
 import { d8, d12, d20, d100, pickOne, pickTable, twoD6 } from './dice'
 import { extremeHotThermalZones, hotThermalZones, type BodyPlanKind, type WorldClassOption } from './domain'
 import { deriveEnvironmentPolicy, normalizeDetailForEnvironment } from './environmentPolicy'
+import { NameRegistry } from './nameRegistry'
 import { createSeededRng, type SeededRng } from './rng'
 import {
   ageStates,
@@ -2557,14 +2558,15 @@ function settlementWhyHere(
 }
 
 function settlementDescriptorForFunction(settlementFunction: string): string {
-  if (settlementFunction.includes('mine') || settlementFunction.includes('extraction') || settlementFunction.includes('harvest')) return 'Claim'
-  if (settlementFunction.includes('Refinery') || settlementFunction.includes('foundry') || settlementFunction.includes('works')) return 'Works'
-  if (settlementFunction.includes('Freeport') || settlementFunction.includes('Smuggler')) return 'Freeport'
-  if (settlementFunction.includes('Quarantine')) return 'Cordon'
-  if (settlementFunction.includes('Military') || settlementFunction.includes('Naval') || settlementFunction.includes('Weapons')) return 'Bastion'
-  if (settlementFunction.includes('Iggygate') || settlementFunction.includes('Pinchdrive') || settlementFunction.includes('customs')) return 'Gate'
-  if (settlementFunction.includes('lab') || settlementFunction.includes('observ')) return 'Laboratory'
-  if (settlementFunction.includes('colony') || settlementFunction.includes('Refugee') || settlementFunction.includes('enclave')) return 'Habitat'
+  const value = settlementFunction.toLowerCase()
+  if (value.includes('mine') || value.includes('extraction') || value.includes('harvest')) return 'Claim'
+  if (value.includes('refinery') || value.includes('foundry') || value.includes('works')) return 'Works'
+  if (value.includes('freeport') || value.includes('smuggler')) return 'Freeport'
+  if (value.includes('quarantine')) return 'Cordon'
+  if (value.includes('military') || value.includes('naval') || value.includes('weapons')) return 'Bastion'
+  if (value.includes('iggygate') || value.includes('pinchdrive') || value.includes('customs')) return 'Gate'
+  if (value.includes('lab') || value.includes('observ')) return 'Laboratory'
+  if (value.includes('colony') || value.includes('refugee') || value.includes('enclave')) return 'Habitat'
   return 'Station'
 }
 
@@ -2591,12 +2593,13 @@ function generateSettlementName(
   const anchorStem = anchor.name.split(',')[0].replace(/\s+(orbital space|route geometry|traffic pattern|transit geometry)$/i, '')
   const functionDescriptor = settlementDescriptorForFunction(settlementFunction)
   const categoryDescriptor = settlementDescriptorForCategory(siteCategory)
+  const authorityValue = authority.toLowerCase()
   const authorityDescriptor =
-    authority.includes('corp') || authority.includes('Corporate') ? 'Concession' :
-    authority.includes('Military') || authority.includes('navy') ? 'Command' :
-    authority.includes('quarantine') || authority.includes('Quarantine') ? 'Cordon' :
-    authority.includes('council') ? 'Commons' :
-    authority.includes('free') || authority.includes('captain') ? 'Compact' :
+    authorityValue.includes('corp') ? 'Concession' :
+    authorityValue.includes('military') || authorityValue.includes('navy') ? 'Command' :
+    authorityValue.includes('quarantine') ? 'Cordon' :
+    authorityValue.includes('council') ? 'Commons' :
+    authorityValue.includes('free') || authorityValue.includes('captain') ? 'Compact' :
     'Charter'
   const scaleDescriptor =
     scale.includes('million') || scale.includes('Regional') || scale.includes('Large') ? 'Hub' :
@@ -2626,6 +2629,7 @@ function generateSettlements(
     .sort((a, b) => b.presence.score - a.presence.score)
   const targetCount = targetSettlementCount(rng, options, scored, guOverlay, reachability, architectureName)
   const selected = scored.slice(0, targetCount)
+  const nameRegistry = new NameRegistry()
 
   return selected.map(({ body, presence }, index) => {
     const locationOption = chooseSettlementLocation(rng, body, reachability)
@@ -2637,12 +2641,30 @@ function generateSettlements(
     const tagHook = settlementTagHook(rng.fork(`tag-hook-${index + 1}`), tags[0], tags[1])
     const scale = settlementScaleFromRoll(rng, presence)
     const authority = pickOne(rng, settlementAuthorities)
-    const settlementName = generateSettlementName(rng.fork(`settlement-name-${index + 1}`), body, anchor, locationOption.category, settlementFunction, authority, scale)
+    const baseSettlementName = generateSettlementName(rng.fork(`settlement-name-${index + 1}`), body, anchor, locationOption.category, settlementFunction, authority, scale)
+    const settlementId = `settlement-${index + 1}`
+    const settlementName = nameRegistry.uniqueGeneratedName(baseSettlementName, {
+      bodyName: body.name.value,
+      anchorName: anchor.name,
+      anchorKind: anchor.kind,
+      location: locationOption.label,
+      siteCategory: locationOption.category,
+      authority,
+      functionName: settlementFunction,
+      settlementId,
+      ordinal: index + 1,
+    })
     return {
-      id: `settlement-${index + 1}`,
+      id: settlementId,
       bodyId: body.id,
       moonId: anchor.moonId,
-      name: fact(settlementName, 'human-layer', 'Generated settlement name from anchor, function, authority, and scale'),
+      name: fact(
+        settlementName,
+        'human-layer',
+        settlementName === baseSettlementName
+          ? 'Generated settlement name from anchor, function, authority, and scale'
+          : 'Generated settlement name from anchor, function, authority, and scale; duplicate repaired by deterministic name registry'
+      ),
       anchorKind: fact(anchor.kind, 'human-layer', 'Generated site-to-body relationship'),
       anchorName: fact(anchor.name, 'human-layer', 'Generated site-to-body relationship'),
       anchorDetail: fact(anchor.detail, 'human-layer', 'Generated site-to-body relationship'),

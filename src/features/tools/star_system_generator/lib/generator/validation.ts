@@ -405,7 +405,7 @@ export function validateSettlementNames(system: GeneratedSystem): ValidationFind
 
   const duplicateNames = names.filter((name, index) => names.indexOf(name) !== index)
   return [...new Set(duplicateNames)].map((name) => finding({
-    severity: 'warning',
+    severity: 'error',
     code: validationCodes.settlementDuplicateName,
     path: 'settlements.name',
     message: `Settlement name "${name}" repeats within the system.`,

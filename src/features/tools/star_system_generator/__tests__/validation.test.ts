@@ -169,7 +169,7 @@ describe('star system validation contracts', () => {
     expect(findings.map((finding) => finding.code)).toContain('ARCH_MINIMUM_UNSATISFIED')
   })
 
-  it('reports duplicate settlement names without making them hard errors yet', () => {
+  it('reports duplicate settlement names as hard errors after registry repair', () => {
     const findings = validateSettlementNames(system({
       settlements: [
         settlement({ id: 'settlement-1', name: fact('Nadir Hold') }),
@@ -179,7 +179,7 @@ describe('star system validation contracts', () => {
 
     expect(findings).toHaveLength(1)
     expect(findings[0].code).toBe('SETTLEMENT_DUPLICATE_NAME')
-    expect(findings[0].severity).toBe('warning')
+    expect(findings[0].severity).toBe('error')
   })
 
   it('reports incompatible settlement built forms', () => {
