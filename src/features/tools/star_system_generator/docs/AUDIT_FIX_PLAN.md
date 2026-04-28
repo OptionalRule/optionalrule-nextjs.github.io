@@ -105,18 +105,21 @@ Checkpoint commits:
 
 Purpose: improve source coverage and reduce repeated category/detail outputs.
 
+Status: in progress. First checkpoint expands source body-class coverage and replaces provisional moon, belt, and ring shortcuts with source-shaped tables.
+
 Work items:
-- Expand planet class tables toward source d20 coverage by thermal zone.
-- Add missing classes such as carbon-rich furnace worlds, ultra-hot giants, resonant inner-chain worlds, Hycean-like candidates, CO2 ice worlds, small ice giants, super-Jovians, captured eccentric worlds, and additional debris bodies.
+- Expand planet class tables toward source d20 coverage by thermal zone. Completed in checkpoint `feat: expand star system world and moon tables` for the missing class labels called out below.
+- Add missing classes such as carbon-rich furnace worlds, ultra-hot giants, resonant inner-chain worlds, Hycean-like candidates, CO2 ice worlds, small ice giants, super-Jovians, captured eccentric worlds, and additional debris bodies. Completed in checkpoint `feat: expand star system world and moon tables`.
 - Add source-style atmosphere, hydrosphere, geology, climate, radiation, and biosphere modifier rolls instead of mostly direct array picks.
-- Implement moon count tables:
+- Implement moon count tables. Completed in checkpoint `feat: expand star system world and moon tables`:
   - terrestrial 2d6 with modifiers
   - giant d6 major-moon count with modifiers
-- Expand belt and ring subtype generation using source d12 tables.
+- Expand belt and ring subtype generation using source d12 tables. Completed in checkpoint `feat: expand star system world and moon tables`.
 - Ensure body detail text changes when a body is non-planet, artificial, anomalous, or substellar.
 
 Acceptance checks:
 - Audit reports top body-class concentration and warns when one class dominates.
+- Audit reports moon-type and ring-type distributions and warns when one moon type dominates.
 - Tests prove every major thermal-zone table produces several distinct source classes over a seed corpus.
 - Regression tests for hot/cold, envelope, belt, anomaly, moon, and ring invariants pass.
 

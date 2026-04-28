@@ -285,7 +285,8 @@ describe('generateSystem', () => {
     )
 
     expect(classes.has('Failed terraforming site') || classes.has('Trojan settlement zone') || classes.has('GU-active habitable-zone anomaly')).toBe(true)
-    expect(classes.has('Main debris belt') || classes.has('Outer ice belt') || classes.has('Dark refueling body')).toBe(true)
+    expect(classes.has('Carbon-rich furnace world') || classes.has('Hycean-like candidate') || classes.has('Super-Jovian')).toBe(true)
+    expect(classes.has('Metal-rich asteroid belt') || classes.has('Ice-rich belt') || classes.has('Chiral ore belt') || classes.has('Programmable-matter microcluster belt')).toBe(true)
   })
 
   it('generates a fuller orbital profile across frontier seeds', () => {
@@ -713,5 +714,21 @@ describe('generateSystem', () => {
 
     expect(giants.length).toBeGreaterThan(0)
     expect(giants.every((body) => body.giantEconomy?.value.includes('traffic'))).toBe(true)
+  })
+
+  it('uses source moon count and ring tables across sampled systems', () => {
+    const systems = Array.from({ length: 180 }, (_, index) =>
+      generateSystem({ ...options, seed: `d43f9c2e41b8${index.toString(16).padStart(4, '0')}` })
+    )
+    const giants = systems.flatMap((system) => system.bodies.filter((body) => body.category.value === 'gas-giant' || body.category.value === 'ice-giant'))
+    const rings = giants.flatMap((body) => body.rings ? [body.rings] : [])
+    const moons = systems.flatMap((system) => system.bodies.flatMap((body) => body.moons))
+
+    expect(giants.length).toBeGreaterThan(0)
+    expect(giants.some((body) => body.moons.length > 6)).toBe(true)
+    expect(rings.length).toBeGreaterThan(0)
+    expect(new Set(rings.map((ring) => ring.type.value)).size).toBeGreaterThan(3)
+    expect(rings.every((ring) => ring.type.source?.includes('MASS-GU 17 ring type d12'))).toBe(true)
+    expect(moons.every((moon) => moon.scale.source?.includes('MASS-GU 17 moon scale'))).toBe(true)
   })
 })

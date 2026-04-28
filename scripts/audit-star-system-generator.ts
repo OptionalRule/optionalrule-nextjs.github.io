@@ -30,8 +30,11 @@ interface CorpusStats {
   starTypes: Map<string, number>
   starTypesByDistribution: Record<GeneratorDistribution, Map<string, number>>
   architectures: Map<string, number>
+  bodyClasses: Map<string, number>
   categoriesByArchitecture: Map<string, Map<BodyCategory, number>>
   categories: Map<BodyCategory, number>
+  moonTypes: Map<string, number>
+  ringTypes: Map<string, number>
   settlementCategories: Map<string, number>
   settlementCountsByDensity: Record<SettlementDensity, number[]>
   settlementPresenceRolls: Map<number, number>
@@ -544,6 +547,9 @@ function auditSystem(system: GeneratedSystem, findings: Finding[], stats: Corpus
   })
   system.bodies.forEach((body) => {
     increment(stats.categories, body.category.value)
+    increment(stats.bodyClasses, body.bodyClass.value)
+    if (body.rings) increment(stats.ringTypes, body.rings.type.value)
+    body.moons.forEach((moon) => increment(stats.moonTypes, moon.moonType.value))
     nestedIncrement(stats.categoriesByArchitecture, system.architecture.name.value, body.category.value)
   })
   system.settlements.forEach((settlement) => {
@@ -651,6 +657,18 @@ function auditCoverage(stats: CorpusStats, findings: Finding[]): void {
     }
   }
 
+  const bodyClassEntries = [...stats.bodyClasses.entries()]
+  const topBodyClass = bodyClassEntries.sort(([, left], [, right]) => right - left)[0]
+  if (topBodyClass && topBodyClass[1] / stats.bodies > 0.18) {
+    addFinding(findings, 'warning', syntheticSeed, 'bodies.bodyClass', `Body class "${topBodyClass[0]}" accounts for more than 18% of generated bodies.`)
+  }
+
+  const moonTypeEntries = [...stats.moonTypes.entries()]
+  const topMoonType = moonTypeEntries.sort(([, left], [, right]) => right - left)[0]
+  if (topMoonType && topMoonType[1] / stats.moons > 0.2) {
+    addFinding(findings, 'warning', syntheticSeed, 'bodies.moons.moonType', `Moon type "${topMoonType[0]}" accounts for more than 20% of generated moons.`)
+  }
+
   if (!stats.settlementCategories.has('Moon base')) {
     addFinding(findings, 'warning', syntheticSeed, 'settlements.siteCategory', 'Corpus did not produce any moon-base settlements.')
   }
@@ -743,8 +761,11 @@ const stats: CorpusStats = {
     realistic: new Map(),
   },
   architectures: new Map(),
+  bodyClasses: new Map(),
   categoriesByArchitecture: new Map(),
   categories: new Map(),
+  moonTypes: new Map(),
+  ringTypes: new Map(),
   settlementCategories: new Map(),
   settlementCountsByDensity: {
     sparse: [],
@@ -804,6 +825,9 @@ console.log(`Star types: ${formatMap(stats.starTypes)}`)
 console.log(`Frontier star types: ${formatMap(stats.starTypesByDistribution.frontier)}`)
 console.log(`Realistic star types: ${formatMap(stats.starTypesByDistribution.realistic)}`)
 console.log(`Body categories: ${formatMap(stats.categories)}`)
+console.log(`Body classes: ${formatMap(stats.bodyClasses)}`)
+console.log(`Moon types: ${formatMap(stats.moonTypes)}`)
+console.log(`Ring types: ${formatMap(stats.ringTypes)}`)
 console.log(`Settlement categories: ${formatMap(stats.settlementCategories)}`)
 console.log(`Settlement presence rolls: ${formatMap(stats.settlementPresenceRolls)}`)
 console.log(`Settlement presence tiers: ${formatMap(stats.settlementPresenceTiers)}`)
