@@ -38,8 +38,6 @@ export function OrbitalTable({ system, selectedBodyId, onSelectBody }: OrbitalTa
               >
                 <td className="py-3 pr-3 text-[var(--text-secondary)]">
                   <div className="font-mono">{body.orbitAu.value} AU</div>
-                  <div className="mt-1 text-xs text-[var(--text-tertiary)]">{formatOrbitContext(body.orbitAu.value, system)}</div>
-                  <div className="mt-1 text-xs text-[var(--text-tertiary)]">{formatNearestOrbitSpacing(body.id, system)}</div>
                 </td>
                 <td className="py-3 pr-3 font-semibold text-[var(--text-primary)]">
                   <button
@@ -80,46 +78,8 @@ export function formatOrbitContext(orbitAu: number, system: GeneratedSystem): st
   return 'no stellar zone scale'
 }
 
-export function formatNearestOrbitSpacing(bodyId: string, system: GeneratedSystem): string {
-  const bodies = [...system.bodies].sort((left, right) => left.orbitAu.value - right.orbitAu.value)
-  const index = bodies.findIndex((body) => body.id === bodyId)
-  if (index < 0 || bodies.length < 2) return 'no adjacent orbit'
-
-  const body = bodies[index]
-  const neighbors = [bodies[index - 1], bodies[index + 1]].filter(Boolean)
-  const nearest = neighbors
-    .map((neighbor) => ({
-      body: neighbor,
-      gap: Math.abs(neighbor.orbitAu.value - body.orbitAu.value),
-    }))
-    .sort((left, right) => left.gap - right.gap)[0]
-
-  if (!nearest) return 'no adjacent orbit'
-
-  const mutualHill = mutualHillSpacingRatio(body, nearest.body, system)
-  const hillText = mutualHill === null ? '' : ` · ${formatRatio(mutualHill)}x mutual Hill`
-  return `nearest gap ${nearest.gap.toFixed(3)} AU${hillText}`
-}
-
 function formatRatio(value: number): string {
   if (value >= 10) return value.toFixed(0)
   if (value >= 1) return value.toFixed(1)
   return value.toFixed(2)
-}
-
-function mutualHillSpacingRatio(
-  body: GeneratedSystem['bodies'][number],
-  neighbor: GeneratedSystem['bodies'][number],
-  system: GeneratedSystem
-): number | null {
-  const bodyMass = body.physical.massEarth.value
-  const neighborMass = neighbor.physical.massEarth.value
-  if (typeof bodyMass !== 'number' || typeof neighborMass !== 'number' || bodyMass <= 0 || neighborMass <= 0) return null
-
-  const stellarMassEarth = Math.max(system.primary.massSolar.value * 332946, 1)
-  const averageOrbit = (body.orbitAu.value + neighbor.orbitAu.value) / 2
-  const mutualHillRadius = averageOrbit * ((bodyMass + neighborMass) / (3 * stellarMassEarth)) ** (1 / 3)
-  if (mutualHillRadius <= 0) return null
-
-  return Math.abs(body.orbitAu.value - neighbor.orbitAu.value) / mutualHillRadius
 }
