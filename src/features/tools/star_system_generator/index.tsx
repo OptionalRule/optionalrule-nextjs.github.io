@@ -75,7 +75,7 @@ export default function StarSystemGenerator({ className }: StarSystemGeneratorPr
           />
         </div>
         <div id="body">
-          {selectedBody && <BodyDetailPanel body={selectedBody} />}
+          {selectedBody && <BodyDetailPanel body={selectedBody} system={system} />}
         </div>
 
         <div id="gu">

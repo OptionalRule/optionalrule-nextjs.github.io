@@ -36,7 +36,10 @@ export function OrbitalTable({ system, selectedBodyId, onSelectBody }: OrbitalTa
                   body.id === selectedBodyId ? 'bg-[var(--accent-light)]/40' : ''
                 }`}
               >
-                <td className="py-3 pr-3 font-mono text-[var(--text-secondary)]">{body.orbitAu.value} AU</td>
+                <td className="py-3 pr-3 text-[var(--text-secondary)]">
+                  <div className="font-mono">{body.orbitAu.value} AU</div>
+                  <div className="mt-1 text-xs text-[var(--text-tertiary)]">{formatOrbitContext(body.orbitAu.value, system)}</div>
+                </td>
                 <td className="py-3 pr-3 font-semibold text-[var(--text-primary)]">
                   <button
                     type="button"
@@ -66,4 +69,18 @@ export function OrbitalTable({ system, selectedBodyId, onSelectBody }: OrbitalTa
       </div>
     </section>
   )
+}
+
+export function formatOrbitContext(orbitAu: number, system: GeneratedSystem): string {
+  const hzCenter = system.zones.habitableCenterAu.value
+  const snowLine = system.zones.snowLineAu.value
+  if (snowLine > 0 && orbitAu >= snowLine * 0.7) return `${formatRatio(orbitAu / snowLine)}x snow line`
+  if (hzCenter > 0) return `${formatRatio(orbitAu / hzCenter)}x HZ center`
+  return 'no stellar zone scale'
+}
+
+function formatRatio(value: number): string {
+  if (value >= 10) return value.toFixed(0)
+  if (value >= 1) return value.toFixed(1)
+  return value.toFixed(2)
 }

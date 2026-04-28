@@ -1,7 +1,8 @@
-import type { OrbitingBody } from '../types'
+import type { GeneratedSystem, OrbitingBody } from '../types'
 import { ConfidenceBadge } from './ConfidenceBadge'
+import { formatOrbitContext } from './OrbitalTable'
 
-export function BodyDetailPanel({ body }: { body: OrbitingBody }) {
+export function BodyDetailPanel({ body, system }: { body: OrbitingBody; system: GeneratedSystem }) {
   const isAnomaly = body.category.value === 'anomaly'
 
   return (
@@ -10,7 +11,7 @@ export function BodyDetailPanel({ body }: { body: OrbitingBody }) {
         <div>
           <h2 className="text-lg font-semibold text-[var(--text-primary)]">{body.name.value}</h2>
           <p className="text-sm text-[var(--text-tertiary)]">
-            {body.bodyClass.value} · {body.massClass.value} · {body.orbitAu.value} AU
+            {body.bodyClass.value} · {body.massClass.value} · {body.orbitAu.value} AU · {formatOrbitContext(body.orbitAu.value, system)}
           </p>
         </div>
         <ConfidenceBadge confidence={body.name.confidence} />
@@ -20,6 +21,7 @@ export function BodyDetailPanel({ body }: { body: OrbitingBody }) {
         <Detail label={isAnomaly ? 'Scale' : 'Radius'} value={isAnomaly ? `${body.physical.radiusEarth.value} operational scale index` : `${body.physical.radiusEarth.value} Earth radii`} />
         <Detail label="Mass" value={body.physical.massEarth.value === null ? 'Not applicable' : `${body.physical.massEarth.value} Earth masses`} />
         <Detail label="Gravity" value={body.physical.gravityLabel.value} />
+        <Detail label="Orbit" value={`${body.orbitAu.value} AU · ${formatOrbitContext(body.orbitAu.value, system)}`} />
         <Detail label="Period" value={`${body.physical.periodDays.value} days`} />
         <Detail label="Atmosphere" value={body.detail.atmosphere.value} />
         <Detail label="Volatiles" value={body.detail.hydrosphere.value} />

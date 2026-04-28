@@ -46,6 +46,12 @@ interface CorpusStats {
   starTypes: Map<string, number>
   starTypesByDistribution: Record<GeneratorDistribution, Map<string, number>>
   architectures: Map<string, number>
+  outermostAu: number[]
+  outermostByStarType: Map<string, number[]>
+  outermostByArchitecture: Map<string, number[]>
+  outermostHzRatio: number[]
+  outermostSnowLineRatio: number[]
+  suspiciousCompactByArchitecture: Map<string, number>
   bodyClasses: Map<string, number>
   categoriesByArchitecture: Map<string, Map<BodyCategory, number>>
   categories: Map<BodyCategory, number>
@@ -226,6 +232,12 @@ function nestedIncrement<OuterKey, InnerKey>(map: Map<OuterKey, Map<InnerKey, nu
   const innerMap = map.get(outerKey) ?? new Map<InnerKey, number>()
   increment(innerMap, innerKey)
   map.set(outerKey, innerMap)
+}
+
+function nestedPush<OuterKey>(map: Map<OuterKey, number[]>, outerKey: OuterKey, value: number): void {
+  const values = map.get(outerKey) ?? []
+  values.push(value)
+  map.set(outerKey, values)
 }
 
 function makeSeed(options: Omit<GenerationOptions, 'seed'>, index: number): string {
@@ -506,6 +518,13 @@ function auditSettlement(system: GeneratedSystem, settlement: Settlement, settle
   }
 }
 
+function isSuspiciouslyCompact(system: GeneratedSystem, outermostOrbit: number, snowLine: number): boolean {
+  if (system.primary.spectralType.value === 'M dwarf' || system.primary.spectralType.value === 'Brown dwarf/substellar primary') return false
+  if (system.architecture.name.value === 'Compact inner system' || system.architecture.name.value === 'Peas-in-a-pod chain' || system.architecture.name.value === 'Sparse rocky') return false
+  if (snowLine <= 0) return outermostOrbit <= 3.9
+  return outermostOrbit <= 3.9 && outermostOrbit < snowLine * 1.4
+}
+
 function auditSystem(system: GeneratedSystem, findings: Finding[], stats: CorpusStats): void {
   const seed = system.seed
   addValidationFindings(findings, seed, validateSystem(system))
@@ -519,6 +538,17 @@ function auditSystem(system: GeneratedSystem, findings: Finding[], stats: Corpus
   increment(stats.starTypes, system.primary.spectralType.value)
   increment(stats.starTypesByDistribution[system.options.distribution], system.primary.spectralType.value)
   increment(stats.architectures, system.architecture.name.value)
+  const outermostOrbit = Math.max(...system.bodies.map((body) => body.orbitAu.value))
+  const hzCenter = system.zones.habitableCenterAu.value
+  const snowLine = system.zones.snowLineAu.value
+  stats.outermostAu.push(outermostOrbit)
+  nestedPush(stats.outermostByStarType, system.primary.spectralType.value, outermostOrbit)
+  nestedPush(stats.outermostByArchitecture, system.architecture.name.value, outermostOrbit)
+  if (hzCenter > 0) stats.outermostHzRatio.push(outermostOrbit / hzCenter)
+  if (snowLine > 0) stats.outermostSnowLineRatio.push(outermostOrbit / snowLine)
+  if (isSuspiciouslyCompact(system, outermostOrbit, snowLine)) {
+    increment(stats.suspiciousCompactByArchitecture, system.architecture.name.value)
+  }
   increment(stats.reachabilityClasses, system.reachability.className.value)
   increment(stats.guIntensityByPreference[system.options.gu], system.guOverlay.intensity.value)
   increment(stats.guBehaviors, system.guOverlay.bleedBehavior.value)
@@ -729,6 +759,24 @@ function formatMap<Key>(map: Map<Key, number>): string {
     .join(', ')
 }
 
+function percentile(values: number[], quantile: number): number {
+  if (values.length === 0) return 0
+  const sorted = [...values].sort((left, right) => left - right)
+  const index = Math.min(sorted.length - 1, Math.max(0, Math.floor((sorted.length - 1) * quantile)))
+  return sorted[index]
+}
+
+function formatPercentiles(values: number[], unit = ''): string {
+  return `p10 ${percentile(values, 0.1).toFixed(2)}${unit}, p50 ${percentile(values, 0.5).toFixed(2)}${unit}, p90 ${percentile(values, 0.9).toFixed(2)}${unit}`
+}
+
+function formatNestedPercentiles(map: Map<string, number[]>, unit = ''): string {
+  return [...map.entries()]
+    .sort(([left], [right]) => left.localeCompare(right))
+    .map(([key, values]) => `${key}: ${formatPercentiles(values, unit)}`)
+    .join('\n')
+}
+
 function findingCodeSummary(findings: Finding[]): string {
   const codes = new Map<string, number>()
   for (const finding of findings) {
@@ -819,6 +867,12 @@ const stats: CorpusStats = {
     realistic: new Map(),
   },
   architectures: new Map(),
+  outermostAu: [],
+  outermostByStarType: new Map(),
+  outermostByArchitecture: new Map(),
+  outermostHzRatio: [],
+  outermostSnowLineRatio: [],
+  suspiciousCompactByArchitecture: new Map(),
   bodyClasses: new Map(),
   categoriesByArchitecture: new Map(),
   categories: new Map(),
@@ -912,6 +966,10 @@ console.log(`Settlement presence rolls: ${formatMap(stats.settlementPresenceRoll
 console.log(`Settlement presence tiers: ${formatMap(stats.settlementPresenceTiers)}`)
 console.log(`Settlement scales: ${formatMap(stats.settlementScales)}`)
 console.log(`Architectures: ${formatMap(stats.architectures)}`)
+console.log(`Outermost orbit AU percentiles: ${formatPercentiles(stats.outermostAu, ' AU')}`)
+console.log(`Outermost / HZ center percentiles: ${formatPercentiles(stats.outermostHzRatio, 'x')}`)
+console.log(`Outermost / snow-line percentiles: ${formatPercentiles(stats.outermostSnowLineRatio, 'x')}`)
+console.log(`Suspicious compact counts by architecture: ${formatMap(stats.suspiciousCompactByArchitecture) || 'none'}`)
 console.log(`Reachability classes: ${formatMap(stats.reachabilityClasses)}`)
 console.log(`Companion types: ${formatMap(stats.companionTypes)}`)
 console.log(`Companion separations: ${formatMap(stats.companionSeparations)}`)
@@ -927,6 +985,10 @@ console.log(`GU hazards: ${formatMap(stats.guHazards)}`)
 console.log(`GU intensity modifiers: ${formatMap(stats.guIntensityModifiers)}`)
 console.log('Body categories by architecture:')
 console.log(formatNestedCategoryMap(stats.categoriesByArchitecture))
+console.log('Outermost orbit by star type:')
+console.log(formatNestedPercentiles(stats.outermostByStarType, ' AU'))
+console.log('Outermost orbit by architecture:')
+console.log(formatNestedPercentiles(stats.outermostByArchitecture, ' AU'))
 
 if (findings.length > 0) {
   console.log('')

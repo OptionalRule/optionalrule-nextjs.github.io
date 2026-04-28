@@ -7,12 +7,15 @@ export type ArchitectureSlotRole = 'core' | 'support' | 'scar-extra' | 'known-im
 
 export type ArchitectureCountTarget = 'full-planet' | 'minor-body' | 'rocky-chain' | 'giant' | 'anomaly'
 
+export type OrbitBand = 'inner' | 'habitable' | 'snowline' | 'outer' | 'deepOuter' | 'extremeOuter'
+
 export interface ArchitectureSlot {
   id: string
   planKind: BodyPlanKind
   role: ArchitectureSlotRole
   countsToward: ArchitectureCountTarget[]
   requirementId?: string
+  orbitBand?: OrbitBand
   source: string
 }
 
@@ -140,13 +143,21 @@ function targetsForPlanKind(planKind: BodyPlanKind): ArchitectureCountTarget[] {
   return []
 }
 
-function slot(id: string, planKind: BodyPlanKind, role: ArchitectureSlotRole, source: string, requirementId?: string): ArchitectureSlot {
+function slot(
+  id: string,
+  planKind: BodyPlanKind,
+  role: ArchitectureSlotRole,
+  source: string,
+  requirementId?: string,
+  orbitBand?: OrbitBand
+): ArchitectureSlot {
   return {
     id,
     planKind,
     role,
     countsToward: targetsForPlanKind(planKind),
     requirementId,
+    orbitBand,
     source,
   }
 }
@@ -256,35 +267,35 @@ export function buildArchitectureSlots(rng: SeededRng, architectureName: string)
     pushRepeated(slots, weightedCount(rng, [
       { weight: 45, value: 0 },
       { weight: 55, value: 1 },
-    ]), (index) => slot(`failed-remnant-${index + 1}`, failedRemnantKind(rng), 'support', 'Failed system remnant slot'))
-    pushRepeated(slots, rng.int(4, 8), (index) => slot(`failed-debris-${index + 1}`, debrisKind(rng), 'support', 'Failed system debris slot', 'failed-minor-floor'))
-    if (rng.chance(0.1)) slots.push(slot('failed-rogue-extra', 'rogue', 'support', 'Failed system rogue extra'))
+    ]), (index) => slot(`failed-remnant-${index + 1}`, failedRemnantKind(rng), 'support', 'Failed system remnant slot', undefined, rng.chance(0.65) ? 'outer' : 'deepOuter'))
+    pushRepeated(slots, rng.int(4, 8), (index) => slot(`failed-debris-${index + 1}`, debrisKind(rng), 'support', 'Failed system debris slot', 'failed-minor-floor', rng.chance(0.58) ? 'deepOuter' : 'outer'))
+    if (rng.chance(0.1)) slots.push(slot('failed-rogue-extra', 'rogue', 'support', 'Failed system rogue extra', undefined, 'extremeOuter'))
     return slots
   }
 
   if (architectureName === 'Debris-dominated') {
-    pushRepeated(slots, rng.int(0, 2), (index) => slot(`debris-survivor-${index + 1}`, rockySurvivorKind(rng), 'support', 'Debris-dominated survivor slot'))
-    pushRepeated(slots, rng.int(5, 9), (index) => slot(`debris-field-${index + 1}`, debrisKind(rng), 'support', 'Debris-dominated debris slot', 'debris-minor-floor'))
-    if (rng.chance(0.12)) slots.push(slot('debris-giant-extra', giantKind(rng), 'support', 'Debris-dominated giant crossover'))
-    if (rng.chance(0.1)) slots.push(slot('debris-scar-extra', 'anomaly', 'scar-extra', 'Debris-dominated anomaly scar'))
+    pushRepeated(slots, rng.int(0, 2), (index) => slot(`debris-survivor-${index + 1}`, rockySurvivorKind(rng), 'support', 'Debris-dominated survivor slot', undefined, rng.chance(0.75) ? 'inner' : 'habitable'))
+    pushRepeated(slots, rng.int(5, 9), (index) => slot(`debris-field-${index + 1}`, debrisKind(rng), 'support', 'Debris-dominated debris slot', 'debris-minor-floor', rng.chance(0.64) ? 'outer' : 'deepOuter'))
+    if (rng.chance(0.12)) slots.push(slot('debris-giant-extra', giantKind(rng), 'support', 'Debris-dominated giant crossover', undefined, 'snowline'))
+    if (rng.chance(0.1)) slots.push(slot('debris-scar-extra', 'anomaly', 'scar-extra', 'Debris-dominated anomaly scar', undefined, rng.chance(0.5) ? 'outer' : 'deepOuter'))
     return slots
   }
 
   if (architectureName === 'Sparse rocky') {
-    slots.push(slot('sparse-rocky-core-1', corePlanetKind(rng), 'core', 'Sparse rocky required survivor', 'sparse-rocky-survivor'))
-    pushRepeated(slots, rng.int(1, 3), (index) => slot(`sparse-rocky-support-${index + 1}`, rockyOrSuperKind(rng), 'support', 'Sparse rocky survivor support'))
-    pushRepeated(slots, rng.int(0, 2), (index) => slot(`sparse-debris-${index + 1}`, debrisKind(rng), 'support', 'Sparse rocky debris support'))
-    if (rng.chance(0.15)) slots.push(slot('sparse-giant-extra', giantKind(rng), 'support', 'Sparse rocky rare giant'))
-    if (rng.chance(0.1)) slots.push(slot('sparse-unusual-extra', rng.chance(0.55) ? 'sub-neptune' : 'anomaly', 'support', 'Sparse rocky unusual crossover'))
+    slots.push(slot('sparse-rocky-core-1', corePlanetKind(rng), 'core', 'Sparse rocky required survivor', 'sparse-rocky-survivor', rng.chance(0.72) ? 'inner' : 'habitable'))
+    pushRepeated(slots, rng.int(1, 3), (index) => slot(`sparse-rocky-support-${index + 1}`, rockyOrSuperKind(rng), 'support', 'Sparse rocky survivor support', undefined, rng.chance(0.72) ? 'inner' : 'habitable'))
+    pushRepeated(slots, rng.int(0, 2), (index) => slot(`sparse-debris-${index + 1}`, debrisKind(rng), 'support', 'Sparse rocky debris support', undefined, rng.chance(0.55) ? 'outer' : 'deepOuter'))
+    if (rng.chance(0.15)) slots.push(slot('sparse-giant-extra', giantKind(rng), 'support', 'Sparse rocky rare giant', undefined, rng.chance(0.65) ? 'snowline' : 'outer'))
+    if (rng.chance(0.1)) slots.push(slot('sparse-unusual-extra', rng.chance(0.55) ? 'sub-neptune' : 'anomaly', 'support', 'Sparse rocky unusual crossover', undefined, rng.chance(0.65) ? 'habitable' : 'outer'))
     return slots
   }
 
   if (architectureName === 'Compact inner system') {
     const coreCount = rng.int(5, 8)
-    pushRepeated(slots, 3, (index) => slot(`compact-core-${index + 1}`, corePlanetKind(rng), 'core', 'Compact inner required rocky-chain core', 'compact-rocky-core'))
-    pushRepeated(slots, coreCount - 3, (index) => slot(`compact-support-${index + 1}`, planetLikeKind(rng), 'support', 'Compact inner supporting planet slot'))
-    pushRepeated(slots, rng.int(0, 1), (index) => slot(`compact-debris-${index + 1}`, rng.chance(0.7) ? 'belt' : 'dwarf', 'support', 'Compact inner limited debris'))
-    if (rng.chance(0.08)) slots.push(slot('compact-giant-extra', giantKind(rng), 'support', 'Compact inner rare giant'))
+    pushRepeated(slots, 3, (index) => slot(`compact-core-${index + 1}`, corePlanetKind(rng), 'core', 'Compact inner required rocky-chain core', 'compact-rocky-core', index === 2 ? 'habitable' : 'inner'))
+    pushRepeated(slots, coreCount - 3, (index) => slot(`compact-support-${index + 1}`, planetLikeKind(rng), 'support', 'Compact inner supporting planet slot', undefined, rng.chance(0.76) ? 'inner' : 'habitable'))
+    pushRepeated(slots, rng.int(0, 1), (index) => slot(`compact-debris-${index + 1}`, rng.chance(0.7) ? 'belt' : 'dwarf', 'support', 'Compact inner limited debris', undefined, rng.chance(0.75) ? 'habitable' : 'snowline'))
+    if (rng.chance(0.08)) slots.push(slot('compact-giant-extra', giantKind(rng), 'support', 'Compact inner rare giant', undefined, 'snowline'))
     return slots
   }
 
@@ -295,51 +306,51 @@ export function buildArchitectureSlots(rng: SeededRng, architectureName: string)
       { weight: 20, value: 'sub-neptune' as const },
     ])
     const chainCount = rng.int(4, 7)
-    pushRepeated(slots, 4, (index) => slot(`peas-core-${index + 1}`, family, 'core', 'Peas-in-a-pod required chain core', 'peas-rocky-chain'))
-    pushRepeated(slots, chainCount - 4, (index) => slot(`peas-support-${index + 1}`, rng.chance(0.86) ? family : planetLikeKind(rng), 'support', 'Peas-in-a-pod supporting chain slot'))
-    pushRepeated(slots, rng.int(0, 1), (index) => slot(`peas-debris-${index + 1}`, debrisKind(rng), 'support', 'Peas-in-a-pod limited debris'))
-    if (rng.chance(0.08)) slots.push(slot('peas-giant-extra', giantKind(rng), 'support', 'Peas-in-a-pod rare giant'))
+    pushRepeated(slots, 4, (index) => slot(`peas-core-${index + 1}`, family, 'core', 'Peas-in-a-pod required chain core', 'peas-rocky-chain', index >= 2 ? 'habitable' : 'inner'))
+    pushRepeated(slots, chainCount - 4, (index) => slot(`peas-support-${index + 1}`, rng.chance(0.86) ? family : planetLikeKind(rng), 'support', 'Peas-in-a-pod supporting chain slot', undefined, rng.chance(0.55) ? 'inner' : 'habitable'))
+    pushRepeated(slots, rng.int(0, 1), (index) => slot(`peas-debris-${index + 1}`, debrisKind(rng), 'support', 'Peas-in-a-pod limited debris', undefined, 'snowline'))
+    if (rng.chance(0.08)) slots.push(slot('peas-giant-extra', giantKind(rng), 'support', 'Peas-in-a-pod rare giant', undefined, 'snowline'))
     return slots
   }
 
   if (architectureName === 'Solar-ish mixed') {
-    pushRepeated(slots, rng.int(2, 5), (index) => slot(`solarish-inner-${index + 1}`, rockyOrSuperKind(rng), 'support', 'Solar-ish inner rocky slot'))
+    pushRepeated(slots, rng.int(2, 5), (index) => slot(`solarish-inner-${index + 1}`, rockyOrSuperKind(rng), 'support', 'Solar-ish inner rocky slot', undefined, rng.chance(0.68) ? 'inner' : 'habitable'))
     pushRepeated(slots, weightedCount(rng, [
       { weight: 12, value: 0 },
       { weight: 48, value: 1 },
       { weight: 30, value: 2 },
       { weight: 10, value: 3 },
-    ]), (index) => slot(`solarish-belt-${index + 1}`, rng.chance(0.7) ? 'belt' : 'ice-belt', 'support', 'Solar-ish belt slot'))
+    ]), (index) => slot(`solarish-belt-${index + 1}`, rng.chance(0.7) ? 'belt' : 'ice-belt', 'support', 'Solar-ish belt slot', undefined, index === 0 ? 'snowline' : 'outer'))
     const giantCount = weightedCount(rng, [
       { weight: 42, value: 1 },
       { weight: 38, value: 2 },
       { weight: 16, value: 3 },
       { weight: 4, value: 4 },
     ])
-    slots.push(slot('solarish-giant-core-1', 'gas-giant', 'core', 'Solar-ish required giant', 'solarish-giant-floor'))
-    pushRepeated(slots, giantCount - 1, (index) => slot(`solarish-giant-support-${index + 1}`, giantKind(rng), 'support', 'Solar-ish giant support'))
-    pushRepeated(slots, rng.int(1, 5), (index) => slot(`solarish-outer-${index + 1}`, debrisKind(rng), 'support', 'Solar-ish outer minor-body slot'))
-    if (rng.chance(0.14)) slots.push(slot('solarish-rogue-extra', 'rogue', 'support', 'Solar-ish rogue extra'))
-    if (rng.chance(0.08)) slots.push(slot('solarish-scar-extra', 'anomaly', 'scar-extra', 'Solar-ish anomaly scar'))
+    slots.push(slot('solarish-giant-core-1', 'gas-giant', 'core', 'Solar-ish required giant', 'solarish-giant-floor', 'snowline'))
+    pushRepeated(slots, giantCount - 1, (index) => slot(`solarish-giant-support-${index + 1}`, giantKind(rng), 'support', 'Solar-ish giant support', undefined, index === 0 ? 'outer' : rng.chance(0.65) ? 'outer' : 'deepOuter'))
+    pushRepeated(slots, rng.int(1, 5), (index) => slot(`solarish-outer-${index + 1}`, debrisKind(rng), 'support', 'Solar-ish outer minor-body slot', undefined, rng.chance(0.68) ? 'outer' : 'deepOuter'))
+    if (rng.chance(0.14)) slots.push(slot('solarish-rogue-extra', 'rogue', 'support', 'Solar-ish rogue extra', undefined, 'extremeOuter'))
+    if (rng.chance(0.08)) slots.push(slot('solarish-scar-extra', 'anomaly', 'scar-extra', 'Solar-ish anomaly scar', undefined, rng.chance(0.5) ? 'outer' : 'deepOuter'))
     return slots
   }
 
   if (architectureName === 'Migrated giant') {
-    slots.push(slot('migrated-giant-core-1', 'gas-giant', 'core', 'Migrated giant required giant', 'migrated-giant-floor'))
-    pushRepeated(slots, rng.int(1, 4), (index) => slot(`migrated-survivor-${index + 1}`, rockySurvivorKind(rng), 'support', 'Migrated giant disrupted survivor'))
-    pushRepeated(slots, rng.int(1, 4), (index) => slot(`migrated-outer-${index + 1}`, rng.chance(0.35) ? giantKind(rng) : debrisKind(rng), 'support', 'Migrated giant outer remnant'))
-    if (rng.chance(0.25)) slots.splice(rng.int(0, slots.length - 1), 0, slot('migrated-belt-extra', 'belt', 'support', 'Migrated giant injected belt'))
-    if (rng.chance(0.15)) slots.push(slot('migrated-scar-extra', 'anomaly', 'scar-extra', 'Migrated giant anomaly scar'))
+    slots.push(slot('migrated-giant-core-1', 'gas-giant', 'core', 'Migrated giant required giant', 'migrated-giant-floor', rng.chance(0.76) ? 'inner' : 'habitable'))
+    pushRepeated(slots, rng.int(1, 4), (index) => slot(`migrated-survivor-${index + 1}`, rockySurvivorKind(rng), 'support', 'Migrated giant disrupted survivor', undefined, rng.chance(0.65) ? 'inner' : 'habitable'))
+    pushRepeated(slots, rng.int(1, 4), (index) => slot(`migrated-outer-${index + 1}`, rng.chance(0.35) ? giantKind(rng) : debrisKind(rng), 'support', 'Migrated giant outer remnant', undefined, rng.chance(0.62) ? 'outer' : 'deepOuter'))
+    if (rng.chance(0.25)) slots.splice(rng.int(0, slots.length - 1), 0, slot('migrated-belt-extra', 'belt', 'support', 'Migrated giant injected belt', undefined, 'snowline'))
+    if (rng.chance(0.15)) slots.push(slot('migrated-scar-extra', 'anomaly', 'scar-extra', 'Migrated giant anomaly scar', undefined, rng.chance(0.5) ? 'outer' : 'deepOuter'))
     return slots
   }
 
-  pushRepeated(slots, rng.int(1, 4), (index) => slot(`giant-rich-survivor-${index + 1}`, rockySurvivorKind(rng), 'support', 'Giant-rich survivor'))
-  pushRepeated(slots, 2, (index) => slot(`giant-rich-core-${index + 1}`, giantKind(rng), 'core', 'Giant-rich required giant', 'giant-rich-floor'))
-  pushRepeated(slots, rng.int(0, 3), (index) => slot(`giant-rich-support-${index + 1}`, giantKind(rng), 'support', 'Giant-rich supporting giant'))
-  pushRepeated(slots, rng.int(2, 5), (index) => slot(`giant-rich-debris-${index + 1}`, debrisKind(rng), 'support', 'Giant-rich debris'))
-  if (rng.chance(0.25)) slots.splice(0, 0, slot('giant-rich-inner-giant-extra', giantKind(rng), 'support', 'Giant-rich inner giant extra'))
-  if (rng.chance(0.25)) slots.push(slot('giant-rich-rogue-extra', 'rogue', 'support', 'Giant-rich rogue extra'))
-  if (rng.chance(0.28)) slots.push(slot('giant-rich-scar-extra', 'anomaly', 'scar-extra', 'Giant-rich anomaly scar'))
+  pushRepeated(slots, rng.int(1, 4), (index) => slot(`giant-rich-survivor-${index + 1}`, rockySurvivorKind(rng), 'support', 'Giant-rich survivor', undefined, rng.chance(0.7) ? 'inner' : 'habitable'))
+  pushRepeated(slots, 2, (index) => slot(`giant-rich-core-${index + 1}`, giantKind(rng), 'core', 'Giant-rich required giant', 'giant-rich-floor', index === 0 ? 'snowline' : 'outer'))
+  pushRepeated(slots, rng.int(0, 3), (index) => slot(`giant-rich-support-${index + 1}`, giantKind(rng), 'support', 'Giant-rich supporting giant', undefined, rng.chance(0.75) ? 'outer' : 'deepOuter'))
+  pushRepeated(slots, rng.int(2, 5), (index) => slot(`giant-rich-debris-${index + 1}`, debrisKind(rng), 'support', 'Giant-rich debris', undefined, rng.chance(0.58) ? 'outer' : 'deepOuter'))
+  if (rng.chance(0.25)) slots.splice(0, 0, slot('giant-rich-inner-giant-extra', giantKind(rng), 'support', 'Giant-rich inner giant extra', undefined, 'habitable'))
+  if (rng.chance(0.25)) slots.push(slot('giant-rich-rogue-extra', 'rogue', 'support', 'Giant-rich rogue extra', undefined, 'extremeOuter'))
+  if (rng.chance(0.28)) slots.push(slot('giant-rich-scar-extra', 'anomaly', 'scar-extra', 'Giant-rich anomaly scar', undefined, rng.chance(0.5) ? 'outer' : 'deepOuter'))
   return slots
 }
 
@@ -418,16 +429,26 @@ export function replacementSlotsForUnsatisfiedRequirements(satisfaction: Archite
   for (const result of satisfaction) {
     if (result.passed || result.deficit <= 0 || !result.replacementKind) continue
     const replacementKind = result.replacementKind
+    const replacementBand = replacementOrbitBand(result.requirementId)
     pushRepeated(replacements, result.deficit, (index) =>
       slot(
         `${result.requirementId}-replacement-${index + 1}`,
         replacementKind,
         'replacement',
         `Architecture replacement for ${result.label}`,
-        result.requirementId
+        result.requirementId,
+        replacementBand
       )
     )
   }
 
   return replacements
+}
+
+function replacementOrbitBand(requirementId: string): OrbitBand | undefined {
+  if (requirementId === 'compact-rocky-core' || requirementId === 'peas-rocky-chain') return 'inner'
+  if (requirementId === 'solarish-giant-floor' || requirementId === 'giant-rich-floor') return 'snowline'
+  if (requirementId === 'failed-minor-floor' || requirementId === 'debris-minor-floor') return 'outer'
+  if (requirementId === 'sparse-rocky-survivor' || requirementId === 'migrated-giant-floor') return 'habitable'
+  return undefined
 }

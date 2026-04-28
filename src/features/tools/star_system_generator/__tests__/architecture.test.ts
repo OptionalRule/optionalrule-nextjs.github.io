@@ -60,6 +60,7 @@ describe('architecture slot contracts', () => {
     expect(peasCore).toHaveLength(4)
     expect([...compactCore, ...peasCore].every((slot) => slot.countsToward.includes('rocky-chain'))).toBe(true)
     expect([...compactCore, ...peasCore].some((slot) => slot.planKind === 'anomaly')).toBe(false)
+    expect([...compactCore, ...peasCore].every((slot) => slot.orbitBand === 'inner' || slot.orbitBand === 'habitable')).toBe(true)
   })
 
   it('turns unsatisfied minimums into deterministic replacement slots', () => {
@@ -79,6 +80,7 @@ describe('architecture slot contracts', () => {
       ['compact-rocky-core-replacement-2', 'rocky', 'replacement'],
       ['compact-rocky-core-replacement-3', 'rocky', 'replacement'],
     ])
+    expect(replacements.every((slot) => slot.orbitBand === 'inner')).toBe(true)
   })
 
   it('preserves locked imported bodies and adds replacement core bodies when imports consume compact slots', () => {
