@@ -16,7 +16,7 @@ import type {
   SystemPhenomenon,
 } from '../../types'
 import { calculateHabitableZone, calculateInsolation, calculateSnowLine, classifyThermalZone, roundTo } from './calculations'
-import { d12, d20, d100, pickOne, pickTable, twoD6 } from './dice'
+import { d8, d12, d20, d100, pickOne, pickTable, twoD6 } from './dice'
 import { createSeededRng, type SeededRng } from './rng'
 import {
   ageStates,
@@ -396,23 +396,89 @@ const traitOptions = [
   'old first-wave traffic',
 ] as const
 
-const atmospheres = ['None / hard vacuum', 'Trace exosphere', 'Thin CO2/N2', 'Moderate inert atmosphere', 'Moderate toxic atmosphere', 'Dense greenhouse', 'Hydrogen/helium envelope', 'Chiral-active atmosphere'] as const
+const atmosphereTable = [
+  { min: 1, max: 1, value: 'None / hard vacuum' },
+  { min: 2, max: 2, value: 'Trace exosphere' },
+  { min: 3, max: 3, value: 'Thin CO2/N2' },
+  { min: 4, max: 4, value: 'Thin but usable with pressure gear' },
+  { min: 5, max: 5, value: 'Moderate inert atmosphere' },
+  { min: 6, max: 6, value: 'Moderate toxic atmosphere' },
+  { min: 7, max: 7, value: 'Dense CO2/N2' },
+  { min: 8, max: 8, value: 'Dense greenhouse' },
+  { min: 9, max: 9, value: 'Steam atmosphere' },
+  { min: 10, max: 10, value: 'Sulfur/chlorine/ammonia haze' },
+  { min: 11, max: 11, value: 'Hydrogen/helium envelope' },
+  { min: 12, max: 12, value: 'Chiral-active or GU-distorted atmosphere' },
+]
 const extremeHotAtmospheres = ['None / hard vacuum', 'Trace exosphere', 'Rock-vapor atmosphere', 'Metal vapor atmosphere', 'Chiral-active atmosphere'] as const
-const hotAtmospheres = ['Trace exosphere', 'Thin CO2/N2', 'Moderate toxic atmosphere', 'Dense greenhouse', 'Steam atmosphere', 'Sulfur/chlorine haze'] as const
-const coldAtmospheres = ['None / hard vacuum', 'Trace exosphere', 'Thin CO2/N2', 'Moderate inert atmosphere', 'Nitrogen/methane haze', 'Chiral-active atmosphere'] as const
-const hydrospheres = ['Bone dry', 'Subsurface ice', 'Polar caps / buried glaciers', 'Briny aquifers', 'Local seas', 'Ocean-continent balance', 'Ice-shell subsurface ocean', 'Hydrocarbon lakes/seas'] as const
+const hydrosphereTable = [
+  { min: 1, max: 1, value: 'Bone dry' },
+  { min: 2, max: 2, value: 'Hydrated minerals only' },
+  { min: 3, max: 3, value: 'Subsurface ice' },
+  { min: 4, max: 4, value: 'Polar caps / buried glaciers' },
+  { min: 5, max: 5, value: 'Briny aquifers' },
+  { min: 6, max: 6, value: 'Local seas' },
+  { min: 7, max: 7, value: 'Ocean-continent balance' },
+  { min: 8, max: 8, value: 'Global ocean' },
+  { min: 9, max: 9, value: 'High-pressure deep ocean' },
+  { min: 10, max: 10, value: 'Ice-shell subsurface ocean' },
+  { min: 11, max: 11, value: 'Hydrocarbon lakes/seas' },
+  { min: 12, max: 12, value: 'Exotic solvent or GU-stabilized fluid chemistry' },
+]
 const extremeHotVolatiles = ['Bone dry', 'Hydrated minerals only', 'Vaporized volatile traces', 'Nightside mineral frost'] as const
-const hotVolatiles = ['Bone dry', 'Hydrated minerals only', 'Deep briny aquifers', 'Steam-locked volatile cycle', 'Polar remnant ice'] as const
-const geologies = ['Dead interior', 'Ancient cratered crust', 'Low volcanism', 'Static lid', 'Active volcanism', 'Plate tectonic analogue', 'Cryovolcanism', 'Tidal heating'] as const
+const geologyTable = [
+  { min: 1, max: 1, value: 'Dead interior' },
+  { min: 2, max: 2, value: 'Ancient cratered crust' },
+  { min: 3, max: 3, value: 'Low volcanism' },
+  { min: 4, max: 4, value: 'Static lid' },
+  { min: 5, max: 5, value: 'Active volcanism' },
+  { min: 6, max: 6, value: 'Plate tectonic analogue' },
+  { min: 7, max: 7, value: 'Supercontinent cycle' },
+  { min: 8, max: 8, value: 'Cryovolcanism' },
+  { min: 9, max: 9, value: 'Tidal heating' },
+  { min: 10, max: 10, value: 'Extreme plume provinces' },
+  { min: 11, max: 11, value: 'Global resurfacing' },
+  { min: 12, max: 12, value: 'Programmable-matter geological behavior' },
+]
 const envelopeGeologies = ['Deep atmospheric circulation', 'Metallic hydrogen interior', 'Layered volatile mantle', 'Magnetosphere-driven weather'] as const
+const climateSourceTable = [
+  { min: 1, max: 1, value: 'Runaway greenhouse' },
+  { min: 2, max: 2, value: 'Moist greenhouse edge' },
+  { min: 3, max: 3, value: 'Snowball' },
+  { min: 4, max: 4, value: 'Cold desert' },
+  { min: 5, max: 5, value: 'Hot desert' },
+  { min: 6, max: 6, value: 'Eyeball world' },
+  { min: 7, max: 7, value: 'Terminator belt' },
+  { min: 8, max: 8, value: 'Permanent storm tracks' },
+  { min: 9, max: 9, value: 'Global monsoon' },
+  { min: 10, max: 10, value: 'Hypercanes' },
+  { min: 11, max: 11, value: 'Twilight ocean' },
+  { min: 12, max: 12, value: 'Aerosol winter' },
+  { min: 13, max: 13, value: 'Thin-air alpine world' },
+  { min: 14, max: 14, value: 'Dense lowland pressure seas' },
+  { min: 15, max: 15, value: 'Methane cycle' },
+  { min: 16, max: 16, value: 'CO2 glacier cycle' },
+  { min: 17, max: 17, value: 'Chiral cloud chemistry' },
+  { min: 18, max: 18, value: 'Dark-sector gravity tides' },
+  { min: 19, max: 19, value: 'Artificial climate lattice' },
+  { min: 20, max: 20, value: 'Recently failed terraforming climate' },
+]
 const extremeHotClimateTags = ['Runaway greenhouse', 'Hot desert', 'Dayside glass fields', 'Nightside mineral frost', 'Hypercanes', 'Chiral cloud chemistry'] as const
 const hotClimateTags = ['Runaway greenhouse', 'Moist greenhouse edge', 'Hot desert', 'Permanent storm tracks', 'Hypercanes', 'Aerosol winter'] as const
 const temperateClimateTags = ['Cold desert', 'Hot desert', 'Eyeball world', 'Terminator belt', 'Permanent storm tracks', 'Global monsoon', 'Twilight ocean', 'Recently failed terraforming climate'] as const
 const coldClimateTags = ['Snowball', 'Cold desert', 'Aerosol winter', 'Methane cycle', 'CO2 glacier cycle', 'Dark-sector gravity tides'] as const
 const extremeHotEnvelopeClimateTags = ['Permanent storm tracks', 'Hypercanes', 'Chiral cloud chemistry', 'Dark-sector gravity tides'] as const
 const envelopeClimateTags = ['Permanent storm tracks', 'Hypercanes', 'Methane cycle', 'Chiral cloud chemistry', 'Dark-sector gravity tides'] as const
-const radiationEnvironments = ['Benign', 'Manageable', 'Chronic exposure', 'Storm-dependent hazard', 'Severe radiation belts', 'Flare-lethal surface', 'Electronics-disruptive metric/radiation mix'] as const
-const highRadiationEnvironments = ['Chronic exposure', 'Storm-dependent hazard', 'Severe radiation belts', 'Flare-lethal surface', 'Electronics-disruptive metric/radiation mix', 'Only deep shielded habitats survive'] as const
+const radiationTable = [
+  { min: 1, max: 1, value: 'Benign' },
+  { min: 2, max: 2, value: 'Manageable' },
+  { min: 3, max: 3, value: 'Chronic exposure' },
+  { min: 4, max: 4, value: 'Storm-dependent hazard' },
+  { min: 5, max: 5, value: 'Severe radiation belts' },
+  { min: 6, max: 6, value: 'Flare-lethal surface' },
+  { min: 7, max: 7, value: 'Electronics-disruptive metric/radiation mix' },
+  { min: 8, max: 8, value: 'Only deep shielded habitats survive' },
+]
 const biospheres = ['Sterile', 'Prebiotic chemistry', 'Ambiguous biosignatures', 'Microbial life', 'Extremophile microbial ecology', 'Simple macroscopic non-sapient life'] as const
 const moonTypes = ['Airless rock', 'Cratered ice-rock', 'Captured asteroid', 'Captured dwarf', 'Subsurface ocean moon', 'Thick ice-shell moon', 'Cryovolcanic moon', 'Volcanic tidal moon', 'Dense-atmosphere moon', 'Hydrocarbon moon', 'Habitable-zone moon', 'Radiation-scorched inner moon', 'Ring-shepherd moon', 'Chiral ice moon', 'Dark-sector density moon', 'Programmable regolith moon', 'Former settlement moon', 'Active mining moon', 'Quarantine moon', 'Moving bleed node moon'] as const
 const moonScales = ['minor captured moonlet', 'small major moon', 'mid-sized icy moon', 'large differentiated moon', 'planet-scale major moon'] as const
@@ -953,12 +1019,13 @@ function applyModernExoplanetFilters(
   previous: FilteredWorldClass | null
 ): FilteredWorldClass {
   let current: FilteredWorldClass = { bodyClass, physical, filterNotes: [] }
-  current = applyHotNeptuneDesertFilter(rng, thermalZone, current)
+  const preservePlannedGiant = architectureName === 'Giant-rich or chaotic' && (bodyClass.category === 'gas-giant' || bodyClass.category === 'ice-giant')
+  if (!preservePlannedGiant) current = applyHotNeptuneDesertFilter(rng, thermalZone, current)
   current = applyRadiusValleyFilter(rng, current)
   current = applyPeasInPodFilter(rng, architectureName, thermalZone, previous, current)
-  current = applyHotNeptuneDesertFilter(rng, thermalZone, current)
+  if (!preservePlannedGiant) current = applyHotNeptuneDesertFilter(rng, thermalZone, current)
   current = applyRadiusValleyFilter(rng, current)
-  current = applyHotNeptuneDesertFilter(rng, thermalZone, current)
+  if (!preservePlannedGiant) current = applyHotNeptuneDesertFilter(rng, thermalZone, current)
   return current
 }
 
@@ -993,8 +1060,99 @@ function supportsComplexSurfaceEnvironment(category: BodyCategory): boolean {
   return category === 'rocky-planet' || category === 'super-earth'
 }
 
+function clampTableRoll(roll: number, max: number): number {
+  return Math.max(1, Math.min(max, roll))
+}
+
+function isHighActivityStar(primary: Star): boolean {
+  return ['Flare-prone', 'Violent flare cycle', 'Extreme activity / metric-amplified events'].includes(primary.activity.value)
+}
+
+function isVolatileRichWorld(bodyClass: WorldClassOption, category: BodyCategory, thermalZone: string): boolean {
+  return (
+    category === 'sub-neptune' ||
+    category === 'gas-giant' ||
+    category === 'ice-giant' ||
+    thermalZone === 'Cold' ||
+    thermalZone === 'Cryogenic' ||
+    thermalZone === 'Dark' ||
+    bodyClass.className.includes('ocean') ||
+    bodyClass.className.includes('Ocean') ||
+    bodyClass.className.includes('Hycean') ||
+    bodyClass.className.includes('Ice') ||
+    bodyClass.className.includes('Hydrogen')
+  )
+}
+
+function isArtificialOrTerraformed(bodyClass: WorldClassOption): boolean {
+  return (
+    bodyClass.className.includes('Artificial') ||
+    bodyClass.className.includes('Terraforming') ||
+    bodyClass.className.includes('terraformed') ||
+    bodyClass.className.includes('facility') ||
+    bodyClass.className.includes('platform')
+  )
+}
+
+function rollGeology(rng: SeededRng, category: BodyCategory, thermalZone: string, bodyClass: WorldClassOption): string {
+  if (category === 'belt') return 'Minor-body rubble and collision families'
+  if (category === 'sub-neptune' || category === 'gas-giant' || category === 'ice-giant') return pickOne(rng, envelopeGeologies)
+
+  let roll = d12(rng)
+  if (thermalZone === 'Furnace' || thermalZone === 'Inferno' || thermalZone === 'Hot') roll += 1
+  if (thermalZone === 'Cold' || thermalZone === 'Cryogenic' || thermalZone === 'Dark') roll += 1
+  if (bodyClass.className.includes('Tidal') || bodyClass.className.includes('Volcanic') || bodyClass.className.includes('Cryovolcanic')) roll += 2
+  if (bodyClass.className.includes('Programmable') || bodyClass.className.includes('GU')) roll += 2
+
+  return pickTable(rng, clampTableRoll(roll, 12), geologyTable)
+}
+
+function rollAtmosphere(
+  rng: SeededRng,
+  category: BodyCategory,
+  thermalZone: string,
+  primary: Star,
+  bodyClass: WorldClassOption,
+  physical: BodyPhysicalHints,
+  geology: string
+): string {
+  if (category === 'belt') return 'None / dispersed volatiles'
+  if (category === 'sub-neptune' || category === 'gas-giant' || category === 'ice-giant') {
+    return pickTable(rng, clampTableRoll(d12(rng) + 3, 12), atmosphereTable)
+  }
+  if (extremeHotThermalZones.has(thermalZone)) return pickOne(rng, extremeHotAtmospheres)
+
+  let roll = d12(rng)
+  if (category === 'super-earth') roll += 1
+  if (isVolatileRichWorld(bodyClass, category, thermalZone)) roll += 1
+  if (physical.radiusEarth.value < 0.8 || category === 'dwarf-body') roll -= 1
+  if (thermalZone === 'Hot') roll -= 1
+  if (isHighActivityStar(primary)) roll -= primary.activity.value === 'Extreme activity / metric-amplified events' ? 3 : 2
+  if (geology === 'Active volcanism' || geology === 'Extreme plume provinces' || geology === 'Global resurfacing') roll += 1
+  if (isArtificialOrTerraformed(bodyClass)) roll += 1
+
+  return pickTable(rng, clampTableRoll(roll, 12), atmosphereTable)
+}
+
+function rollHydrosphere(rng: SeededRng, category: BodyCategory, thermalZone: string, bodyClass: WorldClassOption): string {
+  if (category === 'belt') return pickOne(rng, ['Subsurface ice', 'Cometary volatiles', 'Hydrated minerals only'])
+  if (category === 'sub-neptune' || category === 'gas-giant' || category === 'ice-giant') {
+    return pickOne(rng, ['Deep atmospheric volatile layers', 'High-pressure condensate decks', 'No accessible surface volatiles'])
+  }
+  if (extremeHotThermalZones.has(thermalZone)) return pickOne(rng, extremeHotVolatiles)
+
+  let roll = d12(rng)
+  if (thermalZone === 'Hot') roll -= 2
+  if (thermalZone === 'Cold' || thermalZone === 'Cryogenic' || thermalZone === 'Dark') roll += 2
+  if (bodyClass.className.includes('Ocean') || bodyClass.className.includes('Waterworld') || bodyClass.className.includes('Hycean')) roll += 3
+  if (bodyClass.className.includes('Dry') || bodyClass.className.includes('desert') || bodyClass.className.includes('Airless')) roll -= 3
+  if (bodyClass.className.includes('Hydrogen') || bodyClass.className.includes('Exotic')) roll += 1
+
+  return pickTable(rng, clampTableRoll(roll, 12), hydrosphereTable)
+}
+
 function generateClimate(rng: SeededRng, category: BodyCategory, thermalZone: string, count: number) {
-  const climateTable =
+  const climateOptions =
     thermalZone === 'Furnace' || thermalZone === 'Inferno'
       ? category === 'gas-giant' || category === 'ice-giant' || category === 'sub-neptune'
         ? extremeHotEnvelopeClimateTags
@@ -1007,15 +1165,22 @@ function generateClimate(rng: SeededRng, category: BodyCategory, thermalZone: st
             ? temperateClimateTags
             : coldClimateTags
 
-  return Array.from({ length: count }, () => fact(pickOne(rng, climateTable), 'inferred', 'MASS-GU climate tag table'))
+  return Array.from({ length: count }, () => {
+    const sourceClimate = pickTable(rng, d20(rng), climateSourceTable)
+    const value = (climateOptions as readonly string[]).includes(sourceClimate) ? sourceClimate : pickOne(rng, climateOptions)
+    return fact(value, 'inferred', 'MASS-GU climate tag d20 table with thermal-zone constraints')
+  })
 }
 
 function generateRadiation(rng: SeededRng, category: BodyCategory, thermalZone: string, primary: Star): string {
   const isEnvelopeWorld = category === 'sub-neptune' || category === 'gas-giant' || category === 'ice-giant'
-  const isHighActivity = ['Flare-prone', 'Violent flare cycle', 'Extreme activity / metric-amplified events'].includes(primary.activity.value)
-  if (isEnvelopeWorld) return pickOne(rng, ['Severe radiation belts', 'Storm-dependent hazard', 'Electronics-disruptive metric/radiation mix'])
-  if (isHighActivity || thermalZone === 'Furnace' || thermalZone === 'Inferno') return pickOne(rng, highRadiationEnvironments)
-  return pickOne(rng, radiationEnvironments)
+  let roll = d8(rng)
+  if (isEnvelopeWorld) roll += 2
+  if (isHighActivityStar(primary)) roll += primary.activity.value === 'Extreme activity / metric-amplified events' ? 3 : 2
+  if (thermalZone === 'Furnace' || thermalZone === 'Inferno') roll += 2
+  if (thermalZone === 'Hot') roll += 1
+
+  return pickTable(rng, clampTableRoll(roll, 8), radiationTable)
 }
 
 function generateBiosphere(rng: SeededRng, category: BodyCategory, thermalZone: string, detail: Omit<PlanetaryDetail, 'biosphere'>, primary: Star): string {
@@ -1045,7 +1210,14 @@ function generateBiosphere(rng: SeededRng, category: BodyCategory, thermalZone: 
   return pickOne(rng, biospheres.filter((value) => value !== 'Sterile' && value !== 'Prebiotic chemistry'))
 }
 
-function generateDetail(rng: SeededRng, category: BodyCategory, thermalZone: string, primary: Star): PlanetaryDetail {
+function generateDetail(
+  rng: SeededRng,
+  bodyClass: WorldClassOption,
+  physical: BodyPhysicalHints,
+  thermalZone: string,
+  primary: Star
+): PlanetaryDetail {
+  const category = bodyClass.category
   if (category === 'anomaly') {
     const isFacilityLike = rng.chance(0.45)
     const detailWithoutBiosphere = {
@@ -1086,54 +1258,32 @@ function generateDetail(rng: SeededRng, category: BodyCategory, thermalZone: str
 
   const isEnvelopeWorld = category === 'sub-neptune' || category === 'gas-giant' || category === 'ice-giant'
   const isBelt = category === 'belt'
-  const isExtremeHot = extremeHotThermalZones.has(thermalZone)
-  const isHot = thermalZone === 'Hot'
-  const isCold = thermalZone === 'Cold' || thermalZone === 'Cryogenic' || thermalZone === 'Dark'
   const climateCount = rng.chance(0.4) ? 2 : 1
-  const atmosphere = isBelt
-    ? 'None / dispersed volatiles'
-    : isEnvelopeWorld
-      ? pickOne(rng, ['Hydrogen/helium envelope', 'Dense greenhouse', 'Chiral-active atmosphere'])
-      : isExtremeHot
-        ? pickOne(rng, extremeHotAtmospheres)
-        : isHot
-          ? pickOne(rng, hotAtmospheres)
-          : isCold
-            ? pickOne(rng, coldAtmospheres)
-            : pickOne(rng, atmospheres)
-  const hydrosphere = isBelt
-    ? pickOne(rng, ['Subsurface ice', 'Cometary volatiles', 'Hydrated minerals only'])
-    : isEnvelopeWorld
-      ? pickOne(rng, ['Deep atmospheric volatile layers', 'High-pressure condensate decks', 'No accessible surface volatiles'])
-      : isExtremeHot
-        ? pickOne(rng, extremeHotVolatiles)
-        : isHot
-          ? pickOne(rng, hotVolatiles)
-          : isCold
-            ? pickOne(rng, ['Subsurface ice', 'Ice-shell subsurface ocean', 'Hydrocarbon lakes/seas'])
-            : pickOne(rng, hydrospheres)
+  const geology = rollGeology(rng, category, thermalZone, bodyClass)
+  const atmosphere = rollAtmosphere(rng, category, thermalZone, primary, bodyClass, physical, geology)
+  const hydrosphere = rollHydrosphere(rng, category, thermalZone, bodyClass)
 
   const detailWithoutBiosphere = {
     atmosphere: fact(
       atmosphere,
       'inferred',
-      'MASS-GU atmosphere table'
+      'MASS-GU 14 atmosphere d12 table with source modifiers'
     ),
     hydrosphere: fact(
       hydrosphere,
       'inferred',
-      'MASS-GU hydrosphere table'
+      'MASS-GU 14 hydrosphere d12 table with volatile-state modifiers'
     ),
     geology: fact(
-      isBelt ? 'Minor-body rubble and collision families' : isEnvelopeWorld ? pickOne(rng, envelopeGeologies) : pickOne(rng, geologies),
+      geology,
       'inferred',
-      'MASS-GU geology table'
+      isBelt || isEnvelopeWorld ? 'MASS-GU 14 geology table with category constraints' : 'MASS-GU 14 geology d12 table with source modifiers'
     ),
     climate: generateClimate(rng, category, thermalZone, climateCount),
     radiation: fact(
       generateRadiation(rng, category, thermalZone, primary),
       'inferred',
-      'MASS-GU radiation table'
+      'MASS-GU 14 radiation d8 table with source modifiers'
     ),
   }
 
@@ -1702,7 +1852,7 @@ function selectWorldClassForPlanKind(rng: SeededRng, thermalZone: string, planKi
       thermalZone,
       ['ice-giant'],
       hotThermalZones.has(thermalZone)
-        ? { className: 'Hot Neptune desert survivor', category: 'sub-neptune', massClass: 'Rare close-in Neptunian' }
+        ? { className: 'Hot Jupiter', category: 'gas-giant', massClass: 'Hot gas giant' }
         : forcedWorldClasses.iceGiant
     )
   }
@@ -1743,7 +1893,7 @@ function generateBodies(rng: SeededRng, primary: Star, architectureName: string)
     const filtered = withRecomputedGravity(applyModernExoplanetFilters(rng, baseBodyClass, basePhysical, thermalZone, architectureName, previousFiltered))
     const habitabilityNotes = mDwarfHabitabilityNotes(rng, primary, thermalZone, filtered.bodyClass.category)
     const siteCount = rng.chance(0.55) ? 1 : 0
-    const detail = generateDetail(rng, filtered.bodyClass.category, thermalZone, primary)
+    const detail = generateDetail(rng, filtered.bodyClass, filtered.physical, thermalZone, primary)
     const moons = generateMoons(rng, filtered.bodyClass, filtered.physical, index, thermalZone, primary, architectureName)
     const rings = generateRingSystem(rng, filtered.bodyClass.category)
     const giantEconomy = generateGiantEconomy(filtered.bodyClass, moons, rings)

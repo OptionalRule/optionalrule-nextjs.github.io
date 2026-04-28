@@ -236,6 +236,28 @@ describe('generateSystem', () => {
     }
   })
 
+  it('uses source rolled detail tables for ordinary planets', () => {
+    const systems = Array.from({ length: 120 }, (_, index) =>
+      generateSystem({ ...options, seed: `e43f9c2e41b8${index.toString(16).padStart(4, '0')}` })
+    )
+    const ordinaryBodies = systems.flatMap((system) =>
+      system.bodies.filter((body) =>
+        body.category.value !== 'anomaly' &&
+        body.category.value !== 'belt' &&
+        body.category.value !== 'gas-giant' &&
+        body.category.value !== 'ice-giant' &&
+        body.category.value !== 'sub-neptune'
+      )
+    )
+
+    expect(ordinaryBodies.length).toBeGreaterThan(0)
+    expect(ordinaryBodies.every((body) => body.detail.atmosphere.source?.includes('MASS-GU 14 atmosphere d12'))).toBe(true)
+    expect(ordinaryBodies.every((body) => body.detail.hydrosphere.source?.includes('MASS-GU 14 hydrosphere d12'))).toBe(true)
+    expect(ordinaryBodies.every((body) => body.detail.geology.source?.includes('MASS-GU 14 geology'))).toBe(true)
+    expect(ordinaryBodies.every((body) => body.detail.radiation.source?.includes('MASS-GU 14 radiation d8'))).toBe(true)
+    expect(ordinaryBodies.some((body) => body.detail.atmosphere.value === 'Thin but usable with pressure gear' || body.detail.hydrosphere.value === 'Global ocean' || body.detail.geology.value === 'Global resurfacing')).toBe(true)
+  })
+
   it('estimates surface gravity where gravity is meaningful', () => {
     for (let index = 0; index < 50; index++) {
       const system = generateSystem({ ...options, seed: `e93f9c2e41b8${index.toString(16).padStart(4, '0')}` })

@@ -33,6 +33,11 @@ interface CorpusStats {
   bodyClasses: Map<string, number>
   categoriesByArchitecture: Map<string, Map<BodyCategory, number>>
   categories: Map<BodyCategory, number>
+  atmospheres: Map<string, number>
+  hydrospheres: Map<string, number>
+  geologies: Map<string, number>
+  radiation: Map<string, number>
+  biospheres: Map<string, number>
   moonTypes: Map<string, number>
   ringTypes: Map<string, number>
   settlementCategories: Map<string, number>
@@ -548,6 +553,11 @@ function auditSystem(system: GeneratedSystem, findings: Finding[], stats: Corpus
   system.bodies.forEach((body) => {
     increment(stats.categories, body.category.value)
     increment(stats.bodyClasses, body.bodyClass.value)
+    increment(stats.atmospheres, body.detail.atmosphere.value)
+    increment(stats.hydrospheres, body.detail.hydrosphere.value)
+    increment(stats.geologies, body.detail.geology.value)
+    increment(stats.radiation, body.detail.radiation.value)
+    increment(stats.biospheres, body.detail.biosphere.value)
     if (body.rings) increment(stats.ringTypes, body.rings.type.value)
     body.moons.forEach((moon) => increment(stats.moonTypes, moon.moonType.value))
     nestedIncrement(stats.categoriesByArchitecture, system.architecture.name.value, body.category.value)
@@ -764,6 +774,11 @@ const stats: CorpusStats = {
   bodyClasses: new Map(),
   categoriesByArchitecture: new Map(),
   categories: new Map(),
+  atmospheres: new Map(),
+  hydrospheres: new Map(),
+  geologies: new Map(),
+  radiation: new Map(),
+  biospheres: new Map(),
   moonTypes: new Map(),
   ringTypes: new Map(),
   settlementCategories: new Map(),
@@ -826,6 +841,11 @@ console.log(`Frontier star types: ${formatMap(stats.starTypesByDistribution.fron
 console.log(`Realistic star types: ${formatMap(stats.starTypesByDistribution.realistic)}`)
 console.log(`Body categories: ${formatMap(stats.categories)}`)
 console.log(`Body classes: ${formatMap(stats.bodyClasses)}`)
+console.log(`Atmospheres: ${formatMap(stats.atmospheres)}`)
+console.log(`Hydrospheres: ${formatMap(stats.hydrospheres)}`)
+console.log(`Geologies: ${formatMap(stats.geologies)}`)
+console.log(`Radiation: ${formatMap(stats.radiation)}`)
+console.log(`Biospheres: ${formatMap(stats.biospheres)}`)
 console.log(`Moon types: ${formatMap(stats.moonTypes)}`)
 console.log(`Ring types: ${formatMap(stats.ringTypes)}`)
 console.log(`Settlement categories: ${formatMap(stats.settlementCategories)}`)
