@@ -31,6 +31,15 @@ export interface Star {
   activity: Fact<string>
 }
 
+export interface StellarCompanion {
+  id: string
+  companionType: Fact<string>
+  separation: Fact<string>
+  planetaryConsequence: Fact<string>
+  guConsequence: Fact<string>
+  rollMargin: Fact<number>
+}
+
 export interface Reachability {
   className: Fact<string>
   routeNote: Fact<string>
@@ -180,6 +189,7 @@ export interface GeneratedSystem {
   name: Fact<string>
   dataBasis: Fact<string>
   primary: Star
+  companions: StellarCompanion[]
   reachability: Reachability
   architecture: SystemArchitecture
   zones: SystemZones

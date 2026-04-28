@@ -69,7 +69,7 @@ Checkpoint commit:
 Purpose: move from inspired approximations toward the writeup's actual procedures.
 
 Work items:
-- Implement multiplicity/companions:
+- Implement multiplicity/companions. Completed in checkpoint `feat: add stellar multiplicity generation`:
   - star-type thresholds
   - result margins
   - separation bands

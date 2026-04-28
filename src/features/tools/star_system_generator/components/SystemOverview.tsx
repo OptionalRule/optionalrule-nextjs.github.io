@@ -9,6 +9,7 @@ export function SystemOverview({ system }: { system: GeneratedSystem }) {
     ['Luminosity', `${system.primary.luminositySolar.value} solar`],
     ['Age', system.primary.ageState.value],
     ['Activity', system.primary.activity.value],
+    ['Multiplicity', system.companions.length ? system.companions[0].companionType.value : 'Single star'],
     ['Reachability', system.reachability.className.value],
     ['Architecture', system.architecture.name.value],
     ['GU', system.guOverlay.intensity.value],
@@ -48,6 +49,16 @@ export function SystemOverview({ system }: { system: GeneratedSystem }) {
       <p className="mt-3 text-sm text-[var(--text-tertiary)]">
         Stellar class note: {stellarClassNote(system.primary.spectralType.value)}
       </p>
+
+      {system.companions.length ? (
+        <div className="mt-4 rounded-md border border-[var(--border)] bg-[var(--card-elevated)] p-3 text-sm">
+          <h3 className="text-xs font-semibold uppercase tracking-wide text-[var(--text-tertiary)]">Companion Structure</h3>
+          <p className="mt-1 text-[var(--text-primary)]">
+            {system.companions[0].separation.value}: {system.companions[0].planetaryConsequence.value}
+          </p>
+          <p className="mt-1 text-[var(--text-secondary)]">{system.companions[0].guConsequence.value}</p>
+        </div>
+      ) : null}
     </section>
   )
 }

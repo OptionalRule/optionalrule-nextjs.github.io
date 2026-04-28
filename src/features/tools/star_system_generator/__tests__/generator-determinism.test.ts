@@ -73,6 +73,7 @@ describe('generateSystem', () => {
 
     expect(system.name.value).toBeTruthy()
     expect(system.primary.spectralType.value).toBeTruthy()
+    expect(Array.isArray(system.companions)).toBe(true)
     expect(system.reachability.className.confidence).toBe('gu-layer')
     expect(system.bodies.length).toBeGreaterThanOrEqual(2)
     expect(system.bodies[0].category.value).toBeTruthy()
@@ -93,6 +94,13 @@ describe('generateSystem', () => {
       expect(moon.use.value).toBeTruthy()
     }
     expect(system.guOverlay.hazard.confidence).toBe('gu-layer')
+    for (const companion of system.companions) {
+      expect(companion.companionType.source).toContain('MASS-GU companion threshold')
+      expect(companion.separation.source).toContain('MASS-GU binary separation roll')
+      expect(companion.planetaryConsequence.value).toBeTruthy()
+      expect(companion.guConsequence.confidence).toBe('gu-layer')
+      expect(companion.rollMargin.value).toBeGreaterThanOrEqual(0)
+    }
     expect(system.noAlienCheck.passed).toBe(true)
     expect(system.bodies.map((body) => body.bodyClass.value.toLowerCase())).not.toContain('alien artifact')
   })
@@ -421,6 +429,19 @@ describe('generateSystem', () => {
     expect(sparseSystems.length).toBeGreaterThan(0)
     expect(sparseSystems.some((system) => system.bodies.some((body) => body.category.value === 'rocky-planet'))).toBe(true)
     expect(sparseSystems.some((system) => system.bodies.some((body) => body.category.value === 'belt' || body.category.value === 'dwarf-body'))).toBe(true)
+  })
+
+  it('generates source-table stellar companions across sampled systems', () => {
+    const systems = Array.from({ length: 240 }, (_, index) =>
+      generateSystem({ ...options, seed: `711a9c2e41b8${index.toString(16).padStart(4, '0')}` })
+    )
+    const companions = systems.flatMap((system) => system.companions)
+
+    expect(companions.length).toBeGreaterThan(0)
+    expect(new Set(companions.map((companion) => companion.separation.value)).size).toBeGreaterThan(2)
+    expect(companions.some((companion) => companion.companionType.value === 'Triple or higher-order system')).toBe(true)
+    expect(companions.every((companion) => companion.planetaryConsequence.value.length > 10)).toBe(true)
+    expect(companions.every((companion) => companion.guConsequence.value.length > 10)).toBe(true)
   })
 
   it('keeps architecture body plans aligned with source intent', () => {

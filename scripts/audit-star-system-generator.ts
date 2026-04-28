@@ -26,6 +26,7 @@ interface CorpusStats {
   bodies: number
   settlements: number
   moons: number
+  multiStarSystems: number
   starTypes: Map<string, number>
   starTypesByDistribution: Record<GeneratorDistribution, Map<string, number>>
   architectures: Map<string, number>
@@ -34,6 +35,8 @@ interface CorpusStats {
   settlementCategories: Map<string, number>
   settlementCountsByDensity: Record<SettlementDensity, number[]>
   guIntensityByPreference: Record<GuPreference, Map<string, number>>
+  companionTypes: Map<string, number>
+  companionSeparations: Map<string, number>
 }
 
 const auditProfiles = {
@@ -502,11 +505,16 @@ function auditSystem(system: GeneratedSystem, findings: Finding[], stats: Corpus
   stats.bodies += system.bodies.length
   stats.settlements += system.settlements.length
   stats.moons += system.bodies.reduce((total, body) => total + body.moons.length, 0)
+  if (system.companions.length > 0) stats.multiStarSystems += 1
   increment(stats.starTypes, system.primary.spectralType.value)
   increment(stats.starTypesByDistribution[system.options.distribution], system.primary.spectralType.value)
   increment(stats.architectures, system.architecture.name.value)
   increment(stats.guIntensityByPreference[system.options.gu], system.guOverlay.intensity.value)
   stats.settlementCountsByDensity[system.options.settlements].push(system.settlements.length)
+  system.companions.forEach((companion) => {
+    increment(stats.companionTypes, companion.companionType.value)
+    increment(stats.companionSeparations, companion.separation.value)
+  })
   system.bodies.forEach((body) => {
     increment(stats.categories, body.category.value)
     nestedIncrement(stats.categoriesByArchitecture, system.architecture.name.value, body.category.value)
@@ -535,6 +543,16 @@ function auditSystem(system: GeneratedSystem, findings: Finding[], stats: Corpus
   if (hasDuplicates(system.settlements.map((settlement) => settlement.id))) {
     addFinding(findings, 'error', seed, 'settlements', 'Settlement ids repeat within a system.')
   }
+
+  system.companions.forEach((companion, companionIndex) => {
+    assertText(findings, seed, `companions[${companionIndex}].companionType`, companion.companionType.value, 'Companion type')
+    assertText(findings, seed, `companions[${companionIndex}].separation`, companion.separation.value, 'Companion separation')
+    assertText(findings, seed, `companions[${companionIndex}].planetaryConsequence`, companion.planetaryConsequence.value, 'Companion planetary consequence')
+    assertText(findings, seed, `companions[${companionIndex}].guConsequence`, companion.guConsequence.value, 'Companion GU consequence')
+    if (companion.rollMargin.value < 0) {
+      addFinding(findings, 'error', seed, `companions[${companionIndex}].rollMargin`, `Companion generated with negative margin ${companion.rollMargin.value}.`)
+    }
+  })
 
   auditArchitectureIntent(system, findings)
   system.bodies.forEach((body, bodyIndex) => auditBody(system, body, bodyIndex, findings))
@@ -660,6 +678,7 @@ const stats: CorpusStats = {
   bodies: 0,
   settlements: 0,
   moons: 0,
+  multiStarSystems: 0,
   starTypes: new Map(),
   starTypesByDistribution: {
     frontier: new Map(),
@@ -681,6 +700,8 @@ const stats: CorpusStats = {
     high: new Map(),
     fracture: new Map(),
   },
+  companionTypes: new Map(),
+  companionSeparations: new Map(),
 }
 
 for (const distribution of distributions) {
@@ -708,6 +729,7 @@ console.log(`Systems: ${stats.systems}`)
 console.log(`Bodies: ${stats.bodies}`)
 console.log(`Moons: ${stats.moons}`)
 console.log(`Settlements: ${stats.settlements}`)
+console.log(`Multi-star systems: ${stats.multiStarSystems}`)
 console.log(`Errors: ${errors.length}`)
 console.log(`Warnings: ${warnings.length}`)
 console.log(`Star types: ${formatMap(stats.starTypes)}`)
@@ -716,6 +738,8 @@ console.log(`Realistic star types: ${formatMap(stats.starTypesByDistribution.rea
 console.log(`Body categories: ${formatMap(stats.categories)}`)
 console.log(`Settlement categories: ${formatMap(stats.settlementCategories)}`)
 console.log(`Architectures: ${formatMap(stats.architectures)}`)
+console.log(`Companion types: ${formatMap(stats.companionTypes)}`)
+console.log(`Companion separations: ${formatMap(stats.companionSeparations)}`)
 console.log('Settlement counts by density:')
 console.log(formatSettlementCountsByDensity(stats))
 console.log('GU intensity by preference:')

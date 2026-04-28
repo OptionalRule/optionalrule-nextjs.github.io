@@ -12,6 +12,7 @@ import type {
   RingSystem,
   Settlement,
   Star,
+  StellarCompanion,
   SystemPhenomenon,
 } from '../../types'
 import { calculateHabitableZone, calculateInsolation, calculateSnowLine, classifyThermalZone, roundTo } from './calculations'
@@ -353,6 +354,94 @@ function generateReachability(rng: SeededRng) {
     routeNote: fact(result.routeNote, 'gu-layer', 'Reachable-volume bias'),
     pinchDifficulty: fact(result.pinchDifficulty, 'gu-layer', 'Route geometry'),
   }
+}
+
+function companionThreshold(spectralType: string): number {
+  if (spectralType === 'Brown dwarf/substellar primary') return 11
+  if (spectralType === 'M dwarf') return 10
+  if (spectralType === 'K star') return 9
+  if (spectralType === 'G star') return 8
+  if (spectralType === 'F star') return 7
+  if (spectralType === 'O/B/A bright star') return 6
+  if (spectralType === 'White dwarf/remnant') return 9
+  return 8
+}
+
+function companionTypeFromMargin(margin: number): string {
+  if (margin >= 4) return 'Triple or higher-order system'
+  if (margin >= 2) return 'Binary with distant substellar companion'
+  return 'Binary'
+}
+
+function binarySeparationProfile(roll: number): Pick<StellarCompanion, 'separation' | 'planetaryConsequence' | 'guConsequence'> {
+  const profile =
+    roll <= 2 ? {
+      separation: 'Contact / near-contact',
+      planetaryConsequence: 'Ordinary planets unlikely.',
+      guConsequence: 'Extreme bleed, dangerous research site.',
+    } :
+    roll <= 4 ? {
+      separation: 'Close binary',
+      planetaryConsequence: 'Circumbinary planets likely.',
+      guConsequence: 'Strong rhythmic metric tides.',
+    } :
+    roll <= 6 ? {
+      separation: 'Tight binary',
+      planetaryConsequence: 'Inner circumbinary zone, truncated outer zones.',
+      guConsequence: 'Good Iggygate anchor candidate.',
+    } :
+    roll <= 8 ? {
+      separation: 'Moderate binary',
+      planetaryConsequence: 'Circumstellar and circumbinary niches.',
+      guConsequence: 'Rich Lagrange shear zones.',
+    } :
+    roll <= 10 ? {
+      separation: 'Wide binary',
+      planetaryConsequence: 'Treat stars as linked sub-systems.',
+      guConsequence: 'Smuggler gaps, dark-route habitats.',
+    } :
+    roll === 11 ? {
+      separation: 'Very wide',
+      planetaryConsequence: 'Two semi-independent systems.',
+      guConsequence: 'Long-haul intra-system frontier.',
+    } : {
+      separation: 'Hierarchical triple',
+      planetaryConsequence: 'Complex but stable if hierarchical.',
+      guConsequence: 'Major bleed economy, high military value.',
+    }
+
+  return {
+    separation: fact(profile.separation, 'inferred', `MASS-GU binary separation roll ${roll}`),
+    planetaryConsequence: fact(profile.planetaryConsequence, 'inferred', 'MASS-GU binary separation table'),
+    guConsequence: fact(profile.guConsequence, 'gu-layer', 'MASS-GU binary separation table'),
+  }
+}
+
+function generateStellarCompanions(rng: SeededRng, primary: Star, reachability: ReturnType<typeof generateReachability>): StellarCompanion[] {
+  const threshold = companionThreshold(primary.spectralType.value)
+  let roll = twoD6(rng)
+  const modifiers: string[] = ['+1 major reachable system']
+  roll += 1
+
+  if (reachability.className.value === 'Iggygate anchor' || reachability.className.value === 'Resonance hub') {
+    roll += 1
+    modifiers.push('+1 route geometry')
+  }
+
+  const margin = roll - threshold
+  if (margin < 0) return []
+
+  const separationRoll = twoD6(rng)
+  const separationProfile = binarySeparationProfile(separationRoll)
+
+  return [
+    {
+      id: 'companion-1',
+      companionType: fact(companionTypeFromMargin(margin), 'inferred', `MASS-GU companion threshold ${threshold}; modifiers ${modifiers.join(', ')}`),
+      ...separationProfile,
+      rollMargin: fact(margin, 'derived', `Modified 2d6 companion roll ${roll} vs threshold ${threshold}`),
+    },
+  ]
 }
 
 function generateArchitecture(rng: SeededRng, options: GenerationOptions, primary: Star, reachabilityClass: string) {
@@ -1394,8 +1483,9 @@ function generateBodies(rng: SeededRng, primary: Star, architectureName: string)
   return bodies
 }
 
-function generateGuOverlay(rng: SeededRng, preference: GuPreference, primary: Star, bodies: OrbitingBody[], architectureName: string) {
+function generateGuOverlay(rng: SeededRng, preference: GuPreference, primary: Star, companions: StellarCompanion[], bodies: OrbitingBody[], architectureName: string) {
   let baseIndex = preference === 'low' ? rng.int(0, 2) : preference === 'high' ? rng.int(2, 4) : preference === 'fracture' ? rng.int(4, 5) : rng.int(1, 4)
+  if (companions.length > 0) baseIndex += 1
   if (primary.spectralType.value === 'M dwarf' && ['Flare-prone', 'Violent flare cycle', 'Extreme activity / metric-amplified events'].includes(primary.activity.value)) baseIndex += 1
   if (bodies.some((body) => body.category.value === 'gas-giant')) baseIndex += 1
   if (architectureName.includes('Compact')) baseIndex += 1
@@ -2065,11 +2155,12 @@ export function generateSystem(options: GenerationOptions): GeneratedSystem {
   const name = generateSystemName(rootRng.fork('name'))
   const primary = generatePrimaryStar(rootRng.fork('star'), options, name)
   const reachability = generateReachability(rootRng.fork('reachability'))
+  const companions = generateStellarCompanions(rootRng.fork('companions'), primary, reachability)
   const architectureResult = generateArchitecture(rootRng.fork('architecture'), options, primary, reachability.className.value)
   const hz = calculateHabitableZone(primary.luminositySolar.value)
   const snowLine = calculateSnowLine(primary.luminositySolar.value)
   const bodies = generateBodies(rootRng.fork('bodies'), primary, architectureResult.architecture.name.value)
-  const guOverlay = generateGuOverlay(rootRng.fork('gu'), options.gu, primary, bodies, architectureResult.architecture.name.value)
+  const guOverlay = generateGuOverlay(rootRng.fork('gu'), options.gu, primary, companions, bodies, architectureResult.architecture.name.value)
   const settlements = generateSettlements(rootRng.fork('settlements'), options, name, bodies, guOverlay, reachability, architectureResult.architecture.name.value)
   const ruins = generateHumanRemnants(rootRng.fork('ruins'), bodies, guOverlay)
   const phenomena = generatePhenomena(rootRng.fork('phenomena'), architectureResult.architecture.name.value, guOverlay)
@@ -2081,6 +2172,7 @@ export function generateSystem(options: GenerationOptions): GeneratedSystem {
     name: fact(name, 'human-layer', 'Generated system name'),
     dataBasis: fact('Fictional generated system', 'human-layer', 'MVP fictional generation'),
     primary,
+    companions,
     reachability,
     architecture: architectureResult.architecture,
     zones: {
