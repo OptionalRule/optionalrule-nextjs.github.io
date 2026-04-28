@@ -158,7 +158,6 @@ export function generateBodyInterest(
   const pressurePoints: string[] = []
   const playUses: string[] = []
 
-  if (bodyProfile) astronomyFacts.push(bodyProfile.value)
   if (giantEconomy) playUses.push(giantEconomy.value)
   if (detail.biosphere.value !== 'Sterile') pressurePoints.push(`${detail.biosphere.value} creates science, quarantine, or settlement pressure`)
   if (detail.hydrosphere.value.includes('ocean') || detail.hydrosphere.value.includes('ice') || detail.hydrosphere.value.includes('volatiles')) {

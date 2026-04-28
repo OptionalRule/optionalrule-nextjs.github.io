@@ -4,6 +4,27 @@ import { formatOrbitContext } from './OrbitalTable'
 
 export function BodyDetailPanel({ body, system }: { body: OrbitingBody; system: GeneratedSystem }) {
   const isAnomaly = body.category.value === 'anomaly'
+  const isBelt = body.category.value === 'belt'
+  const physicalRows = [
+    ...(isBelt
+      ? [
+          ['Structure', 'Distributed belt or swarm'],
+          ['Mass', 'Not estimated for a distributed belt'],
+        ]
+      : [
+          [isAnomaly ? 'Scale' : 'Radius', isAnomaly ? `${body.physical.radiusEarth.value} operational scale index` : `${body.physical.radiusEarth.value} Earth radii`],
+          ['Mass', body.physical.massEarth.value === null ? 'Not applicable' : `${body.physical.massEarth.value} Earth masses`],
+          ['Gravity', body.physical.gravityLabel.value],
+        ]),
+    ['Orbit', `${body.orbitAu.value} AU · ${formatOrbitContext(body.orbitAu.value, system)}`],
+    ['Period', `${body.physical.periodDays.value} days`],
+    ['Atmosphere', body.detail.atmosphere.value],
+    ['Volatiles', body.detail.hydrosphere.value],
+    ['Geology', body.detail.geology.value],
+    ['Radiation', body.detail.radiation.value],
+    ['Biosphere', body.detail.biosphere.value],
+    ['Climate', body.detail.climate.map((tag) => tag.value).join(', ')],
+  ]
 
   return (
     <section className="rounded-lg border border-[var(--border)] bg-[var(--card)] p-4">
@@ -18,17 +39,9 @@ export function BodyDetailPanel({ body, system }: { body: OrbitingBody; system: 
       </div>
 
       <dl className="mt-4 grid gap-3 text-sm sm:grid-cols-2 lg:grid-cols-3">
-        <Detail label={isAnomaly ? 'Scale' : 'Radius'} value={isAnomaly ? `${body.physical.radiusEarth.value} operational scale index` : `${body.physical.radiusEarth.value} Earth radii`} />
-        <Detail label="Mass" value={body.physical.massEarth.value === null ? 'Not applicable' : `${body.physical.massEarth.value} Earth masses`} />
-        <Detail label="Gravity" value={body.physical.gravityLabel.value} />
-        <Detail label="Orbit" value={`${body.orbitAu.value} AU · ${formatOrbitContext(body.orbitAu.value, system)}`} />
-        <Detail label="Period" value={`${body.physical.periodDays.value} days`} />
-        <Detail label="Atmosphere" value={body.detail.atmosphere.value} />
-        <Detail label="Volatiles" value={body.detail.hydrosphere.value} />
-        <Detail label="Geology" value={body.detail.geology.value} />
-        <Detail label="Radiation" value={body.detail.radiation.value} />
-        <Detail label="Biosphere" value={body.detail.biosphere.value} />
-        <Detail label="Climate" value={body.detail.climate.map((tag) => tag.value).join(', ')} />
+        {physicalRows.map(([label, value]) => (
+          <Detail key={label} label={label} value={value} />
+        ))}
       </dl>
 
       <div className="mt-4 rounded-md border border-[var(--border)] bg-[var(--card-elevated)] p-3 text-sm">

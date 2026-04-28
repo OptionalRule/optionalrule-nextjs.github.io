@@ -457,6 +457,16 @@ describe('generateSystem', () => {
     }
   })
 
+  it('does not repeat the exact body profile inside the body interest summary', () => {
+    const system = generateSystem({ ...options, seed: 'ea1d8ba2f11e808c' })
+    const profiledBodies = system.bodies.filter((body) => body.bodyProfile)
+
+    expect(profiledBodies.length).toBeGreaterThan(0)
+    for (const body of profiledBodies) {
+      expect(body.whyInteresting.value).not.toContain(body.bodyProfile?.value)
+    }
+  })
+
   it('includes expanded source-derived world classes across sampled seeds', () => {
     const classes = new Set(
       Array.from({ length: 120 }, (_, index) =>
