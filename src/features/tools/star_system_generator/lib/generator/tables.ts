@@ -59,15 +59,15 @@ export const reachabilityClasses: Array<TableEntry<{ className: string; routeNot
   { min: 12, max: 12, value: { className: 'Gardener-shadowed', routeNote: 'Reachable, but Sol or its ASI may monitor or interfere.', pinchDifficulty: 'Politically dangerous' } },
 ]
 
-export const architectures: Array<TableEntry<{ name: string; description: string; bodyCount: [number, number] }>> = [
-  { min: 2, max: 2, value: { name: 'Failed system', description: 'Dust, rocks, dwarf bodies, and maybe one remnant planet.', bodyCount: [2, 6] } },
-  { min: 3, max: 3, value: { name: 'Debris-dominated', description: 'Belts, planetesimals, impact hazards, and few full planets.', bodyCount: [4, 9] } },
-  { min: 4, max: 5, value: { name: 'Sparse rocky', description: 'A small number of terrestrial, super-terrestrial, or rocky survivor worlds.', bodyCount: [2, 7] } },
-  { min: 6, max: 8, value: { name: 'Compact inner system', description: 'Close-in rocky, super-Earth, and sub-Neptune worlds.', bodyCount: [4, 10] } },
-  { min: 9, max: 9, value: { name: 'Peas-in-a-pod chain', description: 'Similar-sized planets with regular spacing and related compositions.', bodyCount: [5, 9] } },
-  { min: 10, max: 10, value: { name: 'Solar-ish mixed', description: 'Inner rocks, belts, giants, and outer ice or dwarf zones.', bodyCount: [7, 15] } },
-  { min: 11, max: 11, value: { name: 'Migrated giant', description: 'A hot or warm giant has disrupted the inner system and left survivors.', bodyCount: [5, 12] } },
-  { min: 12, max: 13, value: { name: 'Giant-rich or chaotic', description: 'Multiple giants, eccentric orbits, resonances, debris, and captured worlds.', bodyCount: [8, 16] } },
+export const architectures: Array<TableEntry<{ name: string; description: string }>> = [
+  { min: 2, max: 2, value: { name: 'Failed system', description: 'Dust, rocks, dwarf bodies, and maybe one remnant planet.' } },
+  { min: 3, max: 3, value: { name: 'Debris-dominated', description: 'Belts, planetesimals, impact hazards, and few full planets.' } },
+  { min: 4, max: 5, value: { name: 'Sparse rocky', description: 'A small number of terrestrial, super-terrestrial, or rocky survivor worlds.' } },
+  { min: 6, max: 8, value: { name: 'Compact inner system', description: 'Close-in rocky, super-Earth, and sub-Neptune worlds.' } },
+  { min: 9, max: 9, value: { name: 'Peas-in-a-pod chain', description: 'Similar-sized planets with regular spacing and related compositions.' } },
+  { min: 10, max: 10, value: { name: 'Solar-ish mixed', description: 'Inner rocks, belts, giants, and outer ice or dwarf zones.' } },
+  { min: 11, max: 11, value: { name: 'Migrated giant', description: 'A hot or warm giant has disrupted the inner system and left survivors.' } },
+  { min: 12, max: 13, value: { name: 'Giant-rich or chaotic', description: 'Multiple giants, eccentric orbits, resonances, debris, and captured worlds.' } },
 ]
 
 export const guIntensities = ['Geometrically quiet', 'Low bleed', 'Useful bleed', 'Rich bleed', 'Dangerous fracture system', 'Major observiverse shear zone'] as const

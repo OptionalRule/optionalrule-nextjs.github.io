@@ -258,6 +258,68 @@ function hasDuplicates(values: string[]): boolean {
   return new Set(values).size !== values.length
 }
 
+function countBodiesByCategory(system: GeneratedSystem, categories: ReadonlySet<BodyCategory>): number {
+  return system.bodies.filter((body) => categories.has(body.category.value)).length
+}
+
+const fullPlanetCategories = new Set<BodyCategory>(['rocky-planet', 'super-earth', 'sub-neptune', 'gas-giant', 'ice-giant'])
+const minorBodyCategories = new Set<BodyCategory>(['belt', 'dwarf-body', 'rogue-captured'])
+const rockyChainCategories = new Set<BodyCategory>(['rocky-planet', 'super-earth', 'sub-neptune'])
+const giantCategories = new Set<BodyCategory>(['gas-giant', 'ice-giant'])
+
+function auditArchitectureIntent(system: GeneratedSystem, findings: Finding[]): void {
+  const seed = system.seed
+  const architecture = system.architecture.name.value
+  const fullPlanets = countBodiesByCategory(system, fullPlanetCategories)
+  const minorBodies = countBodiesByCategory(system, minorBodyCategories)
+  const rockyChainBodies = countBodiesByCategory(system, rockyChainCategories)
+  const giants = countBodiesByCategory(system, giantCategories)
+
+  if (architecture === 'Failed system') {
+    if (fullPlanets > 3) {
+      addFinding(findings, 'error', seed, 'architecture.bodyPlan', `Failed system generated ${fullPlanets} full planets.`)
+    }
+    if (minorBodies < 2) {
+      addFinding(findings, 'error', seed, 'architecture.bodyPlan', `Failed system generated only ${minorBodies} debris/minor bodies.`)
+    }
+  }
+
+  if (architecture === 'Debris-dominated') {
+    if (minorBodies < 2 || minorBodies + 1 < fullPlanets) {
+      addFinding(findings, 'error', seed, 'architecture.bodyPlan', `Debris-dominated system has ${minorBodies} debris/minor bodies versus ${fullPlanets} full planets.`)
+    }
+  }
+
+  if (architecture === 'Sparse rocky') {
+    if (rockyChainBodies < 1) {
+      addFinding(findings, 'error', seed, 'architecture.bodyPlan', 'Sparse rocky system lacks a rocky/super-terrestrial/sub-Neptune survivor.')
+    }
+    if (giants > 1) {
+      addFinding(findings, 'error', seed, 'architecture.bodyPlan', `Sparse rocky system generated ${giants} giants.`)
+    }
+  }
+
+  if (architecture === 'Compact inner system' && rockyChainBodies < 3) {
+    addFinding(findings, 'error', seed, 'architecture.bodyPlan', `Compact inner system generated only ${rockyChainBodies} rocky/super-Earth/sub-Neptune bodies.`)
+  }
+
+  if (architecture === 'Peas-in-a-pod chain' && rockyChainBodies < 4) {
+    addFinding(findings, 'error', seed, 'architecture.bodyPlan', `Peas-in-a-pod chain generated only ${rockyChainBodies} chain bodies.`)
+  }
+
+  if (architecture === 'Solar-ish mixed' && giants < 1) {
+    addFinding(findings, 'error', seed, 'architecture.bodyPlan', 'Solar-ish mixed system lacks a giant planet.')
+  }
+
+  if (architecture === 'Migrated giant' && giants < 1) {
+    addFinding(findings, 'error', seed, 'architecture.bodyPlan', 'Migrated giant architecture lacks a generated giant.')
+  }
+
+  if (architecture === 'Giant-rich or chaotic' && giants < 2) {
+    addFinding(findings, 'error', seed, 'architecture.bodyPlan', `Giant-rich or chaotic system generated only ${giants} giants.`)
+  }
+}
+
 function auditBody(system: GeneratedSystem, body: OrbitingBody, bodyIndex: number, findings: Finding[]): void {
   const seed = system.seed
   const path = `bodies[${bodyIndex}]`
@@ -474,6 +536,7 @@ function auditSystem(system: GeneratedSystem, findings: Finding[], stats: Corpus
     addFinding(findings, 'error', seed, 'settlements', 'Settlement ids repeat within a system.')
   }
 
+  auditArchitectureIntent(system, findings)
   system.bodies.forEach((body, bodyIndex) => auditBody(system, body, bodyIndex, findings))
   system.settlements.forEach((settlement, settlementIndex) => auditSettlement(system, settlement, settlementIndex, findings))
 

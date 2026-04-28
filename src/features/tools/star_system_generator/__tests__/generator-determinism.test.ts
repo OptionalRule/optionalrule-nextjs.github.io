@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import type { GenerationOptions } from '../types'
-import { applyNoAlienTextGuard, generateSystem } from '../lib/generator'
+import { applyNoAlienTextGuard, architectureBodyPlanRules, generateSystem } from '../lib/generator'
 import { architectures, frontierStarTypes, realisticStarTypes } from '../lib/generator/tables'
 
 const options: GenerationOptions = {
@@ -50,6 +50,10 @@ describe('generateSystem', () => {
       [11, 11, 'Migrated giant'],
       [12, 13, 'Giant-rich or chaotic'],
     ])
+    for (const entry of architectures) {
+      expect(entry.value).not.toHaveProperty('bodyCount')
+      expect(architectureBodyPlanRules[entry.value.name as keyof typeof architectureBodyPlanRules]).toBeTruthy()
+    }
   })
 
 
@@ -417,6 +421,61 @@ describe('generateSystem', () => {
     expect(sparseSystems.length).toBeGreaterThan(0)
     expect(sparseSystems.some((system) => system.bodies.some((body) => body.category.value === 'rocky-planet'))).toBe(true)
     expect(sparseSystems.some((system) => system.bodies.some((body) => body.category.value === 'belt' || body.category.value === 'dwarf-body'))).toBe(true)
+  })
+
+  it('keeps architecture body plans aligned with source intent', () => {
+    const fullPlanetCategories = new Set(['rocky-planet', 'super-earth', 'sub-neptune', 'gas-giant', 'ice-giant'])
+    const minorCategories = new Set(['belt', 'dwarf-body', 'rogue-captured'])
+    const rockyChainCategories = new Set(['rocky-planet', 'super-earth', 'sub-neptune'])
+    const giantCategories = new Set(['gas-giant', 'ice-giant'])
+
+    const count = (system: ReturnType<typeof generateSystem>, categories: Set<string>) =>
+      system.bodies.filter((body) => categories.has(body.category.value)).length
+
+    const systems = Array.from({ length: 500 }, (_, index) =>
+      generateSystem({ ...options, seed: `611a9c2e41b8${index.toString(16).padStart(4, '0')}` })
+    )
+
+    expect(new Set(systems.map((system) => system.architecture.name.value)).size).toBeGreaterThan(5)
+
+    for (const system of systems) {
+      const architecture = system.architecture.name.value
+      const fullPlanets = count(system, fullPlanetCategories)
+      const minorBodies = count(system, minorCategories)
+      const rockyChainBodies = count(system, rockyChainCategories)
+      const giants = count(system, giantCategories)
+
+      if (architecture === 'Failed system') {
+        expect(fullPlanets).toBeLessThanOrEqual(3)
+        expect(minorBodies).toBeGreaterThanOrEqual(2)
+      }
+
+      if (architecture === 'Debris-dominated') {
+        expect(minorBodies).toBeGreaterThanOrEqual(2)
+        expect(minorBodies + 1).toBeGreaterThanOrEqual(fullPlanets)
+      }
+
+      if (architecture === 'Sparse rocky') {
+        expect(rockyChainBodies).toBeGreaterThanOrEqual(1)
+        expect(giants).toBeLessThanOrEqual(1)
+      }
+
+      if (architecture === 'Compact inner system') {
+        expect(rockyChainBodies).toBeGreaterThanOrEqual(3)
+      }
+
+      if (architecture === 'Peas-in-a-pod chain') {
+        expect(rockyChainBodies).toBeGreaterThanOrEqual(4)
+      }
+
+      if (architecture === 'Solar-ish mixed' || architecture === 'Migrated giant') {
+        expect(giants).toBeGreaterThanOrEqual(1)
+      }
+
+      if (architecture === 'Giant-rich or chaotic') {
+        expect(giants).toBeGreaterThanOrEqual(2)
+      }
+    }
   })
 
   it('generates scored settlements, remnants, and phenomena for play', () => {

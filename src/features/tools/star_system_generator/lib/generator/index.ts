@@ -372,7 +372,6 @@ function generateArchitecture(rng: SeededRng, options: GenerationOptions, primar
       name: fact(result.name, 'inferred', 'MASS-GU architecture table'),
       description: fact(result.description, 'inferred', `Modified 2d6 architecture roll ${roll}`),
     },
-    bodyCount: rng.int(result.bodyCount[0], result.bodyCount[1]),
   }
 }
 
@@ -1111,8 +1110,26 @@ function planetLikeKind(rng: SeededRng): BodyPlanKind {
   return weightedPick(rng, [
     { weight: 45, value: 'rocky' },
     { weight: 35, value: 'super-earth' },
-    { weight: 18, value: 'sub-neptune' },
+    { weight: 19, value: 'sub-neptune' },
+    { weight: 1, value: 'anomaly' },
+  ])
+}
+
+function rockyOrSuperKind(rng: SeededRng): BodyPlanKind {
+  return weightedPick(rng, [
+    { weight: 58, value: 'rocky' },
+    { weight: 34, value: 'super-earth' },
+    { weight: 6, value: 'sub-neptune' },
     { weight: 2, value: 'anomaly' },
+  ])
+}
+
+function failedRemnantKind(rng: SeededRng): BodyPlanKind {
+  return weightedPick(rng, [
+    { weight: 50, value: 'dwarf' },
+    { weight: 30, value: 'rocky' },
+    { weight: 12, value: 'super-earth' },
+    { weight: 8, value: 'anomaly' },
   ])
 }
 
@@ -1144,40 +1161,74 @@ function weightedCount(rng: SeededRng, entries: Array<{ weight: number; value: n
   return weightedPick(rng, entries)
 }
 
+export const architectureBodyPlanRules = {
+  'Failed system': {
+    bodyRange: [4, 9],
+    intent: 'Debris, dwarf bodies, and zero or one remnant full planet dominate.',
+  },
+  'Debris-dominated': {
+    bodyRange: [5, 12],
+    intent: 'Belts and minor bodies dominate, with zero to two full-planet survivors and rare giant/anomaly crossovers.',
+  },
+  'Sparse rocky': {
+    bodyRange: [2, 8],
+    intent: 'One to four rocky or super-terrestrial worlds lead, with limited debris and unusual crossovers.',
+  },
+  'Compact inner system': {
+    bodyRange: [5, 10],
+    intent: 'Three to eight rocky, super-Earth, or sub-Neptune worlds lead, with rare debris or giant exceptions.',
+  },
+  'Peas-in-a-pod chain': {
+    bodyRange: [4, 9],
+    intent: 'Four to seven similar-sized planets form the main chain, with rare debris or giant exceptions.',
+  },
+  'Solar-ish mixed': {
+    bodyRange: [4, 19],
+    intent: 'Variable inner rocks, variable belts, one to four giants, and outer minor bodies.',
+  },
+  'Migrated giant': {
+    bodyRange: [3, 11],
+    intent: 'At least one hot or warm gas giant plus disrupted survivors and outer remnants.',
+  },
+  'Giant-rich or chaotic': {
+    bodyRange: [5, 16],
+    intent: 'Multiple giants, survivor worlds, debris, and possible captured or anomalous bodies.',
+  },
+} as const
+
 function generateBodyPlan(rng: SeededRng, architectureName: string): BodyPlanKind[] {
   const plan: BodyPlanKind[] = []
 
   if (architectureName === 'Failed system') {
     pushRepeated(plan, weightedCount(rng, [
-      { weight: 40, value: 0 },
-      { weight: 45, value: 1 },
-      { weight: 15, value: 2 },
-    ]), () => rockySurvivorKind(rng))
-    pushRepeated(plan, rng.int(3, 6), () => debrisKind(rng))
-    if (rng.chance(0.12)) plan.push('rogue')
+      { weight: 45, value: 0 },
+      { weight: 55, value: 1 },
+    ]), () => failedRemnantKind(rng))
+    pushRepeated(plan, rng.int(4, 8), () => debrisKind(rng))
+    if (rng.chance(0.1)) plan.push('rogue')
     return plan
   }
 
   if (architectureName === 'Debris-dominated') {
-    pushRepeated(plan, rng.int(1, 3), () => rockySurvivorKind(rng))
-    pushRepeated(plan, rng.int(3, 7), () => debrisKind(rng))
-    if (rng.chance(0.15)) plan.push(giantKind(rng))
+    pushRepeated(plan, rng.int(0, 2), () => rockySurvivorKind(rng))
+    pushRepeated(plan, rng.int(5, 9), () => debrisKind(rng))
+    if (rng.chance(0.12)) plan.push(giantKind(rng))
     if (rng.chance(0.1)) plan.push('anomaly')
     return plan
   }
 
   if (architectureName === 'Sparse rocky') {
-    pushRepeated(plan, rng.int(2, 5), () => rng.chance(0.82) ? planetLikeKind(rng) : rockySurvivorKind(rng))
-    pushRepeated(plan, rng.int(0, 3), () => debrisKind(rng))
-    if (rng.chance(0.18)) plan.push(giantKind(rng))
-    if (rng.chance(0.12)) plan.push('sub-neptune')
+    pushRepeated(plan, rng.int(2, 4), () => rockyOrSuperKind(rng))
+    pushRepeated(plan, rng.int(0, 2), () => debrisKind(rng))
+    if (rng.chance(0.15)) plan.push(giantKind(rng))
+    if (rng.chance(0.1)) plan.push(rng.chance(0.55) ? 'sub-neptune' : 'anomaly')
     return plan
   }
 
   if (architectureName === 'Compact inner system') {
-    pushRepeated(plan, rng.int(4, 9), () => planetLikeKind(rng))
-    pushRepeated(plan, rng.int(0, 2), () => rng.chance(0.7) ? 'belt' : 'dwarf')
-    if (rng.chance(0.12)) plan.push(giantKind(rng))
+    pushRepeated(plan, rng.int(5, 8), () => planetLikeKind(rng))
+    pushRepeated(plan, rng.int(0, 1), () => rng.chance(0.7) ? 'belt' : 'dwarf')
+    if (rng.chance(0.08)) plan.push(giantKind(rng))
     return plan
   }
 
@@ -1187,27 +1238,28 @@ function generateBodyPlan(rng: SeededRng, architectureName: string): BodyPlanKin
       { weight: 35, value: 'super-earth' as const },
       { weight: 20, value: 'sub-neptune' as const },
     ])
-    pushRepeated(plan, rng.int(5, 8), () => rng.chance(0.82) ? family : planetLikeKind(rng))
-    pushRepeated(plan, rng.int(0, 2), () => debrisKind(rng))
-    if (rng.chance(0.1)) plan.push(giantKind(rng))
+    pushRepeated(plan, rng.int(4, 7), () => rng.chance(0.86) ? family : planetLikeKind(rng))
+    pushRepeated(plan, rng.int(0, 1), () => debrisKind(rng))
+    if (rng.chance(0.08)) plan.push(giantKind(rng))
     return plan
   }
 
   if (architectureName === 'Solar-ish mixed') {
-    pushRepeated(plan, rng.int(3, 7), () => planetLikeKind(rng))
+    pushRepeated(plan, rng.int(2, 5), () => rockyOrSuperKind(rng))
     pushRepeated(plan, weightedCount(rng, [
       { weight: 12, value: 0 },
       { weight: 48, value: 1 },
       { weight: 30, value: 2 },
       { weight: 10, value: 3 },
     ]), () => rng.chance(0.7) ? 'belt' : 'ice-belt')
-    pushRepeated(plan, weightedCount(rng, [
-      { weight: 8, value: 0 },
-      { weight: 34, value: 1 },
-      { weight: 36, value: 2 },
-      { weight: 18, value: 3 },
+    const giantCount = weightedCount(rng, [
+      { weight: 42, value: 1 },
+      { weight: 38, value: 2 },
+      { weight: 16, value: 3 },
       { weight: 4, value: 4 },
-    ]), () => giantKind(rng))
+    ])
+    plan.push('gas-giant')
+    pushRepeated(plan, giantCount - 1, () => giantKind(rng))
     pushRepeated(plan, rng.int(1, 5), () => debrisKind(rng))
     if (rng.chance(0.14)) plan.push('rogue')
     if (rng.chance(0.08)) plan.push('anomaly')
@@ -1215,15 +1267,15 @@ function generateBodyPlan(rng: SeededRng, architectureName: string): BodyPlanKin
   }
 
   if (architectureName === 'Migrated giant') {
-    plan.push(giantKind(rng))
-    pushRepeated(plan, rng.int(2, 5), () => rockySurvivorKind(rng))
+    plan.push('gas-giant')
+    pushRepeated(plan, rng.int(1, 4), () => rockySurvivorKind(rng))
     pushRepeated(plan, rng.int(1, 4), () => rng.chance(0.35) ? giantKind(rng) : debrisKind(rng))
     if (rng.chance(0.25)) plan.splice(rng.int(0, plan.length - 1), 0, 'belt')
     if (rng.chance(0.15)) plan.push('anomaly')
     return plan
   }
 
-  pushRepeated(plan, rng.int(2, 6), () => rockySurvivorKind(rng))
+  pushRepeated(plan, rng.int(1, 4), () => rockySurvivorKind(rng))
   pushRepeated(plan, rng.int(2, 5), () => giantKind(rng))
   pushRepeated(plan, rng.int(2, 5), () => debrisKind(rng))
   if (rng.chance(0.25)) plan.splice(0, 0, giantKind(rng))

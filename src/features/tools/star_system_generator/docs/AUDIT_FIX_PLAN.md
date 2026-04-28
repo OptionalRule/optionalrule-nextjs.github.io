@@ -38,10 +38,14 @@ Checkpoint commit:
 
 Purpose: remove split authority between architecture table ranges and actual body-plan output.
 
+Status: completed in checkpoint `refactor: unify star system architecture body planning`.
+
+Design note: broad generated body counts are retained intentionally. The source architecture table gives descriptive structure rather than exact counts for several rows, and the current generator keeps weighted variation plus rare crossovers so systems do not collapse into fixed templates.
+
 Work items:
-- Replace `bodyCount` in `architectures` with explicit architecture plan metadata, or make `generateArchitecture` return the actual body plan.
-- Decide whether broad body counts intentionally exceed source table counts; document that choice if retained.
-- Add required-category rules for each architecture:
+- Replace `bodyCount` in `architectures` with explicit architecture plan metadata, or make `generateArchitecture` return the actual body plan. Completed with explicit architecture body-plan metadata and removal of dead `bodyCount`.
+- Decide whether broad body counts intentionally exceed source table counts; document that choice if retained. Completed; broad counts are intentional for variety and crossover support.
+- Add required-category rules for each architecture. Completed:
   - Failed system: debris/dwarfs dominate, zero to few full planets.
   - Debris-dominated: belts/planetesimals dominate, few full planets.
   - Sparse rocky: rocky/super-terrestrial body count is primary, with rare giants and debris.
@@ -50,7 +54,7 @@ Work items:
   - Solar-ish mixed: variable inner rocks, variable belts, variable giants, and outer ice/dwarf bodies.
   - Migrated giant: at least one hot/warm giant plus disrupted survivors.
   - Giant-rich or chaotic: multiple giants plus debris/captured bodies.
-- Add architecture-plan tests that check range intent and required category presence.
+- Add architecture-plan tests that check range intent and required category presence. Completed.
 
 Acceptance checks:
 - Architecture body count and category distribution tests pass.
