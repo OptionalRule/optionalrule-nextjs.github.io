@@ -20,6 +20,7 @@ import type {
 } from '../../types'
 import { calculateHabitableZone, calculateInsolation, calculateSnowLine, classifyThermalZone, roundTo } from './calculations'
 import { d8, d12, d20, d100, pickOne, pickTable, twoD6 } from './dice'
+import { extremeHotThermalZones, hotThermalZones, type BodyPlanKind, type WorldClassOption } from './domain'
 import { createSeededRng, type SeededRng } from './rng'
 import {
   ageStates,
@@ -152,30 +153,11 @@ const guHazardTable = [
   'Systemic cascade',
 ] as const
 
-interface WorldClassOption {
-  className: string
-  category: BodyCategory
-  massClass: string
-}
-
 interface FilteredWorldClass {
   bodyClass: WorldClassOption
   physical: BodyPhysicalHints
   filterNotes: Array<Fact<string>>
 }
-
-type BodyPlanKind =
-  | 'rocky'
-  | 'super-earth'
-  | 'sub-neptune'
-  | 'belt'
-  | 'ice-belt'
-  | 'gas-giant'
-  | 'ice-giant'
-  | 'dwarf'
-  | 'rogue'
-  | 'anomaly'
-  | 'thermal'
 
 type SettlementSiteCategory =
   | 'Surface settlement'
@@ -199,7 +181,7 @@ interface SettlementAnchor {
   moonId?: string
 }
 
-const worldClassesByThermalZone: Record<string, readonly WorldClassOption[]> = {
+export const worldClassesByThermalZone: Record<string, readonly WorldClassOption[]> = {
   Furnace: [
     { className: 'Iron remnant core', category: 'rocky-planet', massClass: 'Mercury-scale remnant' },
     { className: 'Ultra-dense super-Mercury', category: 'rocky-planet', massClass: 'Dense terrestrial' },
@@ -340,7 +322,7 @@ const worldClassesByThermalZone: Record<string, readonly WorldClassOption[]> = {
   ],
 }
 
-const forcedWorldClasses = {
+export const forcedWorldClasses = {
   rocky: { className: 'Rocky terrestrial world', category: 'rocky-planet', massClass: 'Terrestrial' },
   superEarth: { className: 'Super-terrestrial world', category: 'super-earth', massClass: 'Super-Earth' },
   subNeptune: { className: 'Volatile-rich sub-Neptune', category: 'sub-neptune', massClass: 'Sub-Neptune' },
@@ -352,7 +334,7 @@ const forcedWorldClasses = {
   rogue: { className: 'Rogue captured planet', category: 'rogue-captured', massClass: 'Captured planet' },
 } satisfies Record<string, WorldClassOption>
 
-const beltClassTable: Array<{ min: number; max: number; value: WorldClassOption }> = [
+export const beltClassTable: Array<{ min: number; max: number; value: WorldClassOption }> = [
   { min: 1, max: 1, value: { className: 'Sparse rubble', category: 'belt', massClass: 'Minor-body belt' } },
   { min: 2, max: 2, value: { className: 'Metal-rich asteroid belt', category: 'belt', massClass: 'Metal-rich belt' } },
   { min: 3, max: 3, value: { className: 'Carbonaceous belt', category: 'belt', massClass: 'Carbonaceous belt' } },
@@ -367,8 +349,11 @@ const beltClassTable: Array<{ min: number; max: number; value: WorldClassOption 
   { min: 12, max: 12, value: { className: 'Programmable-matter microcluster belt', category: 'belt', massClass: 'Programmable-matter debris' } },
 ]
 
-const hotThermalZones = new Set(['Furnace', 'Inferno', 'Hot'])
-const extremeHotThermalZones = new Set(['Furnace', 'Inferno'])
+export const allWorldClassOptions: readonly WorldClassOption[] = [
+  ...Object.values(worldClassesByThermalZone).flat(),
+  ...Object.values(forcedWorldClasses),
+  ...beltClassTable.map((entry) => entry.value),
+]
 
 function isClassAvailableInThermalZone(thermalZone: string, bodyClass: WorldClassOption): boolean {
   return worldClassesByThermalZone[thermalZone]?.some((option) =>

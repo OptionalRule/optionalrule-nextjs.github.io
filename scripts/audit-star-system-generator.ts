@@ -1,4 +1,13 @@
 import { generateSystem } from '../src/features/tools/star_system_generator/lib/generator/index'
+import {
+  coldThermalZones as coldZones,
+  envelopeCategories,
+  fullPlanetCategories,
+  giantCategories,
+  minorBodyCategories,
+  rockyChainCategories,
+  solidSurfaceCategories,
+} from '../src/features/tools/star_system_generator/lib/generator/domain'
 import { frontierStarTypes, realisticStarTypes } from '../src/features/tools/star_system_generator/lib/generator/tables'
 import type {
   BodyCategory,
@@ -80,9 +89,6 @@ const tones: GeneratorTone[] = ['balanced', 'astronomy', 'cinematic']
 const guPreferences: GuPreference[] = ['low', 'normal', 'high', 'fracture']
 const settlementDensities: SettlementDensity[] = ['sparse', 'normal', 'crowded', 'hub']
 
-const envelopeCategories = new Set<BodyCategory>(['sub-neptune', 'gas-giant', 'ice-giant'])
-const solidSurfaceCategories = new Set<BodyCategory>(['rocky-planet', 'super-earth', 'dwarf-body', 'rogue-captured'])
-const coldZones = new Set(['Cold', 'Cryogenic', 'Dark'])
 const extremeHotZones = new Set(['Furnace', 'Inferno'])
 
 const forbiddenAlienPatterns = [
@@ -300,11 +306,6 @@ function phraseKey(value: string): string {
 function countBodiesByCategory(system: GeneratedSystem, categories: ReadonlySet<BodyCategory>): number {
   return system.bodies.filter((body) => categories.has(body.category.value)).length
 }
-
-const fullPlanetCategories = new Set<BodyCategory>(['rocky-planet', 'super-earth', 'sub-neptune', 'gas-giant', 'ice-giant'])
-const minorBodyCategories = new Set<BodyCategory>(['belt', 'dwarf-body', 'rogue-captured'])
-const rockyChainCategories = new Set<BodyCategory>(['rocky-planet', 'super-earth', 'sub-neptune'])
-const giantCategories = new Set<BodyCategory>(['gas-giant', 'ice-giant'])
 
 function auditArchitectureIntent(system: GeneratedSystem, findings: Finding[]): void {
   const seed = system.seed
