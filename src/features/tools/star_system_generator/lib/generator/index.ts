@@ -860,7 +860,7 @@ function estimatedPlanMassEarth(planKind: BodyPlanKind, known?: PartialKnownBody
   if (known?.category?.value === 'rocky-planet') return 1.5
   if (known?.category?.value === 'super-earth') return 6
   if (known?.category?.value === 'sub-neptune') return 14
-  if (known?.category?.value === 'gas-giant') return 120
+  if (known?.category?.value === 'gas-giant') return 32
   if (known?.category?.value === 'ice-giant') return 17
   if (known?.category?.value === 'belt') return 0.001
   if (known?.category?.value === 'dwarf-body') return 0.05
@@ -872,7 +872,7 @@ function estimatedPlanMassEarth(planKind: BodyPlanKind, known?: PartialKnownBody
     'sub-neptune': 14,
     belt: 0.001,
     'ice-belt': 0.001,
-    'gas-giant': 120,
+    'gas-giant': 32,
     'ice-giant': 17,
     dwarf: 0.05,
     rogue: 2,
@@ -889,6 +889,7 @@ function mutualHillRadius(orbitAu: number, massEarth: number, otherOrbitAu: numb
 }
 
 function massAwareSeparation(orbitAu: number, massEarth: number, otherOrbitAu: number, otherMassEarth: number, stellarMassSolar: number): number {
+  if (massEarth <= 0.1 || otherMassEarth <= 0.1) return Math.max(orbitSeparation(orbitAu), orbitSeparation(otherOrbitAu))
   const hillSpacing = targetMutualHillRadii(massEarth, otherMassEarth) * mutualHillRadius(orbitAu, massEarth, otherOrbitAu, otherMassEarth, stellarMassSolar)
   return Math.max(orbitSeparation(orbitAu), orbitSeparation(otherOrbitAu), hillSpacing)
 }

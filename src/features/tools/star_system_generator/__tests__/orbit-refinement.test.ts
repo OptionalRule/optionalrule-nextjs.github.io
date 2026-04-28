@@ -72,6 +72,16 @@ describe('orbit refinement', () => {
     expect(systems.filter((system) => outerSnowRatio(system) >= 1.8).length / systems.length).toBeGreaterThan(0.9)
   })
 
+  it('does not let minor-body belts shove solar-ish giants into implausibly late outer slots', () => {
+    const system = generateSystem({ ...options, seed: 'eafcd0e96a4d804f' })
+    const snowLine = system.zones.snowLineAu.value
+    const giants = system.bodies.filter((body) => body.category.value === 'gas-giant' || body.category.value === 'ice-giant')
+
+    expect(system.architecture.name.value).toBe('Solar-ish mixed')
+    expect(giants.length).toBeGreaterThan(0)
+    expect(Math.min(...giants.map((body) => body.orbitAu.value / snowLine))).toBeLessThanOrEqual(2)
+  })
+
   it('extends giant-rich systems beyond the snow line', () => {
     const systems = systemsFor('Giant-rich or chaotic')
     expect(systems.length).toBeGreaterThan(10)

@@ -5,7 +5,7 @@ describe('stellarLabels', () => {
   it('describes ordinary stellar classes with source-table labels', () => {
     expect(formatStellarClass('G star')).toBe('G-type star')
     expect(stellarClassNote('G star')).toContain('Solar-like')
-    expect(stellarClassNote('K star')).toContain('colony candidate')
+    expect(stellarClassNote('K star')).toContain('Stable, long-lived star')
   })
 
   it('preserves remnant and substellar distinctions', () => {
