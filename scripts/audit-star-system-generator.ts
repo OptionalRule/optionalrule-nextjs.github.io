@@ -9,6 +9,7 @@ import {
   solidSurfaceCategories,
 } from '../src/features/tools/star_system_generator/lib/generator/domain'
 import { frontierStarTypes, realisticStarTypes } from '../src/features/tools/star_system_generator/lib/generator/tables'
+import { validateSystem, type ValidationFinding } from '../src/features/tools/star_system_generator/lib/generator/validation'
 import type {
   BodyCategory,
   GeneratedSystem,
@@ -84,6 +85,7 @@ const auditProfile = (process.env.STAR_SYSTEM_AUDIT_PROFILE ?? 'default') as key
 const profileCorpusPerOption = auditProfiles[auditProfile] ?? auditProfiles.default
 const corpusPerOption = Number.parseInt(process.env.STAR_SYSTEM_AUDIT_COUNT_PER_OPTION ?? String(profileCorpusPerOption), 10)
 const findingLimit = Number.parseInt(process.env.STAR_SYSTEM_AUDIT_FINDING_LIMIT ?? '50', 10)
+const includeReportOnlyValidation = process.env.STAR_SYSTEM_AUDIT_REPORT_ONLY === '1'
 const distributions: GeneratorDistribution[] = ['frontier', 'realistic']
 const tones: GeneratorTone[] = ['balanced', 'astronomy', 'cinematic']
 const guPreferences: GuPreference[] = ['low', 'normal', 'high', 'fracture']
@@ -261,6 +263,21 @@ function makeOptions(
 
 function addFinding(findings: Finding[], severity: Severity, seed: string, path: string, message: string): void {
   findings.push({ severity, seed, path, message })
+}
+
+function addValidationFindings(findings: Finding[], seed: string, validationFindings: ValidationFinding[]): void {
+  for (const validationFinding of validationFindings) {
+    if (validationFinding.severity === 'info') continue
+    if (validationFinding.severity === 'warning' && !includeReportOnlyValidation) continue
+
+    addFinding(
+      findings,
+      validationFinding.severity,
+      seed,
+      validationFinding.path,
+      `${validationFinding.code}: ${validationFinding.message}`
+    )
+  }
 }
 
 function assertText(
@@ -548,6 +565,8 @@ function auditSettlement(system: GeneratedSystem, settlement: Settlement, settle
 
 function auditSystem(system: GeneratedSystem, findings: Finding[], stats: CorpusStats): void {
   const seed = system.seed
+  addValidationFindings(findings, seed, validateSystem(system))
+
   stats.systems += 1
   stats.bodies += system.bodies.length
   stats.settlements += system.settlements.length
