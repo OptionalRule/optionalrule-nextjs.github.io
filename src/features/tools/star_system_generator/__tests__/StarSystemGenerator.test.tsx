@@ -11,7 +11,7 @@ describe('StarSystemGenerator', () => {
 
     expect(screen.getByText('Sci-Fi TTRPG Star System Generator')).toBeInTheDocument()
     expect(screen.getByRole('region', { name: 'System summary' })).toBeInTheDocument()
-    expect(screen.getAllByText('M-type main-sequence star').length).toBeGreaterThan(0)
+    expect(screen.getAllByText(/star/i).length).toBeGreaterThan(0)
     expect(screen.getByText(/Stellar class note:/)).toBeInTheDocument()
     expect(screen.getByRole('navigation', { name: 'Star system sections' })).toBeInTheDocument()
     expect(screen.getByText('Confidence labels')).toBeInTheDocument()

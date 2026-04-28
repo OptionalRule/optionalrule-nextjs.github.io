@@ -19,3 +19,5 @@ Commit work at logical checkpoints during development. For this feature, good ch
 Run `npm run audit:star-system-generator` after generator-rule changes. The audit generates a deterministic corpus across frontier and realistic distributions, fails on hard contradictions or missing fields, and reports warnings for coverage or tuning gaps that are useful during iterative table work.
 
 Settlement density is intentionally variable. The density control chooses a range, then reachability, GU intensity, architecture, hazards, and top presence scores nudge the final number so normal systems do not all show the same count.
+
+Stellar generation should preserve the labels and d100 ranges in `docs/SOURCE_WRITEUP.md`. The audit reports star-type counts separately for realistic and frontier distributions so aggregate samples do not hide table drift.

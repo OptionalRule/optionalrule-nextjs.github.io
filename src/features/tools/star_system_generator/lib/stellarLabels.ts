@@ -1,22 +1,22 @@
 const labels: Record<string, string> = {
   'M dwarf': 'M-type main-sequence star',
-  'K dwarf': 'K-type main-sequence star',
-  'G dwarf': 'G-type main-sequence star',
-  'F dwarf': 'F-type main-sequence star',
-  'A/B bright star': 'A/B bright star',
-  'White dwarf': 'White dwarf remnant',
-  'Brown dwarf': 'Brown dwarf / substellar primary',
+  'K star': 'K-type star',
+  'G star': 'G-type star',
+  'F star': 'F-type star',
+  'O/B/A bright star': 'O/B/A bright star',
+  'White dwarf/remnant': 'White dwarf/remnant',
+  'Brown dwarf/substellar primary': 'Brown dwarf/substellar primary',
   'Gate-selected anomaly': 'Gate-selected stellar anomaly',
 }
 
 const notes: Record<string, string> = {
   'M dwarf': 'Red dwarf; common, long-lived, and often flare-relevant.',
-  'K dwarf': 'Orange main-sequence star; stable and valuable for colony systems.',
-  'G dwarf': 'Sun-like main-sequence star; "dwarf" is the normal luminosity class.',
-  'F dwarf': 'Bright main-sequence star; hotter and shorter-lived than the Sun.',
-  'A/B bright star': 'Massive bright primary; rare in reachable frontier samples.',
-  'White dwarf': 'Stellar remnant; useful for relic systems and debris salvage.',
-  'Brown dwarf': 'Substellar primary; dark, cold, and useful for hidden systems.',
+  'K star': 'Excellent long-term colony candidate: stable, long-lived, and less flare-prone than many M dwarfs.',
+  'G star': 'Solar-like, familiar, valuable, and politically contested.',
+  'F star': 'Bright star with a wider habitable zone, shorter stable era, and more radiation stress.',
+  'O/B/A bright star': 'Rare, luminous, young, dangerous, and visible across long distances.',
+  'White dwarf/remnant': 'Ancient remnant system with stripped worlds, relic stations, and exotic hazards.',
+  'Brown dwarf/substellar primary': 'Dark system suited to rogue refuel sites, ice moons, and hidden bases.',
   'Gate-selected anomaly': 'Reachability or GU geometry matters more than normal census weighting.',
 }
 

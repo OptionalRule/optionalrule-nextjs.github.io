@@ -1,4 +1,5 @@
 import { generateSystem } from '../src/features/tools/star_system_generator/lib/generator/index'
+import { frontierStarTypes, realisticStarTypes } from '../src/features/tools/star_system_generator/lib/generator/tables'
 import type {
   BodyCategory,
   GeneratedSystem,
@@ -23,6 +24,7 @@ interface CorpusStats {
   settlements: number
   moons: number
   starTypes: Map<string, number>
+  starTypesByDistribution: Record<GeneratorDistribution, Map<string, number>>
   architectures: Map<string, number>
   categories: Map<BodyCategory, number>
   settlementCategories: Map<string, number>
@@ -368,6 +370,7 @@ function auditSystem(system: GeneratedSystem, findings: Finding[], stats: Corpus
   stats.settlements += system.settlements.length
   stats.moons += system.bodies.reduce((total, body) => total + body.moons.length, 0)
   increment(stats.starTypes, system.primary.spectralType.value)
+  increment(stats.starTypesByDistribution[system.options.distribution], system.primary.spectralType.value)
   increment(stats.architectures, system.architecture.name.value)
   system.bodies.forEach((body) => increment(stats.categories, body.category.value))
   system.settlements.forEach((settlement) => increment(stats.settlementCategories, settlement.siteCategory.value))
@@ -408,7 +411,7 @@ function auditSystem(system: GeneratedSystem, findings: Finding[], stats: Corpus
 
 function auditCoverage(stats: CorpusStats, findings: Finding[]): void {
   const syntheticSeed = 'corpus'
-  const expectedStarTypes = ['M dwarf', 'K dwarf', 'G dwarf', 'F dwarf', 'A/B bright star', 'White dwarf', 'Brown dwarf']
+  const expectedStarTypes = ['M dwarf', 'K star', 'G star', 'F star', 'O/B/A bright star', 'White dwarf/remnant', 'Brown dwarf/substellar primary']
   const expectedCategories: BodyCategory[] = [
     'rocky-planet',
     'super-earth',
@@ -448,6 +451,34 @@ function auditCoverage(stats: CorpusStats, findings: Finding[]): void {
   if (stats.moons < stats.systems) {
     addFinding(findings, 'warning', syntheticSeed, 'bodies.moons', 'Average moon count fell below one per system.')
   }
+
+  auditStarDistribution('realistic', realisticStarTypes, stats, findings)
+  auditStarDistribution('frontier', frontierStarTypes, stats, findings)
+}
+
+function auditStarDistribution(
+  distribution: GeneratorDistribution,
+  table: typeof realisticStarTypes,
+  stats: CorpusStats,
+  findings: Finding[]
+): void {
+  const observed = stats.starTypesByDistribution[distribution]
+  const sampleSize = [...observed.values()].reduce((sum, count) => sum + count, 0)
+  const allowedDelta = Math.max(8, Math.ceil(sampleSize * 0.06))
+
+  for (const entry of table) {
+    const expected = ((entry.max - entry.min + 1) / 100) * sampleSize
+    const actual = observed.get(entry.value.type) ?? 0
+    if (Math.abs(actual - expected) > allowedDelta) {
+      addFinding(
+        findings,
+        'error',
+        'corpus',
+        `primary.spectralType.${distribution}`,
+        `${distribution} star type "${entry.value.type}" produced ${actual}; expected about ${expected.toFixed(1)} from d100 range ${entry.min}-${entry.max}.`
+      )
+    }
+  }
 }
 
 function formatMap<Key>(map: Map<Key, number>): string {
@@ -464,6 +495,10 @@ const stats: CorpusStats = {
   settlements: 0,
   moons: 0,
   starTypes: new Map(),
+  starTypesByDistribution: {
+    frontier: new Map(),
+    realistic: new Map(),
+  },
   architectures: new Map(),
   categories: new Map(),
   settlementCategories: new Map(),
@@ -489,6 +524,8 @@ console.log(`Settlements: ${stats.settlements}`)
 console.log(`Errors: ${errors.length}`)
 console.log(`Warnings: ${warnings.length}`)
 console.log(`Star types: ${formatMap(stats.starTypes)}`)
+console.log(`Frontier star types: ${formatMap(stats.starTypesByDistribution.frontier)}`)
+console.log(`Realistic star types: ${formatMap(stats.starTypesByDistribution.realistic)}`)
 console.log(`Body categories: ${formatMap(stats.categories)}`)
 console.log(`Settlement categories: ${formatMap(stats.settlementCategories)}`)
 console.log(`Architectures: ${formatMap(stats.architectures)}`)

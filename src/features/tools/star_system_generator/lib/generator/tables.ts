@@ -7,23 +7,23 @@ export interface StarTypeProfile {
 }
 
 export const realisticStarTypes: Array<TableEntry<StarTypeProfile>> = [
-  { min: 1, max: 70, value: { type: 'M dwarf', massRange: [0.12, 0.55], luminosityRange: [0.003, 0.08] } },
-  { min: 71, max: 83, value: { type: 'K dwarf', massRange: [0.55, 0.85], luminosityRange: [0.08, 0.45] } },
-  { min: 84, max: 91, value: { type: 'G dwarf', massRange: [0.85, 1.1], luminosityRange: [0.6, 1.5] } },
-  { min: 92, max: 96, value: { type: 'F dwarf', massRange: [1.1, 1.45], luminosityRange: [1.5, 5.0] } },
-  { min: 97, max: 98, value: { type: 'A/B bright star', massRange: [1.5, 3.2], luminosityRange: [8.0, 60.0] } },
-  { min: 99, max: 99, value: { type: 'White dwarf', massRange: [0.5, 1.2], luminosityRange: [0.0005, 0.02] } },
-  { min: 100, max: 100, value: { type: 'Brown dwarf', massRange: [0.02, 0.08], luminosityRange: [0.00001, 0.0005] } },
+  { min: 1, max: 1, value: { type: 'O/B/A bright star', massRange: [1.5, 8.0], luminosityRange: [8.0, 5000.0] } },
+  { min: 2, max: 4, value: { type: 'F star', massRange: [1.1, 1.45], luminosityRange: [1.5, 5.0] } },
+  { min: 5, max: 11, value: { type: 'G star', massRange: [0.85, 1.1], luminosityRange: [0.6, 1.5] } },
+  { min: 12, max: 24, value: { type: 'K star', massRange: [0.55, 0.85], luminosityRange: [0.08, 0.45] } },
+  { min: 25, max: 94, value: { type: 'M dwarf', massRange: [0.12, 0.55], luminosityRange: [0.003, 0.08] } },
+  { min: 95, max: 98, value: { type: 'White dwarf/remnant', massRange: [0.5, 1.2], luminosityRange: [0.0005, 0.02] } },
+  { min: 99, max: 100, value: { type: 'Brown dwarf/substellar primary', massRange: [0.02, 0.08], luminosityRange: [0.00001, 0.0005] } },
 ]
 
 export const frontierStarTypes: Array<TableEntry<StarTypeProfile>> = [
   { min: 1, max: 48, value: { type: 'M dwarf', massRange: [0.12, 0.55], luminosityRange: [0.003, 0.08] } },
-  { min: 49, max: 68, value: { type: 'K dwarf', massRange: [0.55, 0.85], luminosityRange: [0.08, 0.45] } },
-  { min: 69, max: 80, value: { type: 'G dwarf', massRange: [0.85, 1.1], luminosityRange: [0.6, 1.5] } },
-  { min: 81, max: 87, value: { type: 'F dwarf', massRange: [1.1, 1.45], luminosityRange: [1.5, 5.0] } },
-  { min: 88, max: 91, value: { type: 'A/B bright star', massRange: [1.5, 3.2], luminosityRange: [8.0, 60.0] } },
-  { min: 92, max: 95, value: { type: 'White dwarf', massRange: [0.5, 1.2], luminosityRange: [0.0005, 0.02] } },
-  { min: 96, max: 98, value: { type: 'Brown dwarf', massRange: [0.02, 0.08], luminosityRange: [0.00001, 0.0005] } },
+  { min: 49, max: 68, value: { type: 'K star', massRange: [0.55, 0.85], luminosityRange: [0.08, 0.45] } },
+  { min: 69, max: 80, value: { type: 'G star', massRange: [0.85, 1.1], luminosityRange: [0.6, 1.5] } },
+  { min: 81, max: 87, value: { type: 'F star', massRange: [1.1, 1.45], luminosityRange: [1.5, 5.0] } },
+  { min: 88, max: 91, value: { type: 'O/B/A bright star', massRange: [1.5, 8.0], luminosityRange: [8.0, 5000.0] } },
+  { min: 92, max: 95, value: { type: 'White dwarf/remnant', massRange: [0.5, 1.2], luminosityRange: [0.0005, 0.02] } },
+  { min: 96, max: 98, value: { type: 'Brown dwarf/substellar primary', massRange: [0.02, 0.08], luminosityRange: [0.00001, 0.0005] } },
   { min: 99, max: 100, value: { type: 'Gate-selected anomaly', massRange: [0.2, 1.4], luminosityRange: [0.01, 2.0] } },
 ]
 
@@ -63,7 +63,7 @@ export const architectures: Array<TableEntry<{ name: string; description: string
   { min: 1, max: 8, value: { name: 'Debris-dominated', description: 'Belts, rubble, impact hazards, and few major planets.', bodyCount: [4, 7] } },
   { min: 9, max: 21, value: { name: 'Compact rocky chain', description: 'Close-in rocky and super-Earth worlds in tight orbits.', bodyCount: [5, 8] } },
   { min: 22, max: 36, value: { name: 'Compact mixed chain', description: 'Rock worlds mixed with sub-Neptunes and regular spacing.', bodyCount: [5, 8] } },
-  { min: 37, max: 51, value: { name: 'K-dwarf colony candidate', description: 'Stable inner worlds with cold outer resources.', bodyCount: [6, 9] } },
+  { min: 37, max: 51, value: { name: 'K-star colony candidate', description: 'Stable inner worlds with cold outer resources.', bodyCount: [6, 9] } },
   { min: 52, max: 64, value: { name: 'Solar-ish mixed', description: 'Inner rocks, belt, outer giants, and ice-zone resources.', bodyCount: [7, 10] } },
   { min: 65, max: 75, value: { name: 'Giant-bearing system', description: 'One or two outer giants with moon economies.', bodyCount: [7, 10] } },
   { min: 76, max: 88, value: { name: 'Disrupted inner system', description: 'Migration, heat, or binary forcing has scarred the inner orbits.', bodyCount: [5, 8] } },

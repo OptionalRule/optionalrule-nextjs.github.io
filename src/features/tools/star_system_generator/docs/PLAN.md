@@ -187,6 +187,7 @@ M2 - Core Types, RNG, Dice, and Tables
 
 M3 - Astronomy Skeleton
 - [x] Implement stellar generation for fictional systems.
+- [x] Align stellar generation labels and d100 ranges with the source writeup's primary-star tables.
 - [x] Implement reachable-volume bias.
 - [x] Implement age, metallicity, and activity.
 - [ ] Implement multiplicity.

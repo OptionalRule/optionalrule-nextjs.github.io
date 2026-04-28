@@ -2,14 +2,14 @@ import { describe, expect, it } from 'vitest'
 import { formatStellarClass, stellarClassNote } from '../lib/stellarLabels'
 
 describe('stellarLabels', () => {
-  it('describes ordinary dwarf classes as main-sequence stars for display', () => {
-    expect(formatStellarClass('G dwarf')).toBe('G-type main-sequence star')
-    expect(stellarClassNote('G dwarf')).toContain('Sun-like')
-    expect(stellarClassNote('G dwarf')).toContain('normal luminosity class')
+  it('describes ordinary stellar classes with source-table labels', () => {
+    expect(formatStellarClass('G star')).toBe('G-type star')
+    expect(stellarClassNote('G star')).toContain('Solar-like')
+    expect(stellarClassNote('K star')).toContain('colony candidate')
   })
 
   it('preserves remnant and substellar distinctions', () => {
-    expect(formatStellarClass('White dwarf')).toBe('White dwarf remnant')
-    expect(formatStellarClass('Brown dwarf')).toBe('Brown dwarf / substellar primary')
+    expect(formatStellarClass('White dwarf/remnant')).toBe('White dwarf/remnant')
+    expect(formatStellarClass('Brown dwarf/substellar primary')).toBe('Brown dwarf/substellar primary')
   })
 })

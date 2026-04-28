@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import type { GenerationOptions } from '../types'
 import { applyNoAlienTextGuard, generateSystem } from '../lib/generator'
+import { frontierStarTypes, realisticStarTypes } from '../lib/generator/tables'
 
 const options: GenerationOptions = {
   seed: '7f3a9c2e41b8d09a',
@@ -11,6 +12,31 @@ const options: GenerationOptions = {
 }
 
 describe('generateSystem', () => {
+  it('matches the source stellar generation tables', () => {
+    const summarize = (table: typeof realisticStarTypes) =>
+      table.map((entry) => [entry.min, entry.max, entry.value.type])
+
+    expect(summarize(realisticStarTypes)).toEqual([
+      [1, 1, 'O/B/A bright star'],
+      [2, 4, 'F star'],
+      [5, 11, 'G star'],
+      [12, 24, 'K star'],
+      [25, 94, 'M dwarf'],
+      [95, 98, 'White dwarf/remnant'],
+      [99, 100, 'Brown dwarf/substellar primary'],
+    ])
+    expect(summarize(frontierStarTypes)).toEqual([
+      [1, 48, 'M dwarf'],
+      [49, 68, 'K star'],
+      [69, 80, 'G star'],
+      [81, 87, 'F star'],
+      [88, 91, 'O/B/A bright star'],
+      [92, 95, 'White dwarf/remnant'],
+      [96, 98, 'Brown dwarf/substellar primary'],
+      [99, 100, 'Gate-selected anomaly'],
+    ])
+  })
+
   it('returns identical systems for the same seed and options', () => {
     expect(generateSystem(options)).toEqual(generateSystem(options))
   })

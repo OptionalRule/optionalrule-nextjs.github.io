@@ -303,7 +303,7 @@ function generateArchitecture(rng: SeededRng, options: GenerationOptions, primar
   if (options.tone === 'astronomy') roll = Math.max(1, roll - 6)
   if (primary.metallicity.value === 'Metal-rich') roll += 10
   if (primary.metallicity.value === 'Very metal-rich') roll += 20
-  if (['K dwarf', 'G dwarf', 'F dwarf'].includes(primary.spectralType.value)) roll += 5
+  if (['K star', 'G star', 'F star'].includes(primary.spectralType.value)) roll += 5
   if (primary.metallicity.value === 'Metal-poor') roll -= 10
   if (primary.massSolar.value < 0.18 && primary.spectralType.value === 'M dwarf') roll -= 10
   if (reachabilityClass === 'Resource corridor' || reachabilityClass === 'Resonance hub') roll += 10
@@ -1077,7 +1077,7 @@ function generateGuOverlay(rng: SeededRng, preference: GuPreference, primary: St
   if (primary.spectralType.value === 'M dwarf' && ['Flare-prone', 'Violent flare cycle', 'Extreme activity / metric-amplified events'].includes(primary.activity.value)) baseIndex += 1
   if (bodies.some((body) => body.category.value === 'gas-giant')) baseIndex += 1
   if (architectureName.includes('Compact')) baseIndex += 1
-  if (primary.spectralType.value === 'G dwarf' || primary.spectralType.value === 'K dwarf') {
+  if (primary.spectralType.value === 'G star' || primary.spectralType.value === 'K star') {
     if (primary.activity.value === 'Quiet') baseIndex -= 1
   }
   baseIndex = Math.max(0, Math.min(guIntensities.length - 1, baseIndex))

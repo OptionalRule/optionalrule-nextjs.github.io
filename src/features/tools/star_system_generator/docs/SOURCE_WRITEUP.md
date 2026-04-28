@@ -120,27 +120,27 @@ When generating unknown stars, use one of two distributions.
 
 Use **Realistic Local-ish Distribution** if you want astronomy-forward maps.
 
-|  d100 | Primary type                              |
-| ----: | ----------------------------------------- |
-| 01–70 | M dwarf                                   |
-| 71–83 | K dwarf                                   |
-| 84–91 | G dwarf                                   |
-| 92–96 | F dwarf                                   |
-| 97–98 | A/B bright star                           |
-|    99 | White dwarf                               |
-|    00 | Brown dwarf or unusual substellar primary |
+|  d100 | Primary type                    | Campaign meaning                                                                                            |
+| ----: | ------------------------------- | ----------------------------------------------------------------------------------------------------------- |
+|    01 | O/B/A bright star               | Rare, luminous, young, dangerous, visible across long distances. Good for military outposts, hazards, debris disks. |
+| 02–04 | F star                          | Bright, wider habitable zone, shorter stable era, more radiation stress.                                    |
+| 05–11 | G star                          | Solar-like, familiar, valuable, politically contested.                                                       |
+| 12–24 | K star                          | Excellent long-term colony candidate: stable, long-lived, less flare-prone than many M dwarfs.              |
+| 25–94 | M dwarf                         | Most common field-star result; compact systems, close habitable zones, flare/tidal-lock complications.       |
+| 95–98 | White dwarf/remnant             | Ancient system, stripped worlds, relic stations, exotic hazards.                                             |
+| 99–00 | Brown dwarf/substellar primary  | Dark system, rogue refuel site, ice moons, hidden bases.                                                     |
 
 Use **Reachable Frontier Distribution** if you want the 150 playable systems to be more diverse and valuable.
 
 |  d100 | Primary type                                                                     |
 | ----: | -------------------------------------------------------------------------------- |
 | 01–48 | M dwarf                                                                          |
-| 49–68 | K dwarf                                                                          |
-| 69–80 | G dwarf                                                                          |
-| 81–87 | F dwarf                                                                          |
-| 88–91 | A/B bright star                                                                  |
-| 92–95 | White dwarf or post-main-sequence remnant                                        |
-| 96–98 | Brown dwarf / dark system                                                        |
+| 49–68 | K star                                                                           |
+| 69–80 | G star                                                                           |
+| 81–87 | F star                                                                           |
+| 88–91 | O/B/A bright star                                                                |
+| 92–95 | White dwarf/remnant                                                              |
+| 96–98 | Brown dwarf/substellar primary                                                   |
 | 99–00 | Special: compact binary, trinary, stellar remnant pair, or gate-selected anomaly |
 
 The second table is not “more realistic” as a raw stellar census. It is more realistic for your **reachable game volume**, because travel, economics, and Iggygate placement bias which systems matter.
@@ -225,10 +225,10 @@ Use this table for a normal stellar census:
 | ----------- | ---------------: |
 | Brown dwarf |              11+ |
 | M dwarf     |              10+ |
-| K dwarf     |               9+ |
-| G dwarf     |               8+ |
-| F dwarf     |               7+ |
-| A/B star    |               6+ |
+| K star      |               9+ |
+| G star      |               8+ |
+| F star      |               7+ |
+| O/B/A star  |               6+ |
 
 Then apply setting modifier:
 
@@ -322,7 +322,7 @@ Roll d100. Apply modifiers:
 | 22–29 | Compact mixed chain       | Rock worlds mixed with sub-Neptunes.                        |
 | 30–36 | Peas-in-a-pod chain       | Similar-sized planets, regular spacing.                     |
 | 37–44 | M-dwarf close system      | Tight orbits, tidal locking, flare pressure.                |
-| 45–51 | K-dwarf colony candidate  | Stable inner worlds, possible cold resources.               |
+| 45–51 | K-star colony candidate   | Stable inner worlds, possible cold resources.               |
 | 52–58 | Solar-ish mixed           | Inner rocks, belt, gas/ice giants, outer ice zone.          |
 | 59–64 | Giant-light system        | Mostly small planets, no major Jovians.                     |
 | 65–70 | Giant-bearing system      | One or two outer giants with moons.                         |
@@ -1619,4 +1619,3 @@ When the table wants a mystery, use one of five sources: **natural astronomy, Ge
 [9]: https://ui.adsabs.harvard.edu/abs/2010PASP..122..905J/abstract?utm_source=chatgpt.com "Giant Planet Occurrence in the Stellar Mass-Metallicity Plane"
 [10]: https://exoplanetarchive.ipac.caltech.edu/docs/poet_calculations.html "How Predicted Observables for Exoplanets are Calculated"
 [11]: https://assets.science.nasa.gov/content/dam/science/missions/hubble/releases/2012/07/STScI-01EVSRD5C3K2XEF3KXNAQJPW8M.pdf?utm_source=chatgpt.com "On the Evolution of the Snow Line in Protoplanetary Discs"
-
