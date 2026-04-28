@@ -1,15 +1,8 @@
 import type { BodyCategory, Fact, PlanetaryDetail, Star } from '../../types'
-import { extremeHotThermalZones, type WorldClassOption } from './domain'
+import { extremeHotThermalZones, type WorldClassEnvironmentProfile, type WorldClassOption } from './domain'
+import { deriveWorldClassMetadata } from './worldClassMetadata'
 
-export type EnvironmentProfile =
-  | 'airless'
-  | 'desert'
-  | 'terrestrial'
-  | 'ocean'
-  | 'envelope'
-  | 'belt'
-  | 'anomaly'
-  | 'facility'
+export type EnvironmentProfile = WorldClassEnvironmentProfile
 
 export interface EnvironmentPolicyFacets {
   substrate: 'solid' | 'minor-body' | 'envelope' | 'metric-phenomenon' | 'engineered'
@@ -83,31 +76,6 @@ const envelopeHydrospheres = new Set([
 const beltAtmospheres = new Set(['None / dispersed volatiles'])
 const beltHydrospheres = new Set(['Subsurface ice', 'Cometary volatiles', 'Hydrated minerals only'])
 
-function classIncludes(bodyClass: WorldClassOption, pattern: RegExp): boolean {
-  return pattern.test(bodyClass.className)
-}
-
-function isAirlessClass(bodyClass: WorldClassOption): boolean {
-  return classIncludes(bodyClass, /\bairless\b/i)
-}
-
-function isDesertClass(bodyClass: WorldClassOption): boolean {
-  return (
-    classIncludes(bodyClass, /\bdesert\b/i) ||
-    classIncludes(bodyClass, /\bdry\b/i) ||
-    classIncludes(bodyClass, /\bMars-like\b/i) ||
-    classIncludes(bodyClass, /\bMercury-like\b/i)
-  )
-}
-
-function isOceanClass(bodyClass: WorldClassOption): boolean {
-  return classIncludes(bodyClass, /\bocean\b|\bwaterworld\b|\bhycean\b/i)
-}
-
-function isFacilityClass(bodyClass: WorldClassOption): boolean {
-  return classIncludes(bodyClass, /\bfacility\b|\bplatform\b|\bterraforming\b|\bsettlement\b|\bindustry\b/i)
-}
-
 function envelopeCategory(category: BodyCategory): boolean {
   return category === 'sub-neptune' || category === 'gas-giant' || category === 'ice-giant'
 }
@@ -131,6 +99,7 @@ export function deriveEnvironmentPolicy(
   _primary: Star
 ): EnvironmentPolicy {
   const category = bodyClass.category
+  const metadata = deriveWorldClassMetadata(bodyClass)
 
   if (category === 'belt') {
     return {
@@ -143,7 +112,18 @@ export function deriveEnvironmentPolicy(
     }
   }
 
-  if (category === 'anomaly') {
+  if (metadata.environmentProfileHint === 'facility') {
+    return {
+      profile: 'facility',
+      facets: baseFacets({ substrate: 'engineered', atmosphereRegime: 'controlled', volatileState: 'imported', surfaceAccess: 'sealed-habitat', management: bodyClass.className.includes('Failed') ? 'failed-terraforming' : 'active-facility', biosphereEligibility: 'microbial' }),
+      atmosphere: { allowed: new Set(), fallback: '' },
+      hydrosphere: { allowed: new Set(), fallback: '' },
+      biosphere: { allowed: true },
+      notes: ['Facility profile permits managed or imported environmental states.'],
+    }
+  }
+
+  if (category === 'anomaly' || metadata.environmentProfileHint === 'anomaly') {
     return {
       profile: 'anomaly',
       facets: baseFacets({ substrate: 'metric-phenomenon', atmosphereRegime: 'exotic', volatileState: 'exotic', surfaceAccess: 'no-surface', management: 'gu-distorted', biosphereEligibility: 'none' }),
@@ -154,7 +134,7 @@ export function deriveEnvironmentPolicy(
     }
   }
 
-  if (isAirlessClass(bodyClass)) {
+  if (metadata.environmentProfileHint === 'airless' || metadata.physicalTags.includes('airless')) {
     return {
       profile: 'airless',
       facets: baseFacets({ atmosphereRegime: 'airless', volatileState: thermalZone === 'Cold' || thermalZone === 'Cryogenic' || thermalZone === 'Dark' ? 'ice' : 'dry', surfaceAccess: 'hostile-surface', biosphereEligibility: 'none' }),
@@ -165,7 +145,7 @@ export function deriveEnvironmentPolicy(
     }
   }
 
-  if (isDesertClass(bodyClass)) {
+  if (metadata.environmentProfileHint === 'desert' || metadata.physicalTags.includes('desert')) {
     return {
       profile: 'desert',
       facets: baseFacets({ volatileState: 'dry', surfaceAccess: 'hostile-surface', biosphereEligibility: 'prebiotic' }),
@@ -187,18 +167,7 @@ export function deriveEnvironmentPolicy(
     }
   }
 
-  if (isFacilityClass(bodyClass)) {
-    return {
-      profile: 'facility',
-      facets: baseFacets({ substrate: 'engineered', atmosphereRegime: 'controlled', volatileState: 'imported', surfaceAccess: 'sealed-habitat', management: bodyClass.className.includes('Failed') ? 'failed-terraforming' : 'active-facility', biosphereEligibility: 'microbial' }),
-      atmosphere: { allowed: new Set(), fallback: '' },
-      hydrosphere: { allowed: new Set(), fallback: '' },
-      biosphere: { allowed: true },
-      notes: ['Facility profile permits managed or imported environmental states.'],
-    }
-  }
-
-  if (isOceanClass(bodyClass)) {
+  if (metadata.environmentProfileHint === 'ocean' || metadata.physicalTags.includes('ocean')) {
     return {
       profile: 'ocean',
       facets: baseFacets({ volatileState: 'ocean', biosphereEligibility: 'open' }),

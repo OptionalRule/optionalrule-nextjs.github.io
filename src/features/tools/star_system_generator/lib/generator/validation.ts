@@ -5,6 +5,7 @@ import {
   rockyChainCategories,
   solidSurfaceCategories,
 } from './domain'
+import { metadataForClassName } from './worldClassMetadata'
 
 export type ValidationSeverity = 'error' | 'warning' | 'info'
 
@@ -171,11 +172,13 @@ export function isRockyChainCategory(category: BodyCategory): boolean {
 }
 
 export function isAirlessClass(className: string): boolean {
-  return /\bairless\b/i.test(className)
+  const metadata = metadataForClassName(className)
+  return metadata.environmentProfileHint === 'airless' || metadata.physicalTags.includes('airless')
 }
 
 export function isDesertClass(className: string): boolean {
-  return /\bdesert\b/i.test(className) || /\bdry\b/i.test(className) || /\bMars-like\b/i.test(className) || /\bMercury-like\b/i.test(className)
+  const metadata = metadataForClassName(className)
+  return metadata.environmentProfileHint === 'desert' || metadata.physicalTags.includes('desert')
 }
 
 export function isAirlessAtmosphere(value: string): boolean {

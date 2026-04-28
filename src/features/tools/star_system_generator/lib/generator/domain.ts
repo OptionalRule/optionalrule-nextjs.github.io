@@ -1,9 +1,36 @@
 import type { BodyCategory } from '../../types'
 
+export type WorldClassEnvironmentProfile =
+  | 'airless'
+  | 'desert'
+  | 'terrestrial'
+  | 'ocean'
+  | 'envelope'
+  | 'belt'
+  | 'anomaly'
+  | 'facility'
+
+export type WorldClassArchitectureTag = 'full-planet' | 'minor-body' | 'rocky-chain' | 'giant' | 'anomaly'
+
+export type WorldClassPhysicalTag =
+  | 'airless'
+  | 'volatile-rich'
+  | 'desert'
+  | 'ocean'
+  | 'facility'
+  | 'gu-anomaly'
+  | 'stripped-core'
+
+export type WorldClassSpecialHandling = 'no-moons' | 'no-rings' | 'managed-habitat' | 'metric-phenomenon'
+
 export interface WorldClassOption {
   className: string
   category: BodyCategory
   massClass: string
+  environmentProfileHint?: WorldClassEnvironmentProfile
+  architectureTags?: WorldClassArchitectureTag[]
+  physicalTags?: WorldClassPhysicalTag[]
+  specialHandling?: WorldClassSpecialHandling[]
 }
 
 export type BodyPlanKind =
