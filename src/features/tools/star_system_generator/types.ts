@@ -29,6 +29,8 @@ export interface Star {
   ageState: Fact<string>
   metallicity: Fact<string>
   activity: Fact<string>
+  activityRoll: Fact<number>
+  activityModifiers: Array<Fact<string>>
 }
 
 export interface StellarCompanion {
@@ -44,6 +46,8 @@ export interface Reachability {
   className: Fact<string>
   routeNote: Fact<string>
   pinchDifficulty: Fact<string>
+  roll: Fact<number>
+  modifiers: Array<Fact<string>>
 }
 
 export interface SystemArchitecture {

@@ -37,6 +37,9 @@ interface CorpusStats {
   guIntensityByPreference: Record<GuPreference, Map<string, number>>
   companionTypes: Map<string, number>
   companionSeparations: Map<string, number>
+  activityModifiers: Map<string, number>
+  reachabilityModifiers: Map<string, number>
+  reachabilityClasses: Map<string, number>
 }
 
 const auditProfiles = {
@@ -509,8 +512,11 @@ function auditSystem(system: GeneratedSystem, findings: Finding[], stats: Corpus
   increment(stats.starTypes, system.primary.spectralType.value)
   increment(stats.starTypesByDistribution[system.options.distribution], system.primary.spectralType.value)
   increment(stats.architectures, system.architecture.name.value)
+  increment(stats.reachabilityClasses, system.reachability.className.value)
   increment(stats.guIntensityByPreference[system.options.gu], system.guOverlay.intensity.value)
   stats.settlementCountsByDensity[system.options.settlements].push(system.settlements.length)
+  system.primary.activityModifiers.forEach((modifier) => increment(stats.activityModifiers, modifier.value))
+  system.reachability.modifiers.forEach((modifier) => increment(stats.reachabilityModifiers, modifier.value))
   system.companions.forEach((companion) => {
     increment(stats.companionTypes, companion.companionType.value)
     increment(stats.companionSeparations, companion.separation.value)
@@ -526,6 +532,22 @@ function auditSystem(system: GeneratedSystem, findings: Finding[], stats: Corpus
 
   if (!system.noAlienCheck.passed) {
     addFinding(findings, 'error', seed, 'noAlienCheck', 'No-alien check did not pass.')
+  }
+
+  if (!Number.isFinite(system.primary.activityRoll.value)) {
+    addFinding(findings, 'error', seed, 'primary.activityRoll', 'Activity roll is not finite.')
+  }
+
+  if (system.primary.activityModifiers.some((modifier) => !modifier.value.trim())) {
+    addFinding(findings, 'error', seed, 'primary.activityModifiers', 'Activity modifier is blank.')
+  }
+
+  if (!Number.isFinite(system.reachability.roll.value) || system.reachability.roll.value < 1 || system.reachability.roll.value > 12) {
+    addFinding(findings, 'error', seed, 'reachability.roll', `Reachability roll must be clamped to 1-12; got ${system.reachability.roll.value}.`)
+  }
+
+  if (system.reachability.modifiers.some((modifier) => !modifier.value.trim())) {
+    addFinding(findings, 'error', seed, 'reachability.modifiers', 'Reachability modifier is blank.')
   }
 
   if (system.bodies.length === 0) {
@@ -702,6 +724,9 @@ const stats: CorpusStats = {
   },
   companionTypes: new Map(),
   companionSeparations: new Map(),
+  activityModifiers: new Map(),
+  reachabilityModifiers: new Map(),
+  reachabilityClasses: new Map(),
 }
 
 for (const distribution of distributions) {
@@ -738,8 +763,11 @@ console.log(`Realistic star types: ${formatMap(stats.starTypesByDistribution.rea
 console.log(`Body categories: ${formatMap(stats.categories)}`)
 console.log(`Settlement categories: ${formatMap(stats.settlementCategories)}`)
 console.log(`Architectures: ${formatMap(stats.architectures)}`)
+console.log(`Reachability classes: ${formatMap(stats.reachabilityClasses)}`)
 console.log(`Companion types: ${formatMap(stats.companionTypes)}`)
 console.log(`Companion separations: ${formatMap(stats.companionSeparations)}`)
+console.log(`Activity modifiers: ${formatMap(stats.activityModifiers)}`)
+console.log(`Reachability modifiers: ${formatMap(stats.reachabilityModifiers)}`)
 console.log('Settlement counts by density:')
 console.log(formatSettlementCountsByDensity(stats))
 console.log('GU intensity by preference:')

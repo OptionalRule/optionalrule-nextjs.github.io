@@ -74,11 +74,11 @@ Work items:
   - result margins
   - separation bands
   - architecture/GU/reachability effects
-- Apply reachable-volume modifiers:
+- Apply reachable-volume modifiers. Completed in checkpoint `feat: apply source reachability and activity modifiers`:
   - multi-star systems
   - flare-heavy M dwarfs
-  - chiral-resource systems
-- Rework stellar activity modifiers:
+  - chiral-resource systems, currently represented by high/fracture GU resource bias until the full GU resource-table parity pass
+- Rework stellar activity modifiers. Completed in checkpoint `feat: apply source reachability and activity modifiers`:
   - very young
   - close binary
   - strong GU bleed field

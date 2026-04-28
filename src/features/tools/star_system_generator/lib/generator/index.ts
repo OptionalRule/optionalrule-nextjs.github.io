@@ -63,6 +63,16 @@ const bodyNames = [
 ]
 const moonNames = ['Silt', 'Brine', 'Kettle', 'Palehook', 'Vigil', 'Thresh', 'Low Bell', 'Cairnlet']
 
+const activityLabels = [
+  { max: 3, value: 'Dormant / unusually quiet' },
+  { max: 6, value: 'Quiet' },
+  { max: 8, value: 'Normal' },
+  { max: 10, value: 'Active' },
+  { max: 12, value: 'Flare-prone' },
+  { max: 14, value: 'Violent flare cycle' },
+  { max: Number.POSITIVE_INFINITY, value: 'Extreme activity / metric-amplified events' },
+] as const
+
 interface WorldClassOption {
   className: string
   category: BodyCategory
@@ -307,6 +317,10 @@ function generateSystemName(rng: SeededRng): string {
   return `${pickOne(rng, systemPrefixes)}'s ${pickOne(rng, systemSuffixes)}`
 }
 
+function activityFromRoll(roll: number): string {
+  return activityLabels.find((entry) => roll <= entry.max)?.value ?? activityLabels[activityLabels.length - 1].value
+}
+
 function generatePrimaryStar(rng: SeededRng, options: GenerationOptions, systemName: string): Star {
   const profile = pickTable(
     rng,
@@ -319,20 +333,33 @@ function generatePrimaryStar(rng: SeededRng, options: GenerationOptions, systemN
   const metallicity = pickTable(rng, twoD6(rng), metallicities)
 
   let activityRoll = twoD6(rng)
-  if (ageState === 'Young') activityRoll += 2
-  if (ageState === 'Embryonic/very young') activityRoll += 3
-  if (profile.type === 'M dwarf') activityRoll += 2
-  if (ageState === 'Old') activityRoll -= 1
-  if (ageState === 'Very old' || ageState === 'Ancient/remnant-associated') activityRoll -= 2
+  const activityModifiers: Array<Fact<string>> = []
+  if (ageState === 'Young') {
+    activityRoll += 2
+    activityModifiers.push(fact('+2 young star', 'inferred', 'MASS-GU stellar activity modifiers'))
+  }
+  if (ageState === 'Embryonic/very young') {
+    activityRoll += 1
+    activityModifiers.push(fact('+1 very young star', 'inferred', 'MASS-GU stellar activity modifiers'))
+  }
+  if (profile.type === 'M dwarf') {
+    activityRoll += 2
+    activityModifiers.push(fact('+2 M dwarf', 'inferred', 'MASS-GU stellar activity modifiers'))
+  }
+  if (ageState === 'Old') {
+    activityRoll -= 1
+    activityModifiers.push(fact('-1 old star', 'inferred', 'MASS-GU stellar activity modifiers'))
+  }
+  if (ageState === 'Very old' || ageState === 'Ancient/remnant-associated') {
+    activityRoll -= 2
+    activityModifiers.push(fact('-2 ancient or remnant-associated star', 'inferred', 'MASS-GU stellar activity modifiers'))
+  }
+  if (options.gu === 'high' || options.gu === 'fracture') {
+    activityRoll += 1
+    activityModifiers.push(fact('+1 strong GU bleed preference', 'gu-layer', 'MASS-GU stellar activity modifiers'))
+  }
 
-  const activity =
-    activityRoll <= 3 ? 'Dormant / unusually quiet' :
-    activityRoll <= 6 ? 'Quiet' :
-    activityRoll <= 8 ? 'Normal' :
-    activityRoll <= 10 ? 'Active' :
-    activityRoll <= 12 ? 'Flare-prone' :
-    activityRoll <= 14 ? 'Violent flare cycle' :
-    'Extreme activity / metric-amplified events'
+  const activity = activityFromRoll(activityRoll)
 
   return {
     id: 'primary',
@@ -343,16 +370,63 @@ function generatePrimaryStar(rng: SeededRng, options: GenerationOptions, systemN
     ageState: fact(ageState, 'inferred', 'MASS-GU stellar age table'),
     metallicity: fact(metallicity, 'inferred', 'MASS-GU metallicity table'),
     activity: fact(activity, 'inferred', 'MASS-GU activity modifiers'),
+    activityRoll: fact(activityRoll, 'derived', 'Modified 2d6 stellar activity roll'),
+    activityModifiers,
   }
 }
 
-function generateReachability(rng: SeededRng) {
-  const roll = d12(rng)
+function isHighActivity(activity: string): boolean {
+  return activity === 'Flare-prone' || activity === 'Violent flare cycle' || activity === 'Extreme activity / metric-amplified events'
+}
+
+function hasCloseBinary(companions: StellarCompanion[]): boolean {
+  return companions.some((companion) =>
+    companion.separation.value === 'Contact / near-contact' ||
+    companion.separation.value === 'Close binary' ||
+    companion.separation.value === 'Tight binary'
+  )
+}
+
+function applyCompanionActivityModifier(primary: Star, companions: StellarCompanion[]): Star {
+  if (!hasCloseBinary(companions)) return primary
+
+  const activityRoll = primary.activityRoll.value + 1
+  return {
+    ...primary,
+    activity: fact(activityFromRoll(activityRoll), 'inferred', 'MASS-GU activity modifiers'),
+    activityRoll: fact(activityRoll, 'derived', 'Modified 2d6 stellar activity roll'),
+    activityModifiers: [
+      ...primary.activityModifiers,
+      fact('+1 close binary', 'inferred', 'MASS-GU stellar activity modifiers'),
+    ],
+  }
+}
+
+function generateReachability(rng: SeededRng, options: GenerationOptions, primary: Star, companions: StellarCompanion[]) {
+  let roll = d12(rng)
+  const modifiers: Array<Fact<string>> = []
+
+  if (companions.length > 0) {
+    roll += 1
+    modifiers.push(fact('+1 multi-star resonance geometry', 'gu-layer', 'MASS-GU reachability modifiers'))
+  }
+  if (primary.spectralType.value === 'M dwarf' && isHighActivity(primary.activity.value)) {
+    roll += 1
+    modifiers.push(fact('+1 flare-driven M-dwarf bleed behavior', 'gu-layer', 'MASS-GU reachability modifiers'))
+  }
+  if (options.gu === 'high' || options.gu === 'fracture') {
+    roll += 1
+    modifiers.push(fact('+1 chiral or high-bleed resource bias', 'gu-layer', 'MASS-GU reachability modifiers'))
+  }
+
+  roll = Math.max(1, Math.min(12, roll))
   const result = pickTable(rng, roll, reachabilityClasses)
   return {
     className: fact(result.className, 'gu-layer', 'MASS-GU reachability class'),
     routeNote: fact(result.routeNote, 'gu-layer', 'Reachable-volume bias'),
     pinchDifficulty: fact(result.pinchDifficulty, 'gu-layer', 'Route geometry'),
+    roll: fact(roll, 'derived', 'Modified d12 reachability roll'),
+    modifiers,
   }
 }
 
@@ -417,16 +491,11 @@ function binarySeparationProfile(roll: number): Pick<StellarCompanion, 'separati
   }
 }
 
-function generateStellarCompanions(rng: SeededRng, primary: Star, reachability: ReturnType<typeof generateReachability>): StellarCompanion[] {
+function generateStellarCompanions(rng: SeededRng, primary: Star): StellarCompanion[] {
   const threshold = companionThreshold(primary.spectralType.value)
   let roll = twoD6(rng)
   const modifiers: string[] = ['+1 major reachable system']
   roll += 1
-
-  if (reachability.className.value === 'Iggygate anchor' || reachability.className.value === 'Resonance hub') {
-    roll += 1
-    modifiers.push('+1 route geometry')
-  }
 
   const margin = roll - threshold
   if (margin < 0) return []
@@ -2153,9 +2222,10 @@ function runNoAlienGuard(system: Omit<GeneratedSystem, 'noAlienCheck'>): Generat
 export function generateSystem(options: GenerationOptions): GeneratedSystem {
   const rootRng = createSeededRng(options.seed)
   const name = generateSystemName(rootRng.fork('name'))
-  const primary = generatePrimaryStar(rootRng.fork('star'), options, name)
-  const reachability = generateReachability(rootRng.fork('reachability'))
-  const companions = generateStellarCompanions(rootRng.fork('companions'), primary, reachability)
+  const basePrimary = generatePrimaryStar(rootRng.fork('star'), options, name)
+  const companions = generateStellarCompanions(rootRng.fork('companions'), basePrimary)
+  const primary = applyCompanionActivityModifier(basePrimary, companions)
+  const reachability = generateReachability(rootRng.fork('reachability'), options, primary, companions)
   const architectureResult = generateArchitecture(rootRng.fork('architecture'), options, primary, reachability.className.value)
   const hz = calculateHabitableZone(primary.luminositySolar.value)
   const snowLine = calculateSnowLine(primary.luminositySolar.value)

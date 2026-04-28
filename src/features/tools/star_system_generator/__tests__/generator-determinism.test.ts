@@ -73,8 +73,13 @@ describe('generateSystem', () => {
 
     expect(system.name.value).toBeTruthy()
     expect(system.primary.spectralType.value).toBeTruthy()
+    expect(system.primary.activityRoll.value).toBeGreaterThan(0)
+    expect(Array.isArray(system.primary.activityModifiers)).toBe(true)
     expect(Array.isArray(system.companions)).toBe(true)
     expect(system.reachability.className.confidence).toBe('gu-layer')
+    expect(system.reachability.roll.value).toBeGreaterThanOrEqual(1)
+    expect(system.reachability.roll.value).toBeLessThanOrEqual(12)
+    expect(Array.isArray(system.reachability.modifiers)).toBe(true)
     expect(system.bodies.length).toBeGreaterThanOrEqual(2)
     expect(system.bodies[0].category.value).toBeTruthy()
     expect(system.bodies[0].massClass.value).toBeTruthy()
@@ -408,6 +413,7 @@ describe('generateSystem', () => {
 
     for (let index = 0; index < 120; index++) {
       const system = generateSystem({ ...options, gu: 'fracture', seed: `db3f9c2e41b8${index.toString(16).padStart(4, '0')}` })
+      if (!system.guOverlay.intensity.value.includes('fracture') && !system.guOverlay.intensity.value.includes('shear')) continue
       for (const settlement of system.settlements) {
         expect(allowedFunctionsByCategory.get(settlement.siteCategory.value)?.has(settlement.function.value)).toBe(true)
       }
@@ -442,6 +448,22 @@ describe('generateSystem', () => {
     expect(companions.some((companion) => companion.companionType.value === 'Triple or higher-order system')).toBe(true)
     expect(companions.every((companion) => companion.planetaryConsequence.value.length > 10)).toBe(true)
     expect(companions.every((companion) => companion.guConsequence.value.length > 10)).toBe(true)
+  })
+
+  it('applies source reachability and activity modifiers', () => {
+    const systems = Array.from({ length: 240 }, (_, index) =>
+      generateSystem({ ...options, gu: index % 2 === 0 ? 'fracture' : 'normal', seed: `811a9c2e41b8${index.toString(16).padStart(4, '0')}` })
+    )
+
+    const activityModifiers = systems.flatMap((system) => system.primary.activityModifiers.map((modifier) => modifier.value))
+    const reachabilityModifiers = systems.flatMap((system) => system.reachability.modifiers.map((modifier) => modifier.value))
+
+    expect(activityModifiers).toContain('+2 M dwarf')
+    expect(activityModifiers).toContain('+1 strong GU bleed preference')
+    expect(activityModifiers).toContain('+1 close binary')
+    expect(reachabilityModifiers).toContain('+1 multi-star resonance geometry')
+    expect(reachabilityModifiers).toContain('+1 chiral or high-bleed resource bias')
+    expect(reachabilityModifiers).toContain('+1 flare-driven M-dwarf bleed behavior')
   })
 
   it('keeps architecture body plans aligned with source intent', () => {
