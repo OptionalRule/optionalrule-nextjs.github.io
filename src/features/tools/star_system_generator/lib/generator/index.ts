@@ -21,6 +21,7 @@ import type {
 import { calculateHabitableZone, calculateInsolation, calculateSnowLine, classifyThermalZone, roundTo } from './calculations'
 import { d8, d12, d20, d100, pickOne, pickTable, twoD6 } from './dice'
 import { extremeHotThermalZones, hotThermalZones, type BodyPlanKind, type WorldClassOption } from './domain'
+import { deriveEnvironmentPolicy, normalizeDetailForEnvironment } from './environmentPolicy'
 import { createSeededRng, type SeededRng } from './rng'
 import {
   ageStates,
@@ -1290,11 +1291,12 @@ function generateDetail(
   const isEnvelopeWorld = category === 'sub-neptune' || category === 'gas-giant' || category === 'ice-giant'
   const isBelt = category === 'belt'
   const climateCount = rng.chance(0.4) ? 2 : 1
+  const environmentPolicy = deriveEnvironmentPolicy(bodyClass, thermalZone, primary)
   const geology = rollGeology(rng, category, thermalZone, bodyClass)
   const atmosphere = rollAtmosphere(rng, category, thermalZone, primary, bodyClass, physical, geology)
   const hydrosphere = rollHydrosphere(rng, category, thermalZone, bodyClass)
 
-  const detailWithoutBiosphere = {
+  const detailWithoutBiosphere = normalizeDetailForEnvironment({
     atmosphere: fact(
       atmosphere,
       'inferred',
@@ -1316,14 +1318,14 @@ function generateDetail(
       'inferred',
       'MASS-GU 14 radiation d8 table with source modifiers'
     ),
-  }
+  }, environmentPolicy)
 
   return {
     ...detailWithoutBiosphere,
     biosphere: fact(
-      generateBiosphere(rng, category, thermalZone, detailWithoutBiosphere, primary),
+      environmentPolicy.biosphere.forced ?? generateBiosphere(rng, category, thermalZone, detailWithoutBiosphere, primary),
       'inferred',
-      'MASS-GU biosphere score'
+      environmentPolicy.biosphere.forced ? `Forced by ${environmentPolicy.profile} environment policy` : 'MASS-GU biosphere score'
     ),
   }
 }
@@ -1337,6 +1339,16 @@ function mergeKnownDetail(generated: PlanetaryDetail, known?: PartialKnownBody['
     radiation: mergeLockedFact(generated.radiation, known?.radiation),
     biosphere: mergeLockedFact(generated.biosphere, known?.biosphere),
   }
+}
+
+function hasLockedEnvironmentDetail(known?: PartialKnownBody['detail']): boolean {
+  return Boolean(
+    known?.atmosphere?.locked ||
+    known?.hydrosphere?.locked ||
+    known?.geology?.locked ||
+    known?.climate?.some((entry) => entry.locked) ||
+    known?.radiation?.locked
+  )
 }
 
 function moonProfile(moonType: string): Pick<Moon, 'resource' | 'hazard' | 'use'> {
@@ -2005,7 +2017,17 @@ function generatedBody(
     : withRecomputedGravity(applyModernExoplanetFilters(rng, baseBodyClass, basePhysical, thermalZone, architectureName, previousFiltered))
   const habitabilityNotes = mDwarfHabitabilityNotes(rng, primary, thermalZone, filtered.bodyClass.category)
   const siteCount = rng.chance(0.55) ? 1 : 0
-  const detail = mergeKnownDetail(generateDetail(rng, filtered.bodyClass, filtered.physical, thermalZone, primary), known?.detail)
+  const mergedDetail = mergeKnownDetail(generateDetail(rng, filtered.bodyClass, filtered.physical, thermalZone, primary), known?.detail)
+  const detail = hasLockedEnvironmentDetail(known?.detail) && !known?.detail?.biosphere?.locked
+    ? {
+        ...mergedDetail,
+        biosphere: fact(
+          generateBiosphere(rng.fork(`locked-detail-biosphere-${index + 1}`), filtered.bodyClass.category, thermalZone, mergedDetail, primary),
+          'inferred',
+          'MASS-GU biosphere score recomputed after locked environmental facts'
+        ),
+      }
+    : mergedDetail
   const moons = generateMoons(rng, filtered.bodyClass, filtered.physical, index, thermalZone, primary, architectureName)
   const rings = generateRingSystem(rng, filtered.bodyClass.category)
   const giantEconomy = generateGiantEconomy(filtered.bodyClass, moons, rings)

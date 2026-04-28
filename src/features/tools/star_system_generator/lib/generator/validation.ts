@@ -274,7 +274,7 @@ export function validateBodyEnvironment(body: OrbitingBody, path = 'body'): Vali
 
   if (isAirlessClass(body.bodyClass.value) && !isAirlessAtmosphere(body.detail.atmosphere.value)) {
     findings.push(finding({
-      severity: 'warning',
+      severity: 'error',
       code: validationCodes.environmentAirlessAtmosphere,
       path: `${path}.detail.atmosphere`,
       message: `Airless class "${body.bodyClass.value}" has incompatible atmosphere "${body.detail.atmosphere.value}".`,
@@ -288,7 +288,7 @@ export function validateBodyEnvironment(body: OrbitingBody, path = 'body'): Vali
 
   if (isAirlessClass(body.bodyClass.value) && !isAirlessHydrosphere(body.detail.hydrosphere.value)) {
     findings.push(finding({
-      severity: 'warning',
+      severity: 'error',
       code: validationCodes.environmentAirlessHydrosphere,
       path: `${path}.detail.hydrosphere`,
       message: `Airless class "${body.bodyClass.value}" has incompatible hydrosphere "${body.detail.hydrosphere.value}".`,
@@ -302,7 +302,7 @@ export function validateBodyEnvironment(body: OrbitingBody, path = 'body'): Vali
 
   if (isDesertClass(body.bodyClass.value) && !isDesertCompatibleHydrosphere(body.detail.hydrosphere.value)) {
     findings.push(finding({
-      severity: 'warning',
+      severity: 'error',
       code: validationCodes.environmentDesertHydrosphere,
       path: `${path}.detail.hydrosphere`,
       message: `Desert class "${body.bodyClass.value}" has incompatible hydrosphere "${body.detail.hydrosphere.value}".`,

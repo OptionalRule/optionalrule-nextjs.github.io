@@ -123,7 +123,7 @@ function system(overrides: Partial<GeneratedSystem> = {}): GeneratedSystem {
 }
 
 describe('star system validation contracts', () => {
-  it('reports airless atmosphere and hydrosphere contradictions as baseline warnings', () => {
+  it('reports airless atmosphere and hydrosphere contradictions as generated errors', () => {
     const findings = validateBodyEnvironment(body({
       bodyClass: fact('Airless rock in nominal HZ'),
       detail: {
@@ -138,10 +138,10 @@ describe('star system validation contracts', () => {
 
     expect(findings.map((finding) => finding.code)).toContain('ENV_AIRLESS_ATMOSPHERE')
     expect(findings.map((finding) => finding.code)).toContain('ENV_AIRLESS_HYDROSPHERE')
-    expect(findings.every((finding) => finding.severity === 'warning')).toBe(true)
+    expect(findings.every((finding) => finding.severity === 'error')).toBe(true)
   })
 
-  it('reports desert hydrosphere contradictions as baseline warnings', () => {
+  it('reports desert hydrosphere contradictions as generated errors', () => {
     const findings = validateBodyEnvironment(body({
       bodyClass: fact('Dry supercontinent world'),
       detail: {
