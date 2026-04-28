@@ -131,24 +131,25 @@ Checkpoint commit:
 
 Purpose: improve replayability and reduce visibly repeated text.
 
-Status: in progress. First checkpoint improves system/body/moon/settlement naming and adds corpus name-concentration audit metrics.
+Status: completed across checkpoints `feat: improve star system naming variety` and `feat: vary star system prose templates`.
 
 Work items:
 - Replace the 100-combination system-name table with a larger seeded naming system. Completed in checkpoint `feat: improve star system naming variety`.
 - Make body names depend on system seed, architecture, category, or orbit instead of fixed index order. Completed in checkpoint `feat: improve star system naming variety`.
 - Make settlement names depend on site category, authority, function, anchor, and scale. Completed in checkpoint `feat: improve star system naming variety`.
 - Add more moon names or category-aware moon naming. Completed in checkpoint `feat: improve star system naming variety`.
-- Add alternate templates for `whyInteresting`, `whyHere`, and generic settlement tag hooks.
-- Add phrase repetition metrics to the audit. Name concentration metrics completed in checkpoint `feat: improve star system naming variety`; prose-template metrics remain pending.
+- Add alternate templates for `whyInteresting`, `whyHere`, and generic settlement tag hooks. Completed in checkpoint `feat: vary star system prose templates`.
+- Add phrase repetition metrics to the audit. Name concentration metrics completed in checkpoint `feat: improve star system naming variety`; prose-template metrics completed in checkpoint `feat: vary star system prose templates`.
 
 Acceptance checks:
 - Corpus report includes unique system/body/moon/settlement name counts. Completed.
 - Audit warns on repeated first-body names, repeated settlement names, or top name concentration. Completed.
-- Audit warns on top phrase/template concentration.
+- Audit warns on top phrase/template concentration. Completed.
 - UI remains readable with longer generated names.
 
 Checkpoint commit:
 - `feat: improve star system naming variety`
+- `feat: vary star system prose templates`
 
 ## Phase 6 - Audit And Test Infrastructure
 

@@ -84,6 +84,20 @@ describe('generateSystem', () => {
     expect(firstBodyNames.filter((name) => name === 'Ashkey').length).toBe(0)
   })
 
+  it('varies generated prose templates across sampled systems', () => {
+    const systems = Array.from({ length: 120 }, (_, index) =>
+      generateSystem({ ...options, settlements: 'crowded', seed: `a14a9c2e41b8${index.toString(16).padStart(4, '0')}` })
+    )
+    const opening = (value: string) => value.split(/\s+/).slice(0, 4).join(' ')
+    const bodyOpenings = new Set(systems.flatMap((system) => system.bodies.map((body) => opening(body.whyInteresting.value))))
+    const whyHereOpenings = new Set(systems.flatMap((system) => system.settlements.map((settlement) => opening(settlement.whyHere.value))))
+    const tagHookOpenings = new Set(systems.flatMap((system) => system.settlements.map((settlement) => opening(settlement.tagHook.value))))
+
+    expect(bodyOpenings.size).toBeGreaterThan(8)
+    expect(whyHereOpenings.size).toBeGreaterThan(8)
+    expect(tagHookOpenings.size).toBeGreaterThan(8)
+  })
+
   it('includes required MVP layers and passes the no-alien check', () => {
     const system = generateSystem(options)
 

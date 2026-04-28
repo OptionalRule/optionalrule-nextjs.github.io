@@ -1569,6 +1569,7 @@ function generateBodyProfile(bodyClass: WorldClassOption, detail: PlanetaryDetai
 }
 
 function generateBodyInterest(
+  rng: SeededRng,
   bodyClass: WorldClassOption,
   thermalZone: string,
   detail: PlanetaryDetail,
@@ -1601,7 +1602,33 @@ function generateBodyInterest(
   const selected = reasons.slice(0, 3)
   if (selected.length === 0) selected.push(`${bodyClass.className} is mainly useful as orbital context and navigation terrain`)
 
-  return fact(selected.join(' '), selected.some((reason) => reason.includes('GU')) ? 'gu-layer' : 'inferred', 'Generated body interest summary')
+  const joined = selected.join(' ')
+  const lowerJoined = joined.charAt(0).toLowerCase() + joined.slice(1)
+  const subject = pickOne(rng, bodyInterestSubjects[bodyClass.category])
+  const template = rng.int(1, 8)
+  const summary =
+    template === 1 ? joined :
+    template === 2 ? `The practical draw is this: ${joined}` :
+    template === 3 ? `Survey crews flag ${bodyClass.className.toLowerCase()} because ${lowerJoined}` :
+    template === 4 ? `For play, the important pressure is ${lowerJoined}` :
+    template === 5 ? `${subject} care because ${lowerJoined}` :
+    template === 6 ? `Campaign pressure starts with ${lowerJoined}` :
+    template === 7 ? `Local maps mark it as useful because ${lowerJoined}` :
+    `The table value is not just its orbit: ${lowerJoined}`
+
+  return fact(summary, selected.some((reason) => reason.includes('GU')) ? 'gu-layer' : 'inferred', 'Generated body interest summary')
+}
+
+const bodyInterestSubjects: Record<BodyCategory, readonly string[]> = {
+  'rocky-planet': ['Colony planners', 'Prospectors', 'Surface crews', 'Survey offices'],
+  'super-earth': ['Heavy-world crews', 'Habitat planners', 'Gravity-adapted teams', 'Survey offices'],
+  'sub-neptune': ['Envelope miners', 'Atmospheric researchers', 'Transit crews', 'Survey offices'],
+  'gas-giant': ['Orbital crews', 'Moon brokers', 'Fuel consortia', 'Magnetosphere researchers'],
+  'ice-giant': ['Volatile miners', 'Outer-system crews', 'Fuel consortia', 'Magnetosphere researchers'],
+  belt: ['Belt crews', 'Claim auditors', 'Navigation offices', 'Prospector combines'],
+  'dwarf-body': ['Frontier crews', 'Ice miners', 'Hidden-harbor pilots', 'Survey offices'],
+  'rogue-captured': ['Deep-range crews', 'Interdiction patrols', 'Refuel brokers', 'Survey offices'],
+  anomaly: ['Research teams', 'Interdiction patrols', 'GU auditors', 'Survey offices'],
 }
 
 function weightedPick<T>(rng: SeededRng, entries: Array<{ weight: number; value: T }>): T {
@@ -1916,7 +1943,7 @@ function generateBodies(rng: SeededRng, primary: Star, architectureName: string,
     const rings = generateRingSystem(rng, filtered.bodyClass.category)
     const giantEconomy = generateGiantEconomy(filtered.bodyClass, moons, rings)
     const bodyProfile = generateBodyProfile(filtered.bodyClass, detail, moons, rings)
-    const whyInteresting = generateBodyInterest(filtered.bodyClass, thermalZone, detail, moons, [...filtered.filterNotes, ...habitabilityNotes], bodyProfile, giantEconomy)
+    const whyInteresting = generateBodyInterest(rng.fork(`body-interest-${index + 1}`), filtered.bodyClass, thermalZone, detail, moons, [...filtered.filterNotes, ...habitabilityNotes], bodyProfile, giantEconomy)
     bodies.push({
       id: `body-${index + 1}`,
       orbitAu: fact(orbitAu, 'derived', 'Generated orbital spacing'),
@@ -2015,7 +2042,7 @@ function assertNever(value: never): never {
   throw new Error(`Unhandled settlement category: ${value}`)
 }
 
-function settlementTagHook(obviousTag: string, deeperTag: string): string {
+function settlementTagHook(rng: SeededRng, obviousTag: string, deeperTag: string): string {
   const exactPair = `${obviousTag} + ${deeperTag}`
   if (exactPair === 'Air Is Money + Debt Labor') {
     return 'Air Is Money is visible in every meter and airlock; Debt Labor means workers cannot afford passage out.'
@@ -2066,7 +2093,12 @@ function settlementTagHook(obviousTag: string, deeperTag: string): string {
     'Strikebreaker City': 'labor peace is being maintained by coercion.',
   }
 
-  return `${obviousTag} is what visitors notice first; ${deeperPressures[deeperTag] ?? `${deeperTag.toLowerCase()} is the deeper pressure driving the site.`}`
+  const deeperText = deeperPressures[deeperTag] ?? `${deeperTag.toLowerCase()} is the deeper pressure driving the site.`
+  const template = rng.int(1, 4)
+  if (template === 1) return `${obviousTag} is what visitors notice first; ${deeperText}`
+  if (template === 2) return `Outsiders call it ${obviousTag}, but the local pressure is sharper: ${deeperText}`
+  if (template === 3) return `${obviousTag} frames the first scene, while ${deeperTag} explains who benefits from the tension: ${deeperText}`
+  return `The public tag is ${obviousTag}; the private trouble is ${deeperTag}, because ${deeperText}`
 }
 
 function chooseSettlementTags(rng: SeededRng): [string, string] {
@@ -2473,6 +2505,7 @@ function chooseMoonForLocation(rng: SeededRng, moons: Moon[], locationLabel: str
 }
 
 function settlementWhyHere(
+  rng: SeededRng,
   body: OrbitingBody,
   presence: ReturnType<typeof scoreSettlementPresence>,
   guOverlay: ReturnType<typeof generateGuOverlay>,
@@ -2503,7 +2536,12 @@ function settlementWhyHere(
     selected.push(`${anchor.name} is the best available compromise between access, shelter, and useful work`)
   }
 
-  return `${anchor.name}: ${selected.join('; ')}.`
+  const template = rng.int(1, 5)
+  if (template === 1) return `${anchor.name}: ${selected.join('; ')}.`
+  if (template === 2) return `Crews keep choosing ${anchor.name} because ${selected.join('; ')}.`
+  if (template === 3) return `The case for ${anchor.name} is practical: ${selected.join('; ')}.`
+  if (template === 4) return `${anchor.name} survives because ${selected.join('; ')}.`
+  return `At ${anchor.name}, the settlement logic is ${selected.join('; ')}.`
 }
 
 function settlementDescriptorForFunction(settlementFunction: string): string {
@@ -2582,9 +2620,9 @@ function generateSettlements(
     const settlementFunction = chooseSettlementFunction(rng, body, locationOption, guOverlay)
     const builtForm = chooseBuiltForm(rng, locationOption, settlementFunction)
     const anchor = chooseSettlementAnchor(rng, systemName, body, locationOption)
-    const whyHere = settlementWhyHere(body, presence, guOverlay, reachability, anchor)
+    const whyHere = settlementWhyHere(rng.fork(`why-here-${index + 1}`), body, presence, guOverlay, reachability, anchor)
     const tags = chooseSettlementTags(rng)
-    const tagHook = settlementTagHook(tags[0], tags[1])
+    const tagHook = settlementTagHook(rng.fork(`tag-hook-${index + 1}`), tags[0], tags[1])
     const scale = settlementScaleFromRoll(rng, presence)
     const authority = pickOne(rng, settlementAuthorities)
     const settlementName = generateSettlementName(rng.fork(`settlement-name-${index + 1}`), body, anchor, locationOption.category, settlementFunction, authority, scale)

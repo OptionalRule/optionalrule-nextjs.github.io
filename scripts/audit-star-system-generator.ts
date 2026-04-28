@@ -32,6 +32,9 @@ interface CorpusStats {
   firstBodyNames: Map<string, number>
   moonNames: Map<string, number>
   settlementNames: Map<string, number>
+  bodyInterestPhrases: Map<string, number>
+  settlementWhyHerePhrases: Map<string, number>
+  settlementTagHookPhrases: Map<string, number>
   starTypes: Map<string, number>
   starTypesByDistribution: Record<GeneratorDistribution, Map<string, number>>
   architectures: Map<string, number>
@@ -282,6 +285,16 @@ function collectStrings(value: unknown, path = '$'): Array<{ path: string; value
 
 function hasDuplicates(values: string[]): boolean {
   return new Set(values).size !== values.length
+}
+
+function phraseKey(value: string): string {
+  return value
+    .toLowerCase()
+    .replace(/[^a-z0-9\s'-]/g, ' ')
+    .split(/\s+/)
+    .filter(Boolean)
+    .slice(0, 7)
+    .join(' ')
 }
 
 function countBodiesByCategory(system: GeneratedSystem, categories: ReadonlySet<BodyCategory>): number {
@@ -559,6 +572,7 @@ function auditSystem(system: GeneratedSystem, findings: Finding[], stats: Corpus
   system.bodies.forEach((body, bodyIndex) => {
     increment(stats.bodyNames, body.name.value)
     if (bodyIndex === 0) increment(stats.firstBodyNames, body.name.value)
+    increment(stats.bodyInterestPhrases, phraseKey(body.whyInteresting.value))
     increment(stats.categories, body.category.value)
     increment(stats.bodyClasses, body.bodyClass.value)
     increment(stats.atmospheres, body.detail.atmosphere.value)
@@ -575,6 +589,8 @@ function auditSystem(system: GeneratedSystem, findings: Finding[], stats: Corpus
   })
   system.settlements.forEach((settlement) => {
     increment(stats.settlementNames, settlement.name.value)
+    increment(stats.settlementWhyHerePhrases, phraseKey(settlement.whyHere.value))
+    increment(stats.settlementTagHookPhrases, phraseKey(settlement.tagHook.value))
     increment(stats.settlementCategories, settlement.siteCategory.value)
     increment(stats.settlementPresenceRolls, settlement.presence.roll.value)
     increment(stats.settlementPresenceTiers, settlement.presence.tier.value)
@@ -695,6 +711,9 @@ function auditCoverage(stats: CorpusStats, findings: Finding[]): void {
   auditNameConcentration(findings, stats.firstBodyNames, stats.systems, 'bodies[0].name', 'First body name', 0.03)
   auditNameConcentration(findings, stats.settlementNames, stats.settlements, 'settlements.name', 'Settlement name', 0.02)
   auditNameConcentration(findings, stats.moonNames, stats.moons, 'bodies.moons.name', 'Moon name', 0.03)
+  auditPhraseConcentration(findings, stats.bodyInterestPhrases, stats.bodies, 'bodies.whyInteresting', 'Body interest opening', 0.18)
+  auditPhraseConcentration(findings, stats.settlementWhyHerePhrases, stats.settlements, 'settlements.whyHere', 'Settlement reason opening', 0.18)
+  auditPhraseConcentration(findings, stats.settlementTagHookPhrases, stats.settlements, 'settlements.tagHook', 'Settlement tag hook opening', 0.18)
 
   if (!stats.settlementCategories.has('Moon base')) {
     addFinding(findings, 'warning', syntheticSeed, 'settlements.siteCategory', 'Corpus did not produce any moon-base settlements.')
@@ -768,6 +787,20 @@ function auditNameConcentration(
   }
 }
 
+function auditPhraseConcentration(
+  findings: Finding[],
+  map: Map<string, number>,
+  total: number,
+  path: string,
+  label: string,
+  maxShare: number
+): void {
+  const top = [...map.entries()].sort(([, left], [, right]) => right - left)[0]
+  if (top && total > 0 && top[1] / total > maxShare) {
+    addFinding(findings, 'warning', 'corpus', path, `${label} phrase "${top[0]}" appears ${top[1]} times, above ${(maxShare * 100).toFixed(1)}% concentration.`)
+  }
+}
+
 function formatNestedCategoryMap(map: Map<string, Map<BodyCategory, number>>): string {
   return [...map.entries()]
     .sort(([left], [right]) => left.localeCompare(right))
@@ -807,6 +840,9 @@ const stats: CorpusStats = {
   firstBodyNames: new Map(),
   moonNames: new Map(),
   settlementNames: new Map(),
+  bodyInterestPhrases: new Map(),
+  settlementWhyHerePhrases: new Map(),
+  settlementTagHookPhrases: new Map(),
   starTypes: new Map(),
   starTypesByDistribution: {
     frontier: new Map(),
@@ -881,6 +917,9 @@ console.log(`Unique body names: ${uniqueSummary(stats.bodyNames, stats.bodies)}`
 console.log(`Unique first-body names: ${uniqueSummary(stats.firstBodyNames, stats.systems)}`)
 console.log(`Unique moon names: ${uniqueSummary(stats.moonNames, stats.moons)}`)
 console.log(`Unique settlement names: ${uniqueSummary(stats.settlementNames, stats.settlements)}`)
+console.log(`Body interest phrase openings: ${uniqueSummary(stats.bodyInterestPhrases, stats.bodies)}`)
+console.log(`Settlement reason phrase openings: ${uniqueSummary(stats.settlementWhyHerePhrases, stats.settlements)}`)
+console.log(`Settlement tag hook phrase openings: ${uniqueSummary(stats.settlementTagHookPhrases, stats.settlements)}`)
 console.log(`Errors: ${errors.length}`)
 console.log(`Warnings: ${warnings.length}`)
 console.log(`Star types: ${formatMap(stats.starTypes)}`)
