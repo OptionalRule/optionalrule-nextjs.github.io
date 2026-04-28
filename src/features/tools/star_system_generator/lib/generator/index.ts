@@ -487,14 +487,14 @@ const routeFunctions = ['Iggygate control station', 'Pinchdrive tuning station',
 const securityFunctions = ['Military base', 'Listening post', 'Naval logistics depot', 'Weapons test range', 'Quarantine station', 'Intelligence black site'] as const
 const civilFunctions = ['Civilian colony', 'Terraforming camp', 'Refugee settlement', 'Prison or debt-labor site', 'Religious/ideological enclave', 'Narrow-AI observiverse facility'] as const
 const guFractureFunctionsBySiteCategory: Record<SettlementSiteCategory, readonly string[]> = {
-  'Surface settlement': ['Chiral harvesting site', 'Programmable-matter containment site', 'Narrow-AI observiverse facility', 'Quarantine station'],
-  'Orbital station': ['Chiral harvesting site', 'Programmable-matter containment site', 'Narrow-AI observiverse facility', 'Quarantine station', 'Pinchdrive tuning station'],
-  'Asteroid or belt base': ['Chiral harvesting site', 'Dark-sector ore extraction', 'Programmable-matter containment site', 'Quarantine station'],
-  'Moon base': ['Chiral harvesting site', 'Dark-sector ore extraction', 'Narrow-AI observiverse facility', 'Quarantine station'],
-  'Deep-space platform': ['Moving bleed-node tracking platform', 'Pinchdrive tuning station', 'Narrow-AI observiverse facility', 'Quarantine station'],
-  'Gate or route node': ['Iggygate control station', 'Pinchdrive tuning station', 'Quarantine station', 'Narrow-AI observiverse facility'],
+  'Surface settlement': ['Chiral harvesting site', 'Programmable-matter containment site', 'Narrow-AI observiverse facility', 'Quarantine station', 'Refugee settlement', 'Planetology lab'],
+  'Orbital station': ['Chiral harvesting site', 'Programmable-matter containment site', 'Narrow-AI observiverse facility', 'Quarantine station', 'Pinchdrive tuning station', 'Fuel depot', 'Ship repair yard', 'Freeport'],
+  'Asteroid or belt base': ['Chiral harvesting site', 'Dark-sector ore extraction', 'Programmable-matter containment site', 'Quarantine station', 'Fuel depot', 'Salvage yard', 'Smuggler port'],
+  'Moon base': ['Chiral harvesting site', 'Dark-sector ore extraction', 'Narrow-AI observiverse facility', 'Quarantine station', 'Survey station', 'Military base'],
+  'Deep-space platform': ['Moving bleed-node tracking platform', 'Pinchdrive tuning station', 'Narrow-AI observiverse facility', 'Quarantine station', 'Ship repair yard', 'Listening post', 'Corporate customs post'],
+  'Gate or route node': ['Iggygate control station', 'Pinchdrive tuning station', 'Quarantine station', 'Narrow-AI observiverse facility', 'Corporate customs post', 'Astrometry/nav beacon', 'Freeport'],
   'Mobile site': ['Moving bleed-node harvest fleet', 'Freeport', 'Smuggler port', 'Refugee settlement', 'Naval logistics depot'],
-  'Derelict or restricted site': ['Programmable-matter containment site', 'Intelligence black site', 'Quarantine station', 'Weapons test range'],
+  'Derelict or restricted site': ['Programmable-matter containment site', 'Intelligence black site', 'Quarantine station', 'Weapons test range', 'Survey station', 'Salvage yard'],
 }
 const orbitalBuiltForms = ['Inflatable modules', 'Rotating cylinder', 'Non-rotating microgravity stack', 'Modular orbital lattice', 'Ring-habitat arc', 'Corporate luxury enclave', 'Slum raft cluster'] as const
 const asteroidBuiltForms = ['Buried pressure cans', 'Ice-shielded tunnels', 'Asteroid hollow', 'Modular orbital lattice', 'Shielded military bunker', 'First-wave retrofitted ruin'] as const
@@ -1660,29 +1660,37 @@ function generateBodyInterest(
   bodyProfile?: Fact<string>,
   giantEconomy?: Fact<string>
 ): Fact<string> {
-  const reasons: string[] = []
+  const astronomyFacts: string[] = [
+    `${bodyClass.className} sits in the ${thermalZone.toLowerCase()} zone`,
+  ]
+  const pressurePoints: string[] = []
+  const playUses: string[] = []
 
-  if (bodyProfile) reasons.push(bodyProfile.value)
-  if (giantEconomy) reasons.push(giantEconomy.value)
-  if (detail.biosphere.value !== 'Sterile') reasons.push(`${detail.biosphere.value} creates science, quarantine, or settlement pressure`)
+  if (bodyProfile) astronomyFacts.push(bodyProfile.value)
+  if (giantEconomy) playUses.push(giantEconomy.value)
+  if (detail.biosphere.value !== 'Sterile') pressurePoints.push(`${detail.biosphere.value} creates science, quarantine, or settlement pressure`)
   if (detail.hydrosphere.value.includes('ocean') || detail.hydrosphere.value.includes('ice') || detail.hydrosphere.value.includes('volatiles')) {
-    reasons.push(`${detail.hydrosphere.value} makes local volatiles important`)
+    playUses.push(`${detail.hydrosphere.value} makes local volatiles important`)
   }
   if (detail.radiation.value.includes('Severe') || detail.radiation.value.includes('Flare-lethal') || detail.radiation.value.includes('Only deep')) {
-    reasons.push(`${detail.radiation.value} makes operations dangerous`)
+    pressurePoints.push(`${detail.radiation.value} makes operations dangerous`)
   }
   if (filterNotes.some((note) => note.value.includes('Hot Neptune desert') || note.value.includes('Radius valley') || note.value.includes('M-dwarf'))) {
-    reasons.push('modern exoplanet filters make this a notable survey target')
+    astronomyFacts.push('modern exoplanet filters make this a notable survey target')
   }
   if (moons.some((moon) => moon.resource.confidence === 'gu-layer') || bodyClass.className.includes('GU') || bodyClass.className.includes('Chiral') || bodyClass.className.includes('bleed')) {
-    reasons.push('GU value may attract research, extraction, or interdiction')
+    pressurePoints.push('GU value may attract research, extraction, or interdiction')
   }
   if (thermalZone === 'Temperate band' && (bodyClass.category === 'rocky-planet' || bodyClass.category === 'super-earth')) {
-    reasons.push('its nominal habitable-zone position gives it political and survey value even if conditions are harsh')
+    astronomyFacts.push('its nominal habitable-zone position gives it political and survey value even if conditions are harsh')
   }
+  if (moons.length > 0) playUses.push(`${moons.length} major moon${moons.length === 1 ? '' : 's'} create anchor points for travel, mining, or conflict`)
 
-  const selected = reasons.slice(0, 3)
-  if (selected.length === 0) selected.push(`${bodyClass.className} is mainly useful as orbital context and navigation terrain`)
+  const selected = [
+    pickOne(rng, astronomyFacts),
+    pickOne(rng, pressurePoints.length ? pressurePoints : [`${detail.radiation.value.toLowerCase()} is the main operating constraint`]),
+    pickOne(rng, playUses.length ? playUses : [`${bodyClass.className} is mainly useful as orbital context and navigation terrain`]),
+  ]
 
   const joined = selected.join(' ')
   const lowerJoined = joined.charAt(0).toLowerCase() + joined.slice(1)
@@ -2114,6 +2122,33 @@ function settlementTagHook(rng: SeededRng, obviousTag: string, deeperTag: string
   return `The public tag is ${obviousTag}; the private trouble is ${deeperTag}, because ${deeperText}`
 }
 
+function settlementHookSynthesis(
+  rng: SeededRng,
+  obviousTag: string,
+  deeperTag: string,
+  context: {
+    scale: string
+    siteCategory: string
+    settlementFunction: string
+    condition: string
+    crisis: string
+    hiddenTruth: string
+    encounterSites: string[]
+    guIntensity: string
+  }
+): string {
+  const base = settlementTagHook(rng, obviousTag, deeperTag)
+  const pressure =
+    context.scale === 'Automated only' ? `Automation failure turns ${context.encounterSites[0].toLowerCase()} into the key scene` :
+    context.scale === 'Abandoned' ? `Salvage pressure centers on ${context.encounterSites[0].toLowerCase()}` :
+    context.guIntensity.includes('fracture') || context.guIntensity.includes('shear') ? `${context.crisis.toLowerCase()} makes the GU work impossible to treat as routine` :
+    `${context.crisis.toLowerCase()} puts ${context.siteCategory.toLowerCase()} politics under stress`
+  const secret = context.hiddenTruth.charAt(0).toLowerCase() + context.hiddenTruth.slice(1)
+  const functionPressure = context.settlementFunction.toLowerCase()
+
+  return `${base} ${pressure}; ${secret}; ${functionPressure} decides who has leverage.`
+}
+
 function chooseSettlementTags(rng: SeededRng): [string, string] {
   const obviousTag = pickOne(rng, settlementTags)
   const deeperOptions = settlementTags.filter((tag) => tag !== obviousTag)
@@ -2271,6 +2306,63 @@ function settlementScaleFromRoll(rng: SeededRng, presence: SettlementPresenceSco
   if (presence.score >= 15) roll += 2
   roll = Math.max(1, Math.min(12, roll))
   return settlementScaleTable[roll - 1]
+}
+
+function chooseSettlementAuthority(rng: SeededRng, scale: string): string {
+  if (scale === 'Automated only') {
+    return pickOne(rng, ['AI-supervised technocracy', 'Gate authority', 'Sol-interdiction compliance office', 'Unknown sponsor', 'Official records are falsified'])
+  }
+  if (scale === 'Abandoned') {
+    return pickOne(rng, ['No recognized authority', 'Quarantine authority', 'Salvage court', 'Unknown sponsor', 'Official records are falsified'])
+  }
+  return pickOne(rng, settlementAuthorities)
+}
+
+function chooseSettlementCondition(rng: SeededRng, scale: string): string {
+  if (scale === 'Automated only') {
+    return pickOne(rng, ['Efficient but joyless', 'Understaffed', 'Life support near failure', 'Hidden AI incident', 'Under quarantine', 'Officially safe, actually hazardous'])
+  }
+  if (scale === 'Abandoned') {
+    return pickOne(rng, ['Half-abandoned', 'Recently evacuated', 'Reoccupied ruin', 'Decaying first-wave infrastructure', 'Hidden reason it cannot be abandoned'])
+  }
+  return pickOne(rng, settlementConditions)
+}
+
+function chooseSettlementCrisis(rng: SeededRng, scale: string): string {
+  if (scale === 'Automated only') {
+    return pickOne(rng, ['Life-support cascade', 'AI refuses unsafe operation', 'Illegal AI expansion discovered', 'Sabotage of refinery/gate/AI', 'Essential expert missing', 'The base broadcasts two contradictory distress calls'])
+  }
+  if (scale === 'Abandoned') {
+    return pickOne(rng, ['Salvage claim dispute', 'Old first-wave map found', 'Ship full of dead arrives', 'A whole district goes silent', 'The base broadcasts two contradictory distress calls', 'Crisis is staged to hide something worse'])
+  }
+  return pickOne(rng, settlementCrises)
+}
+
+function chooseHiddenTruth(rng: SeededRng, scale: string): string {
+  if (scale === 'Automated only') {
+    return pickOne(rng, ['The local AI deleted evidence', 'The local AI preserved forbidden evidence', 'The site is an illegal AI lab', 'The AI is sane; the humans are not listening', 'The system official survey is deliberately wrong'])
+  }
+  if (scale === 'Abandoned') {
+    return pickOne(rng, ['The official death toll is false', 'A first-wave expedition survived in hiding', 'The ghosts are old human recordings', 'The settlement has an evacuation ark nobody knows about', 'The quarantine is political'])
+  }
+  return pickOne(rng, hiddenTruths)
+}
+
+function chooseEncounterSites(rng: SeededRng, scale: string, settlementFunction: string): string[] {
+  const value = settlementFunction.toLowerCase()
+  const candidates = new Set<string>()
+
+  if (scale === 'Automated only') ['AI core vault', 'Drone hangar', 'Closed habitat ring', 'Place the maps say does not exist'].forEach((site) => candidates.add(site))
+  if (scale === 'Abandoned') ['Old first-wave command bunker', 'Hidden launch bay', 'Half-flooded maintenance tunnels', 'Place the maps say does not exist'].forEach((site) => candidates.add(site))
+  if (value.includes('quarantine') || value.includes('biosphere')) ['Quarantine ward', 'Black-market clinic', 'Water plant'].forEach((site) => candidates.add(site))
+  if (value.includes('mine') || value.includes('extraction') || value.includes('harvest') || value.includes('refinery')) ['Chiral refinery floor', 'Bleed-harvest control room', 'Worker barracks'].forEach((site) => candidates.add(site))
+  if (value.includes('gate') || value.includes('pinchdrive') || value.includes('customs')) ['Illegal pinchdrive test chamber', 'Courtroom / debt registry', 'Dockside free market'].forEach((site) => candidates.add(site))
+  if (candidates.size < 2) encounterSites.forEach((site) => candidates.add(site))
+
+  const pool = [...candidates]
+  const first = pickOne(rng, pool)
+  const secondPool = pool.filter((site) => site !== first)
+  return [first, pickOne(rng, secondPool.length ? secondPool : pool)]
 }
 
 function location(label: string, category: SettlementSiteCategory): SettlementLocationOption {
@@ -2638,9 +2730,22 @@ function generateSettlements(
     const anchor = chooseSettlementAnchor(rng, systemName, body, locationOption)
     const whyHere = settlementWhyHere(rng.fork(`why-here-${index + 1}`), body, presence, guOverlay, reachability, anchor)
     const tags = chooseSettlementTags(rng)
-    const tagHook = settlementTagHook(rng.fork(`tag-hook-${index + 1}`), tags[0], tags[1])
     const scale = settlementScaleFromRoll(rng, presence)
-    const authority = pickOne(rng, settlementAuthorities)
+    const authority = chooseSettlementAuthority(rng, scale)
+    const condition = chooseSettlementCondition(rng, scale)
+    const crisis = chooseSettlementCrisis(rng, scale)
+    const hiddenTruth = chooseHiddenTruth(rng, scale)
+    const encounterSiteValues = chooseEncounterSites(rng.fork(`encounter-sites-${index + 1}`), scale, settlementFunction)
+    const tagHook = settlementHookSynthesis(rng.fork(`tag-hook-${index + 1}`), tags[0], tags[1], {
+      scale,
+      siteCategory: locationOption.category,
+      settlementFunction,
+      condition,
+      crisis,
+      hiddenTruth,
+      encounterSites: encounterSiteValues,
+      guIntensity: guOverlay.intensity.value,
+    })
     const baseSettlementName = generateSettlementName(rng.fork(`settlement-name-${index + 1}`), body, anchor, locationOption.category, settlementFunction, authority, scale)
     const settlementId = `settlement-${index + 1}`
     const settlementName = nameRegistry.uniqueGeneratedName(baseSettlementName, {
@@ -2675,12 +2780,12 @@ function generateSettlements(
       authority: fact(authority, 'human-layer', 'MASS-GU 18.5 authority table'),
       builtForm: fact(builtForm, 'human-layer', 'MASS-GU built form table with location/function constraints'),
       aiSituation: fact(pickOne(rng, aiSituations), 'human-layer', 'MASS-GU AI situation table'),
-      condition: fact(pickOne(rng, settlementConditions), 'human-layer', 'MASS-GU settlement condition table'),
+      condition: fact(condition, 'human-layer', 'MASS-GU settlement condition table with scale compatibility'),
       tags: tags.map((tag, tagIndex) => fact(tag, 'human-layer', tagIndex === 0 ? 'MASS-GU 18.9 obvious settlement tag' : 'MASS-GU 18.9 deeper settlement tag')),
-      tagHook: fact(tagHook, 'human-layer', 'Generated interpretation of MASS-GU 18.9 tag pair'),
-      crisis: fact(pickOne(rng, settlementCrises), 'human-layer', 'MASS-GU 18.10 crisis table'),
-      hiddenTruth: fact(pickOne(rng, hiddenTruths), 'human-layer', 'MASS-GU 18.11 hidden truth table; no-alien conversion applied where needed'),
-      encounterSites: Array.from({ length: 2 }, () => fact(pickOne(rng, encounterSites), 'human-layer', 'MASS-GU 18.12 local encounter site table')),
+      tagHook: fact(tagHook, 'human-layer', 'Generated contextual interpretation of MASS-GU 18.9 tag pair, crisis, hidden truth, and site pressure'),
+      crisis: fact(crisis, 'human-layer', 'MASS-GU 18.10 crisis table with scale compatibility'),
+      hiddenTruth: fact(hiddenTruth, 'human-layer', 'MASS-GU 18.11 hidden truth table with scale compatibility; no-alien conversion applied where needed'),
+      encounterSites: encounterSiteValues.map((site) => fact(site, 'human-layer', 'MASS-GU 18.12 local encounter site table with function/scale weighting')),
       whyHere: fact(whyHere, 'human-layer', 'Generated from MASS-GU 18.1 presence score components'),
       methodNotes: [
         fact('Source-derived from MASS-GU section 18; current implementation adds compatibility constraints between body, site category, function, built form, and physical anchor.', 'human-layer', 'Implementation note'),

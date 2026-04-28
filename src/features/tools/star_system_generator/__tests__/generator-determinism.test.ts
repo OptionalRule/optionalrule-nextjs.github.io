@@ -526,14 +526,14 @@ describe('generateSystem', () => {
 
   it('keeps fracture functions compatible with settlement site category', () => {
     const allowedFunctionsByCategory = new Map([
-      ['Surface settlement', new Set(['Chiral harvesting site', 'Programmable-matter containment site', 'Narrow-AI observiverse facility', 'Quarantine station'])],
-      ['Orbital station', new Set(['Chiral harvesting site', 'Programmable-matter containment site', 'Narrow-AI observiverse facility', 'Quarantine station', 'Pinchdrive tuning station'])],
-      ['Asteroid or belt base', new Set(['Chiral harvesting site', 'Dark-sector ore extraction', 'Programmable-matter containment site', 'Quarantine station'])],
-      ['Moon base', new Set(['Chiral harvesting site', 'Dark-sector ore extraction', 'Narrow-AI observiverse facility', 'Quarantine station'])],
-      ['Deep-space platform', new Set(['Moving bleed-node tracking platform', 'Pinchdrive tuning station', 'Narrow-AI observiverse facility', 'Quarantine station'])],
-      ['Gate or route node', new Set(['Iggygate control station', 'Pinchdrive tuning station', 'Quarantine station', 'Narrow-AI observiverse facility'])],
+      ['Surface settlement', new Set(['Chiral harvesting site', 'Programmable-matter containment site', 'Narrow-AI observiverse facility', 'Quarantine station', 'Refugee settlement', 'Planetology lab'])],
+      ['Orbital station', new Set(['Chiral harvesting site', 'Programmable-matter containment site', 'Narrow-AI observiverse facility', 'Quarantine station', 'Pinchdrive tuning station', 'Fuel depot', 'Ship repair yard', 'Freeport'])],
+      ['Asteroid or belt base', new Set(['Chiral harvesting site', 'Dark-sector ore extraction', 'Programmable-matter containment site', 'Quarantine station', 'Fuel depot', 'Salvage yard', 'Smuggler port'])],
+      ['Moon base', new Set(['Chiral harvesting site', 'Dark-sector ore extraction', 'Narrow-AI observiverse facility', 'Quarantine station', 'Survey station', 'Military base'])],
+      ['Deep-space platform', new Set(['Moving bleed-node tracking platform', 'Pinchdrive tuning station', 'Narrow-AI observiverse facility', 'Quarantine station', 'Ship repair yard', 'Listening post', 'Corporate customs post'])],
+      ['Gate or route node', new Set(['Iggygate control station', 'Pinchdrive tuning station', 'Quarantine station', 'Narrow-AI observiverse facility', 'Corporate customs post', 'Astrometry/nav beacon', 'Freeport'])],
       ['Mobile site', new Set(['Moving bleed-node harvest fleet', 'Freeport', 'Smuggler port', 'Refugee settlement', 'Naval logistics depot'])],
-      ['Derelict or restricted site', new Set(['Programmable-matter containment site', 'Intelligence black site', 'Quarantine station', 'Weapons test range'])],
+      ['Derelict or restricted site', new Set(['Programmable-matter containment site', 'Intelligence black site', 'Quarantine station', 'Weapons test range', 'Survey station', 'Salvage yard'])],
     ])
 
     for (let index = 0; index < 120; index++) {
@@ -754,6 +754,44 @@ describe('generateSystem', () => {
       const system = generateSystem({ ...options, seed: `f93f9c2e41b8${index.toString(16).padStart(4, '0')}` })
       for (const settlement of system.settlements) {
         expect(settlement.tags[0].value).not.toBe(settlement.tags[1].value)
+      }
+    }
+  })
+
+  it('keeps automated and abandoned settlement crises scale-aware', () => {
+    const automatedCrises = new Set(['Life-support cascade', 'AI refuses unsafe operation', 'Illegal AI expansion discovered', 'Sabotage of refinery/gate/AI', 'Essential expert missing', 'The base broadcasts two contradictory distress calls'])
+    const abandonedCrises = new Set(['Salvage claim dispute', 'Old first-wave map found', 'Ship full of dead arrives', 'A whole district goes silent', 'The base broadcasts two contradictory distress calls', 'Crisis is staged to hide something worse'])
+    const automatedConditions = new Set(['Efficient but joyless', 'Understaffed', 'Life support near failure', 'Hidden AI incident', 'Under quarantine', 'Officially safe, actually hazardous'])
+    const abandonedConditions = new Set(['Half-abandoned', 'Recently evacuated', 'Reoccupied ruin', 'Decaying first-wave infrastructure', 'Hidden reason it cannot be abandoned'])
+    let sawAutomated = false
+    let sawAbandoned = false
+
+    for (let index = 0; index < 180; index++) {
+      const system = generateSystem({ ...options, settlements: 'hub', seed: `scale-coherence-${index.toString(16).padStart(4, '0')}` })
+      for (const settlement of system.settlements) {
+        if (settlement.scale.value === 'Automated only') {
+          sawAutomated = true
+          expect(automatedCrises.has(settlement.crisis.value)).toBe(true)
+          expect(automatedConditions.has(settlement.condition.value)).toBe(true)
+        }
+        if (settlement.scale.value === 'Abandoned') {
+          sawAbandoned = true
+          expect(abandonedCrises.has(settlement.crisis.value)).toBe(true)
+          expect(abandonedConditions.has(settlement.condition.value)).toBe(true)
+        }
+      }
+    }
+
+    expect(sawAutomated).toBe(true)
+    expect(sawAbandoned).toBe(true)
+  })
+
+  it('ties settlement hooks to hidden truths and immediate scene pressure', () => {
+    for (let index = 0; index < 60; index++) {
+      const system = generateSystem({ ...options, settlements: 'crowded', seed: `hook-coherence-${index.toString(16).padStart(4, '0')}` })
+      for (const settlement of system.settlements) {
+        expect(settlement.tagHook.value.toLowerCase()).toContain(settlement.hiddenTruth.value.toLowerCase())
+        expect(settlement.tagHook.value.toLowerCase()).toContain(settlement.function.value.toLowerCase())
       }
     }
   })
