@@ -1,0 +1,200 @@
+# Star System Generator Audit Fix Plan
+
+This plan addresses the multi-agent audit findings from the generation-method review. The goal is to make the generator more source-faithful, internally sensible, varied, and testable before expanding the scripted generation audit.
+
+## Principles
+
+- Fix semantic contradictions before tuning distribution percentages.
+- Keep deliberate deviations from `SOURCE_WRITEUP.md` documented as design choices, not accidental drift.
+- Prefer shared rule helpers over duplicating compatibility logic in generator code, tests, and audit scripts.
+- Add audit coverage before relying on generated samples for design decisions.
+- Commit after each coherent phase with focused verification.
+
+## Phase 1 - Guardrail Fixes
+
+Purpose: remove known contradictions that the current audit misses.
+
+Work items:
+- Revalidate peas-in-a-pod copied classes against the receiving orbit's thermal zone.
+- Prevent hot-zone forced dwarf/rogue/debris classes from producing misleading cold-body labels.
+- Split or constrain anomaly handling so `Brown-dwarf companion`, `Black-lab platform`, and similar non-planet labels do not receive ordinary planet geology, rings, or Earth-radius framing.
+- Constrain GU fracture/shear settlement functions by site category so mobile/fleet functions do not appear as lava-tube cities, moon bunkers, or fixed ruins.
+- Fix `observerse` / `observiverse` terminology after confirming intended setting term.
+- Make no-alien guard recursive or share its text traversal with the audit.
+
+Acceptance checks:
+- Add regression tests for the cited seeds and equivalent semantic cases.
+- Add audit checks for class-label-vs-zone consistency, anomaly physical/detail consistency, and function/site compatibility.
+- `npm run audit:star-system-generator`
+- `npm run test -- --run src/features/tools/star_system_generator`
+- `npm run typecheck`
+
+Checkpoint commit:
+- `fix: tighten star system generation guardrails`
+
+## Phase 2 - Architecture Authority And Body Planning
+
+Purpose: remove split authority between architecture table ranges and actual body-plan output.
+
+Work items:
+- Replace `bodyCount` in `architectures` with explicit architecture plan metadata, or make `generateArchitecture` return the actual body plan.
+- Decide whether broad body counts intentionally exceed source table counts; document that choice if retained.
+- Add required-category rules for each architecture:
+  - Failed system: debris/dwarfs dominate, zero to few full planets.
+  - Debris-dominated: belts/planetesimals dominate, few full planets.
+  - Sparse rocky: rocky/super-terrestrial body count is primary, with rare giants and debris.
+  - Compact inner system: close-in rocky/super-Earth/sub-Neptune bodies dominate.
+  - Peas-in-a-pod: similar body family dominates, with limited exceptions.
+  - Solar-ish mixed: variable inner rocks, variable belts, variable giants, and outer ice/dwarf bodies.
+  - Migrated giant: at least one hot/warm giant plus disrupted survivors.
+  - Giant-rich or chaotic: multiple giants plus debris/captured bodies.
+- Add architecture-plan tests that check range intent and required category presence.
+
+Acceptance checks:
+- Architecture body count and category distribution tests pass.
+- Corpus report includes body category by architecture.
+- No dead `bodyCount` field remains.
+
+Checkpoint commit:
+- `refactor: unify star system architecture body planning`
+
+## Phase 3 - Source-Method Parity Pass
+
+Purpose: move from inspired approximations toward the writeup's actual procedures.
+
+Work items:
+- Implement multiplicity/companions:
+  - star-type thresholds
+  - result margins
+  - separation bands
+  - architecture/GU/reachability effects
+- Apply reachable-volume modifiers:
+  - multi-star systems
+  - flare-heavy M dwarfs
+  - chiral-resource systems
+- Rework stellar activity modifiers:
+  - very young
+  - close binary
+  - strong GU bleed field
+- Expand GU overlay:
+  - modified 2d6 intensity
+  - bleed behavior
+  - d20 location/resource/hazard tables
+  - preference bias layered on top of the source roll
+- Implement settlement presence as `2d6 + components`, not fixed baseline `7 + components`.
+- Replace settlement scale labels with source population/scale outputs or split `presenceTier` from `populationScale`.
+
+Acceptance checks:
+- Tests lock key source tables and modifier behavior.
+- Audit reports reachability, GU intensity, and settlement score component distributions.
+- Existing deterministic behavior remains stable for same seed/options after intentional snapshot updates.
+
+Checkpoint commits:
+- `feat: add stellar multiplicity generation`
+- `feat: apply source reachability and activity modifiers`
+- `feat: expand geometric unity generation`
+- `feat: use rolled settlement presence scoring`
+
+## Phase 4 - Planet, Moon, Belt, And Ring Tables
+
+Purpose: improve source coverage and reduce repeated category/detail outputs.
+
+Work items:
+- Expand planet class tables toward source d20 coverage by thermal zone.
+- Add missing classes such as carbon-rich furnace worlds, ultra-hot giants, resonant inner-chain worlds, Hycean-like candidates, CO2 ice worlds, small ice giants, super-Jovians, captured eccentric worlds, and additional debris bodies.
+- Add source-style atmosphere, hydrosphere, geology, climate, radiation, and biosphere modifier rolls instead of mostly direct array picks.
+- Implement moon count tables:
+  - terrestrial 2d6 with modifiers
+  - giant d6 major-moon count with modifiers
+- Expand belt and ring subtype generation using source d12 tables.
+- Ensure body detail text changes when a body is non-planet, artificial, anomalous, or substellar.
+
+Acceptance checks:
+- Audit reports top body-class concentration and warns when one class dominates.
+- Tests prove every major thermal-zone table produces several distinct source classes over a seed corpus.
+- Regression tests for hot/cold, envelope, belt, anomaly, moon, and ring invariants pass.
+
+Checkpoint commit:
+- `feat: expand star system world and moon tables`
+
+## Phase 5 - Variety And Naming
+
+Purpose: improve replayability and reduce visibly repeated text.
+
+Work items:
+- Replace the 100-combination system-name table with a larger seeded naming system.
+- Make body names depend on system seed, architecture, category, or orbit instead of fixed index order.
+- Make settlement names depend on site category, authority, function, anchor, and scale.
+- Add more moon names or category-aware moon naming.
+- Add alternate templates for `whyInteresting`, `whyHere`, and generic settlement tag hooks.
+- Add phrase repetition metrics to the audit.
+
+Acceptance checks:
+- Corpus report includes unique system/body/moon/settlement name counts.
+- Audit warns on repeated first-body names, repeated settlement names, or top phrase/template concentration.
+- UI remains readable with longer generated names.
+
+Checkpoint commit:
+- `feat: improve star system naming variety`
+
+## Phase 6 - Audit And Test Infrastructure
+
+Purpose: make the scripted audit reliable enough to guide future tuning.
+
+Work items:
+- Add `npm run test:star-system-generator` that runs focused tests plus the generator audit.
+- Add audit option matrix:
+  - `distribution`: frontier, realistic
+  - `tone`: balanced, astronomy, cinematic
+  - `gu`: low, normal, high, fracture
+  - `settlements`: sparse, normal, crowded, hub
+- Add configurable corpus profiles:
+  - quick local
+  - default local
+  - deep pre-release
+- Add score-component distribution metrics for settlement presence.
+- Add architecture-by-category metrics.
+- Add GU intensity by preference metrics.
+- Add frontier-vs-realistic downstream divergence metrics.
+- Add golden snapshots for a small canonical seed set.
+- Extract shared compatibility rules so tests and audit import generator rules instead of duplicating them.
+
+Acceptance checks:
+- `npm run test:star-system-generator` passes.
+- `npm run test:all` either includes the generator audit or documents why it remains separate.
+- Audit output distinguishes hard failures, warnings, and design-tuning notes.
+
+Checkpoint commit:
+- `test: expand star system generator audit coverage`
+
+## Phase 7 - Import-Ready Contract
+
+Purpose: keep future known-system imports from being bolted on after the generator hardens.
+
+Work items:
+- Define a minimal `PartialKnownSystem` input contract.
+- Add locked-fact merge helpers.
+- Ensure imported star facts skip stellar type rolls.
+- Ensure imported planets can reserve orbital slots and generated bodies fill gaps.
+- Add tests proving locked facts are not overwritten.
+- Keep public import UI hidden until the schema is stable.
+
+Acceptance checks:
+- Generator accepts fictional-only and partial-known inputs.
+- Locked fields survive all generation stages.
+- URL seed/options behavior remains deterministic.
+
+Checkpoint commit:
+- `feat: add star system import-ready generation contract`
+
+## Recommended Execution Order
+
+1. Phase 1 guardrails.
+2. Phase 6 audit infrastructure, at least option matrix and semantic checks.
+3. Phase 2 architecture authority.
+4. Phase 3 source-method parity.
+5. Phase 4 expanded world/moon tables.
+6. Phase 5 naming and text variety.
+7. Phase 7 import-ready contract.
+
+This order makes the next broad generation audit meaningful: it first prevents known contradictions, then broadens the audit, then resumes method and variety tuning.

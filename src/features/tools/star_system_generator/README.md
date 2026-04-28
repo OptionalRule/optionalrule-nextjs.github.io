@@ -7,6 +7,7 @@ Planned client-side tool for generating astronomy-grounded, game-facing star sys
 - Source writeup: `docs/SOURCE_WRITEUP.md`
 - Requirements: `docs/PRD.md`
 - Implementation plan: `docs/PLAN.md`
+- Audit fix plan: `docs/AUDIT_FIX_PLAN.md`
 
 ## Development Notes
 
