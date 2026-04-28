@@ -372,6 +372,28 @@ describe('generateSystem', () => {
     }
   })
 
+  it('does not emit qualitative environment or prose findings across sampled systems', () => {
+    const qualitativeCodes = new Set([
+      'ENV_GREENHOUSE_ATMOSPHERE',
+      'ENV_OCEAN_HYDROSPHERE',
+      'ENV_HYCEAN_HYDROSPHERE',
+      'ENV_SOLID_H2_ENVELOPE',
+      'PROSE_REDUNDANT_ZONE_WORDING',
+      'PROSE_SINGULAR_MOON_GRAMMAR',
+    ])
+
+    for (let index = 0; index < 180; index++) {
+      const system = generateSystem({
+        ...options,
+        settlements: index % 3 === 0 ? 'hub' : index % 3 === 1 ? 'crowded' : 'normal',
+        seed: `qualitative-regression-${index.toString(16).padStart(4, '0')}`,
+      })
+      const findings = validateSystem(system).filter((finding) => qualitativeCodes.has(finding.code))
+
+      expect(findings).toEqual([])
+    }
+  })
+
   it('uses source rolled detail tables for ordinary planets', () => {
     const systems = Array.from({ length: 120 }, (_, index) =>
       generateSystem({ ...options, seed: `e43f9c2e41b8${index.toString(16).padStart(4, '0')}` })

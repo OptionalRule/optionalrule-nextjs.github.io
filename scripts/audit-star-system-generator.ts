@@ -729,6 +729,14 @@ function formatMap<Key>(map: Map<Key, number>): string {
     .join(', ')
 }
 
+function findingCodeSummary(findings: Finding[]): string {
+  const codes = new Map<string, number>()
+  for (const finding of findings) {
+    increment(codes, finding.code ?? finding.source ?? 'audit')
+  }
+  return formatMap(codes)
+}
+
 function uniqueSummary(map: Map<string, number>, total: number): string {
   const top = [...map.entries()].sort(([, left], [, right]) => right - left)[0]
   const topText = top ? `, top "${top[0]}" x${top[1]}` : ''
@@ -886,6 +894,7 @@ console.log(`Settlement tag hook phrase openings: ${uniqueSummary(stats.settleme
 console.log(`Errors: ${errors.length}`)
 console.log(`Warnings: ${warnings.length}`)
 console.log(`Locked fact conflicts: ${lockedConflicts.length}`)
+console.log(`Finding codes: ${findingCodeSummary(findings) || 'none'}`)
 console.log(`Star types: ${formatMap(stats.starTypes)}`)
 console.log(`Frontier star types: ${formatMap(stats.starTypesByDistribution.frontier)}`)
 console.log(`Realistic star types: ${formatMap(stats.starTypesByDistribution.realistic)}`)

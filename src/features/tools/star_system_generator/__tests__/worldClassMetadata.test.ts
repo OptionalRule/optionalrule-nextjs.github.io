@@ -59,6 +59,14 @@ describe('world class metadata', () => {
     expect(metadataForClassName('Hot Neptune desert survivor').environmentProfileHint).toBe('desert')
   })
 
+  it('marks qualitative environment tags without confusing magma with water oceans', () => {
+    expect(deriveWorldClassMetadata({ className: 'Steam greenhouse', category: 'rocky-planet', massClass: 'Terrestrial' }).physicalTags).toEqual(expect.arrayContaining(['greenhouse', 'steam']))
+    expect(deriveWorldClassMetadata({ className: 'Hycean-like candidate', category: 'sub-neptune', massClass: 'Mini-Neptune' }).physicalTags).toEqual(expect.arrayContaining(['hycean', 'water-ocean', 'ocean']))
+    expect(deriveWorldClassMetadata({ className: 'Magma ocean world', category: 'rocky-planet', massClass: 'Molten terrestrial' }).physicalTags).not.toContain('water-ocean')
+    expect(deriveWorldClassMetadata({ className: 'Magma ocean world', category: 'rocky-planet', massClass: 'Molten terrestrial' }).physicalTags).toContain('magma-ocean')
+    expect(deriveWorldClassMetadata({ className: 'Stripped rocky super-Earth', category: 'super-earth', massClass: 'Stripped core' }).physicalTags).toContain('stripped-core')
+  })
+
   it('classifies anomalies and facilities separately for later policy use', () => {
     expect(deriveWorldClassMetadata({ className: 'Deep observiverse fracture', category: 'anomaly', massClass: 'Metric anomaly' })).toMatchObject({
       environmentProfileHint: 'anomaly',

@@ -1,11 +1,40 @@
 import type { BodyCategory, Fact, GeneratedSystem, OrbitingBody, Settlement } from '../../types'
 import { evaluateArchitectureSatisfaction } from './architecture'
 import {
-  envelopeCategories,
   rockyChainCategories,
-  solidSurfaceCategories,
 } from './domain'
-import { metadataForClassName } from './worldClassMetadata'
+import {
+  airlessAllowedAtmospheres,
+  airlessAllowedHydrospheres,
+  anomalyAllowedGeologies,
+  coldAllowedClimateTags,
+  desertAllowedHydrospheres,
+  envelopeAllowedGeologies,
+  extremeHotAllowedAtmospheres,
+  extremeHotAllowedHydrospheres,
+  isAirlessAtmosphere,
+  isAirlessClass,
+  isAirlessHydrosphere,
+  isDesertClass,
+  isDesertCompatibleHydrosphere,
+  isEnvelopeCategory as isEnvelopeCategoryCompatible,
+  isGreenhouseAtmosphereCompatible,
+  isGreenhouseClass,
+  isHyceanClass,
+  isHyceanHydrosphere,
+  isSolidHydrogenEnvelopeConflict,
+  isSolidSurfaceCategory as isSolidSurfaceCategoryCompatible,
+  isWaterOceanClass,
+  isWetOceanHydrosphere,
+} from './environmentCompatibility'
+
+export {
+  isAirlessAtmosphere,
+  isAirlessClass,
+  isAirlessHydrosphere,
+  isDesertClass,
+  isDesertCompatibleHydrosphere,
+} from './environmentCompatibility'
 
 export type ValidationSeverity = 'error' | 'warning' | 'info'
 
@@ -31,10 +60,16 @@ export const validationCodes = {
   environmentAirlessAtmosphere: 'ENV_AIRLESS_ATMOSPHERE',
   environmentAirlessHydrosphere: 'ENV_AIRLESS_HYDROSPHERE',
   environmentDesertHydrosphere: 'ENV_DESERT_HYDROSPHERE',
+  environmentGreenhouseAtmosphere: 'ENV_GREENHOUSE_ATMOSPHERE',
+  environmentOceanHydrosphere: 'ENV_OCEAN_HYDROSPHERE',
+  environmentHyceanHydrosphere: 'ENV_HYCEAN_HYDROSPHERE',
+  environmentSolidHydrogenEnvelope: 'ENV_SOLID_H2_ENVELOPE',
   architectureMinimumUnsatisfied: 'ARCH_MINIMUM_UNSATISFIED',
   settlementDuplicateName: 'SETTLEMENT_DUPLICATE_NAME',
   lockedFactConflict: 'LOCKED_FACT_CONFLICT',
   repairApplied: 'REPAIR_APPLIED',
+  proseSingularMoonGrammar: 'PROSE_SINGULAR_MOON_GRAMMAR',
+  proseRedundantZoneWording: 'PROSE_REDUNDANT_ZONE_WORDING',
 } as const
 
 export type ValidationCode = typeof validationCodes[keyof typeof validationCodes] | (string & {})
@@ -58,68 +93,6 @@ export interface ValidationFinding {
 
 const extremeHotZones = new Set(['Furnace', 'Inferno'])
 const coldZones = new Set(['Cold', 'Cryogenic', 'Dark'])
-
-const extremeHotAllowedAtmospheres = new Set([
-  'None / hard vacuum',
-  'Trace exosphere',
-  'Rock-vapor atmosphere',
-  'Metal vapor atmosphere',
-  'Chiral-active atmosphere',
-])
-
-const extremeHotAllowedHydrospheres = new Set([
-  'Bone dry',
-  'Hydrated minerals only',
-  'Vaporized volatile traces',
-  'Nightside mineral frost',
-])
-
-const coldAllowedClimateTags = new Set([
-  'Snowball',
-  'Cold desert',
-  'Aerosol winter',
-  'Methane cycle',
-  'CO2 glacier cycle',
-  'Dark-sector gravity tides',
-])
-
-const envelopeAllowedGeologies = new Set([
-  'Deep atmospheric circulation',
-  'Metallic hydrogen interior',
-  'Layered volatile mantle',
-  'Magnetosphere-driven weather',
-])
-
-const anomalyAllowedGeologies = new Set([
-  'Artificial platform or engineered substrate',
-  'Metric shear geometry',
-])
-
-const airlessAllowedAtmospheres = new Set([
-  'None / hard vacuum',
-  'Trace exosphere',
-  'None / dispersed volatiles',
-  'No ordinary atmosphere',
-])
-
-const airlessAllowedHydrospheres = new Set([
-  'Bone dry',
-  'Hydrated minerals only',
-  'Subsurface ice',
-  'Polar caps / buried glaciers',
-  'No accessible surface volatiles',
-  'Not applicable: metric or route phenomenon',
-])
-
-const desertAllowedHydrospheres = new Set([
-  'Bone dry',
-  'Hydrated minerals only',
-  'Subsurface ice',
-  'Polar caps / buried glaciers',
-  'Briny aquifers',
-  'Vaporized volatile traces',
-  'Nightside mineral frost',
-])
 
 const forbiddenAlienPatterns = [
   /\balien\b/i,
@@ -197,47 +170,29 @@ function hasDuplicates(values: string[]): boolean {
 }
 
 export function isEnvelopeCategory(category: BodyCategory): boolean {
-  return envelopeCategories.has(category)
+  return isEnvelopeCategoryCompatible(category)
 }
 
 export function isSolidSurfaceCategory(category: BodyCategory): boolean {
-  return solidSurfaceCategories.has(category)
+  return isSolidSurfaceCategoryCompatible(category)
 }
 
 export function isRockyChainCategory(category: BodyCategory): boolean {
   return rockyChainCategories.has(category)
 }
 
-export function isAirlessClass(className: string): boolean {
-  const metadata = metadataForClassName(className)
-  return metadata.environmentProfileHint === 'airless' || metadata.physicalTags.includes('airless')
-}
-
-export function isDesertClass(className: string): boolean {
-  const metadata = metadataForClassName(className)
-  return metadata.environmentProfileHint === 'desert' || metadata.physicalTags.includes('desert')
-}
-
-export function isAirlessAtmosphere(value: string): boolean {
-  return airlessAllowedAtmospheres.has(value)
-}
-
-export function isAirlessHydrosphere(value: string): boolean {
-  return airlessAllowedHydrospheres.has(value)
-}
-
-export function isDesertCompatibleHydrosphere(value: string): boolean {
-  return desertAllowedHydrospheres.has(value)
-}
-
 export function isAtmosphereCompatible(body: OrbitingBody): boolean {
   if (isAirlessClass(body.bodyClass.value)) return isAirlessAtmosphere(body.detail.atmosphere.value)
+  if (isGreenhouseClass(body.bodyClass.value)) return isGreenhouseAtmosphereCompatible(body.detail.atmosphere.value)
+  if (isSolidHydrogenEnvelopeConflict(body)) return false
   return true
 }
 
 export function isHydrosphereCompatible(body: OrbitingBody): boolean {
+  if (isHyceanClass(body.bodyClass.value)) return isHyceanHydrosphere(body.detail.hydrosphere.value)
   if (isAirlessClass(body.bodyClass.value)) return isAirlessHydrosphere(body.detail.hydrosphere.value)
   if (isDesertClass(body.bodyClass.value)) return isDesertCompatibleHydrosphere(body.detail.hydrosphere.value)
+  if (isWaterOceanClass(body.bodyClass.value)) return isWetOceanHydrosphere(body.detail.hydrosphere.value)
   return true
 }
 
@@ -246,7 +201,7 @@ export function validateBodyEnvironment(body: OrbitingBody, path = 'body'): Vali
   const category = body.category.value
   const thermalZone = body.thermalZone.value
 
-  if (extremeHotZones.has(thermalZone) && !envelopeCategories.has(category) && category !== 'anomaly') {
+  if (extremeHotZones.has(thermalZone) && !isEnvelopeCategory(category) && category !== 'anomaly') {
     if (!extremeHotAllowedAtmospheres.has(body.detail.atmosphere.value)) {
       findings.push(detailConflictFinding({
         code: 'ENV_EXTREME_HOT_ATMOSPHERE',
@@ -280,7 +235,7 @@ export function validateBodyEnvironment(body: OrbitingBody, path = 'body'): Vali
     }))
   }
 
-  if (coldZones.has(thermalZone) && solidSurfaceCategories.has(category)) {
+  if (coldZones.has(thermalZone) && isSolidSurfaceCategory(category)) {
     const badClimate = body.detail.climate.find((tag) => !coldAllowedClimateTags.has(tag.value))
     if (badClimate) {
       findings.push(detailConflictFinding({
@@ -327,6 +282,50 @@ export function validateBodyEnvironment(body: OrbitingBody, path = 'body'): Vali
     }))
   }
 
+  if (isGreenhouseClass(body.bodyClass.value) && !isGreenhouseAtmosphereCompatible(body.detail.atmosphere.value)) {
+    findings.push(detailConflictFinding({
+      code: validationCodes.environmentGreenhouseAtmosphere,
+      path: `${path}.detail.atmosphere`,
+      message: `Atmosphere-bearing greenhouse/cloud class "${body.bodyClass.value}" has incompatible atmosphere "${body.detail.atmosphere.value}".`,
+      targetId: body.id,
+      fact: body.detail.atmosphere,
+      expected: 'dense, greenhouse, steam, haze, toxic, or GU-distorted atmosphere',
+    }))
+  }
+
+  if (isHyceanClass(body.bodyClass.value)) {
+    if (!isHyceanHydrosphere(body.detail.hydrosphere.value)) {
+      findings.push(detailConflictFinding({
+        code: validationCodes.environmentHyceanHydrosphere,
+        path: `${path}.detail.hydrosphere`,
+        message: `Hycean class "${body.bodyClass.value}" has incompatible hydrosphere "${body.detail.hydrosphere.value}".`,
+        targetId: body.id,
+        fact: body.detail.hydrosphere,
+        expected: 'deep ocean, condensate, or deep atmospheric volatile layers',
+      }))
+    }
+  } else if (isWaterOceanClass(body.bodyClass.value) && !isWetOceanHydrosphere(body.detail.hydrosphere.value)) {
+    findings.push(detailConflictFinding({
+      code: validationCodes.environmentOceanHydrosphere,
+      path: `${path}.detail.hydrosphere`,
+      message: `Water/ocean class "${body.bodyClass.value}" has incompatible hydrosphere "${body.detail.hydrosphere.value}".`,
+      targetId: body.id,
+      fact: body.detail.hydrosphere,
+      expected: 'wet, protected-ocean, volatile, or vaporized ocean-remnant hydrosphere',
+    }))
+  }
+
+  if (isSolidHydrogenEnvelopeConflict(body)) {
+    findings.push(detailConflictFinding({
+      code: validationCodes.environmentSolidHydrogenEnvelope,
+      path: `${path}.detail.atmosphere`,
+      message: `Solid class "${body.bodyClass.value}" should not retain a hydrogen/helium envelope atmosphere.`,
+      targetId: body.id,
+      fact: body.detail.atmosphere,
+      expected: 'solid-world atmosphere or airless state',
+    }))
+  }
+
   return findings
 }
 
@@ -334,7 +333,7 @@ export function validateBodyPhysicalContract(body: OrbitingBody, path = 'body'):
   const findings: ValidationFinding[] = []
   const category = body.category.value
 
-  if (envelopeCategories.has(category)) {
+  if (isEnvelopeCategory(category)) {
     if (!body.physical.volatileEnvelope.value) {
       findings.push(finding({ severity: 'error', code: 'BODY_ENVELOPE_FLAG', path: `${path}.physical.volatileEnvelope`, message: `${category} should be marked as a volatile-envelope world.`, targetId: body.id, targetKind: 'body', source: 'generated-error' }))
     }
@@ -381,7 +380,7 @@ export function validateBodyPhysicalContract(body: OrbitingBody, path = 'body'):
     }
   }
 
-  if (!envelopeCategories.has(category) && category !== 'belt' && category !== 'anomaly') {
+  if (!isEnvelopeCategory(category) && category !== 'belt' && category !== 'anomaly') {
     if (body.physical.massEarth.value === null || body.physical.surfaceGravityG.value === null) {
       findings.push(finding({ severity: 'error', code: 'BODY_SOLID_PHYSICAL', path: `${path}.physical`, message: `${category} is missing mass or gravity estimates.`, targetId: body.id, targetKind: 'body', source: 'generated-error' }))
     }
@@ -474,7 +473,7 @@ export function validateSettlementCompatibility(system: GeneratedSystem, settlem
     findings.push(finding({ severity: 'error', code: 'SETTLEMENT_UNEXPECTED_MOON_ID', path: `${path}.moonId`, message: `${siteCategory} should not carry a moon id.`, targetId: settlement.id, targetKind: 'settlement', source: 'generated-error' }))
   }
 
-  if (siteCategory === 'Surface settlement' && envelopeCategories.has(body.category.value)) {
+  if (siteCategory === 'Surface settlement' && isEnvelopeCategory(body.category.value)) {
     findings.push(finding({ severity: 'error', code: 'SETTLEMENT_SURFACE_ON_ENVELOPE', path: `${path}.siteCategory`, message: `Surface settlement anchored to ${body.category.value}.`, targetId: settlement.id, targetKind: 'settlement', source: 'generated-error' }))
   }
   if (siteCategory === 'Surface settlement' && extremeHotZones.has(body.thermalZone.value)) {
@@ -517,6 +516,41 @@ export function validateNoAlienText(system: GeneratedSystem): ValidationFinding[
   })
 }
 
+export function validateBodyInterestText(body: OrbitingBody, path = 'body'): ValidationFinding[] {
+  const findings: ValidationFinding[] = []
+  const value = body.whyInteresting.value
+
+  if (/\b(?:hot|cold|cryogenic|inferno|furnace|temperate band)\s+zone\b/i.test(value)) {
+    findings.push(finding({
+      severity: 'warning',
+      code: validationCodes.proseRedundantZoneWording,
+      path: `${path}.whyInteresting`,
+      message: `Body interest text uses redundant thermal-zone wording: "${value}".`,
+      targetId: body.id,
+      targetKind: 'body',
+      source: 'generated-error',
+      observed: value,
+      expected: 'natural thermal-location phrasing',
+    }))
+  }
+
+  if (/\b1\s+major\s+moons?\s+create\b/i.test(value) || /\b[2-9]\s+major\s+moon\s+creates\b/i.test(value)) {
+    findings.push(finding({
+      severity: 'error',
+      code: validationCodes.proseSingularMoonGrammar,
+      path: `${path}.whyInteresting`,
+      message: `Body interest text has moon-count grammar mismatch: "${value}".`,
+      targetId: body.id,
+      targetKind: 'body',
+      source: 'generated-error',
+      observed: value,
+      expected: 'moon count agrees with noun and verb',
+    }))
+  }
+
+  return findings
+}
+
 export function validateLockedBodyDetail(body: OrbitingBody, path = 'body'): ValidationFinding[] {
   return validateBodyEnvironment(body, path).filter((finding) => finding.source === validationSources.lockedConflict)
 }
@@ -528,6 +562,7 @@ export function validateSystem(system: GeneratedSystem): ValidationFinding[] {
     ...system.bodies.flatMap((body, index) => [
       ...validateBodyEnvironment(body, `bodies[${index}]`),
       ...validateBodyPhysicalContract(body, `bodies[${index}]`),
+      ...validateBodyInterestText(body, `bodies[${index}]`),
     ]),
     ...system.settlements.flatMap((settlement, index) => validateSettlementCompatibility(system, settlement, `settlements[${index}]`)),
     ...validateNoAlienText(system),

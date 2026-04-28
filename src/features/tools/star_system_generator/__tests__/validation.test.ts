@@ -3,6 +3,7 @@ import type { BodyCategory, Fact, GeneratedSystem, OrbitingBody, Settlement } fr
 import {
   validateArchitecture,
   validateBodyEnvironment,
+  validateBodyInterestText,
   validateBodyPhysicalContract,
   validateLockedBodyDetail,
   validateSettlementCompatibility,
@@ -208,6 +209,67 @@ describe('star system validation contracts', () => {
     }))
 
     expect(findings.map((finding) => finding.code)).toContain('ENV_DESERT_HYDROSPHERE')
+  })
+
+  it('reports greenhouse, ocean, hycean, and stripped-core qualitative contradictions', () => {
+    expect(validateBodyEnvironment(body({
+      bodyClass: fact('Steam greenhouse'),
+      detail: {
+        atmosphere: fact('Hard vacuum'),
+        hydrosphere: fact('Vaporized volatile traces'),
+        geology: fact('Global resurfacing'),
+        climate: [fact('Runaway greenhouse')],
+        radiation: fact('Manageable'),
+        biosphere: fact('Sterile'),
+      },
+    })).map((finding) => finding.code)).toContain('ENV_GREENHOUSE_ATMOSPHERE')
+
+    expect(validateBodyEnvironment(body({
+      bodyClass: fact('Waterworld'),
+      detail: {
+        atmosphere: fact('Moderate inert atmosphere'),
+        hydrosphere: fact('Bone dry'),
+        geology: fact('Static lid'),
+        climate: [fact('Permanent storm tracks')],
+        radiation: fact('Manageable'),
+        biosphere: fact('Sterile'),
+      },
+    })).map((finding) => finding.code)).toContain('ENV_OCEAN_HYDROSPHERE')
+
+    expect(validateBodyEnvironment(body({
+      category: fact('sub-neptune' as BodyCategory),
+      bodyClass: fact('Hycean-like candidate'),
+      detail: {
+        atmosphere: fact('Hydrogen/helium envelope'),
+        hydrosphere: fact('No accessible volatile layer'),
+        geology: fact('High-pressure ice mantle'),
+        climate: [fact('Permanent storm tracks')],
+        radiation: fact('Manageable'),
+        biosphere: fact('Sterile'),
+      },
+    })).map((finding) => finding.code)).toContain('ENV_HYCEAN_HYDROSPHERE')
+
+    expect(validateBodyEnvironment(body({
+      bodyClass: fact('Stripped rocky super-Earth'),
+      detail: {
+        atmosphere: fact('Hydrogen/helium envelope'),
+        hydrosphere: fact('Bone dry'),
+        geology: fact('Static lid'),
+        climate: [fact('Hot desert')],
+        radiation: fact('Manageable'),
+        biosphere: fact('Sterile'),
+      },
+    })).map((finding) => finding.code)).toContain('ENV_SOLID_H2_ENVELOPE')
+  })
+
+  it('reports body-interest wording regressions for redundant zones and singular moon grammar', () => {
+    expect(validateBodyInterestText(body({
+      whyInteresting: fact('Survey crews flag this body because it sits in the hot zone.'),
+    })).map((finding) => finding.code)).toContain('PROSE_REDUNDANT_ZONE_WORDING')
+
+    expect(validateBodyInterestText(body({
+      whyInteresting: fact('1 major moon create anchor points for travel, mining, or conflict.'),
+    })).map((finding) => finding.code)).toContain('PROSE_SINGULAR_MOON_GRAMMAR')
   })
 
   it('reports compact architecture core-count failures', () => {

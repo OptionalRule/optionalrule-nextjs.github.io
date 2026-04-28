@@ -37,8 +37,10 @@ function derivedEnvironmentProfile(option: WorldClassOption, physicalTags: Set<W
   if (option.category === 'anomaly') return 'anomaly'
   if (physicalTags.has('airless')) return 'airless'
   if (physicalTags.has('desert')) return 'desert'
-  if (envelopeCategories.has(option.category)) return 'envelope'
+  if (physicalTags.has('hycean')) return 'ocean'
+  if (physicalTags.has('water-ocean')) return 'ocean'
   if (physicalTags.has('ocean')) return 'ocean'
+  if (envelopeCategories.has(option.category)) return 'envelope'
   return 'terrestrial'
 }
 
@@ -66,8 +68,37 @@ export function deriveWorldClassMetadata(option: WorldClassOption): WorldClassMe
     physicalTags.add('desert')
   }
 
-  if (includesAny(className, [/\bocean\b/, /\bwaterworld\b/, /\bhycean\b/])) {
+  if (includesAny(className, [/\bgreenhouse\b/])) {
+    physicalTags.add('greenhouse')
+  }
+
+  if (includesAny(className, [/\bsteam\b/])) {
+    physicalTags.add('steam')
+    physicalTags.add('greenhouse')
+  }
+
+  if (includesAny(className, [/\bcloud\b/, /\bcloudy\b/])) {
+    physicalTags.add('cloud')
+    physicalTags.add('greenhouse')
+  }
+
+  if (includesAny(className, [/\bhycean\b/])) {
+    physicalTags.add('hycean')
+    physicalTags.add('water-ocean')
     physicalTags.add('ocean')
+  }
+
+  if (includesAny(className, [/\bmagma ocean\b/, /\blava\b/])) {
+    physicalTags.add('magma-ocean')
+  }
+
+  if (includesAny(className, [/\bocean\b/, /\bwaterworld\b/]) && !includesAny(className, [/\bmagma ocean\b/, /\blava\b/])) {
+    physicalTags.add('water-ocean')
+    physicalTags.add('ocean')
+  }
+
+  if (includesAny(className, [/\bhydrogen-atmosphere\b/, /\bhydrogen atmosphere\b/])) {
+    physicalTags.add('hydrogen-atmosphere')
   }
 
   if (includesAny(className, [/\bfacility\b/, /\bplatform\b/, /\bterraforming\b/, /\bsettlement zone\b/, /\bindustry\b/, /\bblack-lab\b/, /\bexile habitat\b/, /\bsmuggler ice depot\b/])) {

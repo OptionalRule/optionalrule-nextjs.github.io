@@ -1,0 +1,243 @@
+import type { BodyCategory, OrbitingBody } from '../../types'
+import { envelopeCategories, solidSurfaceCategories, type WorldClassOption } from './domain'
+import { deriveWorldClassMetadata, metadataForClassName } from './worldClassMetadata'
+
+export const airlessAllowedAtmospheres = new Set([
+  'None / hard vacuum',
+  'Trace exosphere',
+  'None / dispersed volatiles',
+  'No ordinary atmosphere',
+])
+
+export const airlessAllowedHydrospheres = new Set([
+  'Bone dry',
+  'Hydrated minerals only',
+  'Subsurface ice',
+  'Polar caps / buried glaciers',
+  'No accessible surface volatiles',
+  'Not applicable: metric or route phenomenon',
+])
+
+export const desertAllowedHydrospheres = new Set([
+  'Bone dry',
+  'Hydrated minerals only',
+  'Subsurface ice',
+  'Polar caps / buried glaciers',
+  'Briny aquifers',
+  'Vaporized volatile traces',
+  'Nightside mineral frost',
+])
+
+export const envelopeAllowedHydrospheres = new Set([
+  'Deep atmospheric volatile layers',
+  'High-pressure condensate decks',
+  'No accessible surface volatiles',
+])
+
+export const beltAllowedAtmospheres = new Set(['None / dispersed volatiles'])
+export const beltAllowedHydrospheres = new Set(['Subsurface ice', 'Cometary volatiles', 'Hydrated minerals only'])
+
+export const solidSurfaceAtmospheres = new Set([
+  'None / hard vacuum',
+  'Trace exosphere',
+  'Thin CO2/N2',
+  'Thin but usable with pressure gear',
+  'Moderate inert atmosphere',
+  'Moderate toxic atmosphere',
+  'Dense CO2/N2',
+  'Dense greenhouse',
+  'Steam atmosphere',
+  'Sulfur/chlorine/ammonia haze',
+  'Chiral-active or GU-distorted atmosphere',
+  'Rock-vapor atmosphere',
+  'Metal vapor atmosphere',
+  'Chiral-active atmosphere',
+  'Controlled habitat envelopes',
+  'No ordinary atmosphere',
+])
+
+export const greenhouseAtmospheres = new Set([
+  'Dense CO2/N2',
+  'Dense greenhouse',
+  'Steam atmosphere',
+  'Sulfur/chlorine/ammonia haze',
+  'Moderate toxic atmosphere',
+  'Chiral-active or GU-distorted atmosphere',
+])
+
+export const steamHydrospheres = new Set([
+  'Briny aquifers',
+  'Local seas',
+  'Ocean-continent balance',
+  'Global ocean',
+  'High-pressure deep ocean',
+  'Ice-shell subsurface ocean',
+  'Hydrocarbon lakes/seas',
+  'Exotic solvent or GU-stabilized fluid chemistry',
+  'Vaporized volatile traces',
+])
+
+export const magmaOceanHydrospheres = new Set([
+  'Vaporized volatile traces',
+  'Nightside mineral frost',
+])
+
+export const waterOceanHydrospheres = new Set([
+  'Briny aquifers',
+  'Local seas',
+  'Ocean-continent balance',
+  'Global ocean',
+  'High-pressure deep ocean',
+  'Ice-shell subsurface ocean',
+  'Subsurface ice',
+  'Polar caps / buried glaciers',
+  'Exotic solvent or GU-stabilized fluid chemistry',
+  'Vaporized volatile traces',
+])
+
+export const hyceanHydrospheres = new Set([
+  'High-pressure deep ocean',
+  'High-pressure condensate decks',
+  'Deep atmospheric volatile layers',
+  'Global ocean',
+])
+
+export const dryHydrospheres = new Set([
+  'Bone dry',
+  'Hydrated minerals only',
+  'No accessible surface volatiles',
+  'Vaporized volatile traces',
+])
+
+export const extremeHotAllowedAtmospheres = new Set([
+  'None / hard vacuum',
+  'Trace exosphere',
+  'Rock-vapor atmosphere',
+  'Metal vapor atmosphere',
+  'Chiral-active atmosphere',
+])
+
+export const extremeHotAllowedHydrospheres = new Set([
+  'Bone dry',
+  'Hydrated minerals only',
+  'Vaporized volatile traces',
+  'Nightside mineral frost',
+])
+
+export const coldAllowedClimateTags = new Set([
+  'Snowball',
+  'Cold desert',
+  'Aerosol winter',
+  'Methane cycle',
+  'CO2 glacier cycle',
+  'Dark-sector gravity tides',
+])
+
+export const envelopeAllowedGeologies = new Set([
+  'Deep atmospheric circulation',
+  'Metallic hydrogen interior',
+  'Layered volatile mantle',
+  'Magnetosphere-driven weather',
+])
+
+export const anomalyAllowedGeologies = new Set([
+  'Artificial platform or engineered substrate',
+  'Metric shear geometry',
+])
+
+export function isEnvelopeCategory(category: BodyCategory): boolean {
+  return envelopeCategories.has(category)
+}
+
+export function isSolidSurfaceCategory(category: BodyCategory): boolean {
+  return solidSurfaceCategories.has(category)
+}
+
+export function isAirlessAtmosphere(value: string): boolean {
+  return airlessAllowedAtmospheres.has(value)
+}
+
+export function isAirlessHydrosphere(value: string): boolean {
+  return airlessAllowedHydrospheres.has(value)
+}
+
+export function isDesertCompatibleHydrosphere(value: string): boolean {
+  return desertAllowedHydrospheres.has(value)
+}
+
+export function isDryHydrosphere(value: string): boolean {
+  return dryHydrospheres.has(value)
+}
+
+export function isWetOceanHydrosphere(value: string): boolean {
+  return waterOceanHydrospheres.has(value)
+}
+
+export function isHyceanHydrosphere(value: string): boolean {
+  return hyceanHydrospheres.has(value)
+}
+
+export function isHydrogenHeliumEnvelope(value: string): boolean {
+  return value === 'Hydrogen/helium envelope'
+}
+
+export function isSolidSurfaceAtmosphere(value: string): boolean {
+  return solidSurfaceAtmospheres.has(value)
+}
+
+export function isGreenhouseAtmosphereCompatible(value: string): boolean {
+  return greenhouseAtmospheres.has(value)
+}
+
+export function isAirlessClass(className: string): boolean {
+  const metadata = metadataForClassName(className)
+  return metadata.environmentProfileHint === 'airless' || metadata.physicalTags.includes('airless')
+}
+
+export function isDesertClass(className: string): boolean {
+  const metadata = metadataForClassName(className)
+  return metadata.environmentProfileHint === 'desert' || metadata.physicalTags.includes('desert')
+}
+
+export function isGreenhouseClass(className: string): boolean {
+  const metadata = metadataForClassName(className)
+  return metadata.physicalTags.includes('greenhouse') || metadata.physicalTags.includes('steam') || metadata.physicalTags.includes('cloud')
+}
+
+export function isSteamClass(className: string): boolean {
+  return metadataForClassName(className).physicalTags.includes('steam')
+}
+
+export function isHyceanClass(className: string): boolean {
+  return metadataForClassName(className).physicalTags.includes('hycean')
+}
+
+export function isMagmaOceanClass(className: string): boolean {
+  return metadataForClassName(className).physicalTags.includes('magma-ocean')
+}
+
+export function isWaterOceanClass(className: string): boolean {
+  const metadata = metadataForClassName(className)
+  return !isMagmaOceanClass(className) && (metadata.physicalTags.includes('water-ocean') || metadata.physicalTags.includes('hycean'))
+}
+
+export function isHydrogenAtmosphereException(className: string): boolean {
+  return metadataForClassName(className).physicalTags.includes('hydrogen-atmosphere')
+}
+
+export function isSolidNoEnvelopeClass(className: string): boolean {
+  const metadata = metadataForClassName(className)
+  return metadata.physicalTags.includes('stripped-core') || /\brocky terrestrial\b|\bearth-sized terrestrial\b|\bsuper-terrestrial\b|\bbasaltic\b|\bmercury\b/i.test(className)
+}
+
+export function isSolidHydrogenEnvelopeConflict(body: OrbitingBody): boolean {
+  return (
+    solidSurfaceCategories.has(body.category.value) &&
+    isHydrogenHeliumEnvelope(body.detail.atmosphere.value) &&
+    !isHydrogenAtmosphereException(body.bodyClass.value)
+  )
+}
+
+export function worldClassHasTag(option: WorldClassOption, tag: ReturnType<typeof deriveWorldClassMetadata>['physicalTags'][number]): boolean {
+  return deriveWorldClassMetadata(option).physicalTags.includes(tag)
+}
