@@ -27,6 +27,11 @@ interface CorpusStats {
   settlements: number
   moons: number
   multiStarSystems: number
+  systemNames: Map<string, number>
+  bodyNames: Map<string, number>
+  firstBodyNames: Map<string, number>
+  moonNames: Map<string, number>
+  settlementNames: Map<string, number>
   starTypes: Map<string, number>
   starTypesByDistribution: Record<GeneratorDistribution, Map<string, number>>
   architectures: Map<string, number>
@@ -534,6 +539,7 @@ function auditSystem(system: GeneratedSystem, findings: Finding[], stats: Corpus
   stats.settlements += system.settlements.length
   stats.moons += system.bodies.reduce((total, body) => total + body.moons.length, 0)
   if (system.companions.length > 0) stats.multiStarSystems += 1
+  increment(stats.systemNames, system.name.value)
   increment(stats.starTypes, system.primary.spectralType.value)
   increment(stats.starTypesByDistribution[system.options.distribution], system.primary.spectralType.value)
   increment(stats.architectures, system.architecture.name.value)
@@ -550,7 +556,9 @@ function auditSystem(system: GeneratedSystem, findings: Finding[], stats: Corpus
     increment(stats.companionTypes, companion.companionType.value)
     increment(stats.companionSeparations, companion.separation.value)
   })
-  system.bodies.forEach((body) => {
+  system.bodies.forEach((body, bodyIndex) => {
+    increment(stats.bodyNames, body.name.value)
+    if (bodyIndex === 0) increment(stats.firstBodyNames, body.name.value)
     increment(stats.categories, body.category.value)
     increment(stats.bodyClasses, body.bodyClass.value)
     increment(stats.atmospheres, body.detail.atmosphere.value)
@@ -559,10 +567,14 @@ function auditSystem(system: GeneratedSystem, findings: Finding[], stats: Corpus
     increment(stats.radiation, body.detail.radiation.value)
     increment(stats.biospheres, body.detail.biosphere.value)
     if (body.rings) increment(stats.ringTypes, body.rings.type.value)
-    body.moons.forEach((moon) => increment(stats.moonTypes, moon.moonType.value))
+    body.moons.forEach((moon) => {
+      increment(stats.moonNames, moon.name.value)
+      increment(stats.moonTypes, moon.moonType.value)
+    })
     nestedIncrement(stats.categoriesByArchitecture, system.architecture.name.value, body.category.value)
   })
   system.settlements.forEach((settlement) => {
+    increment(stats.settlementNames, settlement.name.value)
     increment(stats.settlementCategories, settlement.siteCategory.value)
     increment(stats.settlementPresenceRolls, settlement.presence.roll.value)
     increment(stats.settlementPresenceTiers, settlement.presence.tier.value)
@@ -679,6 +691,11 @@ function auditCoverage(stats: CorpusStats, findings: Finding[]): void {
     addFinding(findings, 'warning', syntheticSeed, 'bodies.moons.moonType', `Moon type "${topMoonType[0]}" accounts for more than 20% of generated moons.`)
   }
 
+  auditNameConcentration(findings, stats.systemNames, stats.systems, 'name', 'System name', 0.02)
+  auditNameConcentration(findings, stats.firstBodyNames, stats.systems, 'bodies[0].name', 'First body name', 0.03)
+  auditNameConcentration(findings, stats.settlementNames, stats.settlements, 'settlements.name', 'Settlement name', 0.02)
+  auditNameConcentration(findings, stats.moonNames, stats.moons, 'bodies.moons.name', 'Moon name', 0.03)
+
   if (!stats.settlementCategories.has('Moon base')) {
     addFinding(findings, 'warning', syntheticSeed, 'settlements.siteCategory', 'Corpus did not produce any moon-base settlements.')
   }
@@ -731,6 +748,26 @@ function formatMap<Key>(map: Map<Key, number>): string {
     .join(', ')
 }
 
+function uniqueSummary(map: Map<string, number>, total: number): string {
+  const top = [...map.entries()].sort(([, left], [, right]) => right - left)[0]
+  const topText = top ? `, top "${top[0]}" x${top[1]}` : ''
+  return `${map.size}/${total}${topText}`
+}
+
+function auditNameConcentration(
+  findings: Finding[],
+  map: Map<string, number>,
+  total: number,
+  path: string,
+  label: string,
+  maxShare: number
+): void {
+  const top = [...map.entries()].sort(([, left], [, right]) => right - left)[0]
+  if (top && total > 0 && top[1] / total > maxShare) {
+    addFinding(findings, 'warning', 'corpus', path, `${label} "${top[0]}" appears ${top[1]} times, above ${(maxShare * 100).toFixed(1)}% concentration.`)
+  }
+}
+
 function formatNestedCategoryMap(map: Map<string, Map<BodyCategory, number>>): string {
   return [...map.entries()]
     .sort(([left], [right]) => left.localeCompare(right))
@@ -765,6 +802,11 @@ const stats: CorpusStats = {
   settlements: 0,
   moons: 0,
   multiStarSystems: 0,
+  systemNames: new Map(),
+  bodyNames: new Map(),
+  firstBodyNames: new Map(),
+  moonNames: new Map(),
+  settlementNames: new Map(),
   starTypes: new Map(),
   starTypesByDistribution: {
     frontier: new Map(),
@@ -834,6 +876,11 @@ console.log(`Bodies: ${stats.bodies}`)
 console.log(`Moons: ${stats.moons}`)
 console.log(`Settlements: ${stats.settlements}`)
 console.log(`Multi-star systems: ${stats.multiStarSystems}`)
+console.log(`Unique system names: ${uniqueSummary(stats.systemNames, stats.systems)}`)
+console.log(`Unique body names: ${uniqueSummary(stats.bodyNames, stats.bodies)}`)
+console.log(`Unique first-body names: ${uniqueSummary(stats.firstBodyNames, stats.systems)}`)
+console.log(`Unique moon names: ${uniqueSummary(stats.moonNames, stats.moons)}`)
+console.log(`Unique settlement names: ${uniqueSummary(stats.settlementNames, stats.settlements)}`)
 console.log(`Errors: ${errors.length}`)
 console.log(`Warnings: ${warnings.length}`)
 console.log(`Star types: ${formatMap(stats.starTypes)}`)

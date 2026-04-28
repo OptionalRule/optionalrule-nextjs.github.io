@@ -28,35 +28,23 @@ import {
   siteOptions,
 } from './tables'
 
-const systemPrefixes = ['Keid', 'Vesper', 'Lumen', 'Harrow', 'Sable', 'Marrow', 'Orison', 'Nadir', 'Calder', 'Pale']
-const systemSuffixes = ['Ladder', 'Verge', 'Crown', 'Breach', 'Harbor', 'Glass', 'Wake', 'Cairn', 'Tide', 'Gate']
-const bodyNames = [
-  'Ashkey',
-  'Red Vane',
-  'Sable',
-  'Harrowglass',
-  'Cinder',
-  'Pale Belt',
-  'Mourn',
-  'Chime',
-  'Vey',
-  'Dross',
-  'Siren',
-  'Gath',
-  'Low Lantern',
-  'Blackwater',
-  'Pilgrim',
-  'Rook',
-  'Kestrel',
-  'Vigilance',
-  'Old Copper',
-  'Ninth Choir',
-  'Cold Chapel',
-  'Ravel',
-  'Warden',
-  'Glasswake',
-]
-const moonNames = ['Silt', 'Brine', 'Kettle', 'Palehook', 'Vigil', 'Thresh', 'Low Bell', 'Cairnlet']
+const systemNameCores = ['Keid', 'Vesper', 'Lumen', 'Harrow', 'Sable', 'Marrow', 'Orison', 'Nadir', 'Calder', 'Pale', 'Vey', 'Dross', 'Siren', 'Gath', 'Ravel', 'Warden', 'Glasswake', 'Aster', 'Kore', 'Tavian', 'Mire', 'Sundrake', 'Obol', 'Kestrin', 'Lowry', 'Cairn', 'Tidehook', 'Ashen', 'Nacre', 'Cobalt']
+const systemNameForms = ['Ladder', 'Verge', 'Crown', 'Breach', 'Harbor', 'Glass', 'Wake', 'Cairn', 'Tide', 'Gate', 'Reach', 'Spindle', 'Cradle', 'Lantern', 'Thread', 'Lock', 'Bridge', 'Chapel', 'Furnace', 'Choir', 'Mirror', 'Anvil', 'Current', 'Maw', 'Haven', 'Gyre', 'Wound', 'Shelf', 'Quay', 'Vault']
+const systemNamePatterns = ['possessive', 'compound', 'numeric', 'catalog', 'route'] as const
+const bodyNameCores = ['Ash', 'Vane', 'Sable', 'Harrow', 'Cinder', 'Pale', 'Mourn', 'Chime', 'Vey', 'Dross', 'Siren', 'Gath', 'Lantern', 'Blackwater', 'Pilgrim', 'Rook', 'Kestrel', 'Vigil', 'Copper', 'Choir', 'Chapel', 'Ravel', 'Warden', 'Glass', 'Thorn', 'Kettle', 'Brine', 'Silt', 'Kore', 'Mire', 'Obol', 'Nacre', 'Tavian', 'Low Bell', 'Calder', 'Marrow']
+const bodyNameFormsByCategory: Record<BodyCategory, readonly string[]> = {
+  'rocky-planet': ['World', 'Stone', 'Vane', 'Reach', 'March', 'Anvil'],
+  'super-earth': ['Crown', 'Massif', 'Bastion', 'Hold', 'Atlas', 'Rise'],
+  'sub-neptune': ['Veil', 'Mantle', 'Swell', 'Envelope', 'Drift', 'Pall'],
+  'gas-giant': ['Giant', 'Lantern', 'Furnace', 'Maw', 'Aegis', 'Bell'],
+  'ice-giant': ['Deep', 'Blue', 'Warden', 'Gale', 'Vault', 'Boreal'],
+  belt: ['Belt', 'Shards', 'Shoal', 'Swarm', 'Field', 'Arc'],
+  'dwarf-body': ['Dwarf', 'Cairn', 'Chip', 'Knot', 'Relic', 'Shard'],
+  'rogue-captured': ['Stray', 'Rogue', 'Drifter', 'Captive', 'Wayfarer', 'Outcast'],
+  anomaly: ['Shear', 'Fracture', 'Mirror', 'Scar', 'Null', 'Cipher'],
+}
+const moonNameCores = ['Silt', 'Brine', 'Kettle', 'Palehook', 'Vigil', 'Thresh', 'Low Bell', 'Cairnlet', 'Mote', 'Rime', 'Tallow', 'Pin', 'Cradle', 'Hush', 'Glim', 'Marl', 'Wick', 'Fret', 'Spar', 'Nail', 'Sedge', 'Rooklet', 'Tarn', 'Hollow']
+const moonNameForms = ['Minor', 'Major', 'Cradle', 'Shard', 'Watch', 'Cup', 'Knot', 'Shell', 'Hook', 'Lantern', 'Marker', 'Hold']
 
 const activityLabels = [
   { max: 3, value: 'Dormant / unusually quiet' },
@@ -533,7 +521,16 @@ function fact<T>(value: T, confidence: Fact<T>['confidence'], source?: string): 
 }
 
 function generateSystemName(rng: SeededRng): string {
-  return `${pickOne(rng, systemPrefixes)}'s ${pickOne(rng, systemSuffixes)}`
+  const core = pickOne(rng, systemNameCores)
+  const form = pickOne(rng, systemNameForms)
+  const secondCore = pickOne(rng, systemNameCores.filter((candidate) => candidate !== core))
+  const pattern = pickOne(rng, systemNamePatterns)
+
+  if (pattern === 'compound') return `${core}${form}`
+  if (pattern === 'numeric') return `${core}-${rng.int(2, 99).toString().padStart(2, '0')}`
+  if (pattern === 'catalog') return `${core} ${pickOne(rng, ['Aster', 'Route', 'Survey', 'Gate', 'Trace'])}-${rng.int(10, 999)}`
+  if (pattern === 'route') return `${core}-${secondCore} ${form}`
+  return `${core}'s ${form}`
 }
 
 function activityFromRoll(roll: number): string {
@@ -1422,11 +1419,17 @@ function terrestrialMoonResult(roll: number): { count: number; scale?: string; t
   return { count: 1, scale: 'planet-scale major moon' }
 }
 
-function moonNameForIndex(bodyIndex: number, moonIndex: number): string {
+function moonNameForIndex(rng: SeededRng, bodyIndex: number, moonIndex: number, moonType: string): string {
   const offset = bodyIndex + moonIndex
-  const baseName = moonNames[offset % moonNames.length]
-  const cycle = Math.floor(offset / moonNames.length)
-  return cycle === 0 ? baseName : `${baseName} ${cycle + 1}`
+  const baseName = pickOne(rng, moonNameCores)
+  const form = moonType.includes('ocean') || moonType.includes('ice') || moonType.includes('Hydrocarbon')
+    ? pickOne(rng, ['Shell', 'Deep', 'Brine', 'Frost'])
+    : moonType.includes('Radiation') || moonType.includes('Volcanic')
+      ? pickOne(rng, ['Scorch', 'Forge', 'Watch', 'Flare'])
+      : pickOne(rng, moonNameForms)
+  const cycle = Math.floor(offset / moonNameCores.length)
+  const suffix = cycle === 0 ? '' : ` ${cycle + 1}`
+  return `${baseName} ${form} ${moonIndex + 1}${suffix}`
 }
 
 function generateMoons(
@@ -1470,7 +1473,7 @@ function generateMoons(
     const profile = moonProfile(moonType)
     return {
       id: `body-${bodyIndex + 1}-moon-${index + 1}`,
-      name: fact(moonNameForIndex(bodyIndex, index), 'human-layer', 'Generated moon name'),
+      name: fact(moonNameForIndex(rng.fork(`moon-name-${bodyIndex + 1}-${index + 1}`), bodyIndex, index, moonType), 'human-layer', 'Generated moon name from body and moon type'),
       moonType: fact(moonType, moonType.includes('Chiral') || moonType.includes('Dark-sector') || moonType.includes('Moving bleed') || moonType.includes('Programmable') ? 'gu-layer' : 'inferred', 'MASS-GU 17 moon type table'),
       scale: fact(scaleOverride ?? (category === 'gas-giant' || category === 'ice-giant' ? pickOne(rng, moonScales.slice(1)) : pickOne(rng, moonScales.slice(0, 3))), 'inferred', 'MASS-GU 17 moon scale from moon count table'),
       ...profile,
@@ -1872,13 +1875,28 @@ function selectWorldClassForPlanKind(rng: SeededRng, thermalZone: string, planKi
   return pickOne(rng, worldClassesByThermalZone[thermalZone])
 }
 
-function bodyNameForIndex(index: number): string {
-  const baseName = bodyNames[index % bodyNames.length]
-  const cycle = Math.floor(index / bodyNames.length)
-  return cycle === 0 ? baseName : `${baseName} ${cycle + 1}`
+function bodyNameForIndex(
+  rng: SeededRng,
+  systemName: string,
+  index: number,
+  architectureName: string,
+  bodyClass: WorldClassOption
+): string {
+  const categoryForms = bodyNameFormsByCategory[bodyClass.category]
+  const core = pickOne(rng, bodyNameCores)
+  const form = pickOne(rng, categoryForms)
+  const systemStem = systemName.split(/[\s'-]+/).find((part) => part.length > 2) ?? systemName
+  const orbitMark = index + 1
+
+  if (bodyClass.category === 'belt') return `${systemStem} ${form} ${orbitMark}`
+  if (bodyClass.category === 'anomaly') return `${core} ${form}-${orbitMark}`
+  if (architectureName === 'Peas-in-a-pod chain') return `${systemStem} ${core}-${orbitMark}`
+  if (architectureName === 'Giant-rich or chaotic' && (bodyClass.category === 'gas-giant' || bodyClass.category === 'ice-giant')) return `${core} ${form} ${orbitMark}`
+  if (rng.chance(0.35)) return `${core}${form} ${orbitMark}`
+  return `${core} ${form} ${orbitMark}`
 }
 
-function generateBodies(rng: SeededRng, primary: Star, architectureName: string): OrbitingBody[] {
+function generateBodies(rng: SeededRng, primary: Star, architectureName: string, systemName: string): OrbitingBody[] {
   const bodyPlan = generateBodyPlan(rng.fork('body-plan'), architectureName)
   const orbits = generateOrbitSeries(rng, primary.luminositySolar.value, bodyPlan.length)
   const bodies: OrbitingBody[] = []
@@ -1902,7 +1920,7 @@ function generateBodies(rng: SeededRng, primary: Star, architectureName: string)
     bodies.push({
       id: `body-${index + 1}`,
       orbitAu: fact(orbitAu, 'derived', 'Generated orbital spacing'),
-      name: fact(bodyNameForIndex(index), 'human-layer', 'Generated system nomenclature'),
+      name: fact(bodyNameForIndex(rng.fork(`body-name-${index + 1}`), systemName, index, architectureName, filtered.bodyClass), 'human-layer', 'Generated body name from system, architecture, category, and orbit'),
       category: fact(filtered.bodyClass.category, 'inferred', 'Thermal-zone body class table'),
       massClass: fact(filtered.bodyClass.massClass, 'inferred', 'Thermal-zone body class table'),
       bodyClass: fact(filtered.bodyClass.className, 'inferred', 'Thermal-zone, architecture, and exoplanet filters'),
@@ -2488,6 +2506,62 @@ function settlementWhyHere(
   return `${anchor.name}: ${selected.join('; ')}.`
 }
 
+function settlementDescriptorForFunction(settlementFunction: string): string {
+  if (settlementFunction.includes('mine') || settlementFunction.includes('extraction') || settlementFunction.includes('harvest')) return 'Claim'
+  if (settlementFunction.includes('Refinery') || settlementFunction.includes('foundry') || settlementFunction.includes('works')) return 'Works'
+  if (settlementFunction.includes('Freeport') || settlementFunction.includes('Smuggler')) return 'Freeport'
+  if (settlementFunction.includes('Quarantine')) return 'Cordon'
+  if (settlementFunction.includes('Military') || settlementFunction.includes('Naval') || settlementFunction.includes('Weapons')) return 'Bastion'
+  if (settlementFunction.includes('Iggygate') || settlementFunction.includes('Pinchdrive') || settlementFunction.includes('customs')) return 'Gate'
+  if (settlementFunction.includes('lab') || settlementFunction.includes('observ')) return 'Laboratory'
+  if (settlementFunction.includes('colony') || settlementFunction.includes('Refugee') || settlementFunction.includes('enclave')) return 'Habitat'
+  return 'Station'
+}
+
+function settlementDescriptorForCategory(siteCategory: string): string {
+  if (siteCategory === 'Surface settlement') return 'Dome'
+  if (siteCategory === 'Moon base') return 'Base'
+  if (siteCategory === 'Asteroid or belt base') return 'Bore'
+  if (siteCategory === 'Gate or route node') return 'Node'
+  if (siteCategory === 'Mobile site') return 'Fleet'
+  if (siteCategory === 'Derelict or restricted site') return 'Redoubt'
+  if (siteCategory === 'Deep-space platform') return 'Platform'
+  return 'Station'
+}
+
+function generateSettlementName(
+  rng: SeededRng,
+  body: OrbitingBody,
+  anchor: SettlementAnchor,
+  siteCategory: string,
+  settlementFunction: string,
+  authority: string,
+  scale: string
+): string {
+  const anchorStem = anchor.name.split(',')[0].replace(/\s+(orbital space|route geometry|traffic pattern|transit geometry)$/i, '')
+  const functionDescriptor = settlementDescriptorForFunction(settlementFunction)
+  const categoryDescriptor = settlementDescriptorForCategory(siteCategory)
+  const authorityDescriptor =
+    authority.includes('corp') || authority.includes('Corporate') ? 'Concession' :
+    authority.includes('Military') || authority.includes('navy') ? 'Command' :
+    authority.includes('quarantine') || authority.includes('Quarantine') ? 'Cordon' :
+    authority.includes('council') ? 'Commons' :
+    authority.includes('free') || authority.includes('captain') ? 'Compact' :
+    'Charter'
+  const scaleDescriptor =
+    scale.includes('million') || scale.includes('Regional') || scale.includes('Large') ? 'Hub' :
+    scale === 'Automated only' ? 'Array' :
+    scale === 'Abandoned' ? 'Remnant' :
+    'Hold'
+
+  const pattern = rng.int(1, 5)
+  if (pattern === 1) return `${anchorStem} ${functionDescriptor}`
+  if (pattern === 2) return `${anchorStem} ${categoryDescriptor}`
+  if (pattern === 3) return `${body.name.value} ${authorityDescriptor}`
+  if (pattern === 4) return `${anchorStem} ${scaleDescriptor}`
+  return `${body.name.value} ${functionDescriptor} ${rng.int(2, 99).toString().padStart(2, '0')}`
+}
+
 function generateSettlements(
   rng: SeededRng,
   options: GenerationOptions,
@@ -2511,19 +2585,22 @@ function generateSettlements(
     const whyHere = settlementWhyHere(body, presence, guOverlay, reachability, anchor)
     const tags = chooseSettlementTags(rng)
     const tagHook = settlementTagHook(tags[0], tags[1])
+    const scale = settlementScaleFromRoll(rng, presence)
+    const authority = pickOne(rng, settlementAuthorities)
+    const settlementName = generateSettlementName(rng.fork(`settlement-name-${index + 1}`), body, anchor, locationOption.category, settlementFunction, authority, scale)
     return {
       id: `settlement-${index + 1}`,
       bodyId: body.id,
       moonId: anchor.moonId,
-      name: fact(`${body.name.value} ${pickOne(rng, ['Freeport', 'Anchor', 'Bore', 'Picket', 'Yard', 'Station'])}`, 'human-layer', 'Generated settlement name'),
+      name: fact(settlementName, 'human-layer', 'Generated settlement name from anchor, function, authority, and scale'),
       anchorKind: fact(anchor.kind, 'human-layer', 'Generated site-to-body relationship'),
       anchorName: fact(anchor.name, 'human-layer', 'Generated site-to-body relationship'),
       anchorDetail: fact(anchor.detail, 'human-layer', 'Generated site-to-body relationship'),
       siteCategory: fact(locationOption.category, 'human-layer', 'MASS-GU section 18 constrained site category'),
       location: fact(locationOption.label, 'human-layer', 'MASS-GU 18.3 site location table with body constraints'),
       function: fact(settlementFunction, 'human-layer', 'MASS-GU settlement function table with body constraints'),
-      scale: fact(settlementScaleFromRoll(rng, presence), 'human-layer', 'MASS-GU 18.2 settlement scale d12 table'),
-      authority: fact(pickOne(rng, settlementAuthorities), 'human-layer', 'MASS-GU 18.5 authority table'),
+      scale: fact(scale, 'human-layer', 'MASS-GU 18.2 settlement scale d12 table'),
+      authority: fact(authority, 'human-layer', 'MASS-GU 18.5 authority table'),
       builtForm: fact(builtForm, 'human-layer', 'MASS-GU built form table with location/function constraints'),
       aiSituation: fact(pickOne(rng, aiSituations), 'human-layer', 'MASS-GU AI situation table'),
       condition: fact(pickOne(rng, settlementConditions), 'human-layer', 'MASS-GU settlement condition table'),
@@ -2665,7 +2742,7 @@ export function generateSystem(options: GenerationOptions): GeneratedSystem {
   const architectureResult = generateArchitecture(rootRng.fork('architecture'), options, primary, reachability.className.value)
   const hz = calculateHabitableZone(primary.luminositySolar.value)
   const snowLine = calculateSnowLine(primary.luminositySolar.value)
-  const bodies = generateBodies(rootRng.fork('bodies'), primary, architectureResult.architecture.name.value)
+  const bodies = generateBodies(rootRng.fork('bodies'), primary, architectureResult.architecture.name.value, name)
   const guOverlay = generateGuOverlay(rootRng.fork('gu'), options.gu, primary, companions, bodies, architectureResult.architecture.name.value)
   const settlements = generateSettlements(rootRng.fork('settlements'), options, name, bodies, guOverlay, reachability, architectureResult.architecture.name.value)
   const ruins = generateHumanRemnants(rootRng.fork('ruins'), bodies, guOverlay)

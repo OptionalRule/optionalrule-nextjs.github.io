@@ -68,6 +68,22 @@ describe('generateSystem', () => {
     expect(second).not.toEqual(first)
   })
 
+  it('generates varied contextual names across sampled systems', () => {
+    const systems = Array.from({ length: 120 }, (_, index) =>
+      generateSystem({ ...options, settlements: 'crowded', seed: `914a9c2e41b8${index.toString(16).padStart(4, '0')}` })
+    )
+    const systemNames = systems.map((system) => system.name.value)
+    const firstBodyNames = systems.map((system) => system.bodies[0]?.name.value).filter(Boolean)
+    const settlementNames = systems.flatMap((system) => system.settlements.map((settlement) => settlement.name.value))
+    const moonNames = systems.flatMap((system) => system.bodies.flatMap((body) => body.moons.map((moon) => moon.name.value)))
+
+    expect(new Set(systemNames).size).toBeGreaterThan(100)
+    expect(new Set(firstBodyNames).size).toBeGreaterThan(60)
+    expect(new Set(settlementNames).size).toBeGreaterThan(100)
+    expect(new Set(moonNames).size).toBeGreaterThan(40)
+    expect(firstBodyNames.filter((name) => name === 'Ashkey').length).toBe(0)
+  })
+
   it('includes required MVP layers and passes the no-alien check', () => {
     const system = generateSystem(options)
 
