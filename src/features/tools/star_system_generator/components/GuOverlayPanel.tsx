@@ -16,8 +16,10 @@ export function GuOverlayPanel({ system }: { system: GeneratedSystem }) {
       <dl className="mt-4 grid gap-3 text-sm sm:grid-cols-2 lg:grid-cols-4">
         <Detail label="Intensity" value={system.guOverlay.intensity.value} />
         <Detail label="Bleed Location" value={system.guOverlay.bleedLocation.value} />
+        <Detail label="Behavior" value={system.guOverlay.bleedBehavior.value} />
         <Detail label="Resource" value={system.guOverlay.resource.value} />
         <Detail label="Hazard" value={system.guOverlay.hazard.value} />
+        <Detail label="Intensity Roll" value={`${system.guOverlay.intensityRoll.value}`} />
       </dl>
     </section>
   )

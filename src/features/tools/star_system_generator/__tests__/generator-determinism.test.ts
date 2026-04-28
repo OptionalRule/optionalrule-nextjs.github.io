@@ -99,6 +99,9 @@ describe('generateSystem', () => {
       expect(moon.use.value).toBeTruthy()
     }
     expect(system.guOverlay.hazard.confidence).toBe('gu-layer')
+    expect(system.guOverlay.bleedBehavior.value).toBeTruthy()
+    expect(system.guOverlay.intensityRoll.value).toBeGreaterThan(0)
+    expect(Array.isArray(system.guOverlay.intensityModifiers)).toBe(true)
     for (const companion of system.companions) {
       expect(companion.companionType.source).toContain('MASS-GU companion threshold')
       expect(companion.separation.source).toContain('MASS-GU binary separation roll')
@@ -464,6 +467,26 @@ describe('generateSystem', () => {
     expect(reachabilityModifiers).toContain('+1 multi-star resonance geometry')
     expect(reachabilityModifiers).toContain('+1 chiral or high-bleed resource bias')
     expect(reachabilityModifiers).toContain('+1 flare-driven M-dwarf bleed behavior')
+  })
+
+  it('uses expanded source GU overlay rolls', () => {
+    const systems = Array.from({ length: 240 }, (_, index) =>
+      generateSystem({ ...options, gu: index % 3 === 0 ? 'fracture' : index % 3 === 1 ? 'high' : 'normal', seed: `911a9c2e41b8${index.toString(16).padStart(4, '0')}` })
+    )
+    const locations = new Set(systems.map((system) => system.guOverlay.bleedLocation.value))
+    const behaviors = new Set(systems.map((system) => system.guOverlay.bleedBehavior.value))
+    const resources = new Set(systems.map((system) => system.guOverlay.resource.value))
+    const hazards = new Set(systems.map((system) => system.guOverlay.hazard.value))
+    const modifiers = systems.flatMap((system) => system.guOverlay.intensityModifiers.map((modifier) => modifier.value))
+
+    expect(locations.size).toBeGreaterThan(10)
+    expect(behaviors.size).toBeGreaterThan(6)
+    expect(resources.size).toBeGreaterThan(10)
+    expect(hazards.size).toBeGreaterThan(10)
+    expect(modifiers).toContain('+2 multi-star')
+    expect(modifiers).toContain('+1 close-in resonant planetary chain')
+    expect(modifiers).toContain('+1 strong giant magnetosphere')
+    expect(modifiers).toContain('+4 fracture GU preference')
   })
 
   it('keeps architecture body plans aligned with source intent', () => {

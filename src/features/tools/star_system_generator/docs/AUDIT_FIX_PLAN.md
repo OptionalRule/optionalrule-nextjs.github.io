@@ -82,7 +82,7 @@ Work items:
   - very young
   - close binary
   - strong GU bleed field
-- Expand GU overlay:
+- Expand GU overlay. Completed in checkpoint `feat: expand geometric unity generation`:
   - modified 2d6 intensity
   - bleed behavior
   - d20 location/resource/hazard tables

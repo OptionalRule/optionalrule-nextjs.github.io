@@ -35,6 +35,10 @@ interface CorpusStats {
   settlementCategories: Map<string, number>
   settlementCountsByDensity: Record<SettlementDensity, number[]>
   guIntensityByPreference: Record<GuPreference, Map<string, number>>
+  guBehaviors: Map<string, number>
+  guResources: Map<string, number>
+  guHazards: Map<string, number>
+  guIntensityModifiers: Map<string, number>
   companionTypes: Map<string, number>
   companionSeparations: Map<string, number>
   activityModifiers: Map<string, number>
@@ -514,6 +518,10 @@ function auditSystem(system: GeneratedSystem, findings: Finding[], stats: Corpus
   increment(stats.architectures, system.architecture.name.value)
   increment(stats.reachabilityClasses, system.reachability.className.value)
   increment(stats.guIntensityByPreference[system.options.gu], system.guOverlay.intensity.value)
+  increment(stats.guBehaviors, system.guOverlay.bleedBehavior.value)
+  increment(stats.guResources, system.guOverlay.resource.value)
+  increment(stats.guHazards, system.guOverlay.hazard.value)
+  system.guOverlay.intensityModifiers.forEach((modifier) => increment(stats.guIntensityModifiers, modifier.value))
   stats.settlementCountsByDensity[system.options.settlements].push(system.settlements.length)
   system.primary.activityModifiers.forEach((modifier) => increment(stats.activityModifiers, modifier.value))
   system.reachability.modifiers.forEach((modifier) => increment(stats.reachabilityModifiers, modifier.value))
@@ -548,6 +556,16 @@ function auditSystem(system: GeneratedSystem, findings: Finding[], stats: Corpus
 
   if (system.reachability.modifiers.some((modifier) => !modifier.value.trim())) {
     addFinding(findings, 'error', seed, 'reachability.modifiers', 'Reachability modifier is blank.')
+  }
+
+  if (!Number.isFinite(system.guOverlay.intensityRoll.value)) {
+    addFinding(findings, 'error', seed, 'guOverlay.intensityRoll', 'GU intensity roll is not finite.')
+  }
+
+  assertText(findings, seed, 'guOverlay.bleedBehavior', system.guOverlay.bleedBehavior.value, 'GU bleed behavior')
+
+  if (system.guOverlay.intensityModifiers.some((modifier) => !modifier.value.trim())) {
+    addFinding(findings, 'error', seed, 'guOverlay.intensityModifiers', 'GU intensity modifier is blank.')
   }
 
   if (system.bodies.length === 0) {
@@ -722,6 +740,10 @@ const stats: CorpusStats = {
     high: new Map(),
     fracture: new Map(),
   },
+  guBehaviors: new Map(),
+  guResources: new Map(),
+  guHazards: new Map(),
+  guIntensityModifiers: new Map(),
   companionTypes: new Map(),
   companionSeparations: new Map(),
   activityModifiers: new Map(),
@@ -772,6 +794,10 @@ console.log('Settlement counts by density:')
 console.log(formatSettlementCountsByDensity(stats))
 console.log('GU intensity by preference:')
 console.log(formatGuIntensityByPreference(stats))
+console.log(`GU behaviors: ${formatMap(stats.guBehaviors)}`)
+console.log(`GU resources: ${formatMap(stats.guResources)}`)
+console.log(`GU hazards: ${formatMap(stats.guHazards)}`)
+console.log(`GU intensity modifiers: ${formatMap(stats.guIntensityModifiers)}`)
 console.log('Body categories by architecture:')
 console.log(formatNestedCategoryMap(stats.categoriesByArchitecture))
 

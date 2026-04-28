@@ -16,16 +16,12 @@ import type {
   SystemPhenomenon,
 } from '../../types'
 import { calculateHabitableZone, calculateInsolation, calculateSnowLine, classifyThermalZone, roundTo } from './calculations'
-import { d12, d100, pickOne, pickTable, twoD6 } from './dice'
+import { d12, d20, d100, pickOne, pickTable, twoD6 } from './dice'
 import { createSeededRng, type SeededRng } from './rng'
 import {
   ageStates,
   architectures,
-  bleedLocations,
   frontierStarTypes,
-  guHazards,
-  guIntensities,
-  guResources,
   metallicities,
   reachabilityClasses,
   realisticStarTypes,
@@ -71,6 +67,99 @@ const activityLabels = [
   { max: 12, value: 'Flare-prone' },
   { max: 14, value: 'Violent flare cycle' },
   { max: Number.POSITIVE_INFINITY, value: 'Extreme activity / metric-amplified events' },
+] as const
+
+const guIntensityTable = [
+  { max: 4, value: 'Geometrically quiet' },
+  { max: 6, value: 'Low bleed' },
+  { max: 8, value: 'Useful bleed' },
+  { max: 10, value: 'Rich bleed' },
+  { max: 12, value: 'Dangerous fracture system' },
+  { max: Number.POSITIVE_INFINITY, value: 'Major observiverse shear zone' },
+] as const
+
+const bleedLocationTable = [
+  'Inner star-skimming orbit',
+  'Flare-coupled magnetosphere',
+  'Tidally locked planet terminator',
+  'Planetary nightside cold trap',
+  'Resonant orbit between two planets',
+  'Lagrange point',
+  'Trojan swarm',
+  'Asteroid belt seam',
+  'Snow-line volatile belt',
+  'Ring arc',
+  'Gas giant radiation belt',
+  'Major moon tidal corridor',
+  'Ice-shell ocean vent field',
+  'Circumbinary barycenter region',
+  'Wide-binary transfer corridor',
+  'Comet stream',
+  'Derelict Iggygate wake',
+  'Pinchdrive calibration scar',
+  'Moving node with no fixed orbit',
+  'System-wide metric storm cycle',
+] as const
+
+const bleedBehaviorTable = [
+  'Stable and charted',
+  'Stable but weakening',
+  'Seasonal/orbital cycle',
+  'Flare-triggered',
+  'Tidal-cycle triggered',
+  'Migrates slowly',
+  'Splits and recombines',
+  'Appears only during eclipses',
+  'Follows cometary bodies',
+  'Reacts to Pinchdrives',
+  'Reacts to narrow observiverse AIs',
+  'Apparently anticipatory, but not intelligent',
+] as const
+
+const guResourceTable = [
+  'Left-handed chiral silicates',
+  'Right-handed chiral ice phases',
+  'Chiral volatile reservoirs',
+  'Metric shear condensates',
+  'Phase-stable superconductive lattice',
+  'Dark-sector doped ore',
+  'Gravity-skewed heavy isotopes',
+  'Programmable-matter microseeds',
+  'Self-ordering regolith',
+  'Observiverse-reactive crystal foam',
+  'Flare-imprinted chiral aerosols',
+  'Ring-arc phase dust',
+  'Snow-line organochemical feedstock',
+  'Deep-ocean catalytic vent matter',
+  'Iggygate-compatible anchor mass',
+  'Pinchdrive calibration medium',
+  'Narrow-AI stabilizer substrate',
+  'Shielding-grade chiral plating feedstock',
+  'Medical chirality stock',
+  'Illegal Sol-prohibited geometry sample',
+] as const
+
+const guHazardTable = [
+  'Metric shear damages hulls',
+  'Local gravity fluctuates',
+  'Navigation baselines drift',
+  'Clocks desynchronize',
+  'AI perception errors',
+  'False sensor returns',
+  'Human vestibular/neurological effects',
+  'Chiral contamination',
+  'Matter phase instability',
+  'Programmed regolith growth',
+  'Radiation/metric storm coupling',
+  'Pinchdrive misjump risk',
+  'Iggygate throat instability',
+  'Legal quarantine',
+  'Corporate claim war',
+  'Pirate ambush zone',
+  'Gardener attention risk',
+  'Narrow-AI fragmentation risk',
+  'Settlement madness rumor, actually environmental',
+  'Systemic cascade',
 ] as const
 
 interface WorldClassOption {
@@ -1552,21 +1641,68 @@ function generateBodies(rng: SeededRng, primary: Star, architectureName: string)
   return bodies
 }
 
+function intensityFromRoll(roll: number): string {
+  return guIntensityTable.find((entry) => roll <= entry.max)?.value ?? guIntensityTable[guIntensityTable.length - 1].value
+}
+
 function generateGuOverlay(rng: SeededRng, preference: GuPreference, primary: Star, companions: StellarCompanion[], bodies: OrbitingBody[], architectureName: string) {
-  let baseIndex = preference === 'low' ? rng.int(0, 2) : preference === 'high' ? rng.int(2, 4) : preference === 'fracture' ? rng.int(4, 5) : rng.int(1, 4)
-  if (companions.length > 0) baseIndex += 1
-  if (primary.spectralType.value === 'M dwarf' && ['Flare-prone', 'Violent flare cycle', 'Extreme activity / metric-amplified events'].includes(primary.activity.value)) baseIndex += 1
-  if (bodies.some((body) => body.category.value === 'gas-giant')) baseIndex += 1
-  if (architectureName.includes('Compact')) baseIndex += 1
-  if (primary.spectralType.value === 'G star' || primary.spectralType.value === 'K star') {
-    if (primary.activity.value === 'Quiet') baseIndex -= 1
+  let intensityRoll = twoD6(rng)
+  const intensityModifiers: Array<Fact<string>> = []
+
+  if (preference === 'low') {
+    intensityRoll -= 2
+    intensityModifiers.push(fact('-2 low GU preference', 'gu-layer', 'Generator GU preference'))
   }
-  baseIndex = Math.max(0, Math.min(guIntensities.length - 1, baseIndex))
+  if (preference === 'high') {
+    intensityRoll += 2
+    intensityModifiers.push(fact('+2 high GU preference', 'gu-layer', 'Generator GU preference'))
+  }
+  if (preference === 'fracture') {
+    intensityRoll += 4
+    intensityModifiers.push(fact('+4 fracture GU preference', 'gu-layer', 'Generator GU preference'))
+  }
+  if (companions.length > 0) {
+    intensityRoll += 2
+    intensityModifiers.push(fact('+2 multi-star', 'gu-layer', 'MASS-GU GU intensity modifiers'))
+  }
+  if (primary.spectralType.value === 'M dwarf' && isHighActivity(primary.activity.value)) {
+    intensityRoll += 1
+    intensityModifiers.push(fact('+1 M dwarf with high activity', 'gu-layer', 'MASS-GU GU intensity modifiers'))
+  }
+  if (architectureName === 'Compact inner system' || architectureName === 'Peas-in-a-pod chain') {
+    intensityRoll += 1
+    intensityModifiers.push(fact('+1 close-in resonant planetary chain', 'gu-layer', 'MASS-GU GU intensity modifiers'))
+  }
+  if (bodies.some((body) => body.category.value === 'gas-giant' || body.category.value === 'ice-giant')) {
+    intensityRoll += 1
+    intensityModifiers.push(fact('+1 strong giant magnetosphere', 'gu-layer', 'MASS-GU GU intensity modifiers'))
+  }
+  if (primary.spectralType.value === 'White dwarf/remnant' && bodies.some((body) => body.category.value === 'belt')) {
+    intensityRoll += 1
+    intensityModifiers.push(fact('+1 white dwarf debris system', 'gu-layer', 'MASS-GU GU intensity modifiers'))
+  }
+  if (primary.spectralType.value === 'G star' || primary.spectralType.value === 'K star') {
+    if (primary.activity.value === 'Quiet' && companions.length === 0) {
+      intensityRoll -= 1
+      intensityModifiers.push(fact('-1 quiet single G/K system', 'gu-layer', 'MASS-GU GU intensity modifiers'))
+    }
+  }
+
+  const locationRoll = d20(rng)
+  const behaviorRoll = d12(rng)
+  const resourceRoll = d20(rng)
+  const hazardRoll = d20(rng)
+  const hazard = guHazardTable[hazardRoll - 1]
+  const resource = guResourceTable[resourceRoll - 1]
+
   return {
-    intensity: fact(guIntensities[baseIndex], 'gu-layer', 'MASS-GU GU intensity'),
-    bleedLocation: fact(pickOne(rng, bleedLocations), 'gu-layer', 'MASS-GU bleed-zone table'),
-    resource: fact(pickOne(rng, guResources), 'gu-layer', 'MASS-GU resource table'),
-    hazard: fact(pickOne(rng, guHazards), 'gu-layer', 'MASS-GU hazard table'),
+    intensity: fact(intensityFromRoll(intensityRoll), 'gu-layer', 'MASS-GU modified 2d6 GU intensity table'),
+    bleedLocation: fact(bleedLocationTable[locationRoll - 1], 'gu-layer', `MASS-GU d20 bleed-zone location roll ${locationRoll}`),
+    bleedBehavior: fact(bleedBehaviorTable[behaviorRoll - 1], 'gu-layer', `MASS-GU d12 bleed behavior roll ${behaviorRoll}`),
+    resource: fact(resource, 'gu-layer', `MASS-GU d20 resource roll ${resourceRoll}`),
+    hazard: fact(hazard === 'Systemic cascade' ? `Systemic cascade: ${pickOne(rng, guHazardTable.slice(0, 19))}; ${pickOne(rng, guHazardTable.slice(0, 19))}` : hazard, 'gu-layer', `MASS-GU d20 hazard roll ${hazardRoll}`),
+    intensityRoll: fact(intensityRoll, 'derived', 'Modified 2d6 GU intensity roll'),
+    intensityModifiers,
   }
 }
 

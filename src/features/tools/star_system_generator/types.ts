@@ -129,8 +129,11 @@ export interface OrbitingBody {
 export interface GuOverlay {
   intensity: Fact<string>
   bleedLocation: Fact<string>
+  bleedBehavior: Fact<string>
   resource: Fact<string>
   hazard: Fact<string>
+  intensityRoll: Fact<number>
+  intensityModifiers: Array<Fact<string>>
 }
 
 export interface Settlement {
