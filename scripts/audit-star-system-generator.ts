@@ -5,7 +5,7 @@ import {
   solidSurfaceCategories,
 } from '../src/features/tools/star_system_generator/lib/generator/domain'
 import { frontierStarTypes, realisticStarTypes } from '../src/features/tools/star_system_generator/lib/generator/tables'
-import { validateSystem, type ValidationFinding } from '../src/features/tools/star_system_generator/lib/generator/validation'
+import { validateSystem, type ValidationFinding, type ValidationSource } from '../src/features/tools/star_system_generator/lib/generator/validation'
 import type {
   BodyCategory,
   GeneratedSystem,
@@ -25,6 +25,8 @@ interface Finding {
   seed: string
   path: string
   message: string
+  source?: ValidationSource | 'audit'
+  code?: string
 }
 
 interface CorpusStats {
@@ -257,21 +259,23 @@ function makeOptions(
   }
 }
 
-function addFinding(findings: Finding[], severity: Severity, seed: string, path: string, message: string): void {
-  findings.push({ severity, seed, path, message })
+function addFinding(findings: Finding[], severity: Severity, seed: string, path: string, message: string, source: Finding['source'] = 'audit', code?: string): void {
+  findings.push({ severity, seed, path, message, source, code })
 }
 
 function addValidationFindings(findings: Finding[], seed: string, validationFindings: ValidationFinding[]): void {
   for (const validationFinding of validationFindings) {
     if (validationFinding.severity === 'info') continue
-    if (validationFinding.severity === 'warning' && !includeReportOnlyValidation) continue
+    if (validationFinding.severity === 'warning' && validationFinding.source !== 'locked-conflict' && !includeReportOnlyValidation) continue
 
     addFinding(
       findings,
       validationFinding.severity,
       seed,
       validationFinding.path,
-      `${validationFinding.code}: ${validationFinding.message}`
+      `${validationFinding.code}: ${validationFinding.message}`,
+      validationFinding.source,
+      validationFinding.code
     )
   }
 }
@@ -860,6 +864,7 @@ auditCoverage(stats, findings)
 
 const errors = findings.filter((finding) => finding.severity === 'error')
 const warnings = findings.filter((finding) => finding.severity === 'warning')
+const lockedConflicts = findings.filter((finding) => finding.source === 'locked-conflict')
 
 console.log('Star System Generator Audit')
 console.log(`Profile: ${auditProfile in auditProfiles ? auditProfile : 'default'}`)
@@ -880,6 +885,7 @@ console.log(`Settlement reason phrase openings: ${uniqueSummary(stats.settlement
 console.log(`Settlement tag hook phrase openings: ${uniqueSummary(stats.settlementTagHookPhrases, stats.settlements)}`)
 console.log(`Errors: ${errors.length}`)
 console.log(`Warnings: ${warnings.length}`)
+console.log(`Locked fact conflicts: ${lockedConflicts.length}`)
 console.log(`Star types: ${formatMap(stats.starTypes)}`)
 console.log(`Frontier star types: ${formatMap(stats.starTypesByDistribution.frontier)}`)
 console.log(`Realistic star types: ${formatMap(stats.starTypesByDistribution.realistic)}`)

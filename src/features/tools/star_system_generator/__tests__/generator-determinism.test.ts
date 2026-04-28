@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest'
 import type { GenerationOptions, PartialKnownSystem } from '../types'
 import { applyNoAlienTextGuard, architectureBodyPlanRules, generateSystem } from '../lib/generator'
 import { architectures, frontierStarTypes, realisticStarTypes } from '../lib/generator/tables'
+import { validateSystem } from '../lib/generator/validation'
 
 const options: GenerationOptions = {
   seed: '7f3a9c2e41b8d09a',
@@ -128,6 +129,42 @@ describe('generateSystem', () => {
     expect(knownBody?.physical.massEarth).toEqual(knownSystem.bodies?.[0].physical?.massEarth)
     expect(knownBody?.detail.atmosphere).toEqual(knownSystem.bodies?.[0].detail?.atmosphere)
     expect(system.bodies.length).toBeGreaterThan(1)
+  })
+
+  it('preserves incompatible locked body details and reports them as conflicts', () => {
+    const knownSystem: PartialKnownSystem = {
+      name: { value: 'Locked Conflict Test', confidence: 'confirmed', source: 'Test catalog', locked: true },
+      primary: {
+        spectralType: { value: 'K star', confidence: 'confirmed', source: 'Test catalog', locked: true },
+        massSolar: { value: 0.78, confidence: 'confirmed', source: 'Test catalog', locked: true },
+        luminositySolar: { value: 0.41, confidence: 'confirmed', source: 'Test catalog', locked: true },
+      },
+      bodies: [
+        {
+          id: 'known-airless-conflict',
+          orbitAu: { value: 0.72, confidence: 'confirmed', source: 'Test catalog', locked: true },
+          name: { value: 'Known Contradiction b', confidence: 'confirmed', source: 'Test catalog', locked: true },
+          category: { value: 'rocky-planet', confidence: 'confirmed', source: 'Test catalog', locked: true },
+          bodyClass: { value: 'Airless rock in nominal HZ', confidence: 'confirmed', source: 'Test catalog', locked: true },
+          massClass: { value: 'Terrestrial', confidence: 'confirmed', source: 'Test catalog', locked: true },
+          detail: {
+            atmosphere: { value: 'Moderate inert atmosphere', confidence: 'confirmed', source: 'Test catalog', locked: true },
+            hydrosphere: { value: 'Global ocean', confidence: 'confirmed', source: 'Test catalog', locked: true },
+          },
+        },
+      ],
+    }
+
+    const system = generateSystem({ ...options, seed: 'known-locked-conflict-test' }, knownSystem)
+    const knownBody = system.bodies.find((body) => body.id === 'known-airless-conflict')
+
+    expect(knownBody?.detail.atmosphere).toEqual(knownSystem.bodies?.[0].detail?.atmosphere)
+    expect(knownBody?.detail.hydrosphere).toEqual(knownSystem.bodies?.[0].detail?.hydrosphere)
+
+    const lockedConflicts = validateSystem(system).filter((finding) => finding.source === 'locked-conflict')
+    expect(lockedConflicts).toHaveLength(2)
+    expect(lockedConflicts.map((finding) => finding.policyCode)).toEqual(expect.arrayContaining(['ENV_AIRLESS_ATMOSPHERE', 'ENV_AIRLESS_HYDROSPHERE']))
+    expect(lockedConflicts.every((finding) => finding.code === 'LOCKED_FACT_CONFLICT')).toBe(true)
   })
 
   it('changes output for a different seed', () => {

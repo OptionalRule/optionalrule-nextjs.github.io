@@ -4,8 +4,10 @@ import {
   validateArchitecture,
   validateBodyEnvironment,
   validateBodyPhysicalContract,
+  validateLockedBodyDetail,
   validateSettlementCompatibility,
   validateSettlementNames,
+  validateSystem,
 } from '../lib/generator/validation'
 
 function fact<T>(value: T): Fact<T> {
@@ -139,6 +141,57 @@ describe('star system validation contracts', () => {
     expect(findings.map((finding) => finding.code)).toContain('ENV_AIRLESS_ATMOSPHERE')
     expect(findings.map((finding) => finding.code)).toContain('ENV_AIRLESS_HYDROSPHERE')
     expect(findings.every((finding) => finding.severity === 'error')).toBe(true)
+  })
+
+  it('reports locked imported environment contradictions as locked conflicts', () => {
+    const locked = <T,>(value: T): Fact<T> => ({ value, confidence: 'confirmed', source: 'Test catalog', locked: true })
+    const testBody = body({
+      bodyClass: locked('Airless rock in nominal HZ'),
+      detail: {
+        atmosphere: locked('Moderate inert atmosphere'),
+        hydrosphere: locked('Global ocean'),
+        geology: fact('Static lid'),
+        climate: [fact('Cold desert')],
+        radiation: fact('Manageable'),
+        biosphere: fact('Sterile'),
+      },
+    })
+
+    const findings = validateLockedBodyDetail(testBody)
+
+    expect(findings).toHaveLength(2)
+    expect(findings.every((finding) => finding.code === 'LOCKED_FACT_CONFLICT')).toBe(true)
+    expect(findings.every((finding) => finding.severity === 'warning')).toBe(true)
+    expect(findings.every((finding) => finding.source === 'locked-conflict')).toBe(true)
+    expect(findings.map((finding) => finding.policyCode)).toEqual(expect.arrayContaining(['ENV_AIRLESS_ATMOSPHERE', 'ENV_AIRLESS_HYDROSPHERE']))
+  })
+
+  it('keeps locked conflicts visible in full-system validation without generated-error source', () => {
+    const locked = <T,>(value: T): Fact<T> => ({ value, confidence: 'confirmed', source: 'Test catalog', locked: true })
+    const testSystem = system({
+      architecture: { name: fact('Sparse rocky'), description: fact('Fixture') },
+      bodies: [body({
+        bodyClass: locked('Dry supercontinent world'),
+        detail: {
+          atmosphere: fact('Thin CO2/N2'),
+          hydrosphere: locked('Global ocean'),
+          geology: fact('Static lid'),
+          climate: [fact('Permanent storm tracks')],
+          radiation: fact('Manageable'),
+          biosphere: fact('Sterile'),
+        },
+      })],
+    })
+
+    const lockedConflicts = validateSystem(testSystem).filter((finding) => finding.source === 'locked-conflict')
+
+    expect(lockedConflicts).toHaveLength(1)
+    expect(lockedConflicts[0]).toMatchObject({
+      code: 'LOCKED_FACT_CONFLICT',
+      policyCode: 'ENV_DESERT_HYDROSPHERE',
+      observed: 'Global ocean',
+      locked: true,
+    })
   })
 
   it('reports desert hydrosphere contradictions as generated errors', () => {

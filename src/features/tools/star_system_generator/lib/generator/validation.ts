@@ -1,4 +1,4 @@
-import type { BodyCategory, GeneratedSystem, OrbitingBody, Settlement } from '../../types'
+import type { BodyCategory, Fact, GeneratedSystem, OrbitingBody, Settlement } from '../../types'
 import { evaluateArchitectureSatisfaction } from './architecture'
 import {
   envelopeCategories,
@@ -155,6 +155,43 @@ function finding(input: ValidationFinding): ValidationFinding {
   return input
 }
 
+function detailConflictFinding(input: {
+  code: ValidationCode
+  path: string
+  message: string
+  targetId: string
+  fact: Fact<unknown>
+  expected: unknown
+}): ValidationFinding {
+  if (input.fact.locked) {
+    return finding({
+      severity: 'warning',
+      code: validationCodes.lockedFactConflict,
+      path: input.path,
+      message: `Locked imported fact conflicts with ${input.code}: ${input.message}`,
+      targetId: input.targetId,
+      targetKind: 'locked-fact',
+      source: validationSources.lockedConflict,
+      observed: input.fact.value,
+      expected: input.expected,
+      policyCode: input.code,
+      locked: true,
+    })
+  }
+
+  return finding({
+    severity: 'error',
+    code: input.code,
+    path: input.path,
+    message: input.message,
+    targetId: input.targetId,
+    targetKind: 'body',
+    source: validationSources.generatedError,
+    observed: input.fact.value,
+    expected: input.expected,
+  })
+}
+
 function hasDuplicates(values: string[]): boolean {
   return new Set(values).size !== values.length
 }
@@ -211,43 +248,34 @@ export function validateBodyEnvironment(body: OrbitingBody, path = 'body'): Vali
 
   if (extremeHotZones.has(thermalZone) && !envelopeCategories.has(category) && category !== 'anomaly') {
     if (!extremeHotAllowedAtmospheres.has(body.detail.atmosphere.value)) {
-      findings.push(finding({
-        severity: 'error',
+      findings.push(detailConflictFinding({
         code: 'ENV_EXTREME_HOT_ATMOSPHERE',
         path: `${path}.detail.atmosphere`,
         message: `${thermalZone} world has implausible atmosphere "${body.detail.atmosphere.value}".`,
         targetId: body.id,
-        targetKind: 'body',
-        source: 'generated-error',
-        observed: body.detail.atmosphere.value,
+        fact: body.detail.atmosphere,
         expected: [...extremeHotAllowedAtmospheres],
       }))
     }
     if (!extremeHotAllowedHydrospheres.has(body.detail.hydrosphere.value)) {
-      findings.push(finding({
-        severity: 'error',
+      findings.push(detailConflictFinding({
         code: 'ENV_EXTREME_HOT_HYDROSPHERE',
         path: `${path}.detail.hydrosphere`,
         message: `${thermalZone} world has implausible hydrosphere "${body.detail.hydrosphere.value}".`,
         targetId: body.id,
-        targetKind: 'body',
-        source: 'generated-error',
-        observed: body.detail.hydrosphere.value,
+        fact: body.detail.hydrosphere,
         expected: [...extremeHotAllowedHydrospheres],
       }))
     }
   }
 
   if (extremeHotZones.has(thermalZone) && body.detail.biosphere.value !== 'Sterile') {
-    findings.push(finding({
-      severity: 'error',
+    findings.push(detailConflictFinding({
       code: 'ENV_EXTREME_HOT_BIOSPHERE',
       path: `${path}.detail.biosphere`,
       message: `${thermalZone} world has non-sterile biosphere "${body.detail.biosphere.value}".`,
       targetId: body.id,
-      targetKind: 'body',
-      source: 'generated-error',
-      observed: body.detail.biosphere.value,
+      fact: body.detail.biosphere,
       expected: 'Sterile',
     }))
   }
@@ -255,58 +283,46 @@ export function validateBodyEnvironment(body: OrbitingBody, path = 'body'): Vali
   if (coldZones.has(thermalZone) && solidSurfaceCategories.has(category)) {
     const badClimate = body.detail.climate.find((tag) => !coldAllowedClimateTags.has(tag.value))
     if (badClimate) {
-      findings.push(finding({
-        severity: 'error',
+      findings.push(detailConflictFinding({
         code: 'ENV_COLD_CLIMATE',
         path: `${path}.detail.climate`,
         message: `${thermalZone} solid body has hot/temperate climate tag "${badClimate.value}".`,
         targetId: body.id,
-        targetKind: 'body',
-        source: 'generated-error',
-        observed: badClimate.value,
+        fact: badClimate,
         expected: [...coldAllowedClimateTags],
       }))
     }
   }
 
   if (isAirlessClass(body.bodyClass.value) && !isAirlessAtmosphere(body.detail.atmosphere.value)) {
-    findings.push(finding({
-      severity: 'error',
+    findings.push(detailConflictFinding({
       code: validationCodes.environmentAirlessAtmosphere,
       path: `${path}.detail.atmosphere`,
       message: `Airless class "${body.bodyClass.value}" has incompatible atmosphere "${body.detail.atmosphere.value}".`,
       targetId: body.id,
-      targetKind: 'body',
-      source: 'generated-error',
-      observed: body.detail.atmosphere.value,
+      fact: body.detail.atmosphere,
       expected: [...airlessAllowedAtmospheres],
     }))
   }
 
   if (isAirlessClass(body.bodyClass.value) && !isAirlessHydrosphere(body.detail.hydrosphere.value)) {
-    findings.push(finding({
-      severity: 'error',
+    findings.push(detailConflictFinding({
       code: validationCodes.environmentAirlessHydrosphere,
       path: `${path}.detail.hydrosphere`,
       message: `Airless class "${body.bodyClass.value}" has incompatible hydrosphere "${body.detail.hydrosphere.value}".`,
       targetId: body.id,
-      targetKind: 'body',
-      source: 'generated-error',
-      observed: body.detail.hydrosphere.value,
+      fact: body.detail.hydrosphere,
       expected: [...airlessAllowedHydrospheres],
     }))
   }
 
   if (isDesertClass(body.bodyClass.value) && !isDesertCompatibleHydrosphere(body.detail.hydrosphere.value)) {
-    findings.push(finding({
-      severity: 'error',
+    findings.push(detailConflictFinding({
       code: validationCodes.environmentDesertHydrosphere,
       path: `${path}.detail.hydrosphere`,
       message: `Desert class "${body.bodyClass.value}" has incompatible hydrosphere "${body.detail.hydrosphere.value}".`,
       targetId: body.id,
-      targetKind: 'body',
-      source: 'generated-error',
-      observed: body.detail.hydrosphere.value,
+      fact: body.detail.hydrosphere,
       expected: [...desertAllowedHydrospheres],
     }))
   }
@@ -501,8 +517,8 @@ export function validateNoAlienText(system: GeneratedSystem): ValidationFinding[
   })
 }
 
-export function validateLockedBodyDetail(): ValidationFinding[] {
-  return []
+export function validateLockedBodyDetail(body: OrbitingBody, path = 'body'): ValidationFinding[] {
+  return validateBodyEnvironment(body, path).filter((finding) => finding.source === validationSources.lockedConflict)
 }
 
 export function validateSystem(system: GeneratedSystem): ValidationFinding[] {
