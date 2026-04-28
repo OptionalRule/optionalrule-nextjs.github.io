@@ -934,7 +934,7 @@ describe('generateSystem', () => {
     expect(giants.every((body) => body.giantEconomy?.value.includes('traffic'))).toBe(true)
   })
 
-  it('uses source moon count and ring tables across sampled systems', () => {
+  it('uses source moon detail and ring tables across sampled systems', () => {
     const systems = Array.from({ length: 180 }, (_, index) =>
       generateSystem({ ...options, seed: `d43f9c2e41b8${index.toString(16).padStart(4, '0')}` })
     )
@@ -948,5 +948,36 @@ describe('generateSystem', () => {
     expect(new Set(rings.map((ring) => ring.type.value)).size).toBeGreaterThan(3)
     expect(rings.every((ring) => ring.type.source?.includes('MASS-GU 17 ring type d12'))).toBe(true)
     expect(moons.every((moon) => moon.scale.source?.includes('MASS-GU 17 moon scale'))).toBe(true)
+  })
+
+  it('scales named moon systems by giant category, class, and radius', () => {
+    const systems = Array.from({ length: 360 }, (_, index) =>
+      generateSystem({ ...options, seed: `moon-regression-${index.toString(16).padStart(4, '0')}` })
+    )
+    const moonCounts = (bodies: typeof systems[number]['bodies']) => bodies.map((body) => body.moons.length)
+    const average = (values: number[]) => values.reduce((total, value) => total + value, 0) / values.length
+    const median = (values: number[]) => {
+      const sorted = [...values].sort((left, right) => left - right)
+      return sorted[Math.floor((sorted.length - 1) / 2)]
+    }
+    const gasGiants = systems.flatMap((system) => system.bodies.filter((body) => body.category.value === 'gas-giant'))
+    const iceGiants = systems.flatMap((system) => system.bodies.filter((body) => body.category.value === 'ice-giant'))
+    const superJovians = gasGiants.filter((body) => body.bodyClass.value === 'Super-Jovian')
+    const ordinaryGasGiants = gasGiants.filter((body) =>
+      !['Hot Jupiter', 'Ultra-hot Jupiter', 'Super-Jovian', 'Migrated giant'].includes(body.bodyClass.value) &&
+      !body.physical.closeIn.value
+    )
+    const largeOrdinaryGasGiants = ordinaryGasGiants.filter((body) => body.physical.radiusEarth.value >= 11)
+    const smallOrdinaryGasGiants = ordinaryGasGiants.filter((body) => body.physical.radiusEarth.value < 9.5)
+
+    expect(gasGiants.length).toBeGreaterThan(50)
+    expect(iceGiants.length).toBeGreaterThan(20)
+    expect(superJovians.length).toBeGreaterThan(10)
+    expect(largeOrdinaryGasGiants.length).toBeGreaterThan(10)
+    expect(smallOrdinaryGasGiants.length).toBeGreaterThan(10)
+    expect(median(moonCounts(gasGiants))).toBeGreaterThanOrEqual(9)
+    expect(average(moonCounts(gasGiants))).toBeGreaterThan(average(moonCounts(iceGiants)) + 2)
+    expect(median(moonCounts(superJovians))).toBeGreaterThanOrEqual(12)
+    expect(average(moonCounts(largeOrdinaryGasGiants))).toBeGreaterThan(average(moonCounts(smallOrdinaryGasGiants)) + 2)
   })
 })

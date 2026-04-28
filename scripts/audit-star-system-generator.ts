@@ -61,6 +61,8 @@ interface CorpusStats {
   radiation: Map<string, number>
   biospheres: Map<string, number>
   moonTypes: Map<string, number>
+  moonCountsByCategory: Map<string, number[]>
+  moonCountsByBodyClass: Map<string, number[]>
   ringTypes: Map<string, number>
   settlementCategories: Map<string, number>
   settlementCountsByDensity: Record<SettlementDensity, number[]>
@@ -574,6 +576,8 @@ function auditSystem(system: GeneratedSystem, findings: Finding[], stats: Corpus
     increment(stats.radiation, body.detail.radiation.value)
     increment(stats.biospheres, body.detail.biosphere.value)
     if (body.rings) increment(stats.ringTypes, body.rings.type.value)
+    nestedPush(stats.moonCountsByCategory, body.category.value, body.moons.length)
+    nestedPush(stats.moonCountsByBodyClass, body.bodyClass.value, body.moons.length)
     body.moons.forEach((moon) => {
       increment(stats.moonNames, moon.name.value)
       increment(stats.moonTypes, moon.moonType.value)
@@ -721,6 +725,15 @@ function auditCoverage(stats: CorpusStats, findings: Finding[]): void {
 
   if (stats.moons < stats.systems) {
     addFinding(findings, 'warning', syntheticSeed, 'bodies.moons', 'Average moon count fell below one per system.')
+  }
+
+  const gasGiantMoonCounts = stats.moonCountsByCategory.get('gas-giant') ?? []
+  const iceGiantMoonCounts = stats.moonCountsByCategory.get('ice-giant') ?? []
+  if (gasGiantMoonCounts.length > 0 && percentile(gasGiantMoonCounts, 0.5) < 7) {
+    addFinding(findings, 'warning', syntheticSeed, 'bodies.gas-giant.moons', 'Median gas-giant moon count fell below seven named major moons.')
+  }
+  if (gasGiantMoonCounts.length > 0 && iceGiantMoonCounts.length > 0 && percentile(gasGiantMoonCounts, 0.5) <= percentile(iceGiantMoonCounts, 0.5)) {
+    addFinding(findings, 'warning', syntheticSeed, 'bodies.giant.moons', 'Gas giants did not produce a higher median moon count than ice giants.')
   }
 
   auditStarDistribution('realistic', realisticStarTypes, stats, findings)
@@ -882,6 +895,8 @@ const stats: CorpusStats = {
   radiation: new Map(),
   biospheres: new Map(),
   moonTypes: new Map(),
+  moonCountsByCategory: new Map(),
+  moonCountsByBodyClass: new Map(),
   ringTypes: new Map(),
   settlementCategories: new Map(),
   settlementCountsByDensity: {
@@ -960,6 +975,10 @@ console.log(`Geologies: ${formatMap(stats.geologies)}`)
 console.log(`Radiation: ${formatMap(stats.radiation)}`)
 console.log(`Biospheres: ${formatMap(stats.biospheres)}`)
 console.log(`Moon types: ${formatMap(stats.moonTypes)}`)
+console.log('Moon counts by category:')
+console.log(formatNestedPercentiles(stats.moonCountsByCategory))
+console.log('Moon counts by giant class:')
+console.log(formatNestedPercentiles(new Map([...stats.moonCountsByBodyClass.entries()].filter(([bodyClass]) => bodyClass.toLowerCase().includes('giant') || bodyClass === 'Hot Jupiter' || bodyClass === 'Super-Jovian'))))
 console.log(`Ring types: ${formatMap(stats.ringTypes)}`)
 console.log(`Settlement categories: ${formatMap(stats.settlementCategories)}`)
 console.log(`Settlement presence rolls: ${formatMap(stats.settlementPresenceRolls)}`)

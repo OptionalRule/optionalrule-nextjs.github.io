@@ -1742,6 +1742,67 @@ function terrestrialMoonResult(roll: number): { count: number; scale?: string; t
   return { count: 1, scale: 'planet-scale major moon' }
 }
 
+function giantMoonCount(
+  rng: SeededRng,
+  bodyClass: WorldClassOption,
+  physical: BodyPhysicalHints,
+  thermalZone: string,
+  primary: Star,
+  architectureName: string
+): number {
+  const category = bodyClass.category
+  const radius = physical.radiusEarth.value
+  let count = category === 'gas-giant'
+    ? rng.int(2, 6) + rng.int(1, 4)
+    : rng.int(1, 4) + rng.int(0, 2)
+
+  if (category === 'gas-giant') {
+    if (radius >= 12) count += 3
+    else if (radius >= 10.5) count += 2
+    else if (radius >= 9) count += 1
+    else count -= 1
+
+    if (bodyClass.className === 'Super-Jovian') count += 4
+    if (bodyClass.className === 'Ringed giant with moons') count += 1
+    if (bodyClass.className === 'Migrated giant') count -= 1
+  } else {
+    if (radius >= 5) count += 2
+    else if (radius >= 4.3) count += 1
+    else if (radius < 3.8) count -= 1
+    if (bodyClass.className === 'Small ice giant') count -= 2
+    if (bodyClass.className === 'Neptune-like ice giant') count += 1
+  }
+
+  if (thermalZone === 'Cold' || thermalZone === 'Cryogenic' || thermalZone === 'Dark') count += 1
+  if (thermalZone === 'Hot') count -= 2
+  if (physical.closeIn.value) count -= 1
+  if (primary.ageState.value === 'Embryonic/very young' || primary.ageState.value === 'Young' || architectureName === 'Debris-dominated') count += 1
+  if (architectureName === 'Giant-rich or chaotic') count += 1
+
+  const minimum = category === 'gas-giant' && thermalZone !== 'Hot' && !physical.closeIn.value ? 4 : 1
+  const maximum = category === 'gas-giant'
+    ? bodyClass.className === 'Super-Jovian' ? 16 : 13
+    : 9
+  return Math.max(minimum, Math.min(maximum, count))
+}
+
+function subNeptuneMoonResult(
+  rng: SeededRng,
+  physical: BodyPhysicalHints,
+  thermalZone: string,
+  architectureName: string
+): { count: number; scale?: string; typeHints?: readonly string[] } {
+  let roll = rng.int(1, 6)
+  if (physical.radiusEarth.value >= 3.2) roll += 1
+  if (thermalZone === 'Cold' || thermalZone === 'Cryogenic' || thermalZone === 'Dark') roll += 1
+  if (architectureName === 'Giant-rich or chaotic' || architectureName === 'Debris-dominated') roll += 1
+  if (thermalZone === 'Hot') roll -= 2
+  if (physical.closeIn.value) roll -= 2
+  if (roll <= 5) return { count: 0 }
+  if (roll <= 7) return { count: 1, scale: 'minor captured moonlet', typeHints: ['Captured asteroid', 'Airless rock', 'Cratered ice-rock'] }
+  return { count: 2, scale: 'small major moon', typeHints: ['Captured asteroid', 'Cratered ice-rock', 'Thick ice-shell moon', 'Cryovolcanic moon'] }
+}
+
 function moonNameForIndex(rng: SeededRng, bodyIndex: number, moonIndex: number, moonType: string): string {
   const offset = bodyIndex + moonIndex
   const baseName = pickOne(rng, moonNameCores)
@@ -1771,13 +1832,12 @@ function generateMoons(
   let typeHints: readonly string[] | undefined
 
   if (category === 'gas-giant' || category === 'ice-giant') {
-    let roll = rng.int(1, 6)
-    if (category === 'gas-giant') roll += 1
-    if (bodyClass.className === 'Super-Jovian') roll += 2
-    if (category === 'ice-giant') roll -= 1
-    if (thermalZone === 'Cold' || thermalZone === 'Cryogenic' || thermalZone === 'Dark') roll += 1
-    if (primary.ageState.value === 'Embryonic/very young' || primary.ageState.value === 'Young' || architectureName === 'Debris-dominated' || architectureName === 'Giant-rich or chaotic') roll += 1
-    moonCount = Math.max(0, Math.min(10, roll))
+    moonCount = giantMoonCount(rng, bodyClass, physical, thermalZone, primary, architectureName)
+  } else if (category === 'sub-neptune') {
+    const result = subNeptuneMoonResult(rng, physical, thermalZone, architectureName)
+    moonCount = result.count
+    scaleOverride = result.scale
+    typeHints = result.typeHints
   } else if (category === 'rocky-planet' || category === 'super-earth' || category === 'dwarf-body' || category === 'rogue-captured') {
     let roll = twoD6(rng)
     if (category === 'super-earth' || physical.radiusEarth.value >= 1.2) roll += 1
