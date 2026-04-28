@@ -10,8 +10,8 @@ const labels: Record<string, string> = {
 }
 
 const notes: Record<string, string> = {
-  'M dwarf': 'Red dwarf; common, long-lived, and often flare-relevant.',
-  'K star': 'Excellent long-term colony candidate: stable, long-lived, and less flare-prone than many M dwarfs.',
+  'M dwarf': 'Small, cool, long-lived star. Its worlds orbit close in, so stellar activity can strongly affect nearby planets.',
+  'K star': 'Stable, long-lived star with less intense activity than many smaller M-type stars.',
   'G star': 'Solar-like, familiar, valuable, and politically contested.',
   'F star': 'Bright star with a wider habitable zone, shorter stable era, and more radiation stress.',
   'O/B/A bright star': 'Rare, luminous, young, dangerous, and visible across long distances.',
