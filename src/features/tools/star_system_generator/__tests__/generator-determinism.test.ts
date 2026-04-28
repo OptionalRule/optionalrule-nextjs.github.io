@@ -336,6 +336,72 @@ describe('generateSystem', () => {
     expect(compactSystems.some((system) => system.bodies.some((body) => body.filterNotes.some((note) => note.value.includes('Peas-in-a-pod'))))).toBe(true)
   })
 
+  it('revalidates copied chain classes against the receiving thermal zone', () => {
+    const impossibleHotLabels = [
+      'Dwarf planet',
+      'Outer ice belt',
+      'Rogue captured planet',
+      'Frozen super-Earth',
+      'Cold gas giant',
+      'Neptune-like ice giant',
+      'Ringed giant with moons',
+      'Ice-rich asteroid belt',
+    ]
+
+    for (let index = 0; index < 160; index++) {
+      const system = generateSystem({ ...options, seed: `ab3f9c2e41b8${index.toString(16).padStart(4, '0')}` })
+      for (const body of system.bodies) {
+        if (body.thermalZone.value === 'Furnace' || body.thermalZone.value === 'Inferno' || body.thermalZone.value === 'Hot') {
+          expect(impossibleHotLabels).not.toContain(body.bodyClass.value)
+        }
+      }
+    }
+  })
+
+  it('keeps anomalies from using ordinary planet detail systems', () => {
+    const systems = Array.from({ length: 120 }, (_, index) =>
+      generateSystem({ ...options, seed: `bb3f9c2e41b8${index.toString(16).padStart(4, '0')}` })
+    )
+    const anomalies = systems.flatMap((system) => system.bodies.filter((body) => body.category.value === 'anomaly'))
+
+    expect(anomalies.length).toBeGreaterThan(0)
+    for (const anomaly of anomalies) {
+      expect(anomaly.moons).toHaveLength(0)
+      expect(anomaly.rings).toBeUndefined()
+      expect(anomaly.detail.biosphere.value).toBe('Sterile')
+      expect(['Artificial platform or engineered substrate', 'Metric shear geometry']).toContain(anomaly.detail.geology.value)
+      expect(anomaly.physical.massEarth.value).toBeNull()
+      expect(anomaly.physical.surfaceGravityG.value).toBeNull()
+    }
+  })
+
+  it('uses observiverse terminology consistently in generated output', () => {
+    for (let index = 0; index < 80; index++) {
+      const system = generateSystem({ ...options, gu: 'fracture', seed: `cb3f9c2e41b8${index.toString(16).padStart(4, '0')}` })
+      expect(JSON.stringify(system).toLowerCase()).not.toContain('observerse')
+    }
+  })
+
+  it('keeps fracture functions compatible with settlement site category', () => {
+    const allowedFunctionsByCategory = new Map([
+      ['Surface settlement', new Set(['Chiral harvesting site', 'Programmable-matter containment site', 'Narrow-AI observiverse facility', 'Quarantine station'])],
+      ['Orbital station', new Set(['Chiral harvesting site', 'Programmable-matter containment site', 'Narrow-AI observiverse facility', 'Quarantine station', 'Pinchdrive tuning station'])],
+      ['Asteroid or belt base', new Set(['Chiral harvesting site', 'Dark-sector ore extraction', 'Programmable-matter containment site', 'Quarantine station'])],
+      ['Moon base', new Set(['Chiral harvesting site', 'Dark-sector ore extraction', 'Narrow-AI observiverse facility', 'Quarantine station'])],
+      ['Deep-space platform', new Set(['Moving bleed-node tracking platform', 'Pinchdrive tuning station', 'Narrow-AI observiverse facility', 'Quarantine station'])],
+      ['Gate or route node', new Set(['Iggygate control station', 'Pinchdrive tuning station', 'Quarantine station', 'Narrow-AI observiverse facility'])],
+      ['Mobile site', new Set(['Moving bleed-node harvest fleet', 'Freeport', 'Smuggler port', 'Refugee settlement', 'Naval logistics depot'])],
+      ['Derelict or restricted site', new Set(['Programmable-matter containment site', 'Intelligence black site', 'Quarantine station', 'Weapons test range'])],
+    ])
+
+    for (let index = 0; index < 120; index++) {
+      const system = generateSystem({ ...options, gu: 'fracture', seed: `db3f9c2e41b8${index.toString(16).padStart(4, '0')}` })
+      for (const settlement of system.settlements) {
+        expect(allowedFunctionsByCategory.get(settlement.siteCategory.value)?.has(settlement.function.value)).toBe(true)
+      }
+    }
+  })
+
   it('uses varied architecture body plans instead of fixed belt and giant slots', () => {
     const systems = Array.from({ length: 300 }, (_, index) =>
       generateSystem({ ...options, seed: `501a9c2e41b8${index.toString(16).padStart(4, '0')}` })

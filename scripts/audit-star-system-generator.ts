@@ -78,6 +78,22 @@ const envelopeAllowedGeologies = new Set([
   'Magnetosphere-driven weather',
 ])
 
+const anomalyAllowedGeologies = new Set([
+  'Artificial platform or engineered substrate',
+  'Metric shear geometry',
+])
+
+const guFractureFunctionsBySiteCategory: Record<string, ReadonlySet<string>> = {
+  'Surface settlement': new Set(['Chiral harvesting site', 'Programmable-matter containment site', 'Narrow-AI observiverse facility', 'Quarantine station']),
+  'Orbital station': new Set(['Chiral harvesting site', 'Programmable-matter containment site', 'Narrow-AI observiverse facility', 'Quarantine station', 'Pinchdrive tuning station']),
+  'Asteroid or belt base': new Set(['Chiral harvesting site', 'Dark-sector ore extraction', 'Programmable-matter containment site', 'Quarantine station']),
+  'Moon base': new Set(['Chiral harvesting site', 'Dark-sector ore extraction', 'Narrow-AI observiverse facility', 'Quarantine station']),
+  'Deep-space platform': new Set(['Moving bleed-node tracking platform', 'Pinchdrive tuning station', 'Narrow-AI observiverse facility', 'Quarantine station']),
+  'Gate or route node': new Set(['Iggygate control station', 'Pinchdrive tuning station', 'Quarantine station', 'Narrow-AI observiverse facility']),
+  'Mobile site': new Set(['Moving bleed-node harvest fleet', 'Freeport', 'Smuggler port', 'Refugee settlement', 'Naval logistics depot']),
+  'Derelict or restricted site': new Set(['Programmable-matter containment site', 'Intelligence black site', 'Quarantine station', 'Weapons test range']),
+}
+
 const allowedBuiltFormsBySiteCategory: Record<string, ReadonlySet<string>> = {
   'Surface settlement': new Set([
     'Buried pressure cans',
@@ -217,7 +233,7 @@ function auditBody(system: GeneratedSystem, body: OrbitingBody, bodyIndex: numbe
     addFinding(findings, 'error', seed, `${path}.orbitAu`, `Orbit must be positive; got ${body.orbitAu.value}.`)
   }
 
-  if (extremeHotZones.has(thermalZone) && !envelopeCategories.has(category)) {
+  if (extremeHotZones.has(thermalZone) && !envelopeCategories.has(category) && category !== 'anomaly') {
     if (!extremeHotAllowedAtmospheres.has(body.detail.atmosphere.value)) {
       addFinding(findings, 'error', seed, `${path}.detail.atmosphere`, `${thermalZone} world has implausible atmosphere "${body.detail.atmosphere.value}".`)
     }
@@ -278,6 +294,15 @@ function auditBody(system: GeneratedSystem, body: OrbitingBody, bodyIndex: numbe
     if (!body.physical.gravityLabel.value.startsWith('Unreliable')) {
       addFinding(findings, 'error', seed, `${path}.physical.gravityLabel`, 'Anomaly gravity label should be marked unreliable.')
     }
+    if (body.rings) {
+      addFinding(findings, 'error', seed, `${path}.rings`, 'Anomaly should not use ordinary planet ring generation.')
+    }
+    if (body.moons.length > 0) {
+      addFinding(findings, 'error', seed, `${path}.moons`, 'Anomaly should not use ordinary moon generation.')
+    }
+    if (!anomalyAllowedGeologies.has(body.detail.geology.value)) {
+      addFinding(findings, 'error', seed, `${path}.detail.geology`, `Anomaly has ordinary planet geology "${body.detail.geology.value}".`)
+    }
   }
 
   if (!envelopeCategories.has(category) && category !== 'belt' && category !== 'anomaly') {
@@ -289,7 +314,7 @@ function auditBody(system: GeneratedSystem, body: OrbitingBody, bodyIndex: numbe
     }
   }
 
-  if (body.rings && category !== 'gas-giant' && category !== 'ice-giant' && category !== 'anomaly') {
+  if (body.rings && category !== 'gas-giant' && category !== 'ice-giant') {
     addFinding(findings, 'error', seed, `${path}.rings`, `${category} generated a ring system.`)
   }
 
@@ -332,6 +357,13 @@ function auditSettlement(system: GeneratedSystem, settlement: Settlement, settle
     addFinding(findings, 'error', seed, `${path}.siteCategory`, `Unknown site category "${siteCategory}".`)
   } else if (!allowedBuiltForms.has(settlement.builtForm.value)) {
     addFinding(findings, 'error', seed, `${path}.builtForm`, `${siteCategory} has incompatible built form "${settlement.builtForm.value}".`)
+  }
+
+  if (system.guOverlay.intensity.value.includes('fracture') || system.guOverlay.intensity.value.includes('shear')) {
+    const allowedFunctions = guFractureFunctionsBySiteCategory[siteCategory]
+    if (!allowedFunctions?.has(settlement.function.value)) {
+      addFinding(findings, 'error', seed, `${path}.function`, `${siteCategory} has incompatible GU fracture/shear function "${settlement.function.value}".`)
+    }
   }
 
   if (siteCategory === 'Moon base') {

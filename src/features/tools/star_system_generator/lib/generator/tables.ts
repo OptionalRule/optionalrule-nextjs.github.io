@@ -70,9 +70,9 @@ export const architectures: Array<TableEntry<{ name: string; description: string
   { min: 12, max: 13, value: { name: 'Giant-rich or chaotic', description: 'Multiple giants, eccentric orbits, resonances, debris, and captured worlds.', bodyCount: [8, 16] } },
 ]
 
-export const guIntensities = ['Geometrically quiet', 'Low bleed', 'Useful bleed', 'Rich bleed', 'Dangerous fracture system', 'Major observerse shear zone'] as const
+export const guIntensities = ['Geometrically quiet', 'Low bleed', 'Useful bleed', 'Rich bleed', 'Dangerous fracture system', 'Major observiverse shear zone'] as const
 export const bleedLocations = ['Lagrange point', 'Asteroid belt seam', 'Snow-line volatile belt', 'Gas giant radiation belt', 'Moving node with no fixed orbit', 'System-wide metric storm cycle'] as const
-export const guResources = ['Chiral volatile reservoirs', 'Metric shear condensates', 'Dark-sector doped ore', 'Observerse-reactive crystal foam', 'Pinchdrive calibration medium', 'Medical chirality stock'] as const
+export const guResources = ['Chiral volatile reservoirs', 'Metric shear condensates', 'Dark-sector doped ore', 'Observiverse-reactive crystal foam', 'Pinchdrive calibration medium', 'Medical chirality stock'] as const
 export const guHazards = ['Navigation baselines drift', 'AI perception errors', 'Chiral contamination', 'Pinchdrive misjump risk', 'Corporate claim war', 'Gardener attention risk'] as const
 
 export const siteOptions = ['automated survey rig', 'chiral mining claim', 'fuel depot', 'quarantine beacon', 'first-wave ruin', 'free captain hideout'] as const

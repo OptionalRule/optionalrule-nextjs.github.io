@@ -207,7 +207,7 @@ const worldClassesByThermalZone: Record<string, readonly WorldClassOption[]> = {
     { className: 'Long-period comet storm source', category: 'belt', massClass: 'Comet storm source' },
     { className: 'Exile habitat', category: 'dwarf-body', massClass: 'Hidden habitat body' },
     { className: 'Gardener-shadowed forbidden zone', category: 'anomaly', massClass: 'Interdicted zone' },
-    { className: 'Deep observerse fracture', category: 'anomaly', massClass: 'Metric anomaly' },
+    { className: 'Deep observiverse fracture', category: 'anomaly', massClass: 'Metric anomaly' },
   ],
 }
 
@@ -222,6 +222,15 @@ const forcedWorldClasses = {
   dwarf: { className: 'Dwarf planet', category: 'dwarf-body', massClass: 'Dwarf planet' },
   rogue: { className: 'Rogue captured planet', category: 'rogue-captured', massClass: 'Captured planet' },
 } satisfies Record<string, WorldClassOption>
+
+const hotThermalZones = new Set(['Furnace', 'Inferno', 'Hot'])
+const extremeHotThermalZones = new Set(['Furnace', 'Inferno'])
+
+function isClassAvailableInThermalZone(thermalZone: string, bodyClass: WorldClassOption): boolean {
+  return worldClassesByThermalZone[thermalZone]?.some((option) =>
+    option.className === bodyClass.className && option.category === bodyClass.category
+  ) ?? false
+}
 
 const traitOptions = [
   'tidal stress',
@@ -261,6 +270,16 @@ const orbitalFunctions = ['Fuel depot', 'Ship repair yard', 'Full shipyard', 'Dr
 const routeFunctions = ['Iggygate control station', 'Pinchdrive tuning station', 'Corporate customs post', 'Freeport', 'Astrometry/nav beacon', 'Quarantine station'] as const
 const securityFunctions = ['Military base', 'Listening post', 'Naval logistics depot', 'Weapons test range', 'Quarantine station', 'Intelligence black site'] as const
 const civilFunctions = ['Civilian colony', 'Terraforming camp', 'Refugee settlement', 'Prison or debt-labor site', 'Religious/ideological enclave', 'Narrow-AI observiverse facility'] as const
+const guFractureFunctionsBySiteCategory: Record<SettlementSiteCategory, readonly string[]> = {
+  'Surface settlement': ['Chiral harvesting site', 'Programmable-matter containment site', 'Narrow-AI observiverse facility', 'Quarantine station'],
+  'Orbital station': ['Chiral harvesting site', 'Programmable-matter containment site', 'Narrow-AI observiverse facility', 'Quarantine station', 'Pinchdrive tuning station'],
+  'Asteroid or belt base': ['Chiral harvesting site', 'Dark-sector ore extraction', 'Programmable-matter containment site', 'Quarantine station'],
+  'Moon base': ['Chiral harvesting site', 'Dark-sector ore extraction', 'Narrow-AI observiverse facility', 'Quarantine station'],
+  'Deep-space platform': ['Moving bleed-node tracking platform', 'Pinchdrive tuning station', 'Narrow-AI observiverse facility', 'Quarantine station'],
+  'Gate or route node': ['Iggygate control station', 'Pinchdrive tuning station', 'Quarantine station', 'Narrow-AI observiverse facility'],
+  'Mobile site': ['Moving bleed-node harvest fleet', 'Freeport', 'Smuggler port', 'Refugee settlement', 'Naval logistics depot'],
+  'Derelict or restricted site': ['Programmable-matter containment site', 'Intelligence black site', 'Quarantine station', 'Weapons test range'],
+}
 const orbitalBuiltForms = ['Inflatable modules', 'Rotating cylinder', 'Non-rotating microgravity stack', 'Modular orbital lattice', 'Ring-habitat arc', 'Corporate luxury enclave', 'Slum raft cluster'] as const
 const asteroidBuiltForms = ['Buried pressure cans', 'Ice-shielded tunnels', 'Asteroid hollow', 'Modular orbital lattice', 'Shielded military bunker', 'First-wave retrofitted ruin'] as const
 const moonBuiltForms = ['Buried pressure cans', 'Ice-shielded tunnels', 'Dome cluster', 'Borehole habitat', 'Shielded military bunker', 'First-wave retrofitted ruin'] as const
@@ -421,7 +440,7 @@ function buildPhysicalHints(
   const massEarth = estimateMassEarth(radiusEarth, bodyClass.category)
   const surfaceGravityG = massEarth === null ? null : roundTo(massEarth / radiusEarth ** 2, 2)
   return {
-    radiusEarth: fact(radiusEarth, 'inferred', 'Category-based radius estimate'),
+    radiusEarth: fact(radiusEarth, 'inferred', bodyClass.category === 'anomaly' ? 'Operational scale estimate for anomaly' : 'Category-based radius estimate'),
     massEarth: fact(massEarth, 'inferred', 'Mass estimate from category and radius'),
     surfaceGravityG: fact(surfaceGravityG, massEarth === null ? 'inferred' : 'derived', 'Estimated mass divided by radius squared'),
     gravityLabel: fact(gravityLabel(bodyClass.category, surfaceGravityG), 'derived', 'Surface gravity estimate'),
@@ -532,6 +551,7 @@ function applyHotNeptuneDesertFilter(rng: SeededRng, thermalZone: string, input:
 function applyPeasInPodFilter(
   rng: SeededRng,
   architectureName: string,
+  thermalZone: string,
   previous: FilteredWorldClass | null,
   input: FilteredWorldClass
 ): FilteredWorldClass {
@@ -547,17 +567,28 @@ function applyPeasInPodFilter(
   const roll = rng.int(1, 6)
   if (roll >= 2 && roll <= 4) {
     const radius = roundTo(previous.physical.radiusEarth.value * rng.float(0.85, 1.18), 2)
+    const canReusePreviousClass = isClassAvailableInThermalZone(thermalZone, previous.bodyClass)
+
     return {
-      bodyClass: previous.bodyClass,
+      bodyClass: canReusePreviousClass ? previous.bodyClass : input.bodyClass,
       physical: {
         ...input.physical,
         radiusEarth: fact(radius, 'inferred', 'Peas-in-a-pod filter'),
         massEarth: fact(null, 'inferred', 'Recomputed after exoplanet filters'),
         surfaceGravityG: fact(null, 'inferred', 'Recomputed after exoplanet filters'),
         gravityLabel: fact('Pending recomputation after exoplanet filters.', 'inferred', 'Recomputed after exoplanet filters'),
-        volatileEnvelope: fact(previous.physical.volatileEnvelope.value, 'inferred', 'Peas-in-a-pod filter'),
+        volatileEnvelope: fact(canReusePreviousClass ? previous.physical.volatileEnvelope.value : input.physical.volatileEnvelope.value, 'inferred', 'Peas-in-a-pod filter'),
       },
-      filterNotes: [...input.filterNotes, fact('Peas-in-a-pod: adjacent planet made similar in size/composition.', 'inferred', 'Modern exoplanet filter')],
+      filterNotes: [
+        ...input.filterNotes,
+        fact(
+          canReusePreviousClass
+            ? 'Peas-in-a-pod: adjacent planet made similar in size/composition.'
+            : 'Peas-in-a-pod: adjacent planet made similar in size, but class was revalidated against its thermal zone.',
+          'inferred',
+          'Modern exoplanet filter'
+        ),
+      ],
     }
   }
   if (roll === 1) {
@@ -614,7 +645,7 @@ function applyModernExoplanetFilters(
   let current: FilteredWorldClass = { bodyClass, physical, filterNotes: [] }
   current = applyHotNeptuneDesertFilter(rng, thermalZone, current)
   current = applyRadiusValleyFilter(rng, current)
-  current = applyPeasInPodFilter(rng, architectureName, previous, current)
+  current = applyPeasInPodFilter(rng, architectureName, thermalZone, previous, current)
   current = applyHotNeptuneDesertFilter(rng, thermalZone, current)
   current = applyRadiusValleyFilter(rng, current)
   current = applyHotNeptuneDesertFilter(rng, thermalZone, current)
@@ -705,9 +736,47 @@ function generateBiosphere(rng: SeededRng, category: BodyCategory, thermalZone: 
 }
 
 function generateDetail(rng: SeededRng, category: BodyCategory, thermalZone: string, primary: Star): PlanetaryDetail {
+  if (category === 'anomaly') {
+    const isFacilityLike = rng.chance(0.45)
+    const detailWithoutBiosphere = {
+      atmosphere: fact(
+        isFacilityLike ? 'Controlled habitat envelopes' : 'No ordinary atmosphere',
+        'gu-layer',
+        'MASS-GU anomaly environment constraint'
+      ),
+      hydrosphere: fact(
+        isFacilityLike ? 'Imported or recycled volatiles' : 'Not applicable: metric or route phenomenon',
+        'gu-layer',
+        'MASS-GU anomaly environment constraint'
+      ),
+      geology: fact(
+        isFacilityLike ? 'Artificial platform or engineered substrate' : 'Metric shear geometry',
+        'gu-layer',
+        'MASS-GU anomaly environment constraint'
+      ),
+      climate: [
+        fact(
+          isFacilityLike ? 'Managed facility microclimates' : 'No planetary climate',
+          'gu-layer',
+          'MASS-GU anomaly environment constraint'
+        ),
+      ],
+      radiation: fact(
+        pickOne(rng, ['Electronics-disruptive metric/radiation mix', 'Only deep shielded habitats survive', 'Storm-dependent hazard']),
+        'gu-layer',
+        'MASS-GU anomaly radiation constraint'
+      ),
+    }
+
+    return {
+      ...detailWithoutBiosphere,
+      biosphere: fact('Sterile', 'inferred', 'Anomaly bodies do not roll ordinary biospheres'),
+    }
+  }
+
   const isEnvelopeWorld = category === 'sub-neptune' || category === 'gas-giant' || category === 'ice-giant'
   const isBelt = category === 'belt'
-  const isExtremeHot = thermalZone === 'Furnace' || thermalZone === 'Inferno'
+  const isExtremeHot = extremeHotThermalZones.has(thermalZone)
   const isHot = thermalZone === 'Hot'
   const isCold = thermalZone === 'Cold' || thermalZone === 'Cryogenic' || thermalZone === 'Dark'
   const climateCount = rng.chance(0.4) ? 2 : 1
@@ -885,7 +954,7 @@ function moonProfile(moonType: string): Pick<Moon, 'resource' | 'hazard' | 'use'
 }
 
 function generateMoons(rng: SeededRng, category: BodyCategory, bodyIndex: number, thermalZone: string): Moon[] {
-  if (thermalZone === 'Furnace' || thermalZone === 'Inferno') return []
+  if (category === 'anomaly' || extremeHotThermalZones.has(thermalZone)) return []
   const moonCount =
     category === 'gas-giant' ? rng.int(4, 8) :
     category === 'ice-giant' ? rng.int(2, 5) :
@@ -908,7 +977,7 @@ function generateMoons(rng: SeededRng, category: BodyCategory, bodyIndex: number
 }
 
 function generateRingSystem(rng: SeededRng, category: BodyCategory): RingSystem | undefined {
-  if (category !== 'gas-giant' && category !== 'ice-giant' && category !== 'anomaly') return undefined
+  if (category !== 'gas-giant' && category !== 'ice-giant') return undefined
   const type = pickOne(rng, ringTypes)
   if (type === 'None or faint') return undefined
   return { type: fact(type, 'inferred', 'MASS-GU ring table') }
@@ -971,7 +1040,7 @@ function generateBodyProfile(bodyClass: WorldClassOption, detail: PlanetaryDetai
 
   if (bodyClass.category === 'anomaly') {
     const profile =
-      bodyClass.className.includes('GU') || bodyClass.className.includes('observerse') || bodyClass.className.includes('bleed')
+      bodyClass.className.includes('GU') || bodyClass.className.includes('observiverse') || bodyClass.className.includes('bleed')
         ? 'GU-active body where metric behavior matters as much as normal geology.'
         : bodyClass.className.includes('facility') || bodyClass.className.includes('platform')
           ? 'Human-altered facility world where infrastructure is the main point of interest.'
@@ -1177,15 +1246,46 @@ function selectWorldClassForPlanKind(rng: SeededRng, thermalZone: string, planKi
   if (planKind === 'rocky') return pickWorldClassByCategory(rng, thermalZone, ['rocky-planet'], forcedWorldClasses.rocky)
   if (planKind === 'super-earth') return pickWorldClassByCategory(rng, thermalZone, ['super-earth'], forcedWorldClasses.superEarth)
   if (planKind === 'sub-neptune') return pickWorldClassByCategory(rng, thermalZone, ['sub-neptune'], forcedWorldClasses.subNeptune)
-  if ((planKind === 'belt' || planKind === 'ice-belt') && (thermalZone === 'Furnace' || thermalZone === 'Inferno')) {
+  if ((planKind === 'belt' || planKind === 'ice-belt') && extremeHotThermalZones.has(thermalZone)) {
     return pickWorldClassByCategory(rng, thermalZone, ['rocky-planet', 'super-earth', 'anomaly'], forcedWorldClasses.rocky)
   }
-  if (planKind === 'belt') return thermalZone === 'Cold' || thermalZone === 'Cryogenic' || thermalZone === 'Dark' || rng.chance(0.25) ? forcedWorldClasses.iceBelt : forcedWorldClasses.belt
+  if (planKind === 'belt') {
+    if (hotThermalZones.has(thermalZone) || thermalZone === 'Temperate band') return forcedWorldClasses.belt
+    return thermalZone === 'Cold' || thermalZone === 'Cryogenic' || thermalZone === 'Dark' || rng.chance(0.25) ? forcedWorldClasses.iceBelt : forcedWorldClasses.belt
+  }
   if (planKind === 'ice-belt') return thermalZone === 'Hot' ? forcedWorldClasses.belt : forcedWorldClasses.iceBelt
-  if (planKind === 'gas-giant') return pickWorldClassByCategory(rng, thermalZone, ['gas-giant'], forcedWorldClasses.gasGiant)
-  if (planKind === 'ice-giant') return pickWorldClassByCategory(rng, thermalZone, ['ice-giant'], forcedWorldClasses.iceGiant)
-  if (planKind === 'dwarf') return forcedWorldClasses.dwarf
-  if (planKind === 'rogue') return forcedWorldClasses.rogue
+  if (planKind === 'gas-giant') {
+    return pickWorldClassByCategory(
+      rng,
+      thermalZone,
+      ['gas-giant'],
+      hotThermalZones.has(thermalZone)
+        ? { className: 'Hot Jupiter', category: 'gas-giant', massClass: 'Hot gas giant' }
+        : forcedWorldClasses.gasGiant
+    )
+  }
+  if (planKind === 'ice-giant') {
+    return pickWorldClassByCategory(
+      rng,
+      thermalZone,
+      ['ice-giant'],
+      hotThermalZones.has(thermalZone)
+        ? { className: 'Hot Neptune desert survivor', category: 'sub-neptune', massClass: 'Rare close-in Neptunian' }
+        : forcedWorldClasses.iceGiant
+    )
+  }
+  if (planKind === 'dwarf') {
+    if (hotThermalZones.has(thermalZone)) {
+      return pickWorldClassByCategory(rng, thermalZone, ['rocky-planet', 'super-earth', 'anomaly'], { className: 'Iron remnant core', category: 'rocky-planet', massClass: 'Mercury-scale remnant' })
+    }
+    return forcedWorldClasses.dwarf
+  }
+  if (planKind === 'rogue') {
+    if (hotThermalZones.has(thermalZone)) {
+      return pickWorldClassByCategory(rng, thermalZone, ['rocky-planet', 'super-earth', 'anomaly'], { className: 'Roche-distorted world', category: 'anomaly', massClass: 'Tidal remnant' })
+    }
+    return forcedWorldClasses.rogue
+  }
   if (planKind === 'anomaly') return pickWorldClassByCategory(rng, thermalZone, ['anomaly'], { className: 'Dark-sector density anomaly', category: 'anomaly', massClass: 'Dark-sector anomaly' })
   return pickOne(rng, worldClassesByThermalZone[thermalZone])
 }
@@ -1546,7 +1646,7 @@ function chooseSettlementFunction(
   guOverlay: ReturnType<typeof generateGuOverlay>
 ): string {
   if (guOverlay.intensity.value.includes('fracture') || guOverlay.intensity.value.includes('shear')) {
-    return pickOne(rng, ['Chiral harvesting site', 'Moving bleed-node harvest fleet', 'Programmable-matter containment site', 'Narrow-AI observiverse facility', 'Quarantine station'])
+    return pickOne(rng, guFractureFunctionsBySiteCategory[locationOption.category])
   }
   if (body.detail.biosphere.value !== 'Sterile') return pickOne(rng, ['Biosphere research station', 'Quarantine station', 'Civilian colony', 'Planetology lab'])
 
@@ -1859,93 +1959,46 @@ export function applyNoAlienTextGuard(value: string): { value: string; conversio
   return { value: guarded, conversions }
 }
 
-function guardFactText<T>(input: Fact<T>, conversions: string[]): Fact<T> {
-  if (typeof input.value !== 'string') return input
-  const guarded = applyNoAlienTextGuard(input.value)
-  if (guarded.value === input.value) return input
-  conversions.push(...guarded.conversions)
-  return {
-    ...input,
-    value: guarded.value as T,
-    source: `${input.source ?? 'Generated text'}; no-alien guard`,
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null
+}
+
+function guardGeneratedText<T>(input: T, conversions: string[]): T {
+  if (typeof input === 'string') {
+    return applyNoAlienTextGuard(input).value as T
   }
+
+  if (Array.isArray(input)) {
+    return input.map((entry) => guardGeneratedText(entry, conversions)) as T
+  }
+
+  if (!isRecord(input)) return input
+
+  const output: Record<string, unknown> = { ...input }
+  if (typeof input.value === 'string') {
+    const guarded = applyNoAlienTextGuard(input.value)
+    if (guarded.value !== input.value) {
+      conversions.push(...guarded.conversions)
+      output.value = guarded.value
+      if (typeof input.source === 'string') output.source = `${input.source}; no-alien guard`
+    }
+  }
+
+  for (const [key, value] of Object.entries(input)) {
+    if (key === 'value' || key === 'source' || key === 'noAlienCheck') continue
+    output[key] = guardGeneratedText(value, conversions)
+  }
+
+  return output as T
 }
 
 function runNoAlienGuard(system: Omit<GeneratedSystem, 'noAlienCheck'>): GeneratedSystem {
   const conversions: string[] = []
-  const bodies = system.bodies.map((body) => ({
-    ...body,
-    name: guardFactText(body.name, conversions),
-    massClass: guardFactText(body.massClass, conversions),
-    bodyClass: guardFactText(body.bodyClass, conversions),
-    bodyProfile: body.bodyProfile ? guardFactText(body.bodyProfile, conversions) : undefined,
-    whyInteresting: guardFactText(body.whyInteresting, conversions),
-    thermalZone: guardFactText(body.thermalZone, conversions),
-    detail: {
-      atmosphere: guardFactText(body.detail.atmosphere, conversions),
-      hydrosphere: guardFactText(body.detail.hydrosphere, conversions),
-      geology: guardFactText(body.detail.geology, conversions),
-      climate: body.detail.climate.map((tag) => guardFactText(tag, conversions)),
-      radiation: guardFactText(body.detail.radiation, conversions),
-      biosphere: guardFactText(body.detail.biosphere, conversions),
-    },
-    moons: body.moons.map((moon) => ({
-      ...moon,
-      name: guardFactText(moon.name, conversions),
-      moonType: guardFactText(moon.moonType, conversions),
-      scale: guardFactText(moon.scale, conversions),
-      resource: guardFactText(moon.resource, conversions),
-      hazard: guardFactText(moon.hazard, conversions),
-      use: guardFactText(moon.use, conversions),
-    })),
-    rings: body.rings ? { type: guardFactText(body.rings.type, conversions) } : undefined,
-    giantEconomy: body.giantEconomy ? guardFactText(body.giantEconomy, conversions) : undefined,
-    filterNotes: body.filterNotes.map((note) => guardFactText(note, conversions)),
-    traits: body.traits.map((trait) => guardFactText(trait, conversions)),
-    sites: body.sites.map((site) => guardFactText(site, conversions)),
-  }))
-  const settlements = system.settlements.map((settlement) => ({
-    ...settlement,
-    name: guardFactText(settlement.name, conversions),
-    anchorKind: guardFactText(settlement.anchorKind, conversions),
-    anchorName: guardFactText(settlement.anchorName, conversions),
-    anchorDetail: guardFactText(settlement.anchorDetail, conversions),
-    siteCategory: guardFactText(settlement.siteCategory, conversions),
-    location: guardFactText(settlement.location, conversions),
-    function: guardFactText(settlement.function, conversions),
-    scale: guardFactText(settlement.scale, conversions),
-    authority: guardFactText(settlement.authority, conversions),
-    builtForm: guardFactText(settlement.builtForm, conversions),
-    aiSituation: guardFactText(settlement.aiSituation, conversions),
-    condition: guardFactText(settlement.condition, conversions),
-    tags: settlement.tags.map((tag) => guardFactText(tag, conversions)),
-    tagHook: guardFactText(settlement.tagHook, conversions),
-    crisis: guardFactText(settlement.crisis, conversions),
-    hiddenTruth: guardFactText(settlement.hiddenTruth, conversions),
-    encounterSites: settlement.encounterSites.map((site) => guardFactText(site, conversions)),
-    whyHere: guardFactText(settlement.whyHere, conversions),
-    methodNotes: settlement.methodNotes.map((note) => guardFactText(note, conversions)),
-  }))
-  const ruins = system.ruins.map((ruin) => ({
-    ...ruin,
-    location: guardFactText(ruin.location, conversions),
-    remnantType: guardFactText(ruin.remnantType, conversions),
-    hook: guardFactText(ruin.hook, conversions),
-  }))
-  const phenomena = system.phenomena.map((phenomenon) => ({
-    ...phenomenon,
-    phenomenon: guardFactText(phenomenon.phenomenon, conversions),
-    note: guardFactText(phenomenon.note, conversions),
-  }))
+  const guardedSystem = guardGeneratedText(system, conversions)
   const uniqueConversions = [...new Set(conversions)]
 
   return {
-    ...system,
-    bodies,
-    settlements,
-    ruins,
-    phenomena,
-    majorHazards: system.majorHazards.map((hazard) => guardFactText(hazard, conversions)),
+    ...guardedSystem,
     noAlienCheck: {
       passed: true,
       note: uniqueConversions.length

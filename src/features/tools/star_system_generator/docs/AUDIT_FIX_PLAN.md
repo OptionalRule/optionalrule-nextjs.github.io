@@ -14,6 +14,8 @@ This plan addresses the multi-agent audit findings from the generation-method re
 
 Purpose: remove known contradictions that the current audit misses.
 
+Status: completed in checkpoint `fix: tighten star system generation guardrails`.
+
 Work items:
 - Revalidate peas-in-a-pod copied classes against the receiving orbit's thermal zone.
 - Prevent hot-zone forced dwarf/rogue/debris classes from producing misleading cold-body labels.

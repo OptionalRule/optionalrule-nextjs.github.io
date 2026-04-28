@@ -2,6 +2,8 @@ import type { OrbitingBody } from '../types'
 import { ConfidenceBadge } from './ConfidenceBadge'
 
 export function BodyDetailPanel({ body }: { body: OrbitingBody }) {
+  const isAnomaly = body.category.value === 'anomaly'
+
   return (
     <section className="rounded-lg border border-[var(--border)] bg-[var(--card)] p-4">
       <div className="flex flex-col gap-1 sm:flex-row sm:items-start sm:justify-between">
@@ -15,7 +17,7 @@ export function BodyDetailPanel({ body }: { body: OrbitingBody }) {
       </div>
 
       <dl className="mt-4 grid gap-3 text-sm sm:grid-cols-2 lg:grid-cols-3">
-        <Detail label="Radius" value={`${body.physical.radiusEarth.value} Earth radii`} />
+        <Detail label={isAnomaly ? 'Scale' : 'Radius'} value={isAnomaly ? `${body.physical.radiusEarth.value} operational scale index` : `${body.physical.radiusEarth.value} Earth radii`} />
         <Detail label="Mass" value={body.physical.massEarth.value === null ? 'Not applicable' : `${body.physical.massEarth.value} Earth masses`} />
         <Detail label="Gravity" value={body.physical.gravityLabel.value} />
         <Detail label="Period" value={`${body.physical.periodDays.value} days`} />
