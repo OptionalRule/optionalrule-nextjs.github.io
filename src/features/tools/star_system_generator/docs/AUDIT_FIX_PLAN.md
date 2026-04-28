@@ -143,20 +143,22 @@ Checkpoint commit:
 
 Purpose: make the scripted audit reliable enough to guide future tuning.
 
+Status: partially completed in checkpoint `test: expand star system generator audit matrix`.
+
 Work items:
-- Add `npm run test:star-system-generator` that runs focused tests plus the generator audit.
-- Add audit option matrix:
+- Add `npm run test:star-system-generator` that runs focused tests plus the generator audit. Completed.
+- Add audit option matrix. Completed for:
   - `distribution`: frontier, realistic
   - `tone`: balanced, astronomy, cinematic
   - `gu`: low, normal, high, fracture
   - `settlements`: sparse, normal, crowded, hub
-- Add configurable corpus profiles:
+- Add configurable corpus profiles. Completed for:
   - quick local
   - default local
   - deep pre-release
 - Add score-component distribution metrics for settlement presence.
-- Add architecture-by-category metrics.
-- Add GU intensity by preference metrics.
+- Add architecture-by-category metrics. Completed.
+- Add GU intensity by preference metrics. Completed.
 - Add frontier-vs-realistic downstream divergence metrics.
 - Add golden snapshots for a small canonical seed set.
 - Extract shared compatibility rules so tests and audit import generator rules instead of duplicating them.

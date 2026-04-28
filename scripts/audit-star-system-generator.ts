@@ -5,8 +5,11 @@ import type {
   GeneratedSystem,
   GenerationOptions,
   GeneratorDistribution,
+  GeneratorTone,
+  GuPreference,
   OrbitingBody,
   Settlement,
+  SettlementDensity,
 } from '../src/features/tools/star_system_generator/types'
 
 type Severity = 'error' | 'warning'
@@ -26,13 +29,27 @@ interface CorpusStats {
   starTypes: Map<string, number>
   starTypesByDistribution: Record<GeneratorDistribution, Map<string, number>>
   architectures: Map<string, number>
+  categoriesByArchitecture: Map<string, Map<BodyCategory, number>>
   categories: Map<BodyCategory, number>
   settlementCategories: Map<string, number>
+  settlementCountsByDensity: Record<SettlementDensity, number[]>
+  guIntensityByPreference: Record<GuPreference, Map<string, number>>
 }
 
-const corpusPerDistribution = Number.parseInt(process.env.STAR_SYSTEM_AUDIT_COUNT ?? '500', 10)
+const auditProfiles = {
+  quick: 3,
+  default: 10,
+  deep: 50,
+} as const
+
+const auditProfile = (process.env.STAR_SYSTEM_AUDIT_PROFILE ?? 'default') as keyof typeof auditProfiles
+const profileCorpusPerOption = auditProfiles[auditProfile] ?? auditProfiles.default
+const corpusPerOption = Number.parseInt(process.env.STAR_SYSTEM_AUDIT_COUNT_PER_OPTION ?? String(profileCorpusPerOption), 10)
 const findingLimit = Number.parseInt(process.env.STAR_SYSTEM_AUDIT_FINDING_LIMIT ?? '50', 10)
 const distributions: GeneratorDistribution[] = ['frontier', 'realistic']
+const tones: GeneratorTone[] = ['balanced', 'astronomy', 'cinematic']
+const guPreferences: GuPreference[] = ['low', 'normal', 'high', 'fracture']
+const settlementDensities: SettlementDensity[] = ['sparse', 'normal', 'crowded', 'hub']
 
 const envelopeCategories = new Set<BodyCategory>(['sub-neptune', 'gas-giant', 'ice-giant'])
 const solidSurfaceCategories = new Set<BodyCategory>(['rocky-planet', 'super-earth', 'dwarf-body', 'rogue-captured'])
@@ -170,18 +187,40 @@ function increment<Key>(map: Map<Key, number>, key: Key): void {
   map.set(key, (map.get(key) ?? 0) + 1)
 }
 
-function makeSeed(distribution: GeneratorDistribution, index: number): string {
-  const prefix = distribution === 'frontier' ? 'fa17a11d0000' : '5eedcafe0000'
-  return `${prefix}${index.toString(16).padStart(4, '0')}`
+function nestedIncrement<OuterKey, InnerKey>(map: Map<OuterKey, Map<InnerKey, number>>, outerKey: OuterKey, innerKey: InnerKey): void {
+  const innerMap = map.get(outerKey) ?? new Map<InnerKey, number>()
+  increment(innerMap, innerKey)
+  map.set(outerKey, innerMap)
 }
 
-function makeOptions(distribution: GeneratorDistribution, seed: string): GenerationOptions {
-  return {
-    seed,
+function makeSeed(options: Omit<GenerationOptions, 'seed'>, index: number): string {
+  return [
+    'ssg-audit',
+    options.distribution,
+    options.tone,
+    options.gu,
+    options.settlements,
+    index.toString(16).padStart(4, '0'),
+  ].join('-')
+}
+
+function makeOptions(
+  distribution: GeneratorDistribution,
+  tone: GeneratorTone,
+  gu: GuPreference,
+  settlements: SettlementDensity,
+  index: number
+): GenerationOptions {
+  const options = {
     distribution,
-    tone: 'balanced',
-    gu: 'normal',
-    settlements: 'normal',
+    tone,
+    gu,
+    settlements,
+  }
+
+  return {
+    ...options,
+    seed: makeSeed(options, index),
   }
 }
 
@@ -404,7 +443,12 @@ function auditSystem(system: GeneratedSystem, findings: Finding[], stats: Corpus
   increment(stats.starTypes, system.primary.spectralType.value)
   increment(stats.starTypesByDistribution[system.options.distribution], system.primary.spectralType.value)
   increment(stats.architectures, system.architecture.name.value)
-  system.bodies.forEach((body) => increment(stats.categories, body.category.value))
+  increment(stats.guIntensityByPreference[system.options.gu], system.guOverlay.intensity.value)
+  stats.settlementCountsByDensity[system.options.settlements].push(system.settlements.length)
+  system.bodies.forEach((body) => {
+    increment(stats.categories, body.category.value)
+    nestedIncrement(stats.categoriesByArchitecture, system.architecture.name.value, body.category.value)
+  })
   system.settlements.forEach((settlement) => increment(stats.settlementCategories, settlement.siteCategory.value))
 
   assertText(findings, seed, 'name', system.name.value, 'System name')
@@ -520,6 +564,33 @@ function formatMap<Key>(map: Map<Key, number>): string {
     .join(', ')
 }
 
+function formatNestedCategoryMap(map: Map<string, Map<BodyCategory, number>>): string {
+  return [...map.entries()]
+    .sort(([left], [right]) => left.localeCompare(right))
+    .map(([architecture, categories]) => `${architecture} => ${formatMap(categories)}`)
+    .join('\n')
+}
+
+function formatGuIntensityByPreference(stats: CorpusStats): string {
+  return guPreferences
+    .map((preference) => `${preference}: ${formatMap(stats.guIntensityByPreference[preference])}`)
+    .join('\n')
+}
+
+function formatSettlementCountsByDensity(stats: CorpusStats): string {
+  return settlementDensities
+    .map((density) => {
+      const counts = stats.settlementCountsByDensity[density]
+      const average = counts.length
+        ? counts.reduce((sum, count) => sum + count, 0) / counts.length
+        : 0
+      const min = counts.length ? Math.min(...counts) : 0
+      const max = counts.length ? Math.max(...counts) : 0
+      return `${density}: avg ${average.toFixed(2)}, range ${min}-${max}`
+    })
+    .join('\n')
+}
+
 const findings: Finding[] = []
 const stats: CorpusStats = {
   systems: 0,
@@ -532,14 +603,32 @@ const stats: CorpusStats = {
     realistic: new Map(),
   },
   architectures: new Map(),
+  categoriesByArchitecture: new Map(),
   categories: new Map(),
   settlementCategories: new Map(),
+  settlementCountsByDensity: {
+    sparse: [],
+    normal: [],
+    crowded: [],
+    hub: [],
+  },
+  guIntensityByPreference: {
+    low: new Map(),
+    normal: new Map(),
+    high: new Map(),
+    fracture: new Map(),
+  },
 }
 
 for (const distribution of distributions) {
-  for (let index = 0; index < corpusPerDistribution; index += 1) {
-    const seed = makeSeed(distribution, index)
-    auditSystem(generateSystem(makeOptions(distribution, seed)), findings, stats)
+  for (const tone of tones) {
+    for (const gu of guPreferences) {
+      for (const settlements of settlementDensities) {
+        for (let index = 0; index < corpusPerOption; index += 1) {
+          auditSystem(generateSystem(makeOptions(distribution, tone, gu, settlements, index)), findings, stats)
+        }
+      }
+    }
   }
 }
 
@@ -549,6 +638,9 @@ const errors = findings.filter((finding) => finding.severity === 'error')
 const warnings = findings.filter((finding) => finding.severity === 'warning')
 
 console.log('Star System Generator Audit')
+console.log(`Profile: ${auditProfile in auditProfiles ? auditProfile : 'default'}`)
+console.log(`Option matrix: ${distributions.length} distributions x ${tones.length} tones x ${guPreferences.length} GU preferences x ${settlementDensities.length} settlement densities`)
+console.log(`Corpus per option: ${corpusPerOption}`)
 console.log(`Systems: ${stats.systems}`)
 console.log(`Bodies: ${stats.bodies}`)
 console.log(`Moons: ${stats.moons}`)
@@ -561,6 +653,12 @@ console.log(`Realistic star types: ${formatMap(stats.starTypesByDistribution.rea
 console.log(`Body categories: ${formatMap(stats.categories)}`)
 console.log(`Settlement categories: ${formatMap(stats.settlementCategories)}`)
 console.log(`Architectures: ${formatMap(stats.architectures)}`)
+console.log('Settlement counts by density:')
+console.log(formatSettlementCountsByDensity(stats))
+console.log('GU intensity by preference:')
+console.log(formatGuIntensityByPreference(stats))
+console.log('Body categories by architecture:')
+console.log(formatNestedCategoryMap(stats.categoriesByArchitecture))
 
 if (findings.length > 0) {
   console.log('')
