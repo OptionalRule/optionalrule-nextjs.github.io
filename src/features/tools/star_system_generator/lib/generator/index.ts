@@ -18,6 +18,13 @@ import type {
   StellarCompanion,
   SystemPhenomenon,
 } from '../../types'
+import {
+  buildArchitectureSlots,
+  createKnownImportSlot,
+  evaluateArchitectureSatisfaction,
+  replacementSlotsForUnsatisfiedRequirements,
+  type ArchitectureSlot,
+} from './architecture'
 import { calculateHabitableZone, calculateInsolation, calculateSnowLine, classifyThermalZone, roundTo } from './calculations'
 import { d8, d12, d20, d100, pickOne, pickTable, twoD6 } from './dice'
 import { extremeHotThermalZones, hotThermalZones, type BodyPlanKind, type WorldClassOption } from './domain'
@@ -32,6 +39,8 @@ import {
   realisticStarTypes,
   siteOptions,
 } from './tables'
+
+export { architectureBodyPlanRules } from './architecture'
 
 const systemNameCores = ['Keid', 'Vesper', 'Lumen', 'Harrow', 'Sable', 'Marrow', 'Orison', 'Nadir', 'Calder', 'Pale', 'Vey', 'Dross', 'Siren', 'Gath', 'Ravel', 'Warden', 'Glasswake', 'Aster', 'Kore', 'Tavian', 'Mire', 'Sundrake', 'Obol', 'Kestrin', 'Lowry', 'Cairn', 'Tidehook', 'Ashen', 'Nacre', 'Cobalt']
 const systemNameForms = ['Ladder', 'Verge', 'Crown', 'Breach', 'Harbor', 'Glass', 'Wake', 'Cairn', 'Tide', 'Gate', 'Reach', 'Spindle', 'Cradle', 'Lantern', 'Thread', 'Lock', 'Bridge', 'Chapel', 'Furnace', 'Choir', 'Mirror', 'Anvil', 'Current', 'Maw', 'Haven', 'Gyre', 'Wound', 'Shelf', 'Quay', 'Vault']
@@ -956,6 +965,20 @@ function applyHotNeptuneDesertFilter(rng: SeededRng, thermalZone: string, input:
   }
 }
 
+function annotatePreservedHotNeptuneDesert(thermalZone: string, input: FilteredWorldClass): FilteredWorldClass {
+  const isNeptuneLike = input.bodyClass.category === 'sub-neptune' || input.bodyClass.category === 'ice-giant'
+  if (!isNeptuneLike || !input.physical.closeIn.value || !['Furnace', 'Inferno', 'Hot'].includes(thermalZone)) return input
+  if (input.filterNotes.some((note) => note.value.includes('Hot Neptune desert'))) return input
+
+  return {
+    ...input,
+    filterNotes: [
+      ...input.filterNotes,
+      fact('Hot Neptune desert: architecture-preserved close-in giant, flagged as rare high-interest survivor.', 'inferred', 'Modern exoplanet filter'),
+    ],
+  }
+}
+
 function applyPeasInPodFilter(
   rng: SeededRng,
   architectureName: string,
@@ -1058,6 +1081,7 @@ function applyModernExoplanetFilters(
   if (!preservePlannedGiant) current = applyHotNeptuneDesertFilter(rng, thermalZone, current)
   current = applyRadiusValleyFilter(rng, current)
   if (!preservePlannedGiant) current = applyHotNeptuneDesertFilter(rng, thermalZone, current)
+  if (preservePlannedGiant) current = annotatePreservedHotNeptuneDesert(thermalZone, current)
   return current
 }
 
@@ -1688,200 +1712,6 @@ const bodyInterestSubjects: Record<BodyCategory, readonly string[]> = {
   anomaly: ['Research teams', 'Interdiction patrols', 'GU auditors', 'Survey offices'],
 }
 
-function weightedPick<T>(rng: SeededRng, entries: Array<{ weight: number; value: T }>): T {
-  const total = entries.reduce((sum, entry) => sum + entry.weight, 0)
-  let roll = rng.float(0, total)
-  for (const entry of entries) {
-    roll -= entry.weight
-    if (roll <= 0) return entry.value
-  }
-  return entries[entries.length - 1].value
-}
-
-function pushRepeated(plan: BodyPlanKind[], count: number, create: () => BodyPlanKind): void {
-  for (let index = 0; index < count; index++) {
-    plan.push(create())
-  }
-}
-
-function planetLikeKind(rng: SeededRng): BodyPlanKind {
-  return weightedPick(rng, [
-    { weight: 45, value: 'rocky' },
-    { weight: 35, value: 'super-earth' },
-    { weight: 19, value: 'sub-neptune' },
-    { weight: 1, value: 'anomaly' },
-  ])
-}
-
-function rockyOrSuperKind(rng: SeededRng): BodyPlanKind {
-  return weightedPick(rng, [
-    { weight: 58, value: 'rocky' },
-    { weight: 34, value: 'super-earth' },
-    { weight: 6, value: 'sub-neptune' },
-    { weight: 2, value: 'anomaly' },
-  ])
-}
-
-function failedRemnantKind(rng: SeededRng): BodyPlanKind {
-  return weightedPick(rng, [
-    { weight: 50, value: 'dwarf' },
-    { weight: 30, value: 'rocky' },
-    { weight: 12, value: 'super-earth' },
-    { weight: 8, value: 'anomaly' },
-  ])
-}
-
-function rockySurvivorKind(rng: SeededRng): BodyPlanKind {
-  return weightedPick(rng, [
-    { weight: 55, value: 'rocky' },
-    { weight: 25, value: 'super-earth' },
-    { weight: 10, value: 'sub-neptune' },
-    { weight: 7, value: 'belt' },
-    { weight: 3, value: 'anomaly' },
-  ])
-}
-
-function debrisKind(rng: SeededRng): BodyPlanKind {
-  return weightedPick(rng, [
-    { weight: 42, value: 'belt' },
-    { weight: 30, value: 'ice-belt' },
-    { weight: 18, value: 'dwarf' },
-    { weight: 6, value: 'rogue' },
-    { weight: 4, value: 'anomaly' },
-  ])
-}
-
-function giantKind(rng: SeededRng): BodyPlanKind {
-  return rng.chance(0.62) ? 'gas-giant' : 'ice-giant'
-}
-
-function weightedCount(rng: SeededRng, entries: Array<{ weight: number; value: number }>): number {
-  return weightedPick(rng, entries)
-}
-
-export const architectureBodyPlanRules = {
-  'Failed system': {
-    bodyRange: [4, 9],
-    intent: 'Debris, dwarf bodies, and zero or one remnant full planet dominate.',
-  },
-  'Debris-dominated': {
-    bodyRange: [5, 12],
-    intent: 'Belts and minor bodies dominate, with zero to two full-planet survivors and rare giant/anomaly crossovers.',
-  },
-  'Sparse rocky': {
-    bodyRange: [2, 8],
-    intent: 'One to four rocky or super-terrestrial worlds lead, with limited debris and unusual crossovers.',
-  },
-  'Compact inner system': {
-    bodyRange: [5, 10],
-    intent: 'Three to eight rocky, super-Earth, or sub-Neptune worlds lead, with rare debris or giant exceptions.',
-  },
-  'Peas-in-a-pod chain': {
-    bodyRange: [4, 9],
-    intent: 'Four to seven similar-sized planets form the main chain, with rare debris or giant exceptions.',
-  },
-  'Solar-ish mixed': {
-    bodyRange: [4, 19],
-    intent: 'Variable inner rocks, variable belts, one to four giants, and outer minor bodies.',
-  },
-  'Migrated giant': {
-    bodyRange: [3, 11],
-    intent: 'At least one hot or warm gas giant plus disrupted survivors and outer remnants.',
-  },
-  'Giant-rich or chaotic': {
-    bodyRange: [5, 16],
-    intent: 'Multiple giants, survivor worlds, debris, and possible captured or anomalous bodies.',
-  },
-} as const
-
-function generateBodyPlan(rng: SeededRng, architectureName: string): BodyPlanKind[] {
-  const plan: BodyPlanKind[] = []
-
-  if (architectureName === 'Failed system') {
-    pushRepeated(plan, weightedCount(rng, [
-      { weight: 45, value: 0 },
-      { weight: 55, value: 1 },
-    ]), () => failedRemnantKind(rng))
-    pushRepeated(plan, rng.int(4, 8), () => debrisKind(rng))
-    if (rng.chance(0.1)) plan.push('rogue')
-    return plan
-  }
-
-  if (architectureName === 'Debris-dominated') {
-    pushRepeated(plan, rng.int(0, 2), () => rockySurvivorKind(rng))
-    pushRepeated(plan, rng.int(5, 9), () => debrisKind(rng))
-    if (rng.chance(0.12)) plan.push(giantKind(rng))
-    if (rng.chance(0.1)) plan.push('anomaly')
-    return plan
-  }
-
-  if (architectureName === 'Sparse rocky') {
-    pushRepeated(plan, rng.int(2, 4), () => rockyOrSuperKind(rng))
-    pushRepeated(plan, rng.int(0, 2), () => debrisKind(rng))
-    if (rng.chance(0.15)) plan.push(giantKind(rng))
-    if (rng.chance(0.1)) plan.push(rng.chance(0.55) ? 'sub-neptune' : 'anomaly')
-    return plan
-  }
-
-  if (architectureName === 'Compact inner system') {
-    pushRepeated(plan, rng.int(5, 8), () => planetLikeKind(rng))
-    pushRepeated(plan, rng.int(0, 1), () => rng.chance(0.7) ? 'belt' : 'dwarf')
-    if (rng.chance(0.08)) plan.push(giantKind(rng))
-    return plan
-  }
-
-  if (architectureName === 'Peas-in-a-pod chain') {
-    const family = weightedPick(rng, [
-      { weight: 45, value: 'rocky' as const },
-      { weight: 35, value: 'super-earth' as const },
-      { weight: 20, value: 'sub-neptune' as const },
-    ])
-    pushRepeated(plan, rng.int(4, 7), () => rng.chance(0.86) ? family : planetLikeKind(rng))
-    pushRepeated(plan, rng.int(0, 1), () => debrisKind(rng))
-    if (rng.chance(0.08)) plan.push(giantKind(rng))
-    return plan
-  }
-
-  if (architectureName === 'Solar-ish mixed') {
-    pushRepeated(plan, rng.int(2, 5), () => rockyOrSuperKind(rng))
-    pushRepeated(plan, weightedCount(rng, [
-      { weight: 12, value: 0 },
-      { weight: 48, value: 1 },
-      { weight: 30, value: 2 },
-      { weight: 10, value: 3 },
-    ]), () => rng.chance(0.7) ? 'belt' : 'ice-belt')
-    const giantCount = weightedCount(rng, [
-      { weight: 42, value: 1 },
-      { weight: 38, value: 2 },
-      { weight: 16, value: 3 },
-      { weight: 4, value: 4 },
-    ])
-    plan.push('gas-giant')
-    pushRepeated(plan, giantCount - 1, () => giantKind(rng))
-    pushRepeated(plan, rng.int(1, 5), () => debrisKind(rng))
-    if (rng.chance(0.14)) plan.push('rogue')
-    if (rng.chance(0.08)) plan.push('anomaly')
-    return plan
-  }
-
-  if (architectureName === 'Migrated giant') {
-    plan.push('gas-giant')
-    pushRepeated(plan, rng.int(1, 4), () => rockySurvivorKind(rng))
-    pushRepeated(plan, rng.int(1, 4), () => rng.chance(0.35) ? giantKind(rng) : debrisKind(rng))
-    if (rng.chance(0.25)) plan.splice(rng.int(0, plan.length - 1), 0, 'belt')
-    if (rng.chance(0.15)) plan.push('anomaly')
-    return plan
-  }
-
-  pushRepeated(plan, rng.int(1, 4), () => rockySurvivorKind(rng))
-  pushRepeated(plan, rng.int(2, 5), () => giantKind(rng))
-  pushRepeated(plan, rng.int(2, 5), () => debrisKind(rng))
-  if (rng.chance(0.25)) plan.splice(0, 0, giantKind(rng))
-  if (rng.chance(0.25)) plan.push('rogue')
-  if (rng.chance(0.28)) plan.push('anomaly')
-  return plan
-}
-
 function pickWorldClassByCategory(
   rng: SeededRng,
   thermalZone: string,
@@ -2081,17 +1911,70 @@ function reservedKnownSlots(orbits: number[], knownBodies: PartialKnownBody[]): 
   return slots
 }
 
+function expandSlotsForKnownBodies(slots: ArchitectureSlot[], knownBodies: PartialKnownBody[]): ArchitectureSlot[] {
+  const expanded = [...slots]
+  while (expanded.length < knownBodies.length) {
+    expanded.push(createKnownImportSlot(expanded.length))
+  }
+  return expanded
+}
+
+function replacementOrbitAu(rng: SeededRng, luminositySolar: number, bodies: OrbitingBody[]): number {
+  const occupied = bodies.map((body) => body.orbitAu.value).sort((left, right) => left - right)
+  const expandedSeries = generateOrbitSeries(rng, luminositySolar, occupied.length + 1)
+  const minSeparation = 0.015
+  const candidate = expandedSeries.find((orbit) =>
+    occupied.every((existing) => Math.abs(existing - orbit) > Math.max(minSeparation, existing * 0.03))
+  )
+
+  if (candidate !== undefined) return candidate
+
+  const outermost = occupied.at(-1) ?? Math.max(0.025, Math.sqrt(Math.max(luminositySolar, 0.0001)) * 0.25)
+  return roundTo(outermost * rng.float(1.22, 1.48), 3)
+}
+
+function addArchitectureReplacementNote(body: OrbitingBody, slot: ArchitectureSlot): OrbitingBody {
+  return {
+    ...body,
+    filterNotes: [
+      ...body.filterNotes,
+      fact(
+        `Architecture replacement slot ${slot.id} added to satisfy ${slot.requirementId ?? 'profile requirement'}.`,
+        'inferred',
+        slot.source
+      ),
+    ],
+  }
+}
+
 function generateBodies(rng: SeededRng, primary: Star, architectureName: string, systemName: string, knownBodies: PartialKnownBody[] = []): OrbitingBody[] {
-  const bodyPlan = generateBodyPlan(rng.fork('body-plan'), architectureName)
-  const orbits = generateOrbitSeries(rng, primary.luminositySolar.value, bodyPlan.length)
+  const slots = expandSlotsForKnownBodies(buildArchitectureSlots(rng.fork('body-plan'), architectureName), knownBodies)
+  const orbits = generateOrbitSeries(rng, primary.luminositySolar.value, slots.length)
   const knownSlots = reservedKnownSlots(orbits, knownBodies)
   const bodies: OrbitingBody[] = []
   let previousFiltered: FilteredWorldClass | null = null
 
   for (let index = 0; index < orbits.length; index++) {
     const known = knownSlots.get(index)
-    const generated = generatedBody(rng, primary, architectureName, systemName, known?.orbitAu.value ?? orbits[index], index, bodyPlan[index], previousFiltered, known)
+    const generated = generatedBody(rng, primary, architectureName, systemName, known?.orbitAu.value ?? orbits[index], index, slots[index].planKind, previousFiltered, known)
     bodies.push(generated.body)
+    previousFiltered = generated.filtered
+  }
+
+  const replacementSlots = replacementSlotsForUnsatisfiedRequirements(evaluateArchitectureSatisfaction(architectureName, bodies))
+  for (const slot of replacementSlots) {
+    const replacementIndex = bodies.length
+    const generated = generatedBody(
+      rng.fork(`slot-${slot.id}:replacement`),
+      primary,
+      architectureName,
+      systemName,
+      replacementOrbitAu(rng.fork(`slot-${slot.id}:orbit`), primary.luminositySolar.value, bodies),
+      replacementIndex,
+      slot.planKind,
+      previousFiltered
+    )
+    bodies.push(addArchitectureReplacementNote(generated.body, slot))
     previousFiltered = generated.filtered
   }
 

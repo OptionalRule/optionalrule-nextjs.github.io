@@ -1,9 +1,7 @@
 import type { BodyCategory, GeneratedSystem, OrbitingBody, Settlement } from '../../types'
+import { evaluateArchitectureSatisfaction } from './architecture'
 import {
   envelopeCategories,
-  fullPlanetCategories,
-  giantCategories,
-  minorBodyCategories,
   rockyChainCategories,
   solidSurfaceCategories,
 } from './domain'
@@ -158,10 +156,6 @@ function finding(input: ValidationFinding): ValidationFinding {
 
 function hasDuplicates(values: string[]): boolean {
   return new Set(values).size !== values.length
-}
-
-function countBodiesByCategory(system: GeneratedSystem, categories: ReadonlySet<BodyCategory>): number {
-  return system.bodies.filter((body) => categories.has(body.category.value)).length
 }
 
 export function isEnvelopeCategory(category: BodyCategory): boolean {
@@ -389,43 +383,17 @@ export function validateBodyPhysicalContract(body: OrbitingBody, path = 'body'):
 }
 
 export function validateArchitecture(system: GeneratedSystem): ValidationFinding[] {
-  const findings: ValidationFinding[] = []
-  const architecture = system.architecture.name.value
-  const fullPlanets = countBodiesByCategory(system, fullPlanetCategories)
-  const minorBodies = countBodiesByCategory(system, minorBodyCategories)
-  const rockyChainBodies = countBodiesByCategory(system, rockyChainCategories)
-  const giants = countBodiesByCategory(system, giantCategories)
-
-  const addArchitectureFinding = (message: string, observed?: unknown, expected?: unknown) => findings.push(finding({
+  return evaluateArchitectureSatisfaction(system.architecture.name.value, system.bodies).map((result) => finding({
     severity: 'error',
     code: validationCodes.architectureMinimumUnsatisfied,
     path: 'architecture.bodyPlan',
-    message,
+    message: result.message,
     targetId: system.id,
     targetKind: 'architecture',
     source: 'generated-error',
-    observed,
-    expected,
+    observed: result.observed,
+    expected: result.expected,
   }))
-
-  if (architecture === 'Failed system') {
-    if (fullPlanets > 3) addArchitectureFinding(`Failed system generated ${fullPlanets} full planets.`, fullPlanets, '<= 3')
-    if (minorBodies < 2) addArchitectureFinding(`Failed system generated only ${minorBodies} debris/minor bodies.`, minorBodies, '>= 2')
-  }
-  if (architecture === 'Debris-dominated' && (minorBodies < 2 || minorBodies + 1 < fullPlanets)) {
-    addArchitectureFinding(`Debris-dominated system has ${minorBodies} debris/minor bodies versus ${fullPlanets} full planets.`, { minorBodies, fullPlanets }, 'debris/minor dominance')
-  }
-  if (architecture === 'Sparse rocky') {
-    if (rockyChainBodies < 1) addArchitectureFinding('Sparse rocky system lacks a rocky/super-terrestrial/sub-Neptune survivor.', rockyChainBodies, '>= 1')
-    if (giants > 1) addArchitectureFinding(`Sparse rocky system generated ${giants} giants.`, giants, '<= 1')
-  }
-  if (architecture === 'Compact inner system' && rockyChainBodies < 3) addArchitectureFinding(`Compact inner system generated only ${rockyChainBodies} rocky/super-Earth/sub-Neptune bodies.`, rockyChainBodies, '>= 3')
-  if (architecture === 'Peas-in-a-pod chain' && rockyChainBodies < 4) addArchitectureFinding(`Peas-in-a-pod chain generated only ${rockyChainBodies} chain bodies.`, rockyChainBodies, '>= 4')
-  if (architecture === 'Solar-ish mixed' && giants < 1) addArchitectureFinding('Solar-ish mixed system lacks a giant planet.', giants, '>= 1')
-  if (architecture === 'Migrated giant' && giants < 1) addArchitectureFinding('Migrated giant architecture lacks a generated giant.', giants, '>= 1')
-  if (architecture === 'Giant-rich or chaotic' && giants < 2) addArchitectureFinding(`Giant-rich or chaotic system generated only ${giants} giants.`, giants, '>= 2')
-
-  return findings
 }
 
 export function validateSettlementNames(system: GeneratedSystem): ValidationFinding[] {
