@@ -1201,11 +1201,86 @@ function scoreSettlementPresence(body: OrbitingBody, guOverlay: ReturnType<typeo
   return { score, resource, access, strategic, guValue, habitability, hazard, legalHeat }
 }
 
-function targetSettlementCount(options: GenerationOptions): number {
-  if (options.settlements === 'sparse') return 1
-  if (options.settlements === 'crowded') return 4
-  if (options.settlements === 'hub') return 5
-  return 3
+type SettlementPresenceScore = ReturnType<typeof scoreSettlementPresence>
+
+interface ScoredSettlementBody {
+  body: OrbitingBody
+  presence: SettlementPresenceScore
+}
+
+function weightedSettlementBaseCount(rng: SeededRng, density: GenerationOptions['settlements']): number {
+  const roll = rng.int(1, 100)
+  if (density === 'sparse') {
+    if (roll <= 35) return 0
+    if (roll <= 85) return 1
+    return 2
+  }
+  if (density === 'crowded') {
+    if (roll <= 15) return 3
+    if (roll <= 45) return 4
+    if (roll <= 80) return 5
+    return 6
+  }
+  if (density === 'hub') {
+    if (roll <= 10) return 4
+    if (roll <= 30) return 5
+    if (roll <= 60) return 6
+    if (roll <= 85) return 7
+    return 8
+  }
+
+  if (roll <= 25) return 1
+  if (roll <= 75) return 2
+  if (roll <= 97) return 3
+  return 4
+}
+
+function settlementCountBounds(density: GenerationOptions['settlements']): [number, number] {
+  if (density === 'sparse') return [0, 2]
+  if (density === 'crowded') return [3, 6]
+  if (density === 'hub') return [4, 8]
+  return [1, 4]
+}
+
+function targetSettlementCount(
+  rng: SeededRng,
+  options: GenerationOptions,
+  scored: ScoredSettlementBody[],
+  guOverlay: ReturnType<typeof generateGuOverlay>,
+  reachability: ReturnType<typeof generateReachability>,
+  architectureName: string
+): number {
+  const [min, max] = settlementCountBounds(options.settlements)
+  let count = weightedSettlementBaseCount(rng, options.settlements)
+  const topScores = scored.slice(0, Math.max(1, Math.min(3, scored.length))).map((entry) => entry.presence.score)
+  const averageTopScore = topScores.length
+    ? topScores.reduce((sum, score) => sum + score, 0) / topScores.length
+    : 0
+  const topScore = topScores[0] ?? 0
+
+  if (options.settlements === 'sparse') {
+    if (topScore < 8) count = 0
+    if ((reachability.className.value.includes('Iggygate') || reachability.className.value.includes('hub')) && averageTopScore >= 12) count += 1
+    return Math.max(0, Math.min(scored.length, Math.max(min, Math.min(max, count))))
+  }
+
+  if (options.settlements === 'normal') {
+    if (reachability.className.value.includes('Dead-end') || reachability.className.value.includes('Marginal')) count -= 1
+    if ((guOverlay.intensity.value.includes('Rich') || guOverlay.intensity.value.includes('fracture') || guOverlay.intensity.value.includes('shear')) && averageTopScore >= 14) count += 1
+    if (topScore < 9) count -= 1
+    if (scored.slice(0, 3).every((entry) => entry.presence.hazard >= 4)) count -= 1
+    return Math.max(0, Math.min(scored.length, Math.max(min, Math.min(max, count))))
+  }
+
+  if ((reachability.className.value.includes('Iggygate') || reachability.className.value.includes('hub')) && averageTopScore >= 13) count += 1
+  if (reachability.className.value.includes('Dead-end') || reachability.className.value.includes('Marginal')) count -= 1
+  if (guOverlay.intensity.value.includes('Rich') || guOverlay.intensity.value.includes('fracture') || guOverlay.intensity.value.includes('shear')) count += 1
+  if (architectureName === 'Major GU fracture system') count += 1
+  if (averageTopScore >= 14) count += 1
+  if (topScore < 9) count -= 1
+  if (scored.slice(0, 3).every((entry) => entry.presence.hazard >= 4)) count -= 1
+
+  return Math.max(0, Math.min(scored.length, Math.max(min, Math.min(max, count))))
 }
 
 function settlementScaleFromScore(score: number, rng: SeededRng): string {
@@ -1504,15 +1579,16 @@ function generateSettlements(
   systemName: string,
   bodies: OrbitingBody[],
   guOverlay: ReturnType<typeof generateGuOverlay>,
-  reachability: ReturnType<typeof generateReachability>
+  reachability: ReturnType<typeof generateReachability>,
+  architectureName: string
 ): Settlement[] {
   const scored = bodies
     .map((body) => ({ body, presence: scoreSettlementPresence(body, guOverlay, reachability) }))
     .sort((a, b) => b.presence.score - a.presence.score)
-    .slice(0, targetSettlementCount(options))
-    .filter((entry) => options.settlements !== 'sparse' || entry.presence.score >= 8)
+  const targetCount = targetSettlementCount(rng, options, scored, guOverlay, reachability, architectureName)
+  const selected = scored.slice(0, targetCount)
 
-  return scored.map(({ body, presence }, index) => {
+  return selected.map(({ body, presence }, index) => {
     const locationOption = chooseSettlementLocation(rng, body, reachability)
     const settlementFunction = chooseSettlementFunction(rng, body, locationOption, guOverlay)
     const builtForm = chooseBuiltForm(rng, locationOption, settlementFunction)
@@ -1719,7 +1795,7 @@ export function generateSystem(options: GenerationOptions): GeneratedSystem {
   const snowLine = calculateSnowLine(primary.luminositySolar.value)
   const bodies = generateBodies(rootRng.fork('bodies'), primary, architectureResult.bodyCount, architectureResult.architecture.name.value)
   const guOverlay = generateGuOverlay(rootRng.fork('gu'), options.gu, primary, bodies, architectureResult.architecture.name.value)
-  const settlements = generateSettlements(rootRng.fork('settlements'), options, name, bodies, guOverlay, reachability)
+  const settlements = generateSettlements(rootRng.fork('settlements'), options, name, bodies, guOverlay, reachability, architectureResult.architecture.name.value)
   const ruins = generateHumanRemnants(rootRng.fork('ruins'), bodies, guOverlay)
   const phenomena = generatePhenomena(rootRng.fork('phenomena'), architectureResult.architecture.name.value, guOverlay)
 

@@ -324,6 +324,35 @@ describe('generateSystem', () => {
     expect(JSON.stringify(system.ruins).toLowerCase()).not.toContain('alien')
   })
 
+  it('varies settlement count by density and system context', () => {
+    const densityBounds = {
+      sparse: [0, 2],
+      normal: [1, 4],
+      crowded: [3, 6],
+      hub: [4, 8],
+    } as const
+    const averages = new Map<string, number>()
+
+    for (const [density, [min, max]] of Object.entries(densityBounds)) {
+      const counts = Array.from({ length: 100 }, (_, index) =>
+        generateSystem({
+          ...options,
+          settlements: density as GenerationOptions['settlements'],
+          seed: `5e771e5${index.toString(16).padStart(8, '0')}`,
+        }).settlements.length
+      )
+
+      expect(Math.min(...counts)).toBeGreaterThanOrEqual(min)
+      expect(Math.max(...counts)).toBeLessThanOrEqual(max)
+      expect(new Set(counts).size).toBeGreaterThan(1)
+      averages.set(density, counts.reduce((sum, count) => sum + count, 0) / counts.length)
+    }
+
+    expect(averages.get('sparse')!).toBeLessThan(averages.get('normal')!)
+    expect(averages.get('normal')!).toBeLessThan(averages.get('crowded')!)
+    expect(averages.get('crowded')!).toBeLessThan(averages.get('hub')!)
+  })
+
   it('does not generate duplicate settlement tag pairs', () => {
     for (let index = 0; index < 120; index++) {
       const system = generateSystem({ ...options, seed: `f93f9c2e41b8${index.toString(16).padStart(4, '0')}` })

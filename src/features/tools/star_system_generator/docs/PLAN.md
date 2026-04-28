@@ -211,6 +211,7 @@ M5 - Geometric Unity and Human Layer
 - [x] Implement first-pass GU intensity, bleed-zone location, resources, and hazards.
 - [x] Implement first-pass settlement presence scoring.
 - [x] Implement settlement scale, site category, location, physical anchor, reason-for-existence, function, authority, built form, AI situation, condition, tags, current crisis, hidden truth, local encounter sites.
+- [x] Make settlement count variable by density preset and system context instead of fixed per preset.
 - [x] Implement first-pass human ruins/derelicts and expanded phenomena.
 - [x] Implement no-alien guard and conversion rules.
 - [x] Add tests that forbidden alien outputs cannot survive first-pass human-layer generation.
