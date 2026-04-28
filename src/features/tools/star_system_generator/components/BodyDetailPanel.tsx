@@ -108,8 +108,8 @@ function ListBlock({ title, items, empty }: { title: string; items: string[]; em
       <h3 className="text-xs font-semibold uppercase tracking-wide text-[var(--text-tertiary)]">{title}</h3>
       {items.length ? (
         <ul className="mt-2 space-y-1 text-[var(--text-primary)]">
-          {items.map((item) => (
-            <li key={item}>{item}</li>
+          {items.map((item, index) => (
+            <li key={`${index}-${item}`}>{item}</li>
           ))}
         </ul>
       ) : (

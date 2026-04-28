@@ -328,6 +328,7 @@ First-pass approximations
 Not implemented yet
 - Multiplicity and binary/trinary separation consequences.
 - Known-system import and locked fact preservation.
+- Plain-language overview copy pass for all stellar class labels and notes, replacing astronomy shorthand with player-facing explanations.
 - Full source-table implementation of radius valley, hot Neptune desert, peas-in-a-pod, and M-dwarf habitability filters beyond the first-pass notes/adjustments.
 - Full moons, belts, rings, dwarf bodies, rogue/captured body procedures.
 - Exact d66/d20 roll weighting for every settlement/base table; current arrays include the full source entries for section 18 support tables but use constrained equal-choice subsets by site category.
