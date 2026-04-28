@@ -557,7 +557,11 @@ describe('generateSystem', () => {
       expect(settlement.whyHere.source).toContain('MASS-GU 18.1')
       expect(settlement.siteCategory.value).toBeTruthy()
       expect(settlement.presence.score.value).toBeGreaterThan(0)
+      expect(settlement.presence.roll.value).toBeGreaterThanOrEqual(2)
+      expect(settlement.presence.roll.value).toBeLessThanOrEqual(12)
+      expect(settlement.presence.tier.value).toBeTruthy()
       expect(settlement.function.value).toBeTruthy()
+      expect(settlement.scale.source).toContain('MASS-GU 18.2')
       expect(settlement.builtForm.value).toBeTruthy()
       expect(settlement.aiSituation.value).toBeTruthy()
       expect(settlement.condition.value).toBeTruthy()
@@ -573,6 +577,25 @@ describe('generateSystem', () => {
     expect(system.ruins.length).toBeGreaterThan(0)
     expect(system.phenomena.length).toBeGreaterThan(0)
     expect(JSON.stringify(system.ruins).toLowerCase()).not.toContain('alien')
+  })
+
+  it('uses rolled settlement presence and source settlement scales', () => {
+    const systems = Array.from({ length: 160 }, (_, index) =>
+      generateSystem({
+        ...options,
+        settlements: 'crowded',
+        seed: `c93f9c2e41b8${index.toString(16).padStart(4, '0')}`,
+      })
+    )
+    const settlements = systems.flatMap((system) => system.settlements)
+
+    expect(settlements.length).toBeGreaterThan(0)
+    expect(new Set(settlements.map((settlement) => settlement.presence.roll.value)).size).toBeGreaterThan(4)
+    expect(new Set(settlements.map((settlement) => settlement.presence.tier.value)).size).toBeGreaterThan(3)
+    expect(new Set(settlements.map((settlement) => settlement.scale.value)).size).toBeGreaterThan(5)
+    expect(settlements.some((settlement) => settlement.scale.value.includes('people') || settlement.scale.value === 'Automated only')).toBe(true)
+    expect(settlements.every((settlement) => settlement.presence.roll.source?.includes('MASS-GU 18.1'))).toBe(true)
+    expect(settlements.every((settlement) => settlement.scale.source?.includes('MASS-GU 18.2'))).toBe(true)
   })
 
   it('varies settlement count by density and system context', () => {

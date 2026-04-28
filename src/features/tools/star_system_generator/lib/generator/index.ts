@@ -25,7 +25,6 @@ import {
   metallicities,
   reachabilityClasses,
   realisticStarTypes,
-  settlementScales,
   siteOptions,
 } from './tables'
 
@@ -394,6 +393,7 @@ const settlementTags = ['Abandoned First Wave', 'Air Is Money', 'AI Whisper Cult
 const settlementCrises = ['Life-support cascade', 'Water ration failure', 'Food culture contamination', 'Radiation storm incoming', 'Flare season arrived early', 'Hull breach hidden from public', 'Bleed node changed course', 'Chiral harvest turned toxic', 'Metric storm trapped ships', 'Iggygate schedule failure', 'Pinchdrive calibration accident', 'AI refuses unsafe operation', 'Labor strike', 'Debt revolt', 'Corporate security crackdown', 'Pirate protection demand', 'Smuggler war', 'Refugee surge', 'Quarantine violation', 'Unknown native microbial hazard', 'Failed terraforming release', 'Medical supplies stolen', 'Illegal AI expansion discovered', 'Sol/Gardener warning sign detected', 'Military coup', 'Election or succession crisis', 'Sabotage of refinery/gate/AI', 'Essential expert missing', 'Salvage claim dispute', 'Old first-wave map found', 'Children or civilians trapped', 'Ship full of dead arrives', 'A whole district goes silent', 'The base broadcasts two contradictory distress calls', 'Everyone is lying about casualty numbers', 'Crisis is staged to hide something worse'] as const
 const hiddenTruths = ['The settlement is insolvent', 'The mine is nearly exhausted', 'The resource is richer than reported', 'The hazard is artificial/human-caused', 'The official death toll is false', 'The founders committed a crime', 'Corporate records were altered', 'The local AI deleted evidence', 'The local AI preserved forbidden evidence', 'The base is built on unstable ground/orbit', 'The settlement cannot survive evacuation', 'The workers are legally trapped', 'The site is a weapons lab', 'The site is an illegal AI lab', 'The site is a black prison', 'The site is a military listening post', 'The site is a fake colony masking extraction', 'The site is a smuggling hub', 'A first-wave expedition survived in hiding', 'The ghosts are old human recordings', 'The curse is chiral neurochemistry', 'The miracle is illegal terraforming tech', 'The supposed unknown signal is human encryption', 'The artifact rumor is a natural GU formation', 'The Gardener has already intervened once', 'Sol interdiction files are sealed here', 'A faction is provoking Gardener attention', 'The Iggygate is misaligned on purpose', 'The bleed node is being illegally stabilized', 'The settlement has an evacuation ark nobody knows about', 'The leader is a proxy for a distant faction', 'The pirate threat is staged', 'The quarantine is political', 'The plague is industrial poisoning', 'The AI is sane; the humans are not listening', 'The system official survey is deliberately wrong'] as const
 const encounterSites = ['Half-flooded maintenance tunnels', 'Shielding crawlspace district', 'Dockside free market', 'Drone hangar', 'AI core vault', 'Chiral refinery floor', 'Bleed-harvest control room', 'Closed habitat ring', 'Quarantine ward', 'Black-market clinic', 'Corporate executive dome', 'Worker barracks', 'Religious geometry chapel', 'Old first-wave command bunker', 'Illegal pinchdrive test chamber', 'Radiation storm shelter', 'Water plant', 'Courtroom / debt registry', 'Hidden launch bay', 'Place the maps say does not exist'] as const
+const settlementScaleTable = ['Abandoned', 'Automated only', '1-20 people', '21-100 people', '101-1,000 people', '1,001-10,000 people', '10,001-100,000 people', '100,001-1 million people', '1-10 million people', '10+ million people', 'Distributed swarm settlement', 'Population unknown or deliberately falsified'] as const
 const humanRemnants = ['Survey probe field', 'Dead relay buoy', 'Abandoned mining claim', 'Burned-out research dome', 'First-wave colony shell', 'Ruined terraforming plant', 'Frozen refugee convoy', 'Derelict refinery', 'Old navy depot', 'Illegal AI growth chamber', 'Pinchdrive accident scar', 'Iggygate construction failure', 'Sol-struck outpost', 'Records surgically erased', 'Still broadcasting old distress call'] as const
 const remnantHooks = ['claimed by three legal owners', 'contains deleted survey records', 'appears abandoned but still runs automated routines', 'sits inside a drifting hazard zone', 'was erased from corporate maps', 'is used as bait by criminals', 'contains evidence that would alter local politics'] as const
 const phenomena = ['Dense debris disk', 'Recent planetary collision', 'Resonant compact chain', 'Trojan megaswarm', 'Long-period comet storm', 'Captured rogue world', 'Flare-amplified bleed season', 'Hot Neptune desert survivor', 'Snow-line chiral belt', 'Ring arc with phase dust', 'Ice-shell plume moon', 'Gas giant radiation maze', 'Failed Iggygate wake', 'Moving bleed-node river', 'Metric mirage zone', 'Native microbial biosphere', 'Failed terraforming biosphere', 'First-wave ghost colony', 'Derelict fleet cluster', 'Gardener warning beacon'] as const
@@ -1775,7 +1775,23 @@ function chooseSettlementTags(rng: SeededRng): [string, string] {
   return [obviousTag, deeperTag]
 }
 
-function scoreSettlementPresence(body: OrbitingBody, guOverlay: ReturnType<typeof generateGuOverlay>, reachability: ReturnType<typeof generateReachability>) {
+function settlementPresenceTier(score: number): string {
+  if (score <= 2) return 'Empty except probes'
+  if (score <= 4) return 'Beacon, cache, survey buoy'
+  if (score === 5) return 'Automated monitor or claim marker'
+  if (score === 6) return 'Temporary camp or rotating crew'
+  if (score === 7) return 'Automated mine/refinery/research rig'
+  if (score === 8) return 'Small permanent outpost'
+  if (score === 9) return 'Settlement, dome, tunnel-town, or station'
+  if (score === 10) return 'Major base or industrial site'
+  if (score === 11) return 'Town, freeport, or military complex'
+  if (score === 12) return 'Large colony, hub, or shipyard'
+  if (score <= 14) return 'Regional power center'
+  return 'Major campaign location'
+}
+
+function scoreSettlementPresence(rng: SeededRng, body: OrbitingBody, guOverlay: ReturnType<typeof generateGuOverlay>, reachability: ReturnType<typeof generateReachability>) {
+  const roll = twoD6(rng)
   const resource = clampScore(
     (body.category.value === 'belt' || body.category.value === 'gas-giant' || body.category.value === 'ice-giant' ? 2 : 0) +
     (body.sites.length ? 1 : 0) +
@@ -1813,9 +1829,10 @@ function scoreSettlementPresence(body: OrbitingBody, guOverlay: ReturnType<typeo
     (guOverlay.resource.value.includes('Illegal') ? 3 : 0)
   )
   const routeValue = reachability.className.value.includes('Iggygate') || reachability.className.value.includes('hub') ? 2 : 1
-  const score = 7 + resource + access + strategic + guValue + routeValue + habitability - hazard - legalHeat
+  const score = roll + resource + access + strategic + guValue + routeValue + habitability - hazard - legalHeat
+  const tier = settlementPresenceTier(score)
 
-  return { score, resource, access, strategic, guValue, habitability, hazard, legalHeat }
+  return { score, roll, tier, resource, access, strategic, guValue, habitability, hazard, legalHeat }
 }
 
 type SettlementPresenceScore = ReturnType<typeof scoreSettlementPresence>
@@ -1900,16 +1917,14 @@ function targetSettlementCount(
   return Math.max(0, Math.min(scored.length, Math.max(min, Math.min(max, count))))
 }
 
-function settlementScaleFromScore(score: number, rng: SeededRng): string {
-  if (score >= 15) return 'major campaign location'
-  if (score >= 13) return 'regional power center'
-  if (score >= 12) return 'large colony, hub, or shipyard'
-  if (score >= 11) return 'town, freeport, or military complex'
-  if (score >= 10) return 'major base or industrial site'
-  if (score >= 9) return 'settlement, dome, tunnel-town, or station'
-  if (score >= 8) return 'small permanent outpost'
-  if (score >= 7) return 'automated mine/refinery/research rig'
-  return pickOne(rng, settlementScales)
+function settlementScaleFromRoll(rng: SeededRng, presence: SettlementPresenceScore): string {
+  let roll = d12(rng)
+  if (presence.score <= 6) roll -= 2
+  if (presence.score === 7 || presence.score === 8) roll -= 1
+  if (presence.score >= 12) roll += 1
+  if (presence.score >= 15) roll += 2
+  roll = Math.max(1, Math.min(12, roll))
+  return settlementScaleTable[roll - 1]
 }
 
 function location(label: string, category: SettlementSiteCategory): SettlementLocationOption {
@@ -2200,7 +2215,7 @@ function generateSettlements(
   architectureName: string
 ): Settlement[] {
   const scored = bodies
-    .map((body) => ({ body, presence: scoreSettlementPresence(body, guOverlay, reachability) }))
+    .map((body, bodyIndex) => ({ body, presence: scoreSettlementPresence(rng.fork(`presence-${bodyIndex + 1}`), body, guOverlay, reachability) }))
     .sort((a, b) => b.presence.score - a.presence.score)
   const targetCount = targetSettlementCount(rng, options, scored, guOverlay, reachability, architectureName)
   const selected = scored.slice(0, targetCount)
@@ -2224,7 +2239,7 @@ function generateSettlements(
       siteCategory: fact(locationOption.category, 'human-layer', 'MASS-GU section 18 constrained site category'),
       location: fact(locationOption.label, 'human-layer', 'MASS-GU 18.3 site location table with body constraints'),
       function: fact(settlementFunction, 'human-layer', 'MASS-GU settlement function table with body constraints'),
-      scale: fact(settlementScaleFromScore(presence.score, rng), 'human-layer', 'MASS-GU settlement presence score'),
+      scale: fact(settlementScaleFromRoll(rng, presence), 'human-layer', 'MASS-GU 18.2 settlement scale d12 table'),
       authority: fact(pickOne(rng, settlementAuthorities), 'human-layer', 'MASS-GU 18.5 authority table'),
       builtForm: fact(builtForm, 'human-layer', 'MASS-GU built form table with location/function constraints'),
       aiSituation: fact(pickOne(rng, aiSituations), 'human-layer', 'MASS-GU AI situation table'),
@@ -2240,6 +2255,8 @@ function generateSettlements(
       ],
       presence: {
         score: fact(presence.score, 'human-layer', 'MASS-GU settlement presence score'),
+        roll: fact(presence.roll, 'human-layer', 'MASS-GU 18.1 settlement presence 2d6 roll'),
+        tier: fact(presence.tier, 'human-layer', 'MASS-GU 18.1 settlement presence result'),
         resource: fact(presence.resource, 'human-layer', 'Presence score component'),
         access: fact(presence.access, 'human-layer', 'Presence score component'),
         strategic: fact(presence.strategic, 'human-layer', 'Presence score component'),

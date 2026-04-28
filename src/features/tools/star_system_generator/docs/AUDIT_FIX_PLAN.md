@@ -87,12 +87,12 @@ Work items:
   - bleed behavior
   - d20 location/resource/hazard tables
   - preference bias layered on top of the source roll
-- Implement settlement presence as `2d6 + components`, not fixed baseline `7 + components`.
-- Replace settlement scale labels with source population/scale outputs or split `presenceTier` from `populationScale`.
+- Implement settlement presence as `2d6 + components`, not fixed baseline `7 + components`. Completed in checkpoint `feat: use rolled settlement presence scoring`.
+- Replace settlement scale labels with source population/scale outputs or split `presenceTier` from `populationScale`. Completed in checkpoint `feat: use rolled settlement presence scoring`; presence tier is now separate from section 18.2 population/scale output.
 
 Acceptance checks:
 - Tests lock key source tables and modifier behavior.
-- Audit reports reachability, GU intensity, and settlement score component distributions.
+- Audit reports reachability, GU intensity, settlement presence rolls, settlement presence tiers, settlement scales, and settlement score component distributions.
 - Existing deterministic behavior remains stable for same seed/options after intentional snapshot updates.
 
 Checkpoint commits:

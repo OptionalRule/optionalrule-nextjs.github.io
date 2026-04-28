@@ -161,6 +161,8 @@ export interface Settlement {
   methodNotes: Array<Fact<string>>
   presence: {
     score: Fact<number>
+    roll: Fact<number>
+    tier: Fact<string>
     resource: Fact<number>
     access: Fact<number>
     strategic: Fact<number>

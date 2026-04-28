@@ -34,6 +34,9 @@ interface CorpusStats {
   categories: Map<BodyCategory, number>
   settlementCategories: Map<string, number>
   settlementCountsByDensity: Record<SettlementDensity, number[]>
+  settlementPresenceRolls: Map<number, number>
+  settlementPresenceTiers: Map<string, number>
+  settlementScales: Map<string, number>
   guIntensityByPreference: Record<GuPreference, Map<string, number>>
   guBehaviors: Map<string, number>
   guResources: Map<string, number>
@@ -500,9 +503,19 @@ function auditSettlement(system: GeneratedSystem, settlement: Settlement, settle
   }
 
   for (const [component, fact] of Object.entries(settlement.presence)) {
-    if (!Number.isFinite(fact.value)) {
+    if (typeof fact.value === 'number' && !Number.isFinite(fact.value)) {
       addFinding(findings, 'error', seed, `${path}.presence.${component}`, 'Presence component is not finite.')
+    } else if (typeof fact.value === 'string' && fact.value.trim().length === 0) {
+      addFinding(findings, 'error', seed, `${path}.presence.${component}`, 'Presence text component is blank.')
     }
+  }
+
+  if (settlement.presence.roll.value < 2 || settlement.presence.roll.value > 12) {
+    addFinding(findings, 'error', seed, `${path}.presence.roll`, `Presence roll must be 2-12; got ${settlement.presence.roll.value}.`)
+  }
+
+  if (!settlement.scale.value.trim()) {
+    addFinding(findings, 'error', seed, `${path}.scale`, 'Settlement scale is blank.')
   }
 }
 
@@ -533,7 +546,12 @@ function auditSystem(system: GeneratedSystem, findings: Finding[], stats: Corpus
     increment(stats.categories, body.category.value)
     nestedIncrement(stats.categoriesByArchitecture, system.architecture.name.value, body.category.value)
   })
-  system.settlements.forEach((settlement) => increment(stats.settlementCategories, settlement.siteCategory.value))
+  system.settlements.forEach((settlement) => {
+    increment(stats.settlementCategories, settlement.siteCategory.value)
+    increment(stats.settlementPresenceRolls, settlement.presence.roll.value)
+    increment(stats.settlementPresenceTiers, settlement.presence.tier.value)
+    increment(stats.settlementScales, settlement.scale.value)
+  })
 
   assertText(findings, seed, 'name', system.name.value, 'System name')
   assertText(findings, seed, 'primary.spectralType', system.primary.spectralType.value, 'Primary spectral type')
@@ -734,6 +752,9 @@ const stats: CorpusStats = {
     crowded: [],
     hub: [],
   },
+  settlementPresenceRolls: new Map(),
+  settlementPresenceTiers: new Map(),
+  settlementScales: new Map(),
   guIntensityByPreference: {
     low: new Map(),
     normal: new Map(),
@@ -784,6 +805,9 @@ console.log(`Frontier star types: ${formatMap(stats.starTypesByDistribution.fron
 console.log(`Realistic star types: ${formatMap(stats.starTypesByDistribution.realistic)}`)
 console.log(`Body categories: ${formatMap(stats.categories)}`)
 console.log(`Settlement categories: ${formatMap(stats.settlementCategories)}`)
+console.log(`Settlement presence rolls: ${formatMap(stats.settlementPresenceRolls)}`)
+console.log(`Settlement presence tiers: ${formatMap(stats.settlementPresenceTiers)}`)
+console.log(`Settlement scales: ${formatMap(stats.settlementScales)}`)
 console.log(`Architectures: ${formatMap(stats.architectures)}`)
 console.log(`Reachability classes: ${formatMap(stats.reachabilityClasses)}`)
 console.log(`Companion types: ${formatMap(stats.companionTypes)}`)
