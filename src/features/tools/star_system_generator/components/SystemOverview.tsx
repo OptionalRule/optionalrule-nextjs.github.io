@@ -47,12 +47,12 @@ export function SystemOverview({ system }: { system: GeneratedSystem }) {
           <Thermometer aria-hidden="true" className="h-3.5 w-3.5 text-[var(--accent)]" />
           Stellar Zones
         </h3>
-        <div className="mt-2 grid gap-x-5 gap-y-1.5 text-sm sm:grid-cols-2 lg:grid-cols-4">
+        <dl className="mt-2 grid gap-3 text-sm sm:grid-cols-2 lg:grid-cols-4">
           <ZoneStat label="HZ inner" value={`${system.zones.habitableInnerAu.value} AU`} accent="emerald" />
           <ZoneStat label="HZ center" value={`${system.zones.habitableCenterAu.value} AU`} accent="emerald" emphasized />
           <ZoneStat label="HZ outer" value={`${system.zones.habitableOuterAu.value} AU`} accent="emerald" />
           <ZoneStat label="Snow line" value={`${system.zones.snowLineAu.value} AU`} accent="sky" />
-        </div>
+        </dl>
       </div>
 
       <p className="mt-3 flex gap-2 text-sm text-[var(--text-secondary)]">
@@ -105,12 +105,14 @@ function ZoneStat({
 }) {
   const dot = accent === 'emerald' ? 'bg-emerald-500' : 'bg-sky-500'
   return (
-    <div className="flex items-center gap-2">
-      <span className={`inline-block h-1.5 w-1.5 shrink-0 rounded-full ${dot}`} aria-hidden="true" />
-      <span className="text-[var(--text-tertiary)]">{label}</span>
-      <span className={`ml-auto font-mono ${emphasized ? 'font-semibold text-[var(--text-primary)]' : 'text-[var(--text-secondary)]'}`}>
+    <div>
+      <dt className="flex items-center gap-1.5 text-[0.68rem] font-semibold uppercase tracking-[0.08em] text-[var(--text-tertiary)]">
+        <span className={`inline-block h-1.5 w-1.5 shrink-0 rounded-full ${dot}`} aria-hidden="true" />
+        {label}
+      </dt>
+      <dd className={`mt-0.5 font-mono ${emphasized ? 'font-semibold text-[var(--text-primary)]' : 'text-[var(--text-secondary)]'}`}>
         {value}
-      </span>
+      </dd>
     </div>
   )
 }
