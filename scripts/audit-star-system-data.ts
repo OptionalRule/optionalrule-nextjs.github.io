@@ -11,6 +11,27 @@ import {
   systemNamePatterns,
 } from '../src/features/tools/star_system_generator/lib/generator/data/names'
 import {
+  activityLabels,
+  atmosphereTable,
+  biospheres,
+  climateSourceTable,
+  geologyTable,
+  hydrosphereTable,
+  moonScales,
+  moonTypes,
+  radiationTable,
+  ringTypeTable,
+  siteOptions,
+} from '../src/features/tools/star_system_generator/lib/generator/data/mechanics'
+import {
+  ageStates,
+  architectures,
+  frontierStarTypes,
+  metallicities,
+  reachabilityClasses,
+  realisticStarTypes,
+} from '../src/features/tools/star_system_generator/lib/generator/data/stellar'
+import {
   bleedBehaviorTable,
   bleedLocationTable,
   guHazardTable,
@@ -106,6 +127,21 @@ function assertNonEmpty(path: string, values: readonly unknown[] | undefined): v
 function assertNoDuplicates(path: string, values: readonly string[]): void {
   const duplicates = duplicateValues(values)
   if (duplicates.length > 0) addError(path, `Duplicate values: ${duplicates.join(', ')}`)
+}
+
+function validateTableCoverage(path: string, table: Array<{ min: number; max: number }>, min: number, max: number): void {
+  const covered = new Set<number>()
+  table.forEach((entry, entryIndex) => {
+    if (entry.min > entry.max) addError(`${path}.${entryIndex}`, `Range min ${entry.min} exceeds max ${entry.max}.`)
+    for (let roll = entry.min; roll <= entry.max; roll++) {
+      if (covered.has(roll)) addError(`${path}.${entryIndex}`, `Roll ${roll} is covered more than once.`)
+      covered.add(roll)
+    }
+  })
+
+  for (let roll = min; roll <= max; roll++) {
+    if (!covered.has(roll)) addError(path, `Roll ${roll} is not covered.`)
+  }
 }
 
 function warnIfThin(path: string, count: number, threshold: number): void {
@@ -281,6 +317,48 @@ function validateGuAndNarrative(): void {
   warnIfThin('narrative.phenomena', phenomena.length, 30)
 }
 
+function validateMechanicalTables(): void {
+  assertNonEmpty('stellar.realisticStarTypes', realisticStarTypes)
+  assertNonEmpty('stellar.frontierStarTypes', frontierStarTypes)
+  assertNonEmpty('stellar.ageStates', ageStates)
+  assertNonEmpty('stellar.metallicities', metallicities)
+  assertNonEmpty('stellar.reachabilityClasses', reachabilityClasses)
+  assertNonEmpty('stellar.architectures', architectures)
+  assertNonEmpty('mechanics.activityLabels', activityLabels)
+  assertNonEmpty('mechanics.atmosphereTable', atmosphereTable)
+  assertNonEmpty('mechanics.hydrosphereTable', hydrosphereTable)
+  assertNonEmpty('mechanics.geologyTable', geologyTable)
+  assertNonEmpty('mechanics.climateSourceTable', climateSourceTable)
+  assertNonEmpty('mechanics.radiationTable', radiationTable)
+  assertNonEmpty('mechanics.ringTypeTable', ringTypeTable)
+  assertNonEmpty('mechanics.biospheres', biospheres)
+  assertNonEmpty('mechanics.moonTypes', moonTypes)
+  assertNonEmpty('mechanics.moonScales', moonScales)
+  assertNonEmpty('mechanics.siteOptions', siteOptions)
+
+  validateTableCoverage('stellar.realisticStarTypes', realisticStarTypes, 1, 100)
+  validateTableCoverage('stellar.frontierStarTypes', frontierStarTypes, 1, 100)
+  validateTableCoverage('stellar.ageStates', ageStates, 2, 12)
+  validateTableCoverage('stellar.metallicities', metallicities, 2, 12)
+  validateTableCoverage('stellar.reachabilityClasses', reachabilityClasses, 1, 12)
+  validateTableCoverage('stellar.architectures', architectures, 2, 13)
+  validateTableCoverage('mechanics.atmosphereTable', atmosphereTable, 1, 12)
+  validateTableCoverage('mechanics.hydrosphereTable', hydrosphereTable, 1, 12)
+  validateTableCoverage('mechanics.geologyTable', geologyTable, 1, 12)
+  validateTableCoverage('mechanics.climateSourceTable', climateSourceTable, 1, 20)
+  validateTableCoverage('mechanics.radiationTable', radiationTable, 1, 8)
+  validateTableCoverage('mechanics.ringTypeTable', ringTypeTable, 1, 12)
+
+  if (activityLabels.at(-1)?.max !== Number.POSITIVE_INFINITY) {
+    addError('mechanics.activityLabels', 'Final activity label must be open-ended.')
+  }
+
+  assertNoDuplicates('mechanics.biospheres', biospheres)
+  assertNoDuplicates('mechanics.moonTypes', moonTypes)
+  assertNoDuplicates('mechanics.moonScales', moonScales)
+  assertNoDuplicates('mechanics.siteOptions', siteOptions)
+}
+
 function printReport(): void {
   const locationCounts = locationCountsByCategory()
 
@@ -348,6 +426,29 @@ function printReport(): void {
     ['phenomena', phenomena.length],
   ])
 
+  printSection('Stellar And Route Tables', [
+    ['realisticStarTypes', realisticStarTypes.length],
+    ['frontierStarTypes', frontierStarTypes.length],
+    ['ageStates', ageStates.length],
+    ['metallicities', metallicities.length],
+    ['reachabilityClasses', reachabilityClasses.length],
+    ['architectures', architectures.length],
+  ])
+
+  printSection('Mechanical Tables', [
+    ['activityLabels', activityLabels.length],
+    ['atmosphereTable', atmosphereTable.length],
+    ['hydrosphereTable', hydrosphereTable.length],
+    ['geologyTable', geologyTable.length],
+    ['climateSourceTable', climateSourceTable.length],
+    ['radiationTable', radiationTable.length],
+    ['ringTypeTable', ringTypeTable.length],
+    ['biospheres', biospheres.length],
+    ['moonTypes', moonTypes.length],
+    ['moonScales', moonScales.length],
+    ['siteOptions', siteOptions.length],
+  ])
+
   console.log(`Structural errors: ${errors.length}`)
   if (errors.length > 0) errors.forEach((error) => console.log(formatFinding(error)))
   console.log('')
@@ -359,6 +460,7 @@ function printReport(): void {
 validateNames()
 validateSettlements()
 validateGuAndNarrative()
+validateMechanicalTables()
 printReport()
 
 if (errors.length > 0) {

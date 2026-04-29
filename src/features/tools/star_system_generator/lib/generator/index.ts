@@ -50,6 +50,28 @@ import {
   guIntensityTable,
   guResourceTable,
 } from './data/gu'
+import {
+  activityLabels,
+  atmosphereTable,
+  biospheres,
+  climateSourceTable,
+  coldClimateTags,
+  envelopeClimateTags,
+  envelopeGeologies,
+  extremeHotAtmospheres,
+  extremeHotClimateTags,
+  extremeHotEnvelopeClimateTags,
+  extremeHotVolatiles,
+  geologyTable,
+  hotClimateTags,
+  hydrosphereTable,
+  moonScales,
+  moonTypes,
+  radiationTable,
+  ringTypeTable,
+  siteOptions,
+  temperateClimateTags,
+} from './data/mechanics'
 import { humanRemnants, phenomena, remnantHooks } from './data/narrative'
 import {
   aiSituations,
@@ -87,8 +109,6 @@ import {
   surfaceIceFunctions,
   type SettlementLocationOption,
 } from './data/settlements'
-import { NameRegistry } from './nameRegistry'
-import { createSeededRng, type SeededRng } from './rng'
 import {
   ageStates,
   architectures,
@@ -96,20 +116,11 @@ import {
   metallicities,
   reachabilityClasses,
   realisticStarTypes,
-  siteOptions,
-} from './tables'
+} from './data/stellar'
+import { NameRegistry } from './nameRegistry'
+import { createSeededRng, type SeededRng } from './rng'
 
 export { architectureBodyPlanRules } from './architecture'
-
-const activityLabels = [
-  { max: 3, value: 'Dormant / unusually quiet' },
-  { max: 6, value: 'Quiet' },
-  { max: 8, value: 'Normal' },
-  { max: 10, value: 'Active' },
-  { max: 12, value: 'Flare-prone' },
-  { max: 14, value: 'Violent flare cycle' },
-  { max: Number.POSITIVE_INFINITY, value: 'Extreme activity / metric-amplified events' },
-] as const
 
 interface FilteredWorldClass {
   bodyClass: WorldClassOption
@@ -314,104 +325,6 @@ const traitOptions = [
   'unstable crossing orbit',
   'old first-wave traffic',
 ] as const
-
-const atmosphereTable = [
-  { min: 1, max: 1, value: 'None / hard vacuum' },
-  { min: 2, max: 2, value: 'Trace exosphere' },
-  { min: 3, max: 3, value: 'Thin CO2/N2' },
-  { min: 4, max: 4, value: 'Thin but usable with pressure gear' },
-  { min: 5, max: 5, value: 'Moderate inert atmosphere' },
-  { min: 6, max: 6, value: 'Moderate toxic atmosphere' },
-  { min: 7, max: 7, value: 'Dense CO2/N2' },
-  { min: 8, max: 8, value: 'Dense greenhouse' },
-  { min: 9, max: 9, value: 'Steam atmosphere' },
-  { min: 10, max: 10, value: 'Sulfur/chlorine/ammonia haze' },
-  { min: 11, max: 11, value: 'Hydrogen/helium envelope' },
-  { min: 12, max: 12, value: 'Chiral-active or GU-distorted atmosphere' },
-]
-const extremeHotAtmospheres = ['None / hard vacuum', 'Trace exosphere', 'Rock-vapor atmosphere', 'Metal vapor atmosphere', 'Chiral-active atmosphere'] as const
-const hydrosphereTable = [
-  { min: 1, max: 1, value: 'Bone dry' },
-  { min: 2, max: 2, value: 'Hydrated minerals only' },
-  { min: 3, max: 3, value: 'Subsurface ice' },
-  { min: 4, max: 4, value: 'Polar caps / buried glaciers' },
-  { min: 5, max: 5, value: 'Briny aquifers' },
-  { min: 6, max: 6, value: 'Local seas' },
-  { min: 7, max: 7, value: 'Ocean-continent balance' },
-  { min: 8, max: 8, value: 'Global ocean' },
-  { min: 9, max: 9, value: 'High-pressure deep ocean' },
-  { min: 10, max: 10, value: 'Ice-shell subsurface ocean' },
-  { min: 11, max: 11, value: 'Hydrocarbon lakes/seas' },
-  { min: 12, max: 12, value: 'Exotic solvent or GU-stabilized fluid chemistry' },
-]
-const extremeHotVolatiles = ['Bone dry', 'Hydrated minerals only', 'Vaporized volatile traces', 'Nightside mineral frost'] as const
-const geologyTable = [
-  { min: 1, max: 1, value: 'Dead interior' },
-  { min: 2, max: 2, value: 'Ancient cratered crust' },
-  { min: 3, max: 3, value: 'Low volcanism' },
-  { min: 4, max: 4, value: 'Static lid' },
-  { min: 5, max: 5, value: 'Active volcanism' },
-  { min: 6, max: 6, value: 'Plate tectonic analogue' },
-  { min: 7, max: 7, value: 'Supercontinent cycle' },
-  { min: 8, max: 8, value: 'Cryovolcanism' },
-  { min: 9, max: 9, value: 'Tidal heating' },
-  { min: 10, max: 10, value: 'Extreme plume provinces' },
-  { min: 11, max: 11, value: 'Global resurfacing' },
-  { min: 12, max: 12, value: 'Programmable-matter geological behavior' },
-]
-const envelopeGeologies = ['Deep atmospheric circulation', 'Metallic hydrogen interior', 'Layered volatile mantle', 'Magnetosphere-driven weather'] as const
-const climateSourceTable = [
-  { min: 1, max: 1, value: 'Runaway greenhouse' },
-  { min: 2, max: 2, value: 'Moist greenhouse edge' },
-  { min: 3, max: 3, value: 'Snowball' },
-  { min: 4, max: 4, value: 'Cold desert' },
-  { min: 5, max: 5, value: 'Hot desert' },
-  { min: 6, max: 6, value: 'Eyeball world' },
-  { min: 7, max: 7, value: 'Terminator belt' },
-  { min: 8, max: 8, value: 'Permanent storm tracks' },
-  { min: 9, max: 9, value: 'Global monsoon' },
-  { min: 10, max: 10, value: 'Hypercanes' },
-  { min: 11, max: 11, value: 'Twilight ocean' },
-  { min: 12, max: 12, value: 'Aerosol winter' },
-  { min: 13, max: 13, value: 'Thin-air alpine world' },
-  { min: 14, max: 14, value: 'Dense lowland pressure seas' },
-  { min: 15, max: 15, value: 'Methane cycle' },
-  { min: 16, max: 16, value: 'CO2 glacier cycle' },
-  { min: 17, max: 17, value: 'Chiral cloud chemistry' },
-  { min: 18, max: 18, value: 'Dark-sector gravity tides' },
-  { min: 19, max: 19, value: 'Artificial climate lattice' },
-  { min: 20, max: 20, value: 'Recently failed terraforming climate' },
-]
-const extremeHotClimateTags = ['Runaway greenhouse', 'Hot desert', 'Dayside glass fields', 'Nightside mineral frost', 'Hypercanes', 'Chiral cloud chemistry'] as const
-const hotClimateTags = ['Runaway greenhouse', 'Moist greenhouse edge', 'Hot desert', 'Permanent storm tracks', 'Hypercanes', 'Aerosol winter'] as const
-const temperateClimateTags = ['Cold desert', 'Hot desert', 'Eyeball world', 'Terminator belt', 'Permanent storm tracks', 'Global monsoon', 'Twilight ocean', 'Recently failed terraforming climate'] as const
-const coldClimateTags = ['Snowball', 'Cold desert', 'Aerosol winter', 'Methane cycle', 'CO2 glacier cycle', 'Dark-sector gravity tides'] as const
-const extremeHotEnvelopeClimateTags = ['Permanent storm tracks', 'Hypercanes', 'Chiral cloud chemistry', 'Dark-sector gravity tides'] as const
-const envelopeClimateTags = ['Permanent storm tracks', 'Hypercanes', 'Methane cycle', 'Chiral cloud chemistry', 'Dark-sector gravity tides'] as const
-const radiationTable = [
-  { min: 1, max: 1, value: 'Benign' },
-  { min: 2, max: 2, value: 'Manageable' },
-  { min: 3, max: 3, value: 'Chronic exposure' },
-  { min: 4, max: 4, value: 'Storm-dependent hazard' },
-  { min: 5, max: 5, value: 'Severe radiation belts' },
-  { min: 6, max: 6, value: 'Flare-lethal surface' },
-  { min: 7, max: 7, value: 'Electronics-disruptive metric/radiation mix' },
-  { min: 8, max: 8, value: 'Only deep shielded habitats survive' },
-]
-const biospheres = ['Sterile', 'Prebiotic chemistry', 'Ambiguous biosignatures', 'Microbial life', 'Extremophile microbial ecology', 'Simple macroscopic non-sapient life'] as const
-const moonTypes = ['Airless rock', 'Cratered ice-rock', 'Captured asteroid', 'Captured dwarf', 'Subsurface ocean moon', 'Thick ice-shell moon', 'Cryovolcanic moon', 'Volcanic tidal moon', 'Dense-atmosphere moon', 'Hydrocarbon moon', 'Habitable-zone moon', 'Radiation-scorched inner moon', 'Ring-shepherd moon', 'Chiral ice moon', 'Dark-sector density moon', 'Programmable regolith moon', 'Former settlement moon', 'Active mining moon', 'Quarantine moon', 'Moving bleed node moon'] as const
-const moonScales = ['minor captured moonlet', 'small major moon', 'mid-sized icy moon', 'large differentiated moon', 'planet-scale major moon'] as const
-const ringTypeTable: Array<{ min: number; max: number; value: string }> = [
-  { min: 1, max: 4, value: 'None or faint' },
-  { min: 5, max: 5, value: 'Dust ring' },
-  { min: 6, max: 6, value: 'Ice ring' },
-  { min: 7, max: 7, value: 'Rocky ring' },
-  { min: 8, max: 8, value: 'Shepherded bright rings' },
-  { min: 9, max: 9, value: 'Warped inclined rings' },
-  { min: 10, max: 10, value: 'Radiation-charged rings' },
-  { min: 11, max: 11, value: 'Industrialized ring arc' },
-  { min: 12, max: 12, value: 'GU-reactive ring lattice' },
-]
 
 function fact<T>(value: T, confidence: Fact<T>['confidence'], source?: string): Fact<T> {
   return { value, confidence, source }

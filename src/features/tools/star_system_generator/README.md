@@ -20,7 +20,7 @@ Commit work at logical checkpoints during development. For this feature, good ch
 
 Run `npm run audit:star-system-generator:quick` after generator-rule changes. Run `npm run audit:star-system-generator:deep` before marking procedural-generation work complete. The audit generates a deterministic corpus across frontier and realistic distributions, fails on hard generated contradictions or missing fields, reports locked imported contradictions separately, and reports warnings for coverage or tuning gaps that are useful during iterative table work.
 
-Run `npm run audit:star-system-data` after editing JSON-backed creative pools. The data audit reports name, settlement, tag, crisis, hidden-truth, encounter-site, location, function, built-form, GU, remnant, and phenomenon counts; fails on structural data errors; and warns when author-facing pools are thin enough to need expansion.
+Run `npm run audit:star-system-data` after editing JSON-backed data pools. The data audit reports name, settlement, tag, crisis, hidden-truth, encounter-site, location, function, built-form, GU, remnant, phenomenon, stellar, route, and mechanical table counts; fails on structural data errors; and warns when author-facing pools are thin enough to need expansion.
 
 Settlement density is intentionally variable. The density control chooses a range, then reachability, GU intensity, architecture, hazards, and top presence scores nudge the final number so normal systems do not all show the same count.
 
@@ -72,5 +72,7 @@ JSON-backed creative pools live under `data/`.
 - Add settlement locations, functions, built forms, authorities, AI situations, conditions, tags, crises, hidden truths, encounter sites, and scale overrides in `data/settlements.json`.
 - Add GU bleed locations, behaviors, resources, hazards, and intensity labels in `data/gu.json`.
 - Add human remnants, remnant hooks, and phenomena in `data/narrative.json`.
+- Add stellar distributions, stellar age/metallicity, reachability, and architecture roll tables in `data/stellar.json`.
+- Add environment, moon, ring, activity, and generated site roll tables in `data/mechanics.json`.
 - Keep labels stable when they are referenced by other JSON entries, such as settlement tag pair hooks.
 - Run `npm run audit:star-system-data`, then focused generator tests and the quick generator audit.
