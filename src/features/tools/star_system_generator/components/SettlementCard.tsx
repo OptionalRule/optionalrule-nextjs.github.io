@@ -1,6 +1,5 @@
 import type { Settlement } from '../types'
 import type { ReactNode } from 'react'
-import { ConfidenceBadge } from './ConfidenceBadge'
 
 export function SettlementCard({ settlement }: { settlement: Settlement }) {
   return (
@@ -12,21 +11,20 @@ export function SettlementCard({ settlement }: { settlement: Settlement }) {
             {settlement.siteCategory.value} · {settlement.location.value}
           </p>
         </div>
-        <ConfidenceBadge confidence={settlement.name.confidence} />
       </div>
 
-      <div className="mt-4 space-y-4 text-sm">
-        <Section title="Why It Exists">
+      <div className="mt-4 space-y-3 text-sm">
+        <section className="border-t border-[var(--border)] pt-3">
           <dl className="space-y-2">
             <InlineDetail label="Activity level" value={settlement.presence.tier.value} />
             <InlineDetail label="Anchor" value={`${settlement.anchorName.value} (${settlement.anchorKind.value})`} />
             <InlineDetail label="Placement" value={settlement.anchorDetail.value} />
             <InlineDetail label="Why here" value={settlement.whyHere.value} />
           </dl>
-        </Section>
+        </section>
 
-        <div className="grid gap-4 lg:grid-cols-2">
-          <Section title="Operations">
+        <div className="grid gap-3 lg:grid-cols-2">
+          <Section title="Operations" variant="card">
             <dl className="space-y-2">
               <InlineDetail label="Function" value={settlement.function.value} />
               <InlineDetail label="Scale" value={settlement.scale.value} />
@@ -35,7 +33,7 @@ export function SettlementCard({ settlement }: { settlement: Settlement }) {
             </dl>
           </Section>
 
-          <Section title="Trouble">
+          <Section title="Trouble" variant="card">
             <dl className="space-y-2">
               <InlineDetail label="Condition" value={settlement.condition.value} />
               <InlineDetail label="Current crisis" value={settlement.crisis.value} />
@@ -53,17 +51,13 @@ export function SettlementCard({ settlement }: { settlement: Settlement }) {
           </dl>
         </Section>
       </div>
-
-      <p className="mt-3 border-t border-[var(--border)] pt-3 text-xs leading-relaxed text-[var(--text-tertiary)]">
-        {settlement.methodNotes.map((note) => note.value).join(' ')}
-      </p>
     </article>
   )
 }
 
-function Section({ title, children }: { title: string; children: ReactNode }) {
+function Section({ title, children, variant = 'divider' }: { title: string; children: ReactNode; variant?: 'divider' | 'card' }) {
   return (
-    <section className="rounded-md border border-[var(--border)] bg-[var(--card-elevated)] p-3">
+    <section className={variant === 'card' ? 'rounded-md border border-[var(--border)] bg-[var(--card-elevated)] p-3' : 'border-t border-[var(--border)] pt-3'}>
       <h4 className="text-xs font-semibold uppercase tracking-wide text-[var(--text-tertiary)]">{title}</h4>
       <div className="mt-2 text-[var(--text-primary)]">{children}</div>
     </section>

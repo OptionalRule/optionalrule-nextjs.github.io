@@ -335,6 +335,15 @@ Not implemented yet
 - More bespoke settlement tag interaction explanation text for every pair.
 - Markdown and JSON export.
 
+## 6.2 Future Public Documentation
+
+After the generator process, UI vocabulary, and output model stabilize, add public static MDX pages for:
+
+- A user-facing explanation of the MASS-GU procedural generation process.
+- A glossary of astronomy, Geometric Unity, and generator-specific terms.
+
+These should live under `content/pages/` and be linked from the Star System Generator UI. Prefer static pages over posts so there is one canonical, updated reference.
+
 ## 7. Testing Strategy
 
 Focused unit tests should carry most of the risk.

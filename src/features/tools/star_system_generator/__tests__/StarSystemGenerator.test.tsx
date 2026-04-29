@@ -4,7 +4,7 @@ import { describe, expect, it, vi } from 'vitest'
 import StarSystemGenerator from '..'
 
 describe('StarSystemGenerator', () => {
-  it('renders a seeded system profile', () => {
+  it('renders a seeded system profile', async () => {
     window.history.replaceState(null, '', '/tools/star_system_generator/?seed=7f3a9c2e41b8d09a')
 
     render(<StarSystemGenerator />)
@@ -13,23 +13,28 @@ describe('StarSystemGenerator', () => {
     expect(screen.getByRole('region', { name: 'System summary' })).toBeInTheDocument()
     expect(screen.getAllByText(/star/i).length).toBeGreaterThan(0)
     expect(screen.getByText(/Stellar class note:/)).toBeInTheDocument()
-    expect(screen.getByRole('navigation', { name: 'Star system sections' })).toBeInTheDocument()
-    expect(screen.getByText('Confidence labels')).toBeInTheDocument()
+    expect(screen.queryByRole('navigation', { name: 'Star system sections' })).not.toBeInTheDocument()
+    expect(screen.queryByText('Confidence labels')).not.toBeInTheDocument()
     expect(screen.getByText('Orbital Profile')).toBeInTheDocument()
     expect(screen.getByText('Geometric Unity Overlay')).toBeInTheDocument()
     expect(screen.getByText('Sites & Settlements')).toBeInTheDocument()
-    expect(screen.getByText('Human layer')).toBeInTheDocument()
-    expect(screen.getByText('Atmosphere')).toBeInTheDocument()
-    expect(screen.getByText('Orbital Companions')).toBeInTheDocument()
-    expect(screen.getByText('Survey Notes')).toBeInTheDocument()
-    expect(screen.getByText('Rings, Economy, Sites')).toBeInTheDocument()
-    expect(screen.getAllByText('Why It Exists').length).toBeGreaterThan(0)
+    expect(screen.getByText('Human Remnants')).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Expand all' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Collapse all' })).toBeDisabled()
+    expect(screen.queryByText('Orbital Companions')).not.toBeInTheDocument()
+
+    await userEvent.click(screen.getByRole('button', { name: 'Expand all' }))
+
+    expect(screen.getAllByText('Atmosphere').length).toBeGreaterThan(0)
+    expect(screen.getAllByText('Orbital Companions').length).toBeGreaterThan(0)
+    expect(screen.getAllByText('Survey Notes').length).toBeGreaterThan(0)
+    expect(screen.getAllByText('Rings, Economy, Sites').length).toBeGreaterThan(0)
+    expect(screen.queryByText('Why It Exists')).not.toBeInTheDocument()
     expect(screen.getAllByText('Activity level:').length).toBeGreaterThan(0)
     expect(screen.queryByText('Presence roll:')).not.toBeInTheDocument()
     expect(screen.getAllByText('Operations').length).toBeGreaterThan(0)
     expect(screen.getAllByText('Trouble').length).toBeGreaterThan(0)
     expect(screen.getAllByText('Adventure Texture').length).toBeGreaterThan(0)
-    expect(screen.getByText('Human Remnants')).toBeInTheDocument()
     expect(screen.getByText('System Phenomena')).toBeInTheDocument()
     expect(screen.getByDisplayValue('7f3a9c2e41b8d09a')).toBeInTheDocument()
   })

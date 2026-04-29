@@ -1,5 +1,4 @@
 import type { GeneratedSystem } from '../types'
-import { ConfidenceBadge } from './ConfidenceBadge'
 
 export function GuOverlayPanel({ system }: { system: GeneratedSystem }) {
   return (
@@ -11,9 +10,8 @@ export function GuOverlayPanel({ system }: { system: GeneratedSystem }) {
             Fictional pressure points layered on the physical system.
           </p>
         </div>
-        <ConfidenceBadge confidence={system.guOverlay.intensity.confidence} />
       </div>
-      <dl className="mt-4 grid gap-3 text-sm sm:grid-cols-2 lg:grid-cols-4">
+      <dl className="mt-4 grid gap-2 text-sm sm:grid-cols-2 lg:grid-cols-4">
         <Detail label="Intensity" value={system.guOverlay.intensity.value} />
         <Detail label="Bleed Location" value={system.guOverlay.bleedLocation.value} />
         <Detail label="Behavior" value={system.guOverlay.bleedBehavior.value} />
@@ -27,7 +25,7 @@ export function GuOverlayPanel({ system }: { system: GeneratedSystem }) {
 
 function Detail({ label, value }: { label: string; value: string }) {
   return (
-    <div className="rounded-md border border-[var(--border)] bg-[var(--card-elevated)] p-3">
+    <div className="min-w-0 rounded-md border border-[var(--border)] bg-[var(--card-elevated)] p-2.5">
       <dt className="text-xs font-semibold uppercase tracking-wide text-[var(--text-tertiary)]">{label}</dt>
       <dd className="mt-1 text-[var(--text-primary)]">{value}</dd>
     </div>

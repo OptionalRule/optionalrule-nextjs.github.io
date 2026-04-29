@@ -1,8 +1,24 @@
 import type { GeneratedSystem, OrbitingBody } from '../types'
-import { ConfidenceBadge } from './ConfidenceBadge'
-import { formatOrbitContext } from './OrbitalTable'
 
 export function BodyDetailPanel({ body, system }: { body: OrbitingBody; system: GeneratedSystem }) {
+  return (
+    <section className="rounded-lg border border-[var(--border)] bg-[var(--card)] p-4">
+      <BodyDetailContent body={body} system={system} showHeader />
+    </section>
+  )
+}
+
+export function BodyDetailContent({
+  body,
+  system,
+  showHeader = false,
+  compact = false,
+}: {
+  body: OrbitingBody
+  system: GeneratedSystem
+  showHeader?: boolean
+  compact?: boolean
+}) {
   const isAnomaly = body.category.value === 'anomaly'
   const isBelt = body.category.value === 'belt'
   const physicalRows = [
@@ -27,24 +43,25 @@ export function BodyDetailPanel({ body, system }: { body: OrbitingBody; system: 
   ]
 
   return (
-    <section className="rounded-lg border border-[var(--border)] bg-[var(--card)] p-4">
-      <div className="flex flex-col gap-1 sm:flex-row sm:items-start sm:justify-between">
-        <div>
-          <h2 className="text-lg font-semibold text-[var(--text-primary)]">{body.name.value}</h2>
-          <p className="text-sm text-[var(--text-tertiary)]">
-            {body.bodyClass.value} · {body.massClass.value} · {body.orbitAu.value} AU · {formatOrbitContext(body.orbitAu.value, system)}
-          </p>
+    <div>
+      {showHeader ? (
+        <div className="flex flex-col gap-1 sm:flex-row sm:items-start sm:justify-between">
+          <div>
+            <h2 className="text-lg font-semibold text-[var(--text-primary)]">{body.name.value}</h2>
+            <p className="text-sm text-[var(--text-tertiary)]">
+              {body.bodyClass.value} · {body.massClass.value} · {body.orbitAu.value} AU · {formatOrbitContext(body.orbitAu.value, system)}
+            </p>
+          </div>
         </div>
-        <ConfidenceBadge confidence={body.name.confidence} />
-      </div>
+      ) : null}
 
-      <dl className="mt-4 grid gap-3 text-sm sm:grid-cols-2 lg:grid-cols-3">
+      <dl className={`${showHeader ? 'mt-4' : ''} grid gap-2 text-sm sm:grid-cols-2 lg:grid-cols-3`}>
         {physicalRows.map(([label, value]) => (
-          <Detail key={label} label={label} value={value} />
+          <Detail key={label} label={label} value={value} compact={compact} />
         ))}
       </dl>
 
-      <div className="mt-4 rounded-md border border-[var(--border)] bg-[var(--card-elevated)] p-3 text-sm">
+      <div className={compact ? 'mt-4 border-t border-[var(--border)] pt-3 text-sm' : 'mt-3 rounded-md border border-[var(--border)] bg-[var(--card-elevated)] p-3 text-sm'}>
         <h3 className="text-xs font-semibold uppercase tracking-wide text-[var(--text-tertiary)]">Why It Matters</h3>
         <p className="mt-1 text-[var(--text-primary)]">{body.whyInteresting.value}</p>
         {body.bodyProfile ? (
@@ -93,17 +110,31 @@ export function BodyDetailPanel({ body, system }: { body: OrbitingBody; system: 
           />
         </div>
       </div>
-    </section>
+    </div>
   )
 }
 
-function Detail({ label, value }: { label: string; value: string }) {
+function Detail({ label, value, compact }: { label: string; value: string; compact: boolean }) {
   return (
-    <div className="rounded-md border border-[var(--border)] bg-[var(--card-elevated)] p-3">
+    <div className={compact ? 'min-w-0 rounded-md border border-[var(--border)] bg-[var(--card-elevated)] p-2' : 'min-w-0 rounded-md border border-[var(--border)] bg-[var(--card-elevated)] p-2.5'}>
       <dt className="text-xs font-semibold uppercase tracking-wide text-[var(--text-tertiary)]">{label}</dt>
       <dd className="mt-1 text-[var(--text-primary)]">{value}</dd>
     </div>
   )
+}
+
+function formatOrbitContext(orbitAu: number, system: GeneratedSystem): string {
+  const hzCenter = system.zones.habitableCenterAu.value
+  const snowLine = system.zones.snowLineAu.value
+  if (snowLine > 0 && orbitAu >= snowLine * 0.7) return `${formatRatio(orbitAu / snowLine)}x snow line`
+  if (hzCenter > 0) return `${formatRatio(orbitAu / hzCenter)}x HZ center`
+  return 'no stellar zone scale'
+}
+
+function formatRatio(value: number): string {
+  if (value >= 10) return value.toFixed(0)
+  if (value >= 1) return value.toFixed(1)
+  return value.toFixed(2)
 }
 
 function InlineDetail({ label, value }: { label: string; value: string }) {

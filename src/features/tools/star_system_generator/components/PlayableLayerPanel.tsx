@@ -1,5 +1,4 @@
 import type { GeneratedSystem } from '../types'
-import { ConfidenceBadge } from './ConfidenceBadge'
 
 export function PlayableLayerPanel({ system }: { system: GeneratedSystem }) {
   return (
@@ -14,7 +13,6 @@ export function PlayableLayerPanel({ system }: { system: GeneratedSystem }) {
                   <h3 className="font-semibold text-[var(--text-primary)]">{ruin.remnantType.value}</h3>
                   <p className="text-[var(--text-tertiary)]">{ruin.location.value}</p>
                 </div>
-                <ConfidenceBadge confidence={ruin.remnantType.confidence} />
               </div>
               <p className="mt-2 text-[var(--text-secondary)]">{ruin.hook.value}</p>
             </div>
@@ -29,7 +27,6 @@ export function PlayableLayerPanel({ system }: { system: GeneratedSystem }) {
             <div key={phenomenon.id} className="rounded-md border border-[var(--border)] bg-[var(--card-elevated)] p-3 text-sm">
               <div className="flex items-start justify-between gap-3">
                 <h3 className="font-semibold text-[var(--text-primary)]">{phenomenon.phenomenon.value}</h3>
-                <ConfidenceBadge confidence={phenomenon.phenomenon.confidence} />
               </div>
               <p className="mt-2 text-[var(--text-secondary)]">{phenomenon.note.value}</p>
             </div>
