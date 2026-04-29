@@ -43,6 +43,42 @@ import {
   systemNamePatterns,
   type RuleBackedDescriptorSet,
 } from './data/names'
+import {
+  aiSituations,
+  asteroidBaseFunctions,
+  biosphereFunctions,
+  builtForms,
+  civilFunctions,
+  deepSpaceFunctions,
+  encounterSites,
+  encounterSitesByFunctionKeyword,
+  encounterSitesByScale,
+  extractionFunctions,
+  giantOrbitalFunctions,
+  guFractureFunctionsBySiteCategory,
+  hiddenTruthByScale,
+  hiddenTruths,
+  mobileFunctions,
+  moonBaseFunctions,
+  orbitalFunctions,
+  restrictedFunctions,
+  routeFunctions,
+  securityFunctions,
+  settlementAuthorities,
+  settlementAuthorityByScale,
+  settlementConditionByScale,
+  settlementConditions,
+  settlementCrisisByScale,
+  settlementCrises,
+  settlementLocations,
+  settlementScaleTable,
+  settlementTagPairHooks,
+  settlementTagPressures,
+  settlementTags,
+  surveyFunctions,
+  surfaceIceFunctions,
+  type SettlementLocationOption,
+} from './data/settlements'
 import { NameRegistry } from './nameRegistry'
 import { createSeededRng, type SeededRng } from './rng'
 import {
@@ -164,21 +200,6 @@ interface FilteredWorldClass {
   bodyClass: WorldClassOption
   physical: BodyPhysicalHints
   filterNotes: Array<Fact<string>>
-}
-
-type SettlementSiteCategory =
-  | 'Surface settlement'
-  | 'Orbital station'
-  | 'Asteroid or belt base'
-  | 'Moon base'
-  | 'Deep-space platform'
-  | 'Gate or route node'
-  | 'Mobile site'
-  | 'Derelict or restricted site'
-
-interface SettlementLocationOption {
-  label: string
-  category: SettlementSiteCategory
 }
 
 interface SettlementAnchor {
@@ -476,37 +497,6 @@ const ringTypeTable: Array<{ min: number; max: number; value: string }> = [
   { min: 11, max: 11, value: 'Industrialized ring arc' },
   { min: 12, max: 12, value: 'GU-reactive ring lattice' },
 ]
-const surveyFunctions = ['Survey station', 'Astrometry/nav beacon', 'Sensor picket', 'Weather/flare monitoring', 'Planetology lab'] as const
-const extractionFunctions = ['Metal mine', 'Volatile mine', 'Chiral harvesting site', 'Dark-sector ore extraction', 'Refinery'] as const
-const orbitalFunctions = ['Fuel depot', 'Ship repair yard', 'Full shipyard', 'Drone foundry', 'Shielding/chiral plating works', 'Freeport', 'Smuggler port'] as const
-const routeFunctions = ['Iggygate control station', 'Pinchdrive tuning station', 'Corporate customs post', 'Freeport', 'Astrometry/nav beacon', 'Quarantine station'] as const
-const securityFunctions = ['Military base', 'Listening post', 'Naval logistics depot', 'Weapons test range', 'Quarantine station', 'Intelligence black site'] as const
-const civilFunctions = ['Civilian colony', 'Terraforming camp', 'Refugee settlement', 'Prison or debt-labor site', 'Religious/ideological enclave', 'Narrow-AI observiverse facility'] as const
-const guFractureFunctionsBySiteCategory: Record<SettlementSiteCategory, readonly string[]> = {
-  'Surface settlement': ['Chiral harvesting site', 'Programmable-matter containment site', 'Narrow-AI observiverse facility', 'Quarantine station', 'Refugee settlement', 'Planetology lab'],
-  'Orbital station': ['Chiral harvesting site', 'Programmable-matter containment site', 'Narrow-AI observiverse facility', 'Quarantine station', 'Pinchdrive tuning station', 'Fuel depot', 'Ship repair yard', 'Freeport'],
-  'Asteroid or belt base': ['Chiral harvesting site', 'Dark-sector ore extraction', 'Programmable-matter containment site', 'Quarantine station', 'Fuel depot', 'Salvage yard', 'Smuggler port'],
-  'Moon base': ['Chiral harvesting site', 'Dark-sector ore extraction', 'Narrow-AI observiverse facility', 'Quarantine station', 'Survey station', 'Military base'],
-  'Deep-space platform': ['Moving bleed-node tracking platform', 'Pinchdrive tuning station', 'Narrow-AI observiverse facility', 'Quarantine station', 'Ship repair yard', 'Listening post', 'Corporate customs post'],
-  'Gate or route node': ['Iggygate control station', 'Pinchdrive tuning station', 'Quarantine station', 'Narrow-AI observiverse facility', 'Corporate customs post', 'Astrometry/nav beacon', 'Freeport'],
-  'Mobile site': ['Moving bleed-node harvest fleet', 'Freeport', 'Smuggler port', 'Refugee settlement', 'Naval logistics depot'],
-  'Derelict or restricted site': ['Programmable-matter containment site', 'Intelligence black site', 'Quarantine station', 'Weapons test range', 'Survey station', 'Salvage yard'],
-}
-const orbitalBuiltForms = ['Inflatable modules', 'Rotating cylinder', 'Non-rotating microgravity stack', 'Modular orbital lattice', 'Ring-habitat arc', 'Corporate luxury enclave', 'Slum raft cluster'] as const
-const asteroidBuiltForms = ['Buried pressure cans', 'Ice-shielded tunnels', 'Asteroid hollow', 'Modular orbital lattice', 'Shielded military bunker', 'First-wave retrofitted ruin'] as const
-const moonBuiltForms = ['Buried pressure cans', 'Ice-shielded tunnels', 'Dome cluster', 'Borehole habitat', 'Shielded military bunker', 'First-wave retrofitted ruin'] as const
-const surfaceBuiltForms = ['Buried pressure cans', 'Ice-shielded tunnels', 'Lava-tube arcology', 'Dome cluster', 'Rail-linked terminator city', 'Aerostat city', 'Submarine habitat', 'Borehole habitat', 'Shielded military bunker', 'Corporate luxury enclave', 'First-wave retrofitted ruin'] as const
-const gateBuiltForms = ['Non-rotating microgravity stack', 'Modular orbital lattice', 'Ring-habitat arc', 'Shielded military bunker', 'Partly self-growing programmable structure'] as const
-const mobileBuiltForms = ['Inflatable modules', 'Crawling mobile base', 'Modular orbital lattice', 'Rotating cylinder', 'Shielded military bunker'] as const
-const derelictBuiltForms = ['Asteroid hollow', 'Shielded military bunker', 'First-wave retrofitted ruin', 'Partly self-growing programmable structure'] as const
-const settlementAuthorities = ['No recognized authority', 'Direct democracy / crew vote', 'Family syndicate', 'Worker council', 'Frontier sheriff or magistrate', 'Emergency commander', 'Minor corporation', 'Megacorp concession', 'Trade house', 'Banking or debt trust', 'Insurance-backed administrator', 'Extraction guild', 'Local militia', 'System navy', 'Interstellar navy', 'Intelligence service', 'Quarantine authority', 'Gate authority', 'Academic institute', 'Research consortium', 'Medical/biosafety board', 'AI-supervised technocracy', 'Terraforming directorate', 'Chiral-harvest cartel', 'Religious commune', 'Exile council', 'Pirate clan', 'Smuggler compact', 'Revolutionary cell', 'Criminal protection racket', 'Sol-interdiction compliance office', 'Gardener-fear cult', 'Independent captain assembly', 'Mercenary company', 'Unknown sponsor', 'Official records are falsified'] as const
-const aiSituations = ['No AI; dangerously manual', 'Obsolete but loyal AI', 'Overworked single AI', 'Multiple narrow AIs in stable partition', 'AI heavily censored after incident', 'AI speaks only through approved operators', 'AI is beloved as local crew', 'AI treated as property', 'AI manages life support flawlessly', 'AI handles navigation/traffic only', 'AI controls mining drones', 'AI controls security', 'AI has memory gaps', 'AI predicts bleed shifts too well', 'AI refuses certain commands', 'AI gives contradictory but valid advice', 'AI has a hidden emergency protocol', 'AI is being illegally expanded', 'AI has split into rival task-fragments', 'AI is compromised by chiral contamination', 'AI hallucinates during metric storms', 'AI is under corporate remote override', 'AI is being interrogated by investigators', 'AI wants evacuation but cannot say why', 'AI is the only witness to a disaster', 'AI is protecting illegal residents', 'AI is running the settlement better than humans admit', 'AI is blamed for human corruption', 'AI may trigger Gardener attention if pushed', 'AI was cut down from a more capable illegal architecture', 'AI is missing', 'AI has been replaced by an impostor system', 'AI runs a secret simulation of the settlement', 'AI is obeying old first-wave orders', 'AI is loyal to the wrong authority', 'AI is one bad command away from catastrophe'] as const
-const settlementConditions = ['Pristine and overfunded', 'Efficient but joyless', 'Wealthy core enclave', 'Militarized and tense', 'Corporate showroom', 'Secretly brittle', 'Functional frontier town', 'Expanding too fast', 'Poor but cooperative', 'Improvised repairs everywhere', 'Understaffed', 'Supply-starved', 'Decaying first-wave infrastructure', 'Half-abandoned', 'Recently attacked', 'Recently evacuated', 'Reoccupied ruin', 'Built on bad survey data', 'Overrun by debt labor', 'Divided by class zones', 'Split between surface and orbital populations', 'Officially safe, actually hazardous', 'Life support near failure', 'Radiation shielding degraded', 'Under quarantine', 'Under blockade', 'Under corporate lockdown', 'Under military occupation', 'Under legal dispute', 'Under quiet Gardener warning', 'Hidden prosperity', 'Hidden famine', 'Hidden epidemic or contamination', 'Hidden AI incident', 'Hidden civil war', 'Hidden reason it cannot be abandoned'] as const
-const settlementTags = ['Abandoned First Wave', 'Air Is Money', 'AI Whisper Cult', 'Anti-Corporate Commune', 'Aristocratic Dome', 'Automated but Haunted', 'Bleed-Chaser Port', 'Border Fort', 'Broken Terraformer', 'Chiral Monopoly', 'Debt Labor', 'Deep Ice', 'Derelict Yard', 'Elegant Core Enclave', 'Exile Haven', 'Flare Refuge', 'Free Captain Nest', 'Gate Shadow', 'Ghost City, Human', 'High-G Research', 'Hidden Navy', 'Hydrocarbon Frontier', 'Kessler Cloud', 'Machine-Run Town', 'Memory-Loss Zone', 'Migrant Swarm', 'Moving Node Rush', 'Narrow-AI Schism', 'Old War Minefield', 'Outlaw Court', 'Penal Extraction', 'Perfect Dome, Rotten Outside', 'Plague/Biosafety Fear', 'Precious Water', 'Religious Geometry', 'Strikebreaker City'] as const
-const settlementCrises = ['Life-support cascade', 'Water ration failure', 'Food culture contamination', 'Radiation storm incoming', 'Flare season arrived early', 'Hull breach hidden from public', 'Bleed node changed course', 'Chiral harvest turned toxic', 'Metric storm trapped ships', 'Iggygate schedule failure', 'Pinchdrive calibration accident', 'AI refuses unsafe operation', 'Labor strike', 'Debt revolt', 'Corporate security crackdown', 'Pirate protection demand', 'Smuggler war', 'Refugee surge', 'Quarantine violation', 'Unknown native microbial hazard', 'Failed terraforming release', 'Medical supplies stolen', 'Illegal AI expansion discovered', 'Sol/Gardener warning sign detected', 'Military coup', 'Election or succession crisis', 'Sabotage of refinery/gate/AI', 'Essential expert missing', 'Salvage claim dispute', 'Old first-wave map found', 'Children or civilians trapped', 'Ship full of dead arrives', 'A whole district goes silent', 'The base broadcasts two contradictory distress calls', 'Everyone is lying about casualty numbers', 'Crisis is staged to hide something worse'] as const
-const hiddenTruths = ['The settlement is insolvent', 'The mine is nearly exhausted', 'The resource is richer than reported', 'The hazard is artificial/human-caused', 'The official death toll is false', 'The founders committed a crime', 'Corporate records were altered', 'The local AI deleted evidence', 'The local AI preserved forbidden evidence', 'The base is built on unstable ground/orbit', 'The settlement cannot survive evacuation', 'The workers are legally trapped', 'The site is a weapons lab', 'The site is an illegal AI lab', 'The site is a black prison', 'The site is a military listening post', 'The site is a fake colony masking extraction', 'The site is a smuggling hub', 'A first-wave expedition survived in hiding', 'The ghosts are old human recordings', 'The curse is chiral neurochemistry', 'The miracle is illegal terraforming tech', 'The supposed unknown signal is human encryption', 'The artifact rumor is a natural GU formation', 'The Gardener has already intervened once', 'Sol interdiction files are sealed here', 'A faction is provoking Gardener attention', 'The Iggygate is misaligned on purpose', 'The bleed node is being illegally stabilized', 'The settlement has an evacuation ark nobody knows about', 'The leader is a proxy for a distant faction', 'The pirate threat is staged', 'The quarantine is political', 'The plague is industrial poisoning', 'The AI is sane; the humans are not listening', 'The system official survey is deliberately wrong'] as const
-const encounterSites = ['Half-flooded maintenance tunnels', 'Shielding crawlspace district', 'Dockside free market', 'Drone hangar', 'AI core vault', 'Chiral refinery floor', 'Bleed-harvest control room', 'Closed habitat ring', 'Quarantine ward', 'Black-market clinic', 'Corporate executive dome', 'Worker barracks', 'Religious geometry chapel', 'Old first-wave command bunker', 'Illegal pinchdrive test chamber', 'Radiation storm shelter', 'Water plant', 'Courtroom / debt registry', 'Hidden launch bay', 'Place the maps say does not exist'] as const
-const settlementScaleTable = ['Abandoned', 'Automated only', '1-20 people', '21-100 people', '101-1,000 people', '1,001-10,000 people', '10,001-100,000 people', '100,001-1 million people', '1-10 million people', '10+ million people', 'Distributed swarm settlement', 'Population unknown or deliberately falsified'] as const
 const humanRemnants = ['Survey probe field', 'Dead relay buoy', 'Abandoned mining claim', 'Burned-out research dome', 'First-wave colony shell', 'Ruined terraforming plant', 'Frozen refugee convoy', 'Derelict refinery', 'Old navy depot', 'Illegal AI growth chamber', 'Pinchdrive accident scar', 'Iggygate construction failure', 'Sol-struck outpost', 'Records surgically erased', 'Still broadcasting old distress call'] as const
 const remnantHooks = ['claimed by three legal owners', 'contains deleted survey records', 'appears abandoned but still runs automated routines', 'sits inside a drifting hazard zone', 'was erased from corporate maps', 'is used as bait by criminals', 'contains evidence that would alter local politics'] as const
 const phenomena = ['Dense debris disk', 'Recent planetary collision', 'Resonant compact chain', 'Trojan megaswarm', 'Long-period comet storm', 'Captured rogue world', 'Flare-amplified bleed season', 'Hot Neptune desert survivor', 'Snow-line chiral belt', 'Ring arc with phase dust', 'Ice-shell plume moon', 'Gas giant radiation maze', 'Failed Iggygate wake', 'Moving bleed-node river', 'Metric mirage zone', 'Native microbial biosphere', 'Failed terraforming biosphere', 'First-wave ghost colony', 'Derelict fleet cluster', 'Gardener warning beacon'] as const
@@ -2243,56 +2233,9 @@ function assertNever(value: never): never {
 
 function settlementTagHook(rng: SeededRng, obviousTag: string, deeperTag: string): string {
   const exactPair = `${obviousTag} + ${deeperTag}`
-  if (exactPair === 'Air Is Money + Debt Labor') {
-    return 'Air Is Money is visible in every meter and airlock; Debt Labor means workers cannot afford passage out.'
-  }
-  if (exactPair === 'Bleed-Chaser Port + Narrow-AI Schism') {
-    return 'Bleed-Chaser Port draws ships racing moving nodes; Narrow-AI Schism means local AIs disagree over which predictions are safe.'
-  }
-  if (exactPair === 'Perfect Dome, Rotten Outside + Chiral Monopoly') {
-    return 'Perfect Dome, Rotten Outside is the public shape; Chiral Monopoly is the toxic extraction chain everyone outside the dome must endure.'
-  }
+  if (settlementTagPairHooks[exactPair]) return settlementTagPairHooks[exactPair]
 
-  const deeperPressures: Record<string, string> = {
-    'Abandoned First Wave': 'old first-wave decisions still decide who has shelter, air, and legal standing.',
-    'Air Is Money': 'life support has become the settlement currency and the main lever of control.',
-    'AI Whisper Cult': 'residents read spiritual or political meaning into narrow-AI behavior.',
-    'Anti-Corporate Commune': 'the public story hides a working political break with corporate control.',
-    'Aristocratic Dome': 'elite protection and outside deprivation are tied together.',
-    'Automated but Haunted': 'old automation keeps producing patterns locals treat as messages.',
-    'Bleed-Chaser Port': 'travel, debt, and risk all orbit the next moving bleed opportunity.',
-    'Border Fort': 'military necessity is being used to justify civilian restrictions.',
-    'Broken Terraformer': 'a failed environmental project is still shaping the crisis.',
-    'Chiral Monopoly': 'one faction controls access to the resource everyone needs.',
-    'Debt Labor': 'contracts and life-support fees make departure functionally impossible.',
-    'Deep Ice': 'buried volatiles or under-ice habitats conceal the real value of the site.',
-    'Derelict Yard': 'salvage law and old wreckage hide the deeper conflict.',
-    'Elegant Core Enclave': 'polished public spaces mask a harsher dependent economy.',
-    'Exile Haven': 'people with incompatible pasts are forced to rely on each other.',
-    'Flare Refuge': 'survival protocols double as social control.',
-    'Free Captain Nest': 'independent crews set the local law when formal authority fails.',
-    'Gate Shadow': 'route access determines who prospers and who is trapped.',
-    'Ghost City, Human': 'the haunting is human history, not the supernatural.',
-    'High-G Research': 'dangerous science is being treated as necessary infrastructure.',
-    'Hidden Navy': 'military presence is deeper than the public registry admits.',
-    'Hydrocarbon Frontier': 'volatile extraction keeps everyone solvent and vulnerable.',
-    'Kessler Cloud': 'debris hazards make movement, rescue, and evacuation political.',
-    'Machine-Run Town': 'humans depend on systems they do not fully control.',
-    'Memory-Loss Zone': 'missing records and altered recollections decide the dispute.',
-    'Migrant Swarm': 'temporary populations outnumber the institutions meant to govern them.',
-    'Moving Node Rush': 'short-lived opportunity is pushing people into unsafe choices.',
-    'Narrow-AI Schism': 'AIs agree on facts but not on which human orders can be obeyed.',
-    'Old War Minefield': 'legacy weapons make ordinary operations into negotiations.',
-    'Outlaw Court': 'local justice answers to power before law.',
-    'Penal Extraction': 'punishment and resource production are the same system.',
-    'Perfect Dome, Rotten Outside': 'comfort inside depends on sacrifice outside.',
-    'Plague/Biosafety Fear': 'containment policy is shaping every personal choice.',
-    'Precious Water': 'water ownership is the settlement constitution.',
-    'Religious Geometry': 'belief and GU observation are tangled in local politics.',
-    'Strikebreaker City': 'labor peace is being maintained by coercion.',
-  }
-
-  const deeperText = deeperPressures[deeperTag] ?? `${deeperTag.toLowerCase()} is the deeper pressure driving the site.`
+  const deeperText = settlementTagPressures[deeperTag] ?? `${deeperTag.toLowerCase()} is the deeper pressure driving the site.`
   const template = rng.int(1, 4)
   if (template === 1) return `${obviousTag} is what visitors notice first; ${deeperText}`
   if (template === 2) return `Outsiders call it ${obviousTag}, but the local pressure is sharper: ${deeperText}`
@@ -2487,42 +2430,22 @@ function settlementScaleFromRoll(rng: SeededRng, presence: SettlementPresenceSco
 }
 
 function chooseSettlementAuthority(rng: SeededRng, scale: string): string {
-  if (scale === 'Automated only') {
-    return pickOne(rng, ['AI-supervised technocracy', 'Gate authority', 'Sol-interdiction compliance office', 'Unknown sponsor', 'Official records are falsified'])
-  }
-  if (scale === 'Abandoned') {
-    return pickOne(rng, ['No recognized authority', 'Quarantine authority', 'Salvage court', 'Unknown sponsor', 'Official records are falsified'])
-  }
+  if (settlementAuthorityByScale[scale]) return pickOne(rng, settlementAuthorityByScale[scale])
   return pickOne(rng, settlementAuthorities)
 }
 
 function chooseSettlementCondition(rng: SeededRng, scale: string): string {
-  if (scale === 'Automated only') {
-    return pickOne(rng, ['Efficient but joyless', 'Understaffed', 'Life support near failure', 'Hidden AI incident', 'Under quarantine', 'Officially safe, actually hazardous'])
-  }
-  if (scale === 'Abandoned') {
-    return pickOne(rng, ['Half-abandoned', 'Recently evacuated', 'Reoccupied ruin', 'Decaying first-wave infrastructure', 'Hidden reason it cannot be abandoned'])
-  }
+  if (settlementConditionByScale[scale]) return pickOne(rng, settlementConditionByScale[scale])
   return pickOne(rng, settlementConditions)
 }
 
 function chooseSettlementCrisis(rng: SeededRng, scale: string): string {
-  if (scale === 'Automated only') {
-    return pickOne(rng, ['Life-support cascade', 'AI refuses unsafe operation', 'Illegal AI expansion discovered', 'Sabotage of refinery/gate/AI', 'Essential expert missing', 'The base broadcasts two contradictory distress calls'])
-  }
-  if (scale === 'Abandoned') {
-    return pickOne(rng, ['Salvage claim dispute', 'Old first-wave map found', 'Ship full of dead arrives', 'A whole district goes silent', 'The base broadcasts two contradictory distress calls', 'Crisis is staged to hide something worse'])
-  }
+  if (settlementCrisisByScale[scale]) return pickOne(rng, settlementCrisisByScale[scale])
   return pickOne(rng, settlementCrises)
 }
 
 function chooseHiddenTruth(rng: SeededRng, scale: string): string {
-  if (scale === 'Automated only') {
-    return pickOne(rng, ['The local AI deleted evidence', 'The local AI preserved forbidden evidence', 'The site is an illegal AI lab', 'The AI is sane; the humans are not listening', 'The system official survey is deliberately wrong'])
-  }
-  if (scale === 'Abandoned') {
-    return pickOne(rng, ['The official death toll is false', 'A first-wave expedition survived in hiding', 'The ghosts are old human recordings', 'The settlement has an evacuation ark nobody knows about', 'The quarantine is political'])
-  }
+  if (hiddenTruthByScale[scale]) return pickOne(rng, hiddenTruthByScale[scale])
   return pickOne(rng, hiddenTruths)
 }
 
@@ -2530,11 +2453,12 @@ function chooseEncounterSites(rng: SeededRng, scale: string, settlementFunction:
   const value = settlementFunction.toLowerCase()
   const candidates = new Set<string>()
 
-  if (scale === 'Automated only') ['AI core vault', 'Drone hangar', 'Closed habitat ring', 'Place the maps say does not exist'].forEach((site) => candidates.add(site))
-  if (scale === 'Abandoned') ['Old first-wave command bunker', 'Hidden launch bay', 'Half-flooded maintenance tunnels', 'Place the maps say does not exist'].forEach((site) => candidates.add(site))
-  if (value.includes('quarantine') || value.includes('biosphere')) ['Quarantine ward', 'Black-market clinic', 'Water plant'].forEach((site) => candidates.add(site))
-  if (value.includes('mine') || value.includes('extraction') || value.includes('harvest') || value.includes('refinery')) ['Chiral refinery floor', 'Bleed-harvest control room', 'Worker barracks'].forEach((site) => candidates.add(site))
-  if (value.includes('gate') || value.includes('pinchdrive') || value.includes('customs')) ['Illegal pinchdrive test chamber', 'Courtroom / debt registry', 'Dockside free market'].forEach((site) => candidates.add(site))
+  encounterSitesByScale[scale]?.forEach((site) => candidates.add(site))
+  encounterSitesByFunctionKeyword.forEach((pool) => {
+    if (pool.keywords.some((keyword) => value.includes(keyword))) {
+      pool.sites.forEach((site) => candidates.add(site))
+    }
+  })
   if (candidates.size < 2) encounterSites.forEach((site) => candidates.add(site))
 
   const pool = [...candidates]
@@ -2543,66 +2467,20 @@ function chooseEncounterSites(rng: SeededRng, scale: string, settlementFunction:
   return [first, pickOne(rng, secondPool.length ? secondPool : pool)]
 }
 
-function location(label: string, category: SettlementSiteCategory): SettlementLocationOption {
-  return { label, category }
-}
-
 function chooseSettlementLocation(rng: SeededRng, body: OrbitingBody, reachability: ReturnType<typeof generateReachability>): SettlementLocationOption {
-  const orbitalOptions = [
-    location('Low-orbit station', 'Orbital station'),
-    location('High-orbit station', 'Orbital station'),
-    location('Lagrange anchor', 'Deep-space platform'),
-    location('Trojan habitat', 'Deep-space platform'),
-    location('Ring-arc platform', 'Orbital station'),
-  ] satisfies SettlementLocationOption[]
-  const routeOptions = [
-    location('Iggygate throat complex', 'Gate or route node'),
-    location('Pinchdrive calibration range', 'Gate or route node'),
-    location('Quarantine perimeter station', 'Gate or route node'),
-    location('Sol/Gardener exclusion picket', 'Gate or route node'),
-    location('Military listening post', 'Gate or route node'),
-  ] satisfies SettlementLocationOption[]
-  const asteroidOptions = [
-    location('Asteroid tunnel city', 'Asteroid or belt base'),
-    location('Belt refinery', 'Asteroid or belt base'),
-    location('Comet ice camp', 'Asteroid or belt base'),
-    location('Dwarf-planet bunker', 'Asteroid or belt base'),
-    location('Rogue-body hideout', 'Asteroid or belt base'),
-    location('White-dwarf debris station', 'Asteroid or belt base'),
-  ] satisfies SettlementLocationOption[]
-  const surfaceOptions = [
-    location('Planetary surface dome', 'Surface settlement'),
-    location('Lava tube settlement', 'Surface settlement'),
-    location('Polar ice mine', 'Surface settlement'),
-    location('Terminator-line rail city', 'Surface settlement'),
-    location('Floating aerostat', 'Surface settlement'),
-    location('Seafloor or under-ice habitat', 'Surface settlement'),
-    location('Deep canyon pressure habitat', 'Surface settlement'),
-  ] satisfies SettlementLocationOption[]
-  const moonOptions = [
-    location('Moon crater base', 'Moon base'),
-    location('Subsurface ocean bore station', 'Moon base'),
-    location('Tidal-volcanic power site', 'Moon base'),
-    location('Magnetic-pole observatory', 'Moon base'),
-    location('Radiation-belt fortress', 'Moon base'),
-  ] satisfies SettlementLocationOption[]
-  const mobileOptions = [
-    location('Moving bleed-node chase fleet', 'Mobile site'),
-    location('Freeport cluster', 'Mobile site'),
-  ] satisfies SettlementLocationOption[]
-  const restrictedOptions = [
-    location('First-wave human ruin', 'Derelict or restricted site'),
-    location('Hidden black site', 'Derelict or restricted site'),
-    location('Corporate enclave', 'Derelict or restricted site'),
-    location('Penal extraction camp', 'Derelict or restricted site'),
-    location('Religious/ideological refuge', 'Derelict or restricted site'),
-  ] satisfies SettlementLocationOption[]
+  const orbitalOptions = settlementLocations.orbital
+  const routeOptions = settlementLocations.route
+  const asteroidOptions = settlementLocations.asteroid
+  const surfaceOptions = settlementLocations.surface
+  const moonOptions = settlementLocations.moon
+  const mobileOptions = settlementLocations.mobile
+  const restrictedOptions = settlementLocations.restricted
 
   if (reachability.className.value.includes('Iggygate') && rng.chance(0.6)) return pickOne(rng, routeOptions)
   if (body.category.value === 'belt') return pickOne(rng, [...asteroidOptions, ...orbitalOptions])
   if (body.category.value === 'gas-giant' || body.category.value === 'ice-giant' || body.category.value === 'sub-neptune') {
     return pickOne(rng, [
-      location('Gas-giant skimmer', 'Orbital station'),
+      ...settlementLocations.gasGiantSpecial,
       ...orbitalOptions,
       ...(body.moons.length > 0 ? moonOptions : []),
       ...routeOptions.slice(1),
@@ -2626,66 +2504,59 @@ function chooseSettlementFunction(
   if (guOverlay.intensity.value.includes('fracture') || guOverlay.intensity.value.includes('shear')) {
     return pickOne(rng, guFractureFunctionsBySiteCategory[locationOption.category])
   }
-  if (body.detail.biosphere.value !== 'Sterile') return pickOne(rng, ['Biosphere research station', 'Quarantine station', 'Civilian colony', 'Planetology lab'])
+  if (body.detail.biosphere.value !== 'Sterile') return pickOne(rng, biosphereFunctions)
 
   switch (locationOption.category) {
     case 'Surface settlement':
-      if (locationOption.label.includes('ice') || locationOption.label.includes('under-ice')) return pickOne(rng, ['Volatile mine', 'Biosphere research station', 'Civilian colony', 'Refugee settlement'])
+      if (locationOption.label.includes('ice') || locationOption.label.includes('under-ice')) return pickOne(rng, surfaceIceFunctions)
       if (locationOption.label.includes('Lava') || locationOption.label.includes('Polar')) return pickOne(rng, [...extractionFunctions, ...surveyFunctions])
       return pickOne(rng, [...civilFunctions, ...surveyFunctions, ...extractionFunctions])
     case 'Orbital station':
-      if (body.category.value === 'gas-giant' || body.category.value === 'ice-giant' || body.category.value === 'sub-neptune') return pickOne(rng, ['Fuel depot', 'Ship repair yard', 'Survey station', 'Naval logistics depot'])
+      if (body.category.value === 'gas-giant' || body.category.value === 'ice-giant' || body.category.value === 'sub-neptune') return pickOne(rng, giantOrbitalFunctions)
       return pickOne(rng, [...orbitalFunctions, ...surveyFunctions, ...securityFunctions])
     case 'Asteroid or belt base':
-      return pickOne(rng, [...extractionFunctions, 'Fuel depot', 'Salvage yard', 'Smuggler port'])
+      return pickOne(rng, asteroidBaseFunctions)
     case 'Moon base':
-      return pickOne(rng, [...extractionFunctions, ...surveyFunctions, 'Military base', 'Biosphere research station', 'Quarantine station'])
+      return pickOne(rng, moonBaseFunctions)
     case 'Deep-space platform':
-      return pickOne(rng, [...orbitalFunctions, ...surveyFunctions, 'Listening post', 'Corporate customs post'])
+      return pickOne(rng, deepSpaceFunctions)
     case 'Gate or route node':
       return pickOne(rng, [...routeFunctions, ...securityFunctions])
     case 'Mobile site':
-      return pickOne(rng, ['Moving bleed-node harvest fleet', 'Freeport', 'Smuggler port', 'Refugee settlement', 'Naval logistics depot'])
+      return pickOne(rng, mobileFunctions)
     case 'Derelict or restricted site':
-      return pickOne(rng, ['Survey station', 'Salvage yard', 'Intelligence black site', 'Prison or debt-labor site', 'Quarantine station', 'Weapons test range'])
+      return pickOne(rng, restrictedFunctions)
     default:
       return assertNever(locationOption.category)
   }
 }
 
 function chooseBuiltForm(rng: SeededRng, locationOption: SettlementLocationOption, settlementFunction: string): string {
-  if (locationOption.label === 'Terminator-line rail city') return 'Rail-linked terminator city'
-  if (locationOption.label === 'Floating aerostat') return 'Aerostat city'
-  if (locationOption.label === 'Seafloor or under-ice habitat') return 'Submarine habitat'
-  if (locationOption.label === 'Subsurface ocean bore station') return 'Borehole habitat'
-  if (locationOption.label === 'Lava tube settlement') return 'Lava-tube arcology'
-  if (locationOption.label === 'First-wave human ruin') return 'First-wave retrofitted ruin'
-  if (locationOption.label === 'Asteroid tunnel city') return 'Asteroid hollow'
-  if (locationOption.label === 'Moving bleed-node chase fleet') return pickOne(rng, mobileBuiltForms)
+  const exactBuiltForm = builtForms.exactLocation[locationOption.label]
+  if (exactBuiltForm) return exactBuiltForm
+  const locationPool = builtForms.mobileLocationPools[locationOption.label]
+  if (locationPool) return pickOne(rng, locationPool)
   if (settlementFunction.includes('mine') || settlementFunction.includes('extraction')) {
-    if (locationOption.category === 'Asteroid or belt base') return pickOne(rng, ['Asteroid hollow', 'Buried pressure cans', 'Ice-shielded tunnels'])
-    if (locationOption.category === 'Moon base') return pickOne(rng, ['Buried pressure cans', 'Ice-shielded tunnels', 'Borehole habitat', 'Shielded military bunker'])
-    if (locationOption.category === 'Surface settlement') return pickOne(rng, ['Buried pressure cans', 'Ice-shielded tunnels', 'Lava-tube arcology', 'Dome cluster'])
-    return pickOne(rng, ['Modular orbital lattice', 'Shielded military bunker'])
+    return pickOne(rng, builtForms.miningBySiteCategory[locationOption.category] ?? builtForms.miningBySiteCategory.default)
   }
 
   switch (locationOption.category) {
     case 'Orbital station':
-      return pickOne(rng, orbitalBuiltForms)
+      return pickOne(rng, builtForms.bySiteCategory[locationOption.category])
     case 'Asteroid or belt base':
-      return pickOne(rng, asteroidBuiltForms)
+      return pickOne(rng, builtForms.bySiteCategory[locationOption.category])
     case 'Surface settlement':
-      return pickOne(rng, surfaceBuiltForms)
+      return pickOne(rng, builtForms.bySiteCategory[locationOption.category])
     case 'Moon base':
-      return pickOne(rng, moonBuiltForms)
+      return pickOne(rng, builtForms.bySiteCategory[locationOption.category])
     case 'Gate or route node':
-      return pickOne(rng, gateBuiltForms)
+      return pickOne(rng, builtForms.bySiteCategory[locationOption.category])
     case 'Mobile site':
-      return pickOne(rng, mobileBuiltForms)
+      return pickOne(rng, builtForms.bySiteCategory[locationOption.category])
     case 'Deep-space platform':
-      return pickOne(rng, orbitalBuiltForms)
+      return pickOne(rng, builtForms.bySiteCategory[locationOption.category])
     case 'Derelict or restricted site':
-      return pickOne(rng, derelictBuiltForms)
+      return pickOne(rng, builtForms.bySiteCategory[locationOption.category])
     default:
       return assertNever(locationOption.category)
   }
