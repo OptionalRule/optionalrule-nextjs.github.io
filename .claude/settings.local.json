@@ -30,7 +30,9 @@
       "mcp__context7__resolve-library-id",
       "mcp__context7__query-docs",
       "WebFetch(domain:devblogs.microsoft.com)",
-      "WebFetch(domain:gist.github.com)"
+      "WebFetch(domain:gist.github.com)",
+      "Bash(git push *)",
+      "Bash(git branch *)"
     ],
     "deny": [],
     "ask": [],
