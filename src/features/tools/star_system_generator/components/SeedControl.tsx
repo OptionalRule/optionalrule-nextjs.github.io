@@ -12,7 +12,7 @@ interface SeedControlProps {
 
 export function SeedControl({ options, onChange }: SeedControlProps) {
   const [copyStatus, setCopyStatus] = useState<'idle' | 'copied' | 'failed'>('idle')
-  const timeoutRef = useRef<ReturnType<typeof window.setTimeout> | null>(null)
+  const timeoutRef = useRef<number | null>(null)
 
   useEffect(() => {
     return () => {

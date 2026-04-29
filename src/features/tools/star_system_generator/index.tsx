@@ -1,6 +1,7 @@
 'use client'
 
 import { Building2, Orbit } from 'lucide-react'
+import { ExportPanel } from './components/ExportPanel'
 import { GeneratorControls } from './components/GeneratorControls'
 import { GuOverlayPanel } from './components/GuOverlayPanel'
 import { OrbitalTable } from './components/OrbitalTable'
@@ -97,6 +98,8 @@ export default function StarSystemGenerator({ className }: StarSystemGeneratorPr
         <div id="human-layer">
           <PlayableLayerPanel system={system} />
         </div>
+
+        <ExportPanel system={system} />
       </main>
     </div>
   )

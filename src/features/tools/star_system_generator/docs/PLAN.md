@@ -157,6 +157,9 @@ Responsive behavior:
 
 Visual requirements:
 - Use existing site/Tailwind tokens.
+- Preserve the current compact operational-tool redesign documented in `../README.md#visual-design-memory`.
+- Reuse shared visual primitives from `components/visual.tsx` before creating one-off shells, labels, chips, icons, or field rows.
+- Keep new elements aligned to the physical/GU/human/neutral layer color model.
 - Avoid marketing-style hero layout.
 - Use compact, legible panels and tables.
 - Use badges for confidence labels, thermal zones, hazards, and GU intensity.
@@ -235,13 +238,13 @@ M6 - UI MVP
 - [ ] Add a11y smoke tests.
 
 M7 - Export and Persistence
-- [ ] Implement Markdown export using the compact system profile format from `SOURCE_WRITEUP.md`.
-- [ ] Implement JSON export using the internal schema.
+- [x] Implement Markdown export using the compact system profile format from `SOURCE_WRITEUP.md`.
+- [x] Implement JSON export using the internal schema.
 - [x] Add first copy-to-clipboard control for share URLs.
 - [x] Persist URL query-string state for seed/options.
 - [x] Add a share-link control that copies the current `/tools/star_system_generator/?seed=...` URL.
 - [ ] Optionally save the last seed/options to `localStorage` if consistent with the final UX.
-- [ ] Add export and query-state tests.
+- [x] Add export and query-state tests.
 
 M8 - Import-Ready Foundation
 - [ ] Add `PartialKnownSystem` schema.

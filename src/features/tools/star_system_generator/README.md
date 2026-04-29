@@ -26,6 +26,22 @@ Stellar generation should preserve the labels and d100 ranges in `docs/SOURCE_WR
 
 Architecture generation uses the modified 2d6 table from the source writeup, then expands it through slot contracts. Each architecture protects its required structure, such as compact rocky-chain cores, while allowing support bodies, crossovers, scars, anomalies, and locked known imports.
 
+## Visual Design Memory
+
+The current look is a compact operational TTRPG tool, not a marketing page. Future UI additions should extend the established page language instead of introducing a separate visual system.
+
+- Reuse `components/visual.tsx` primitives before adding new presentational helpers: `SectionHeader`, `sectionShellClasses`, `FieldRow`, `SpectralChip`, `ThermalZoneTag`, `BodyCategoryIcon`, and `ZoneIcons`.
+- Preserve the three semantic visual layers:
+  - Physical/astronomy: `accent`
+  - Geometric Unity: `accent-mystical`
+  - Human/sites/settlements: `accent-warm`
+  - Neutral metadata: border/text/surface tokens
+- Prefer site tokens and CSS variables already used by the tool: `bg-background`, `bg-[var(--card)]`, `bg-[var(--card-elevated)]`, `border-[var(--border)]`, `text-[var(--text-primary)]`, `text-[var(--text-secondary)]`, and `text-[var(--text-tertiary)]`.
+- Section shells should stay compact: rounded-lg, bordered, `bg-[var(--card)]`, `p-4`, and the thin layer bar from `sectionShellClasses`. Nested detail fields should use rounded-md, light borders, elevated card background, and dense spacing.
+- Use the existing heading rhythm: `SectionHeader` with a Lucide icon in a 9x9 icon block, `text-lg`/`sm:text-xl` section titles, small tertiary captions, and uppercase micro-labels with `tracking-[0.08em]` for field labels.
+- Controls should remain utilitarian and scan-friendly: compact selects/inputs, consistent focus rings, predictable grids, and no landing-page hero treatment.
+- Avoid new standalone palettes, decorative cards, oversized typography, gradient-orb decoration, or UI styles that break from the layer model above.
+
 ## Procedural Contract
 
 The source writeup is the setting and table inspiration. The implementation is compatibility-first: when a source-table roll conflicts with an explicit generator contract, the contract wins for generated facts.

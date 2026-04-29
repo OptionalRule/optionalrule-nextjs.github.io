@@ -36,6 +36,11 @@ describe('StarSystemGenerator', () => {
     expect(screen.getAllByText('Trouble').length).toBeGreaterThan(0)
     expect(screen.getAllByText('Adventure Texture').length).toBeGreaterThan(0)
     expect(screen.getByText('System Phenomena')).toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: 'Export' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Copy Markdown' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Copy JSON' })).toBeInTheDocument()
+    expect((screen.getByLabelText('Markdown export') as HTMLTextAreaElement).value).toContain('## Orbital Bodies')
+    expect((screen.getByLabelText('JSON export') as HTMLTextAreaElement).value).toContain('"bodies"')
     expect(screen.getByDisplayValue('7f3a9c2e41b8d09a')).toBeInTheDocument()
   })
 
