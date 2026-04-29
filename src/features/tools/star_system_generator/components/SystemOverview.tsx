@@ -1,71 +1,117 @@
+import { Sun, Telescope, Thermometer } from 'lucide-react'
 import type { GeneratedSystem } from '../types'
 import { formatStellarClass, stellarClassNote } from '../lib/stellarLabels'
+import { FieldRow, SectionHeader, SpectralChip, sectionShellClasses } from './visual'
 
 export function SystemOverview({ system }: { system: GeneratedSystem }) {
   const stellarRadius = formatEstimatedStellarRadius(system)
-  const rows = [
-    ['Primary', formatStellarClass(system.primary.spectralType.value)],
-    ['Mass', `${system.primary.massSolar.value} solar`],
-    ['Luminosity', `${system.primary.luminositySolar.value} solar`],
-    ...(stellarRadius ? [['Est. radius', stellarRadius]] : []),
-    ['Age', system.primary.ageState.value],
-    ['Activity', system.primary.activity.value],
-    ['Multiplicity', system.companions.length ? system.companions[0].companionType.value : 'Single star'],
-    ['Reachability', system.reachability.className.value],
-    ['Architecture', system.architecture.name.value],
-    ['GU', system.guOverlay.intensity.value],
+  const spectralValue = system.primary.spectralType.value
+
+  const rows: Array<{ label: string; value: React.ReactNode }> = [
+    { label: 'Primary', value: <SpectralChip spectralType={spectralValue} label={formatStellarClass(spectralValue)} /> },
+    { label: 'Mass', value: `${system.primary.massSolar.value} solar` },
+    { label: 'Luminosity', value: `${system.primary.luminositySolar.value} solar` },
+    ...(stellarRadius ? [{ label: 'Est. radius', value: stellarRadius }] : []),
+    { label: 'Age', value: system.primary.ageState.value },
+    { label: 'Activity', value: system.primary.activity.value },
+    { label: 'Multiplicity', value: system.companions.length ? system.companions[0].companionType.value : 'Single star' },
+    { label: 'Reachability', value: system.reachability.className.value },
+    { label: 'Architecture', value: system.architecture.name.value },
+    { label: 'GU', value: system.guOverlay.intensity.value },
   ]
 
   return (
-    <section className="rounded-lg border border-[var(--border)] bg-[var(--card)] p-4">
-      <div className="flex flex-col gap-1">
-        <div>
-          <h2 className="text-2xl font-bold text-[var(--text-primary)]">{system.name.value}</h2>
-          <p className="text-sm text-[var(--text-tertiary)]">
-            {system.dataBasis.value} · Seed <span className="font-mono">{system.seed}</span>
-          </p>
-        </div>
-      </div>
+    <section className={sectionShellClasses('physical')}>
+      <SectionHeader
+        layer="physical"
+        icon={Sun}
+        title={system.name.value}
+        caption={
+          <>
+            {system.dataBasis.value} <span className="text-[var(--text-tertiary)]">·</span> Seed{' '}
+            <span className="font-mono text-[var(--text-secondary)]">{system.seed}</span>
+          </>
+        }
+      />
 
       <dl className="mt-4 grid gap-2 text-sm sm:grid-cols-2 lg:grid-cols-4">
-        {rows.map(([label, value]) => (
-          <div key={label} className="min-w-0 rounded-md border border-[var(--border)] bg-[var(--card-elevated)] p-2.5">
-            <dt className="text-xs font-semibold uppercase tracking-wide text-[var(--text-tertiary)]">{label}</dt>
-            <dd className="mt-1 text-[var(--text-primary)]">{value}</dd>
-          </div>
+        {rows.map((row) => (
+          <FieldRow key={row.label} label={row.label} layer="physical">
+            {row.value}
+          </FieldRow>
         ))}
       </dl>
 
-      <div className="mt-4 flex flex-wrap gap-x-5 gap-y-1 border-t border-[var(--border)] pt-3 text-sm text-[var(--text-secondary)]">
-        <span>HZ inner: {system.zones.habitableInnerAu.value} AU</span>
-        <span>HZ center: {system.zones.habitableCenterAu.value} AU</span>
-        <span>HZ outer: {system.zones.habitableOuterAu.value} AU</span>
-        <span>Snow line: {system.zones.snowLineAu.value} AU</span>
+      <div className="mt-4 rounded-md border border-[var(--border-light)] bg-[var(--card-elevated)] p-3">
+        <h3 className="flex items-center gap-2 text-[0.68rem] font-semibold uppercase tracking-[0.08em] text-[var(--text-tertiary)]">
+          <Thermometer aria-hidden="true" className="h-3.5 w-3.5 text-[var(--accent)]" />
+          Stellar Zones
+        </h3>
+        <div className="mt-2 grid gap-x-5 gap-y-1.5 text-sm sm:grid-cols-2 lg:grid-cols-4">
+          <ZoneStat label="HZ inner" value={`${system.zones.habitableInnerAu.value} AU`} accent="emerald" />
+          <ZoneStat label="HZ center" value={`${system.zones.habitableCenterAu.value} AU`} accent="emerald" emphasized />
+          <ZoneStat label="HZ outer" value={`${system.zones.habitableOuterAu.value} AU`} accent="emerald" />
+          <ZoneStat label="Snow line" value={`${system.zones.snowLineAu.value} AU`} accent="sky" />
+        </div>
       </div>
 
-      <p className="mt-3 text-sm text-[var(--text-tertiary)]">
-        Stellar class note: {stellarClassNote(system.primary.spectralType.value)}
+      <p className="mt-3 flex gap-2 text-sm text-[var(--text-secondary)]">
+        <Telescope aria-hidden="true" className="mt-0.5 h-4 w-4 shrink-0 text-[var(--accent)]" />
+        <span>
+          <span className="font-semibold text-[var(--text-primary)]">Stellar class note:</span>{' '}
+          {stellarClassNote(spectralValue)}
+        </span>
       </p>
 
       {system.companions.length ? (
-        <div className="mt-4 border-t border-[var(--border)] pt-3 text-sm">
-          <h3 className="text-xs font-semibold uppercase tracking-wide text-[var(--text-tertiary)]">Multiple-Star Context</h3>
-          <p className="mt-1 font-medium text-[var(--text-primary)]">
-            {system.companions[0].companionType.value} · {system.companions[0].separation.value}
+        <div className="mt-4 rounded-md border border-[var(--border-light)] bg-[var(--card-elevated)] p-3 text-sm">
+          <h3 className="text-[0.68rem] font-semibold uppercase tracking-[0.08em] text-[var(--text-tertiary)]">
+            Multiple-Star Context
+          </h3>
+          <p className="mt-1 text-base font-semibold text-[var(--text-primary)]">
+            {system.companions[0].companionType.value}{' '}
+            <span className="font-normal text-[var(--text-tertiary)]">· {system.companions[0].separation.value}</span>
           </p>
-          <dl className="mt-2 grid gap-2 sm:grid-cols-2">
+          <dl className="mt-3 grid gap-3 sm:grid-cols-2">
             <div>
-              <dt className="text-xs font-semibold uppercase tracking-wide text-[var(--text-tertiary)]">Planetary layout</dt>
-              <dd className="mt-1 text-[var(--text-secondary)]">{system.companions[0].planetaryConsequence.value}</dd>
+              <dt className="text-[0.68rem] font-semibold uppercase tracking-[0.08em] text-[var(--text-tertiary)]">
+                Planetary layout
+              </dt>
+              <dd className="mt-1 text-[var(--text-primary)]">{system.companions[0].planetaryConsequence.value}</dd>
             </div>
             <div>
-              <dt className="text-xs font-semibold uppercase tracking-wide text-[var(--text-tertiary)]">Route value</dt>
-              <dd className="mt-1 text-[var(--text-secondary)]">{system.companions[0].guConsequence.value}</dd>
+              <dt className="text-[0.68rem] font-semibold uppercase tracking-[0.08em] text-[var(--text-tertiary)]">
+                Route value
+              </dt>
+              <dd className="mt-1 text-[var(--text-primary)]">{system.companions[0].guConsequence.value}</dd>
             </div>
           </dl>
         </div>
       ) : null}
     </section>
+  )
+}
+
+function ZoneStat({
+  label,
+  value,
+  accent,
+  emphasized,
+}: {
+  label: string
+  value: string
+  accent: 'emerald' | 'sky'
+  emphasized?: boolean
+}) {
+  const dot = accent === 'emerald' ? 'bg-emerald-500' : 'bg-sky-500'
+  return (
+    <div className="flex items-center gap-2">
+      <span className={`inline-block h-1.5 w-1.5 shrink-0 rounded-full ${dot}`} aria-hidden="true" />
+      <span className="text-[var(--text-tertiary)]">{label}</span>
+      <span className={`ml-auto font-mono ${emphasized ? 'font-semibold text-[var(--text-primary)]' : 'text-[var(--text-secondary)]'}`}>
+        {value}
+      </span>
+    </div>
   )
 }
 
