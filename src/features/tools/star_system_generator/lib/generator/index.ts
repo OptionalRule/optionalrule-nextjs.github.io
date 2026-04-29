@@ -44,6 +44,14 @@ import {
   type RuleBackedDescriptorSet,
 } from './data/names'
 import {
+  bleedBehaviorTable,
+  bleedLocationTable,
+  guHazardTable,
+  guIntensityTable,
+  guResourceTable,
+} from './data/gu'
+import { humanRemnants, phenomena, remnantHooks } from './data/narrative'
+import {
   aiSituations,
   asteroidBaseFunctions,
   biosphereFunctions,
@@ -101,99 +109,6 @@ const activityLabels = [
   { max: 12, value: 'Flare-prone' },
   { max: 14, value: 'Violent flare cycle' },
   { max: Number.POSITIVE_INFINITY, value: 'Extreme activity / metric-amplified events' },
-] as const
-
-const guIntensityTable = [
-  { max: 4, value: 'Geometrically quiet' },
-  { max: 6, value: 'Low bleed' },
-  { max: 8, value: 'Useful bleed' },
-  { max: 10, value: 'Rich bleed' },
-  { max: 12, value: 'Dangerous fracture system' },
-  { max: Number.POSITIVE_INFINITY, value: 'Major observiverse shear zone' },
-] as const
-
-const bleedLocationTable = [
-  'Inner star-skimming orbit',
-  'Flare-coupled magnetosphere',
-  'Tidally locked planet terminator',
-  'Planetary nightside cold trap',
-  'Resonant orbit between two planets',
-  'Lagrange point',
-  'Trojan swarm',
-  'Asteroid belt seam',
-  'Snow-line volatile belt',
-  'Ring arc',
-  'Gas giant radiation belt',
-  'Major moon tidal corridor',
-  'Ice-shell ocean vent field',
-  'Circumbinary barycenter region',
-  'Wide-binary transfer corridor',
-  'Comet stream',
-  'Derelict Iggygate wake',
-  'Pinchdrive calibration scar',
-  'Moving node with no fixed orbit',
-  'System-wide metric storm cycle',
-] as const
-
-const bleedBehaviorTable = [
-  'Stable and charted',
-  'Stable but weakening',
-  'Seasonal/orbital cycle',
-  'Flare-triggered',
-  'Tidal-cycle triggered',
-  'Migrates slowly',
-  'Splits and recombines',
-  'Appears only during eclipses',
-  'Follows cometary bodies',
-  'Reacts to Pinchdrives',
-  'Reacts to narrow observiverse AIs',
-  'Apparently anticipatory, but not intelligent',
-] as const
-
-const guResourceTable = [
-  'Left-handed chiral silicates',
-  'Right-handed chiral ice phases',
-  'Chiral volatile reservoirs',
-  'Metric shear condensates',
-  'Phase-stable superconductive lattice',
-  'Dark-sector doped ore',
-  'Gravity-skewed heavy isotopes',
-  'Programmable-matter microseeds',
-  'Self-ordering regolith',
-  'Observiverse-reactive crystal foam',
-  'Flare-imprinted chiral aerosols',
-  'Ring-arc phase dust',
-  'Snow-line organochemical feedstock',
-  'Deep-ocean catalytic vent matter',
-  'Iggygate-compatible anchor mass',
-  'Pinchdrive calibration medium',
-  'Narrow-AI stabilizer substrate',
-  'Shielding-grade chiral plating feedstock',
-  'Medical chirality stock',
-  'Illegal Sol-prohibited geometry sample',
-] as const
-
-const guHazardTable = [
-  'Metric shear damages hulls',
-  'Local gravity fluctuates',
-  'Navigation baselines drift',
-  'Clocks desynchronize',
-  'AI perception errors',
-  'False sensor returns',
-  'Human vestibular/neurological effects',
-  'Chiral contamination',
-  'Matter phase instability',
-  'Programmed regolith growth',
-  'Radiation/metric storm coupling',
-  'Pinchdrive misjump risk',
-  'Iggygate throat instability',
-  'Legal quarantine',
-  'Corporate claim war',
-  'Pirate ambush zone',
-  'Gardener attention risk',
-  'Narrow-AI fragmentation risk',
-  'Settlement madness rumor, actually environmental',
-  'Systemic cascade',
 ] as const
 
 interface FilteredWorldClass {
@@ -497,9 +412,6 @@ const ringTypeTable: Array<{ min: number; max: number; value: string }> = [
   { min: 11, max: 11, value: 'Industrialized ring arc' },
   { min: 12, max: 12, value: 'GU-reactive ring lattice' },
 ]
-const humanRemnants = ['Survey probe field', 'Dead relay buoy', 'Abandoned mining claim', 'Burned-out research dome', 'First-wave colony shell', 'Ruined terraforming plant', 'Frozen refugee convoy', 'Derelict refinery', 'Old navy depot', 'Illegal AI growth chamber', 'Pinchdrive accident scar', 'Iggygate construction failure', 'Sol-struck outpost', 'Records surgically erased', 'Still broadcasting old distress call'] as const
-const remnantHooks = ['claimed by three legal owners', 'contains deleted survey records', 'appears abandoned but still runs automated routines', 'sits inside a drifting hazard zone', 'was erased from corporate maps', 'is used as bait by criminals', 'contains evidence that would alter local politics'] as const
-const phenomena = ['Dense debris disk', 'Recent planetary collision', 'Resonant compact chain', 'Trojan megaswarm', 'Long-period comet storm', 'Captured rogue world', 'Flare-amplified bleed season', 'Hot Neptune desert survivor', 'Snow-line chiral belt', 'Ring arc with phase dust', 'Ice-shell plume moon', 'Gas giant radiation maze', 'Failed Iggygate wake', 'Moving bleed-node river', 'Metric mirage zone', 'Native microbial biosphere', 'Failed terraforming biosphere', 'First-wave ghost colony', 'Derelict fleet cluster', 'Gardener warning beacon'] as const
 
 function fact<T>(value: T, confidence: Fact<T>['confidence'], source?: string): Fact<T> {
   return { value, confidence, source }

@@ -11,6 +11,18 @@ import {
   systemNamePatterns,
 } from '../src/features/tools/star_system_generator/lib/generator/data/names'
 import {
+  bleedBehaviorTable,
+  bleedLocationTable,
+  guHazardTable,
+  guIntensityTable,
+  guResourceTable,
+} from '../src/features/tools/star_system_generator/lib/generator/data/gu'
+import {
+  humanRemnants,
+  phenomena,
+  remnantHooks,
+} from '../src/features/tools/star_system_generator/lib/generator/data/narrative'
+import {
   aiSituations,
   asteroidBaseFunctions,
   biosphereFunctions,
@@ -238,6 +250,37 @@ function validateSettlements(): void {
   })
 }
 
+function validateGuAndNarrative(): void {
+  assertNonEmpty('gu.intensityTable', guIntensityTable)
+  assertNonEmpty('gu.bleedLocations', bleedLocationTable)
+  assertNonEmpty('gu.bleedBehaviors', bleedBehaviorTable)
+  assertNonEmpty('gu.resources', guResourceTable)
+  assertNonEmpty('gu.hazards', guHazardTable)
+  assertNonEmpty('narrative.humanRemnants', humanRemnants)
+  assertNonEmpty('narrative.remnantHooks', remnantHooks)
+  assertNonEmpty('narrative.phenomena', phenomena)
+
+  if (guIntensityTable.at(-1)?.max !== Number.POSITIVE_INFINITY) {
+    addError('gu.intensityTable', 'Final intensity entry must be open-ended.')
+  }
+  if (bleedLocationTable.length !== 20) addError('gu.bleedLocations', `Expected d20 table with 20 entries; got ${bleedLocationTable.length}.`)
+  if (bleedBehaviorTable.length !== 12) addError('gu.bleedBehaviors', `Expected d12 table with 12 entries; got ${bleedBehaviorTable.length}.`)
+  if (guResourceTable.length !== 20) addError('gu.resources', `Expected d20 table with 20 entries; got ${guResourceTable.length}.`)
+  if (guHazardTable.length !== 20) addError('gu.hazards', `Expected d20 table with 20 entries; got ${guHazardTable.length}.`)
+
+  assertNoDuplicates('gu.bleedLocations', bleedLocationTable)
+  assertNoDuplicates('gu.bleedBehaviors', bleedBehaviorTable)
+  assertNoDuplicates('gu.resources', guResourceTable)
+  assertNoDuplicates('gu.hazards', guHazardTable)
+  assertNoDuplicates('narrative.humanRemnants', humanRemnants)
+  assertNoDuplicates('narrative.remnantHooks', remnantHooks)
+  assertNoDuplicates('narrative.phenomena', phenomena)
+
+  warnIfThin('narrative.remnantHooks', remnantHooks.length, 20)
+  warnIfThin('narrative.humanRemnants', humanRemnants.length, 20)
+  warnIfThin('narrative.phenomena', phenomena.length, 30)
+}
+
 function printReport(): void {
   const locationCounts = locationCountsByCategory()
 
@@ -291,6 +334,20 @@ function printReport(): void {
     ['restricted', restrictedFunctions.length],
   ])
 
+  printSection('GU Pools', [
+    ['intensityTable', guIntensityTable.length],
+    ['bleedLocations', bleedLocationTable.length],
+    ['bleedBehaviors', bleedBehaviorTable.length],
+    ['resources', guResourceTable.length],
+    ['hazards', guHazardTable.length],
+  ])
+
+  printSection('Play-Layer Narrative Pools', [
+    ['humanRemnants', humanRemnants.length],
+    ['remnantHooks', remnantHooks.length],
+    ['phenomena', phenomena.length],
+  ])
+
   console.log(`Structural errors: ${errors.length}`)
   if (errors.length > 0) errors.forEach((error) => console.log(formatFinding(error)))
   console.log('')
@@ -301,6 +358,7 @@ function printReport(): void {
 
 validateNames()
 validateSettlements()
+validateGuAndNarrative()
 printReport()
 
 if (errors.length > 0) {
