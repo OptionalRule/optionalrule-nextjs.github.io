@@ -1,26 +1,18 @@
 import type { ReactNode } from 'react'
-import { AlertTriangle, Building2, Cog, Drama } from 'lucide-react'
+import { AlertTriangle, Cog, Drama } from 'lucide-react'
 import type { Settlement } from '../types'
 
 export function SettlementCard({ settlement }: { settlement: Settlement }) {
   return (
     <article className="relative overflow-hidden rounded-lg border border-[var(--border)] bg-[var(--card)] p-4 before:absolute before:inset-x-0 before:top-0 before:h-[3px] before:bg-[var(--accent-warm)]">
-      <div className="flex items-start gap-3">
-        <div
-          className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-md bg-[var(--accent-warm-light)] text-[var(--accent-warm)] ring-1 ring-inset ring-[var(--accent-warm)]/25"
-          aria-hidden="true"
-        >
-          <Building2 className="h-5 w-5" />
-        </div>
-        <div className="min-w-0 flex-1">
-          <h3 className="text-base font-bold tracking-tight text-[var(--text-primary)] sm:text-lg">
-            {settlement.name.value}
-          </h3>
-          <p className="mt-0.5 text-sm text-[var(--text-tertiary)]">
-            <span className="font-medium text-[var(--text-secondary)]">{settlement.siteCategory.value}</span>{' '}
-            <span className="text-[var(--text-tertiary)]">·</span> {settlement.location.value}
-          </p>
-        </div>
+      <div className="min-w-0">
+        <h3 className="text-base font-bold tracking-tight text-[var(--text-primary)] sm:text-lg">
+          {settlement.name.value}
+        </h3>
+        <p className="mt-0.5 text-sm text-[var(--text-tertiary)]">
+          <span className="font-medium text-[var(--text-secondary)]">{settlement.siteCategory.value}</span>{' '}
+          <span className="text-[var(--text-tertiary)]">·</span> {settlement.location.value}
+        </p>
       </div>
 
       <div className="mt-4 space-y-3 text-sm">
