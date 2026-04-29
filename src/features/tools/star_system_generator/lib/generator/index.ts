@@ -31,6 +31,18 @@ import { calculateHabitableZone, calculateInsolation, calculateSnowLine, classif
 import { d8, d12, d20, d100, pickOne, pickTable, twoD6 } from './dice'
 import { extremeHotThermalZones, hotThermalZones, type BodyPlanKind, type WorldClassOption } from './domain'
 import { deriveEnvironmentPolicy, normalizeDetailForEnvironment } from './environmentPolicy'
+import {
+  bodyNameCores,
+  bodyNameFormsByCategory,
+  moonNameCores,
+  moonNameForms,
+  settlementNameDescriptors,
+  systemCatalogLabels,
+  systemNameCores,
+  systemNameForms,
+  systemNamePatterns,
+  type RuleBackedDescriptorSet,
+} from './data/names'
 import { NameRegistry } from './nameRegistry'
 import { createSeededRng, type SeededRng } from './rng'
 import {
@@ -44,24 +56,6 @@ import {
 } from './tables'
 
 export { architectureBodyPlanRules } from './architecture'
-
-const systemNameCores = ['Keid', 'Vesper', 'Lumen', 'Harrow', 'Sable', 'Marrow', 'Orison', 'Nadir', 'Calder', 'Pale', 'Vey', 'Dross', 'Siren', 'Gath', 'Ravel', 'Warden', 'Glasswake', 'Aster', 'Kore', 'Tavian', 'Mire', 'Sundrake', 'Obol', 'Kestrin', 'Lowry', 'Cairn', 'Tidehook', 'Ashen', 'Nacre', 'Cobalt']
-const systemNameForms = ['Ladder', 'Verge', 'Crown', 'Breach', 'Harbor', 'Glass', 'Wake', 'Cairn', 'Tide', 'Gate', 'Reach', 'Spindle', 'Cradle', 'Lantern', 'Thread', 'Lock', 'Bridge', 'Chapel', 'Furnace', 'Choir', 'Mirror', 'Anvil', 'Current', 'Maw', 'Haven', 'Gyre', 'Wound', 'Shelf', 'Quay', 'Vault']
-const systemNamePatterns = ['possessive', 'compound', 'numeric', 'catalog', 'route'] as const
-const bodyNameCores = ['Ash', 'Vane', 'Sable', 'Harrow', 'Cinder', 'Pale', 'Mourn', 'Chime', 'Vey', 'Dross', 'Siren', 'Gath', 'Lantern', 'Blackwater', 'Pilgrim', 'Rook', 'Kestrel', 'Vigil', 'Copper', 'Choir', 'Chapel', 'Ravel', 'Warden', 'Glass', 'Thorn', 'Kettle', 'Brine', 'Silt', 'Kore', 'Mire', 'Obol', 'Nacre', 'Tavian', 'Low Bell', 'Calder', 'Marrow']
-const bodyNameFormsByCategory: Record<BodyCategory, readonly string[]> = {
-  'rocky-planet': ['World', 'Stone', 'Vane', 'Reach', 'March', 'Anvil'],
-  'super-earth': ['Crown', 'Massif', 'Bastion', 'Hold', 'Atlas', 'Rise'],
-  'sub-neptune': ['Veil', 'Mantle', 'Swell', 'Envelope', 'Drift', 'Pall'],
-  'gas-giant': ['Giant', 'Lantern', 'Furnace', 'Maw', 'Aegis', 'Bell'],
-  'ice-giant': ['Deep', 'Blue', 'Warden', 'Gale', 'Vault', 'Boreal'],
-  belt: ['Belt', 'Shards', 'Shoal', 'Swarm', 'Field', 'Arc'],
-  'dwarf-body': ['Dwarf', 'Cairn', 'Chip', 'Knot', 'Relic', 'Shard'],
-  'rogue-captured': ['Stray', 'Rogue', 'Drifter', 'Captive', 'Wayfarer', 'Outcast'],
-  anomaly: ['Shear', 'Fracture', 'Mirror', 'Scar', 'Null', 'Cipher'],
-}
-const moonNameCores = ['Silt', 'Brine', 'Kettle', 'Palehook', 'Vigil', 'Thresh', 'Low Bell', 'Cairnlet', 'Mote', 'Rime', 'Tallow', 'Pin', 'Cradle', 'Hush', 'Glim', 'Marl', 'Wick', 'Fret', 'Spar', 'Nail', 'Sedge', 'Rooklet', 'Tarn', 'Hollow']
-const moonNameForms = ['Minor', 'Major', 'Cradle', 'Shard', 'Watch', 'Cup', 'Knot', 'Shell', 'Hook', 'Lantern', 'Marker', 'Hold']
 
 const activityLabels = [
   { max: 3, value: 'Dormant / unusually quiet' },
@@ -533,7 +527,7 @@ function generateSystemName(rng: SeededRng): string {
 
   if (pattern === 'compound') return `${core}${form}`
   if (pattern === 'numeric') return `${core}-${rng.int(2, 99).toString().padStart(2, '0')}`
-  if (pattern === 'catalog') return `${core} ${pickOne(rng, ['Aster', 'Route', 'Survey', 'Gate', 'Trace'])}-${rng.int(10, 999)}`
+  if (pattern === 'catalog') return `${core} ${pickOne(rng, systemCatalogLabels)}-${rng.int(10, 999)}`
   if (pattern === 'route') return `${core}-${secondCore} ${form}`
   return `${core}'s ${form}`
 }
@@ -2833,28 +2827,27 @@ function settlementWhyHere(
   return `At ${anchor.name}, the settlement logic is ${selected.join('; ')}.`
 }
 
+function descriptorFromRules(value: string, descriptorSet: RuleBackedDescriptorSet): string {
+  const normalizedValue = value.toLowerCase()
+  return descriptorSet.rules.find((rule) =>
+    rule.keywords.some((keyword) => normalizedValue.includes(keyword.toLowerCase()))
+  )?.descriptor ?? descriptorSet.default
+}
+
 function settlementDescriptorForFunction(settlementFunction: string): string {
-  const value = settlementFunction.toLowerCase()
-  if (value.includes('mine') || value.includes('extraction') || value.includes('harvest')) return 'Claim'
-  if (value.includes('refinery') || value.includes('foundry') || value.includes('works')) return 'Works'
-  if (value.includes('freeport') || value.includes('smuggler')) return 'Freeport'
-  if (value.includes('quarantine')) return 'Cordon'
-  if (value.includes('military') || value.includes('naval') || value.includes('weapons')) return 'Bastion'
-  if (value.includes('iggygate') || value.includes('pinchdrive') || value.includes('customs')) return 'Gate'
-  if (value.includes('lab') || value.includes('observ')) return 'Laboratory'
-  if (value.includes('colony') || value.includes('refugee') || value.includes('enclave')) return 'Habitat'
-  return 'Station'
+  return descriptorFromRules(settlementFunction, settlementNameDescriptors.function)
 }
 
 function settlementDescriptorForCategory(siteCategory: string): string {
-  if (siteCategory === 'Surface settlement') return 'Dome'
-  if (siteCategory === 'Moon base') return 'Base'
-  if (siteCategory === 'Asteroid or belt base') return 'Bore'
-  if (siteCategory === 'Gate or route node') return 'Node'
-  if (siteCategory === 'Mobile site') return 'Fleet'
-  if (siteCategory === 'Derelict or restricted site') return 'Redoubt'
-  if (siteCategory === 'Deep-space platform') return 'Platform'
-  return 'Station'
+  return settlementNameDescriptors.category[siteCategory] ?? settlementNameDescriptors.category.default
+}
+
+function settlementDescriptorForAuthority(authority: string): string {
+  return descriptorFromRules(authority, settlementNameDescriptors.authority)
+}
+
+function settlementDescriptorForScale(scale: string): string {
+  return settlementNameDescriptors.scale.exact[scale] ?? descriptorFromRules(scale, settlementNameDescriptors.scale)
 }
 
 function generateSettlementName(
@@ -2869,19 +2862,8 @@ function generateSettlementName(
   const anchorStem = anchor.name.split(',')[0].replace(/\s+(orbital space|route geometry|traffic pattern|transit geometry)$/i, '')
   const functionDescriptor = settlementDescriptorForFunction(settlementFunction)
   const categoryDescriptor = settlementDescriptorForCategory(siteCategory)
-  const authorityValue = authority.toLowerCase()
-  const authorityDescriptor =
-    authorityValue.includes('corp') ? 'Concession' :
-    authorityValue.includes('military') || authorityValue.includes('navy') ? 'Command' :
-    authorityValue.includes('quarantine') ? 'Cordon' :
-    authorityValue.includes('council') ? 'Commons' :
-    authorityValue.includes('free') || authorityValue.includes('captain') ? 'Compact' :
-    'Charter'
-  const scaleDescriptor =
-    scale.includes('million') || scale.includes('Regional') || scale.includes('Large') ? 'Hub' :
-    scale === 'Automated only' ? 'Array' :
-    scale === 'Abandoned' ? 'Remnant' :
-    'Hold'
+  const authorityDescriptor = settlementDescriptorForAuthority(authority)
+  const scaleDescriptor = settlementDescriptorForScale(scale)
 
   const pattern = rng.int(1, 5)
   if (pattern === 1) return `${anchorStem} ${functionDescriptor}`
