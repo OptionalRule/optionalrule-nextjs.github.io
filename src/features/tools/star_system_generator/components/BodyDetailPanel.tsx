@@ -126,18 +126,22 @@ export function BodyDetailContent({
           {body.moons.length ? (
             <div className="space-y-3">
               {body.moons.map((moon) => (
-                <div key={moon.id} className="border-l-2 border-[var(--accent)]/40 pl-3">
-                  <p className="font-semibold text-[var(--text-primary)]">
-                    {moon.name.value}
-                    <span className="font-normal text-[var(--text-tertiary)]">
-                      {' · '}
+                <div
+                  key={moon.id}
+                  className="overflow-hidden rounded-md border border-[var(--border-light)] border-l-2 border-l-[var(--accent)] bg-[var(--card-elevated)]"
+                >
+                  <div className="flex flex-wrap items-baseline gap-x-2 gap-y-0.5 border-b border-[var(--border-light)] bg-[var(--card)] px-3 py-2">
+                    <h4 className="text-base font-semibold tracking-tight text-[var(--text-primary)]">
+                      {moon.name.value}
+                    </h4>
+                    <span className="text-[0.68rem] font-medium uppercase tracking-[0.08em] text-[var(--text-tertiary)]">
                       {moon.scale.value} · {moon.moonType.value}
                     </span>
-                  </p>
-                  <dl className="mt-1.5 grid gap-x-4 gap-y-1 sm:grid-cols-3">
-                    <InlineDetail label="Use" value={moon.use.value} />
-                    <InlineDetail label="Resource" value={moon.resource.value} />
-                    <InlineDetail label="Hazard" value={moon.hazard.value} />
+                  </div>
+                  <dl className="divide-y divide-[var(--border-light)]">
+                    <MoonAttr label="Use" value={moon.use.value} />
+                    <MoonAttr label="Resource" value={moon.resource.value} />
+                    <MoonAttr label="Hazard" value={moon.hazard.value} />
                   </dl>
                 </div>
               ))}
@@ -237,11 +241,13 @@ function formatRatio(value: number): string {
   return value.toFixed(2)
 }
 
-function InlineDetail({ label, value }: { label: string; value: string }) {
+function MoonAttr({ label, value }: { label: string; value: string }) {
   return (
-    <div>
-      <dt className="inline font-semibold text-[var(--text-secondary)]">{label}: </dt>
-      <dd className="inline text-[var(--text-primary)]">{value}</dd>
+    <div className="flex gap-3 px-3 py-2 leading-snug">
+      <dt className="w-20 shrink-0 pt-0.5 text-[0.68rem] font-semibold uppercase tracking-[0.08em] text-[var(--text-tertiary)]">
+        {label}
+      </dt>
+      <dd className="flex-1 text-[var(--text-primary)]">{value}</dd>
     </div>
   )
 }
