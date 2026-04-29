@@ -15,7 +15,7 @@ describe('StarSystemGenerator', () => {
     expect(screen.getByText(/Stellar class note:/)).toBeInTheDocument()
     expect(screen.queryByRole('navigation', { name: 'Star system sections' })).not.toBeInTheDocument()
     expect(screen.queryByText('Confidence labels')).not.toBeInTheDocument()
-    expect(screen.getByText('Orbital Profile')).toBeInTheDocument()
+    expect(screen.getByText('Orbital Bodies')).toBeInTheDocument()
     expect(screen.getByText('Geometric Unity Overlay')).toBeInTheDocument()
     expect(screen.getByText('Sites & Settlements')).toBeInTheDocument()
     expect(screen.getByText('Human Remnants')).toBeInTheDocument()

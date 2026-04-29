@@ -37,7 +37,7 @@ export function OrbitalTable({ system }: OrbitalTableProps) {
       <SectionHeader
         layer="physical"
         icon={Orbit}
-        title="Orbital Profile"
+        title="Orbital Bodies"
         caption={`${system.bodies.length} generated bodies`}
         actions={
           <>
