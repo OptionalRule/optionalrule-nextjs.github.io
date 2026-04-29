@@ -20,6 +20,8 @@ Commit work at logical checkpoints during development. For this feature, good ch
 
 Run `npm run audit:star-system-generator:quick` after generator-rule changes. Run `npm run audit:star-system-generator:deep` before marking procedural-generation work complete. The audit generates a deterministic corpus across frontier and realistic distributions, fails on hard generated contradictions or missing fields, reports locked imported contradictions separately, and reports warnings for coverage or tuning gaps that are useful during iterative table work.
 
+Run `npm run audit:star-system-data` after editing JSON-backed creative pools. The data audit reports name, settlement, tag, crisis, hidden-truth, encounter-site, location, function, and built-form counts; fails on structural data errors; and warns when author-facing pools are thin enough to need expansion.
+
 Settlement density is intentionally variable. The density control chooses a range, then reachability, GU intensity, architecture, hazards, and top presence scores nudge the final number so normal systems do not all show the same count.
 
 Stellar generation should preserve the labels and d100 ranges in `docs/SOURCE_WRITEUP.md`. The audit reports star-type counts separately for realistic and frontier distributions so aggregate samples do not hide table drift.
@@ -61,3 +63,12 @@ When adding or changing a world class:
 2. Ensure `deriveWorldClassMetadata` can assign the intended environment profile, physical tags, architecture tags, and special handling.
 3. Confirm the class satisfies environment policy and architecture expectations through focused tests.
 4. Run `npm run test -- --run src/features/tools/star_system_generator` and `npm run audit:star-system-generator:quick`.
+
+## Expanding Creative Data
+
+JSON-backed creative pools live under `data/`.
+
+- Add system, body, moon, catalog, or settlement-name descriptor options in `data/names.json`.
+- Add settlement locations, functions, built forms, authorities, AI situations, conditions, tags, crises, hidden truths, encounter sites, and scale overrides in `data/settlements.json`.
+- Keep labels stable when they are referenced by other JSON entries, such as settlement tag pair hooks.
+- Run `npm run audit:star-system-data`, then focused generator tests and the quick generator audit.

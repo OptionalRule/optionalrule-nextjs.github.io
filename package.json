@@ -31,6 +31,7 @@
     "download-external-images": "node --import tsx/esm scripts/download-external-images.ts",
     "find-empty-links": "node --import tsx/esm scripts/find-empty-links.ts",
     "generate-rss": "node --import tsx/esm scripts/generate-rss.ts",
+    "audit:star-system-data": "node --import tsx/esm scripts/audit-star-system-data.ts",
     "audit:star-system-generator": "node --import tsx/esm scripts/audit-star-system-generator.ts",
     "audit:star-system-generator:quick": "STAR_SYSTEM_AUDIT_PROFILE=quick node --import tsx/esm scripts/audit-star-system-generator.ts",
     "audit:star-system-generator:deep": "STAR_SYSTEM_AUDIT_PROFILE=deep node --import tsx/esm scripts/audit-star-system-generator.ts",
