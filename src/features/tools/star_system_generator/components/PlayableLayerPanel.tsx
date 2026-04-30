@@ -13,13 +13,24 @@ export function PlayableLayerPanel({ system }: { system: GeneratedSystem }) {
           caption="System-level tensions built from reusable structures."
         />
         <div className="mt-4 space-y-3">
-          {system.narrativeLines.map((line) => (
+          {system.narrativeThreads.map((thread) => (
             <div
-              key={line.id}
+              key={thread.id}
               className="rounded-md border border-[var(--border-light)] bg-[var(--card-elevated)] p-3 text-sm"
             >
-              <p className="text-xs uppercase tracking-wide text-[var(--text-tertiary)]">{line.label.value}</p>
-              <p className="mt-2 leading-relaxed text-[var(--text-secondary)]">{line.text.value}</p>
+              <div className="flex flex-wrap items-start justify-between gap-2">
+                <p className="text-xs uppercase tracking-wide text-[var(--text-tertiary)]">{thread.title.value}</p>
+                <p className="text-xs text-[var(--text-tertiary)]">{thread.domains.map((domain) => domain.value).join(' / ')}</p>
+              </div>
+              <p className="mt-2 leading-relaxed text-[var(--text-secondary)]">{thread.beats[0]?.text.value}</p>
+              <div className="mt-3 space-y-2 border-t border-[var(--border-light)] pt-3">
+                {thread.beats.slice(1).map((beat) => (
+                  <p key={beat.id} className="leading-relaxed text-[var(--text-tertiary)]">
+                    <span className="font-medium text-[var(--text-secondary)]">{beat.kind.replace('-', ' ')}:</span>{' '}
+                    {beat.text.value}
+                  </p>
+                ))}
+              </div>
             </div>
           ))}
         </div>

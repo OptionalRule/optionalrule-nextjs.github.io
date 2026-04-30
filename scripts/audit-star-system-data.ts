@@ -40,6 +40,8 @@ import {
 } from '../src/features/tools/star_system_generator/lib/generator/data/gu'
 import {
   humanRemnants,
+  namedFactions,
+  narrativeDomains,
   narrativeStructures,
   narrativeVariablePools,
   phenomena,
@@ -302,7 +304,9 @@ function validateGuAndNarrative(): void {
   assertNonEmpty('narrative.humanRemnants', humanRemnants)
   assertNonEmpty('narrative.remnantHooks', remnantHooks)
   assertNonEmpty('narrative.phenomena', phenomena)
+  assertNonEmpty('narrative.namedFactions', namedFactions)
   assertNonEmpty('narrative.narrativeStructures', narrativeStructures)
+  assertNonEmpty('narrative.narrativeDomains', Object.keys(narrativeDomains))
 
   if (guIntensityTable.at(-1)?.max !== Number.POSITIVE_INFINITY) {
     addError('gu.intensityTable', 'Final intensity entry must be open-ended.')
@@ -319,9 +323,33 @@ function validateGuAndNarrative(): void {
   assertNoDuplicates('narrative.humanRemnants', humanRemnants)
   assertNoDuplicates('narrative.remnantHooks', remnantHooks)
   assertNoDuplicates('narrative.phenomena', phenomena)
+  assertNoDuplicates('narrative.namedFactions.id', namedFactions.map((faction) => faction.id))
+  assertNoDuplicates('narrative.namedFactions.name', namedFactions.map((faction) => faction.name))
   assertNoDuplicates('narrative.narrativeStructures.id', narrativeStructures.map((structure) => structure.id))
 
+  const rawNarrativeValues = [
+    ...humanRemnants,
+    ...remnantHooks,
+    ...phenomena,
+    ...Object.values(narrativeVariablePools).flat(),
+    ...narrativeStructures.flatMap((structure) => [structure.label, structure.template]),
+  ]
+  rawNarrativeValues.forEach((value) => {
+    if (/\balien\b|\bnonhuman\b|\bnative\s+civilization\b|\bancient\s+cities\b/i.test(value)) {
+      addError('narrative', `Forbidden no-alien terminology in raw narrative data: "${value}"`)
+    }
+  })
+
+  namedFactions.forEach((faction) => {
+    if (!faction.id.trim()) addError('narrative.namedFactions', `Named faction "${faction.name}" has no id.`)
+    if (!faction.name.trim()) addError('narrative.namedFactions', `Named faction "${faction.id}" has no name.`)
+    assertNonEmpty(`narrative.namedFactions.${faction.id}.domains`, faction.domains)
+    if (!faction.kind.trim()) addError('narrative.namedFactions', `Named faction "${faction.name}" has no kind.`)
+    if (!faction.publicFace.trim()) addError('narrative.namedFactions', `Named faction "${faction.name}" has no publicFace.`)
+  })
+
   for (const structure of narrativeStructures) {
+    assertNonEmpty(`narrative.narrativeStructures.${structure.id}.domains`, structure.domains ?? [])
     const templateSlots = [...structure.template.matchAll(/\{([A-Za-z0-9_]+)\}/g)].map((match) => match[1])
     assertNonEmpty(`narrative.narrativeStructures.${structure.id}.templateSlots`, templateSlots)
     const declaredSlots = Object.keys(structure.slots)
@@ -342,7 +370,7 @@ function validateGuAndNarrative(): void {
   warnIfThin('narrative.remnantHooks', remnantHooks.length, 20)
   warnIfThin('narrative.humanRemnants', humanRemnants.length, 20)
   warnIfThin('narrative.phenomena', phenomena.length, 30)
-  warnIfThin('narrative.narrativeStructures', narrativeStructures.length, 8)
+  warnIfThin('narrative.narrativeStructures', narrativeStructures.length, 16)
 }
 
 function validateMechanicalTables(): void {
@@ -452,6 +480,8 @@ function printReport(): void {
     ['humanRemnants', humanRemnants.length],
     ['remnantHooks', remnantHooks.length],
     ['phenomena', phenomena.length],
+    ['namedFactions', namedFactions.length],
+    ['narrativeDomains', Object.keys(narrativeDomains).length],
     ['narrativeVariablePools', Object.keys(narrativeVariablePools).length],
     ['narrativeStructures', narrativeStructures.length],
   ])

@@ -216,12 +216,61 @@ export interface SystemPhenomenon {
   note: Fact<string>
 }
 
+export type NarrativeFactStatus = 'established' | 'inferred' | 'rumor' | 'secret' | 'cover-story'
+
+export type NarrativeFactSubjectType =
+  | 'system'
+  | 'star'
+  | 'body'
+  | 'settlement'
+  | 'ruin'
+  | 'phenomenon'
+  | 'faction'
+  | 'route'
+  | 'gu'
+
+export interface NarrativeFact {
+  id: string
+  kind: string
+  domains: string[]
+  subjectType: NarrativeFactSubjectType
+  subjectId?: string
+  value: Fact<string>
+  tags: string[]
+  status: NarrativeFactStatus
+  sourcePath: string
+}
+
 export interface NarrativeLine {
   id: string
   structureId: Fact<string>
   label: Fact<string>
+  motif?: Fact<string>
+  domains: Array<Fact<string>>
   text: Fact<string>
   variables: Record<string, Fact<string>>
+  factsUsed: string[]
+  factsIntroduced: string[]
+}
+
+export type NarrativeBeatKind = 'public-premise' | 'pressure' | 'hidden-cause' | 'choice'
+
+export interface NarrativeBeat {
+  id: string
+  kind: NarrativeBeatKind
+  text: Fact<string>
+  factsUsed: string[]
+}
+
+export interface NarrativeThread {
+  id: string
+  title: Fact<string>
+  domains: Array<Fact<string>>
+  motif?: Fact<string>
+  lineIds: string[]
+  beats: NarrativeBeat[]
+  factsUsed: string[]
+  factsIntroduced: string[]
 }
 
 export interface NoAlienCheck {
@@ -245,7 +294,9 @@ export interface GeneratedSystem {
   settlements: Settlement[]
   ruins: HumanRemnant[]
   phenomena: SystemPhenomenon[]
+  narrativeFacts: NarrativeFact[]
   narrativeLines: NarrativeLine[]
+  narrativeThreads: NarrativeThread[]
   majorHazards: Array<Fact<string>>
   noAlienCheck: NoAlienCheck
 }

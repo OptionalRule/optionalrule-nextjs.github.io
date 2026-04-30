@@ -283,7 +283,9 @@ describe('generateSystem', () => {
         settlements: system.settlements,
         ruins: system.ruins,
         phenomena: system.phenomena,
+        narrativeFacts: system.narrativeFacts,
         narrativeLines: system.narrativeLines,
+        narrativeThreads: system.narrativeThreads,
         majorHazards: system.majorHazards,
       }).toLowerCase()
 
@@ -768,12 +770,20 @@ describe('generateSystem', () => {
 
     expect(system.ruins.length).toBeGreaterThan(0)
     expect(system.phenomena.length).toBeGreaterThan(0)
+    expect(system.narrativeFacts.length).toBeGreaterThan(0)
     expect(system.narrativeLines.length).toBeGreaterThan(0)
+    expect(system.narrativeThreads).toHaveLength(system.narrativeLines.length)
+    expect(system.narrativeLines.some((line) => line.factsUsed.length > 0)).toBe(true)
     for (const line of system.narrativeLines) {
       expect(line.structureId.value).toBeTruthy()
       expect(line.label.value).toBeTruthy()
+      expect(line.domains.length).toBeGreaterThan(0)
       expect(line.text.value).not.toContain('{')
       expect(Object.keys(line.variables).length).toBeGreaterThan(0)
+    }
+    for (const thread of system.narrativeThreads) {
+      expect(thread.beats).toHaveLength(4)
+      expect(thread.factsUsed.length).toBeGreaterThan(0)
     }
     expect(JSON.stringify(system.ruins).toLowerCase()).not.toContain('alien')
   })

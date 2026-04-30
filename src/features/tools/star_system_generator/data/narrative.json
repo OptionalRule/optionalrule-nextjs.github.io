@@ -1,13 +1,14 @@
 {
   "_notes": {
-    "file": "Narrative-facing system tables: remnants, hooks, phenomena, and reusable story structures.",
+    "file": "Narrative-facing system tables: remnants, hooks, phenomena, domain pools, and reusable story structures.",
     "editing": "Use this file for table-facing prompts that explain why a system matters. Prefer templates with variables over many near-duplicate sentence variants.",
     "sections": {
       "humanRemnants": "Physical remains of prior human activity.",
       "remnantHooks": "Short clauses explaining why a remnant matters now.",
       "phenomena": "System-scale oddities that shape travel, surveys, or conflict.",
+      "narrativeDomains": "Domain-specific authoring guidance and reusable pools.",
       "narrativeVariablePools": "Reusable variable lists for narrative templates.",
-      "narrativeStructures": "Sentence templates that combine variables into system-level dramatic situations."
+      "narrativeStructures": "Sentence templates that combine generated facts and fallback pools into system-level dramatic situations."
     }
   },
   "humanRemnants": [
@@ -25,7 +26,16 @@
     "Iggygate construction failure",
     "Sol-struck outpost",
     "Records surgically erased",
-    "Still broadcasting old distress call"
+    "Still broadcasting old distress call",
+    "Evacuated Gardener-warning camp",
+    "Sealed salvage court archive",
+    "Corporate atrocity evidence vault",
+    "Half-built ring habitat",
+    "Quarantine-era cemetery cylinder",
+    "Strikebreaker barracks ruin",
+    "Destroyed customs picket",
+    "Abandoned school-and-market dome",
+    "Narrow-AI witness core"
   ],
   "remnantHooks": [
     "claimed by three legal owners",
@@ -34,7 +44,22 @@
     "sits inside a drifting hazard zone",
     "was erased from corporate maps",
     "is used as bait by criminals",
-    "contains evidence that would alter local politics"
+    "contains evidence that would alter local politics",
+    "holds a debt ledger nobody wants audited",
+    "keeps transmitting a public evacuation order",
+    "contains a censored AI witness",
+    "proves the quarantine order was edited after the disaster",
+    "marks an old labor massacre as a maintenance accident",
+    "contains navigation data for a safer route window",
+    "has legal title older than the current concession",
+    "is protected by a community funeral compact",
+    "contains Sol-interdiction files under seal",
+    "is slowly being consumed by programmed regolith",
+    "hides survivors who never rejoined the registry",
+    "is the only neutral ground for rival claimants",
+    "shows the official casualty list is false",
+    "contains records of a failed public vote",
+    "is still defended by obsolete security routines"
   ],
   "phenomena": [
     "Dense debris disk",
@@ -56,8 +81,166 @@
     "Failed terraforming biosphere",
     "First-wave ghost colony",
     "Derelict fleet cluster",
-    "Gardener warning beacon"
+    "Gardener warning beacon",
+    "Narrow-AI perception fog",
+    "Censored casualty broadcast loop",
+    "Black-market route beacon lattice",
+    "Quarantine perimeter with disputed math",
+    "Election-day metric storm cycle",
+    "Debt-fleet anchor graveyard",
+    "Refugee ark parking orbit",
+    "Chiral contamination bloom",
+    "Sol-interdiction picket shadow",
+    "Public festival tied to safe transit windows",
+    "Industrial mirror swarm failure",
+    "Salvage court evidence cache"
   ],
+  "namedFactions": [
+    {
+      "id": "helion-debt-synod",
+      "name": "Helion Debt Synod",
+      "kind": "banking cartel",
+      "domains": ["trade", "labor", "governance"],
+      "publicFace": "a debt-trust court that presents itself as neutral credit infrastructure"
+    },
+    {
+      "id": "veyra-locke-concession",
+      "name": "Veyra-Locke Concession",
+      "kind": "megacorp extraction charter",
+      "domains": ["trade", "ecology", "labor"],
+      "publicFace": "a concession office that treats resource law as a private operating system"
+    },
+    {
+      "id": "orison-route-authority",
+      "name": "Orison Route Authority",
+      "kind": "gate and route bureaucracy",
+      "domains": ["trade", "governance", "public-life"],
+      "publicFace": "a transit authority trusted to publish safe windows and customs schedules"
+    },
+    {
+      "id": "ash-meridian-navy",
+      "name": "Ash Meridian Navy",
+      "kind": "regional naval command",
+      "domains": ["war", "governance", "espionage"],
+      "publicFace": "a disciplined route-security fleet with sealed casualty accounting"
+    },
+    {
+      "id": "glasshouse-biosafety-compact",
+      "name": "Glasshouse Biosafety Compact",
+      "kind": "medical and quarantine consortium",
+      "domains": ["ecology", "science", "governance"],
+      "publicFace": "a biosafety compact that can make quarantine feel like law"
+    },
+    {
+      "id": "kestrel-free-captains",
+      "name": "Kestrel Free Compact",
+      "kind": "independent captain compact",
+      "domains": ["trade", "crime", "migration"],
+      "publicFace": "a loose compact of free captains, smugglers, and emergency haulers"
+    },
+    {
+      "id": "ninth-ledger-office",
+      "name": "Ninth Ledger Office",
+      "kind": "Sol-interdiction compliance bureau",
+      "domains": ["espionage", "governance", "religion"],
+      "publicFace": "a quiet compliance office that seals records before anyone can ask why"
+    },
+    {
+      "id": "red-vane-labor-combine",
+      "name": "Red Vane Labor Combine",
+      "kind": "worker and habitat-repair federation",
+      "domains": ["labor", "public-life", "trade"],
+      "publicFace": "a worker federation that controls repair crews, strike funds, and funeral broadcasts"
+    },
+    {
+      "id": "sepulcher-archive-court",
+      "name": "Sepulcher Archive Court",
+      "kind": "salvage and first-wave title court",
+      "domains": ["archaeology", "law", "trade"],
+      "publicFace": "a salvage court that makes dead charters dangerous again"
+    },
+    {
+      "id": "pale-choir-communion",
+      "name": "Pale Choir Communion",
+      "kind": "Gardener-warning religious network",
+      "domains": ["religion", "public-life", "disaster"],
+      "publicFace": "a warning rite network that treats route disasters as moral evidence"
+    }
+  ],
+  "narrativeDomains": {
+    "war": {
+      "label": "War and Security",
+      "actors": ["system navy", "interstellar navy", "local militia", "mercenary company", "Ash Meridian Navy"],
+      "stakes": ["military basing rights", "route denial", "defense grid access"],
+      "pressures": ["censored casualty lists", "old minefields", "mobilization drafts"],
+      "secrets": ["a private military contract", "falsified casualty records"],
+      "sceneAnchors": ["listening post", "old navy depot", "defense-grid bunker"]
+    },
+    "trade": {
+      "label": "Trade and Extraction",
+      "actors": ["megacorp concession", "trade house", "extraction guild", "banking or debt trust", "Helion Debt Synod", "Veyra-Locke Concession", "Orison Route Authority", "Kestrel Free Compact"],
+      "stakes": ["chiral resource rights", "water and volatile shipments", "Iggygate control"],
+      "pressures": ["debt seizures", "tariff strikes", "shipyard shortages"],
+      "secrets": ["a hidden debt transfer", "a profitable containment failure"],
+      "sceneAnchors": ["customs post", "fuel depot", "shipyard"]
+    },
+    "espionage": {
+      "label": "Espionage and Records",
+      "actors": ["intelligence service", "Sol-interdiction compliance office", "smuggler compact", "Ninth Ledger Office", "Ash Meridian Navy"],
+      "stakes": ["survey data ownership", "AI custody", "sealed route records"],
+      "pressures": ["records surgically erased", "censored AI testimony", "false sensor returns"],
+      "secrets": ["a censored AI witness", "a concealed evacuation order"],
+      "sceneAnchors": ["evidence vault", "interrogation module", "sealed archive"]
+    },
+    "labor": {
+      "label": "Labor and Survival",
+      "actors": ["worker council", "debt trust", "extraction guild", "emergency commander", "Red Vane Labor Combine", "Helion Debt Synod"],
+      "stakes": ["habitat repair priority", "life-support fees", "forced labor contracts"],
+      "pressures": ["ration failures", "forced labor drafts", "failed habitat repairs"],
+      "secrets": ["a deliberately worsened shortage", "the settlement is insolvent"],
+      "sceneAnchors": ["airlock queue", "ration office", "maintenance shaft"]
+    },
+    "religion": {
+      "label": "Religion and Meaning",
+      "actors": ["religious commune", "Gardener-fear cult", "exile council", "Pale Choir Communion", "Ninth Ledger Office"],
+      "stakes": ["pilgrimage access", "public warning rites", "forbidden observance"],
+      "pressures": ["Sol-monitoring rumors", "Gardener warning signs", "AI prophecy rumors"],
+      "secrets": ["a faction is provoking Gardener attention", "a sealed Sol warning"],
+      "sceneAnchors": ["geometry chapel", "warning-beacon shrine", "funeral cylinder"]
+    },
+    "ecology": {
+      "label": "Ecology and Biosafety",
+      "actors": ["medical/biosafety board", "research consortium", "quarantine authority", "Glasshouse Biosafety Compact", "Veyra-Locke Concession"],
+      "stakes": ["quarantine exemptions", "biosphere custody", "terraforming debt"],
+      "pressures": ["biosafety breach", "chiral contamination", "habitat exposure"],
+      "secrets": ["the quarantine order was fabricated", "a profitable containment failure"],
+      "sceneAnchors": ["biosafety lock", "plume vent lab", "sealed sample garden"]
+    },
+    "archaeology": {
+      "label": "First-Wave History",
+      "actors": ["salvage court", "first-wave heirs", "family syndicate", "Sepulcher Archive Court"],
+      "stakes": ["salvage title", "first-wave inheritance claims", "deleted archive rights"],
+      "pressures": ["old distress calls", "conflicting legal title", "erased maps"],
+      "secrets": ["the first-wave owners never died", "a buried first-wave claim"],
+      "sceneAnchors": ["ruin registry", "old transit map", "sealed witness core"]
+    },
+    "public-life": {
+      "label": "Public Life",
+      "actors": ["civilian colony", "refugee settlement leadership", "frontier magistrate", "Red Vane Labor Combine", "Pale Choir Communion"],
+      "stakes": ["public legitimacy", "evacuation priority", "repair schedules"],
+      "pressures": ["ration rituals", "election crisis", "public casualty vigils"],
+      "secrets": ["a concealed evacuation order", "the public vote was altered"],
+      "sceneAnchors": ["market lock", "school module", "public shelter"]
+    },
+    "ai": {
+      "label": "Narrow AI",
+      "actors": ["AI-supervised technocracy", "AI custody board", "maintenance clergy"],
+      "stakes": ["AI custody", "root credential access", "memory archive rights"],
+      "pressures": ["AI memory gaps", "illegal AI expansion", "narrow-AI fragmentation"],
+      "secrets": ["a censored AI witness", "the AI has a lawful override"],
+      "sceneAnchors": ["root console", "AI hearing chamber", "cold backup vault"]
+    }
+  },
   "narrativeVariablePools": {
     "groups": [
       "system navy",
@@ -83,7 +266,23 @@
       "Sol-interdiction compliance office",
       "Gardener-fear cult",
       "independent captain assembly",
-      "mercenary company"
+      "mercenary company",
+      "salvage court",
+      "frontier magistrate",
+      "insurance-backed administrator",
+      "chiral-harvest cartel",
+      "intelligence service",
+      "trade house",
+      "Helion Debt Synod",
+      "Veyra-Locke Concession",
+      "Orison Route Authority",
+      "Ash Meridian Navy",
+      "Glasshouse Biosafety Compact",
+      "Kestrel Free Compact",
+      "Ninth Ledger Office",
+      "Red Vane Labor Combine",
+      "Sepulcher Archive Court",
+      "Pale Choir Communion"
     ],
     "stakes": [
       "pinchroute access",
@@ -99,7 +298,13 @@
       "refugee resettlement authority",
       "military basing rights",
       "bleed containment contracts",
-      "first-wave inheritance claims"
+      "first-wave inheritance claims",
+      "public evacuation priority",
+      "life-support pricing",
+      "safe transit windows",
+      "root credential custody",
+      "biosphere sampling rights",
+      "sealed archive access"
     ],
     "leverage": [
       "the only stable route chart",
@@ -111,7 +316,12 @@
       "food and water ration authority",
       "the AI's root credentials",
       "quarantine release papers",
-      "the only functioning shipyard"
+      "the only functioning shipyard",
+      "the public casualty register",
+      "the salvage court docket",
+      "the sealed Sol-interdiction file",
+      "the old first-wave title map",
+      "the evacuation ark manifest"
     ],
     "pressures": [
       "ration failures",
@@ -123,7 +333,13 @@
       "smuggling crackdowns",
       "AI memory gaps",
       "contaminated chiral stock",
-      "Sol-monitoring rumors"
+      "Sol-monitoring rumors",
+      "tariff protests",
+      "public shelter shortages",
+      "bleed-window blackouts",
+      "quarantine fatigue",
+      "maintenance strike threats",
+      "funeral broadcasts"
     ],
     "threats": [
       "chiral contamination",
@@ -135,7 +351,12 @@
       "programmed regolith growth",
       "refugee unrest",
       "corporate sabotage",
-      "Gardener attention"
+      "Gardener attention",
+      "narrow-AI fragmentation",
+      "a staged pirate threat",
+      "sealed Sol interdiction",
+      "public panic over false sensor returns",
+      "a containment failure made profitable"
     ],
     "secrets": [
       "falsified casualty records",
@@ -147,7 +368,12 @@
       "a censored AI witness",
       "a private military contract",
       "a concealed evacuation order",
-      "a profitable containment failure"
+      "a profitable containment failure",
+      "an altered public vote",
+      "a sealed Sol-interdiction warning",
+      "a staged pirate threat",
+      "a lawful AI override nobody will admit",
+      "a quarantine order written after the disaster"
     ],
     "routeAssets": [
       "the Iggygate throat complex",
@@ -157,7 +383,11 @@
       "the nav-beacon lattice",
       "the Lagrange anchor",
       "the shipyard",
-      "the military listening post"
+      "the military listening post",
+      "the moving bleed-node track",
+      "the customs schedule",
+      "the salvage court archive",
+      "the refugee ark parking orbit"
     ],
     "claims": [
       "the route data was stolen",
@@ -167,13 +397,54 @@
       "the AI has a lawful override",
       "the hazard reports were altered",
       "the debt ledger is forged",
-      "the system was promised autonomy"
+      "the system was promised autonomy",
+      "the evacuation list was changed",
+      "the strike was provoked by management",
+      "the pirate threat is staged",
+      "the public vote was erased"
+    ],
+    "publics": [
+      "dock crews",
+      "debt families",
+      "refugee households",
+      "repair guilds",
+      "school modules",
+      "pilgrim crews",
+      "salvage families",
+      "quarantine workers",
+      "shipyard apprentices",
+      "market cooperatives"
+    ],
+    "choices": [
+      "open the records and risk system-wide panic",
+      "protect the route and abandon the exposed settlement",
+      "break quarantine to save the people outside it",
+      "side with legal title or present need",
+      "evacuate the workers or preserve the resource window",
+      "trust the censored AI or the official board",
+      "publish the casualty list or keep the peace",
+      "pay the debt trust or fund habitat repairs"
+    ],
+    "sceneAnchors": [
+      "airlock queue",
+      "public ration office",
+      "shipyard lock",
+      "sealed archive",
+      "geometry chapel",
+      "AI hearing chamber",
+      "salvage court",
+      "customs dock",
+      "biosafety lock",
+      "funeral broadcast room"
     ]
   },
   "narrativeStructures": [
     {
       "id": "painful-struggle",
       "label": "Painful Struggle",
+      "domains": ["governance", "war", "labor"],
+      "motif": "rival-power-bloc",
+      "requiredLayers": ["human"],
       "template": "System is locked in a painful struggle between the {groupA} and the {groupB} over {stake}.",
       "slots": { "groupA": "groups", "groupB": "groups", "stake": "stakes" },
       "distinctSlots": [["groupA", "groupB"]]
@@ -181,6 +452,9 @@
     {
       "id": "brittle-protectorate",
       "label": "Brittle Protectorate",
+      "domains": ["governance", "public-life", "labor"],
+      "motif": "order-through-leverage",
+      "requiredLayers": ["human"],
       "template": "The {groupA} keeps order by controlling {leverage}, but the {groupB} is turning {pressure} into a cause.",
       "slots": { "groupA": "groups", "leverage": "leverage", "groupB": "groups", "pressure": "pressures" },
       "distinctSlots": [["groupA", "groupB"]]
@@ -188,6 +462,9 @@
     {
       "id": "costly-extraction",
       "label": "Costly Extraction",
+      "domains": ["trade", "labor", "crime"],
+      "motif": "resource-profit-vs-human-cost",
+      "requiredLayers": ["gu", "human"],
       "template": "The {groupA} can profit from {stake}, but {pressure} has made the {groupB} desperate enough to act.",
       "slots": { "groupA": "groups", "stake": "stakes", "pressure": "pressures", "groupB": "groups" },
       "distinctSlots": [["groupA", "groupB"]]
@@ -195,6 +472,9 @@
     {
       "id": "quarantine-secret",
       "label": "Quarantine Secret",
+      "domains": ["ecology", "science", "espionage"],
+      "motif": "public-safety-vs-hidden-cause",
+      "requiredLayers": ["gu", "human"],
       "template": "The {groupA} claims {threat} requires harsh controls, while the {groupB} insists the real issue is {secret}.",
       "slots": { "groupA": "groups", "threat": "threats", "groupB": "groups", "secret": "secrets" },
       "distinctSlots": [["groupA", "groupB"]]
@@ -202,9 +482,125 @@
     {
       "id": "route-chokepoint",
       "label": "Route Chokepoint",
+      "domains": ["trade", "governance", "crime"],
+      "motif": "route-control",
+      "requiredLayers": ["gu", "human"],
       "template": "Control of {routeAsset} lets the {groupA} tax every ship, unless the {groupB} can prove {claim}.",
       "slots": { "routeAsset": "routeAssets", "groupA": "groups", "groupB": "groups", "claim": "claims" },
       "distinctSlots": [["groupA", "groupB"]]
+    },
+    {
+      "id": "moving-bleed-rush",
+      "label": "Moving Bleed Rush",
+      "domains": ["trade", "science", "crime"],
+      "motif": "moving-resource-window",
+      "requiredLayers": ["gu", "human"],
+      "template": "{stake} has created a rush around {routeAsset}, and the {groupA} is using {leverage} before {threat} closes the window.",
+      "slots": { "stake": "stakes", "routeAsset": "routeAssets", "groupA": "groups", "leverage": "leverage", "threat": "threats" }
+    },
+    {
+      "id": "first-wave-inheritance",
+      "label": "First-Wave Inheritance",
+      "domains": ["archaeology", "governance", "trade"],
+      "motif": "old-title-vs-present-need",
+      "requiredLayers": ["human"],
+      "template": "A first-wave claim around {routeAsset} could overturn {stake}, but the {groupA} needs {secret} to stay buried.",
+      "slots": { "routeAsset": "routeAssets", "stake": "stakes", "groupA": "groups", "secret": "secrets" }
+    },
+    {
+      "id": "ai-witness",
+      "label": "AI Witness",
+      "domains": ["ai", "espionage", "law"],
+      "motif": "censored-witness",
+      "requiredLayers": ["human"],
+      "template": "The {groupA} wants custody of the AI record at {sceneAnchor}, because it can prove {claim} unless {threat} destroys the testimony.",
+      "slots": { "groupA": "groups", "sceneAnchor": "sceneAnchors", "claim": "claims", "threat": "threats" }
+    },
+    {
+      "id": "gardener-warning",
+      "label": "Gardener Warning",
+      "domains": ["religion", "governance", "disaster"],
+      "motif": "interdiction-shadow",
+      "requiredLayers": ["gu", "human"],
+      "template": "After {threat}, the {groupA} treats {routeAsset} as a warning sign, while the {groupB} argues that {choice}.",
+      "slots": { "threat": "threats", "groupA": "groups", "routeAsset": "routeAssets", "groupB": "groups", "choice": "choices" },
+      "distinctSlots": [["groupA", "groupB"]]
+    },
+    {
+      "id": "labor-under-vacuum",
+      "label": "Labor Under Vacuum",
+      "domains": ["labor", "public-life", "trade"],
+      "motif": "survival-as-contract-leverage",
+      "requiredLayers": ["human"],
+      "template": "{public} depend on {leverage}, so {pressure} has turned the {groupA} and the {groupB} into open enemies.",
+      "slots": { "public": "publics", "leverage": "leverage", "pressure": "pressures", "groupA": "groups", "groupB": "groups" },
+      "distinctSlots": [["groupA", "groupB"]]
+    },
+    {
+      "id": "public-life-under-hazard",
+      "label": "Public Life Under Hazard",
+      "domains": ["public-life", "daily-life", "disaster"],
+      "motif": "ordinary-life-under-system-pressure",
+      "requiredLayers": ["human"],
+      "template": "Daily life now centers on {sceneAnchor}: {public} are caught between {pressure} and the official promise that {threat} is under control.",
+      "slots": { "sceneAnchor": "sceneAnchors", "public": "publics", "pressure": "pressures", "threat": "threats" }
+    },
+    {
+      "id": "biosphere-exploitation",
+      "label": "Biosphere Exploitation",
+      "domains": ["ecology", "science", "trade"],
+      "motif": "living-world-vs-extraction",
+      "requiredLayers": ["physical", "human"],
+      "template": "The {groupA} calls {stake} harmless research, but {pressure} has convinced the {groupB} that {secret}.",
+      "slots": { "groupA": "groups", "stake": "stakes", "pressure": "pressures", "groupB": "groups", "secret": "secrets" },
+      "distinctSlots": [["groupA", "groupB"]]
+    },
+    {
+      "id": "refugee-resettlement-fight",
+      "label": "Refugee Resettlement Fight",
+      "domains": ["migration", "public-life", "governance"],
+      "motif": "who-gets-to-stay",
+      "requiredLayers": ["human"],
+      "template": "The {groupA} promises {stake}, but {public} know {claim}, and {pressure} is making compromise impossible.",
+      "slots": { "groupA": "groups", "stake": "stakes", "public": "publics", "claim": "claims", "pressure": "pressures" }
+    },
+    {
+      "id": "salvage-fraud",
+      "label": "Salvage Fraud",
+      "domains": ["archaeology", "crime", "trade"],
+      "motif": "legal-title-as-cover",
+      "requiredLayers": ["human"],
+      "template": "The {groupA} is using {claim} to seize {routeAsset}, but the {groupB} found {secret} in {sceneAnchor}.",
+      "slots": { "groupA": "groups", "claim": "claims", "routeAsset": "routeAssets", "groupB": "groups", "secret": "secrets", "sceneAnchor": "sceneAnchors" },
+      "distinctSlots": [["groupA", "groupB"]]
+    },
+    {
+      "id": "election-under-interdiction",
+      "label": "Election Under Interdiction",
+      "domains": ["governance", "public-life", "espionage"],
+      "motif": "legitimacy-under-seal",
+      "requiredLayers": ["human"],
+      "template": "{public} are being asked to accept the {groupA}'s emergency rule until {threat} passes, but the {groupB} can prove {claim}.",
+      "slots": { "public": "publics", "groupA": "groups", "threat": "threats", "groupB": "groups", "claim": "claims" },
+      "distinctSlots": [["groupA", "groupB"]]
+    },
+    {
+      "id": "quiet-pilgrimage",
+      "label": "Quiet Pilgrimage",
+      "domains": ["religion", "public-life", "trade"],
+      "motif": "ritual-route-economy",
+      "requiredLayers": ["gu", "human"],
+      "template": "{public} gather at {sceneAnchor} whenever {routeAsset} is safe, and the {groupA} fears the ritual will expose {secret}.",
+      "slots": { "public": "publics", "sceneAnchor": "sceneAnchors", "routeAsset": "routeAssets", "groupA": "groups", "secret": "secrets" }
+    },
+    {
+      "id": "false-pirate-threat",
+      "label": "False Pirate Threat",
+      "domains": ["crime", "espionage", "trade"],
+      "motif": "manufactured-security-crisis",
+      "requiredLayers": ["human"],
+      "template": "Everyone blames {threat} for the lockdown, but the real leverage is {leverage}, and the {groupA} benefits if {claim}.",
+      "slots": { "threat": "threats", "leverage": "leverage", "groupA": "groups", "claim": "claims" }
     }
   ]
 }
