@@ -363,8 +363,135 @@ function sentenceFragment(value: string): string {
   return lowerFirst(value)
 }
 
+function sentenceStart(value: string): string {
+  if (!value) return value
+  return `${value.charAt(0).toUpperCase()}${value.slice(1)}`
+}
+
 function stripTerminalPunctuation(value: string): string {
   return value.replace(/[.!?]+$/g, '')
+}
+
+function smoothTechnicalPhrase(value: string): string {
+  return value
+    .replace(/\brefinery\/gate\/AI\b/gi, 'the refinery, gate, or AI systems')
+    .replace(/\bmetric\/radiation\b/gi, 'metric and radiation')
+    .replace(/\bshielding\/chiral\b/gi, 'shielding and chiral')
+    .replace(/\bSol\/Gardener\b/g, 'Sol or Gardener')
+}
+
+function definiteNounPhrase(value: string): string {
+  const phrase = smoothTechnicalPhrase(stripTerminalPunctuation(sentenceFragment(value)).trim())
+  if (!phrase) return phrase
+  if (/^(the|a|an|access to|control of|custody of|safe transit|public|root)\b/i.test(phrase)) return phrase
+  return `the ${phrase}`
+}
+
+function conditionAsPressure(value: string, place: string): string {
+  const condition = sentenceFragment(value)
+  if (/recently evacuated/i.test(value)) return `the recent evacuation of ${place}`
+  if (/under quarantine/i.test(value)) return `the quarantine at ${place}`
+  if (/divided by class zones/i.test(value)) return `class-zone divisions at ${place}`
+  if (/pristine and overfunded/i.test(value)) return `the overfunded order at ${place}`
+  if (/efficient but joyless/i.test(value)) return `joyless efficiency at ${place}`
+  if (/population unknown|falsified/i.test(value)) return `falsified population records at ${place}`
+  return `${condition} conditions at ${place}`
+}
+
+function crisisAsPressure(value: string): string {
+  const crisis = smoothTechnicalPhrase(sentenceFragment(value))
+  if (/the base broadcasts two contradictory distress calls/i.test(value)) return 'contradictory distress calls from the base'
+  if (/a whole district goes silent/i.test(value)) return 'a silent district'
+  if (/ship full of dead arrives/i.test(value)) return 'the arrival of a ship full of dead'
+  if (/everyone is lying about casualty numbers/i.test(value)) return 'lies about casualty numbers'
+  if (/crisis is staged to hide something worse/i.test(value)) return 'a staged crisis'
+  if (/children or civilians trapped/i.test(value)) return 'trapped civilians'
+  if (/essential expert missing/i.test(value)) return 'a missing essential expert'
+  if (/old first-wave map found/i.test(value)) return 'a newly found first-wave map'
+  if (/Sol\/Gardener warning sign detected/i.test(value)) return 'a detected Sol or Gardener warning sign'
+  if (/AI refuses unsafe operation/i.test(value)) return 'AI refusal to operate unsafely'
+  if (/illegal AI expansion discovered/i.test(value)) return 'a discovered illegal AI expansion'
+  if (/medical supplies stolen/i.test(value)) return 'stolen medical supplies'
+  if (/hull breach hidden from public/i.test(value)) return 'a hidden hull breach'
+  if (/bleed node changed course/i.test(value)) return 'a drifting bleed node'
+  if (/flare season arrived early/i.test(value)) return 'an early flare season'
+  if (/chiral harvest turned toxic/i.test(value)) return 'a toxic chiral harvest'
+  if (/radiation storm incoming/i.test(value)) return 'an incoming radiation storm'
+  if (/metric storm trapped ships/i.test(value)) return 'ships trapped by a metric storm'
+  if (/election or succession crisis/i.test(value)) return 'an election or succession crisis'
+  if (/^sabotage of (.+)$/i.test(value)) return crisis.replace(/^sabotage of /i, 'sabotage against ')
+  if (/^(labor strike|debt revolt|corporate security crackdown|pirate protection demand|smuggler war|refugee surge|quarantine violation|unknown native microbial hazard|failed terraforming release|medical supplies stolen|military coup|salvage claim dispute|life-support cascade|radiation storm incoming|flare season arrived early|hull breach hidden from public|bleed node changed course|chiral harvest turned toxic|Iggygate schedule failure|pinchdrive calibration accident)$/i.test(crisis)) {
+    const article = /^[aeiou]/i.test(crisis) ? 'an' : 'a'
+    return `${article} ${crisis}`
+  }
+  return crisis
+}
+
+function crisisPressureSentence(value: string, consequence: string): string {
+  const crisis = crisisAsPressure(value)
+  if (/^(ships trapped|trapped civilians|lies about)\b/i.test(crisis)) {
+    const pluralConsequence = consequence.replace(/^keeps\b/i, 'keep').replace(/^makes\b/i, 'make')
+    return `${sentenceStart(crisis)} ${pluralConsequence}.`
+  }
+  if (/^sabotage\b/i.test(crisis)) return `${sentenceStart(crisis)} ${consequence}.`
+  if (/^an?\s/i.test(crisis)) return `${sentenceStart(crisis)} ${consequence}.`
+  return `The crisis around ${crisis} ${consequence}.`
+}
+
+function hiddenCauseBeatText(secretText: string): string {
+  const secret = stripTerminalPunctuation(lowerFirst(secretText))
+  if (/^(records|evidence|proof)\b/i.test(secret)) {
+    const verb = /^records\b/i.test(secret) ? 'are' : 'is'
+    return `${sentenceStart(secret)} ${verb} driving the conflict.`
+  }
+  if (/^(the|a|an)\s+.+\s+(is|are|was|were|has|have|cannot|can|will|would)\b/i.test(secret)) {
+    return `The hidden cause is that ${secret}.`
+  }
+  return `The hidden evidence is ${secret}.`
+}
+
+function domainProtectionPhrase(domain: string | undefined): string {
+  switch (domain) {
+    case 'archaeology':
+      return 'the archaeological record'
+    case 'ecology':
+      return 'ecological stability'
+    case 'science':
+      return 'scientific access'
+    case 'trade':
+      return 'trade access'
+    case 'governance':
+      return 'public legitimacy'
+    case 'public-life':
+    case 'daily-life':
+      return 'civilian life'
+    case 'labor':
+      return 'worker survival'
+    case 'war':
+      return 'defense readiness'
+    case 'espionage':
+      return 'operational secrecy'
+    case 'religion':
+      return 'public ritual'
+    default:
+      return 'public order'
+  }
+}
+
+function exposurePhrase(secretText: string): string {
+  const secret = stripTerminalPunctuation(lowerFirst(secretText))
+  if (/^(the|a|an)\s+.+\s+(is|are|was|were|has|have|cannot|can|will|would)\b/i.test(secret)) {
+    return `that ${secret}`
+  }
+  return secret
+}
+
+function choiceBeatText(domains: readonly string[], secretText: string | undefined, publicSubject: string): string {
+  const protectedValue = domainProtectionPhrase(domains[0])
+  const exposedValue = secretText
+    ? exposurePhrase(secretText)
+    : `what ${lowerFirst(publicSubject)} is hiding`
+  return `Choice: protect ${protectedValue} or expose ${exposedValue}.`
 }
 
 export function mergeLockedFact<T>(generated: Fact<T>, known?: Fact<T>): Fact<T> {
@@ -2102,7 +2229,7 @@ function settlementTagHook(rng: SeededRng, obviousTag: string, deeperTag: string
   const template = rng.int(1, 4)
   if (template === 1) return `${obviousTag} is what visitors notice first; ${deeperText}`
   if (template === 2) return `Outsiders call it ${obviousTag}, but the local pressure is sharper: ${deeperText}`
-  if (template === 3) return `${obviousTag} frames the first scene, while ${deeperTag} explains who benefits from the tension: ${deeperText}`
+  if (template === 3) return `${obviousTag} is the surface story, but ${deeperTag} shows who benefits from the tension: ${deeperText}`
   return `The public tag is ${obviousTag}; the private trouble is ${deeperTag}, because ${deeperText}`
 }
 
@@ -2123,14 +2250,14 @@ function settlementHookSynthesis(
 ): string {
   const base = settlementTagHook(rng, obviousTag, deeperTag)
   const pressure =
-    context.scale === 'Automated only' ? `Automation failure turns ${context.encounterSites[0].toLowerCase()} into the key scene` :
-    context.scale === 'Abandoned' ? `Salvage pressure centers on ${context.encounterSites[0].toLowerCase()}` :
-    context.guIntensity.includes('fracture') || context.guIntensity.includes('shear') ? `${context.crisis.toLowerCase()} makes the GU work impossible to treat as routine` :
-    `${context.crisis.toLowerCase()} puts ${context.siteCategory.toLowerCase()} politics under stress`
-  const secret = context.hiddenTruth.charAt(0).toLowerCase() + context.hiddenTruth.slice(1)
-  const functionPressure = context.settlementFunction.toLowerCase()
+    context.scale === 'Automated only' ? `Automation failure turns ${context.encounterSites[0].toLowerCase()} into the key scene.` :
+    context.scale === 'Abandoned' ? `Salvage pressure centers on ${context.encounterSites[0].toLowerCase()}.` :
+    context.guIntensity.includes('fracture') || context.guIntensity.includes('shear') ? crisisPressureSentence(context.crisis, 'makes the GU work impossible to treat as routine') :
+    crisisPressureSentence(context.crisis, `keeps ${context.siteCategory.toLowerCase()} politics under stress`)
+  const secret = sentenceFragment(context.hiddenTruth)
+  const functionPressure = definiteNounPhrase(context.settlementFunction)
 
-  return `${base} ${pressure}; ${secret}; ${functionPressure} decides who has leverage.`
+  return `${sentenceStart(base)} ${pressure} Privately, ${secret}. Control of ${functionPressure} decides who has leverage.`
 }
 
 function chooseSettlementTags(rng: SeededRng): [string, string] {
@@ -2804,6 +2931,16 @@ function narrativeFact(input: {
   }
 }
 
+function radiationCreatesNarrativeHazard(value: string): boolean {
+  return !/^(benign|manageable)$/i.test(value.trim())
+}
+
+function secretCandidateFromFact(factEntry: NarrativeFact): boolean {
+  if (factEntry.kind === 'settlement.hiddenTruth' || factEntry.kind === 'ruin.hook') return true
+  if (factEntry.kind !== 'settlement.aiSituation') return false
+  return /(hidden|illegal|memory gaps|only witness|censored|impostor|secret|missing|cut down|wrong authority|catastrophe|gardener)/i.test(factEntry.value.value)
+}
+
 function buildNarrativeFacts(ctx: NarrativeGenerationContext): NarrativeFact[] {
   const facts: NarrativeFact[] = [
     narrativeFact({
@@ -2927,12 +3064,14 @@ function buildNarrativeFacts(ctx: NarrativeGenerationContext): NarrativeFact[] {
         kind: 'body.radiation',
         subjectType: 'body',
         subjectId: body.id,
-        value: `${lowerFirst(body.detail.radiation.value)} near ${body.name.value}`,
+        value: radiationCreatesNarrativeHazard(body.detail.radiation.value)
+          ? `${sentenceFragment(body.detail.radiation.value)} near ${body.name.value}`
+          : `stable radiation conditions near ${body.name.value}`,
         confidence: body.detail.radiation.confidence,
         source: 'Narrative context from generated body radiation',
         sourcePath: `bodies[${bodyIndex}].detail.radiation`,
-        tags: ['hazard', 'physical'],
-        domains: ['disaster', 'public-life', 'science'],
+        tags: radiationCreatesNarrativeHazard(body.detail.radiation.value) ? ['hazard', 'physical'] : ['physical'],
+        domains: radiationCreatesNarrativeHazard(body.detail.radiation.value) ? ['disaster', 'public-life', 'science'] : ['public-life', 'science'],
       })
     )
 
@@ -3136,8 +3275,8 @@ function candidatesFromFacts(facts: readonly NarrativeFact[], poolName: string):
     poolName === 'stakes' ? [...byKind(['gu.resource', 'route.reachability', 'settlement.function', 'body.biosphere', 'body.site']), ...byTag(['stake'])] :
     poolName === 'leverage' ? [...byKind(['gu.bleedLocation', 'settlement.location', 'settlement.encounterSite']), ...byTag(['routeAsset', 'sceneAnchor'])] :
     poolName === 'pressures' ? [...byKind(['settlement.crisis', 'settlement.condition', 'settlement.tag', 'gu.hazard', 'gu.bleedBehavior']), ...byTag(['pressure'])] :
-    poolName === 'threats' ? [...byKind(['gu.hazard', 'gu.bleedBehavior', 'body.radiation', 'settlement.crisis']), ...byTag(['hazard'])] :
-    poolName === 'secrets' ? [...byKind(['settlement.hiddenTruth', 'settlement.aiSituation', 'ruin.hook']), ...byTag(['secret'])] :
+    poolName === 'threats' ? [...byKind(['gu.hazard', 'gu.bleedBehavior', 'body.radiation', 'settlement.crisis']), ...byTag(['hazard'])].filter((factEntry) => factEntry.kind !== 'body.radiation' || factEntry.tags.includes('hazard')) :
+    poolName === 'secrets' ? [...byKind(['settlement.hiddenTruth', 'settlement.aiSituation', 'ruin.hook']), ...byTag(['secret'])].filter(secretCandidateFromFact) :
     poolName === 'routeAssets' ? [...byKind(['gu.bleedLocation', 'settlement.location']), ...byTag(['routeAsset'])] :
     poolName === 'claims' ? [...byKind(['ruin.hook', 'settlement.hiddenTruth']), ...byTag(['claim'])] :
     poolName === 'sceneAnchors' ? [...byKind(['settlement.encounterSite', 'settlement.location']), ...byTag(['sceneAnchor'])] :
@@ -3155,7 +3294,7 @@ function candidatesFromFacts(facts: readonly NarrativeFact[], poolName: string):
 
 function narrativeSlotDisplayValue(factEntry: NarrativeFact, poolName: string): string {
   const rawValue = factEntry.value.value
-  const value = factEntry.kind === 'namedFaction' ? rawValue : sentenceFragment(rawValue)
+  const value = factEntry.kind === 'namedFaction' ? rawValue : smoothTechnicalPhrase(sentenceFragment(rawValue))
 
   if (poolName === 'groups') {
     if (value === 'no recognized authority') return 'unrecognized local crews'
@@ -3171,6 +3310,60 @@ function narrativeSlotDisplayValue(factEntry: NarrativeFact, poolName: string): 
   if (poolName === 'choices') {
     if (factEntry.status === 'secret') return `exposing ${value} is worth the risk`
     return value
+  }
+
+  if (poolName === 'claims') {
+    if (factEntry.kind === 'ruin.hook') {
+      if (/^contains\s+(.+)$/i.test(value)) return value.replace(/^contains\s+/i, 'the remnant contains ')
+      if (/^holds\s+(.+)$/i.test(value)) return value.replace(/^holds\s+/i, 'the remnant holds ')
+      if (/^proves\s+(.+)$/i.test(value)) return value.replace(/^proves\s+/i, '')
+      if (/^shows\s+(.+)$/i.test(value)) return value.replace(/^shows\s+/i, '')
+      if (/^(appears|sits|was|is|keeps|has|hides|marks)\b/i.test(value)) return `the remnant ${value}`
+    }
+    if (factEntry.kind === 'settlement.hiddenTruth') return lowerFirst(value)
+  }
+
+  if (poolName === 'secrets') {
+    if (factEntry.kind === 'ruin.hook') {
+      if (/^contains\s+(.+)$/i.test(value)) return value.replace(/^contains\s+/i, '')
+      if (/^holds\s+(.+)$/i.test(value)) return value.replace(/^holds\s+/i, '')
+      if (/^proves\s+(.+)$/i.test(value)) return value.replace(/^proves\s+/i, 'proof that ')
+      if (/^shows\s+(.+)$/i.test(value)) return value.replace(/^shows\s+/i, 'evidence that ')
+      if (/^(marks|has|hides|keeps)\b/i.test(value)) return `evidence that it ${value}`
+    }
+    if (factEntry.kind === 'settlement.hiddenTruth') return lowerFirst(value)
+  }
+
+  if (poolName === 'pressures') {
+    if (factEntry.kind === 'settlement.crisis') return crisisAsPressure(rawValue)
+    if (factEntry.kind === 'settlement.condition') {
+      const match = value.match(/^(.+) at (.+)$/)
+      if (match) return conditionAsPressure(match[1], match[2])
+    }
+    if (factEntry.kind === 'settlement.tag') return `${value.toLowerCase()} tensions`
+  }
+
+  if (poolName === 'threats') {
+    if (factEntry.kind === 'settlement.crisis') return crisisAsPressure(rawValue)
+    if (factEntry.kind === 'body.radiation') return value
+    if (factEntry.kind === 'gu.bleedBehavior') return `a bleed pattern that ${value}`
+  }
+
+  if (poolName === 'routeAssets') {
+    if (factEntry.kind === 'gu.bleedLocation' || factEntry.kind === 'settlement.location' || factEntry.kind === 'body.site') {
+      return definiteNounPhrase(value)
+    }
+  }
+
+  if (poolName === 'leverage') {
+    if (factEntry.kind === 'settlement.location' || factEntry.kind === 'settlement.encounterSite' || factEntry.kind === 'gu.bleedLocation') {
+      return definiteNounPhrase(value)
+    }
+  }
+
+  if (poolName === 'stakes' && factEntry.kind === 'settlement.function') {
+    const match = value.match(/^(.+) at (.+)$/)
+    if (match) return `control of ${definiteNounPhrase(match[1])} at ${match[2]}`
   }
 
   return value
@@ -3280,7 +3473,7 @@ function generateNarrativeThreads(lines: readonly NarrativeLine[], narrativeFact
     const secretFact = usedFacts.find((factEntry) => factEntry.status === 'secret' || factEntry.tags.includes('secret'))
     const publicFact = usedFacts.find((factEntry) => factEntry.subjectType === 'settlement' || factEntry.subjectType === 'ruin')
     const domains = line.domains.map((domain) => domain.value)
-    const publicSubject = publicFact?.value.value ?? line.label.value.toLowerCase()
+    const publicSubject = smoothTechnicalPhrase(publicFact ? sentenceFragment(publicFact.value.value) : line.label.value.toLowerCase())
     const pressureText =
       (pressureFact ? narrativeSlotDisplayValue(pressureFact, 'pressures') : undefined) ??
       line.variables.pressure?.value ??
@@ -3312,7 +3505,7 @@ function generateNarrativeThreads(lines: readonly NarrativeLine[], narrativeFact
         kind: 'hidden-cause' as const,
         text: fact(
           secretText
-            ? `The hidden cause points toward ${stripTerminalPunctuation(lowerFirst(secretText))}.`
+            ? hiddenCauseBeatText(secretText)
             : `The hidden cause is still disputed because ${lowerFirst(publicSubject)} is the only reliable anchor.`,
           'human-layer',
           'Narrative thread hidden cause synthesized from fact ledger'
@@ -3322,7 +3515,7 @@ function generateNarrativeThreads(lines: readonly NarrativeLine[], narrativeFact
       {
         id: `${line.id}-beat-4`,
         kind: 'choice' as const,
-        text: fact(`Player-facing choice: decide whether to protect ${domains[0] ?? 'public order'} stability or expose the facts behind ${lowerFirst(publicSubject)}.`, 'human-layer', 'Narrative thread choice synthesized from domains and fact ledger'),
+        text: fact(choiceBeatText(domains, secretText, publicSubject), 'human-layer', 'Narrative thread choice synthesized from domains and fact ledger'),
         factsUsed: line.factsUsed,
       },
     ]

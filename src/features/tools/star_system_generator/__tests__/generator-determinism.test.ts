@@ -846,7 +846,7 @@ describe('generateSystem', () => {
   })
 
   it('keeps automated and abandoned settlement crises scale-aware', () => {
-    const automatedCrises = new Set(['Life-support cascade', 'AI refuses unsafe operation', 'Illegal AI expansion discovered', 'Sabotage of refinery/gate/AI', 'Essential expert missing', 'The base broadcasts two contradictory distress calls'])
+    const automatedCrises = new Set(['Life-support cascade', 'AI refuses unsafe operation', 'Illegal AI expansion discovered', 'Sabotage of the refinery, gate, or AI systems', 'Essential expert missing', 'The base broadcasts two contradictory distress calls'])
     const abandonedCrises = new Set(['Salvage claim dispute', 'Old first-wave map found', 'Ship full of dead arrives', 'A whole district goes silent', 'The base broadcasts two contradictory distress calls', 'Crisis is staged to hide something worse'])
     const automatedConditions = new Set(['Efficient but joyless', 'Understaffed', 'Life support near failure', 'Hidden AI incident', 'Under quarantine', 'Officially safe, actually hazardous'])
     const abandonedConditions = new Set(['Half-abandoned', 'Recently evacuated', 'Reoccupied ruin', 'Decaying first-wave infrastructure', 'Hidden reason it cannot be abandoned'])
@@ -878,7 +878,10 @@ describe('generateSystem', () => {
       const system = generateSystem({ ...options, settlements: 'crowded', seed: `hook-coherence-${index.toString(16).padStart(4, '0')}` })
       for (const settlement of system.settlements) {
         expect(settlement.tagHook.value.toLowerCase()).toContain(settlement.hiddenTruth.value.toLowerCase())
-        expect(settlement.tagHook.value.toLowerCase()).toContain(settlement.function.value.toLowerCase())
+        const normalizedFunction = settlement.function.value
+          .toLowerCase()
+          .replace(/\bshielding\/chiral\b/g, 'shielding and chiral')
+        expect(settlement.tagHook.value.toLowerCase()).toContain(normalizedFunction)
       }
     }
   })

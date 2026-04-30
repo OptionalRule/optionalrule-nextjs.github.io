@@ -1323,7 +1323,7 @@ Roll d66.
 |  46 | Sol/Gardener warning sign detected                   |
 |  51 | Military coup                                        |
 |  52 | Election or succession crisis                        |
-|  53 | Sabotage of refinery/gate/AI                         |
+|  53 | Sabotage of the refinery, gate, or AI systems        |
 |  54 | Essential expert missing                             |
 |  55 | Salvage claim dispute                                |
 |  56 | Old first-wave map found                             |
