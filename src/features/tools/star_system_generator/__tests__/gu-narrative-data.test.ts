@@ -7,6 +7,7 @@ import {
   guResourceTable,
 } from '../lib/generator/data/gu'
 import { humanRemnants, phenomena, remnantHooks } from '../lib/generator/data/narrative'
+import { narrativeStructures, narrativeVariablePools } from '../lib/generator/data/narrative'
 
 describe('star system GU and narrative data', () => {
   it('has complete GU roll tables', () => {
@@ -23,5 +24,23 @@ describe('star system GU and narrative data', () => {
     expect(humanRemnants.length).toBeGreaterThan(0)
     expect(remnantHooks.length).toBeGreaterThan(0)
     expect(phenomena.length).toBeGreaterThan(0)
+  })
+
+  it('has complete narrative structures and variable pools', () => {
+    expect(narrativeStructures.length).toBeGreaterThan(0)
+
+    for (const structure of narrativeStructures) {
+      expect(structure.id).toBeTruthy()
+      expect(structure.label).toBeTruthy()
+      expect(structure.template).toContain('{')
+
+      const templateSlots = [...structure.template.matchAll(/\{([A-Za-z0-9_]+)\}/g)].map((match) => match[1])
+      expect(templateSlots.length).toBeGreaterThan(0)
+      expect(Object.keys(structure.slots).sort()).toEqual([...templateSlots].sort())
+
+      for (const poolName of Object.values(structure.slots)) {
+        expect(narrativeVariablePools[poolName]?.length, poolName).toBeGreaterThan(0)
+      }
+    }
   })
 })

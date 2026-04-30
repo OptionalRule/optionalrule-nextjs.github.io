@@ -68,11 +68,13 @@ When adding or changing a world class:
 
 JSON-backed creative pools live under `data/`.
 
+- Each JSON file may include a top-level `_notes` object. This is author-facing metadata only; keep it valid JSON instead of using `//` comments because the app imports these files directly.
 - Add system, body, moon, catalog, or settlement-name descriptor options in `data/names.json`.
 - Add settlement locations, functions, built forms, authorities, AI situations, conditions, tags, crises, hidden truths, encounter sites, and scale overrides in `data/settlements.json`.
 - Add GU bleed locations, behaviors, resources, hazards, and intensity labels in `data/gu.json`.
-- Add human remnants, remnant hooks, and phenomena in `data/narrative.json`.
+- Add human remnants, remnant hooks, phenomena, narrative variable pools, and reusable narrative structures in `data/narrative.json`.
 - Add stellar distributions, stellar age/metallicity, reachability, and architecture roll tables in `data/stellar.json`.
 - Add environment, moon, ring, activity, and generated site roll tables in `data/mechanics.json`.
 - Keep labels stable when they are referenced by other JSON entries, such as settlement tag pair hooks.
+- Prefer narrative structures for repeatable story logic. Use templates such as `System is locked in a painful struggle between the {groupA} and the {groupB} over {stake}.`, then map each placeholder in `slots` to a pool in `narrativeVariablePools`.
 - Run `npm run audit:star-system-data`, then focused generator tests and the quick generator audit.

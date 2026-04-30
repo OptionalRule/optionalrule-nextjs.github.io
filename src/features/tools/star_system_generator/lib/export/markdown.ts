@@ -32,6 +32,14 @@ export function exportSystemMarkdown(system: GeneratedSystem): string {
     }
   }
 
+  if (system.narrativeLines.length) {
+    lines.push('## Narrative Lines', '')
+    for (const line of system.narrativeLines) {
+      lines.push(`- **${line.label.value}:** ${line.text.value}`)
+    }
+    lines.push('')
+  }
+
   if (system.ruins.length) {
     lines.push('## Human Remnants', '')
     for (const ruin of system.ruins) {

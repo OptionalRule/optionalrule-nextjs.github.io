@@ -119,6 +119,7 @@ function system(overrides: Partial<GeneratedSystem> = {}): GeneratedSystem {
     settlements: [],
     ruins: [],
     phenomena: [],
+    narrativeLines: [],
     majorHazards: [],
     noAlienCheck: { passed: true, note: 'passed' },
     ...overrides,

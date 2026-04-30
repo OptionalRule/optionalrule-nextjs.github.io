@@ -1,4 +1,19 @@
 {
+  "_notes": {
+    "file": "Name-building pools for systems, bodies, moons, catalog labels, and settlement names.",
+    "editing": "Names should be short, pronounceable at the table, and tonally consistent with frontier sci-fi. Descriptor rules are matched by keyword in generated settlement facts.",
+    "sections": {
+      "systemNameCores": "Root words for generated star-system names.",
+      "systemNameForms": "Second words for compound or possessive system names.",
+      "systemNamePatterns": "Allowed system-name construction patterns used by code.",
+      "systemCatalogLabels": "Catalog prefixes for less poetic system names.",
+      "bodyNameCores": "Root words for planets, belts, dwarfs, and anomalies.",
+      "bodyNameFormsByCategory": "Category-specific body-name suffix pools.",
+      "moonNameCores": "Root words for moon names.",
+      "moonNameForms": "Moon-name suffix pools.",
+      "settlementNameDescriptors": "Rule-backed descriptors used to name settlements from function, category, authority, and scale."
+    }
+  },
   "systemNameCores": [
     "Keid",
     "Vesper",

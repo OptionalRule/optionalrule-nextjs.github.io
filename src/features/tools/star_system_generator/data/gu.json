@@ -1,4 +1,15 @@
 {
+  "_notes": {
+    "file": "Geometric Unity tables for system-wide bleed intensity, locations, behaviors, resources, and hazards.",
+    "editing": "Keep these options physical and gameable: each entry should imply a travel, extraction, survey, containment, or crisis consequence without introducing alien civilizations.",
+    "sections": {
+      "intensityTable": "Escalating GU presence by modified roll; null max means the open-ended highest band after code conversion.",
+      "bleedLocations": "Where the system's GU activity is anchored in astronomy or infrastructure.",
+      "bleedBehaviors": "How the GU feature changes over time or reacts to local activity.",
+      "resources": "Valuable materials or phenomena created by GU exposure.",
+      "hazards": "Immediate operational dangers caused by GU activity."
+    }
+  },
   "intensityTable": [
     { "max": 4, "value": "Geometrically quiet" },
     { "max": 6, "value": "Low bleed" },

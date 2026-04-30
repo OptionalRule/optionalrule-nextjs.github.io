@@ -40,6 +40,8 @@ import {
 } from '../src/features/tools/star_system_generator/lib/generator/data/gu'
 import {
   humanRemnants,
+  narrativeStructures,
+  narrativeVariablePools,
   phenomena,
   remnantHooks,
 } from '../src/features/tools/star_system_generator/lib/generator/data/narrative'
@@ -295,6 +297,7 @@ function validateGuAndNarrative(): void {
   assertNonEmpty('narrative.humanRemnants', humanRemnants)
   assertNonEmpty('narrative.remnantHooks', remnantHooks)
   assertNonEmpty('narrative.phenomena', phenomena)
+  assertNonEmpty('narrative.narrativeStructures', narrativeStructures)
 
   if (guIntensityTable.at(-1)?.max !== Number.POSITIVE_INFINITY) {
     addError('gu.intensityTable', 'Final intensity entry must be open-ended.')
@@ -311,10 +314,30 @@ function validateGuAndNarrative(): void {
   assertNoDuplicates('narrative.humanRemnants', humanRemnants)
   assertNoDuplicates('narrative.remnantHooks', remnantHooks)
   assertNoDuplicates('narrative.phenomena', phenomena)
+  assertNoDuplicates('narrative.narrativeStructures.id', narrativeStructures.map((structure) => structure.id))
+
+  for (const structure of narrativeStructures) {
+    const templateSlots = [...structure.template.matchAll(/\{([A-Za-z0-9_]+)\}/g)].map((match) => match[1])
+    assertNonEmpty(`narrative.narrativeStructures.${structure.id}.templateSlots`, templateSlots)
+    const declaredSlots = Object.keys(structure.slots)
+    const missingDeclaredSlots = templateSlots.filter((slot) => !declaredSlots.includes(slot))
+    const unusedDeclaredSlots = declaredSlots.filter((slot) => !templateSlots.includes(slot))
+    if (missingDeclaredSlots.length) {
+      addError(`narrative.narrativeStructures.${structure.id}.slots`, `Missing slot declarations: ${missingDeclaredSlots.join(', ')}`)
+    }
+    if (unusedDeclaredSlots.length) {
+      addError(`narrative.narrativeStructures.${structure.id}.slots`, `Declared slots not used in template: ${unusedDeclaredSlots.join(', ')}`)
+    }
+
+    for (const [slot, poolName] of Object.entries(structure.slots)) {
+      assertNonEmpty(`narrative.narrativeVariablePools.${poolName} for ${structure.id}.${slot}`, narrativeVariablePools[poolName])
+    }
+  }
 
   warnIfThin('narrative.remnantHooks', remnantHooks.length, 20)
   warnIfThin('narrative.humanRemnants', humanRemnants.length, 20)
   warnIfThin('narrative.phenomena', phenomena.length, 30)
+  warnIfThin('narrative.narrativeStructures', narrativeStructures.length, 8)
 }
 
 function validateMechanicalTables(): void {
@@ -424,6 +447,8 @@ function printReport(): void {
     ['humanRemnants', humanRemnants.length],
     ['remnantHooks', remnantHooks.length],
     ['phenomena', phenomena.length],
+    ['narrativeVariablePools', Object.keys(narrativeVariablePools).length],
+    ['narrativeStructures', narrativeStructures.length],
   ])
 
   printSection('Stellar And Route Tables', [

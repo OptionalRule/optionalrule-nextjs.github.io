@@ -1,4 +1,15 @@
 {
+  "_notes": {
+    "file": "Narrative-facing system tables: remnants, hooks, phenomena, and reusable story structures.",
+    "editing": "Use this file for table-facing prompts that explain why a system matters. Prefer templates with variables over many near-duplicate sentence variants.",
+    "sections": {
+      "humanRemnants": "Physical remains of prior human activity.",
+      "remnantHooks": "Short clauses explaining why a remnant matters now.",
+      "phenomena": "System-scale oddities that shape travel, surveys, or conflict.",
+      "narrativeVariablePools": "Reusable variable lists for narrative templates.",
+      "narrativeStructures": "Sentence templates that combine variables into system-level dramatic situations."
+    }
+  },
   "humanRemnants": [
     "Survey probe field",
     "Dead relay buoy",
@@ -46,5 +57,154 @@
     "First-wave ghost colony",
     "Derelict fleet cluster",
     "Gardener warning beacon"
+  ],
+  "narrativeVariablePools": {
+    "groups": [
+      "system navy",
+      "interstellar navy",
+      "local militia",
+      "megacorp concession",
+      "minor corporation",
+      "worker council",
+      "revolutionary cells",
+      "family syndicate",
+      "criminal protection racket",
+      "smuggler compact",
+      "extraction guild",
+      "banking or debt trust",
+      "quarantine authority",
+      "gate authority",
+      "research consortium",
+      "medical/biosafety board",
+      "religious commune",
+      "exile council",
+      "refugee settlement leadership",
+      "AI-supervised technocracy",
+      "Sol-interdiction compliance office",
+      "Gardener-fear cult",
+      "independent captain assembly",
+      "mercenary company"
+    ],
+    "stakes": [
+      "pinchroute access",
+      "Iggygate control",
+      "chiral resource rights",
+      "terraforming debt",
+      "quarantine exemptions",
+      "salvage title",
+      "water and volatile shipments",
+      "AI custody",
+      "habitat repair priority",
+      "survey data ownership",
+      "refugee resettlement authority",
+      "military basing rights",
+      "bleed containment contracts",
+      "first-wave inheritance claims"
+    ],
+    "leverage": [
+      "the only stable route chart",
+      "life-support replacement parts",
+      "fuel and shielding permits",
+      "the settlement debt ledger",
+      "access to a safe bleed window",
+      "the local defense grid",
+      "food and water ration authority",
+      "the AI's root credentials",
+      "quarantine release papers",
+      "the only functioning shipyard"
+    ],
+    "pressures": [
+      "ration failures",
+      "radiation exposure",
+      "debt seizures",
+      "forced labor drafts",
+      "censored casualty lists",
+      "failed habitat repairs",
+      "smuggling crackdowns",
+      "AI memory gaps",
+      "contaminated chiral stock",
+      "Sol-monitoring rumors"
+    ],
+    "threats": [
+      "chiral contamination",
+      "metric storm drift",
+      "a biosafety breach",
+      "illegal AI expansion",
+      "pinchdrive misjump risk",
+      "a failed Iggygate wake",
+      "programmed regolith growth",
+      "refugee unrest",
+      "corporate sabotage",
+      "Gardener attention"
+    ],
+    "secrets": [
+      "falsified casualty records",
+      "an illegal research program",
+      "a hidden debt transfer",
+      "a deliberately worsened shortage",
+      "a buried first-wave claim",
+      "a sabotaged route beacon",
+      "a censored AI witness",
+      "a private military contract",
+      "a concealed evacuation order",
+      "a profitable containment failure"
+    ],
+    "routeAssets": [
+      "the Iggygate throat complex",
+      "the pinchdrive calibration range",
+      "the quarantine perimeter station",
+      "the fuel depot",
+      "the nav-beacon lattice",
+      "the Lagrange anchor",
+      "the shipyard",
+      "the military listening post"
+    ],
+    "claims": [
+      "the route data was stolen",
+      "the concession charter is void",
+      "the quarantine order was fabricated",
+      "the first-wave owners never died",
+      "the AI has a lawful override",
+      "the hazard reports were altered",
+      "the debt ledger is forged",
+      "the system was promised autonomy"
+    ]
+  },
+  "narrativeStructures": [
+    {
+      "id": "painful-struggle",
+      "label": "Painful Struggle",
+      "template": "System is locked in a painful struggle between the {groupA} and the {groupB} over {stake}.",
+      "slots": { "groupA": "groups", "groupB": "groups", "stake": "stakes" },
+      "distinctSlots": [["groupA", "groupB"]]
+    },
+    {
+      "id": "brittle-protectorate",
+      "label": "Brittle Protectorate",
+      "template": "The {groupA} keeps order by controlling {leverage}, but the {groupB} is turning {pressure} into a cause.",
+      "slots": { "groupA": "groups", "leverage": "leverage", "groupB": "groups", "pressure": "pressures" },
+      "distinctSlots": [["groupA", "groupB"]]
+    },
+    {
+      "id": "costly-extraction",
+      "label": "Costly Extraction",
+      "template": "The {groupA} can profit from {stake}, but {pressure} has made the {groupB} desperate enough to act.",
+      "slots": { "groupA": "groups", "stake": "stakes", "pressure": "pressures", "groupB": "groups" },
+      "distinctSlots": [["groupA", "groupB"]]
+    },
+    {
+      "id": "quarantine-secret",
+      "label": "Quarantine Secret",
+      "template": "The {groupA} claims {threat} requires harsh controls, while the {groupB} insists the real issue is {secret}.",
+      "slots": { "groupA": "groups", "threat": "threats", "groupB": "groups", "secret": "secrets" },
+      "distinctSlots": [["groupA", "groupB"]]
+    },
+    {
+      "id": "route-chokepoint",
+      "label": "Route Chokepoint",
+      "template": "Control of {routeAsset} lets the {groupA} tax every ship, unless the {groupB} can prove {claim}.",
+      "slots": { "routeAsset": "routeAssets", "groupA": "groups", "groupB": "groups", "claim": "claims" },
+      "distinctSlots": [["groupA", "groupB"]]
+    }
   ]
 }

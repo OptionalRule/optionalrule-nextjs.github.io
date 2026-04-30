@@ -216,6 +216,14 @@ export interface SystemPhenomenon {
   note: Fact<string>
 }
 
+export interface NarrativeLine {
+  id: string
+  structureId: Fact<string>
+  label: Fact<string>
+  text: Fact<string>
+  variables: Record<string, Fact<string>>
+}
+
 export interface NoAlienCheck {
   passed: boolean
   note: string
@@ -237,6 +245,7 @@ export interface GeneratedSystem {
   settlements: Settlement[]
   ruins: HumanRemnant[]
   phenomena: SystemPhenomenon[]
+  narrativeLines: NarrativeLine[]
   majorHazards: Array<Fact<string>>
   noAlienCheck: NoAlienCheck
 }

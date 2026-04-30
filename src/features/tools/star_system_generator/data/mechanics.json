@@ -1,4 +1,30 @@
 {
+  "_notes": {
+    "file": "Physical and procedural mechanics tables for stars, worlds, moons, rings, and generated body sites.",
+    "editing": "Use compact labels that can combine cleanly in body summaries. Environment-policy code may override incompatible rolls, so add new options with clear physical meaning.",
+    "sections": {
+      "activityLabels": "Star activity labels by modified roll; null max means the open-ended highest band after code conversion.",
+      "atmosphereTable": "Base atmosphere roll table before world-class compatibility repairs.",
+      "hydrosphereTable": "Base volatile and surface-liquid roll table before compatibility repairs.",
+      "geologyTable": "Base geology and interior-activity roll table.",
+      "climateSourceTable": "Climate tags used as source material before thermal-zone filtering.",
+      "radiationTable": "Radiation severity for body detail generation.",
+      "ringTypeTable": "Ring descriptors for bodies that receive ring systems.",
+      "extremeHotAtmospheres": "Atmospheres allowed for furnace and inferno terrestrial bodies.",
+      "extremeHotVolatiles": "Hydrosphere states allowed for furnace and inferno terrestrial bodies.",
+      "envelopeGeologies": "Geology labels for gas giants, ice giants, and sub-Neptune envelope worlds.",
+      "extremeHotClimateTags": "Climate tags compatible with furnace and inferno rocky bodies.",
+      "hotClimateTags": "Climate tags compatible with hot inner worlds.",
+      "temperateClimateTags": "Climate tags compatible with temperate-zone worlds.",
+      "coldClimateTags": "Climate tags compatible with cold outer worlds.",
+      "extremeHotEnvelopeClimateTags": "Climate tags compatible with close-in envelope worlds.",
+      "envelopeClimateTags": "Climate tags compatible with normal envelope worlds.",
+      "biospheres": "Biosphere status labels; keep non-sapient unless the setting premise changes.",
+      "moonTypes": "Moon physical archetypes.",
+      "moonScales": "Moon size bands.",
+      "siteOptions": "Brief site prompts attached to bodies outside full settlement generation."
+    }
+  },
   "activityLabels": [
     { "max": 3, "value": "Dormant / unusually quiet" },
     { "max": 6, "value": "Quiet" },

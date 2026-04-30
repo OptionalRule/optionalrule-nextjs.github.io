@@ -1,4 +1,30 @@
 {
+  "_notes": {
+    "file": "Human settlement generation tables: where sites are, what they do, who controls them, what is wrong, and what scenes they offer.",
+    "editing": "Entries should be concrete enough to create playable pressure. Keep labels stable when referenced by compatibility maps, tag hooks, or tests.",
+    "sections": {
+      "siteCategories": "Canonical settlement site categories used by validation and compatibility maps.",
+      "locations": "Specific location labels grouped by placement pool; each label declares its site category.",
+      "functionPools": "Settlement functions grouped by physical or narrative context.",
+      "guFractureFunctionsBySiteCategory": "Function overrides favored when GU intensity is dangerous or fractured.",
+      "builtForms": "Habitat/building forms constrained by site category, exact location, mobility, and mining use.",
+      "authorities": "Political, corporate, military, civic, or illicit powers that can run a site.",
+      "authorityByScale": "Authority overrides for automated or abandoned places.",
+      "aiSituations": "Local narrow-AI conditions and complications.",
+      "conditions": "Current visible operating state of a settlement.",
+      "conditionByScale": "Condition overrides for automated or abandoned places.",
+      "tags": "Two-tag prompt pool; each tag carries a pressure phrase for hook synthesis.",
+      "tagPairHooks": "Specific connective tissue for known tag combinations.",
+      "crises": "Open crisis pool for inhabited sites.",
+      "crisisByScale": "Scale-specific crisis overrides.",
+      "hiddenTruths": "Secret or buried truth pool for inhabited sites.",
+      "hiddenTruthByScale": "Scale-specific hidden-truth overrides.",
+      "encounterSites": "Local scene locations for play.",
+      "encounterSitesByScale": "Scale-specific encounter-site overrides.",
+      "encounterSitesByFunctionKeyword": "Function-keyword rules that add specialized encounter sites.",
+      "scaleTable": "d12 settlement scale table."
+    }
+  },
   "siteCategories": [
     "Surface settlement",
     "Orbital station",

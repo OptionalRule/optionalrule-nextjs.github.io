@@ -7,6 +7,7 @@ import type {
   GuPreference,
   HumanRemnant,
   Moon,
+  NarrativeLine,
   OrbitingBody,
   PlanetaryDetail,
   PartialKnownBody,
@@ -72,7 +73,7 @@ import {
   siteOptions,
   temperateClimateTags,
 } from './data/mechanics'
-import { humanRemnants, phenomena, remnantHooks } from './data/narrative'
+import { humanRemnants, narrativeStructures, narrativeVariablePools, phenomena, remnantHooks } from './data/narrative'
 import {
   aiSituations,
   asteroidBaseFunctions,
@@ -328,6 +329,10 @@ const traitOptions = [
 
 function fact<T>(value: T, confidence: Fact<T>['confidence'], source?: string): Fact<T> {
   return { value, confidence, source }
+}
+
+function uniqueStrings(values: readonly string[]): string[] {
+  return [...new Set(values.filter(Boolean))]
 }
 
 export function mergeLockedFact<T>(generated: Fact<T>, known?: Fact<T>): Fact<T> {
@@ -2693,6 +2698,59 @@ function generatePhenomena(rng: SeededRng, architectureName: string, guOverlay: 
   })
 }
 
+function generateNarrativeLines(
+  rng: SeededRng,
+  options: GenerationOptions,
+  guOverlay: ReturnType<typeof generateGuOverlay>,
+  reachability: ReturnType<typeof generateReachability>
+): NarrativeLine[] {
+  const count = options.tone === 'cinematic' || options.gu === 'high' || options.gu === 'fracture' ? 3 : 2
+  const availableStructures = [...narrativeStructures]
+  const contextualPools: Record<string, readonly string[]> = {
+    ...narrativeVariablePools,
+    stakes: uniqueStrings([
+      ...narrativeVariablePools.stakes,
+      guOverlay.resource.value.toLowerCase(),
+      reachability.className.value.toLowerCase(),
+    ]),
+    threats: uniqueStrings([
+      ...narrativeVariablePools.threats,
+      guOverlay.hazard.value.toLowerCase(),
+      guOverlay.bleedBehavior.value.toLowerCase(),
+    ]),
+  }
+
+  return Array.from({ length: Math.min(count, availableStructures.length) }, (_, index) => {
+    const structureIndex = rng.int(0, availableStructures.length - 1)
+    const structure = availableStructures.splice(structureIndex, 1)[0]
+    const variables: Record<string, Fact<string>> = {}
+
+    for (const [slot, poolName] of Object.entries(structure.slots)) {
+      const pool = contextualPools[poolName] ?? []
+      const blockedValues = new Set(
+        (structure.distinctSlots ?? [])
+          .filter(([left, right]) => right === slot && variables[left])
+          .map(([left]) => variables[left].value)
+      )
+      const eligiblePool = pool.filter((value) => !blockedValues.has(value))
+      const value = pickOne(rng, eligiblePool.length ? eligiblePool : pool)
+      variables[slot] = fact(value, 'human-layer', `Narrative variable pool "${poolName}"`)
+    }
+
+    const text = structure.template.replace(/\{([A-Za-z0-9_]+)\}/g, (placeholder, slot: string) => {
+      return variables[slot]?.value ?? placeholder
+    })
+
+    return {
+      id: `narrative-${index + 1}`,
+      structureId: fact(structure.id, 'human-layer', 'Narrative structure id'),
+      label: fact(structure.label, 'human-layer', 'Narrative structure label'),
+      text: fact(text, 'human-layer', 'Generated narrative structure with variable pools'),
+      variables,
+    }
+  })
+}
+
 const noAlienReplacements: Array<{ pattern: RegExp; replacement: string; label: string }> = [
   { pattern: /\balien\s+civilizations?\b/gi, replacement: 'human polities', label: 'alien civilization -> human polity' },
   { pattern: /\balien\s+ruins?\b/gi, replacement: 'first-wave human ruins', label: 'alien ruin -> first-wave human ruin' },
@@ -2787,6 +2845,7 @@ export function generateSystem(options: GenerationOptions, knownSystem?: Partial
   const settlements = generateSettlements(rootRng.fork('settlements'), options, name.value, bodies, guOverlay, reachability, architectureResult.architecture.name.value)
   const ruins = generateHumanRemnants(rootRng.fork('ruins'), bodies, guOverlay)
   const phenomena = generatePhenomena(rootRng.fork('phenomena'), architectureResult.architecture.name.value, guOverlay)
+  const narrativeLines = generateNarrativeLines(rootRng.fork('narrative-lines'), options, guOverlay, reachability)
 
   return runNoAlienGuard({
     id: knownSystem?.id ?? `system-${options.seed}`,
@@ -2812,6 +2871,7 @@ export function generateSystem(options: GenerationOptions, knownSystem?: Partial
     settlements,
     ruins,
     phenomena,
+    narrativeLines,
     majorHazards: [guOverlay.hazard, fact(primary.activity.value, 'inferred', 'Stellar activity hazard')],
   })
 }

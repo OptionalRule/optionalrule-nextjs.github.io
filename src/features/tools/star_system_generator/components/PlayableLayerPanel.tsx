@@ -1,10 +1,30 @@
-import { Landmark, Zap } from 'lucide-react'
+import { Landmark, ScrollText, Zap } from 'lucide-react'
 import type { GeneratedSystem } from '../types'
 import { SectionHeader, sectionShellClasses } from './visual'
 
 export function PlayableLayerPanel({ system }: { system: GeneratedSystem }) {
   return (
-    <section className="grid gap-4 lg:grid-cols-2">
+    <section className="grid gap-4 xl:grid-cols-3">
+      <article className={sectionShellClasses('human')}>
+        <SectionHeader
+          layer="human"
+          icon={ScrollText}
+          title="Narrative Lines"
+          caption="System-level tensions built from reusable structures."
+        />
+        <div className="mt-4 space-y-3">
+          {system.narrativeLines.map((line) => (
+            <div
+              key={line.id}
+              className="rounded-md border border-[var(--border-light)] bg-[var(--card-elevated)] p-3 text-sm"
+            >
+              <p className="text-xs uppercase tracking-wide text-[var(--text-tertiary)]">{line.label.value}</p>
+              <p className="mt-2 leading-relaxed text-[var(--text-secondary)]">{line.text.value}</p>
+            </div>
+          ))}
+        </div>
+      </article>
+
       <article className={sectionShellClasses('human')}>
         <SectionHeader
           layer="human"

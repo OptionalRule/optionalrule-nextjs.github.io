@@ -1,4 +1,16 @@
 {
+  "_notes": {
+    "file": "Stellar, reachability, and system-architecture roll tables.",
+    "editing": "Preserve d100 or 2d6 coverage when changing roll ranges. Star profiles need mass and luminosity ranges because downstream zone calculations depend on them.",
+    "sections": {
+      "realisticStarTypes": "d100 stellar distribution weighted toward observed stellar demographics.",
+      "frontierStarTypes": "d100 stellar distribution biased toward playable frontier variety.",
+      "ageStates": "2d6 stellar/system age labels.",
+      "metallicities": "2d6 metallicity labels used by body and resource generation.",
+      "reachabilityClasses": "d12 travel-route and pinch difficulty table.",
+      "architectures": "2d6 system layout archetypes that drive body slot generation."
+    }
+  },
   "realisticStarTypes": [
     { "min": 1, "max": 1, "value": { "type": "O/B/A bright star", "massRange": [1.5, 8.0], "luminosityRange": [8.0, 5000.0] } },
     { "min": 2, "max": 4, "value": { "type": "F star", "massRange": [1.1, 1.45], "luminosityRange": [1.5, 5.0] } },
