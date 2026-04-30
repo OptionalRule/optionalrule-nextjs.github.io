@@ -340,12 +340,13 @@ export function mergeLockedFact<T>(generated: Fact<T>, known?: Fact<T>): Fact<T>
 }
 
 function generateSystemName(rng: SeededRng): string {
-  const core = pickOne(rng, systemNameCores)
+  const pattern = pickOne(rng, systemNamePatterns)
+  const corePool = pattern === 'possessive' ? systemNameCores.filter((candidate) => !candidate.includes("'")) : systemNameCores
+  const core = pickOne(rng, corePool)
   const form = pickOne(rng, systemNameForms)
   const secondCore = pickOne(rng, systemNameCores.filter((candidate) => candidate !== core))
-  const pattern = pickOne(rng, systemNamePatterns)
 
-  if (pattern === 'compound') return `${core}${form}`
+  if (pattern === 'compound') return `${core}-${form}`
   if (pattern === 'numeric') return `${core}-${rng.int(2, 99).toString().padStart(2, '0')}`
   if (pattern === 'catalog') return `${core} ${pickOne(rng, systemCatalogLabels)}-${rng.int(10, 999)}`
   if (pattern === 'route') return `${core}-${secondCore} ${form}`

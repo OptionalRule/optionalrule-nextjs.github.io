@@ -27,6 +27,8 @@ const bodyCategories: BodyCategory[] = [
 describe('star system name data', () => {
   it('exposes complete non-empty name pools', () => {
     expect(systemNameCores.length).toBeGreaterThan(0)
+    expect(systemNameCores.every((name) => !/\s/.test(name))).toBe(true)
+    expect(systemNameCores.every((name) => /^[\x20-\x7E]+$/.test(name))).toBe(true)
     expect(systemNameForms.length).toBeGreaterThan(0)
     expect(systemNamePatterns).toEqual(['possessive', 'compound', 'numeric', 'catalog', 'route'])
     expect(systemCatalogLabels.length).toBeGreaterThan(0)

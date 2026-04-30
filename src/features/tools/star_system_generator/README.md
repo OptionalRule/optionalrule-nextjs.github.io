@@ -69,7 +69,7 @@ When adding or changing a world class:
 JSON-backed creative pools live under `data/`.
 
 - Each JSON file may include a top-level `_notes` object. This is author-facing metadata only; keep it valid JSON instead of using `//` comments because the app imports these files directly.
-- Add system, body, moon, catalog, or settlement-name descriptor options in `data/names.json`.
+- Add system, body, moon, catalog, or settlement-name descriptor options in `data/names.json`. Keep `systemNameCores` single-word and put reusable second words in `systemNameForms`.
 - Add settlement locations, functions, built forms, authorities, AI situations, conditions, tags, crises, hidden truths, encounter sites, and scale overrides in `data/settlements.json`.
 - Add GU bleed locations, behaviors, resources, hazards, and intensity labels in `data/gu.json`.
 - Add human remnants, remnant hooks, phenomena, narrative variable pools, and reusable narrative structures in `data/narrative.json`.

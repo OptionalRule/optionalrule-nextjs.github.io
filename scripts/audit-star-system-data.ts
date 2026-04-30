@@ -186,6 +186,11 @@ function validateNames(): void {
   assertNoDuplicates('names.bodyNameCores', bodyNameCores)
   assertNoDuplicates('names.moonNameCores', moonNameCores)
 
+  systemNameCores.forEach((name) => {
+    if (/\s/.test(name)) addError('names.systemNameCores', `System-name core contains whitespace: "${name}"`)
+    if (!/^[\x20-\x7E]+$/.test(name)) addError('names.systemNameCores', `System-name core contains non-ASCII text: "${name}"`)
+  })
+
   bodyCategories.forEach((category) => {
     assertNonEmpty(`names.bodyNameFormsByCategory.${category}`, bodyNameFormsByCategory[category])
   })
