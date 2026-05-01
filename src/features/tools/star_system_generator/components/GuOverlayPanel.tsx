@@ -3,6 +3,8 @@ import type { GeneratedSystem } from '../types'
 import { FieldRow, SectionHeader, sectionShellClasses } from './visual'
 
 export function GuOverlayPanel({ system, compact = false }: { system: GeneratedSystem; compact?: boolean }) {
+  const hazardSpan = compact ? 'sm:col-span-2 xl:col-span-1 2xl:col-span-2' : 'sm:col-span-2 lg:col-span-3'
+
   return (
     <section className={sectionShellClasses('gu')}>
       <SectionHeader
@@ -16,10 +18,7 @@ export function GuOverlayPanel({ system, compact = false }: { system: GeneratedS
         <FieldRow label="Bleed Location" layer="gu">{system.guOverlay.bleedLocation.value}</FieldRow>
         <FieldRow label="Behavior" layer="gu">{system.guOverlay.bleedBehavior.value}</FieldRow>
         <FieldRow label="Resource" layer="gu">{system.guOverlay.resource.value}</FieldRow>
-        <FieldRow label="Hazard" layer="gu">{system.guOverlay.hazard.value}</FieldRow>
-        <FieldRow label="Intensity Roll" layer="gu">
-          <span className="font-mono">{system.guOverlay.intensityRoll.value}</span>
-        </FieldRow>
+        <FieldRow label="Hazard" layer="gu" className={hazardSpan}>{system.guOverlay.hazard.value}</FieldRow>
       </dl>
     </section>
   )

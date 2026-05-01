@@ -184,12 +184,13 @@ interface FieldProps {
   label: string
   children: ReactNode
   layer?: Layer
+  className?: string
 }
 
-export function FieldRow({ label, children, layer = 'neutral' }: FieldProps) {
+export function FieldRow({ label, children, layer = 'neutral', className = '' }: FieldProps) {
   const tokens = layerTokens[layer]
   return (
-    <div className="min-w-0 rounded-md border border-[var(--border-light)] bg-[var(--card-elevated)] p-2.5">
+    <div className={`min-w-0 rounded-md border border-[var(--border-light)] bg-[var(--card-elevated)] p-2.5 ${className}`}>
       <dt className="flex items-center gap-1.5 text-[0.68rem] font-semibold uppercase tracking-[0.08em] text-[var(--text-tertiary)]">
         <span className={`inline-block h-1 w-1 shrink-0 rounded-full ${tokens.bar}`} aria-hidden="true" />
         {label}
