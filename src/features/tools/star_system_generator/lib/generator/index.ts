@@ -49,6 +49,7 @@ import {
 import {
   bleedBehaviorTable,
   bleedLocationTable,
+  domainsForGuValue,
   guHazardTable,
   guIntensityTable,
   guResourceTable,
@@ -462,6 +463,8 @@ function domainProtectionPhrase(domain: string | undefined): string {
       return 'trade access'
     case 'governance':
       return 'public legitimacy'
+    case 'law':
+      return 'lawful title'
     case 'public-life':
     case 'daily-life':
       return 'civilian life'
@@ -471,8 +474,18 @@ function domainProtectionPhrase(domain: string | undefined): string {
       return 'defense readiness'
     case 'espionage':
       return 'operational secrecy'
+    case 'crime':
+      return 'off-book leverage'
+    case 'migration':
+      return 'refugee safety'
+    case 'disaster':
+      return 'containment'
     case 'religion':
       return 'public ritual'
+    case 'ai':
+      return 'AI custody'
+    case 'exploration':
+      return 'safe passage'
     default:
       return 'public order'
   }
@@ -2890,6 +2903,7 @@ function narrativeDomainsForText(value: string): string[] {
   if (/(biosphere|microbial|ecology|contamination|quarantine|chiral|terraform)/.test(text)) domains.push('ecology')
   if (/(worker|labor|strike|draft|ration|life-support|forced|crew)/.test(text)) domains.push('labor')
   if (/(election|authority|council|democracy|magistrate|govern|succession|autonomy|charter)/.test(text)) domains.push('governance')
+  if (/(law|legal|court|claim|title|liability|jurisdiction|evidence|docket|compliance)/.test(text)) domains.push('law')
   if (/(religious|cult|commune|gardener|sol)/.test(text)) domains.push('religion')
   if (/(pirate|criminal|smuggler|cartel|racket|black market)/.test(text)) domains.push('crime')
   if (/(refugee|exile|resettlement|evacuation|ark)/.test(text)) domains.push('migration')
@@ -2897,7 +2911,7 @@ function narrativeDomainsForText(value: string): string[] {
   if (/(ai|narrow-ai|automation|simulation|root credentials|memory)/.test(text)) domains.push('ai')
   if (/(disaster|accident|breach|cascade|storm|failure|hazard|radiation|misjump)/.test(text)) domains.push('disaster')
   if (/(ration|festival|public|school|market|funeral|civilian|colony)/.test(text)) domains.push('public-life', 'daily-life')
-  if (/(route|iggygate|pinch|gate|transit|corridor|anchor|reachability)/.test(text)) domains.push('trade')
+  if (/(route|iggygate|pinch|gate|transit|corridor|anchor|reachability|survey|scout|chart|beacon)/.test(text)) domains.push('exploration', 'trade')
 
   return uniqueStrings(domains.length ? domains : ['public-life'])
 }
@@ -2997,7 +3011,7 @@ function buildNarrativeFacts(ctx: NarrativeGenerationContext): NarrativeFact[] {
       source: 'Narrative context from generated GU resource',
       sourcePath: 'guOverlay.resource',
       tags: ['gu', 'resource'],
-      domains: ['trade', 'science', 'crime'],
+      domains: domainsForGuValue('resources', ctx.guOverlay.resource.value, ['trade', 'science', 'crime']),
     }),
     narrativeFact({
       id: 'gu.hazard',
@@ -3008,7 +3022,7 @@ function buildNarrativeFacts(ctx: NarrativeGenerationContext): NarrativeFact[] {
       source: 'Narrative context from generated GU hazard',
       sourcePath: 'guOverlay.hazard',
       tags: ['gu', 'hazard'],
-      domains: ['disaster', 'science', 'governance'],
+      domains: domainsForGuValue('hazards', ctx.guOverlay.hazard.value, ['disaster', 'science', 'governance']),
     }),
     narrativeFact({
       id: 'gu.bleed-location',
@@ -3019,7 +3033,7 @@ function buildNarrativeFacts(ctx: NarrativeGenerationContext): NarrativeFact[] {
       source: 'Narrative context from generated GU bleed location',
       sourcePath: 'guOverlay.bleedLocation',
       tags: ['gu', 'routeAsset'],
-      domains: ['trade', 'science', 'exploration'],
+      domains: domainsForGuValue('bleedLocations', ctx.guOverlay.bleedLocation.value, ['trade', 'science', 'exploration']),
     }),
     narrativeFact({
       id: 'gu.bleed-behavior',
@@ -3030,7 +3044,7 @@ function buildNarrativeFacts(ctx: NarrativeGenerationContext): NarrativeFact[] {
       source: 'Narrative context from generated GU bleed behavior',
       sourcePath: 'guOverlay.bleedBehavior',
       tags: ['gu', 'pressure'],
-      domains: ['science', 'disaster', 'trade'],
+      domains: domainsForGuValue('bleedBehaviors', ctx.guOverlay.bleedBehavior.value, ['science', 'disaster', 'trade']),
     }),
     ...namedFactions.map((faction) => narrativeFact({
       id: `faction.${faction.id}`,

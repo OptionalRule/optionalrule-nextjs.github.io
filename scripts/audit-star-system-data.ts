@@ -34,9 +34,11 @@ import {
 import {
   bleedBehaviorTable,
   bleedLocationTable,
+  guDomainTags,
   guHazardTable,
   guIntensityTable,
   guResourceTable,
+  type GuDomainTagTable,
 } from '../src/features/tools/star_system_generator/lib/generator/data/gu'
 import {
   humanRemnants,
@@ -150,6 +152,13 @@ function validateTableCoverage(path: string, table: Array<{ min: number; max: nu
 
 function warnIfThin(path: string, count: number, threshold: number): void {
   if (count < threshold) addWarning(path, `${count} entries; target at least ${threshold}.`)
+}
+
+function validateDefinedDomains(path: string, domains: readonly string[], knownDomains: ReadonlySet<string>): void {
+  assertNonEmpty(path, domains)
+  domains.forEach((domain) => {
+    if (!knownDomains.has(domain)) addError(path, `Unknown narrative domain "${domain}".`)
+  })
 }
 
 function formatFinding(finding: Finding): string {
@@ -327,6 +336,31 @@ function validateGuAndNarrative(): void {
   assertNoDuplicates('narrative.namedFactions.name', namedFactions.map((faction) => faction.name))
   assertNoDuplicates('narrative.narrativeStructures.id', narrativeStructures.map((structure) => structure.id))
 
+  const knownDomains = new Set(Object.keys(narrativeDomains))
+  Object.entries(narrativeDomains).forEach(([domain, entry]) => {
+    if (!entry.label.trim()) addError(`narrative.narrativeDomains.${domain}.label`, 'Domain label is missing.')
+    assertNonEmpty(`narrative.narrativeDomains.${domain}.actors`, entry.actors)
+    assertNonEmpty(`narrative.narrativeDomains.${domain}.stakes`, entry.stakes)
+    assertNonEmpty(`narrative.narrativeDomains.${domain}.pressures`, entry.pressures)
+    assertNonEmpty(`narrative.narrativeDomains.${domain}.secrets`, entry.secrets)
+    assertNonEmpty(`narrative.narrativeDomains.${domain}.sceneAnchors`, entry.sceneAnchors)
+  })
+
+  const guDomainTables: Array<[GuDomainTagTable, readonly string[]]> = [
+    ['bleedLocations', bleedLocationTable],
+    ['bleedBehaviors', bleedBehaviorTable],
+    ['resources', guResourceTable],
+    ['hazards', guHazardTable],
+  ]
+  guDomainTables.forEach(([tableName, values]) => {
+    values.forEach((value) => {
+      validateDefinedDomains(`gu.domainTags.${tableName}.${value}`, guDomainTags[tableName]?.[value] ?? [], knownDomains)
+    })
+    Object.keys(guDomainTags[tableName] ?? {}).forEach((value) => {
+      if (!values.includes(value)) addError(`gu.domainTags.${tableName}`, `Metadata references unknown GU table value "${value}".`)
+    })
+  })
+
   const rawNarrativeValues = [
     ...humanRemnants,
     ...remnantHooks,
@@ -343,13 +377,13 @@ function validateGuAndNarrative(): void {
   namedFactions.forEach((faction) => {
     if (!faction.id.trim()) addError('narrative.namedFactions', `Named faction "${faction.name}" has no id.`)
     if (!faction.name.trim()) addError('narrative.namedFactions', `Named faction "${faction.id}" has no name.`)
-    assertNonEmpty(`narrative.namedFactions.${faction.id}.domains`, faction.domains)
+    validateDefinedDomains(`narrative.namedFactions.${faction.id}.domains`, faction.domains, knownDomains)
     if (!faction.kind.trim()) addError('narrative.namedFactions', `Named faction "${faction.name}" has no kind.`)
     if (!faction.publicFace.trim()) addError('narrative.namedFactions', `Named faction "${faction.name}" has no publicFace.`)
   })
 
   for (const structure of narrativeStructures) {
-    assertNonEmpty(`narrative.narrativeStructures.${structure.id}.domains`, structure.domains ?? [])
+    validateDefinedDomains(`narrative.narrativeStructures.${structure.id}.domains`, structure.domains ?? [], knownDomains)
     const templateSlots = [...structure.template.matchAll(/\{([A-Za-z0-9_]+)\}/g)].map((match) => match[1])
     assertNonEmpty(`narrative.narrativeStructures.${structure.id}.templateSlots`, templateSlots)
     const declaredSlots = Object.keys(structure.slots)
@@ -474,6 +508,7 @@ function printReport(): void {
     ['bleedBehaviors', bleedBehaviorTable.length],
     ['resources', guResourceTable.length],
     ['hazards', guHazardTable.length],
+    ['domain-tagged values', Object.values(guDomainTags).reduce((count, table) => count + Object.keys(table ?? {}).length, 0)],
   ])
 
   printSection('Play-Layer Narrative Pools', [

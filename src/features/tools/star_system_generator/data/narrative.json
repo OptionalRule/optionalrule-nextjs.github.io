@@ -176,6 +176,22 @@
       "secrets": ["a private military contract", "falsified casualty records"],
       "sceneAnchors": ["listening post", "old navy depot", "defense-grid bunker"]
     },
+    "governance": {
+      "label": "Governance and Legitimacy",
+      "actors": ["frontier magistrate", "emergency council", "charter authority", "Orison Route Authority", "Ninth Ledger Office"],
+      "stakes": ["public legitimacy", "autonomy charter recognition", "emergency powers"],
+      "pressures": ["altered votes", "succession claims", "sealed public hearings"],
+      "secrets": ["the public vote was altered", "the charter was never ratified"],
+      "sceneAnchors": ["council lock", "charter court", "public hearing module"]
+    },
+    "law": {
+      "label": "Law and Claims",
+      "actors": ["salvage court", "insurance-backed administrator", "compliance judge", "Sepulcher Archive Court", "Helion Debt Synod"],
+      "stakes": ["legal title", "salvage jurisdiction", "liability for old disasters"],
+      "pressures": ["conflicting legal title", "sealed depositions", "debt-court seizures"],
+      "secrets": ["the evidence docket was altered", "a liability transfer was backdated"],
+      "sceneAnchors": ["salvage court", "sealed evidence room", "claim registry"]
+    },
     "trade": {
       "label": "Trade and Extraction",
       "actors": ["megacorp concession", "trade house", "extraction guild", "banking or debt trust", "Helion Debt Synod", "Veyra-Locke Concession", "Orison Route Authority", "Kestrel Free Compact"],
@@ -184,6 +200,14 @@
       "secrets": ["a hidden debt transfer", "a profitable containment failure"],
       "sceneAnchors": ["customs post", "fuel depot", "shipyard"]
     },
+    "crime": {
+      "label": "Crime and Smuggling",
+      "actors": ["criminal protection racket", "smuggler compact", "black-market broker", "Kestrel Free Compact", "chiral-harvest cartel"],
+      "stakes": ["contraband routes", "protection payments", "off-book cargo custody"],
+      "pressures": ["smuggling crackdowns", "pirate-threat rumors", "black-market shortages"],
+      "secrets": ["the pirate threat is staged", "officials are moving contraband"],
+      "sceneAnchors": ["shadow customs dock", "illicit refuel cradle", "dead-drop airlock"]
+    },
     "espionage": {
       "label": "Espionage and Records",
       "actors": ["intelligence service", "Sol-interdiction compliance office", "smuggler compact", "Ninth Ledger Office", "Ash Meridian Navy"],
@@ -191,6 +215,22 @@
       "pressures": ["records surgically erased", "censored AI testimony", "false sensor returns"],
       "secrets": ["a censored AI witness", "a concealed evacuation order"],
       "sceneAnchors": ["evidence vault", "interrogation module", "sealed archive"]
+    },
+    "science": {
+      "label": "Science and Survey",
+      "actors": ["research consortium", "survey bureau", "academic mission", "medical/biosafety board", "Glasshouse Biosafety Compact"],
+      "stakes": ["survey data ownership", "sample custody", "publication rights"],
+      "pressures": ["contested survey math", "instrument failures", "censored field notes"],
+      "secrets": ["the published model omits a lethal outlier", "the samples were swapped"],
+      "sceneAnchors": ["survey control room", "sample lock", "field observatory"]
+    },
+    "exploration": {
+      "label": "Exploration and Routes",
+      "actors": ["survey crew", "independent captain assembly", "route scout", "Orison Route Authority", "Kestrel Free Compact"],
+      "stakes": ["safe transit windows", "uncharted route access", "claim-staking priority"],
+      "pressures": ["missing scouts", "unstable route windows", "bad charts"],
+      "secrets": ["the safer route window was suppressed", "the survey beacon is lying"],
+      "sceneAnchors": ["nav-beacon lattice", "route scout tender", "charted hazard boundary"]
     },
     "labor": {
       "label": "Labor and Survival",
@@ -216,6 +256,14 @@
       "secrets": ["the quarantine order was fabricated", "a profitable containment failure"],
       "sceneAnchors": ["biosafety lock", "plume vent lab", "sealed sample garden"]
     },
+    "disaster": {
+      "label": "Disaster and Containment",
+      "actors": ["emergency commander", "quarantine authority", "route-security fleet", "Glasshouse Biosafety Compact", "Pale Choir Communion"],
+      "stakes": ["evacuation priority", "containment authority", "disaster liability"],
+      "pressures": ["cascade failures", "public shelter shortages", "radiation storms"],
+      "secrets": ["the disaster warning was ignored", "the containment plan saves the assets first"],
+      "sceneAnchors": ["public shelter", "damage-control lock", "evacuation queue"]
+    },
     "archaeology": {
       "label": "First-Wave History",
       "actors": ["salvage court", "first-wave heirs", "family syndicate", "Sepulcher Archive Court"],
@@ -231,6 +279,22 @@
       "pressures": ["ration rituals", "election crisis", "public casualty vigils"],
       "secrets": ["a concealed evacuation order", "the public vote was altered"],
       "sceneAnchors": ["market lock", "school module", "public shelter"]
+    },
+    "daily-life": {
+      "label": "Daily Life",
+      "actors": ["dock crews", "debt families", "school modules", "market cooperatives", "repair guilds"],
+      "stakes": ["food routines", "school access", "work-shift safety"],
+      "pressures": ["ration rituals", "funeral broadcasts", "maintenance delays"],
+      "secrets": ["ordinary records hide the real casualty count", "the public schedule masks an evacuation plan"],
+      "sceneAnchors": ["market lock", "school module", "funeral broadcast room"]
+    },
+    "migration": {
+      "label": "Migration and Refuge",
+      "actors": ["refugee settlement leadership", "exile council", "emergency haulers", "Kestrel Free Compact", "frontier magistrate"],
+      "stakes": ["resettlement authority", "ark manifests", "habitat admission"],
+      "pressures": ["evacuation triage", "exile politics", "temporary camps becoming permanent"],
+      "secrets": ["the evacuation list was changed", "a refugee ark is being hidden from creditors"],
+      "sceneAnchors": ["ark manifest office", "temporary camp lock", "resettlement tribunal"]
     },
     "ai": {
       "label": "Narrow AI",
