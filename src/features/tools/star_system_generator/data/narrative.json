@@ -232,6 +232,22 @@
       "secrets": ["the safer route window was suppressed", "the survey beacon is lying"],
       "sceneAnchors": ["nav-beacon lattice", "route scout tender", "charted hazard boundary"]
     },
+    "stellar-events": {
+      "label": "Stellar Events",
+      "actors": ["flare-season forecasters", "radiation shelter crews", "eclipse-window pilots", "stellar observatory staff", "insurance-backed hazard office"],
+      "stakes": ["flare-season shelter priority", "eclipse-only transit windows", "radiation insurance liability"],
+      "pressures": ["coronal storm warnings", "white-dwarf debris storms", "binary periastron hazard seasons"],
+      "secrets": ["the storm forecast was softened for traffic revenue", "the shelter capacity numbers are false"],
+      "sceneAnchors": ["flare watch room", "radiation storm shelter", "eclipse-window control deck"]
+    },
+    "route-weather": {
+      "label": "Route Weather",
+      "actors": ["route forecasters", "customs schedulers", "pinchdrive dispatchers", "Orison Route Authority", "free captain weather guild"],
+      "stakes": ["safe transit schedules", "storm-delay compensation", "moving-node priority"],
+      "pressures": ["bleed-window blackouts", "route forecast disputes", "ships trapped by metric weather"],
+      "secrets": ["the published route weather omits a profitable danger window", "a dispatcher sold the safe window twice"],
+      "sceneAnchors": ["route weather board", "pinch forecast pit", "stormbound customs queue"]
+    },
     "labor": {
       "label": "Labor and Survival",
       "actors": ["worker council", "debt trust", "extraction guild", "emergency commander", "Red Vane Labor Combine", "Helion Debt Synod"],
@@ -239,6 +255,14 @@
       "pressures": ["ration failures", "forced labor drafts", "failed habitat repairs"],
       "secrets": ["a deliberately worsened shortage", "the settlement is insolvent"],
       "sceneAnchors": ["airlock queue", "ration office", "maintenance shaft"]
+    },
+    "infrastructure": {
+      "label": "Infrastructure and Life Support",
+      "actors": ["repair guild", "life-support board", "shipyard office", "power-grid superintendent", "Red Vane Labor Combine"],
+      "stakes": ["life-support authority", "shipyard repair priority", "power and heat rejection capacity"],
+      "pressures": ["life-support cascades", "replacement-part shortages", "shield and radiator failures"],
+      "secrets": ["maintenance logs were altered before the failure", "the repair backlog is being used as political leverage"],
+      "sceneAnchors": ["life-support spine", "radiator field access lock", "shipyard parts cage"]
     },
     "religion": {
       "label": "Religion and Meaning",
@@ -248,6 +272,14 @@
       "secrets": ["a faction is provoking Gardener attention", "a sealed Sol warning"],
       "sceneAnchors": ["geometry chapel", "warning-beacon shrine", "funeral cylinder"]
     },
+    "gardener-interdiction": {
+      "label": "Gardener Interdiction",
+      "actors": ["Sol-interdiction compliance office", "Ninth Ledger Office", "Pale Choir Communion", "Gardener-fear cult", "sealed route monitor"],
+      "stakes": ["interdiction compliance", "sealed Sol files", "route access under observation"],
+      "pressures": ["Gardener warning signs", "silent route denials", "compliance office seizures"],
+      "secrets": ["the Gardener already intervened once", "a faction is provoking attention to discredit rivals"],
+      "sceneAnchors": ["Sol/Gardener exclusion picket", "sealed compliance archive", "warning-beacon shrine"]
+    },
     "ecology": {
       "label": "Ecology and Biosafety",
       "actors": ["medical/biosafety board", "research consortium", "quarantine authority", "Glasshouse Biosafety Compact", "Veyra-Locke Concession"],
@@ -255,6 +287,22 @@
       "pressures": ["biosafety breach", "chiral contamination", "habitat exposure"],
       "secrets": ["the quarantine order was fabricated", "a profitable containment failure"],
       "sceneAnchors": ["biosafety lock", "plume vent lab", "sealed sample garden"]
+    },
+    "terraforming": {
+      "label": "Terraforming Debt",
+      "actors": ["terraforming authority", "climate-engineering contractor", "settler adaptation board", "Veyra-Locke Concession", "Glasshouse Biosafety Compact"],
+      "stakes": ["terraforming liability", "imported volatile ownership", "climate control access"],
+      "pressures": ["failed mirror swarms", "imported volatile shortages", "climate refugees"],
+      "secrets": ["the terraforming failure was legally profitable", "the climate model was falsified before colonists arrived"],
+      "sceneAnchors": ["dead mirror-control room", "volatile import manifold", "failed garden dome"]
+    },
+    "medicine": {
+      "label": "Medicine and Exposure",
+      "actors": ["clinic board", "exposure triage team", "biosafety doctors", "Glasshouse Biosafety Compact", "medical chirality stock brokers"],
+      "stakes": ["treatment priority", "exposure records", "medical chirality supply"],
+      "pressures": ["neurological exposure symptoms", "triage rationing", "quarantine ward overflow"],
+      "secrets": ["the exposure syndrome was detected before the public alert", "the treatment stock was diverted"],
+      "sceneAnchors": ["quarantine ward", "exposure clinic", "medical stock vault"]
     },
     "disaster": {
       "label": "Disaster and Containment",
@@ -271,6 +319,14 @@
       "pressures": ["old distress calls", "conflicting legal title", "erased maps"],
       "secrets": ["the first-wave owners never died", "a buried first-wave claim"],
       "sceneAnchors": ["ruin registry", "old transit map", "sealed witness core"]
+    },
+    "information-integrity": {
+      "label": "Information Integrity",
+      "actors": ["archive auditors", "AI witness custodians", "casualty-register clerks", "Ninth Ledger Office", "Sepulcher Archive Court"],
+      "stakes": ["public records", "AI testimony", "survey and casualty truth"],
+      "pressures": ["forged ledgers", "deleted maps", "contradictory AI testimony"],
+      "secrets": ["the official record combines two incompatible lies", "the truthful archive is stored under a false identity"],
+      "sceneAnchors": ["public casualty register", "sealed archive", "AI witness vault"]
     },
     "public-life": {
       "label": "Public Life",
@@ -321,6 +377,12 @@
       "banking or debt trust",
       "quarantine authority",
       "gate authority",
+      "route forecasters",
+      "life-support board",
+      "terraforming authority",
+      "clinic board",
+      "archive auditors",
+      "flare-season forecasters",
       "research consortium",
       "medical/biosafety board",
       "religious commune",
@@ -368,7 +430,12 @@
       "safe transit windows",
       "root credential custody",
       "biosphere sampling rights",
-      "sealed archive access"
+      "sealed archive access",
+      "flare-season shelter priority",
+      "storm-delay compensation",
+      "terraforming liability",
+      "treatment priority",
+      "public records"
     ],
     "leverage": [
       "the only stable route chart",
@@ -385,7 +452,12 @@
       "the salvage court docket",
       "the sealed Sol-interdiction file",
       "the old first-wave title map",
-      "the evacuation ark manifest"
+      "the evacuation ark manifest",
+      "the route weather board",
+      "the life-support spine",
+      "the medical stock vault",
+      "the flare forecast",
+      "the dead mirror-control room"
     ],
     "pressures": [
       "ration failures",
@@ -403,7 +475,13 @@
       "bleed-window blackouts",
       "quarantine fatigue",
       "maintenance strike threats",
-      "funeral broadcasts"
+      "funeral broadcasts",
+      "coronal storm warnings",
+      "route forecast disputes",
+      "life-support cascades",
+      "failed mirror swarms",
+      "triage rationing",
+      "forged ledgers"
     ],
     "threats": [
       "chiral contamination",
@@ -420,7 +498,13 @@
       "a staged pirate threat",
       "sealed Sol interdiction",
       "public panic over false sensor returns",
-      "a containment failure made profitable"
+      "a containment failure made profitable",
+      "a coronal storm shelter shortage",
+      "ships trapped by metric weather",
+      "a life-support cascade",
+      "a failed terraforming release",
+      "a neurological exposure outbreak",
+      "a falsified casualty register"
     ],
     "secrets": [
       "falsified casualty records",
@@ -437,7 +521,12 @@
       "a sealed Sol-interdiction warning",
       "a staged pirate threat",
       "a lawful AI override nobody will admit",
-      "a quarantine order written after the disaster"
+      "a quarantine order written after the disaster",
+      "a softened storm forecast",
+      "an altered maintenance log",
+      "a falsified climate model",
+      "a diverted treatment stock",
+      "a truthful archive stored under a false identity"
     ],
     "routeAssets": [
       "the Iggygate throat complex",
@@ -451,7 +540,12 @@
       "the moving bleed-node track",
       "the customs schedule",
       "the salvage court archive",
-      "the refugee ark parking orbit"
+      "the refugee ark parking orbit",
+      "the flare watch station",
+      "the route weather board",
+      "the life-support spine",
+      "the mirror-control swarm",
+      "the medical stock vault"
     ],
     "claims": [
       "the route data was stolen",
@@ -465,7 +559,12 @@
       "the evacuation list was changed",
       "the strike was provoked by management",
       "the pirate threat is staged",
-      "the public vote was erased"
+      "the public vote was erased",
+      "the storm forecast was softened",
+      "the repair logs were altered",
+      "the climate model was falsified",
+      "the exposure records were sealed",
+      "the official archive is a composite lie"
     ],
     "publics": [
       "dock crews",
@@ -477,7 +576,10 @@
       "salvage families",
       "quarantine workers",
       "shipyard apprentices",
-      "market cooperatives"
+      "market cooperatives",
+      "storm shelter crews",
+      "exposure-clinic families",
+      "terraforming debt households"
     ],
     "choices": [
       "open the records and risk system-wide panic",
@@ -487,7 +589,10 @@
       "evacuate the workers or preserve the resource window",
       "trust the censored AI or the official board",
       "publish the casualty list or keep the peace",
-      "pay the debt trust or fund habitat repairs"
+      "pay the debt trust or fund habitat repairs",
+      "honor the route forecast or launch before the storm",
+      "repair the life-support spine or preserve the resource window",
+      "release the exposure records or prevent a quarantine panic"
     ],
     "sceneAnchors": [
       "airlock queue",
@@ -499,7 +604,13 @@
       "salvage court",
       "customs dock",
       "biosafety lock",
-      "funeral broadcast room"
+      "funeral broadcast room",
+      "flare watch room",
+      "route weather board",
+      "life-support spine",
+      "failed garden dome",
+      "exposure clinic",
+      "AI witness vault"
     ]
   },
   "narrativeStructures": [
@@ -665,6 +776,71 @@
       "requiredLayers": ["human"],
       "template": "Everyone blames {threat} for the lockdown, but the real leverage is {leverage}, and the {groupA} benefits if {claim}.",
       "slots": { "threat": "threats", "leverage": "leverage", "groupA": "groups", "claim": "claims" }
+    },
+    {
+      "id": "flare-season-shelter",
+      "label": "Flare Season Shelter",
+      "domains": ["stellar-events", "infrastructure", "public-life"],
+      "motif": "star-as-social-pressure",
+      "requiredLayers": ["physical", "human"],
+      "template": "{threat} has made {leverage} the only thing keeping {public} alive, and the {groupA} is hiding {secret}.",
+      "slots": { "threat": "threats", "leverage": "leverage", "public": "publics", "groupA": "groups", "secret": "secrets" }
+    },
+    {
+      "id": "route-weather-auction",
+      "label": "Route Weather Auction",
+      "domains": ["route-weather", "trade", "exploration"],
+      "motif": "safe-window-as-market",
+      "requiredLayers": ["gu", "human"],
+      "template": "{routeAsset} is safe only during a narrow window, so the {groupA} is auctioning {leverage} while the {groupB} warns that {claim}.",
+      "slots": { "routeAsset": "routeAssets", "groupA": "groups", "leverage": "leverage", "groupB": "groups", "claim": "claims" },
+      "distinctSlots": [["groupA", "groupB"]]
+    },
+    {
+      "id": "interdiction-compliance",
+      "label": "Interdiction Compliance",
+      "domains": ["gardener-interdiction", "law", "religion"],
+      "motif": "opaque-asi-pressure",
+      "requiredLayers": ["gu", "human"],
+      "template": "The {groupA} says {routeAsset} must stay sealed after {threat}, but {public} believe {secret}.",
+      "slots": { "groupA": "groups", "routeAsset": "routeAssets", "threat": "threats", "public": "publics", "secret": "secrets" }
+    },
+    {
+      "id": "life-support-hostage",
+      "label": "Life-Support Hostage",
+      "domains": ["infrastructure", "labor", "ai"],
+      "motif": "machinery-as-political-hostage",
+      "requiredLayers": ["human"],
+      "template": "The {groupA} controls {leverage}, but {pressure} means the {groupB} can force a crisis without firing a shot.",
+      "slots": { "groupA": "groups", "leverage": "leverage", "pressure": "pressures", "groupB": "groups" },
+      "distinctSlots": [["groupA", "groupB"]]
+    },
+    {
+      "id": "terraforming-liability",
+      "label": "Terraforming Liability",
+      "domains": ["terraforming", "ecology", "migration"],
+      "motif": "engineered-climate-debt",
+      "requiredLayers": ["physical", "human"],
+      "template": "{public} were promised {stake}, but {threat} exposed {secret} and turned the {groupA} into the only legal target.",
+      "slots": { "public": "publics", "stake": "stakes", "threat": "threats", "secret": "secrets", "groupA": "groups" }
+    },
+    {
+      "id": "exposure-triage",
+      "label": "Exposure Triage",
+      "domains": ["medicine", "ecology", "public-life"],
+      "motif": "care-under-containment",
+      "requiredLayers": ["human"],
+      "template": "{public} crowd {sceneAnchor} after {threat}, while the {groupA} decides whether {choice}.",
+      "slots": { "public": "publics", "sceneAnchor": "sceneAnchors", "threat": "threats", "groupA": "groups", "choice": "choices" }
+    },
+    {
+      "id": "archive-integrity-crisis",
+      "label": "Archive Integrity Crisis",
+      "domains": ["information-integrity", "espionage", "governance"],
+      "motif": "truth-as-infrastructure",
+      "requiredLayers": ["human"],
+      "template": "The {groupA} can prove {claim}, but {leverage} will collapse if {secret} becomes public.",
+      "slots": { "groupA": "groups", "claim": "claims", "leverage": "leverage", "secret": "secrets" }
     }
   ]
 }

@@ -486,6 +486,20 @@ function domainProtectionPhrase(domain: string | undefined): string {
       return 'AI custody'
     case 'exploration':
       return 'safe passage'
+    case 'stellar-events':
+      return 'storm readiness'
+    case 'gardener-interdiction':
+      return 'interdiction safety'
+    case 'infrastructure':
+      return 'critical systems'
+    case 'terraforming':
+      return 'climate stability'
+    case 'route-weather':
+      return 'the safe transit window'
+    case 'information-integrity':
+      return 'the public record'
+    case 'medicine':
+      return 'medical triage'
     default:
       return 'public order'
   }
@@ -2898,20 +2912,26 @@ function narrativeDomainsForText(value: string): string[] {
 
   if (/(navy|militia|military|mercenary|weapon|war|defense|basing|blockade|casualty)/.test(text)) domains.push('war')
   if (/(trade|customs|freeport|shipyard|depot|resource|ore|mine|extraction|concession|debt|bank|fuel|tax|shipment|salvage)/.test(text)) domains.push('trade')
-  if (/(intelligence|erased|deleted|falsified|censored|secret|black site|hidden|sealed|sabotage|forged|impostor)/.test(text)) domains.push('espionage')
+  if (/(intelligence|erased|deleted|falsified|censored|secret|black site|hidden|sealed|sabotage|forged|impostor)/.test(text)) domains.push('espionage', 'information-integrity')
   if (/(survey|research|science|biosafety|medical|microbial|biosphere|ecology|terrafor|lab|academic)/.test(text)) domains.push('science')
   if (/(biosphere|microbial|ecology|contamination|quarantine|chiral|terraform)/.test(text)) domains.push('ecology')
+  if (/(medical|medicine|clinic|triage|exposure|neurological|vestibular|treatment|quarantine ward|chirality stock)/.test(text)) domains.push('medicine')
+  if (/(terraform|climate|mirror|volatile import|garden dome|failed garden|greenhouse|biosphere project)/.test(text)) domains.push('terraforming')
   if (/(worker|labor|strike|draft|ration|life-support|forced|crew)/.test(text)) domains.push('labor')
+  if (/(life-support|repair|shipyard|power|radiator|maintenance|spare|parts|heat rejection|shield)/.test(text)) domains.push('infrastructure')
   if (/(election|authority|council|democracy|magistrate|govern|succession|autonomy|charter)/.test(text)) domains.push('governance')
-  if (/(law|legal|court|claim|title|liability|jurisdiction|evidence|docket|compliance)/.test(text)) domains.push('law')
+  if (/(law|legal|court|claim|title|liability|jurisdiction|evidence|docket|compliance)/.test(text)) domains.push('law', 'information-integrity')
   if (/(religious|cult|commune|gardener|sol)/.test(text)) domains.push('religion')
+  if (/(gardener|sol-interdiction|interdiction|exclusion picket|compliance office|sealed sol)/.test(text)) domains.push('gardener-interdiction')
   if (/(pirate|criminal|smuggler|cartel|racket|black market)/.test(text)) domains.push('crime')
   if (/(refugee|exile|resettlement|evacuation|ark)/.test(text)) domains.push('migration')
   if (/(first-wave|ruin|remnant|inheritance|archive|salvage title|old)/.test(text)) domains.push('archaeology')
   if (/(ai|narrow-ai|automation|simulation|root credentials|memory)/.test(text)) domains.push('ai')
   if (/(disaster|accident|breach|cascade|storm|failure|hazard|radiation|misjump)/.test(text)) domains.push('disaster')
+  if (/(flare|coronal|eclipse|stellar|radiation storm|white-dwarf|brown dwarf|periastron)/.test(text)) domains.push('stellar-events')
   if (/(ration|festival|public|school|market|funeral|civilian|colony)/.test(text)) domains.push('public-life', 'daily-life')
   if (/(route|iggygate|pinch|gate|transit|corridor|anchor|reachability|survey|scout|chart|beacon)/.test(text)) domains.push('exploration', 'trade')
+  if (/(route weather|safe window|bleed-window|metric weather|pinch forecast|stormbound|schedule failure|calibration scar|moving node)/.test(text)) domains.push('route-weather')
 
   return uniqueStrings(domains.length ? domains : ['public-life'])
 }
@@ -2966,7 +2986,7 @@ function buildNarrativeFacts(ctx: NarrativeGenerationContext): NarrativeFact[] {
       source: 'Narrative context from generated reachability class',
       sourcePath: 'reachability.className',
       tags: ['route', 'access'],
-      domains: ['trade', 'exploration', 'governance'],
+      domains: ['route-weather', 'trade', 'exploration', 'governance'],
     }),
     narrativeFact({
       id: 'system.architecture',
@@ -2989,7 +3009,7 @@ function buildNarrativeFacts(ctx: NarrativeGenerationContext): NarrativeFact[] {
       source: 'Narrative context from generated stellar activity',
       sourcePath: 'primary.activity',
       tags: ['physical', 'hazard'],
-      domains: ['science', 'disaster', 'public-life'],
+      domains: ['stellar-events', 'science', 'disaster', 'public-life'],
     }),
     narrativeFact({
       id: 'gu.intensity',
@@ -3000,7 +3020,7 @@ function buildNarrativeFacts(ctx: NarrativeGenerationContext): NarrativeFact[] {
       source: 'Narrative context from generated GU intensity',
       sourcePath: 'guOverlay.intensity',
       tags: ['gu'],
-      domains: ['science', 'trade', 'disaster'],
+      domains: ['route-weather', 'science', 'trade', 'disaster'],
     }),
     narrativeFact({
       id: 'gu.resource',
@@ -3085,7 +3105,7 @@ function buildNarrativeFacts(ctx: NarrativeGenerationContext): NarrativeFact[] {
         source: 'Narrative context from generated body radiation',
         sourcePath: `bodies[${bodyIndex}].detail.radiation`,
         tags: radiationCreatesNarrativeHazard(body.detail.radiation.value) ? ['hazard', 'physical'] : ['physical'],
-        domains: radiationCreatesNarrativeHazard(body.detail.radiation.value) ? ['disaster', 'public-life', 'science'] : ['public-life', 'science'],
+        domains: radiationCreatesNarrativeHazard(body.detail.radiation.value) ? ['stellar-events', 'disaster', 'medicine', 'public-life'] : ['public-life', 'science'],
       })
     )
 
