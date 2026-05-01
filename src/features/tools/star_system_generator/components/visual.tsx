@@ -49,6 +49,13 @@ const layerTokens: Record<Layer, LayerTokens> = {
   },
 }
 
+const layerBarClasses: Record<Layer, string> = {
+  physical: 'before:bg-[var(--accent)]',
+  gu: 'before:bg-[var(--accent-mystical)]',
+  human: 'before:bg-[var(--accent-warm)]',
+  neutral: 'before:bg-[var(--border-strong)]',
+}
+
 type IconType = ComponentType<SVGProps<SVGSVGElement>>
 
 interface SectionHeaderProps {
@@ -91,8 +98,7 @@ export function SectionHeader({
 }
 
 export function sectionShellClasses(layer: Layer): string {
-  const tokens = layerTokens[layer]
-  return `relative overflow-hidden rounded-lg border border-[var(--border)] bg-[var(--card)] p-4 before:absolute before:inset-y-0 before:left-0 before:w-[3px] ${tokens.bar.replace('bg-', 'before:bg-')}`
+  return `relative h-full overflow-hidden rounded-lg border border-[var(--border)] bg-[var(--card)] p-4 before:absolute before:inset-y-0 before:left-0 before:w-[3px] ${layerBarClasses[layer]}`
 }
 
 interface SpectralChipProps {

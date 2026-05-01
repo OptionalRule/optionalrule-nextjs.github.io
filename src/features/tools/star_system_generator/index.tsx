@@ -95,14 +95,14 @@ export default function StarSystemGenerator({ className }: StarSystemGeneratorPr
           <NarrativeLinesPanel system={system} />
         </div>
 
-        <div className="grid gap-4 xl:grid-cols-3">
-          <div id="gu">
-            <GuOverlayPanel system={system} compact />
-          </div>
-          <div id="human-remnants">
+        <div className="grid items-stretch gap-4 xl:grid-cols-3">
+          <div id="human-remnants" className="h-full">
             <HumanRemnantsPanel system={system} />
           </div>
-          <div id="system-phenomena">
+          <div id="gu" className="h-full">
+            <GuOverlayPanel system={system} compact />
+          </div>
+          <div id="system-phenomena" className="h-full">
             <SystemPhenomenaPanel system={system} />
           </div>
         </div>
