@@ -6,6 +6,7 @@ export interface NarrativeStructure {
   domains?: readonly string[]
   motif?: string
   requiredLayers?: readonly string[]
+  baseWeight?: number
   template: string
   slots: Record<string, string>
   distinctSlots?: readonly (readonly [string, string])[]

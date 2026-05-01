@@ -76,7 +76,7 @@ import {
   siteOptions,
   temperateClimateTags,
 } from './data/mechanics'
-import { humanRemnants, namedFactions, narrativeStructures, narrativeVariablePools, phenomena, remnantHooks } from './data/narrative'
+import { humanRemnants, namedFactions, narrativeStructures, narrativeVariablePools, phenomena, remnantHooks, type NarrativeStructure } from './data/narrative'
 import {
   aiSituations,
   asteroidBaseFunctions,
@@ -3411,6 +3411,114 @@ function fallbackCandidates(poolName: string, values: readonly string[]): Narrat
   }))
 }
 
+function addNarrativeDomainBoost(boosts: Map<string, number>, domain: string, amount: number): void {
+  boosts.set(domain, Math.min((boosts.get(domain) ?? 0) + amount, 6))
+}
+
+function boostDomains(boosts: Map<string, number>, domains: readonly string[], amount: number): void {
+  domains.forEach((domain) => addNarrativeDomainBoost(boosts, domain, amount))
+}
+
+function deriveNarrativeDomainBoosts(narrativeFacts: readonly NarrativeFact[]): Map<string, number> {
+  const boosts = new Map<string, number>()
+
+  narrativeFacts.forEach((factEntry) => {
+    const text = `${factEntry.kind} ${factEntry.value.value} ${factEntry.tags.join(' ')} ${factEntry.domains.join(' ')}`.toLowerCase()
+
+    if (factEntry.kind.startsWith('gu.')) boostDomains(boosts, factEntry.domains, 0.55)
+    if (factEntry.kind === 'phenomenon') boostDomains(boosts, factEntry.domains, 0.35)
+    if (factEntry.kind.startsWith('settlement.')) boostDomains(boosts, factEntry.domains, 0.04)
+
+    if (factEntry.kind === 'route.reachability') {
+      if (text.includes('gardener-shadowed')) addNarrativeDomainBoost(boosts, 'gardener-interdiction', 4)
+      if (/(route|gate|pinch|hub|anchor|crossroads|corridor)/.test(text)) addNarrativeDomainBoost(boosts, 'route-weather', 1.4)
+    }
+
+    if (factEntry.kind === 'star.activity' && !/quiet|moderate/.test(text)) {
+      addNarrativeDomainBoost(boosts, 'stellar-events', 2.5)
+      addNarrativeDomainBoost(boosts, 'medicine', 0.6)
+      addNarrativeDomainBoost(boosts, 'disaster', 0.6)
+    }
+
+    if (factEntry.kind === 'gu.intensity') {
+      if (/rich/.test(text)) addNarrativeDomainBoost(boosts, 'route-weather', 0.8)
+      if (/dangerous|fracture|major|shear/.test(text)) {
+        addNarrativeDomainBoost(boosts, 'route-weather', 1.8)
+        addNarrativeDomainBoost(boosts, 'disaster', 0.8)
+      }
+    }
+
+    if (/(flare|coronal|eclipse|stellar|white-dwarf|brown dwarf|periastron|radiation storm)/.test(text)) {
+      addNarrativeDomainBoost(boosts, 'stellar-events', 1.6)
+    }
+    if (/(gardener|sol-interdiction|interdiction|exclusion picket|compliance office|sealed sol)/.test(text)) {
+      addNarrativeDomainBoost(boosts, 'gardener-interdiction', 1.8)
+    }
+    if (/(life-support|shipyard|repair|maintenance|radiator|power|shield|replacement part|fuel depot)/.test(text)) {
+      addNarrativeDomainBoost(boosts, 'infrastructure', 1.3)
+    }
+    if (/(terraform|climate|mirror|volatile import|garden dome|greenhouse|failed garden|failed terraforming)/.test(text)) {
+      addNarrativeDomainBoost(boosts, 'terraforming', 1.5)
+    }
+    if (/(route weather|safe window|bleed-window|metric weather|pinch forecast|stormbound|schedule failure|calibration scar|moving node|iggygate|pinchdrive)/.test(text)) {
+      addNarrativeDomainBoost(boosts, 'route-weather', 1.2)
+    }
+    if (/(falsified|censored|erased|records|archive|casualty|evidence|forged|deleted|witness)/.test(text)) {
+      addNarrativeDomainBoost(boosts, 'information-integrity', 1.3)
+    }
+    if (/(medical|medicine|clinic|triage|exposure|neurological|vestibular|treatment|quarantine ward|chiral contamination|chirality stock)/.test(text)) {
+      addNarrativeDomainBoost(boosts, 'medicine', 1.4)
+    }
+  })
+
+  return boosts
+}
+
+function finiteNonNegative(value: number | undefined, fallback: number): number {
+  return typeof value === 'number' && Number.isFinite(value) ? Math.max(0, value) : fallback
+}
+
+function narrativeStructureWeight(
+  structure: NarrativeStructure,
+  options: GenerationOptions,
+  domainBoosts: ReadonlyMap<string, number>
+): number {
+  const domains = structure.domains ?? []
+  const baseWeight = finiteNonNegative(structure.baseWeight, 1)
+  const contextBoost = domains.length
+    ? domains.reduce((sum, domain) => sum + (domainBoosts.get(domain) ?? 0), 0) / domains.length
+    : 0
+  const domainBias = domains.length
+    ? Math.max(...domains.map((domain) => finiteNonNegative(options.narrativeBias?.domains?.[domain], 1)))
+    : 1
+  const structureBias = finiteNonNegative(options.narrativeBias?.structures?.[structure.id], 1)
+
+  return baseWeight * (1 + contextBoost) * domainBias * structureBias
+}
+
+function pickWeightedNarrativeStructure(
+  rng: SeededRng,
+  structures: readonly NarrativeStructure[],
+  options: GenerationOptions,
+  domainBoosts: ReadonlyMap<string, number>
+): NarrativeStructure {
+  const weighted = structures.map((structure) => ({
+    structure,
+    weight: narrativeStructureWeight(structure, options, domainBoosts),
+  }))
+  const totalWeight = weighted.reduce((sum, entry) => sum + entry.weight, 0)
+
+  if (totalWeight <= 0) return pickOne(rng, structures)
+
+  let roll = rng.float(0, totalWeight)
+  for (const entry of weighted) {
+    roll -= entry.weight
+    if (roll <= 0) return entry.structure
+  }
+
+  return weighted[weighted.length - 1].structure
+}
+
 function narrativeDomainsForStructure(structureDomains: readonly string[] | undefined, variables: Record<string, Fact<string>>): string[] {
   const variableDomains = Object.values(variables).flatMap((variable) => narrativeDomainsForText(variable.value))
   return uniqueStrings([...(structureDomains ?? []), ...variableDomains]).slice(0, 4)
@@ -3441,10 +3549,11 @@ function generateNarrativeLines(
     options.gu === 'high' || options.settlements === 'hub' || options.settlements === 'crowded' ? 4 :
     3
   const availableStructures = [...narrativeStructures]
+  const domainBoosts = deriveNarrativeDomainBoosts(narrativeFacts)
 
   return Array.from({ length: Math.min(count, availableStructures.length) }, (_, index) => {
-    const structureIndex = rng.int(0, availableStructures.length - 1)
-    const structure = availableStructures.splice(structureIndex, 1)[0]
+    const structure = pickWeightedNarrativeStructure(rng, availableStructures, options, domainBoosts)
+    availableStructures.splice(availableStructures.findIndex((candidate) => candidate.id === structure.id), 1)
     const variables: Record<string, Fact<string>> = {}
     const factsUsed = new Set<string>()
 

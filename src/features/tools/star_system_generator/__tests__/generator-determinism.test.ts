@@ -788,6 +788,35 @@ describe('generateSystem', () => {
     expect(JSON.stringify(system.ruins).toLowerCase()).not.toContain('alien')
   })
 
+  it('weights narrative structures from system context and future user bias', () => {
+    const gardenerSystem = generateSystem({ ...options, seed: 'gardener-context-1' })
+    expect(gardenerSystem.reachability.className.value).toBe('Gardener-shadowed')
+    expect(gardenerSystem.narrativeThreads.map((thread) => thread.title.value)).toContain('Interdiction Compliance')
+
+    const biasedSystem = generateSystem({
+      ...options,
+      seed: 'narrative-bias-test',
+      narrativeBias: {
+        structures: {
+          'flare-season-shelter': 1000,
+        },
+      },
+    })
+    expect(biasedSystem.narrativeThreads[0]?.title.value).toBe('Flare Season Shelter')
+
+    const domainBiasedSystem = generateSystem({
+      ...options,
+      seed: 'domain-bias-test',
+      narrativeBias: {
+        domains: {
+          'route-weather': 100,
+        },
+      },
+    })
+    expect(domainBiasedSystem.narrativeThreads[0]?.domains.map((domain) => domain.value)).toContain('route-weather')
+    expect(generateSystem(domainBiasedSystem.options)).toEqual(domainBiasedSystem)
+  })
+
   it('uses rolled settlement presence and source settlement scales', () => {
     const systems = Array.from({ length: 160 }, (_, index) =>
       generateSystem({
