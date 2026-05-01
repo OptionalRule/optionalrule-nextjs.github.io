@@ -2906,6 +2906,7 @@ interface NarrativeSlotCandidate {
   factId?: string
   confidence: Fact<string>['confidence']
   source: string
+  weight?: number
 }
 
 function narrativeDomainsForText(value: string): string[] {
@@ -2972,7 +2973,7 @@ function radiationCreatesNarrativeHazard(value: string): boolean {
 }
 
 function secretCandidateFromFact(factEntry: NarrativeFact): boolean {
-  if (factEntry.kind === 'settlement.hiddenTruth' || factEntry.kind === 'ruin.hook') return true
+  if (factEntry.kind === 'settlement.hiddenTruth' || factEntry.kind === 'settlement.tagHook' || factEntry.kind === 'ruin.hook') return true
   if (factEntry.kind !== 'settlement.aiSituation') return false
   return /(hidden|illegal|memory gaps|only witness|censored|impostor|secret|missing|cut down|wrong authority|catastrophe|gardener)/i.test(factEntry.value.value)
 }
@@ -3242,6 +3243,19 @@ function buildNarrativeFacts(ctx: NarrativeGenerationContext): NarrativeFact[] {
       }))
     })
 
+    facts.push(narrativeFact({
+      id: `settlement.${settlement.id}.tagHook`,
+      kind: 'settlement.tagHook',
+      subjectType: 'settlement',
+      subjectId: settlement.id,
+      value: settlement.tagHook.value,
+      confidence: settlement.tagHook.confidence,
+      source: `Narrative context from ${settlementLabel} settlement tag hook`,
+      sourcePath: `${settlementBase}.tagHook`,
+      tags: ['pressure', 'claim', 'secret'],
+      domains: narrativeDomainsForText(settlement.tagHook.value),
+    }))
+
     settlement.encounterSites.forEach((site, siteIndex) => {
       facts.push(narrativeFact({
         id: `settlement.${settlement.id}.encounterSite.${siteIndex + 1}`,
@@ -3310,14 +3324,14 @@ function candidatesFromFacts(facts: readonly NarrativeFact[], poolName: string):
     poolName === 'groups' ? byKind(['settlement.authority', 'namedFaction']) :
     poolName === 'stakes' ? [...byKind(['gu.resource', 'route.reachability', 'settlement.function', 'body.biosphere', 'body.site']), ...byTag(['stake'])] :
     poolName === 'leverage' ? [...byKind(['gu.bleedLocation', 'settlement.location', 'settlement.encounterSite']), ...byTag(['routeAsset', 'sceneAnchor'])] :
-    poolName === 'pressures' ? [...byKind(['settlement.crisis', 'settlement.condition', 'settlement.tag', 'gu.hazard', 'gu.bleedBehavior']), ...byTag(['pressure'])] :
+    poolName === 'pressures' ? [...byKind(['settlement.crisis', 'settlement.condition', 'settlement.tag', 'settlement.tagHook', 'gu.hazard', 'gu.bleedBehavior']), ...byTag(['pressure'])] :
     poolName === 'threats' ? [...byKind(['gu.hazard', 'gu.bleedBehavior', 'body.radiation', 'settlement.crisis']), ...byTag(['hazard'])].filter((factEntry) => factEntry.kind !== 'body.radiation' || factEntry.tags.includes('hazard')) :
-    poolName === 'secrets' ? [...byKind(['settlement.hiddenTruth', 'settlement.aiSituation', 'ruin.hook']), ...byTag(['secret'])].filter(secretCandidateFromFact) :
+    poolName === 'secrets' ? [...byKind(['settlement.hiddenTruth', 'settlement.tagHook', 'settlement.aiSituation', 'ruin.hook']), ...byTag(['secret'])].filter(secretCandidateFromFact) :
     poolName === 'routeAssets' ? [...byKind(['gu.bleedLocation', 'settlement.location']), ...byTag(['routeAsset'])] :
-    poolName === 'claims' ? [...byKind(['ruin.hook', 'settlement.hiddenTruth']), ...byTag(['claim'])] :
+    poolName === 'claims' ? [...byKind(['ruin.hook', 'settlement.hiddenTruth', 'settlement.tagHook']), ...byTag(['claim'])] :
     poolName === 'sceneAnchors' ? [...byKind(['settlement.encounterSite', 'settlement.location']), ...byTag(['sceneAnchor'])] :
     poolName === 'publics' ? byKind(['settlement.function', 'settlement.location']) :
-    poolName === 'choices' ? [...byKind(['settlement.hiddenTruth', 'ruin.hook']), ...byTag(['claim', 'secret'])] :
+    poolName === 'choices' ? [...byKind(['settlement.hiddenTruth', 'settlement.tagHook', 'ruin.hook']), ...byTag(['claim', 'secret'])] :
     []
 
   return uniqueByNormalizedValue(selected.map((factEntry) => ({
@@ -3325,7 +3339,91 @@ function candidatesFromFacts(facts: readonly NarrativeFact[], poolName: string):
     factId: factEntry.id,
     confidence: factEntry.value.confidence,
     source: `Narrative fact ledger: ${factEntry.sourcePath}`,
+    weight: narrativeCandidateWeight(factEntry, poolName),
   })))
+}
+
+function narrativeCandidateWeight(factEntry: NarrativeFact, poolName: string): number {
+  if (poolName === 'groups') return factEntry.kind === 'settlement.authority' ? 1.5 : 1
+  if (factEntry.kind === 'settlement.crisis') return 5
+  if (factEntry.kind === 'settlement.hiddenTruth') return 5
+  if (factEntry.kind === 'settlement.tag') return 4.4
+  if (factEntry.kind === 'settlement.tagHook') return 4.1
+  if (factEntry.kind === 'gu.resource' || factEntry.kind === 'gu.hazard') return 4
+  if (factEntry.kind === 'settlement.function') return 3.2
+  if (factEntry.kind === 'settlement.location') return 2.8
+  if (factEntry.kind === 'gu.bleedLocation') return 2.6
+  if (factEntry.kind === 'gu.bleedBehavior') return 2.4
+  if (factEntry.kind === 'ruin.hook') return 2
+  if (factEntry.kind === 'settlement.aiSituation') return 1.8
+  if (factEntry.kind === 'settlement.encounterSite') return 1.2
+  return 1
+}
+
+function pickWeightedCandidate(rng: SeededRng, candidates: readonly NarrativeSlotCandidate[]): NarrativeSlotCandidate {
+  const totalWeight = candidates.reduce((sum, candidate) => sum + Math.max(candidate.weight ?? 1, 0), 0)
+  if (totalWeight <= 0) return pickOne(rng, candidates)
+
+  let roll = rng.float(0, totalWeight)
+  for (const candidate of candidates) {
+    roll -= Math.max(candidate.weight ?? 1, 0)
+    if (roll <= 0) return candidate
+  }
+
+  return candidates[candidates.length - 1]
+}
+
+function tagHookSentences(value: string): string[] {
+  return value
+    .split(/(?<=[.!?])\s+/)
+    .map((sentence) => stripTerminalPunctuation(sentence.trim()))
+    .filter(Boolean)
+}
+
+function tagHookSecret(value: string): string | undefined {
+  const privateSentence = tagHookSentences(value).find((sentence) => /^Privately,\s+/i.test(sentence))
+  if (!privateSentence) return undefined
+  return lowerFirst(privateSentence.replace(/^Privately,\s*/i, ''))
+}
+
+function tagHookPressure(value: string): string | undefined {
+  const sentences = tagHookSentences(value)
+  const localPressure = sentences
+    .map((sentence) => sentence.match(/local pressure is sharper:\s*(.+)$/i)?.[1])
+    .find((sentence): sentence is string => Boolean(sentence))
+  if (localPressure) return lowerFirst(localPressure)
+
+  const crisisSentence = sentences.find((sentence) => /^The crisis around\s+/i.test(sentence))
+  if (crisisSentence) return lowerFirst(crisisSentence)
+
+  return undefined
+}
+
+function factAsChoiceClause(factEntry: NarrativeFact, value: string): string {
+  if (factEntry.kind === 'settlement.tagHook') {
+    const secret = tagHookSecret(factEntry.value.value)
+    if (secret) return `exposing that ${secret} is worth the risk`
+  }
+
+  if (factEntry.status === 'secret') return `exposing that ${value} is worth the risk`
+
+  if (factEntry.kind === 'ruin.hook') {
+    if (/^(is|was|appears|sits)\b/i.test(value)) return `the remnant ${value}`
+    if (/^contains\s+(.+)$/i.test(value)) return value.replace(/^contains\s+/i, 'the remnant contains ')
+    if (/^holds\s+(.+)$/i.test(value)) return value.replace(/^holds\s+/i, 'the remnant holds ')
+  }
+
+  return value
+}
+
+function bleedBehaviorThreat(value: string): string {
+  if (/^stable and charted$/i.test(value)) return 'a stable, charted bleed pattern'
+  if (/^stable but weakening$/i.test(value)) return 'a stable but weakening bleed pattern'
+  if (/^seasonal\/orbital cycle$/i.test(value)) return 'a seasonal orbital bleed cycle'
+  if (/^(flare-triggered|tidal-cycle triggered)$/i.test(value)) return `a ${value.toLowerCase()} bleed pattern`
+  if (/^(migrates|splits|appears|follows|reacts)\b/i.test(value)) return `a bleed pattern that ${value}`
+  if (/^apparently anticipatory/i.test(value)) return 'an apparently anticipatory bleed pattern'
+  return `a bleed pattern shaped by ${value}`
 }
 
 function narrativeSlotDisplayValue(factEntry: NarrativeFact, poolName: string): string {
@@ -3344,11 +3442,11 @@ function narrativeSlotDisplayValue(factEntry: NarrativeFact, poolName: string): 
   }
 
   if (poolName === 'choices') {
-    if (factEntry.status === 'secret') return `exposing ${value} is worth the risk`
-    return value
+    return factAsChoiceClause(factEntry, value)
   }
 
   if (poolName === 'claims') {
+    if (factEntry.kind === 'settlement.tagHook') return tagHookSecret(rawValue) ?? value
     if (factEntry.kind === 'ruin.hook') {
       if (/^contains\s+(.+)$/i.test(value)) return value.replace(/^contains\s+/i, 'the remnant contains ')
       if (/^holds\s+(.+)$/i.test(value)) return value.replace(/^holds\s+/i, 'the remnant holds ')
@@ -3360,17 +3458,20 @@ function narrativeSlotDisplayValue(factEntry: NarrativeFact, poolName: string): 
   }
 
   if (poolName === 'secrets') {
+    if (factEntry.kind === 'settlement.tagHook') return tagHookSecret(rawValue) ?? value
     if (factEntry.kind === 'ruin.hook') {
       if (/^contains\s+(.+)$/i.test(value)) return value.replace(/^contains\s+/i, '')
       if (/^holds\s+(.+)$/i.test(value)) return value.replace(/^holds\s+/i, '')
       if (/^proves\s+(.+)$/i.test(value)) return value.replace(/^proves\s+/i, 'proof that ')
       if (/^shows\s+(.+)$/i.test(value)) return value.replace(/^shows\s+/i, 'evidence that ')
       if (/^(marks|has|hides|keeps)\b/i.test(value)) return `evidence that it ${value}`
+      if (/^(is|was|appears|sits)\b/i.test(value)) return `evidence that the remnant ${value}`
     }
     if (factEntry.kind === 'settlement.hiddenTruth') return lowerFirst(value)
   }
 
   if (poolName === 'pressures') {
+    if (factEntry.kind === 'settlement.tagHook') return tagHookPressure(rawValue) ?? value
     if (factEntry.kind === 'settlement.crisis') return crisisAsPressure(rawValue)
     if (factEntry.kind === 'settlement.condition') {
       const match = value.match(/^(.+) at (.+)$/)
@@ -3382,7 +3483,7 @@ function narrativeSlotDisplayValue(factEntry: NarrativeFact, poolName: string): 
   if (poolName === 'threats') {
     if (factEntry.kind === 'settlement.crisis') return crisisAsPressure(rawValue)
     if (factEntry.kind === 'body.radiation') return value
-    if (factEntry.kind === 'gu.bleedBehavior') return `a bleed pattern that ${value}`
+    if (factEntry.kind === 'gu.bleedBehavior') return bleedBehaviorThreat(value)
   }
 
   if (poolName === 'routeAssets') {
@@ -3407,10 +3508,22 @@ function narrativeSlotDisplayValue(factEntry: NarrativeFact, poolName: string): 
 
 function fallbackCandidates(poolName: string, values: readonly string[]): NarrativeSlotCandidate[] {
   return values.map((value) => ({
-    value,
+    value: fallbackSlotDisplayValue(poolName, value),
     confidence: 'human-layer',
     source: `Narrative variable pool "${poolName}"`,
+    weight: 1,
   }))
+}
+
+function fallbackSlotDisplayValue(poolName: string, value: string): string {
+  if (poolName !== 'groups') return value
+
+  return value
+    .replace(/^revolutionary cells$/i, 'revolutionary cell network')
+    .replace(/^route forecasters$/i, 'route forecasting office')
+    .replace(/^archive auditors$/i, 'archive audit office')
+    .replace(/^flare-season forecasters$/i, 'flare-season forecasting office')
+    .replace(/^medical\/biosafety board$/i, 'medical and biosafety board')
 }
 
 function addNarrativeDomainBoost(boosts: Map<string, number>, domain: string, amount: number): void {
@@ -3570,8 +3683,8 @@ function generateNarrativeLines(
       )
       const eligibleFactPool = factPool.filter((candidate) => !blockedValues.has(candidate.value))
       const eligiblePool = pool.filter((candidate) => !blockedValues.has(candidate.value))
-      const preferredPool = eligibleFactPool.length && rng.chance(0.75) ? eligibleFactPool : eligiblePool
-      const value = pickOne(rng, preferredPool.length ? preferredPool : pool)
+      const preferredPool = eligibleFactPool.length && rng.chance(0.85) ? eligibleFactPool : eligiblePool
+      const value = pickWeightedCandidate(rng, preferredPool.length ? preferredPool : pool)
       if (value.factId) factsUsed.add(value.factId)
       variables[slot] = fact(value.value, value.confidence, value.source)
     }

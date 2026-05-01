@@ -817,6 +817,20 @@ describe('generateSystem', () => {
     expect(generateSystem(domainBiasedSystem.options)).toEqual(domainBiasedSystem)
   })
 
+  it('normalizes narrative fact snippets for slot grammar', () => {
+    const system = generateSystem({ ...options, seed: '64e64d5a63ca1ebe' })
+    const narrativeText = system.narrativeLines.map((line) => line.text.value).join('\n')
+    const exposureTriage = system.narrativeLines.find((line) => line.structureId.value === 'exposure-triage')
+    const movingBleedRush = system.narrativeLines.find((line) => line.structureId.value === 'moving-bleed-rush')
+
+    expect(narrativeText).not.toMatch(/\bwhether is\b/i)
+    expect(narrativeText).not.toMatch(/\bis is\b/i)
+    expect(narrativeText).not.toMatch(/\bthat stable and charted\b/i)
+    expect(narrativeText).not.toMatch(/\bforecasters is\b/i)
+    expect(exposureTriage?.variables.choice.value).toBe('exposing that the site is a fake colony masking extraction is worth the risk')
+    expect(movingBleedRush?.variables.threat.value).toBe('a stable, charted bleed pattern')
+  })
+
   it('uses rolled settlement presence and source settlement scales', () => {
     const systems = Array.from({ length: 160 }, (_, index) =>
       generateSystem({
