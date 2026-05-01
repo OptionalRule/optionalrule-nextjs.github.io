@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import type { GenerationOptions, PartialKnownSystem } from '../types'
 import { applyNoAlienTextGuard, architectureBodyPlanRules, generateSystem } from '../lib/generator'
+import { bodyDesignation, moonDesignation } from '../lib/generator/designations'
 import {
   builtForms,
   guFractureFunctionsBySiteCategory,
@@ -138,6 +139,34 @@ describe('generateSystem', () => {
     expect(system.bodies.length).toBeGreaterThan(1)
   })
 
+  it('assigns designations to imported bodies without locked names', () => {
+    const knownSystem: PartialKnownSystem = {
+      name: { value: 'Known Designation Test', confidence: 'confirmed', source: 'Test catalog', locked: true },
+      primary: {
+        spectralType: { value: 'K star', confidence: 'confirmed', source: 'Test catalog', locked: true },
+        massSolar: { value: 0.8, confidence: 'confirmed', source: 'Test catalog', locked: true },
+        luminositySolar: { value: 0.42, confidence: 'confirmed', source: 'Test catalog', locked: true },
+      },
+      bodies: [
+        {
+          id: 'known-unnamed',
+          orbitAu: { value: 0.76, confidence: 'confirmed', source: 'Test catalog', locked: true },
+          category: { value: 'rocky-planet', confidence: 'confirmed', source: 'Test catalog', locked: true },
+          bodyClass: { value: 'Earth-sized terrestrial', confidence: 'confirmed', source: 'Test catalog', locked: true },
+          massClass: { value: 'Terrestrial', confidence: 'confirmed', source: 'Test catalog', locked: true },
+        },
+      ],
+    }
+
+    const system = generateSystem({ ...options, seed: 'known-body-designation-test' }, knownSystem)
+    const bodyIndex = system.bodies.findIndex((body) => body.id === 'known-unnamed')
+    const knownBody = system.bodies[bodyIndex]
+
+    expect(bodyIndex).toBeGreaterThanOrEqual(0)
+    expect(knownBody.name.value).toBe(bodyDesignation(system.name.value, bodyIndex, knownBody.category.value))
+    expect(knownBody.name.locked).toBeUndefined()
+  })
+
   it('preserves incompatible locked body details and reports them as conflicts', () => {
     const knownSystem: PartialKnownSystem = {
       name: { value: 'Locked Conflict Test', confidence: 'confirmed', source: 'Test catalog', locked: true },
@@ -195,6 +224,22 @@ describe('generateSystem', () => {
     expect(new Set(settlementNames).size).toBeGreaterThan(100)
     expect(new Set(moonNames).size).toBeGreaterThan(40)
     expect(firstBodyNames.filter((name) => name === 'Ashkey').length).toBe(0)
+  })
+
+  it('uses designation-first names for generated bodies and moons', () => {
+    for (let index = 0; index < 40; index++) {
+      const system = generateSystem({ ...options, seed: `designation-${index.toString(16).padStart(4, '0')}` })
+
+      system.bodies.forEach((body, bodyIndex) => {
+        expect(body.name.value).toBe(bodyDesignation(system.name.value, bodyIndex, body.category.value))
+        expect(body.name.source).toContain('celestial designation')
+
+        body.moons.forEach((moon, moonIndex) => {
+          expect(moon.name.value).toBe(moonDesignation(body.name.value, moonIndex))
+          expect(moon.name.source).toContain('moon designation')
+        })
+      })
+    }
   })
 
   it('varies generated prose templates across sampled systems', () => {
@@ -989,9 +1034,11 @@ describe('generateSystem', () => {
 
         if (settlement.siteCategory.value === 'Moon base') {
           expect(settlement.moonId).toBeTruthy()
-          expect(body?.moons.some((moon) => moon.id === settlement.moonId)).toBe(true)
+          const moon = body?.moons.find((candidate) => candidate.id === settlement.moonId)
+          expect(moon).toBeTruthy()
           expect(settlement.anchorKind.value).toBe('major moon')
-          expect(settlement.anchorName.value).toContain('moon of')
+          expect(settlement.anchorName.value).toBe(moon?.name.value)
+          expect(settlement.anchorName.value).toMatch(/ - Moon [IVXLCDM]+$/)
         }
 
         if (settlement.siteCategory.value === 'Surface settlement') {

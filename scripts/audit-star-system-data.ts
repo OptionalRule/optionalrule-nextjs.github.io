@@ -214,8 +214,9 @@ function validateNames(): void {
   if (!settlementNameDescriptors.scale.exact.Abandoned) addError('names.settlementNameDescriptors.scale.exact.Abandoned', 'Missing abandoned scale descriptor.')
 
   warnIfThin('names.systemNameCores', systemNameCores.length, 40)
-  warnIfThin('names.bodyNameCores', bodyNameCores.length, 50)
-  warnIfThin('names.moonNameCores', moonNameCores.length, 40)
+  // Body and moon name pools are retained only as future optional local-alias
+  // material. Canonical generated celestial objects use designation-first
+  // names, so these retired pools are not subject to thin-pool targets.
 }
 
 function validateSettlements(): void {
@@ -447,6 +448,7 @@ function validateMechanicalTables(): void {
   assertNoDuplicates('mechanics.moonTypes', moonTypes)
   assertNoDuplicates('mechanics.moonScales', moonScales)
   assertNoDuplicates('mechanics.siteOptions', siteOptions)
+  warnIfThin('mechanics.siteOptions', siteOptions.length, 60)
 }
 
 function printReport(): void {
@@ -460,12 +462,12 @@ function printReport(): void {
     ['systemNameForms', systemNameForms.length],
     ['systemNamePatterns', systemNamePatterns.length],
     ['systemCatalogLabels', systemCatalogLabels.length],
-    ['bodyNameCores', bodyNameCores.length],
-    ['moonNameCores', moonNameCores.length],
-    ['moonNameForms', moonNameForms.length],
+    ['bodyNameCores (retired alias pool)', bodyNameCores.length],
+    ['moonNameCores (retired alias pool)', moonNameCores.length],
+    ['moonNameForms (retired alias pool)', moonNameForms.length],
   ])
 
-  printSection('Body Name Forms', bodyCategories.map((category) => [category, bodyNameFormsByCategory[category]?.length ?? 0]))
+  printSection('Body Name Forms (retired alias pools)', bodyCategories.map((category) => [category, bodyNameFormsByCategory[category]?.length ?? 0]))
 
   printSection('Settlement Pools', [
     ['siteCategories', settlementSiteCategories.length],

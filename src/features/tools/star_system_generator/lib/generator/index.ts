@@ -32,13 +32,10 @@ import {
 import { generateBodyInterest, generateBodyProfile, generateGiantEconomy } from './bodyInterest'
 import { calculateHabitableZone, calculateInsolation, calculateSnowLine, classifyThermalZone, roundTo } from './calculations'
 import { d8, d12, d20, d100, pickOne, pickTable, twoD6 } from './dice'
+import { bodyDesignation, moonDesignation } from './designations'
 import { extremeHotThermalZones, hotThermalZones, type BodyPlanKind, type WorldClassOption } from './domain'
 import { deriveEnvironmentPolicy, normalizeDetailForEnvironment } from './environmentPolicy'
 import {
-  bodyNameCores,
-  bodyNameFormsByCategory,
-  moonNameCores,
-  moonNameForms,
   settlementNameDescriptors,
   systemCatalogLabels,
   systemNameCores,
@@ -1804,19 +1801,6 @@ function subNeptuneMoonResult(
   return { count: 2, scale: 'small major moon', typeHints: ['Captured asteroid', 'Cratered ice-rock', 'Thick ice-shell moon', 'Cryovolcanic moon'] }
 }
 
-function moonNameForIndex(rng: SeededRng, bodyIndex: number, moonIndex: number, moonType: string): string {
-  const offset = bodyIndex + moonIndex
-  const baseName = pickOne(rng, moonNameCores)
-  const form = moonType.includes('ocean') || moonType.includes('ice') || moonType.includes('Hydrocarbon')
-    ? pickOne(rng, ['Shell', 'Deep', 'Brine', 'Frost'])
-    : moonType.includes('Radiation') || moonType.includes('Volcanic')
-      ? pickOne(rng, ['Scorch', 'Forge', 'Watch', 'Flare'])
-      : pickOne(rng, moonNameForms)
-  const cycle = Math.floor(offset / moonNameCores.length)
-  const suffix = cycle === 0 ? '' : ` ${cycle + 1}`
-  return `${baseName} ${form} ${moonIndex + 1}${suffix}`
-}
-
 function generateMoons(
   rng: SeededRng,
   bodyClass: WorldClassOption,
@@ -1824,7 +1808,8 @@ function generateMoons(
   bodyIndex: number,
   thermalZone: string,
   primary: Star,
-  architectureName: string
+  architectureName: string,
+  parentDesignation: string
 ): Moon[] {
   const category = bodyClass.category
   if (category === 'anomaly' || extremeHotThermalZones.has(thermalZone)) return []
@@ -1857,7 +1842,7 @@ function generateMoons(
     const profile = moonProfile(moonType)
     return {
       id: `body-${bodyIndex + 1}-moon-${index + 1}`,
-      name: fact(moonNameForIndex(rng.fork(`moon-name-${bodyIndex + 1}-${index + 1}`), bodyIndex, index, moonType), 'human-layer', 'Generated moon name from body and moon type'),
+      name: fact(moonDesignation(parentDesignation, index), 'derived', 'Generated moon designation from parent body designation and moon order'),
       moonType: fact(moonType, moonType.includes('Chiral') || moonType.includes('Dark-sector') || moonType.includes('Moving bleed') || moonType.includes('Programmable') ? 'gu-layer' : 'inferred', 'MASS-GU 17 moon type table'),
       scale: fact(scaleOverride ?? (category === 'gas-giant' || category === 'ice-giant' ? pickOne(rng, moonScales.slice(1)) : pickOne(rng, moonScales.slice(0, 3))), 'inferred', 'MASS-GU 17 moon scale from moon count table'),
       ...profile,
@@ -1949,27 +1934,6 @@ function selectWorldClassForPlanKind(rng: SeededRng, thermalZone: string, planKi
   return pickOne(rng, worldClassesByThermalZone[thermalZone])
 }
 
-function bodyNameForIndex(
-  rng: SeededRng,
-  systemName: string,
-  index: number,
-  architectureName: string,
-  bodyClass: WorldClassOption
-): string {
-  const categoryForms = bodyNameFormsByCategory[bodyClass.category]
-  const core = pickOne(rng, bodyNameCores)
-  const form = pickOne(rng, categoryForms)
-  const systemStem = systemName.split(/[\s'-]+/).find((part) => part.length > 2) ?? systemName
-  const orbitMark = index + 1
-
-  if (bodyClass.category === 'belt') return `${systemStem} ${form} ${orbitMark}`
-  if (bodyClass.category === 'anomaly') return `${core} ${form}-${orbitMark}`
-  if (architectureName === 'Peas-in-a-pod chain') return `${systemStem} ${core}-${orbitMark}`
-  if (architectureName === 'Giant-rich or chaotic' && (bodyClass.category === 'gas-giant' || bodyClass.category === 'ice-giant')) return `${core} ${form} ${orbitMark}`
-  if (rng.chance(0.35)) return `${core}${form} ${orbitMark}`
-  return `${core} ${form} ${orbitMark}`
-}
-
 function knownBodyClass(known: PartialKnownBody | undefined, generated: WorldClassOption): WorldClassOption {
   if (!known) return generated
   return {
@@ -2008,6 +1972,10 @@ function generatedBody(
     : withRecomputedGravity(applyModernExoplanetFilters(rng, baseBodyClass, basePhysical, thermalZone, architectureName, previousFiltered))
   const habitabilityNotes = mDwarfHabitabilityNotes(rng, primary, thermalZone, filtered.bodyClass.category)
   const siteCount = rng.chance(0.55) ? 1 : 0
+  const bodyName = mergeLockedFact(
+    fact(bodyDesignation(systemName, index, filtered.bodyClass.category), 'derived', 'Generated celestial designation from system name, body category, and orbital order'),
+    known?.name
+  )
   const mergedDetail = mergeKnownDetail(generateDetail(rng, filtered.bodyClass, filtered.physical, thermalZone, primary), known?.detail)
   const detail = hasLockedEnvironmentDetail(known?.detail) && !known?.detail?.biosphere?.locked
     ? {
@@ -2019,7 +1987,7 @@ function generatedBody(
         ),
       }
     : mergedDetail
-  const moons = generateMoons(rng, filtered.bodyClass, filtered.physical, index, thermalZone, primary, architectureName)
+  const moons = generateMoons(rng, filtered.bodyClass, filtered.physical, index, thermalZone, primary, architectureName, bodyName.value)
   const rings = generateRingSystem(rng, filtered.bodyClass.category)
   const giantEconomy = generateGiantEconomy(filtered.bodyClass, moons, rings)
   const bodyProfile = generateBodyProfile(filtered.bodyClass, detail, moons, rings)
@@ -2028,7 +1996,7 @@ function generatedBody(
     body: {
       id: known?.id ?? `body-${index + 1}`,
       orbitAu: mergeLockedFact(fact(orbitAu, 'derived', orbitSource), known?.orbitAu),
-      name: mergeLockedFact(fact(bodyNameForIndex(rng.fork(`body-name-${index + 1}`), systemName, index, architectureName, filtered.bodyClass), 'human-layer', 'Generated body name from system, architecture, category, and orbit'), known?.name),
+      name: bodyName,
       category: mergeLockedFact(fact(filtered.bodyClass.category, 'inferred', 'Thermal-zone body class table'), known?.category),
       massClass: mergeLockedFact(fact(filtered.bodyClass.massClass, 'inferred', 'Thermal-zone body class table'), known?.massClass),
       bodyClass: mergeLockedFact(fact(filtered.bodyClass.className, 'inferred', 'Thermal-zone, architecture, and exoplanet filters'), known?.bodyClass),
@@ -2046,6 +2014,26 @@ function generatedBody(
     },
     filtered,
   }
+}
+
+function applyFinalDesignations(systemName: string, bodies: OrbitingBody[]): OrbitingBody[] {
+  return bodies
+    .sort((left, right) => left.orbitAu.value - right.orbitAu.value)
+    .map((body, bodyIndex) => {
+      const name = body.name.locked
+        ? body.name
+        : fact(bodyDesignation(systemName, bodyIndex, body.category.value), 'derived', 'Generated celestial designation from system name, body category, and final orbital order')
+      const moons = body.moons.map((moon, moonIndex) => ({
+        ...moon,
+        name: fact(moonDesignation(name.value, moonIndex), 'derived', 'Generated moon designation from parent body designation and moon order'),
+      }))
+
+      return {
+        ...body,
+        name,
+        moons,
+      }
+    })
 }
 
 function reservedKnownSlots(orbits: number[], knownBodies: PartialKnownBody[]): Map<number, PartialKnownBody> {
@@ -2172,7 +2160,7 @@ function generateBodies(rng: SeededRng, primary: Star, architectureName: string,
     previousFiltered = generated.filtered
   }
 
-  return bodies.sort((left, right) => left.orbitAu.value - right.orbitAu.value)
+  return applyFinalDesignations(systemName, bodies)
 }
 
 function intensityFromRoll(roll: number): string {
@@ -2594,7 +2582,7 @@ function chooseSettlementAnchor(
     if (moon) {
       return {
         kind: 'major moon',
-        name: `${moon.name.value}, moon of ${bodyName}`,
+        name: moon.name.value,
         detail: `${locationOption.label} on ${moon.name.value}, a ${moon.scale.value} ${moon.moonType.value.toLowerCase()} orbiting ${bodyName}. ${moon.use.value}.`,
         moonId: moon.id,
       }

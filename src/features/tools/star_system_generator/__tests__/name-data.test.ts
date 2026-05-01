@@ -37,7 +37,7 @@ describe('star system name data', () => {
     expect(moonNameForms.length).toBeGreaterThan(0)
   })
 
-  it('has body name forms for every body category', () => {
+  it('retains optional body alias forms for every body category', () => {
     for (const category of bodyCategories) {
       expect(bodyNameFormsByCategory[category]?.length, category).toBeGreaterThan(0)
     }

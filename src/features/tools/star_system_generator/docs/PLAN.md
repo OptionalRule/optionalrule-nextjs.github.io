@@ -2,7 +2,7 @@
 
 This plan converts `SOURCE_WRITEUP.md` into a static, client-only interactive tool under `/tools/star_system_generator/`. The implementation should follow the existing KCD2 Alchemy Scholar pattern: a thin App Router route, a client-only dynamic import wrapper, isolated feature code, focused tests, and no server runtime.
 
-For the completed post-MVP generation-method repair sequence, see `AUDIT_FIX_PLAN.md`. For the next compatibility-contract remodel after the deep audit, see `POST_AUDIT_REMODEL_PLAN.md`.
+For the completed post-MVP generation-method repair sequence, see `AUDIT_FIX_PLAN.md`. For the completed compatibility-contract remodel after the deep audit, see `POST_AUDIT_REMODEL_PLAN.md`. For the current narrative/data polish queue before advanced options, see `POLISH_ROADMAP.md`.
 
 ## 1. Proposed Directory Structure
 

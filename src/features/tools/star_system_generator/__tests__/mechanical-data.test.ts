@@ -56,6 +56,7 @@ describe('star system mechanical data', () => {
     expect(biospheres.length).toBeGreaterThan(0)
     expect(moonTypes.length).toBeGreaterThan(0)
     expect(moonScales.length).toBeGreaterThan(0)
-    expect(siteOptions.length).toBeGreaterThan(0)
+    expect(siteOptions.length).toBeGreaterThanOrEqual(60)
+    expect(new Set(siteOptions).size).toBe(siteOptions.length)
   })
 })
