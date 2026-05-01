@@ -43,14 +43,26 @@
       { "label": "Trojan habitat", "category": "Deep-space platform" },
       { "label": "Free-orbit repair yard", "category": "Deep-space platform" },
       { "label": "Silent observatory", "category": "Deep-space platform" },
-      { "label": "Ring-arc platform", "category": "Orbital station" }
+      { "label": "Ring-arc platform", "category": "Orbital station" },
+      { "label": "Shipyard quarantine ring", "category": "Orbital station" },
+      { "label": "Radiator-field service stack", "category": "Orbital station" },
+      { "label": "Mirror-control relay", "category": "Deep-space platform" },
+      { "label": "Sunshade governance platform", "category": "Deep-space platform" },
+      { "label": "Debris-screen command stack", "category": "Orbital station" },
+      { "label": "Freefall casualty archive", "category": "Deep-space platform" }
     ],
     "route": [
       { "label": "Iggygate throat complex", "category": "Gate or route node" },
       { "label": "Pinchdrive calibration range", "category": "Gate or route node" },
       { "label": "Quarantine perimeter station", "category": "Gate or route node" },
       { "label": "Sol/Gardener exclusion picket", "category": "Gate or route node" },
-      { "label": "Military listening post", "category": "Gate or route node" }
+      { "label": "Military listening post", "category": "Gate or route node" },
+      { "label": "Route-weather buoy chain", "category": "Gate or route node" },
+      { "label": "Misjump recovery yard", "category": "Gate or route node" },
+      { "label": "Dead-gate salvage cordon", "category": "Gate or route node" },
+      { "label": "Customs arbitration stack", "category": "Gate or route node" },
+      { "label": "Pilgrim transit lock", "category": "Gate or route node" },
+      { "label": "Drift-chart observatory", "category": "Gate or route node" }
     ],
     "asteroid": [
       { "label": "Asteroid tunnel city", "category": "Asteroid or belt base" },
@@ -58,7 +70,13 @@
       { "label": "Comet ice camp", "category": "Asteroid or belt base" },
       { "label": "Dwarf-planet bunker", "category": "Asteroid or belt base" },
       { "label": "Rogue-body hideout", "category": "Asteroid or belt base" },
-      { "label": "White-dwarf debris station", "category": "Asteroid or belt base" }
+      { "label": "White-dwarf debris station", "category": "Asteroid or belt base" },
+      { "label": "Spin-gravity refinery drum", "category": "Asteroid or belt base" },
+      { "label": "Claim-jumper shanty rock", "category": "Asteroid or belt base" },
+      { "label": "Chiral sorting station", "category": "Asteroid or belt base" },
+      { "label": "Debris-family court", "category": "Asteroid or belt base" },
+      { "label": "Ice-hauler harbor", "category": "Asteroid or belt base" },
+      { "label": "Hollowed warhead depot", "category": "Asteroid or belt base" }
     ],
     "surface": [
       { "label": "Planetary surface dome", "category": "Surface settlement" },
@@ -67,14 +85,27 @@
       { "label": "Terminator-line rail city", "category": "Surface settlement" },
       { "label": "Floating aerostat", "category": "Surface settlement" },
       { "label": "Seafloor or under-ice habitat", "category": "Surface settlement" },
-      { "label": "Deep canyon pressure habitat", "category": "Surface settlement" }
+      { "label": "Deep canyon pressure habitat", "category": "Surface settlement" },
+      { "label": "Storm-shelter trench city", "category": "Surface settlement" },
+      { "label": "Terraforming liability camp", "category": "Surface settlement" },
+      { "label": "Mirror-shadow agricultural dome", "category": "Surface settlement" },
+      { "label": "Exposure clinic settlement", "category": "Surface settlement" },
+      { "label": "Pressure-ridge mining town", "category": "Surface settlement" },
+      { "label": "Glassed-dayside service bunker", "category": "Surface settlement" },
+      { "label": "Failed garden dome", "category": "Surface settlement" }
     ],
     "moon": [
       { "label": "Moon crater base", "category": "Moon base" },
       { "label": "Subsurface ocean bore station", "category": "Moon base" },
       { "label": "Tidal-volcanic power site", "category": "Moon base" },
       { "label": "Magnetic-pole observatory", "category": "Moon base" },
-      { "label": "Radiation-belt fortress", "category": "Moon base" }
+      { "label": "Radiation-belt fortress", "category": "Moon base" },
+      { "label": "Ice fissure port", "category": "Moon base" },
+      { "label": "Subsurface sea elevator", "category": "Moon base" },
+      { "label": "Captured-asteroid dockyard", "category": "Moon base" },
+      { "label": "Crater-shadow archive", "category": "Moon base" },
+      { "label": "Tidal stress monastery", "category": "Moon base" },
+      { "label": "Old bombardment shelter city", "category": "Moon base" }
     ],
     "mobile": [
       { "label": "Moving bleed-node chase fleet", "category": "Mobile site" },
@@ -83,17 +114,34 @@
       { "label": "Migrant habitat swarm", "category": "Mobile site" },
       { "label": "Salvage flotilla", "category": "Mobile site" },
       { "label": "Modular clinic fleet", "category": "Mobile site" },
-      { "label": "Free captain court", "category": "Mobile site" }
+      { "label": "Free captain court", "category": "Mobile site" },
+      { "label": "Route-weather cutter squadron", "category": "Mobile site" },
+      { "label": "Evacuation ark convoy", "category": "Mobile site" },
+      { "label": "Itinerant repair caravan", "category": "Mobile site" },
+      { "label": "Chiral medicine caravan", "category": "Mobile site" },
+      { "label": "Drift court flotilla", "category": "Mobile site" }
     ],
     "restricted": [
       { "label": "First-wave human ruin", "category": "Derelict or restricted site" },
       { "label": "Hidden black site", "category": "Derelict or restricted site" },
       { "label": "Corporate enclave", "category": "Derelict or restricted site" },
       { "label": "Penal extraction camp", "category": "Derelict or restricted site" },
-      { "label": "Religious/ideological refuge", "category": "Derelict or restricted site" }
+      { "label": "Religious/ideological refuge", "category": "Derelict or restricted site" },
+      { "label": "Failed evacuation ark", "category": "Derelict or restricted site" },
+      { "label": "Sealed AI testimony vault", "category": "Derelict or restricted site" },
+      { "label": "Burned terraforming command dome", "category": "Derelict or restricted site" },
+      { "label": "Abandoned mirror-control station", "category": "Derelict or restricted site" },
+      { "label": "Contaminated relief depot", "category": "Derelict or restricted site" },
+      { "label": "Forgotten Gardener compliance site", "category": "Derelict or restricted site" }
     ],
     "gasGiantSpecial": [
-      { "label": "Gas-giant skimmer", "category": "Orbital station" }
+      { "label": "Gas-giant skimmer", "category": "Orbital station" },
+      { "label": "Magnetosphere storm station", "category": "Orbital station" },
+      { "label": "Ring-plane customs platform", "category": "Orbital station" },
+      { "label": "Helium scoop refinery", "category": "Orbital station" },
+      { "label": "Deep-atmosphere drop habitat", "category": "Orbital station" },
+      { "label": "Radiation-belt monastery", "category": "Orbital station" },
+      { "label": "Moonlet traffic control hub", "category": "Orbital station" }
     ]
   },
   "functionPools": {
@@ -143,11 +191,59 @@
       "Asteroid tunnel city": "Asteroid hollow",
       "Free-orbit repair yard": "Modular orbital lattice",
       "Silent observatory": "Non-rotating microgravity stack",
+      "Shipyard quarantine ring": "Ring-habitat arc",
+      "Radiator-field service stack": "Non-rotating microgravity stack",
+      "Mirror-control relay": "Modular orbital lattice",
+      "Sunshade governance platform": "Ring-habitat arc",
+      "Debris-screen command stack": "Shielded military bunker",
+      "Freefall casualty archive": "Non-rotating microgravity stack",
+      "Route-weather buoy chain": "Modular orbital lattice",
+      "Misjump recovery yard": "Modular orbital lattice",
+      "Dead-gate salvage cordon": "Shielded military bunker",
+      "Customs arbitration stack": "Non-rotating microgravity stack",
+      "Pilgrim transit lock": "Ring-habitat arc",
+      "Drift-chart observatory": "Non-rotating microgravity stack",
+      "Spin-gravity refinery drum": "Modular orbital lattice",
+      "Claim-jumper shanty rock": "Asteroid hollow",
+      "Chiral sorting station": "Shielded military bunker",
+      "Debris-family court": "Asteroid hollow",
+      "Ice-hauler harbor": "Ice-shielded tunnels",
+      "Hollowed warhead depot": "Asteroid hollow",
+      "Storm-shelter trench city": "Buried pressure cans",
+      "Terraforming liability camp": "Dome cluster",
+      "Mirror-shadow agricultural dome": "Dome cluster",
+      "Exposure clinic settlement": "Dome cluster",
+      "Pressure-ridge mining town": "Buried pressure cans",
+      "Glassed-dayside service bunker": "Shielded military bunker",
+      "Failed garden dome": "Dome cluster",
+      "Ice fissure port": "Ice-shielded tunnels",
+      "Subsurface sea elevator": "Borehole habitat",
+      "Captured-asteroid dockyard": "Asteroid hollow",
+      "Crater-shadow archive": "Shielded military bunker",
+      "Tidal stress monastery": "Buried pressure cans",
+      "Old bombardment shelter city": "First-wave retrofitted ruin",
       "Storm-chaser convoy": "Modular orbital lattice",
       "Migrant habitat swarm": "Slum raft cluster",
       "Salvage flotilla": "Modular orbital lattice",
       "Modular clinic fleet": "Inflatable modules",
-      "Free captain court": "Rotating cylinder"
+      "Free captain court": "Rotating cylinder",
+      "Route-weather cutter squadron": "Modular orbital lattice",
+      "Evacuation ark convoy": "Rotating cylinder",
+      "Itinerant repair caravan": "Inflatable modules",
+      "Chiral medicine caravan": "Inflatable modules",
+      "Drift court flotilla": "Rotating cylinder",
+      "Failed evacuation ark": "First-wave retrofitted ruin",
+      "Sealed AI testimony vault": "Sealed evidence vault",
+      "Burned terraforming command dome": "Collapsed mirror-control bunker",
+      "Abandoned mirror-control station": "Collapsed mirror-control bunker",
+      "Contaminated relief depot": "Shielded military bunker",
+      "Forgotten Gardener compliance site": "Partly self-growing programmable structure",
+      "Magnetosphere storm station": "Shielded military bunker",
+      "Ring-plane customs platform": "Ring-habitat arc",
+      "Helium scoop refinery": "Modular orbital lattice",
+      "Deep-atmosphere drop habitat": "Inflatable modules",
+      "Radiation-belt monastery": "Shielded military bunker",
+      "Moonlet traffic control hub": "Modular orbital lattice"
     },
     "mobileLocationPools": {
       "Moving bleed-node chase fleet": ["Inflatable modules", "Crawling mobile base", "Modular orbital lattice", "Rotating cylinder", "Shielded military bunker"],
@@ -155,7 +251,12 @@
       "Migrant habitat swarm": ["Inflatable modules", "Rotating cylinder", "Slum raft cluster"],
       "Salvage flotilla": ["Modular orbital lattice", "Asteroid hollow", "Non-rotating microgravity stack"],
       "Modular clinic fleet": ["Inflatable modules", "Rotating cylinder", "Modular orbital lattice"],
-      "Free captain court": ["Rotating cylinder", "Modular orbital lattice", "Slum raft cluster"]
+      "Free captain court": ["Rotating cylinder", "Modular orbital lattice", "Slum raft cluster"],
+      "Route-weather cutter squadron": ["Modular orbital lattice", "Rotating cylinder", "Shielded military bunker"],
+      "Evacuation ark convoy": ["Rotating cylinder", "Slum raft cluster", "Inflatable modules"],
+      "Itinerant repair caravan": ["Inflatable modules", "Crawling mobile base", "Modular orbital lattice"],
+      "Chiral medicine caravan": ["Inflatable modules", "Rotating cylinder", "Shielded military bunker"],
+      "Drift court flotilla": ["Rotating cylinder", "Modular orbital lattice", "Slum raft cluster"]
     },
     "miningBySiteCategory": {
       "Asteroid or belt base": ["Asteroid hollow", "Buried pressure cans", "Ice-shielded tunnels"],
