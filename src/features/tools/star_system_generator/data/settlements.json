@@ -41,6 +41,8 @@
       { "label": "High-orbit station", "category": "Orbital station" },
       { "label": "Lagrange anchor", "category": "Deep-space platform" },
       { "label": "Trojan habitat", "category": "Deep-space platform" },
+      { "label": "Free-orbit repair yard", "category": "Deep-space platform" },
+      { "label": "Silent observatory", "category": "Deep-space platform" },
       { "label": "Ring-arc platform", "category": "Orbital station" }
     ],
     "route": [
@@ -76,7 +78,12 @@
     ],
     "mobile": [
       { "label": "Moving bleed-node chase fleet", "category": "Mobile site" },
-      { "label": "Freeport cluster", "category": "Mobile site" }
+      { "label": "Freeport cluster", "category": "Mobile site" },
+      { "label": "Storm-chaser convoy", "category": "Mobile site" },
+      { "label": "Migrant habitat swarm", "category": "Mobile site" },
+      { "label": "Salvage flotilla", "category": "Mobile site" },
+      { "label": "Modular clinic fleet", "category": "Mobile site" },
+      { "label": "Free captain court", "category": "Mobile site" }
     ],
     "restricted": [
       { "label": "First-wave human ruin", "category": "Derelict or restricted site" },
@@ -90,30 +97,30 @@
     ]
   },
   "functionPools": {
-    "survey": ["Survey station", "Astrometry/nav beacon", "Sensor picket", "Weather/flare monitoring", "Planetology lab"],
-    "extraction": ["Metal mine", "Volatile mine", "Chiral harvesting site", "Dark-sector ore extraction", "Refinery"],
-    "orbital": ["Fuel depot", "Ship repair yard", "Full shipyard", "Drone foundry", "Shielding/chiral plating works", "Freeport", "Smuggler port"],
-    "route": ["Iggygate control station", "Pinchdrive tuning station", "Corporate customs post", "Freeport", "Astrometry/nav beacon", "Quarantine station"],
-    "security": ["Military base", "Listening post", "Naval logistics depot", "Weapons test range", "Quarantine station", "Intelligence black site"],
-    "civil": ["Civilian colony", "Terraforming camp", "Refugee settlement", "Prison or debt-labor site", "Religious/ideological enclave", "Narrow-AI observiverse facility"],
-    "biosphere": ["Biosphere research station", "Quarantine station", "Civilian colony", "Planetology lab"],
-    "surfaceIce": ["Volatile mine", "Biosphere research station", "Civilian colony", "Refugee settlement"],
-    "giantOrbital": ["Fuel depot", "Ship repair yard", "Survey station", "Naval logistics depot"],
+    "survey": ["Survey station", "Astrometry/nav beacon", "Sensor picket", "Weather/flare monitoring", "Planetology lab", "Stellar storm forecast office", "Route weather bureau"],
+    "extraction": ["Metal mine", "Volatile mine", "Chiral harvesting site", "Dark-sector ore extraction", "Refinery", "Mirror-swarm salvage yard", "Ice-chirality sorting plant"],
+    "orbital": ["Fuel depot", "Ship repair yard", "Full shipyard", "Drone foundry", "Shielding/chiral plating works", "Freeport", "Smuggler port", "Storm shelter hub", "Life-support parts exchange"],
+    "route": ["Iggygate control station", "Pinchdrive tuning station", "Corporate customs post", "Freeport", "Astrometry/nav beacon", "Quarantine station", "Route weather bureau", "Evacuation logistics hub"],
+    "security": ["Military base", "Listening post", "Naval logistics depot", "Weapons test range", "Quarantine station", "Intelligence black site", "Interdiction compliance office", "Casualty records office"],
+    "civil": ["Civilian colony", "Terraforming camp", "Refugee settlement", "Prison or debt-labor site", "Religious/ideological enclave", "Narrow-AI observiverse facility", "Storm shelter authority", "Exposure clinic", "Habitat repair guild"],
+    "biosphere": ["Biosphere research station", "Quarantine station", "Civilian colony", "Planetology lab", "Exposure clinic", "Failed garden recovery station"],
+    "surfaceIce": ["Volatile mine", "Biosphere research station", "Civilian colony", "Refugee settlement", "Ice-vault city", "Exposure clinic"],
+    "giantOrbital": ["Fuel depot", "Ship repair yard", "Survey station", "Naval logistics depot", "Radiation shelter authority", "Storm forecast office"],
     "asteroidBase": ["Metal mine", "Volatile mine", "Chiral harvesting site", "Dark-sector ore extraction", "Refinery", "Fuel depot", "Salvage yard", "Smuggler port"],
     "moonBase": ["Metal mine", "Volatile mine", "Chiral harvesting site", "Dark-sector ore extraction", "Refinery", "Survey station", "Astrometry/nav beacon", "Sensor picket", "Weather/flare monitoring", "Planetology lab", "Military base", "Biosphere research station", "Quarantine station"],
-    "deepSpace": ["Fuel depot", "Ship repair yard", "Full shipyard", "Drone foundry", "Shielding/chiral plating works", "Freeport", "Smuggler port", "Survey station", "Astrometry/nav beacon", "Sensor picket", "Weather/flare monitoring", "Planetology lab", "Listening post", "Corporate customs post"],
-    "mobile": ["Moving bleed-node harvest fleet", "Freeport", "Smuggler port", "Refugee settlement", "Naval logistics depot"],
-    "restricted": ["Survey station", "Salvage yard", "Intelligence black site", "Prison or debt-labor site", "Quarantine station", "Weapons test range"]
+    "deepSpace": ["Fuel depot", "Ship repair yard", "Full shipyard", "Drone foundry", "Shielding/chiral plating works", "Freeport", "Smuggler port", "Survey station", "Astrometry/nav beacon", "Sensor picket", "Weather/flare monitoring", "Planetology lab", "Listening post", "Corporate customs post", "Route weather bureau", "Archive court", "Storm shelter hub", "Evacuation logistics hub"],
+    "mobile": ["Moving bleed-node harvest fleet", "Freeport", "Smuggler port", "Refugee settlement", "Naval logistics depot", "Storm-chaser convoy", "Modular clinic fleet", "Salvage flotilla", "Free captain court"],
+    "restricted": ["Survey station", "Salvage yard", "Intelligence black site", "Prison or debt-labor site", "Quarantine station", "Weapons test range", "Archive court", "Interdiction compliance office", "Exposure clinic"]
   },
   "guFractureFunctionsBySiteCategory": {
-    "Surface settlement": ["Chiral harvesting site", "Programmable-matter containment site", "Narrow-AI observiverse facility", "Quarantine station", "Refugee settlement", "Planetology lab"],
-    "Orbital station": ["Chiral harvesting site", "Programmable-matter containment site", "Narrow-AI observiverse facility", "Quarantine station", "Pinchdrive tuning station", "Fuel depot", "Ship repair yard", "Freeport"],
-    "Asteroid or belt base": ["Chiral harvesting site", "Dark-sector ore extraction", "Programmable-matter containment site", "Quarantine station", "Fuel depot", "Salvage yard", "Smuggler port"],
-    "Moon base": ["Chiral harvesting site", "Dark-sector ore extraction", "Narrow-AI observiverse facility", "Quarantine station", "Survey station", "Military base"],
-    "Deep-space platform": ["Moving bleed-node tracking platform", "Pinchdrive tuning station", "Narrow-AI observiverse facility", "Quarantine station", "Ship repair yard", "Listening post", "Corporate customs post"],
-    "Gate or route node": ["Iggygate control station", "Pinchdrive tuning station", "Quarantine station", "Narrow-AI observiverse facility", "Corporate customs post", "Astrometry/nav beacon", "Freeport"],
-    "Mobile site": ["Moving bleed-node harvest fleet", "Freeport", "Smuggler port", "Refugee settlement", "Naval logistics depot"],
-    "Derelict or restricted site": ["Programmable-matter containment site", "Intelligence black site", "Quarantine station", "Weapons test range", "Survey station", "Salvage yard"]
+    "Surface settlement": ["Chiral harvesting site", "Programmable-matter containment site", "Narrow-AI observiverse facility", "Quarantine station", "Refugee settlement", "Planetology lab", "Exposure clinic", "Storm shelter authority", "Habitat repair guild"],
+    "Orbital station": ["Chiral harvesting site", "Programmable-matter containment site", "Narrow-AI observiverse facility", "Quarantine station", "Pinchdrive tuning station", "Fuel depot", "Ship repair yard", "Freeport", "Route weather bureau", "Life-support parts exchange"],
+    "Asteroid or belt base": ["Chiral harvesting site", "Dark-sector ore extraction", "Programmable-matter containment site", "Quarantine station", "Fuel depot", "Salvage yard", "Smuggler port", "Archive court", "Ice-chirality sorting plant"],
+    "Moon base": ["Chiral harvesting site", "Dark-sector ore extraction", "Narrow-AI observiverse facility", "Quarantine station", "Survey station", "Military base", "Exposure clinic", "Storm forecast office"],
+    "Deep-space platform": ["Moving bleed-node tracking platform", "Pinchdrive tuning station", "Narrow-AI observiverse facility", "Quarantine station", "Ship repair yard", "Listening post", "Corporate customs post", "Route weather bureau", "Archive court", "Evacuation logistics hub"],
+    "Gate or route node": ["Iggygate control station", "Pinchdrive tuning station", "Quarantine station", "Narrow-AI observiverse facility", "Corporate customs post", "Astrometry/nav beacon", "Freeport", "Route weather bureau", "Interdiction compliance office"],
+    "Mobile site": ["Moving bleed-node harvest fleet", "Freeport", "Smuggler port", "Refugee settlement", "Naval logistics depot", "Storm-chaser convoy", "Modular clinic fleet", "Free captain court"],
+    "Derelict or restricted site": ["Programmable-matter containment site", "Intelligence black site", "Quarantine station", "Weapons test range", "Survey station", "Salvage yard", "Archive court", "Interdiction compliance office", "Mirror-swarm salvage yard"]
   },
   "builtForms": {
     "bySiteCategory": {
@@ -124,7 +131,7 @@
       "Gate or route node": ["Non-rotating microgravity stack", "Modular orbital lattice", "Ring-habitat arc", "Shielded military bunker", "Partly self-growing programmable structure"],
       "Mobile site": ["Inflatable modules", "Crawling mobile base", "Modular orbital lattice", "Rotating cylinder", "Shielded military bunker"],
       "Deep-space platform": ["Inflatable modules", "Rotating cylinder", "Non-rotating microgravity stack", "Modular orbital lattice", "Ring-habitat arc", "Corporate luxury enclave", "Slum raft cluster"],
-      "Derelict or restricted site": ["Asteroid hollow", "Shielded military bunker", "First-wave retrofitted ruin", "Partly self-growing programmable structure"]
+      "Derelict or restricted site": ["Asteroid hollow", "Shielded military bunker", "First-wave retrofitted ruin", "Partly self-growing programmable structure", "Sealed evidence vault", "Collapsed mirror-control bunker"]
     },
     "exactLocation": {
       "Terminator-line rail city": "Rail-linked terminator city",
@@ -133,10 +140,22 @@
       "Subsurface ocean bore station": "Borehole habitat",
       "Lava tube settlement": "Lava-tube arcology",
       "First-wave human ruin": "First-wave retrofitted ruin",
-      "Asteroid tunnel city": "Asteroid hollow"
+      "Asteroid tunnel city": "Asteroid hollow",
+      "Free-orbit repair yard": "Modular orbital lattice",
+      "Silent observatory": "Non-rotating microgravity stack",
+      "Storm-chaser convoy": "Modular orbital lattice",
+      "Migrant habitat swarm": "Slum raft cluster",
+      "Salvage flotilla": "Modular orbital lattice",
+      "Modular clinic fleet": "Inflatable modules",
+      "Free captain court": "Rotating cylinder"
     },
     "mobileLocationPools": {
-      "Moving bleed-node chase fleet": ["Inflatable modules", "Crawling mobile base", "Modular orbital lattice", "Rotating cylinder", "Shielded military bunker"]
+      "Moving bleed-node chase fleet": ["Inflatable modules", "Crawling mobile base", "Modular orbital lattice", "Rotating cylinder", "Shielded military bunker"],
+      "Storm-chaser convoy": ["Inflatable modules", "Modular orbital lattice", "Shielded military bunker"],
+      "Migrant habitat swarm": ["Inflatable modules", "Rotating cylinder", "Slum raft cluster"],
+      "Salvage flotilla": ["Modular orbital lattice", "Asteroid hollow", "Non-rotating microgravity stack"],
+      "Modular clinic fleet": ["Inflatable modules", "Rotating cylinder", "Modular orbital lattice"],
+      "Free captain court": ["Rotating cylinder", "Modular orbital lattice", "Slum raft cluster"]
     },
     "miningBySiteCategory": {
       "Asteroid or belt base": ["Asteroid hollow", "Buried pressure cans", "Ice-shielded tunnels"],
@@ -169,6 +188,13 @@
     "Medical/biosafety board",
     "AI-supervised technocracy",
     "Terraforming directorate",
+    "Route weather board",
+    "Life-support board",
+    "Habitat repair guild",
+    "Clinic compact",
+    "Archive court",
+    "Storm shelter authority",
+    "Salvage court",
     "Chiral-harvest cartel",
     "Religious commune",
     "Exile council",
@@ -303,12 +329,40 @@
     { "id": "plague-biosafety-fear", "label": "Plague/Biosafety Fear", "pressure": "containment policy is shaping every personal choice." },
     { "id": "precious-water", "label": "Precious Water", "pressure": "water ownership is the settlement constitution." },
     { "id": "religious-geometry", "label": "Religious Geometry", "pressure": "belief and GU observation are tangled in local politics." },
-    { "id": "strikebreaker-city", "label": "Strikebreaker City", "pressure": "labor peace is being maintained by coercion." }
+    { "id": "strikebreaker-city", "label": "Strikebreaker City", "pressure": "labor peace is being maintained by coercion." },
+    { "id": "archive-war", "label": "Archive War", "pressure": "whoever controls the records controls legal truth, casualty counts, and property claims." },
+    { "id": "broken-mirror-swarm", "label": "Broken Mirror Swarm", "pressure": "failed terraforming hardware still decides climate, power, and blame." },
+    { "id": "false-evacuation-list", "label": "False Evacuation List", "pressure": "survival priority was assigned by a list nobody trusts." },
+    { "id": "gardener-compliance-zone", "label": "Gardener Compliance Zone", "pressure": "opaque Sol/Gardener rules can override local law without explanation." },
+    { "id": "life-support-union", "label": "Life-Support Union", "pressure": "repair crews can save or freeze the whole settlement by choosing where work stops." },
+    { "id": "medical-triage-state", "label": "Medical Triage State", "pressure": "clinic decisions have become law because exposure and scarcity decide who gets treated." },
+    { "id": "route-weather-board", "label": "Route Weather Board", "pressure": "safe windows are forecasts, markets, and political weapons at the same time." },
+    { "id": "spare-parts-monarchy", "label": "Spare Parts Monarchy", "pressure": "control of replacement parts has hardened into hereditary or cartel power." },
+    { "id": "storm-shelter-politics", "label": "Storm Shelter Politics", "pressure": "the shelter plan reveals whose lives the settlement values first." },
+    { "id": "terraforming-liability", "label": "Terraforming Liability", "pressure": "old climate promises have become debts, lawsuits, and bodies." },
+    { "id": "exposure-records-sealed", "label": "Exposure Records Sealed", "pressure": "medical truth is being hidden to protect authority or prevent panic." },
+    { "id": "interdiction-profiteers", "label": "Interdiction Profiteers", "pressure": "some locals profit whenever Sol/Gardener fear closes routes." },
+    { "id": "ai-witness-custody", "label": "AI Witness Custody", "pressure": "a narrow AI can prove what happened, so every faction wants lawful control of it." },
+    { "id": "shelter-lottery", "label": "Shelter Lottery", "pressure": "storm shelter access is allocated by a lottery everyone suspects is rigged." },
+    { "id": "route-tithe", "label": "Route Tithe", "pressure": "every safe transit window is taxed before anyone knows whether it will hold." },
+    { "id": "clinic-black-market", "label": "Clinic Black Market", "pressure": "treatment, exposure data, and medical chirality stock all move off-book." }
   ],
   "tagPairHooks": {
     "Air Is Money + Debt Labor": "Air Is Money is visible in every meter and airlock; Debt Labor means workers cannot afford passage out.",
     "Bleed-Chaser Port + Narrow-AI Schism": "Bleed-Chaser Port draws ships racing moving nodes; Narrow-AI Schism means local AIs disagree over which predictions are safe.",
-    "Perfect Dome, Rotten Outside + Chiral Monopoly": "Perfect Dome, Rotten Outside is the public shape; Chiral Monopoly is the toxic extraction chain everyone outside the dome must endure."
+    "Perfect Dome, Rotten Outside + Chiral Monopoly": "Perfect Dome, Rotten Outside is the public shape; Chiral Monopoly is the toxic extraction chain everyone outside the dome must endure.",
+    "Flare Refuge + Storm Shelter Politics": "Flare Refuge makes shelter discipline normal; Storm Shelter Politics decides whose names vanish when capacity runs out.",
+    "Broken Terraformer + Terraforming Liability": "Broken Terraformer is the visible wreck; Terraforming Liability is the reason nobody can admit the project failed.",
+    "Gate Shadow + Route Weather Board": "Gate Shadow controls access; Route Weather Board controls the forecast everyone must pretend is neutral.",
+    "Memory-Loss Zone + Archive War": "Memory-Loss Zone breaks testimony; Archive War makes surviving records more valuable than witnesses.",
+    "AI Whisper Cult + AI Witness Custody": "AI Whisper Cult turns machine behavior into meaning; AI Witness Custody turns that same machine into evidence.",
+    "Medical Triage State + Exposure Records Sealed": "Medical Triage State rules the public crisis; Exposure Records Sealed explains why trust is collapsing.",
+    "Gardener Compliance Zone + Interdiction Profiteers": "Gardener Compliance Zone gives fear legal teeth; Interdiction Profiteers make sure the fear keeps paying.",
+    "Spare Parts Monarchy + Life-Support Union": "Spare Parts Monarchy owns the inventory; Life-Support Union knows which failing system matters first.",
+    "False Evacuation List + Migrant Swarm": "False Evacuation List is the betrayal; Migrant Swarm is everyone still alive enough to contest it.",
+    "Route Tithe + Bleed-Chaser Port": "Route Tithe taxes each safe window; Bleed-Chaser Port keeps desperate crews coming anyway.",
+    "Clinic Black Market + Plague/Biosafety Fear": "Clinic Black Market supplies what law withholds; Plague/Biosafety Fear makes every dose a political act.",
+    "Archive War + Outlaw Court": "Archive War decides what counts as true; Outlaw Court decides who pays before truth arrives."
   },
   "crises": [
     "Life-support cascade",
@@ -346,11 +400,29 @@
     "A whole district goes silent",
     "The base broadcasts two contradictory distress calls",
     "Everyone is lying about casualty numbers",
-    "Crisis is staged to hide something worse"
+    "Crisis is staged to hide something worse",
+    "Route weather forecast failed publicly",
+    "Safe transit window sold to too many ships",
+    "Storm shelter capacity numbers leaked",
+    "Life-support repair crews walk out",
+    "Critical spare-parts vault is empty",
+    "Radiator field sabotage is heating the settlement",
+    "Exposure clinic overflow spills into public corridors",
+    "Medical chirality stock was diverted",
+    "Treatment lottery turns violent",
+    "Terraforming mirrors begin an unsafe correction burn",
+    "Imported volatile tanks are legally frozen",
+    "Failed garden dome breaches containment",
+    "Sol/Gardener compliance team seizes the port",
+    "Interdiction warning contradicts the published route plan",
+    "Archive court releases two incompatible rulings",
+    "AI witness testimony becomes publicly accessible",
+    "Maintenance logs prove the disaster was forecast",
+    "Evacuation ark launches without most of its manifest"
   ],
   "crisisByScale": {
-    "Automated only": ["Life-support cascade", "AI refuses unsafe operation", "Illegal AI expansion discovered", "Sabotage of the refinery, gate, or AI systems", "Essential expert missing", "The base broadcasts two contradictory distress calls"],
-    "Abandoned": ["Salvage claim dispute", "Old first-wave map found", "Ship full of dead arrives", "A whole district goes silent", "The base broadcasts two contradictory distress calls", "Crisis is staged to hide something worse"]
+    "Automated only": ["Life-support cascade", "AI refuses unsafe operation", "Illegal AI expansion discovered", "Sabotage of the refinery, gate, or AI systems", "Essential expert missing", "The base broadcasts two contradictory distress calls", "Critical spare-parts vault is empty", "Route weather forecast failed publicly", "AI witness testimony becomes publicly accessible"],
+    "Abandoned": ["Salvage claim dispute", "Old first-wave map found", "Ship full of dead arrives", "A whole district goes silent", "The base broadcasts two contradictory distress calls", "Crisis is staged to hide something worse", "Failed garden dome breaches containment", "Maintenance logs prove the disaster was forecast", "Evacuation ark launches without most of its manifest"]
   },
   "hiddenTruths": [
     "The settlement is insolvent",
@@ -388,11 +460,29 @@
     "The quarantine is political",
     "The plague is industrial poisoning",
     "The AI is sane; the humans are not listening",
-    "The system official survey is deliberately wrong"
+    "The system official survey is deliberately wrong",
+    "The route weather board sells safe windows twice",
+    "The flare forecast was softened to keep traffic moving",
+    "The shelter lottery excludes an entire labor district",
+    "The life-support board is cannibalizing abandoned sections",
+    "The spare-parts shortage is a manufactured monopoly",
+    "The maintenance logs were rewritten after the breach",
+    "The clinic is hiding a second exposure syndrome",
+    "The medical stockpile was traded for route access",
+    "The terraforming directorate falsified the climate model",
+    "The mirror swarm is being kept broken for legal leverage",
+    "The imported volatiles belong to refugees on paper",
+    "The Sol/Gardener warning was copied from another system",
+    "The compliance office is protecting a private interdiction deal",
+    "The archive court knows both claimants are using forged records",
+    "The AI witness has already testified in a sealed simulation",
+    "The evacuation ark manifest contains people who never existed",
+    "The casualty register merges two different disasters",
+    "The official quarantine boundary protects an illegal facility"
   ],
   "hiddenTruthByScale": {
-    "Automated only": ["The local AI deleted evidence", "The local AI preserved forbidden evidence", "The site is an illegal AI lab", "The AI is sane; the humans are not listening", "The system official survey is deliberately wrong"],
-    "Abandoned": ["The official death toll is false", "A first-wave expedition survived in hiding", "The ghosts are old human recordings", "The settlement has an evacuation ark nobody knows about", "The quarantine is political"]
+    "Automated only": ["The local AI deleted evidence", "The local AI preserved forbidden evidence", "The site is an illegal AI lab", "The AI is sane; the humans are not listening", "The system official survey is deliberately wrong", "The route weather board sells safe windows twice", "The maintenance logs were rewritten after the breach", "The AI witness has already testified in a sealed simulation"],
+    "Abandoned": ["The official death toll is false", "A first-wave expedition survived in hiding", "The ghosts are old human recordings", "The settlement has an evacuation ark nobody knows about", "The quarantine is political", "The mirror swarm is being kept broken for legal leverage", "The evacuation ark manifest contains people who never existed", "The casualty register merges two different disasters"]
   },
   "encounterSites": [
     "Half-flooded maintenance tunnels",
@@ -414,16 +504,40 @@
     "Water plant",
     "Courtroom / debt registry",
     "Hidden launch bay",
-    "Place the maps say does not exist"
+    "Place the maps say does not exist",
+    "Route weather board",
+    "Pinch forecast pit",
+    "Stormbound customs queue",
+    "Life-support spine",
+    "Radiator field access lock",
+    "Shipyard parts cage",
+    "Exposure clinic",
+    "Medical stock vault",
+    "Triage lottery hall",
+    "Dead mirror-control room",
+    "Failed garden dome",
+    "Volatile import manifold",
+    "Sol/Gardener compliance archive",
+    "Exclusion picket command deck",
+    "AI witness vault",
+    "Public casualty register",
+    "Sealed evidence room",
+    "Evacuation ark manifest office"
   ],
   "encounterSitesByScale": {
-    "Automated only": ["AI core vault", "Drone hangar", "Closed habitat ring", "Place the maps say does not exist"],
-    "Abandoned": ["Old first-wave command bunker", "Hidden launch bay", "Half-flooded maintenance tunnels", "Place the maps say does not exist"]
+    "Automated only": ["AI core vault", "Drone hangar", "Closed habitat ring", "Place the maps say does not exist", "Route weather board", "AI witness vault", "Life-support spine"],
+    "Abandoned": ["Old first-wave command bunker", "Hidden launch bay", "Half-flooded maintenance tunnels", "Place the maps say does not exist", "Dead mirror-control room", "Public casualty register", "Sealed evidence room"]
   },
   "encounterSitesByFunctionKeyword": [
-    { "keywords": ["quarantine", "biosphere"], "sites": ["Quarantine ward", "Black-market clinic", "Water plant"] },
+    { "keywords": ["quarantine", "biosphere"], "sites": ["Quarantine ward", "Black-market clinic", "Water plant", "Exposure clinic", "Triage lottery hall"] },
     { "keywords": ["mine", "extraction", "harvest", "refinery"], "sites": ["Chiral refinery floor", "Bleed-harvest control room", "Worker barracks"] },
-    { "keywords": ["gate", "pinchdrive", "customs"], "sites": ["Illegal pinchdrive test chamber", "Courtroom / debt registry", "Dockside free market"] }
+    { "keywords": ["gate", "pinchdrive", "customs"], "sites": ["Illegal pinchdrive test chamber", "Courtroom / debt registry", "Dockside free market", "Route weather board", "Pinch forecast pit", "Stormbound customs queue"] },
+    { "keywords": ["weather", "flare", "storm"], "sites": ["Route weather board", "Pinch forecast pit", "Radiation storm shelter", "Stormbound customs queue"] },
+    { "keywords": ["life-support", "repair", "shipyard", "parts"], "sites": ["Life-support spine", "Radiator field access lock", "Shipyard parts cage", "Shielding crawlspace district"] },
+    { "keywords": ["clinic", "medical", "exposure"], "sites": ["Exposure clinic", "Medical stock vault", "Triage lottery hall", "Black-market clinic"] },
+    { "keywords": ["terraforming", "garden", "mirror", "volatile"], "sites": ["Dead mirror-control room", "Failed garden dome", "Volatile import manifold", "Water plant"] },
+    { "keywords": ["interdiction", "gardener", "sol"], "sites": ["Sol/Gardener compliance archive", "Exclusion picket command deck", "Religious geometry chapel"] },
+    { "keywords": ["archive", "records", "court"], "sites": ["AI witness vault", "Public casualty register", "Sealed evidence room", "Courtroom / debt registry"] }
   ],
   "scaleTable": [
     "Abandoned",

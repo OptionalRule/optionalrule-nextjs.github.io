@@ -6,6 +6,11 @@ import {
 } from '../src/features/tools/star_system_generator/lib/generator/domain'
 import { frontierStarTypes, realisticStarTypes } from '../src/features/tools/star_system_generator/lib/generator/tables'
 import { validateSystem, type ValidationFinding, type ValidationSource } from '../src/features/tools/star_system_generator/lib/generator/validation'
+import {
+  builtForms,
+  guFractureFunctionsBySiteCategory as settlementGuFractureFunctionsBySiteCategory,
+  settlementLocations,
+} from '../src/features/tools/star_system_generator/lib/generator/data/settlements'
 import type {
   BodyCategory,
   GeneratedSystem,
@@ -143,88 +148,49 @@ const anomalyAllowedGeologies = new Set([
   'Metric shear geometry',
 ])
 
-const guFractureFunctionsBySiteCategory: Record<string, ReadonlySet<string>> = {
-  'Surface settlement': new Set(['Chiral harvesting site', 'Programmable-matter containment site', 'Narrow-AI observiverse facility', 'Quarantine station', 'Refugee settlement', 'Planetology lab']),
-  'Orbital station': new Set(['Chiral harvesting site', 'Programmable-matter containment site', 'Narrow-AI observiverse facility', 'Quarantine station', 'Pinchdrive tuning station', 'Fuel depot', 'Ship repair yard', 'Freeport']),
-  'Asteroid or belt base': new Set(['Chiral harvesting site', 'Dark-sector ore extraction', 'Programmable-matter containment site', 'Quarantine station', 'Fuel depot', 'Salvage yard', 'Smuggler port']),
-  'Moon base': new Set(['Chiral harvesting site', 'Dark-sector ore extraction', 'Narrow-AI observiverse facility', 'Quarantine station', 'Survey station', 'Military base']),
-  'Deep-space platform': new Set(['Moving bleed-node tracking platform', 'Pinchdrive tuning station', 'Narrow-AI observiverse facility', 'Quarantine station', 'Ship repair yard', 'Listening post', 'Corporate customs post']),
-  'Gate or route node': new Set(['Iggygate control station', 'Pinchdrive tuning station', 'Quarantine station', 'Narrow-AI observiverse facility', 'Corporate customs post', 'Astrometry/nav beacon', 'Freeport']),
-  'Mobile site': new Set(['Moving bleed-node harvest fleet', 'Freeport', 'Smuggler port', 'Refugee settlement', 'Naval logistics depot']),
-  'Derelict or restricted site': new Set(['Programmable-matter containment site', 'Intelligence black site', 'Quarantine station', 'Weapons test range', 'Survey station', 'Salvage yard']),
+const guFractureFunctionsBySiteCategory: Record<string, ReadonlySet<string>> = Object.fromEntries(
+  Object.entries(settlementGuFractureFunctionsBySiteCategory).map(([category, functions]) => [category, new Set(functions)])
+)
+
+function buildAllowedBuiltFormsBySiteCategory(): Record<string, ReadonlySet<string>> {
+  const allowed = Object.fromEntries(
+    Object.entries(builtForms.bySiteCategory).map(([category, forms]) => [category, new Set(forms)])
+  ) as Record<string, Set<string>>
+
+  const locationCategoryByLabel = new Map(
+    Object.values(settlementLocations).flat().map((location) => [location.label, location.category])
+  )
+
+  for (const [label, form] of Object.entries(builtForms.exactLocation)) {
+    const category = locationCategoryByLabel.get(label)
+    if (category) allowed[category]?.add(form)
+  }
+
+  for (const [label, forms] of Object.entries(builtForms.mobileLocationPools)) {
+    const category = locationCategoryByLabel.get(label)
+    if (category) {
+      const categoryAllowed = allowed[category]
+      for (const form of forms) categoryAllowed?.add(form)
+    }
+  }
+
+  for (const [category, forms] of Object.entries(builtForms.miningBySiteCategory)) {
+    if (category === 'default') {
+      for (const categoryAllowed of Object.values(allowed)) {
+        for (const form of forms) categoryAllowed.add(form)
+      }
+    } else {
+      const categoryAllowed = allowed[category]
+      for (const form of forms) categoryAllowed?.add(form)
+    }
+  }
+
+  return Object.fromEntries(
+    Object.entries(allowed).map(([category, forms]) => [category, forms as ReadonlySet<string>])
+  )
 }
 
-const allowedBuiltFormsBySiteCategory: Record<string, ReadonlySet<string>> = {
-  'Surface settlement': new Set([
-    'Buried pressure cans',
-    'Ice-shielded tunnels',
-    'Lava-tube arcology',
-    'Dome cluster',
-    'Rail-linked terminator city',
-    'Aerostat city',
-    'Submarine habitat',
-    'Borehole habitat',
-    'Shielded military bunker',
-    'Corporate luxury enclave',
-    'First-wave retrofitted ruin',
-  ]),
-  'Orbital station': new Set([
-    'Inflatable modules',
-    'Rotating cylinder',
-    'Non-rotating microgravity stack',
-    'Modular orbital lattice',
-    'Ring-habitat arc',
-    'Corporate luxury enclave',
-    'Slum raft cluster',
-    'Shielded military bunker',
-  ]),
-  'Asteroid or belt base': new Set([
-    'Buried pressure cans',
-    'Ice-shielded tunnels',
-    'Asteroid hollow',
-    'Modular orbital lattice',
-    'Shielded military bunker',
-    'First-wave retrofitted ruin',
-  ]),
-  'Moon base': new Set([
-    'Buried pressure cans',
-    'Ice-shielded tunnels',
-    'Dome cluster',
-    'Borehole habitat',
-    'Shielded military bunker',
-    'First-wave retrofitted ruin',
-  ]),
-  'Deep-space platform': new Set([
-    'Inflatable modules',
-    'Rotating cylinder',
-    'Non-rotating microgravity stack',
-    'Modular orbital lattice',
-    'Ring-habitat arc',
-    'Corporate luxury enclave',
-    'Slum raft cluster',
-    'Shielded military bunker',
-  ]),
-  'Gate or route node': new Set([
-    'Non-rotating microgravity stack',
-    'Modular orbital lattice',
-    'Ring-habitat arc',
-    'Shielded military bunker',
-    'Partly self-growing programmable structure',
-  ]),
-  'Mobile site': new Set([
-    'Inflatable modules',
-    'Crawling mobile base',
-    'Modular orbital lattice',
-    'Rotating cylinder',
-    'Shielded military bunker',
-  ]),
-  'Derelict or restricted site': new Set([
-    'Asteroid hollow',
-    'Shielded military bunker',
-    'First-wave retrofitted ruin',
-    'Partly self-growing programmable structure',
-  ]),
-}
+const allowedBuiltFormsBySiteCategory = buildAllowedBuiltFormsBySiteCategory()
 
 function increment<Key>(map: Map<Key, number>, key: Key): void {
   map.set(key, (map.get(key) ?? 0) + 1)

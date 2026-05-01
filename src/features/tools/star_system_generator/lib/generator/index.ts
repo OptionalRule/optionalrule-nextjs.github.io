@@ -2251,6 +2251,8 @@ function assertNever(value: never): never {
 function settlementTagHook(rng: SeededRng, obviousTag: string, deeperTag: string): string {
   const exactPair = `${obviousTag} + ${deeperTag}`
   if (settlementTagPairHooks[exactPair]) return settlementTagPairHooks[exactPair]
+  const reversePair = `${deeperTag} + ${obviousTag}`
+  if (settlementTagPairHooks[reversePair]) return settlementTagPairHooks[reversePair]
 
   const deeperText = settlementTagPressures[deeperTag] ?? `${deeperTag.toLowerCase()} is the deeper pressure driving the site.`
   const template = rng.int(1, 4)

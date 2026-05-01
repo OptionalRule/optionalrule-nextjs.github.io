@@ -1,6 +1,13 @@
 import { describe, expect, it } from 'vitest'
 import type { GenerationOptions, PartialKnownSystem } from '../types'
 import { applyNoAlienTextGuard, architectureBodyPlanRules, generateSystem } from '../lib/generator'
+import {
+  builtForms,
+  guFractureFunctionsBySiteCategory,
+  settlementConditionByScale,
+  settlementCrisisByScale,
+  settlementLocations,
+} from '../lib/generator/data/settlements'
 import { architectures, frontierStarTypes, realisticStarTypes } from '../lib/generator/tables'
 import { validateSystem } from '../lib/generator/validation'
 
@@ -597,16 +604,9 @@ describe('generateSystem', () => {
   })
 
   it('keeps fracture functions compatible with settlement site category', () => {
-    const allowedFunctionsByCategory = new Map([
-      ['Surface settlement', new Set(['Chiral harvesting site', 'Programmable-matter containment site', 'Narrow-AI observiverse facility', 'Quarantine station', 'Refugee settlement', 'Planetology lab'])],
-      ['Orbital station', new Set(['Chiral harvesting site', 'Programmable-matter containment site', 'Narrow-AI observiverse facility', 'Quarantine station', 'Pinchdrive tuning station', 'Fuel depot', 'Ship repair yard', 'Freeport'])],
-      ['Asteroid or belt base', new Set(['Chiral harvesting site', 'Dark-sector ore extraction', 'Programmable-matter containment site', 'Quarantine station', 'Fuel depot', 'Salvage yard', 'Smuggler port'])],
-      ['Moon base', new Set(['Chiral harvesting site', 'Dark-sector ore extraction', 'Narrow-AI observiverse facility', 'Quarantine station', 'Survey station', 'Military base'])],
-      ['Deep-space platform', new Set(['Moving bleed-node tracking platform', 'Pinchdrive tuning station', 'Narrow-AI observiverse facility', 'Quarantine station', 'Ship repair yard', 'Listening post', 'Corporate customs post'])],
-      ['Gate or route node', new Set(['Iggygate control station', 'Pinchdrive tuning station', 'Quarantine station', 'Narrow-AI observiverse facility', 'Corporate customs post', 'Astrometry/nav beacon', 'Freeport'])],
-      ['Mobile site', new Set(['Moving bleed-node harvest fleet', 'Freeport', 'Smuggler port', 'Refugee settlement', 'Naval logistics depot'])],
-      ['Derelict or restricted site', new Set(['Programmable-matter containment site', 'Intelligence black site', 'Quarantine station', 'Weapons test range', 'Survey station', 'Salvage yard'])],
-    ])
+    const allowedFunctionsByCategory = new Map(
+      Object.entries(guFractureFunctionsBySiteCategory).map(([category, functions]) => [category, new Set(functions)])
+    )
 
     for (let index = 0; index < 120; index++) {
       const system = generateSystem({ ...options, gu: 'fracture', seed: `db3f9c2e41b8${index.toString(16).padStart(4, '0')}` })
@@ -875,10 +875,10 @@ describe('generateSystem', () => {
   })
 
   it('keeps automated and abandoned settlement crises scale-aware', () => {
-    const automatedCrises = new Set(['Life-support cascade', 'AI refuses unsafe operation', 'Illegal AI expansion discovered', 'Sabotage of the refinery, gate, or AI systems', 'Essential expert missing', 'The base broadcasts two contradictory distress calls'])
-    const abandonedCrises = new Set(['Salvage claim dispute', 'Old first-wave map found', 'Ship full of dead arrives', 'A whole district goes silent', 'The base broadcasts two contradictory distress calls', 'Crisis is staged to hide something worse'])
-    const automatedConditions = new Set(['Efficient but joyless', 'Understaffed', 'Life support near failure', 'Hidden AI incident', 'Under quarantine', 'Officially safe, actually hazardous'])
-    const abandonedConditions = new Set(['Half-abandoned', 'Recently evacuated', 'Reoccupied ruin', 'Decaying first-wave infrastructure', 'Hidden reason it cannot be abandoned'])
+    const automatedCrises = new Set(settlementCrisisByScale['Automated only'])
+    const abandonedCrises = new Set(settlementCrisisByScale.Abandoned)
+    const automatedConditions = new Set(settlementConditionByScale['Automated only'])
+    const abandonedConditions = new Set(settlementConditionByScale.Abandoned)
     let sawAutomated = false
     let sawAbandoned = false
 
@@ -927,16 +927,33 @@ describe('generateSystem', () => {
   })
 
   it('keeps settlement built forms compatible with location and function', () => {
-    const allowedFormsByCategory = new Map([
-      ['Surface settlement', new Set(['Buried pressure cans', 'Ice-shielded tunnels', 'Lava-tube arcology', 'Dome cluster', 'Rail-linked terminator city', 'Aerostat city', 'Submarine habitat', 'Borehole habitat', 'Shielded military bunker', 'Corporate luxury enclave', 'First-wave retrofitted ruin'])],
-      ['Moon base', new Set(['Buried pressure cans', 'Ice-shielded tunnels', 'Dome cluster', 'Borehole habitat', 'Shielded military bunker', 'First-wave retrofitted ruin'])],
-      ['Asteroid or belt base', new Set(['Asteroid hollow', 'Buried pressure cans', 'Ice-shielded tunnels', 'Modular orbital lattice', 'Shielded military bunker', 'First-wave retrofitted ruin'])],
-      ['Orbital station', new Set(['Inflatable modules', 'Rotating cylinder', 'Non-rotating microgravity stack', 'Modular orbital lattice', 'Ring-habitat arc', 'Corporate luxury enclave', 'Slum raft cluster'])],
-      ['Deep-space platform', new Set(['Inflatable modules', 'Rotating cylinder', 'Non-rotating microgravity stack', 'Modular orbital lattice', 'Ring-habitat arc', 'Corporate luxury enclave', 'Slum raft cluster'])],
-      ['Gate or route node', new Set(['Non-rotating microgravity stack', 'Modular orbital lattice', 'Ring-habitat arc', 'Shielded military bunker', 'Partly self-growing programmable structure'])],
-      ['Mobile site', new Set(['Inflatable modules', 'Crawling mobile base', 'Modular orbital lattice', 'Rotating cylinder', 'Shielded military bunker'])],
-      ['Derelict or restricted site', new Set(['Asteroid hollow', 'Shielded military bunker', 'First-wave retrofitted ruin', 'Partly self-growing programmable structure'])],
-    ])
+    const locationCategoryByLabel = new Map(
+      Object.values(settlementLocations).flat().map((location) => [location.label, location.category])
+    )
+    const allowedFormsByCategory = new Map(
+      Object.entries(builtForms.bySiteCategory).map(([category, forms]) => [category, new Set(forms)])
+    )
+    for (const [label, form] of Object.entries(builtForms.exactLocation)) {
+      const category = locationCategoryByLabel.get(label)
+      if (category) allowedFormsByCategory.get(category)?.add(form)
+    }
+    for (const [label, forms] of Object.entries(builtForms.mobileLocationPools)) {
+      const category = locationCategoryByLabel.get(label)
+      if (category) {
+        const allowedForms = allowedFormsByCategory.get(category)
+        for (const form of forms) allowedForms?.add(form)
+      }
+    }
+    for (const [category, forms] of Object.entries(builtForms.miningBySiteCategory)) {
+      if (category === 'default') {
+        for (const allowedForms of allowedFormsByCategory.values()) {
+          for (const form of forms) allowedForms.add(form)
+        }
+      } else {
+        const allowedForms = allowedFormsByCategory.get(category)
+        for (const form of forms) allowedForms?.add(form)
+      }
+    }
 
     for (let index = 0; index < 80; index++) {
       const system = generateSystem({ ...options, seed: `913f9c2e41b8${index.toString(16).padStart(4, '0')}` })
