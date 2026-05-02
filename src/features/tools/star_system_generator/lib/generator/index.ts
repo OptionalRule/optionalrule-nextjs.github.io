@@ -119,6 +119,7 @@ import {
   realisticStarTypes,
 } from './data/stellar'
 import { NameRegistry } from './nameRegistry'
+import { lowerFirst, sentenceFragment, sentenceStart, stripTerminalPunctuation } from './prose/helpers'
 import { createSeededRng, type SeededRng } from './rng'
 
 export { architectureBodyPlanRules } from './architecture'
@@ -347,27 +348,6 @@ function uniqueByNormalizedValue<T extends { value: string }>(values: readonly T
   }
 
   return result
-}
-
-function lowerFirst(value: string): string {
-  if (!value) return value
-  if (/^(AI|GU|Sol|Iggygate|Pinchdrive)\b/.test(value)) return value
-  return `${value.charAt(0).toLowerCase()}${value.slice(1)}`
-}
-
-function sentenceFragment(value: string): string {
-  if (/^(AI|GU|Sol|Iggygate|Pinchdrive)\b/.test(value)) return value
-  if (/^[A-Z][a-z]+(?:\s+[A-Z][a-z]+)+$/.test(value)) return value.toLowerCase()
-  return lowerFirst(value)
-}
-
-function sentenceStart(value: string): string {
-  if (!value) return value
-  return `${value.charAt(0).toUpperCase()}${value.slice(1)}`
-}
-
-function stripTerminalPunctuation(value: string): string {
-  return value.replace(/[.!?]+$/g, '')
 }
 
 function smoothTechnicalPhrase(value: string): string {
