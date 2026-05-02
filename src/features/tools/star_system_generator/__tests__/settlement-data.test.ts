@@ -49,6 +49,8 @@ describe('star system settlement data', () => {
       expect(settlementTags).toContain(obviousTag)
       expect(settlementTags).toContain(deeperTag)
     }
+
+    expect(Object.keys(settlementTagPairHooks).length).toBeGreaterThanOrEqual(55)
   })
 
   it('keeps scale and contextual override pools usable', () => {

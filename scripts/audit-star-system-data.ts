@@ -272,6 +272,7 @@ function validateSettlements(): void {
   if (settlementScaleTable.length !== 12) addError('settlements.scaleTable', `Expected 12 entries; got ${settlementScaleTable.length}.`)
 
   warnIfThin('settlements.tags', settlementTagOptions.length, 50)
+  warnIfThin('settlements.tagPairHooks', Object.keys(settlementTagPairHooks).length, 55)
   warnIfThin('settlements.crises', settlementCrises.length, 50)
   warnIfThin('settlements.hiddenTruths', hiddenTruths.length, 50)
   warnIfThin('settlements.encounterSites', encounterSites.length, 30)

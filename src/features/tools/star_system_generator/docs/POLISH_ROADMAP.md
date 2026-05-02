@@ -112,7 +112,7 @@ Acceptance checks:
 
 ## Priority 3 - Add Settlement Tag-Pair Hooks
 
-Status: not started.
+Status: implemented.
 
 Problem:
 
@@ -121,12 +121,12 @@ The settlement tag pool is strong, but only a small number of tag-pair combinati
 Current baseline:
 
 - `settlementTags`: 52
-- `tagPairHooks`: 15
-- quick generator audit passes, but top fallback-style tag-hook openings still repeat visibly across the corpus
+- `tagPairHooks`: 84 after the first creative expansion pass
+- quick generator audit passes, with authored hooks covering the highest-value survival, route/GU, AI/evidence, labor, extraction, terraforming, biosafety, evacuation, and governance combinations
 
 Recommended work:
 
-- Add 40-60 authored `tagPairHooks` for high-value combinations.
+- Added 69 authored `tagPairHooks` for high-value combinations.
 - Prioritize combinations involving:
   - life support
   - debt labor
@@ -138,7 +138,7 @@ Recommended work:
   - terraforming liability
   - refugee and evacuation pressure
 - Keep pair hooks specific enough to explain how the two tags interact.
-- Raise authored pair coverage to at least 55 total hooks before considering this priority complete.
+- Added a data-audit and settlement-data test floor of at least 55 authored tag-pair hooks.
 
 Acceptance checks:
 
