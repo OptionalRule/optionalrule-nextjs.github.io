@@ -522,6 +522,18 @@ describe('generateSystem', () => {
     }
   })
 
+  it('does not repeat the exact giant economy note inside the body interest summary', () => {
+    const systems = Array.from({ length: 60 }, (_, index) =>
+      generateSystem({ ...options, seed: `giant-economy-interest-${index.toString(16).padStart(4, '0')}` })
+    )
+    const giantBodies = systems.flatMap((system) => system.bodies.filter((body) => body.giantEconomy))
+
+    expect(giantBodies.length).toBeGreaterThan(0)
+    for (const body of giantBodies) {
+      expect(body.whyInteresting.value).not.toContain(body.giantEconomy?.value)
+    }
+  })
+
   it('includes expanded source-derived world classes across sampled seeds', () => {
     const classes = new Set(
       Array.from({ length: 120 }, (_, index) =>

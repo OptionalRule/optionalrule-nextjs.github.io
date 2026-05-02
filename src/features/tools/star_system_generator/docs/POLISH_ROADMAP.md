@@ -71,7 +71,7 @@ Acceptance checks:
 
 ## Priority 2 - Improve Body Interest Prose
 
-Status: not started.
+Status: implemented.
 
 Problem:
 
@@ -79,14 +79,16 @@ Body summaries can still fall back to generic utility language such as orbital c
 
 Recommended work:
 
-- Expand or refactor `bodyInterest.ts` with category-aware pools for:
+- Expanded and refactored `bodyInterest.ts` with category-aware pools for:
   - operational use
   - local conflict
-  - sensory or visual hook
-  - settlement pressure
+  - visual hook
+  - settlement strain
   - survey question
-- Reduce repeated phrase openings seen in generator audits.
-- Keep summaries concise enough for UI panels.
+  - operational constraint
+- Added modifier phrases for hydrosphere resources, biospheres, severe radiation, GU/chiral/metric conditions, moons, rings, and rogue-captured bodies.
+- Added a human-altered override layer for facility, quarantine, terraforming, shielded, former-settlement, and engineered-site worlds.
+- Reduced repeated phrase openings seen in generator audits while keeping summaries concise enough for UI panels.
 
 Candidate design:
 
@@ -103,7 +105,7 @@ interface BodyInterestPrompt {
 Acceptance checks:
 
 - Body-interest summaries remain deterministic for a seed.
-- Summaries do not duplicate `bodyProfile` text verbatim.
+- Summaries do not duplicate `bodyProfile` or `giantEconomy` text verbatim.
 - Audit phrase-opening concentration improves.
 - focused generator tests and quick audit pass.
 

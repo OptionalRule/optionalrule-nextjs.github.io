@@ -1,5 +1,6 @@
 import type { BodyCategory, Fact, Moon, PlanetaryDetail, RingSystem } from '../../types'
 import type { WorldClassOption } from './domain'
+import { bodyInterestPools, type BodyInterestGroup, type BodyInterestPool, type BodyInterestSlot } from './bodyInterestPools'
 import { pickOne } from './dice'
 import type { SeededRng } from './rng'
 
@@ -27,10 +28,6 @@ function numberWord(count: number): string {
   return words[count] ?? String(count)
 }
 
-function lowerFirst(value: string): string {
-  return value.charAt(0).toLowerCase() + value.slice(1)
-}
-
 function sentenceCase(value: string): string {
   return value.charAt(0).toUpperCase() + value.slice(1)
 }
@@ -56,9 +53,9 @@ function thermalLocationPhrase(thermalZone: string): string {
   return `in the ${thermalZone.toLowerCase()} region`
 }
 
-function moonAnchorClause(count: number): string {
+function moonAnchorFragment(count: number): string {
   const moonText = `${numberWord(count)} major ${plural(count, 'moon')}`
-  return `${moonText} ${count === 1 ? 'provides' : 'provide'} anchor points for travel, mining, or conflict`
+  return `${moonText} as travel, mining, and conflict anchors`
 }
 
 export function generateGiantEconomy(bodyClass: WorldClassOption, moons: Moon[], rings?: RingSystem): Fact<string> | undefined {
@@ -142,71 +139,319 @@ export function generateBodyProfile(bodyClass: WorldClassOption, detail: Planeta
   return undefined
 }
 
+const bodyInterestSlots: BodyInterestSlot[] = [
+  'operationalUse',
+  'localConflict',
+  'visualCue',
+  'settlementStrain',
+  'surveyQuestion',
+  'operationalConstraint',
+]
+
+const bodyInterestGroupByCategory: Record<BodyCategory, BodyInterestGroup> = {
+  'rocky-planet': 'rocky',
+  'super-earth': 'heavySolid',
+  'sub-neptune': 'envelope',
+  'gas-giant': 'gasGiant',
+  'ice-giant': 'iceGiant',
+  belt: 'belt',
+  'dwarf-body': 'minorFrontier',
+  'rogue-captured': 'minorFrontier',
+  anomaly: 'anomaly',
+}
+
+const bodyInterestModifierPools: Record<string, Partial<BodyInterestPool>> = {
+  hydrosphereResource: {
+    operationalUse: [
+      'volatile handling, refueling, and sample custody',
+      'ice-hauling contracts tied to narrow transfer windows',
+      'brine and solvent sampling that pulls crews off main routes',
+    ],
+    surveyQuestion: [
+      'whether the volatile budget is stable or being depleted',
+      'which reservoirs can support long-term extraction',
+      'where hidden ice or brine pockets remain unclaimed',
+    ],
+    operationalConstraint: [
+      'volatile contamination rules slowing every transfer',
+      'ice and brine handling requiring narrow thermal windows',
+      'refueling traffic competing with survey access',
+    ],
+  },
+  biosphere: {
+    localConflict: [
+      'quarantine law colliding with extraction permits',
+      'biosignature claims threatening established land grants',
+      'research preserves limiting where crews can expand',
+    ],
+    settlementStrain: [
+      'clean-room movement rules slowing local work',
+      'habitats built around microbial preserve boundaries',
+      'medical and survey authorities competing for scarce access',
+    ],
+    surveyQuestion: [
+      'whether the biosignature is native, imported, or engineered',
+      'which sites can be sampled without corrupting the record',
+      'how far the living chemistry has spread',
+    ],
+    operationalConstraint: [
+      'sterile handling requirements for routine field work',
+      'quarantine corridors narrowing crew movement',
+      'sample custody rules delaying salvage and extraction',
+    ],
+  },
+  radiation: {
+    visualCue: [
+      'auroral curtains crawling over shielded work zones',
+      'radiation alarms pulsing through every exterior shift',
+      'blue-white static crawling across exposed sensors',
+    ],
+    settlementStrain: [
+      'shielded volume setting the real population limit',
+      'dose budgets rationing labor rotations',
+      'medical capacity lagging behind exposure incidents',
+    ],
+    operationalConstraint: [
+      'strict dose limits near exposed worksites',
+      'shadow-cycle scheduling for exterior labor',
+      'electronics hardening requirements on even simple trips',
+    ],
+  },
+  gu: {
+    localConflict: [
+      'GU readings turning routine claims into interdiction cases',
+      'survey authorities disputing which measurements are legal evidence',
+      'patrols closing access faster than crews can evacuate',
+    ],
+    visualCue: [
+      'metric shimmer bending ordinary range markers',
+      'instrument panels reporting impossible mass returns',
+      'shadow bands crossing with no visible occluder',
+    ],
+    surveyQuestion: [
+      'why GU instruments disagree with normal gravimetry',
+      'which readings are physical and which are planted',
+      'whether the anomaly is fading, moving, or being managed',
+    ],
+    operationalConstraint: [
+      'constant recalibration of range and mass readings',
+      'route updates expiring before crews can trust them',
+      'interdiction challenges triggered by active scans',
+    ],
+  },
+  moons: {
+    operationalUse: [
+      'major-moon anchor points for travel and conflict',
+      'moon transfer routes that concentrate traffic and repairs',
+      'satellite depots with cheaper staging than the primary body',
+    ],
+    localConflict: [
+      'moon access rights and transfer fees',
+      'rival ports competing for shielded berths',
+      'satellite claims outrunning enforceable law',
+    ],
+  },
+  rings: {
+    operationalUse: [
+      'ring-plane survey and debris-control work',
+      'ring-arc sampling tied to navigation safety',
+      'shepherd traffic around valuable ring material',
+    ],
+    visualCue: [
+      'ring shadows cutting across work zones',
+      'charged dust glittering along the ring plane',
+      'thin arcs flashing through station lights',
+    ],
+    operationalConstraint: [
+      'ring-plane debris hazards',
+      'strict clearance windows through shepherded arcs',
+      'collision-control orders overriding private traffic',
+    ],
+  },
+  rogueCaptured: {
+    operationalUse: [
+      'deep-cold refuge outside normal traffic models',
+      'black-route depots with deniable ownership',
+      'survey prizes with unclear origin paths',
+    ],
+    localConflict: [
+      'claimants weaponizing incomplete orbital data',
+      'survey houses suppressing trajectory evidence',
+      'exiles refusing relocation after discovery',
+    ],
+    visualCue: [
+      'starless ice under worklamp glare',
+      'engine heat blooming in absolute dark',
+      'radar ghosts from broken capture debris',
+    ],
+    settlementStrain: [
+      'habitats dependent on imported warmth',
+      'settlements isolated by unstable transfer windows',
+      'claim filings delayed by jurisdiction gaps',
+    ],
+    surveyQuestion: [
+      'where it traveled before capture',
+      'what altered its path into the system',
+      'how stable the current orbit really is',
+    ],
+    operationalConstraint: [
+      'dangerous transfer timing and high fuel costs',
+      'extreme cold without steady solar input',
+      'communications delayed by remote orbital geometry',
+    ],
+  },
+}
+
+function candidatePoolFrom(pool: BodyInterestPool): Record<BodyInterestSlot, string[]> {
+  return {
+    operationalUse: [...pool.operationalUse],
+    localConflict: [...pool.localConflict],
+    visualCue: [...pool.visualCue],
+    settlementStrain: [...pool.settlementStrain],
+    surveyQuestion: [...pool.surveyQuestion],
+    operationalConstraint: [...pool.operationalConstraint],
+  }
+}
+
+function addPool(candidates: Record<BodyInterestSlot, string[]>, pool: Partial<BodyInterestPool>): void {
+  for (const slot of bodyInterestSlots) {
+    const values = pool[slot]
+    if (values?.length) candidates[slot].push(...values)
+  }
+}
+
+function preferPool(candidates: Record<BodyInterestSlot, string[]>, pool: Partial<BodyInterestPool>, preferredSlots: BodyInterestSlot[]): void {
+  for (const slot of bodyInterestSlots) {
+    const values = pool[slot]
+    if (!values?.length) continue
+    candidates[slot] = preferredSlots.includes(slot)
+      ? [...values, ...candidates[slot]]
+      : [...candidates[slot], ...values]
+  }
+}
+
+function uniquePhrases(values: readonly string[]): string[] {
+  const seen = new Set<string>()
+  return values.filter((value) => {
+    const key = value.toLowerCase().replace(/[^\w\s]/g, '').replace(/\s+/g, ' ').trim()
+    if (seen.has(key)) return false
+    seen.add(key)
+    return true
+  })
+}
+
+function pickSlot(rng: SeededRng, candidates: Record<BodyInterestSlot, string[]>, slot: BodyInterestSlot): string {
+  return pickOne(rng, uniquePhrases(candidates[slot]))
+}
+
+function hasHydrosphereResource(detail: PlanetaryDetail): boolean {
+  return /ocean|ice|volatile|brine|aquifer|glacier|sea|solvent|recycled/i.test(detail.hydrosphere.value)
+}
+
+function hasSevereRadiation(detail: PlanetaryDetail): boolean {
+  return /severe|flare-lethal|only deep|electronics-disruptive/i.test(detail.radiation.value)
+}
+
+function isGuTouched(bodyClass: WorldClassOption, moons: Moon[], filterNotes: Array<Fact<string>>): boolean {
+  const text = [
+    bodyClass.className,
+    ...(bodyClass.physicalTags ?? []),
+    ...moons.map((moon) => `${moon.moonType.value} ${moon.resource.value} ${moon.hazard.value}`),
+    ...filterNotes.map((note) => note.value),
+  ].join(' ')
+  return /GU|chiral|bleed|metric|observiverse|dark-sector|programmable/i.test(text)
+}
+
+function isHumanAltered(bodyClass: WorldClassOption, bodyProfile?: Fact<string>): boolean {
+  const text = [
+    bodyClass.className,
+    bodyClass.massClass,
+    bodyProfile?.value ?? '',
+    ...(bodyClass.physicalTags ?? []),
+    ...(bodyClass.specialHandling ?? []),
+  ].join(' ')
+  return /facility|platform|terraform|settlement|habitat|quarantine|shield|engineered|corporate|extraction|transit|docking|black-lab|artificial/i.test(text)
+}
+
+function assembleBodyInterestCandidates(
+  bodyClass: WorldClassOption,
+  detail: PlanetaryDetail,
+  moons: Moon[],
+  rings: RingSystem | undefined,
+  filterNotes: Array<Fact<string>>,
+  bodyProfile?: Fact<string>
+): Record<BodyInterestSlot, string[]> {
+  const group = bodyInterestGroupByCategory[bodyClass.category]
+  const candidates = candidatePoolFrom(bodyInterestPools[group])
+
+  if (isHumanAltered(bodyClass, bodyProfile)) {
+    preferPool(candidates, bodyInterestPools.humanAltered, ['operationalUse', 'localConflict', 'settlementStrain', 'surveyQuestion'])
+  }
+  if (hasHydrosphereResource(detail)) addPool(candidates, bodyInterestModifierPools.hydrosphereResource)
+  if (detail.biosphere.value !== 'Sterile') addPool(candidates, bodyInterestModifierPools.biosphere)
+  if (hasSevereRadiation(detail)) addPool(candidates, bodyInterestModifierPools.radiation)
+  if (isGuTouched(bodyClass, moons, filterNotes)) addPool(candidates, bodyInterestModifierPools.gu)
+  if (moons.length > 0) {
+    addPool(candidates, {
+      ...bodyInterestModifierPools.moons,
+      operationalUse: [
+        moonAnchorFragment(moons.length),
+        ...(bodyInterestModifierPools.moons.operationalUse ?? []),
+      ],
+    })
+  }
+  if (rings) addPool(candidates, bodyInterestModifierPools.rings)
+  if (bodyClass.category === 'rogue-captured') addPool(candidates, bodyInterestModifierPools.rogueCaptured)
+
+  return candidates
+}
+
+function bodyInterestConfidence(selected: readonly string[], bodyClass: WorldClassOption): Fact<string>['confidence'] {
+  if (bodyClass.category === 'anomaly') return 'gu-layer'
+  return selected.some((reason) => /\b(?:GU|chiral|bleed|metric|observiverse|dark-sector|programmable)\b/i.test(reason))
+    ? 'gu-layer'
+    : 'inferred'
+}
+
 export function generateBodyInterest(
   rng: SeededRng,
   bodyClass: WorldClassOption,
   thermalZone: string,
   detail: PlanetaryDetail,
   moons: Moon[],
+  rings: RingSystem | undefined,
   filterNotes: Array<Fact<string>>,
   bodyProfile?: Fact<string>,
   giantEconomy?: Fact<string>
 ): Fact<string> {
-  const astronomyFacts: string[] = [
-    `${bodyClass.className} ${thermalLocationPhrase(thermalZone)}`,
-  ]
-  const pressurePoints: string[] = []
-  const playUses: string[] = []
+  const candidates = assembleBodyInterestCandidates(bodyClass, detail, moons, rings, filterNotes, bodyProfile)
+  if (giantEconomy && (bodyClass.category === 'gas-giant' || bodyClass.category === 'ice-giant')) {
+    candidates.operationalUse.push('moon service routes and shielded depot traffic')
+    candidates.localConflict.push('service economies competing over moon-to-moon traffic')
+  }
+  const operationalUse = pickSlot(rng, candidates, 'operationalUse')
+  const localConflict = pickSlot(rng, candidates, 'localConflict')
+  const visualCue = pickSlot(rng, candidates, 'visualCue')
+  const settlementStrain = pickSlot(rng, candidates, 'settlementStrain')
+  const surveyQuestion = pickSlot(rng, candidates, 'surveyQuestion')
+  const operationalConstraint = pickSlot(rng, candidates, 'operationalConstraint')
+  const categoryFact = `${bodyClass.className} ${thermalLocationPhrase(thermalZone)}`
+  const selected = [operationalUse, localConflict, visualCue, settlementStrain, surveyQuestion, operationalConstraint, categoryFact]
 
-  if (giantEconomy) playUses.push(giantEconomy.value)
-  if (detail.biosphere.value !== 'Sterile') pressurePoints.push(`${detail.biosphere.value} creates science, quarantine, or settlement pressure`)
-  if (detail.hydrosphere.value.includes('ocean') || detail.hydrosphere.value.includes('ice') || detail.hydrosphere.value.includes('volatiles')) {
-    playUses.push(`${detail.hydrosphere.value} makes local volatiles important`)
-  }
-  if (detail.radiation.value.includes('Severe') || detail.radiation.value.includes('Flare-lethal') || detail.radiation.value.includes('Only deep')) {
-    pressurePoints.push(`${detail.radiation.value} makes operations dangerous`)
-  }
-  if (filterNotes.some((note) => note.value.includes('Hot Neptune desert') || note.value.includes('Radius valley') || note.value.includes('M-dwarf'))) {
-    astronomyFacts.push('modern exoplanet filters make this a notable survey target')
-  }
-  if (moons.some((moon) => moon.resource.confidence === 'gu-layer') || bodyClass.className.includes('GU') || bodyClass.className.includes('Chiral') || bodyClass.className.includes('bleed')) {
-    pressurePoints.push('GU value may attract research, extraction, or interdiction')
-  }
-  if (thermalZone === 'Temperate band' && (bodyClass.category === 'rocky-planet' || bodyClass.category === 'super-earth')) {
-    astronomyFacts.push('its habitable-zone position gives it political and survey value even if conditions are harsh')
-  }
-  if (moons.length > 0 && !bodyProfile?.value.includes('major moon')) playUses.push(moonAnchorClause(moons.length))
-
-  const selected = [
-    pickOne(rng, astronomyFacts),
-    pickOne(rng, pressurePoints.length ? pressurePoints : [`${detail.radiation.value.toLowerCase()} is the main operating constraint`]),
-    pickOne(rng, playUses.length ? playUses : [`${bodyClass.className} is mainly useful as orbital context and navigation terrain`]),
-  ]
-
-  const subject = pickOne(rng, bodyInterestSubjects[bodyClass.category])
-  const template = rng.int(1, 8)
-  const [astronomy, pressure, utility] = selected
+  const template = rng.int(1, 12)
   const summary =
-    template === 1 ? joinSentences([astronomy, pressure, utility]) :
-    template === 2 ? joinSentences([`${subject} care because ${lowerFirst(astronomy)}`, pressure, utility]) :
-    template === 3 ? joinSentences([`Survey crews flag ${bodyClass.className.toLowerCase()} because ${lowerFirst(astronomy)}`, pressure, utility]) :
-    template === 4 ? joinSentences([`The playable tension is ${lowerFirst(pressure)}`, utility, astronomy]) :
-    template === 5 ? joinSentences([`${subject} care because ${lowerFirst(pressure)}`, utility, astronomy]) :
-    template === 6 ? joinSentences([`Local politics turn on ${lowerFirst(pressure)}`, utility, astronomy]) :
-    template === 7 ? joinSentences([`Local maps mark it as useful because ${lowerFirst(utility)}`, pressure, astronomy]) :
-    joinSentences([`Traffic concentrates where ${lowerFirst(utility)}`, pressure, astronomy])
+    template === 1 ? joinSentences([`operational value centers on ${operationalUse}`, `local tension follows from ${localConflict}`, `surveyors still need to know ${surveyQuestion}`]) :
+    template === 2 ? joinSentences([`crews notice ${visualCue}`, `settlements are strained by ${settlementStrain}`, `crews must plan around ${operationalConstraint}`]) :
+    template === 3 ? joinSentences([`the site remains useful for ${operationalUse}`, `conflict usually starts with ${localConflict}`, `the unresolved question is ${surveyQuestion}`]) :
+    template === 4 ? joinSentences([`first impressions are dominated by ${visualCue}`, `long-term habitation depends on ${settlementStrain}`, `every approach is shaped by ${operationalConstraint}`]) :
+    template === 5 ? joinSentences([categoryFact, `maps mark it for ${operationalUse}`, `but local tension follows from ${localConflict}`]) :
+    template === 6 ? joinSentences([`local tension follows from ${localConflict}`, `crews notice ${visualCue}`, `crews must plan around ${operationalConstraint}`]) :
+    template === 7 ? joinSentences([`operational value centers on ${operationalUse}`, `settlements are strained by ${settlementStrain}`, `the unresolved question is ${surveyQuestion}`]) :
+    template === 8 ? joinSentences([`every approach is shaped by ${operationalConstraint}`, `the site remains useful for ${operationalUse}`, `crews notice ${visualCue}`]) :
+    template === 9 ? joinSentences([`maps mark it for ${operationalUse}`, `local authorities worry about ${settlementStrain}`, `surveyors still need to know ${surveyQuestion}`]) :
+    template === 10 ? joinSentences([`conflict usually starts with ${localConflict}`, `crews notice ${visualCue}`, `operations depend on ${operationalConstraint}`]) :
+    template === 11 ? joinSentences([`long-term habitation depends on ${settlementStrain}`, `operational value centers on ${operationalUse}`, `the unresolved question is ${surveyQuestion}`]) :
+    joinSentences([`crews must plan around ${operationalConstraint}`, `local tension follows from ${localConflict}`, `the clearest table image is ${visualCue}`])
 
-  return fact(summary, selected.some((reason) => reason.includes('GU')) ? 'gu-layer' : 'inferred', 'Generated body interest summary')
-}
-
-const bodyInterestSubjects: Record<BodyCategory, readonly string[]> = {
-  'rocky-planet': ['Colony planners', 'Prospectors', 'Surface crews', 'Survey offices'],
-  'super-earth': ['Heavy-world crews', 'Habitat planners', 'Gravity-adapted teams', 'Survey offices'],
-  'sub-neptune': ['Envelope miners', 'Atmospheric researchers', 'Transit crews', 'Survey offices'],
-  'gas-giant': ['Orbital crews', 'Moon brokers', 'Fuel consortia', 'Magnetosphere researchers'],
-  'ice-giant': ['Volatile miners', 'Outer-system crews', 'Fuel consortia', 'Magnetosphere researchers'],
-  belt: ['Belt crews', 'Claim auditors', 'Navigation offices', 'Prospector combines'],
-  'dwarf-body': ['Frontier crews', 'Ice miners', 'Hidden-harbor pilots', 'Survey offices'],
-  'rogue-captured': ['Deep-range crews', 'Interdiction patrols', 'Refuel brokers', 'Survey offices'],
-  anomaly: ['Research teams', 'Interdiction patrols', 'GU auditors', 'Survey offices'],
+  return fact(summary, bodyInterestConfidence(selected, bodyClass), 'Generated body interest summary')
 }

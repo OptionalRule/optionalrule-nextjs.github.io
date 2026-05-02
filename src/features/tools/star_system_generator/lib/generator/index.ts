@@ -1991,7 +1991,7 @@ function generatedBody(
   const rings = generateRingSystem(rng, filtered.bodyClass.category)
   const giantEconomy = generateGiantEconomy(filtered.bodyClass, moons, rings)
   const bodyProfile = generateBodyProfile(filtered.bodyClass, detail, moons, rings)
-  const whyInteresting = generateBodyInterest(rng.fork(`body-interest-${index + 1}`), filtered.bodyClass, thermalZone, detail, moons, [...filtered.filterNotes, ...habitabilityNotes], bodyProfile, giantEconomy)
+  const whyInteresting = generateBodyInterest(rng.fork(`body-interest-${index + 1}`), filtered.bodyClass, thermalZone, detail, moons, rings, [...filtered.filterNotes, ...habitabilityNotes], bodyProfile, giantEconomy)
   return {
     body: {
       id: known?.id ?? `body-${index + 1}`,
