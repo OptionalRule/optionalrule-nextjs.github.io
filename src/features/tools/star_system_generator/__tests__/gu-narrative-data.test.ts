@@ -24,6 +24,22 @@ describe('star system GU and narrative data', () => {
     expect(humanRemnants.length).toBeGreaterThan(0)
     expect(remnantHooks.length).toBeGreaterThan(0)
     expect(phenomena.length).toBeGreaterThan(0)
+
+    for (const phenomenon of phenomena) {
+      expect(phenomenon.label).toBeTruthy()
+      expect(['gu-layer', 'human-layer', 'inferred']).toContain(phenomenon.confidence)
+      expect(phenomenon.travelEffect).toBeTruthy()
+      expect(phenomenon.surveyQuestion).toBeTruthy()
+      expect(phenomenon.conflictHook).toBeTruthy()
+      expect(phenomenon.sceneAnchor).toBeTruthy()
+      expect([
+        phenomenon.label,
+        phenomenon.travelEffect,
+        phenomenon.surveyQuestion,
+        phenomenon.conflictHook,
+        phenomenon.sceneAnchor,
+      ].join(' ').toLowerCase()).not.toMatch(/\b(?:alien|native civilization|ancient cities|artifact|relic|megastructure)\b/)
+    }
   })
 
   it('has complete narrative structures and variable pools', () => {

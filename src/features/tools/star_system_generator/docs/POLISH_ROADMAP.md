@@ -148,7 +148,7 @@ Acceptance checks:
 
 ## Priority 4 - Structure System Phenomena Consequences
 
-Status: not started.
+Status: implemented.
 
 Problem:
 
@@ -157,12 +157,15 @@ System phenomena are flavorful labels, but generated notes still use generic wor
 Current baseline:
 
 - `phenomena`: 32
-- the pool is no longer thin by data-audit standards, but entries are still plain labels
+- `phenomena`: 32 structured entries with `travelEffect`, `surveyQuestion`, `conflictHook`, and `sceneAnchor`
+- generated phenomenon notes now expose specific transit, question, hook, and image beats instead of generic fallback wording
 
 Recommended work:
 
-- Convert `phenomena` from strings to structured entries, or add a parallel metadata map.
-- Give each phenomenon specific play consequences.
+- Converted `phenomena` from strings to structured entries.
+- Added specific play consequences for each phenomenon.
+- Preserved existing generated `phenomenon` and `note` fields while adding structured generated facts for UI, JSON export, and Markdown export.
+- Added data-audit and unit-test coverage for required structured fields and no-alien wording guardrails.
 
 Candidate structure:
 

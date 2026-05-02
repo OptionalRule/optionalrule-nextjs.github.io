@@ -220,6 +220,10 @@ export interface SystemPhenomenon {
   id: string
   phenomenon: Fact<string>
   note: Fact<string>
+  travelEffect: Fact<string>
+  surveyQuestion: Fact<string>
+  conflictHook: Fact<string>
+  sceneAnchor: Fact<string>
 }
 
 export type NarrativeFactStatus = 'established' | 'inferred' | 'rumor' | 'secret' | 'cover-story'

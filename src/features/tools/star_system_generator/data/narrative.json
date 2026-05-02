@@ -62,38 +62,262 @@
     "is still defended by obsolete security routines"
   ],
   "phenomena": [
-    "Dense debris disk",
-    "Recent planetary collision",
-    "Resonant compact chain",
-    "Trojan megaswarm",
-    "Long-period comet storm",
-    "Captured rogue world",
-    "Flare-amplified bleed season",
-    "Hot Neptune desert survivor",
-    "Snow-line chiral belt",
-    "Ring arc with phase dust",
-    "Ice-shell plume moon",
-    "Gas giant radiation maze",
-    "Failed Iggygate wake",
-    "Moving bleed-node river",
-    "Metric mirage zone",
-    "Native microbial biosphere",
-    "Failed terraforming biosphere",
-    "First-wave ghost colony",
-    "Derelict fleet cluster",
-    "Gardener warning beacon",
-    "Narrow-AI perception fog",
-    "Censored casualty broadcast loop",
-    "Black-market route beacon lattice",
-    "Quarantine perimeter with disputed math",
-    "Election-day metric storm cycle",
-    "Debt-fleet anchor graveyard",
-    "Refugee ark parking orbit",
-    "Chiral contamination bloom",
-    "Sol-interdiction picket shadow",
-    "Public festival tied to safe transit windows",
-    "Industrial mirror swarm failure",
-    "Salvage court evidence cache"
+    {
+      "label": "Dense debris disk",
+      "confidence": "inferred",
+      "travelEffect": "Approach vectors require slow debris-clearing burns and constant armor checks.",
+      "surveyQuestion": "Which fragments carry industrial isotopes, transponder ghosts, or hidden operation scars?",
+      "conflictHook": "Insurers, salvagers, and GU traffic auditors dispute who must clear safe lanes.",
+      "sceneAnchor": "A cutter drifts beside a glittering wall of rock and frozen metal."
+    },
+    {
+      "label": "Recent planetary collision",
+      "confidence": "inferred",
+      "travelEffect": "Fresh ejecta, unstable moons, and thermal plumes force ships onto temporary routes.",
+      "surveyQuestion": "Was the collision natural resonance failure, redirected impactor, or suppressed engineering mistake?",
+      "conflictHook": "Refugee claims, mineral rights, and liability filings compete before the evidence cools.",
+      "sceneAnchor": "A wounded world glows along a continent-sized fracture and newborn ring."
+    },
+    {
+      "label": "Resonant compact chain",
+      "confidence": "inferred",
+      "travelEffect": "Tight orbital timing creates narrow transfer corridors and expensive missed-burn delays.",
+      "surveyQuestion": "Who mapped the stable windows, and what installations are protected by withheld ephemerides?",
+      "conflictHook": "Route controllers, smugglers, and settlement clocks all depend on one resonance model.",
+      "sceneAnchor": "Three close worlds cross the display in metronome sequence."
+    },
+    {
+      "label": "Trojan megaswarm",
+      "confidence": "inferred",
+      "travelEffect": "Trojan clouds force ships through monitored gaps shared by dust and salvage drones.",
+      "surveyQuestion": "Which clusters are primordial, and which conceal storage hulks or contraband habitats?",
+      "conflictHook": "Mining combines and traffic authorities dispute whether the swarm is resource or hazard.",
+      "sceneAnchor": "The Lagrange horizon looks solid with stones blinking claimant beacons."
+    },
+    {
+      "label": "Long-period comet storm",
+      "confidence": "inferred",
+      "travelEffect": "Outer approaches become hazardous as cometary arcs shed dust across transfer paths.",
+      "surveyQuestion": "What perturbed the reservoir: passing mass, failed survey burn, or old GU intervention?",
+      "conflictHook": "Water prospectors demand priority while port officials quarantine possibly contaminated ice cargo.",
+      "sceneAnchor": "Pale comet tails cross like searchlights over a station short on shielding."
+    },
+    {
+      "label": "Captured rogue world",
+      "confidence": "inferred",
+      "travelEffect": "The rogue's eccentric orbit creates rare close-pass windows and gravitational surprises.",
+      "surveyQuestion": "Do its volatiles, heat signature, or crust records contradict local histories?",
+      "conflictHook": "Colonies, science teams, and GU administrators contest hazard, depot, or archive status.",
+      "sceneAnchor": "A lightless planet rolls through floodlamp glare and survey tug exhaust."
+    },
+    {
+      "label": "Flare-amplified bleed season",
+      "confidence": "gu-layer",
+      "travelEffect": "Crews move only during shielded windows or risk radiation damage and denial.",
+      "surveyQuestion": "Which stations are falsifying flare exposure logs to keep traffic moving?",
+      "conflictHook": "GU inspectors freeze permits after a convoy launches on an altered forecast.",
+      "sceneAnchor": "A departure hall sits under red storm shutters and expired dosimeter seals."
+    },
+    {
+      "label": "Hot Neptune desert survivor",
+      "confidence": "inferred",
+      "travelEffect": "Stellar wind and stripped atmospheric flow distort comms and punish close maneuvers.",
+      "surveyQuestion": "How did the planet survive evaporation, and who falsified its hazard data?",
+      "conflictHook": "Energy firms, climate modelers, and regulators fight over access to the proof.",
+      "sceneAnchor": "A blue remnant screams around the star, trailing a faint atmospheric wake."
+    },
+    {
+      "label": "Snow-line chiral belt",
+      "confidence": "gu-layer",
+      "travelEffect": "Snow-line crossings require screening ice intake and reactor feedstock for asymmetric organics.",
+      "surveyQuestion": "Are the chiral signatures local chemistry, imported contamination, or terraforming residue?",
+      "conflictHook": "Biotech firms and GU biosafety officers contest every water-dependent ice claim.",
+      "sceneAnchor": "Clean ice turns quarantine amber as every tank flags the same handedness."
+    },
+    {
+      "label": "Ring arc with phase dust",
+      "confidence": "gu-layer",
+      "travelEffect": "Phase-dust crossings scramble sensors and force slow approaches through marked lanes.",
+      "surveyQuestion": "What cargo or wreckage is hidden inside the phase-dust blind spots?",
+      "conflictHook": "Rival salvagers accuse lane authorities of selling clean transponder routes.",
+      "sceneAnchor": "A beacon skiff drifts beside a glittering arc, hull abraded raw."
+    },
+    {
+      "label": "Ice-shell plume moon",
+      "confidence": "inferred",
+      "travelEffect": "Plume windows restrict low-orbit approaches to brief corridors with poor sensor reliability.",
+      "surveyQuestion": "Which plume holds clean volatiles, hidden organics, or mislabeled contamination?",
+      "conflictHook": "A GU survey hold stalls extraction while rival crews falsify plume data.",
+      "sceneAnchor": "A lander skids through glittering ejecta as the plume shadow closes."
+    },
+    {
+      "label": "Gas giant radiation maze",
+      "confidence": "inferred",
+      "travelEffect": "Radiation belts force looping transfers, hardened shelters, and costly orbital delays.",
+      "surveyQuestion": "Which supposedly safe corridor shifted, and who knew before the convoy entered?",
+      "conflictHook": "Port authorities, insurers, and smugglers fight over legal and lethal corridor maps.",
+      "sceneAnchor": "A navigation vault shows a convoy bending toward an uncharted hot belt."
+    },
+    {
+      "label": "Failed Iggygate wake",
+      "confidence": "gu-layer",
+      "travelEffect": "Old gate turbulence makes jumps arrive late, offset, or near exclusion buoys.",
+      "surveyQuestion": "Is the wake decaying, stabilizing, or being refreshed by unauthorized traffic?",
+      "conflictHook": "A stranded settlement claims GU approved evacuation after knowing the wake was unsafe.",
+      "sceneAnchor": "A dead gate frame broadcasts conflicting closure orders from warning drones."
+    },
+    {
+      "label": "Moving bleed-node river",
+      "confidence": "gu-layer",
+      "travelEffect": "Transit windows migrate across the system, forcing ships to chase route geometry.",
+      "surveyQuestion": "Who can predict the river's next bend before the official bulletin?",
+      "conflictHook": "Navigation guilds and free captains clash over private forecasts and evacuation markets.",
+      "sceneAnchor": "A convoy burns toward empty space while station clocks count down."
+    },
+    {
+      "label": "Metric mirage zone",
+      "confidence": "gu-layer",
+      "travelEffect": "Distance, mass, and velocity readings disagree, making autopilot corrections unreliable.",
+      "surveyQuestion": "Which measurements remain trustworthy enough to certify a navigation standard?",
+      "conflictHook": "A shipping combine blames lost cargo on math survivors call knowingly oversold.",
+      "sceneAnchor": "A bridge display shows three certified and incompatible approach vectors."
+    },
+    {
+      "label": "Native microbial biosphere",
+      "confidence": "inferred",
+      "travelEffect": "Biosecurity rules slow landings, cargo transfers, and suit cycling near habitats.",
+      "surveyQuestion": "Are the microbes a medical resource, industrial hazard, or protected environmental evidence?",
+      "conflictHook": "GU quarantine orders collide with settlers dependent on local biomass chemistry.",
+      "sceneAnchor": "A decon tent steams beside stained sample tanks and disputed filters."
+    },
+    {
+      "label": "Failed terraforming biosphere",
+      "confidence": "human-layer",
+      "travelEffect": "Unstable weather and toxic biomes make surface routes unreliable beyond maintained corridors.",
+      "surveyQuestion": "Which failure mode is spreading, and which contractor record explains it?",
+      "conflictHook": "Liability courts, cleanup firms, and abandoned settlers need incompatible survival evidence.",
+      "sceneAnchor": "Engineered forest rot crawls across a road built for another climate."
+    },
+    {
+      "label": "First-wave ghost colony",
+      "confidence": "human-layer",
+      "travelEffect": "Old landing grids still work but route ships through abandoned hazards.",
+      "surveyQuestion": "Who erased the last colony updates, and which sealed habitat still has power?",
+      "conflictHook": "Descendant claimants, insurers, and scavengers need incompatible rulings on the colony's fate.",
+      "sceneAnchor": "A lit administration dome broadcasts docking instructions to empty streets."
+    },
+    {
+      "label": "Derelict fleet cluster",
+      "confidence": "human-layer",
+      "travelEffect": "Safe approach requires threading dead hulls, drifting ordnance, and exclusion pings.",
+      "surveyQuestion": "Which ships were sacrificed, and which still carry recoverable command logs?",
+      "conflictHook": "Salvage crews fight legal priority while families demand proof of what happened.",
+      "sceneAnchor": "A frozen convoy hangs around a tender with running lights still on."
+    },
+    {
+      "label": "Gardener warning beacon",
+      "confidence": "human-layer",
+      "travelEffect": "Traffic diverts around the warning radius or accepts fines and inspection risk.",
+      "surveyQuestion": "Is the beacon reacting to current hazard, legacy violation, or human tampering?",
+      "conflictHook": "Local authorities exploit the warning while merchants pressure crews to prove it obsolete.",
+      "sceneAnchor": "A black compliance buoy repeats a code no nearby port understands."
+    },
+    {
+      "label": "Narrow-AI perception fog",
+      "confidence": "human-layer",
+      "travelEffect": "Certified narrow AIs misclassify hazards, forcing manual survey protocols.",
+      "surveyQuestion": "Which AI model family fails first, and who certified it for GU routes?",
+      "conflictHook": "A vendor demands recall secrecy while pilots publish route-bankrupting crash footage.",
+      "sceneAnchor": "Every cockpit machine labels the same debris cloud as clear passage."
+    },
+    {
+      "label": "Censored casualty broadcast loop",
+      "confidence": "human-layer",
+      "travelEffect": "Navigation channels carry clipped emergency telemetry and official suppression bursts.",
+      "surveyQuestion": "What part of the casualty report is cut before the names finish?",
+      "conflictHook": "The censoring agency wants the loop buried; survivors want authentication.",
+      "sceneAnchor": "A rescue frequency repeats names, then drops at one classified timestamp."
+    },
+    {
+      "label": "Black-market route beacon lattice",
+      "confidence": "human-layer",
+      "travelEffect": "Unauthorized microbeacons offer faster routes but can strand crews in toll geometry.",
+      "surveyQuestion": "Which beacon is the guide, and which was planted to mark prey?",
+      "conflictHook": "Port officials deny the lattice while smugglers sell violent access codes.",
+      "sceneAnchor": "A maintenance drone blinks a false safe-window pattern from a relay mast."
+    },
+    {
+      "label": "Quarantine perimeter with disputed math",
+      "confidence": "gu-layer",
+      "travelEffect": "Routes detour around a contested exclusion shell with model-dependent boundaries.",
+      "surveyQuestion": "Which quarantine equation actually matches observed contamination risk?",
+      "conflictHook": "Local ships breach the perimeter after GU expands it onto inhabited docks.",
+      "sceneAnchor": "A customs gantry is split by overlapping quarantine projections and armed crews."
+    },
+    {
+      "label": "Election-day metric storm cycle",
+      "confidence": "gu-layer",
+      "travelEffect": "A recurring storm disrupts election-window traffic, ballots, and monitors.",
+      "surveyQuestion": "Is the cycle natural, exploited, or scheduled around known route instability?",
+      "conflictHook": "Opposition blocs accuse the port council of stranding hostile precincts.",
+      "sceneAnchor": "A polling station runs on emergency power beyond delayed ballot shuttles."
+    },
+    {
+      "label": "Debt-fleet anchor graveyard",
+      "confidence": "human-layer",
+      "travelEffect": "Impounded ships crowd anchor lanes, slowing departure permissions and salvage clearance.",
+      "surveyQuestion": "Which vessels are abandoned collateral, and which crews remain trapped aboard?",
+      "conflictHook": "Creditors auction life-support hours while indebted crews organize a breakout.",
+      "sceneAnchor": "Powered-down freighters sit chained to tax buoys, registry lights delinquent."
+    },
+    {
+      "label": "Refugee ark parking orbit",
+      "confidence": "human-layer",
+      "travelEffect": "Approach windows are rationed around life-support dumps, shuttle queues, and quarantine checks.",
+      "surveyQuestion": "When does a parked ark become a permanent jurisdictional crisis?",
+      "conflictHook": "Receiving settlements want labor, not dependents; ark councils refuse family splits.",
+      "sceneAnchor": "A generation ship vents gray water over a port delaying clearance."
+    },
+    {
+      "label": "Chiral contamination bloom",
+      "confidence": "gu-layer",
+      "travelEffect": "Molecular screening slows fuel, food, and medical transfers near the bloom.",
+      "surveyQuestion": "What supply chain carried the wrong-handed compounds, and who profits?",
+      "conflictHook": "A treatment monopoly pushes controls while workers suspect it preserves the market.",
+      "sceneAnchor": "Two nutrient bags test opposite; one is already in the clinic queue."
+    },
+    {
+      "label": "Sol-interdiction picket shadow",
+      "confidence": "human-layer",
+      "travelEffect": "Transit plans account for inspection shadows, silent tracking, and sudden interdiction claims.",
+      "surveyQuestion": "What is the picket watching, and why has its patrol shifted?",
+      "conflictHook": "Local rulers invoke Sol authority while captains seek proof of mandate abuse.",
+      "sceneAnchor": "A patrol silhouette tags civilian ships for audit without answering hails."
+    },
+    {
+      "label": "Public festival tied to safe transit windows",
+      "confidence": "human-layer",
+      "travelEffect": "Docking, launch, and local prices surge around celebrated safe windows.",
+      "surveyQuestion": "Who controls the forecast that decides when the festival begins?",
+      "conflictHook": "Officials sell civic unity while stranded crews allege the exit window was quietly narrowed.",
+      "sceneAnchor": "Lanterns rise as departure boards quietly cancel the cheaper berths."
+    },
+    {
+      "label": "Industrial mirror swarm failure",
+      "confidence": "human-layer",
+      "travelEffect": "Uncommanded mirrors create heat spikes, blackout arcs, and orbital collision hazards.",
+      "surveyQuestion": "Is the swarm failing from cut maintenance, hostile code, or split authority?",
+      "conflictHook": "Settlements demand shade control while owners resist GU emergency seizure.",
+      "sceneAnchor": "A daylight blade crawls across a night-side district as control loses another mirror."
+    },
+    {
+      "label": "Salvage court evidence cache",
+      "confidence": "human-layer",
+      "travelEffect": "Cache approaches trigger claim holds and court-licensed patrols.",
+      "surveyQuestion": "Which wreck record would overturn the current salvage rights?",
+      "conflictHook": "Judges, insurers, and crews need the evidence preserved, altered, or lost.",
+      "sceneAnchor": "A locked evidence container transmits chain-of-custody pings to every claimant."
+    }
   ],
   "namedFactions": [
     {

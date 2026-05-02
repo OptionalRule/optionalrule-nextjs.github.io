@@ -88,7 +88,24 @@ export function SystemPhenomenaPanel({ system }: { system: GeneratedSystem }) {
                 {phenomenon.phenomenon.value}
               </h3>
             </div>
-            <p className="mt-2 leading-relaxed text-[var(--text-secondary)]">{phenomenon.note.value}</p>
+            <dl className="mt-2 grid gap-2 text-[var(--text-secondary)]">
+              <div>
+                <dt className="font-semibold text-[var(--text-primary)]">Transit</dt>
+                <dd className="leading-relaxed">{phenomenon.travelEffect.value}</dd>
+              </div>
+              <div>
+                <dt className="font-semibold text-[var(--text-primary)]">Question</dt>
+                <dd className="leading-relaxed">{phenomenon.surveyQuestion.value}</dd>
+              </div>
+              <div>
+                <dt className="font-semibold text-[var(--text-primary)]">Hook</dt>
+                <dd className="leading-relaxed">{phenomenon.conflictHook.value}</dd>
+              </div>
+              <div>
+                <dt className="font-semibold text-[var(--text-primary)]">Image</dt>
+                <dd className="leading-relaxed">{phenomenon.sceneAnchor.value}</dd>
+              </div>
+            </dl>
           </div>
         ))}
       </div>

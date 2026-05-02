@@ -68,7 +68,13 @@ export function exportSystemMarkdown(system: GeneratedSystem): string {
   if (system.phenomena.length) {
     lines.push('## System Phenomena', '')
     for (const phenomenon of system.phenomena) {
-      lines.push(`- **${phenomenon.phenomenon.value}:** ${phenomenon.note.value}`)
+      lines.push(
+        `- **${phenomenon.phenomenon.value}**`,
+        `  - Transit: ${phenomenon.travelEffect.value}`,
+        `  - Question: ${phenomenon.surveyQuestion.value}`,
+        `  - Hook: ${phenomenon.conflictHook.value}`,
+        `  - Image: ${phenomenon.sceneAnchor.value}`
+      )
     }
   }
 

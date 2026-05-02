@@ -2868,10 +2868,15 @@ function generatePhenomena(rng: SeededRng, architectureName: string, guOverlay: 
   const count = guOverlay.intensity.value.includes('Rich') || architectureName.includes('Major') ? 3 : 2
   return Array.from({ length: count }, (_, index) => {
     const phenomenon = pickOne(rng, phenomena)
+    const note = `Transit: ${phenomenon.travelEffect} Question: ${phenomenon.surveyQuestion} Hook: ${phenomenon.conflictHook} Image: ${phenomenon.sceneAnchor}`
     return {
       id: `phenomenon-${index + 1}`,
-      phenomenon: fact(phenomenon, phenomenon.includes('bleed') || phenomenon.includes('chiral') || phenomenon.includes('Iggygate') ? 'gu-layer' : 'inferred', 'MASS-GU expanded phenomena table'),
-      note: fact(`${phenomenon} shapes travel, survey priorities, or local conflict.`, 'inferred', 'Generated phenomenon note'),
+      phenomenon: fact(phenomenon.label, phenomenon.confidence, 'MASS-GU expanded phenomena table'),
+      note: fact(note, phenomenon.confidence, 'Generated structured phenomenon consequences'),
+      travelEffect: fact(phenomenon.travelEffect, phenomenon.confidence, 'Generated phenomenon travel consequence'),
+      surveyQuestion: fact(phenomenon.surveyQuestion, phenomenon.confidence, 'Generated phenomenon survey question'),
+      conflictHook: fact(phenomenon.conflictHook, phenomenon.confidence, 'Generated phenomenon conflict hook'),
+      sceneAnchor: fact(phenomenon.sceneAnchor, phenomenon.confidence, 'Generated phenomenon scene anchor'),
     }
   })
 }

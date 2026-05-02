@@ -20,10 +20,19 @@ export interface NamedFaction {
   publicFace: string
 }
 
+export interface PhenomenonEntry {
+  label: string
+  confidence: 'gu-layer' | 'human-layer' | 'inferred'
+  travelEffect: string
+  surveyQuestion: string
+  conflictHook: string
+  sceneAnchor: string
+}
+
 interface NarrativeData {
   humanRemnants: readonly string[]
   remnantHooks: readonly string[]
-  phenomena: readonly string[]
+  phenomena: readonly PhenomenonEntry[]
   namedFactions?: readonly NamedFaction[]
   narrativeDomains?: Record<string, {
     label: string

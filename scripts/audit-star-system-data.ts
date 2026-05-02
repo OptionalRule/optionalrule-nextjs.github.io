@@ -333,10 +333,23 @@ function validateGuAndNarrative(): void {
   assertNoDuplicates('gu.hazards', guHazardTable)
   assertNoDuplicates('narrative.humanRemnants', humanRemnants)
   assertNoDuplicates('narrative.remnantHooks', remnantHooks)
-  assertNoDuplicates('narrative.phenomena', phenomena)
+  assertNoDuplicates('narrative.phenomena.label', phenomena.map((phenomenon) => phenomenon.label))
   assertNoDuplicates('narrative.namedFactions.id', namedFactions.map((faction) => faction.id))
   assertNoDuplicates('narrative.namedFactions.name', namedFactions.map((faction) => faction.name))
   assertNoDuplicates('narrative.narrativeStructures.id', narrativeStructures.map((structure) => structure.id))
+
+  phenomena.forEach((phenomenon, index) => {
+    const path = `narrative.phenomena.${index}`
+    if (!phenomenon.label.trim()) addError(path, 'Phenomenon label is empty.')
+    if (!['gu-layer', 'human-layer', 'inferred'].includes(phenomenon.confidence)) addError(`${path}.confidence`, `Unexpected confidence "${phenomenon.confidence}".`)
+
+    ;(['travelEffect', 'surveyQuestion', 'conflictHook', 'sceneAnchor'] as const).forEach((field) => {
+      const value = phenomenon[field]
+      if (!value.trim()) addError(`${path}.${field}`, 'Required phenomenon consequence field is empty.')
+      if (/shapes travel|survey priorities|local conflict|mystery surrounds/i.test(value)) addError(`${path}.${field}`, 'Field uses generic fallback language.')
+      if (/\b(?:alien|nonhuman|native civilization|ancient cities|artifact|relic|megastructure)\b/i.test(value)) addError(`${path}.${field}`, 'Field violates no-alien/no-artifact wording policy.')
+    })
+  })
 
   const knownDomains = new Set(Object.keys(narrativeDomains))
   Object.entries(narrativeDomains).forEach(([domain, entry]) => {
@@ -518,6 +531,7 @@ function printReport(): void {
     ['humanRemnants', humanRemnants.length],
     ['remnantHooks', remnantHooks.length],
     ['phenomena', phenomena.length],
+    ['structured phenomenon fields', `${phenomena.filter((phenomenon) => phenomenon.travelEffect && phenomenon.surveyQuestion && phenomenon.conflictHook && phenomenon.sceneAnchor).length}/${phenomena.length}`],
     ['namedFactions', namedFactions.length],
     ['narrativeDomains', Object.keys(narrativeDomains).length],
     ['narrativeVariablePools', Object.keys(narrativeVariablePools).length],

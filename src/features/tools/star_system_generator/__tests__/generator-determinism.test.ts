@@ -827,6 +827,18 @@ describe('generateSystem', () => {
 
     expect(system.ruins.length).toBeGreaterThan(0)
     expect(system.phenomena.length).toBeGreaterThan(0)
+    for (const phenomenon of system.phenomena) {
+      expect(phenomenon.phenomenon.value).toBeTruthy()
+      expect(phenomenon.note.value).toContain('Transit:')
+      expect(phenomenon.note.value).toContain('Question:')
+      expect(phenomenon.note.value).toContain('Hook:')
+      expect(phenomenon.note.value).toContain('Image:')
+      expect(phenomenon.note.value).not.toContain('shapes travel, survey priorities, or local conflict')
+      expect(phenomenon.travelEffect.value).toBeTruthy()
+      expect(phenomenon.surveyQuestion.value).toBeTruthy()
+      expect(phenomenon.conflictHook.value).toBeTruthy()
+      expect(phenomenon.sceneAnchor.value).toBeTruthy()
+    }
     expect(system.narrativeFacts.length).toBeGreaterThan(0)
     expect(system.narrativeLines.length).toBeGreaterThan(0)
     expect(system.narrativeThreads).toHaveLength(system.narrativeLines.length)
