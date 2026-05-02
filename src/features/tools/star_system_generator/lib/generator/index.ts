@@ -120,7 +120,8 @@ import {
 } from './data/stellar'
 import { NameRegistry } from './nameRegistry'
 import { lowerFirst, sentenceFragment, sentenceStart, stripTerminalPunctuation, smoothTechnicalPhrase, definiteNounPhrase, normalizeNarrativeText } from './prose/helpers'
-import { conditionAsPressure, crisisAsPressure, crisisPressureSentence } from './prose/crisisShaping'
+import { conditionAsPressure, crisisAsPressure } from './prose/crisisShaping'
+import { settlementHookSynthesis } from './prose/settlementProse'
 import { createSeededRng, type SeededRng } from './rng'
 
 export { architectureBodyPlanRules } from './architecture'
@@ -2151,7 +2152,7 @@ function assertNever(value: never): never {
   throw new Error(`Unhandled settlement category: ${value}`)
 }
 
-function settlementTagHook(rng: SeededRng, obviousTag: string, deeperTag: string): string {
+export function settlementTagHook(rng: SeededRng, obviousTag: string, deeperTag: string): string {
   const exactPair = `${obviousTag} + ${deeperTag}`
   if (settlementTagPairHooks[exactPair]) return settlementTagPairHooks[exactPair]
   const reversePair = `${deeperTag} + ${obviousTag}`
@@ -2163,33 +2164,6 @@ function settlementTagHook(rng: SeededRng, obviousTag: string, deeperTag: string
   if (template === 2) return `Outsiders call it ${obviousTag}, but the local pressure is sharper: ${deeperText}`
   if (template === 3) return `${obviousTag} is the surface story, but ${deeperTag} shows who benefits from the tension: ${deeperText}`
   return `The public tag is ${obviousTag}; the private trouble is ${deeperTag}, because ${deeperText}`
-}
-
-function settlementHookSynthesis(
-  rng: SeededRng,
-  obviousTag: string,
-  deeperTag: string,
-  context: {
-    scale: string
-    siteCategory: string
-    settlementFunction: string
-    condition: string
-    crisis: string
-    hiddenTruth: string
-    encounterSites: string[]
-    guIntensity: string
-  }
-): string {
-  const base = settlementTagHook(rng, obviousTag, deeperTag)
-  const pressure =
-    context.scale === 'Automated only' ? `Automation failure turns ${context.encounterSites[0].toLowerCase()} into the key scene.` :
-    context.scale === 'Abandoned' ? `Salvage pressure centers on ${context.encounterSites[0].toLowerCase()}.` :
-    context.guIntensity.includes('fracture') || context.guIntensity.includes('shear') ? crisisPressureSentence(context.crisis, 'makes the GU work impossible to treat as routine') :
-    crisisPressureSentence(context.crisis, `keeps ${context.siteCategory.toLowerCase()} politics under stress`)
-  const secret = sentenceFragment(context.hiddenTruth)
-  const functionPressure = definiteNounPhrase(context.settlementFunction)
-
-  return `${sentenceStart(base)} ${pressure} Privately, ${secret}. Control of ${functionPressure} decides who has leverage.`
 }
 
 function chooseSettlementTags(rng: SeededRng): [string, string] {
