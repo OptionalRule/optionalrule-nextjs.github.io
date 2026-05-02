@@ -3,7 +3,7 @@ import type { SeededRng } from '../rng'
 import { sentenceStart, sentenceFragment, definiteNounPhrase } from './helpers'
 import { crisisPressureSentence } from './crisisShaping'
 import { settlementTagPairHooks, settlementTagPressures } from '../data/settlements'
-import type { scoreSettlementPresence, generateGuOverlay, generateReachability, SettlementAnchor } from '..'
+import type { SettlementPresenceScore, GuOverlay, Reachability, SettlementAnchor } from '..'
 
 export function settlementTagHook(rng: SeededRng, obviousTag: string, deeperTag: string): string {
   const exactPair = `${obviousTag} + ${deeperTag}`
@@ -49,9 +49,9 @@ export function settlementHookSynthesis(
 export function settlementWhyHere(
   rng: SeededRng,
   body: OrbitingBody,
-  presence: ReturnType<typeof scoreSettlementPresence>,
-  guOverlay: ReturnType<typeof generateGuOverlay>,
-  reachability: ReturnType<typeof generateReachability>,
+  presence: SettlementPresenceScore,
+  guOverlay: GuOverlay,
+  reachability: Reachability,
   anchor: SettlementAnchor
 ): string {
   const reasons: string[] = []

@@ -559,7 +559,7 @@ function applyCompanionActivityModifier(primary: Star, companions: StellarCompan
   }
 }
 
-export function generateReachability(rng: SeededRng, options: GenerationOptions, primary: Star, companions: StellarCompanion[]) {
+function generateReachability(rng: SeededRng, options: GenerationOptions, primary: Star, companions: StellarCompanion[]) {
   let roll = d12(rng)
   const modifiers: Array<Fact<string>> = []
 
@@ -586,6 +586,7 @@ export function generateReachability(rng: SeededRng, options: GenerationOptions,
     modifiers,
   }
 }
+export type Reachability = ReturnType<typeof generateReachability>
 
 function companionThreshold(spectralType: string): number {
   if (spectralType === 'Brown dwarf/substellar primary') return 11
@@ -2082,7 +2083,7 @@ function intensityFromRoll(roll: number): string {
   return guIntensityTable.find((entry) => roll <= entry.max)?.value ?? guIntensityTable[guIntensityTable.length - 1].value
 }
 
-export function generateGuOverlay(rng: SeededRng, preference: GuPreference, primary: Star, companions: StellarCompanion[], bodies: OrbitingBody[], architectureName: string) {
+function generateGuOverlay(rng: SeededRng, preference: GuPreference, primary: Star, companions: StellarCompanion[], bodies: OrbitingBody[], architectureName: string) {
   let intensityRoll = twoD6(rng)
   const intensityModifiers: Array<Fact<string>> = []
 
@@ -2142,6 +2143,7 @@ export function generateGuOverlay(rng: SeededRng, preference: GuPreference, prim
     intensityModifiers,
   }
 }
+export type GuOverlay = ReturnType<typeof generateGuOverlay>
 
 function clampScore(value: number): number {
   return Math.max(0, Math.min(5, value))
@@ -2173,7 +2175,7 @@ function settlementPresenceTier(score: number): string {
   return 'Major campaign location'
 }
 
-export function scoreSettlementPresence(rng: SeededRng, body: OrbitingBody, guOverlay: ReturnType<typeof generateGuOverlay>, reachability: ReturnType<typeof generateReachability>) {
+function scoreSettlementPresence(rng: SeededRng, body: OrbitingBody, guOverlay: GuOverlay, reachability: Reachability) {
   const roll = twoD6(rng)
   const resource = clampScore(
     (body.category.value === 'belt' || body.category.value === 'gas-giant' || body.category.value === 'ice-giant' ? 2 : 0) +
@@ -2218,7 +2220,7 @@ export function scoreSettlementPresence(rng: SeededRng, body: OrbitingBody, guOv
   return { score, roll, tier, resource, access, strategic, guValue, habitability, hazard, legalHeat }
 }
 
-type SettlementPresenceScore = ReturnType<typeof scoreSettlementPresence>
+export type SettlementPresenceScore = ReturnType<typeof scoreSettlementPresence>
 
 interface ScoredSettlementBody {
   body: OrbitingBody
