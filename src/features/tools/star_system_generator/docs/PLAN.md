@@ -325,8 +325,8 @@ First-pass approximations
 - Settlement/base generation now follows MASS-GU section 18 location, function, authority, built-form, AI situation, condition, tag, crisis, hidden-truth, and local-site concepts, but adds implementation constraints so physical site category, function, built form, and anchor remain compatible.
 - Settlement cards include a physical anchor and a first-pass "why here" line generated from MASS-GU 18.1 presence score components.
 - GU resource/hazard/location tables are abbreviated.
-- Settlement tags are implemented as obvious/deeper two-tag pairs with first-pass generated tag interaction text.
-- Human remnants and phenomena use abbreviated tables.
+- Settlement tags are implemented as obvious/deeper two-tag pairs with expanded authored tag-pair hooks for high-value combinations.
+- Human remnants use compact tables; system phenomena now use structured consequences for transit pressure, survey questions, conflict hooks, and scene anchors.
 
 Not implemented yet
 - Multiplicity and binary/trinary separation consequences.

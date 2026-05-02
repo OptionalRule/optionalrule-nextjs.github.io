@@ -15,14 +15,21 @@ This document tracks the remaining narrative polish, data expansion, and table-q
 
 ## Baseline
 
-Current baseline after the celestial designation and body-interest prose work:
+Current baseline after the celestial designation, body-interest prose, settlement tag-pair, and structured-phenomena work:
 
 - generated body and moon names are designation-first
 - old body/moon name pools are retired alias material
 - body-interest summaries use category-aware prompt pools plus context modifiers for moons, rings, biospheres, hydrospheres, radiation, GU conditions, rogue captures, and human-altered sites
+- settlement tag-pair hooks cover the highest-value survival, route/GU, AI/evidence, labor, extraction, terraforming, biosafety, evacuation, and governance combinations
+- system phenomena expose structured transit, question, hook, and image beats in UI, JSON export, and Markdown export
 - `npm run audit:star-system-data` reports zero structural errors and zero thin-pool warnings
 - `npm run audit:star-system-generator` reports zero generated errors and zero warnings
 - focused Star System Generator tests pass
+
+Current next priorities:
+
+1. Priority 5 - Make Narrative Variable Pools Grammar-Safe.
+2. Priority 6 - Add Local-Scale Institutions.
 
 ## Priority 1 - Expand Body Site Prompts
 
@@ -156,7 +163,6 @@ System phenomena are flavorful labels, but generated notes still use generic wor
 
 Current baseline:
 
-- `phenomena`: 32
 - `phenomena`: 32 structured entries with `travelEffect`, `surveyQuestion`, `conflictHook`, and `sceneAnchor`
 - generated phenomenon notes now expose specific transit, question, hook, and image beats instead of generic fallback wording
 

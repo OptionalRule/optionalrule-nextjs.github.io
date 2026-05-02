@@ -9,6 +9,7 @@ Planned client-side tool for generating astronomy-grounded, game-facing star sys
 - Implementation plan: `docs/PLAN.md`
 - Audit fix plan: `docs/AUDIT_FIX_PLAN.md`
 - Post-audit procedural remodel plan: `docs/POST_AUDIT_REMODEL_PLAN.md`
+- Narrative/data polish roadmap: `docs/POLISH_ROADMAP.md`
 
 ## Development Notes
 
@@ -72,7 +73,7 @@ JSON-backed creative pools live under `data/`.
 - Add system, body, moon, catalog, or settlement-name descriptor options in `data/names.json`. Keep `systemNameCores` single-word and put reusable second words in `systemNameForms`.
 - Add settlement locations, functions, built forms, authorities, AI situations, conditions, tags, crises, hidden truths, encounter sites, and scale overrides in `data/settlements.json`.
 - Add GU bleed locations, behaviors, resources, hazards, and intensity labels in `data/gu.json`.
-- Add human remnants, remnant hooks, phenomena, narrative variable pools, and reusable narrative structures in `data/narrative.json`.
+- Add human remnants, remnant hooks, structured system phenomena, narrative variable pools, and reusable narrative structures in `data/narrative.json`. System phenomena require `travelEffect`, `surveyQuestion`, `conflictHook`, `sceneAnchor`, and confidence metadata.
 - Add stellar distributions, stellar age/metallicity, reachability, and architecture roll tables in `data/stellar.json`.
 - Add environment, moon, ring, activity, and generated site roll tables in `data/mechanics.json`.
 - Keep labels stable when they are referenced by other JSON entries, such as settlement tag pair hooks.
