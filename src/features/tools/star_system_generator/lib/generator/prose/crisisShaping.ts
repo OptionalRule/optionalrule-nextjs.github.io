@@ -1,4 +1,4 @@
-import { sentenceFragment, sentenceStart, smoothTechnicalPhrase } from './helpers'
+import { lowerFirst, sentenceFragment, sentenceStart, smoothTechnicalPhrase } from './helpers'
 
 export function conditionAsPressure(value: string, place: string): string {
   const condition = sentenceFragment(value)
@@ -49,5 +49,8 @@ export function crisisPressureSentence(value: string, consequence: string): stri
   if (/\b(?:is|are|was|were|has|have|cannot|can|will|would)\b/i.test(crisis)) return `${sentenceStart(crisis)}, which ${consequence}.`
   if (/^sabotage\b/i.test(crisis)) return `${sentenceStart(crisis)} ${consequence}.`
   if (/^(?:a|an|the)\s/i.test(crisis)) return `${sentenceStart(crisis)} ${consequence}.`
+  if (/^(AI|GU|Sol|Iggygate|Pinchdrive)\b/.test(crisis) || /^[A-Z][a-z]/.test(crisis) || /\s\w+(?:s|es|ed)\b/.test(crisis)) {
+    return `When ${lowerFirst(crisis)}, the situation ${consequence}.`
+  }
   return `The crisis around ${crisis} ${consequence}.`
 }

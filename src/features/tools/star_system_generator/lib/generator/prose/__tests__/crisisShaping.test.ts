@@ -90,8 +90,16 @@ describe('crisisPressureSentence', () => {
     expect(crisisPressureSentence('Bleed node changed course', 'keeps gate politics under stress'))
       .toBe('A drifting bleed node keeps gate politics under stress.')
   })
-  it('falls through to "The crisis around X" for unmatched crises (PRE-FIX BEHAVIOR)', () => {
+  it('wraps clause-shaped crises with "When X, the situation Y" (verb-collision fix)', () => {
     expect(crisisPressureSentence('Sol/Gardener compliance team seizes the port', 'keeps trade frozen'))
-      .toBe('The crisis around Sol or Gardener compliance team seizes the port keeps trade frozen.')
+      .toBe('When Sol or Gardener compliance team seizes the port, the situation keeps trade frozen.')
+  })
+  it('wraps another lexical-verb crisis', () => {
+    expect(crisisPressureSentence('Archive court releases two incompatible rulings', 'keeps litigation alive'))
+      .toBe('When archive court releases two incompatible rulings, the situation keeps litigation alive.')
+  })
+  it('still falls back to "The crisis around X" when crisis has no detectable verb shape', () => {
+    expect(crisisPressureSentence('general unrest', 'shapes politics'))
+      .toBe('The crisis around general unrest shapes politics.')
   })
 })
