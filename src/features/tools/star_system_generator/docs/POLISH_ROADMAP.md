@@ -15,10 +15,11 @@ This document tracks the remaining narrative polish, data expansion, and table-q
 
 ## Baseline
 
-Current baseline after the celestial designation work:
+Current baseline after the celestial designation and body-interest prose work:
 
 - generated body and moon names are designation-first
 - old body/moon name pools are retired alias material
+- body-interest summaries use category-aware prompt pools plus context modifiers for moons, rings, biospheres, hydrospheres, radiation, GU conditions, rogue captures, and human-altered sites
 - `npm run audit:star-system-data` reports zero structural errors and zero thin-pool warnings
 - `npm run audit:star-system-generator` reports zero generated errors and zero warnings
 - focused Star System Generator tests pass
@@ -117,6 +118,12 @@ Problem:
 
 The settlement tag pool is strong, but only a small number of tag-pair combinations have authored connective tissue. Most random pairs fall back to generic synthesis.
 
+Current baseline:
+
+- `settlementTags`: 52
+- `tagPairHooks`: 15
+- quick generator audit passes, but top fallback-style tag-hook openings still repeat visibly across the corpus
+
 Recommended work:
 
 - Add 40-60 authored `tagPairHooks` for high-value combinations.
@@ -131,6 +138,7 @@ Recommended work:
   - terraforming liability
   - refugee and evacuation pressure
 - Keep pair hooks specific enough to explain how the two tags interact.
+- Raise authored pair coverage to at least 55 total hooks before considering this priority complete.
 
 Acceptance checks:
 
@@ -145,6 +153,11 @@ Status: not started.
 Problem:
 
 System phenomena are flavorful labels, but generated notes still use generic wording about shaping travel, surveys, or conflict.
+
+Current baseline:
+
+- `phenomena`: 32
+- the pool is no longer thin by data-audit standards, but entries are still plain labels
 
 Recommended work:
 
