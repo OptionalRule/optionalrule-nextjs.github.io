@@ -353,7 +353,7 @@ function uniqueByNormalizedValue<T extends { value: string }>(values: readonly T
   return result
 }
 
-function hiddenCauseBeatText(secretText: string): string {
+export function hiddenCauseBeatText(secretText: string): string {
   const secret = stripTerminalPunctuation(lowerFirst(secretText))
   if (/^(records|evidence|proof)\b/i.test(secret)) {
     const verb = /^records\b/i.test(secret) ? 'are' : 'is'
