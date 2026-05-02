@@ -121,6 +121,7 @@ import { lowerFirst, sentenceFragment, sentenceStart, stripTerminalPunctuation, 
 import { conditionAsPressure, crisisAsPressure } from './prose/crisisShaping'
 import { settlementHookSynthesis, settlementWhyHere } from './prose/settlementProse'
 import { phenomenonNote } from './prose/phenomenonProse'
+import { buildRelationshipGraph } from './graph'
 import { createSeededRng, type SeededRng } from './rng'
 
 export { architectureBodyPlanRules } from './architecture'
@@ -3711,6 +3712,20 @@ export function generateSystem(options: GenerationOptions, knownSystem?: Partial
     ruins,
     phenomena,
   })
+  const relationshipGraph = buildRelationshipGraph(
+    {
+      systemName: name.value,
+      primary: { spectralType: primary.spectralType },
+      companions,
+      bodies,
+      settlements,
+      guOverlay,
+      phenomena,
+      ruins,
+      narrativeFacts,
+    },
+    rootRng.fork('graph'),
+  )
   const narrativeLines = generateNarrativeLines(rootRng.fork('narrative-lines'), options, narrativeFacts)
   const narrativeThreads = generateNarrativeThreads(narrativeLines, narrativeFacts)
 
@@ -3739,6 +3754,7 @@ export function generateSystem(options: GenerationOptions, knownSystem?: Partial
     ruins,
     phenomena,
     narrativeFacts,
+    relationshipGraph,
     narrativeLines,
     narrativeThreads,
     majorHazards: [guOverlay.hazard, fact(primary.activity.value, 'inferred', 'Stellar activity hazard')],

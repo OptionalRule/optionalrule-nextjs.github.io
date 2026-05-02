@@ -1,3 +1,5 @@
+import type { SystemRelationshipGraph } from './lib/generator/graph/types'
+
 export type Confidence = 'confirmed' | 'derived' | 'inferred' | 'gu-layer' | 'human-layer'
 
 export interface Fact<T> {
@@ -305,6 +307,7 @@ export interface GeneratedSystem {
   ruins: HumanRemnant[]
   phenomena: SystemPhenomenon[]
   narrativeFacts: NarrativeFact[]
+  relationshipGraph: SystemRelationshipGraph
   narrativeLines: NarrativeLine[]
   narrativeThreads: NarrativeThread[]
   majorHazards: Array<Fact<string>>
