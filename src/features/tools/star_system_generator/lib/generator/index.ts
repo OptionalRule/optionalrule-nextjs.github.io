@@ -121,7 +121,7 @@ import {
 import { NameRegistry } from './nameRegistry'
 import { lowerFirst, sentenceFragment, sentenceStart, stripTerminalPunctuation, smoothTechnicalPhrase, definiteNounPhrase, normalizeNarrativeText } from './prose/helpers'
 import { conditionAsPressure, crisisAsPressure } from './prose/crisisShaping'
-import { settlementHookSynthesis } from './prose/settlementProse'
+import { settlementHookSynthesis, settlementWhyHere } from './prose/settlementProse'
 import { createSeededRng, type SeededRng } from './rng'
 
 export { architectureBodyPlanRules } from './architecture'
@@ -132,7 +132,7 @@ interface FilteredWorldClass {
   filterNotes: Array<Fact<string>>
 }
 
-interface SettlementAnchor {
+export interface SettlementAnchor {
   kind: string
   name: string
   detail: string
@@ -560,7 +560,7 @@ function applyCompanionActivityModifier(primary: Star, companions: StellarCompan
   }
 }
 
-function generateReachability(rng: SeededRng, options: GenerationOptions, primary: Star, companions: StellarCompanion[]) {
+export function generateReachability(rng: SeededRng, options: GenerationOptions, primary: Star, companions: StellarCompanion[]) {
   let roll = d12(rng)
   const modifiers: Array<Fact<string>> = []
 
@@ -2083,7 +2083,7 @@ function intensityFromRoll(roll: number): string {
   return guIntensityTable.find((entry) => roll <= entry.max)?.value ?? guIntensityTable[guIntensityTable.length - 1].value
 }
 
-function generateGuOverlay(rng: SeededRng, preference: GuPreference, primary: Star, companions: StellarCompanion[], bodies: OrbitingBody[], architectureName: string) {
+export function generateGuOverlay(rng: SeededRng, preference: GuPreference, primary: Star, companions: StellarCompanion[], bodies: OrbitingBody[], architectureName: string) {
   let intensityRoll = twoD6(rng)
   const intensityModifiers: Array<Fact<string>> = []
 
@@ -2188,7 +2188,7 @@ function settlementPresenceTier(score: number): string {
   return 'Major campaign location'
 }
 
-function scoreSettlementPresence(rng: SeededRng, body: OrbitingBody, guOverlay: ReturnType<typeof generateGuOverlay>, reachability: ReturnType<typeof generateReachability>) {
+export function scoreSettlementPresence(rng: SeededRng, body: OrbitingBody, guOverlay: ReturnType<typeof generateGuOverlay>, reachability: ReturnType<typeof generateReachability>) {
   const roll = twoD6(rng)
   const resource = clampScore(
     (body.category.value === 'belt' || body.category.value === 'gas-giant' || body.category.value === 'ice-giant' ? 2 : 0) +
@@ -2552,46 +2552,6 @@ function chooseMoonForLocation(rng: SeededRng, moons: Moon[], locationLabel: str
   })
 
   return pickOne(rng, preferred.length ? preferred : moons)
-}
-
-function settlementWhyHere(
-  rng: SeededRng,
-  body: OrbitingBody,
-  presence: ReturnType<typeof scoreSettlementPresence>,
-  guOverlay: ReturnType<typeof generateGuOverlay>,
-  reachability: ReturnType<typeof generateReachability>,
-  anchor: SettlementAnchor
-): string {
-  const reasons: string[] = []
-
-  if (presence.resource >= 3) reasons.push(`resources are strong here, especially ${guOverlay.resource.value.toLowerCase()}`)
-  else if (presence.resource >= 2) reasons.push('local materials, volatiles, or fuel justify permanent infrastructure')
-
-  if (presence.access >= 3) reasons.push(`${reachability.className.value.toLowerCase()} access keeps traffic viable`)
-  else if (presence.access >= 2) reasons.push('access is manageable for prepared crews')
-
-  if (presence.strategic >= 3) reasons.push('the site controls a militarily or commercially important approach')
-  else if (presence.strategic >= 2) reasons.push('the site watches a useful route or resource')
-
-  if (presence.guValue >= 3) reasons.push('GU value is high enough to justify danger and secrecy')
-  else if (presence.guValue >= 1) reasons.push('local metric signatures add research or extraction value')
-
-  if (presence.habitability >= 2) reasons.push(`${body.name.value} offers unusually forgiving environmental support`)
-  if (presence.hazard >= 3) reasons.push('hazards are severe, so the site exists because the payoff is worth the risk')
-  else if (presence.hazard >= 1) reasons.push('hazards shape operations but do not prevent occupation')
-  if (presence.legalHeat >= 2) reasons.push('legal or interdiction pressure explains the secrecy and tension')
-
-  const selected = reasons.slice(0, 3)
-  if (selected.length === 0) {
-    selected.push(`${anchor.name} is the best available compromise between access, shelter, and useful work`)
-  }
-
-  const template = rng.int(1, 5)
-  if (template === 1) return `${anchor.name}: ${selected.join('; ')}.`
-  if (template === 2) return `Crews keep choosing ${anchor.name} because ${selected.join('; ')}.`
-  if (template === 3) return `The case for ${anchor.name} is practical: ${selected.join('; ')}.`
-  if (template === 4) return `${anchor.name} survives because ${selected.join('; ')}.`
-  return `At ${anchor.name}, the settlement logic is ${selected.join('; ')}.`
 }
 
 function descriptorFromRules(value: string, descriptorSet: RuleBackedDescriptorSet): string {
