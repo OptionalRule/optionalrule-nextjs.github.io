@@ -379,7 +379,13 @@ function validateGuAndNarrative(): void {
   const rawNarrativeValues = [
     ...humanRemnants,
     ...remnantHooks,
-    ...phenomena,
+    ...phenomena.flatMap((phenomenon) => [
+      phenomenon.label,
+      phenomenon.travelEffect,
+      phenomenon.surveyQuestion,
+      phenomenon.conflictHook,
+      phenomenon.sceneAnchor,
+    ]),
     ...Object.values(narrativeVariablePools).flat(),
     ...narrativeStructures.flatMap((structure) => [structure.label, structure.template]),
   ]
