@@ -119,7 +119,7 @@ import {
   realisticStarTypes,
 } from './data/stellar'
 import { NameRegistry } from './nameRegistry'
-import { lowerFirst, sentenceFragment, sentenceStart, stripTerminalPunctuation } from './prose/helpers'
+import { lowerFirst, sentenceFragment, sentenceStart, stripTerminalPunctuation, smoothTechnicalPhrase, definiteNounPhrase } from './prose/helpers'
 import { createSeededRng, type SeededRng } from './rng'
 
 export { architectureBodyPlanRules } from './architecture'
@@ -348,21 +348,6 @@ function uniqueByNormalizedValue<T extends { value: string }>(values: readonly T
   }
 
   return result
-}
-
-function smoothTechnicalPhrase(value: string): string {
-  return value
-    .replace(/\brefinery\/gate\/AI\b/gi, 'the refinery, gate, or AI systems')
-    .replace(/\bmetric\/radiation\b/gi, 'metric and radiation')
-    .replace(/\bshielding\/chiral\b/gi, 'shielding and chiral')
-    .replace(/\bSol\/Gardener\b/g, 'Sol or Gardener')
-}
-
-function definiteNounPhrase(value: string): string {
-  const phrase = smoothTechnicalPhrase(stripTerminalPunctuation(sentenceFragment(value)).trim())
-  if (!phrase) return phrase
-  if (/^(the|a|an|access to|control of|custody of|safe transit|public|root)\b/i.test(phrase)) return phrase
-  return `the ${phrase}`
 }
 
 function conditionAsPressure(value: string, place: string): string {
