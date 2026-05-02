@@ -2219,7 +2219,6 @@ function scoreSettlementPresence(rng: SeededRng, body: OrbitingBody, guOverlay: 
 
   return { score, roll, tier, resource, access, strategic, guValue, habitability, hazard, legalHeat }
 }
-
 export type SettlementPresenceScore = ReturnType<typeof scoreSettlementPresence>
 
 interface ScoredSettlementBody {
@@ -2265,8 +2264,8 @@ function targetSettlementCount(
   rng: SeededRng,
   options: GenerationOptions,
   scored: ScoredSettlementBody[],
-  guOverlay: ReturnType<typeof generateGuOverlay>,
-  reachability: ReturnType<typeof generateReachability>,
+  guOverlay: GuOverlay,
+  reachability: Reachability,
   architectureName: string
 ): number {
   const [min, max] = settlementCountBounds(options.settlements)
@@ -2350,7 +2349,7 @@ function chooseEncounterSites(rng: SeededRng, scale: string, settlementFunction:
   return [first, pickOne(rng, secondPool.length ? secondPool : pool)]
 }
 
-function chooseSettlementLocation(rng: SeededRng, body: OrbitingBody, reachability: ReturnType<typeof generateReachability>): SettlementLocationOption {
+function chooseSettlementLocation(rng: SeededRng, body: OrbitingBody, reachability: Reachability): SettlementLocationOption {
   const orbitalOptions = settlementLocations.orbital
   const routeOptions = settlementLocations.route
   const asteroidOptions = settlementLocations.asteroid
@@ -2382,7 +2381,7 @@ function chooseSettlementFunction(
   rng: SeededRng,
   body: OrbitingBody,
   locationOption: SettlementLocationOption,
-  guOverlay: ReturnType<typeof generateGuOverlay>
+  guOverlay: GuOverlay
 ): string {
   if (guOverlay.intensity.value.includes('fracture') || guOverlay.intensity.value.includes('shear')) {
     return pickOne(rng, guFractureFunctionsBySiteCategory[locationOption.category])
@@ -2592,8 +2591,8 @@ function generateSettlements(
   options: GenerationOptions,
   systemName: string,
   bodies: OrbitingBody[],
-  guOverlay: ReturnType<typeof generateGuOverlay>,
-  reachability: ReturnType<typeof generateReachability>,
+  guOverlay: GuOverlay,
+  reachability: Reachability,
   architectureName: string
 ): Settlement[] {
   const scored = bodies
@@ -2686,7 +2685,7 @@ function generateSettlements(
   })
 }
 
-function generateHumanRemnants(rng: SeededRng, bodies: OrbitingBody[], guOverlay: ReturnType<typeof generateGuOverlay>): HumanRemnant[] {
+function generateHumanRemnants(rng: SeededRng, bodies: OrbitingBody[], guOverlay: GuOverlay): HumanRemnant[] {
   const count = guOverlay.intensity.value.includes('fracture') || guOverlay.intensity.value.includes('shear') ? 3 : 2
   return Array.from({ length: count }, (_, index) => {
     const body = pickOne(rng, bodies)
@@ -2699,7 +2698,7 @@ function generateHumanRemnants(rng: SeededRng, bodies: OrbitingBody[], guOverlay
   })
 }
 
-function generatePhenomena(rng: SeededRng, architectureName: string, guOverlay: ReturnType<typeof generateGuOverlay>): SystemPhenomenon[] {
+function generatePhenomena(rng: SeededRng, architectureName: string, guOverlay: GuOverlay): SystemPhenomenon[] {
   const count = guOverlay.intensity.value.includes('Rich') || architectureName.includes('Major') ? 3 : 2
   return Array.from({ length: count }, (_, index) => {
     const phenomenon = pickOne(rng, phenomena)
@@ -2721,10 +2720,10 @@ interface NarrativeGenerationContext {
   systemName: Fact<string>
   primary: Star
   companions: StellarCompanion[]
-  reachability: ReturnType<typeof generateReachability>
+  reachability: Reachability
   architectureName: string
   bodies: OrbitingBody[]
-  guOverlay: ReturnType<typeof generateGuOverlay>
+  guOverlay: GuOverlay
   settlements: Settlement[]
   ruins: HumanRemnant[]
   phenomena: SystemPhenomenon[]
