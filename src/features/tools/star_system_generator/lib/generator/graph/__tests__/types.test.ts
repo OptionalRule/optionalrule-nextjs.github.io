@@ -4,6 +4,8 @@ import type {
   EntityKind,
   EdgeType,
   EdgeVisibility,
+  EdgeEra,
+  EntityLayer,
   RelationshipEdge,
   SystemRelationshipGraph,
 } from '../types'
@@ -87,5 +89,15 @@ describe('graph/types', () => {
   it('EdgeVisibility is the literal union public | contested | hidden', () => {
     const v: EdgeVisibility[] = ['public', 'contested', 'hidden']
     expect(v.length).toBe(3)
+  })
+
+  it('EntityLayer covers all 3 layer values', () => {
+    const layers: EntityLayer[] = ['physical', 'gu', 'human']
+    expect(layers.length).toBe(3)
+  })
+
+  it('EdgeEra covers both era values', () => {
+    const eras: EdgeEra[] = ['present', 'historical']
+    expect(eras.length).toBe(2)
   })
 })
