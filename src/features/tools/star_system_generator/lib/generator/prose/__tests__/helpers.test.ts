@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { lowerFirst, sentenceFragment, sentenceStart, stripTerminalPunctuation, smoothTechnicalPhrase, definiteNounPhrase } from '../helpers'
+import { lowerFirst, sentenceFragment, sentenceStart, stripTerminalPunctuation, smoothTechnicalPhrase, definiteNounPhrase, normalizeNarrativeText } from '../helpers'
 
 describe('lowerFirst', () => {
   it('lowercases the first character', () => {
@@ -111,5 +111,42 @@ describe('definiteNounPhrase', () => {
   })
   it('returns empty string unchanged', () => {
     expect(definiteNounPhrase('')).toBe('')
+  })
+})
+
+describe('normalizeNarrativeText', () => {
+  it('collapses runs of whitespace to single spaces', () => {
+    expect(normalizeNarrativeText('Hello   world')).toBe('Hello world.')
+  })
+  it('rewrites "The unrecognized local crews" to drop the article', () => {
+    expect(normalizeNarrativeText('The unrecognized local crews demand pay'))
+      .toBe('Unrecognized local crews demand pay.')
+  })
+  it('rewrites "The officially falsified records" to drop the article', () => {
+    expect(normalizeNarrativeText('The officially falsified records show losses'))
+      .toBe('Officially falsified records show losses.')
+  })
+  it('removes doubled "the the"', () => {
+    expect(normalizeNarrativeText('control of the the gate'))
+      .toBe('Control of the gate.')
+  })
+  it('capitalizes first character', () => {
+    expect(normalizeNarrativeText('the dispute is hardening'))
+      .toBe('The dispute is hardening.')
+  })
+  it('preserves existing terminal period', () => {
+    expect(normalizeNarrativeText('done.')).toBe('Done.')
+  })
+  it('preserves question mark', () => {
+    expect(normalizeNarrativeText('who decides?')).toBe('Who decides?')
+  })
+  it('preserves exclamation', () => {
+    expect(normalizeNarrativeText('go!')).toBe('Go!')
+  })
+  it('appends period when no terminal punctuation', () => {
+    expect(normalizeNarrativeText('the bell rings')).toBe('The bell rings.')
+  })
+  it('returns empty string unchanged', () => {
+    expect(normalizeNarrativeText('')).toBe('')
   })
 })

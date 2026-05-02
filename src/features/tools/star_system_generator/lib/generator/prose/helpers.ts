@@ -33,3 +33,18 @@ export function definiteNounPhrase(value: string): string {
   if (/^(the|a|an|access to|control of|custody of|safe transit|public|root)\b/i.test(phrase)) return phrase
   return `the ${phrase}`
 }
+
+export function normalizeNarrativeText(value: string): string {
+  const normalized = value
+    .replace(/\s+/g, ' ')
+    .replace(/\bThe unrecognized local crews\b/g, 'Unrecognized local crews')
+    .replace(/\bThe officially falsified records\b/g, 'Officially falsified records')
+    .replace(/\bthe the\b/gi, 'the')
+    .trim()
+
+  if (!normalized) return normalized
+  const capitalized = `${normalized.charAt(0).toUpperCase()}${normalized.slice(1)}`
+  return capitalized.endsWith('.') || capitalized.endsWith('?') || capitalized.endsWith('!')
+    ? capitalized
+    : `${capitalized}.`
+}

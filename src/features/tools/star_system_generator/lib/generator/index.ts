@@ -119,7 +119,7 @@ import {
   realisticStarTypes,
 } from './data/stellar'
 import { NameRegistry } from './nameRegistry'
-import { lowerFirst, sentenceFragment, sentenceStart, stripTerminalPunctuation, smoothTechnicalPhrase, definiteNounPhrase } from './prose/helpers'
+import { lowerFirst, sentenceFragment, sentenceStart, stripTerminalPunctuation, smoothTechnicalPhrase, definiteNounPhrase, normalizeNarrativeText } from './prose/helpers'
 import { createSeededRng, type SeededRng } from './rng'
 
 export { architectureBodyPlanRules } from './architecture'
@@ -3596,21 +3596,6 @@ function pickWeightedNarrativeStructure(
 function narrativeDomainsForStructure(structureDomains: readonly string[] | undefined, variables: Record<string, Fact<string>>): string[] {
   const variableDomains = Object.values(variables).flatMap((variable) => narrativeDomainsForText(variable.value))
   return uniqueStrings([...(structureDomains ?? []), ...variableDomains]).slice(0, 4)
-}
-
-function normalizeNarrativeText(value: string): string {
-  const normalized = value
-    .replace(/\s+/g, ' ')
-    .replace(/\bThe unrecognized local crews\b/g, 'Unrecognized local crews')
-    .replace(/\bThe officially falsified records\b/g, 'Officially falsified records')
-    .replace(/\bthe the\b/gi, 'the')
-    .trim()
-
-  if (!normalized) return normalized
-  const capitalized = `${normalized.charAt(0).toUpperCase()}${normalized.slice(1)}`
-  return capitalized.endsWith('.') || capitalized.endsWith('?') || capitalized.endsWith('!')
-    ? capitalized
-    : `${capitalized}.`
 }
 
 function generateNarrativeLines(
