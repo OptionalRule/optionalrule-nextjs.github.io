@@ -986,6 +986,21 @@ describe('generateSystem', () => {
     }
   })
 
+  it('keeps settlement tag hook crisis clauses grammatical', () => {
+    for (let index = 0; index < 40; index++) {
+      const system = generateSystem({
+        ...options,
+        seed: `tag-hook-grammar-${index.toString(16).padStart(4, '0')}`,
+        settlements: index % 2 === 0 ? 'crowded' : 'hub',
+        gu: index % 3 === 0 ? 'fracture' : 'high',
+      })
+
+      for (const settlement of system.settlements) {
+        expect(settlement.tagHook.value).not.toMatch(/\bThe crisis around [^.]+\b(?:is|are|was|were|has|have|cannot|can|will|would)\b/i)
+      }
+    }
+  })
+
   it('uses expanded section 18 settlement table sources', () => {
     const system = generateSystem(options)
 
