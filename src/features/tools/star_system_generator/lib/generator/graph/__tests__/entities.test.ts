@@ -26,6 +26,7 @@ const minimalInput = (): EntityInventoryInput => ({
   narrativeFacts: [
     { kind: 'namedFaction', value: { value: 'Route Authority' } },
     { kind: 'namedFaction', value: { value: 'Kestrel Free Compact' } },
+    { kind: 'namedFaction', value: { value: 'Route Authority' } },
     { kind: 'settlement.crisis', value: { value: 'Bleed node changed course' } },
   ],
 })
@@ -53,6 +54,31 @@ describe('buildEntityInventory', () => {
       layer: 'physical',
     })
     expect(starRefs[0].displayName).toContain('G2V')
+  })
+
+  it('produces companion star entities with id and displayName fallbacks', () => {
+    const input: EntityInventoryInput = {
+      ...minimalInput(),
+      companions: [
+        { id: 'star-b', spectralType: { value: 'M3V' }, name: 'Companion B' },
+        {},
+      ],
+    }
+    const refs = buildEntityInventory(input)
+    const stars = refs.filter(r => r.kind === 'star')
+    expect(stars).toHaveLength(3)
+
+    const primary = stars.find(s => s.id === 'star-primary')
+    expect(primary?.displayName).toContain('G2V')
+
+    const namedCompanion = stars.find(s => s.id === 'star-b')
+    expect(namedCompanion).toBeDefined()
+    expect(namedCompanion?.displayName).toBe('M3V')
+
+    const fallbackCompanion = stars.find(s => s.id === 'star-companion-2')
+    expect(fallbackCompanion).toBeDefined()
+    expect(fallbackCompanion?.displayName).toBe('companion-2')
+    expect(fallbackCompanion?.layer).toBe('physical')
   })
 
   it('produces one body entity per body', () => {

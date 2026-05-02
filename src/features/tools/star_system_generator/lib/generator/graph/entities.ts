@@ -7,7 +7,11 @@ export interface EntityInventoryInput {
   bodies: ReadonlyArray<{ id: string; name: { value: string } }>
   settlements: ReadonlyArray<{ id: string; name: { value: string } }>
   guOverlay: { resource: { value: string }; hazard: { value: string } }
-  phenomena: ReadonlyArray<{ id: string; phenomenon: { value: string } }>
+  phenomena: ReadonlyArray<{
+    id: string
+    phenomenon: { value: string }
+    confidence?: 'inferred' | 'gu-layer' | 'confirmed' | 'derived' | 'human-layer'
+  }>
   ruins: ReadonlyArray<{ id: string; remnantType: { value: string } }>
   narrativeFacts: ReadonlyArray<{ kind: string; value: { value: string } }>
 }
