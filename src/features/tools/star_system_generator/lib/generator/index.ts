@@ -103,8 +103,6 @@ import {
   settlementCrises,
   settlementLocations,
   settlementScaleTable,
-  settlementTagPairHooks,
-  settlementTagPressures,
   settlementTags,
   surveyFunctions,
   surfaceIceFunctions,
@@ -2151,20 +2149,6 @@ function clampScore(value: number): number {
 
 function assertNever(value: never): never {
   throw new Error(`Unhandled settlement category: ${value}`)
-}
-
-export function settlementTagHook(rng: SeededRng, obviousTag: string, deeperTag: string): string {
-  const exactPair = `${obviousTag} + ${deeperTag}`
-  if (settlementTagPairHooks[exactPair]) return settlementTagPairHooks[exactPair]
-  const reversePair = `${deeperTag} + ${obviousTag}`
-  if (settlementTagPairHooks[reversePair]) return settlementTagPairHooks[reversePair]
-
-  const deeperText = settlementTagPressures[deeperTag] ?? `${deeperTag.toLowerCase()} is the deeper pressure driving the site.`
-  const template = rng.int(1, 4)
-  if (template === 1) return `${obviousTag} is what visitors notice first; ${deeperText}`
-  if (template === 2) return `Outsiders call it ${obviousTag}, but the local pressure is sharper: ${deeperText}`
-  if (template === 3) return `${obviousTag} is the surface story, but ${deeperTag} shows who benefits from the tension: ${deeperText}`
-  return `The public tag is ${obviousTag}; the private trouble is ${deeperTag}, because ${deeperText}`
 }
 
 function chooseSettlementTags(rng: SeededRng): [string, string] {

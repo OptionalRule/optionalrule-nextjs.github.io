@@ -2,7 +2,7 @@ import type { OrbitingBody } from '../../../types'
 import type { SeededRng } from '../rng'
 import { sentenceStart, sentenceFragment, definiteNounPhrase } from './helpers'
 import { crisisPressureSentence } from './crisisShaping'
-import { settlementTagHook } from '..'
+import { settlementTagPairHooks, settlementTagPressures } from '../data/settlements'
 import type { scoreSettlementPresence, generateGuOverlay, generateReachability, SettlementAnchor } from '..'
 
 export function settlementHookSynthesis(
@@ -70,4 +70,18 @@ export function settlementWhyHere(
   if (template === 3) return `The case for ${anchor.name} is practical: ${selected.join('; ')}.`
   if (template === 4) return `${anchor.name} survives because ${selected.join('; ')}.`
   return `At ${anchor.name}, the settlement logic is ${selected.join('; ')}.`
+}
+
+export function settlementTagHook(rng: SeededRng, obviousTag: string, deeperTag: string): string {
+  const exactPair = `${obviousTag} + ${deeperTag}`
+  if (settlementTagPairHooks[exactPair]) return settlementTagPairHooks[exactPair]
+  const reversePair = `${deeperTag} + ${obviousTag}`
+  if (settlementTagPairHooks[reversePair]) return settlementTagPairHooks[reversePair]
+
+  const deeperText = settlementTagPressures[deeperTag] ?? `${deeperTag.toLowerCase()} is the deeper pressure driving the site.`
+  const template = rng.int(1, 4)
+  if (template === 1) return `${obviousTag} is what visitors notice first; ${deeperText}`
+  if (template === 2) return `Outsiders call it ${obviousTag}, but the local pressure is sharper: ${deeperText}`
+  if (template === 3) return `${obviousTag} is the surface story, but ${deeperTag} shows who benefits from the tension: ${deeperText}`
+  return `The public tag is ${obviousTag}; the private trouble is ${deeperTag}, because ${deeperText}`
 }

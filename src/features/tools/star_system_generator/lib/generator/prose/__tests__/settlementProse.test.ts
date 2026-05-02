@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { settlementHookSynthesis, settlementWhyHere } from '../settlementProse'
+import { settlementHookSynthesis, settlementWhyHere, settlementTagHook } from '../settlementProse'
 import { createSeededRng } from '../../rng'
 
 describe('settlementHookSynthesis', () => {
@@ -86,5 +86,29 @@ describe('settlementWhyHere', () => {
     const a = generateSystem({ seed: 'phase0-whyhere-2' })
     const b = generateSystem({ seed: 'phase0-whyhere-2' })
     expect(a.settlements[0]?.whyHere?.value).toBe(b.settlements[0]?.whyHere?.value)
+  })
+})
+
+describe('settlementTagHook', () => {
+  it('returns the authored hook for a known tag pair', () => {
+    const rng = createSeededRng('tag-hook-1')
+    const result = settlementTagHook(rng, 'Gate Shadow', 'Archive War')
+    expect(result).toContain('Gate Shadow')
+    expect(result).toContain('Archive War')
+    expect(result).toMatch(/[.;!?]$|with a fragment ending without punctuation/)
+    expect(result.length).toBeGreaterThan(20)
+  })
+
+  it('falls back to a deterministic template when no authored pair exists', () => {
+    const rng = createSeededRng('tag-hook-2')
+    const result = settlementTagHook(rng, 'Synthetic Tag One', 'Synthetic Tag Two')
+    expect(result).toContain('Synthetic Tag One')
+    expect(result).toContain('Synthetic Tag Two')
+  })
+
+  it('produces deterministic output for the same seed', () => {
+    const a = settlementTagHook(createSeededRng('tag-hook-3'), 'Gate Shadow', 'Archive War')
+    const b = settlementTagHook(createSeededRng('tag-hook-3'), 'Gate Shadow', 'Archive War')
+    expect(a).toBe(b)
   })
 })
