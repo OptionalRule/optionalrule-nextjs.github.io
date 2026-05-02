@@ -95,6 +95,7 @@ describe('settlementTagHook', () => {
     const result = settlementTagHook(rng, 'Gate Shadow', 'Archive War')
     expect(result).toContain('Gate Shadow')
     expect(result).toContain('Archive War')
+    expect(result).toContain('decides who can leave')
     expect(result).toMatch(/[.;!?]$|with a fragment ending without punctuation/)
     expect(result.length).toBeGreaterThan(20)
   })
