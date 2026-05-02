@@ -120,7 +120,7 @@ import {
 } from './data/stellar'
 import { NameRegistry } from './nameRegistry'
 import { lowerFirst, sentenceFragment, sentenceStart, stripTerminalPunctuation, smoothTechnicalPhrase, definiteNounPhrase, normalizeNarrativeText } from './prose/helpers'
-import { conditionAsPressure, crisisAsPressure } from './prose/crisisShaping'
+import { conditionAsPressure, crisisAsPressure, crisisPressureSentence } from './prose/crisisShaping'
 import { createSeededRng, type SeededRng } from './rng'
 
 export { architectureBodyPlanRules } from './architecture'
@@ -349,18 +349,6 @@ function uniqueByNormalizedValue<T extends { value: string }>(values: readonly T
   }
 
   return result
-}
-
-function crisisPressureSentence(value: string, consequence: string): string {
-  const crisis = crisisAsPressure(value)
-  if (/^(ships trapped|trapped civilians|lies about)\b/i.test(crisis)) {
-    const pluralConsequence = consequence.replace(/^keeps\b/i, 'keep').replace(/^makes\b/i, 'make')
-    return `${sentenceStart(crisis)} ${pluralConsequence}.`
-  }
-  if (/\b(?:is|are|was|were|has|have|cannot|can|will|would)\b/i.test(crisis)) return `${sentenceStart(crisis)}, which ${consequence}.`
-  if (/^sabotage\b/i.test(crisis)) return `${sentenceStart(crisis)} ${consequence}.`
-  if (/^(?:a|an|the)\s/i.test(crisis)) return `${sentenceStart(crisis)} ${consequence}.`
-  return `The crisis around ${crisis} ${consequence}.`
 }
 
 function hiddenCauseBeatText(secretText: string): string {

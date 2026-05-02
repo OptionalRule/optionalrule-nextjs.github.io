@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { conditionAsPressure, crisisAsPressure } from '../crisisShaping'
+import { conditionAsPressure, crisisAsPressure, crisisPressureSentence } from '../crisisShaping'
 
 describe('conditionAsPressure', () => {
   it('maps "recently evacuated" condition with place', () => {
@@ -66,5 +66,32 @@ describe('crisisAsPressure', () => {
   it('passes unmatched crisis through after lowercase + smoothing', () => {
     expect(crisisAsPressure('Sol/Gardener compliance team seizes the port'))
       .toBe('Sol or Gardener compliance team seizes the port')
+  })
+})
+
+describe('crisisPressureSentence', () => {
+  it('handles "ships trapped" with plural-shifted consequence', () => {
+    expect(crisisPressureSentence('Metric storm trapped ships', 'keeps the lane closed'))
+      .toBe('Ships trapped by a metric storm keep the lane closed.')
+  })
+  it('handles "trapped civilians" with plural-shifted consequence', () => {
+    expect(crisisPressureSentence('Children or civilians trapped', 'makes evacuation urgent'))
+      .toBe('Trapped civilians make evacuation urgent.')
+  })
+  it('handles is/are/was/were verbs with comma-which clause', () => {
+    expect(crisisPressureSentence('Hull breach hidden from public', 'forces silence on the crew'))
+      .toBe('A hidden hull breach forces silence on the crew.')
+  })
+  it('handles sabotage', () => {
+    expect(crisisPressureSentence('Sabotage of life support', 'keeps tempers raw'))
+      .toBe('Sabotage against life support keeps tempers raw.')
+  })
+  it('handles articled crises', () => {
+    expect(crisisPressureSentence('Bleed node changed course', 'keeps gate politics under stress'))
+      .toBe('A drifting bleed node keeps gate politics under stress.')
+  })
+  it('falls through to "The crisis around X" for unmatched crises (PRE-FIX BEHAVIOR)', () => {
+    expect(crisisPressureSentence('Sol/Gardener compliance team seizes the port', 'keeps trade frozen'))
+      .toBe('The crisis around Sol or Gardener compliance team seizes the port keeps trade frozen.')
   })
 })
