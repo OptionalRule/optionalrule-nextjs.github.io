@@ -81,6 +81,27 @@ describe('buildEntityInventory', () => {
     expect(fallbackCompanion?.layer).toBe('physical')
   })
 
+  it('prefers companionType over spectralType for companion star displayName', () => {
+    const input: EntityInventoryInput = {
+      ...minimalInput(),
+      companions: [
+        {
+          id: 'star-c',
+          companionType: { value: 'M-dwarf companion at 12 AU' },
+          spectralType: { value: 'M5V' },
+        },
+        {
+          id: 'star-d',
+          companionType: { value: 'Brown dwarf at 280 AU' },
+        },
+      ],
+    }
+    const refs = buildEntityInventory(input)
+    const stars = refs.filter(r => r.kind === 'star')
+    expect(stars.find(s => s.id === 'star-c')?.displayName).toBe('M-dwarf companion at 12 AU')
+    expect(stars.find(s => s.id === 'star-d')?.displayName).toBe('Brown dwarf at 280 AU')
+  })
+
   it('produces one body entity per body', () => {
     const refs = buildEntityInventory(minimalInput())
     const bodyRefs = refs.filter(r => r.kind === 'body')

@@ -3,7 +3,12 @@ import type { EntityRef } from './types'
 export interface EntityInventoryInput {
   systemName: string
   primary: { spectralType: { value: string } }
-  companions: ReadonlyArray<{ id?: string; spectralType?: { value: string }; name?: string }>
+  companions: ReadonlyArray<{
+    id?: string
+    companionType?: { value: string }
+    spectralType?: { value: string }
+    name?: string
+  }>
   bodies: ReadonlyArray<{ id: string; name: { value: string } }>
   settlements: ReadonlyArray<{ id: string; name: { value: string } }>
   guOverlay: { resource: { value: string }; hazard: { value: string } }
@@ -35,7 +40,8 @@ export function buildEntityInventory(input: EntityInventoryInput): EntityRef[] {
 
   input.companions.forEach((companion, index) => {
     const id = companion.id ?? `star-companion-${index + 1}`
-    const displayName = companion.spectralType?.value
+    const displayName = companion.companionType?.value
+      ?? companion.spectralType?.value
       ?? companion.name
       ?? `companion-${index + 1}`
     refs.push({

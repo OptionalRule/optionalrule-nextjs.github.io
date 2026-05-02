@@ -2,12 +2,12 @@ import type { SeededRng } from '../rng'
 import { buildEntityInventory, type EntityInventoryInput } from './entities'
 import type { EdgeType, SystemRelationshipGraph } from './types'
 
-const ALL_EDGE_TYPES: EdgeType[] = [
+const ALL_EDGE_TYPES = [
   'HOSTS', 'CONTROLS', 'DEPENDS_ON',
   'CONTESTS', 'DESTABILIZES', 'SUPPRESSES',
   'CONTRADICTS', 'WITNESSES', 'HIDES_FROM',
   'FOUNDED_BY', 'BETRAYED', 'DISPLACED',
-]
+] as const satisfies readonly EdgeType[]
 
 function emptyEdgesByType(): Record<EdgeType, string[]> {
   const result = {} as Record<EdgeType, string[]>
