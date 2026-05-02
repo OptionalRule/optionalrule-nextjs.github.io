@@ -122,6 +122,7 @@ import { NameRegistry } from './nameRegistry'
 import { lowerFirst, sentenceFragment, sentenceStart, stripTerminalPunctuation, smoothTechnicalPhrase, definiteNounPhrase, normalizeNarrativeText } from './prose/helpers'
 import { conditionAsPressure, crisisAsPressure } from './prose/crisisShaping'
 import { settlementHookSynthesis, settlementWhyHere } from './prose/settlementProse'
+import { phenomenonNote } from './prose/phenomenonProse'
 import { createSeededRng, type SeededRng } from './rng'
 
 export { architectureBodyPlanRules } from './architecture'
@@ -2716,7 +2717,7 @@ function generatePhenomena(rng: SeededRng, architectureName: string, guOverlay: 
   const count = guOverlay.intensity.value.includes('Rich') || architectureName.includes('Major') ? 3 : 2
   return Array.from({ length: count }, (_, index) => {
     const phenomenon = pickOne(rng, phenomena)
-    const note = `Transit: ${phenomenon.travelEffect} Question: ${phenomenon.surveyQuestion} Hook: ${phenomenon.conflictHook} Image: ${phenomenon.sceneAnchor}`
+    const note = phenomenonNote(phenomenon)
     return {
       id: `phenomenon-${index + 1}`,
       phenomenon: fact(phenomenon.label, phenomenon.confidence, 'MASS-GU expanded phenomena table'),
