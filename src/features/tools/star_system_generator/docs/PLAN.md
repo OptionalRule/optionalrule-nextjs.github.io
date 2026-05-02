@@ -195,7 +195,7 @@ M3 - Astronomy Skeleton
 - [x] Align stellar generation labels and d100 ranges with the source writeup's primary-star tables.
 - [x] Implement reachable-volume bias.
 - [x] Implement age, metallicity, and activity.
-- [ ] Implement multiplicity.
+- [x] Implement multiplicity and binary/trinary separation consequences.
 - [x] Implement luminosity-derived HZ, snow line, insolation, and thermal zones.
 - [x] Implement modified-2d6 system architecture and orbital slot placement.
 - [x] Apply first-pass architecture modifiers for metallicity, star type, low-mass M dwarfs, and reachability.
@@ -211,7 +211,7 @@ M4 - Worlds and Modern Exoplanet Filters
 - [x] Implement first-pass moons, belts, rings, and minor bodies.
 - [x] Add tests for major world-detail invariants.
 - [x] Add regression tests for extreme-hot worlds, belts, envelope worlds, and cold solid-body climates.
-- [ ] Add tests for modern exoplanet filters once implemented.
+- [x] Add tests for modern exoplanet filters once implemented.
 
 M5 - Geometric Unity and Human Layer
 - [x] Implement first-pass GU intensity, bleed-zone location, resources, and hazards.
@@ -219,6 +219,8 @@ M5 - Geometric Unity and Human Layer
 - [x] Implement settlement scale, site category, location, physical anchor, reason-for-existence, function, authority, built form, AI situation, condition, tags, current crisis, hidden truth, local encounter sites.
 - [x] Make settlement count variable by density preset and system context instead of fixed per preset.
 - [x] Implement first-pass human ruins/derelicts and expanded phenomena.
+- [x] Expand authored settlement tag-pair hooks for high-value combinations.
+- [x] Structure system phenomena with transit, question, hook, and image beats.
 - [x] Implement no-alien guard and conversion rules.
 - [x] Add tests that forbidden alien outputs cannot survive first-pass human-layer generation.
 - [x] Add scripted deterministic corpus audit for missing, contradictory, repeated, and coverage-defect outputs.
@@ -247,17 +249,21 @@ M7 - Export and Persistence
 - [x] Add export and query-state tests.
 
 M8 - Import-Ready Foundation
-- [ ] Add `PartialKnownSystem` schema.
-- [ ] Add lock/merge helpers that preserve imported facts.
-- [ ] Add tests proving locked facts are not overwritten.
-- [ ] Keep UI import hidden or experimental unless the schema is ready for user-facing use.
+- [x] Add `PartialKnownSystem` internal schema/types.
+- [x] Add lock/merge helpers that preserve imported facts.
+- [x] Add tests proving locked facts are not overwritten.
+- [x] Report incompatible locked facts as locked-fact conflicts instead of silently rewriting them.
+- [x] Keep import UI hidden while import support remains internal.
+- [ ] Add public import UI.
+- [ ] Add user-facing import validation/copy if/when import UI is exposed.
 
 M9 - Integration and Polish
 - [ ] Add tool link to the site navigation where other tools are listed.
 - [ ] Add route metadata image if available.
 - [ ] Check mobile layout.
-- [ ] Run `npm run lint`.
-- [ ] Run `npm run test`.
+- [x] Run `npm run lint` after the latest generator/UI changes.
+- [x] Run focused Star System Generator tests and audits after the latest generator changes.
+- [ ] Run full-site `npm run test`.
 - [ ] Run `npm run build`.
 
 ## 6. MVP Scope Recommendation
@@ -290,6 +296,7 @@ Implemented close to source method
 - Seeded deterministic generation and query-string sharing.
 - Confidence labels for generated facts.
 - Stellar distribution selection for realistic vs reachable-frontier modes.
+- Stellar multiplicity with companion type, separation profile, planetary consequences, and GU consequences.
 - Stellar age, metallicity, and activity rolls with first-pass modifiers.
 - Insolation, optimistic habitable zone, snow line, and thermal-zone calculations.
 - Reachability class.
@@ -306,13 +313,17 @@ Implemented close to source method
 - First GU overlay with modifiers for active M dwarfs, compact systems, gas giants, and quiet G/K stars.
 - First modern exoplanet filters: radius valley, hot Neptune desert, peas-in-a-pod, and M-dwarf habitability notes.
 - First settlement presence scoring tied to body resources, access, strategic value, GU value, habitability, hazards, and legal heat.
-- First human playable layer: settlement site category, location, physical anchor, reason-for-existence, function, authority, built form, AI situation, condition, tags, crisis, hidden truth, encounter sites, human remnants, and system phenomena.
+- First human playable layer: settlement site category, location, physical anchor, reason-for-existence, function, authority, built form, AI situation, condition, tags, crisis, hidden truth, encounter sites, human remnants, and structured system phenomena.
+- Authored settlement tag-pair hooks for high-value combinations.
+- Structured system phenomena with transit pressure, survey question, conflict hook, and scene anchor fields shown in UI and exports.
+- Import-ready locked-fact foundations for known stars and bodies, including locked conflict reporting.
+- Markdown and JSON export.
 - Final no-alien guard converts old alien-style mystery labels into MASS-GU replacements and records the check result.
 
 First-pass approximations
 - Planet class tables are expanded from the source writeup but still use compressed equal-choice lists rather than exact d20 weighting.
 - Architecture now affects body mix through weighted body plans, but individual body class tables still need deeper source-table weighting.
-- Orbital slot spacing is a simple geometric progression; known planet placement and gap filling are not implemented.
+- Orbital slot spacing is still simplified, though locked known-body orbit preservation and gap filling are implemented.
 - Atmosphere/hydrosphere/geology/radiation use constrained pick lists rather than full d12 modifier math.
 - Mass and gravity are approximate category/radius estimates, not density-modeled planetary interiors.
 - Biosphere uses a rough habitability score, not the full source scoring rules.
@@ -329,14 +340,13 @@ First-pass approximations
 - Human remnants use compact tables; system phenomena now use structured consequences for transit pressure, survey questions, conflict hooks, and scene anchors.
 
 Not implemented yet
-- Multiplicity and binary/trinary separation consequences.
-- Known-system import and locked fact preservation.
+- Public known-system import UI.
 - Plain-language overview copy pass for all stellar class labels and notes, replacing astronomy shorthand with player-facing explanations.
 - Full source-table implementation of radius valley, hot Neptune desert, peas-in-a-pod, and M-dwarf habitability filters beyond the first-pass notes/adjustments.
 - Full moons, belts, rings, dwarf bodies, rogue/captured body procedures.
 - Exact d66/d20 roll weighting for every settlement/base table; current arrays include the full source entries for section 18 support tables but use constrained equal-choice subsets by site category.
-- More bespoke settlement tag interaction explanation text for every pair.
-- Markdown and JSON export.
+- Optional second expansion of settlement tag-pair hooks if sample review shows specific fallback pairs repeating.
+- Site navigation link, route metadata image, mobile layout pass, full-site tests, and production build verification.
 
 ## 6.2 Future Public Documentation
 
