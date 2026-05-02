@@ -49,7 +49,11 @@ export function crisisPressureSentence(value: string, consequence: string): stri
   if (/\b(?:is|are|was|were|has|have|cannot|can|will|would)\b/i.test(crisis)) return `${sentenceStart(crisis)}, which ${consequence}.`
   if (/^sabotage\b/i.test(crisis)) return `${sentenceStart(crisis)} ${consequence}.`
   if (/^(?:a|an|the)\s/i.test(crisis)) return `${sentenceStart(crisis)} ${consequence}.`
-  if (/^(AI|GU|Sol|Iggygate|Pinchdrive)\b/.test(crisis) || /^[A-Z][a-z]/.test(crisis) || /\s\w+(?:s|es|ed)\b/.test(crisis)) {
+  const smoothedLower = smoothTechnicalPhrase(sentenceFragment(value))
+  const wasNotRewritten = crisis === smoothedLower
+  const hasCapitalSubject = /^[A-Z][a-zA-Z]+(?:[\s/-][A-Za-z]+)?\s/.test(value)
+  const hasVerbShape = /\s\w+(?:s|es|ed)\b/.test(crisis)
+  if (wasNotRewritten && hasCapitalSubject && hasVerbShape) {
     return `When ${lowerFirst(crisis)}, the situation ${consequence}.`
   }
   return `The crisis around ${crisis} ${consequence}.`

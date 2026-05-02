@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { conditionAsPressure, crisisAsPressure, crisisPressureSentence } from '../crisisShaping'
+import settlementsData from '../../../../data/settlements.json'
 
 describe('conditionAsPressure', () => {
   it('maps "recently evacuated" condition with place', () => {
@@ -101,5 +102,47 @@ describe('crisisPressureSentence', () => {
   it('still falls back to "The crisis around X" when crisis has no detectable verb shape', () => {
     expect(crisisPressureSentence('general unrest', 'shapes politics'))
       .toBe('The crisis around general unrest shapes politics.')
+  })
+  it('does not over-wrap noun-phrase rewrites with plural nouns', () => {
+    expect(crisisPressureSentence('The base broadcasts two contradictory distress calls', 'keeps gate politics under stress'))
+      .toBe('The crisis around contradictory distress calls from the base keeps gate politics under stress.')
+  })
+  it('routes recognized AI rewrites to noun-phrase fallback', () => {
+    expect(crisisPressureSentence('AI refuses unsafe operation', 'keeps gate politics under stress'))
+      .toBe('The crisis around AI refusal to operate unsafely keeps gate politics under stress.')
+  })
+  it('falls back for capitalized noun-phrase crises with no verb shape', () => {
+    expect(crisisPressureSentence('Food culture contamination', 'keeps tensions high'))
+      .toBe('The crisis around food culture contamination keeps tensions high.')
+    expect(crisisPressureSentence('Water ration failure', 'keeps tensions high'))
+      .toBe('The crisis around water ration failure keeps tensions high.')
+  })
+})
+
+describe('crisisPressureSentence — full pool characterization', () => {
+  const allCrises = (() => {
+    const set = new Set<string>()
+    const data = settlementsData as { crises: string[]; crisisByScale: Record<string, string[]> }
+    for (const c of data.crises ?? []) set.add(c)
+    for (const arr of Object.values(data.crisisByScale ?? {})) {
+      for (const c of arr) set.add(c)
+    }
+    return Array.from(set).sort()
+  })()
+
+  it('produces a sentence ending with a period for every pool entry', () => {
+    for (const crisis of allCrises) {
+      const result = crisisPressureSentence(crisis, 'keeps tensions high')
+      expect(result).toMatch(/\.$/)
+      expect(result).not.toMatch(/\b(\w+)\s+\1\b/i)
+    }
+  })
+
+  it('snapshots all pool outputs for visual review', () => {
+    const outputs: Record<string, string> = {}
+    for (const crisis of allCrises) {
+      outputs[crisis] = crisisPressureSentence(crisis, 'keeps tensions high')
+    }
+    expect(outputs).toMatchSnapshot()
   })
 })
