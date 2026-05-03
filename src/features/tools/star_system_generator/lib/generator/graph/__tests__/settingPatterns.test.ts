@@ -6,6 +6,7 @@ import {
   CRISIS_CONTEST_KEYWORDS,
   matchesAny,
   sharedDomains,
+  containsWord,
 } from '../rules/settingPatterns'
 
 describe('keyword tables', () => {
@@ -50,6 +51,23 @@ describe('matchesAny', () => {
   it('returns false on empty input', () => {
     expect(matchesAny('', ['anything'])).toBe(false)
     expect(matchesAny('text', [])).toBe(false)
+  })
+})
+
+describe('containsWord', () => {
+  it('matches a standalone word case-insensitively', () => {
+    expect(containsWord('Trade house', 'trade')).toBe(true)
+    expect(containsWord('Trade House', 'TRADE')).toBe(true)
+  })
+
+  it('does not match a substring inside a larger word', () => {
+    expect(containsWord('Warden of the Hall', 'war')).toBe(false)
+    expect(containsWord('warehouse district', 'war')).toBe(false)
+  })
+
+  it('returns false on empty input', () => {
+    expect(containsWord('', 'anything')).toBe(false)
+    expect(containsWord('text', '')).toBe(false)
   })
 })
 

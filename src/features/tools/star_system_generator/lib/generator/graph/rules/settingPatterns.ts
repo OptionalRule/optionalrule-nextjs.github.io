@@ -27,6 +27,12 @@ export function matchesAny(text: string, keywords: ReadonlyArray<string>): boole
   return false
 }
 
+export function containsWord(text: string, word: string): boolean {
+  if (text.length === 0 || word.length === 0) return false
+  const escaped = word.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+  return new RegExp(`\\b${escaped}\\b`, 'i').test(text)
+}
+
 export function sharedDomains(
   a: ReadonlyArray<string>,
   b: ReadonlyArray<string>,

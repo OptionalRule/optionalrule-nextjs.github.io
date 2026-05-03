@@ -1,7 +1,7 @@
 import type { NarrativeFact } from '../../../../types'
 import type { EdgeRule, RuleMatch } from './ruleTypes'
 import { mintEdgeId } from './ruleTypes'
-import { sharedDomains } from './settingPatterns'
+import { sharedDomains, containsWord } from './settingPatterns'
 import type { EntityRef } from '../types'
 import { namedFactions, type NamedFaction } from '../../data/narrative'
 
@@ -38,6 +38,13 @@ export const contestsSharedDomainRule: EdgeRule = {
     const authorityFacts = ctx.factsByKind.get('settlement.authority') ?? []
     if (authorityFacts.length === 0) return matches
 
+    const validAuthorityFacts = authorityFacts.filter(f => {
+      if (!f.subjectId) return false
+      const ref = ctx.entitiesById.get(f.subjectId)
+      return ref?.kind === 'settlement'
+    })
+    if (validAuthorityFacts.length === 0) return matches
+
     const sorted = [...factionEntities].sort((a, b) => (a.id < b.id ? -1 : 1))
 
     for (let i = 0; i < sorted.length; i++) {
@@ -51,7 +58,7 @@ export const contestsSharedDomainRule: EdgeRule = {
         if (overlap.length === 0) continue
 
         const overlapSet = new Set(overlap)
-        const authFact = authorityFacts.find(f =>
+        const authFact = validAuthorityFacts.find(f =>
           f.domains.some(d => overlapSet.has(d)),
         )
         if (!authFact) continue
@@ -104,12 +111,11 @@ export const contestsAuthorityRule: EdgeRule = {
       const settlementRef = ctx.entitiesById.get(fact.subjectId)
       if (!settlementRef || settlementRef.kind !== 'settlement') continue
 
-      const authorityLower = fact.value.value.toLowerCase()
       for (const factionEntity of factionEntities) {
         const faction = FACTIONS_BY_NAME.get(factionEntity.displayName)
         if (!faction) continue
         const matchedDomain = faction.domains.find(d =>
-          authorityLower.includes(d.toLowerCase()),
+          containsWord(fact.value.value, d),
         )
         if (!matchedDomain) continue
 

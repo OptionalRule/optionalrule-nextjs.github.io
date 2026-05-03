@@ -178,6 +178,46 @@ describe('CONTESTS:namedFaction-namedFaction-sharedDomain', () => {
     expect(contestsSharedDomainRule.match(ctx)).toHaveLength(0)
   })
 
+  it('shared-domain: skips authority facts with missing subjectId', () => {
+    if (!factionPair) {
+      expect(true).toBe(true)
+      return
+    }
+    const { a, b, sharedDomain } = factionPair
+    const ctx = makeCtx({
+      entities: [
+        { kind: 'settlement', id: 'settlement-1', displayName: 'Hold', layer: 'human' },
+        { kind: 'namedFaction', id: 'faction-a', displayName: a.name, layer: 'human' },
+        { kind: 'namedFaction', id: 'faction-b', displayName: b.name, layer: 'human' },
+      ],
+      facts: [
+        makeFact({
+          id: 'f-fac-a',
+          kind: 'namedFaction',
+          subjectType: 'faction',
+          value: { value: a.name, confidence: 'derived' },
+          domains: [...a.domains],
+        }),
+        makeFact({
+          id: 'f-fac-b',
+          kind: 'namedFaction',
+          subjectType: 'faction',
+          value: { value: b.name, confidence: 'derived' },
+          domains: [...b.domains],
+        }),
+        makeFact({
+          id: 'f-auth-1',
+          kind: 'settlement.authority',
+          subjectType: 'settlement',
+          subjectId: undefined,
+          domains: [sharedDomain],
+          value: { value: 'compliance bureau', confidence: 'derived' },
+        }),
+      ],
+    })
+    expect(contestsSharedDomainRule.match(ctx)).toHaveLength(0)
+  })
+
   it('produces no match when settlement.authority fact has no overlapping domain tag', () => {
     if (!factionPair) {
       expect(true).toBe(true)
