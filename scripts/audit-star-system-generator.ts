@@ -99,6 +99,12 @@ interface CorpusStats {
   systemsWithAnyHistorical: number
   spineEdgesWithHistorical: number
   spineEdgesEligibleForHistorical: number
+  whyHereGraphAwareCount: number
+  whyHereFallbackCount: number
+  noteGraphAwareCount: number
+  noteFallbackCount: number
+  hookGraphAwareCount: number
+  hookFallbackCount: number
 }
 
 const auditProfiles = {
@@ -251,6 +257,11 @@ function makeOptions(
   return {
     ...options,
     seed: makeSeed(options, index),
+    graphAware: {
+      settlementWhyHere: true,
+      phenomenonNote: true,
+      settlementHookSynthesis: true,
+    },
   }
 }
 
@@ -574,6 +585,38 @@ function auditSystem(system: GeneratedSystem, findings: Finding[], stats: Corpus
     increment(stats.settlementPresenceTiers, settlement.presence.tier.value)
     increment(stats.settlementScales, settlement.scale.value)
   })
+
+  for (const settlement of system.settlements) {
+    if (settlement.whyHere.value.includes(';')) {
+      stats.whyHereFallbackCount += 1
+    } else {
+      stats.whyHereGraphAwareCount += 1
+    }
+    if (settlement.tagHook.value.includes('decides who has leverage')) {
+      stats.hookFallbackCount += 1
+    } else {
+      stats.hookGraphAwareCount += 1
+    }
+    if (settlement.whyHere.value.includes('{')) {
+      addFinding(findings, 'error', seed, 'prose.unresolvedSlot',
+        `Settlement ${settlement.id} whyHere contains unresolved slot.`)
+    }
+    if (settlement.tagHook.value.includes('{')) {
+      addFinding(findings, 'error', seed, 'prose.unresolvedSlot',
+        `Settlement ${settlement.id} tagHook contains unresolved slot.`)
+    }
+  }
+  for (const phenomenon of system.phenomena) {
+    if (phenomenon.note.value.includes('Transit:')) {
+      stats.noteFallbackCount += 1
+    } else {
+      stats.noteGraphAwareCount += 1
+    }
+    if (phenomenon.note.value.includes('{')) {
+      addFinding(findings, 'error', seed, 'prose.unresolvedSlot',
+        `Phenomenon ${phenomenon.id} note contains unresolved slot.`)
+    }
+  }
 
   const edgeCount = system.relationshipGraph.edges.length
   stats.edgeCounts.push(edgeCount)
@@ -1072,6 +1115,12 @@ const stats: CorpusStats = {
   systemsWithAnyHistorical: 0,
   spineEdgesWithHistorical: 0,
   spineEdgesEligibleForHistorical: 0,
+  whyHereGraphAwareCount: 0,
+  whyHereFallbackCount: 0,
+  noteGraphAwareCount: 0,
+  noteFallbackCount: 0,
+  hookGraphAwareCount: 0,
+  hookFallbackCount: 0,
 }
 
 for (const distribution of distributions) {
@@ -1120,6 +1169,18 @@ console.log(`Systems with any historical edge: ${stats.systemsWithAnyHistorical}
 if (stats.spineEdgesEligibleForHistorical > 0) {
   const rate = stats.spineEdgesWithHistorical / stats.spineEdgesEligibleForHistorical
   console.log(`Spine edges with attached history: ${(rate * 100).toFixed(1)}% (${stats.spineEdgesWithHistorical}/${stats.spineEdgesEligibleForHistorical})`)
+}
+const totalSettlements = stats.whyHereGraphAwareCount + stats.whyHereFallbackCount
+if (totalSettlements > 0) {
+  const whyHerePct = (stats.whyHereGraphAwareCount / totalSettlements * 100).toFixed(1)
+  console.log(`whyHere graph-aware rate: ${whyHerePct}% (${stats.whyHereGraphAwareCount}/${totalSettlements})`)
+  const hookPct = (stats.hookGraphAwareCount / totalSettlements * 100).toFixed(1)
+  console.log(`tagHook graph-aware rate: ${hookPct}% (${stats.hookGraphAwareCount}/${totalSettlements})`)
+}
+const totalPhenomena = stats.noteGraphAwareCount + stats.noteFallbackCount
+if (totalPhenomena > 0) {
+  const notePct = (stats.noteGraphAwareCount / totalPhenomena * 100).toFixed(1)
+  console.log(`phenomenonNote graph-aware rate: ${notePct}% (${stats.noteGraphAwareCount}/${totalPhenomena})`)
 }
 console.log(`Story spineSummary length (p10/p50/p90): ${formatPercentiles(stats.spineSummaryLengths)} chars`)
 console.log(`Story body paragraph count (p10/p50/p90): ${formatPercentiles(stats.bodyParagraphCounts)}`)
