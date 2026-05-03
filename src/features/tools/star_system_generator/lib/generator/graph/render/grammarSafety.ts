@@ -1,4 +1,5 @@
-export type SlotShape = 'properNoun' | 'nounPhrase' | 'verbPhrase' | 'clause' | 'era'
+import type { SlotShape } from './templates/types'
+export type { SlotShape }
 
 export type Position = 'sentence-start' | 'after-comma' | 'after-semicolon' | 'mid-clause'
 
