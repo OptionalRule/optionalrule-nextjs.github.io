@@ -4,6 +4,7 @@ import type {
 } from '../../../types'
 import type { SystemRelationshipGraph } from '../graph'
 import { graphAwareSettlementWhyHere } from './graphAwareSettlementWhyHere'
+import { graphAwarePhenomenonNote } from './graphAwarePhenomenonNote'
 import { fact } from '../index'
 
 export interface GraphAwareReshapeInput {
@@ -61,8 +62,13 @@ function reshapeSettlement(
 
 function reshapePhenomenon(
   phenomenon: SystemPhenomenon,
-  _graph: SystemRelationshipGraph,
-  _rng: SeededRng,
+  graph: SystemRelationshipGraph,
+  rng: SeededRng,
 ): SystemPhenomenon {
-  return phenomenon
+  const newNote = graphAwarePhenomenonNote(phenomenon, graph, rng)
+  if (newNote === null) return phenomenon
+  return {
+    ...phenomenon,
+    note: fact(newNote, 'inferred', 'Graph-aware reshape from phenomenonNote'),
+  }
 }

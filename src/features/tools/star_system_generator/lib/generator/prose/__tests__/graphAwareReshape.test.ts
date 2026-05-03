@@ -184,6 +184,92 @@ function settlementWithAnchor(id: string, anchorName: string): Settlement {
   } as unknown as Settlement
 }
 
+function makePhenomenonWithFields(id: string, fields: {
+  travelEffect?: string
+  surveyQuestion?: string
+  conflictHook?: string
+  sceneAnchor?: string
+  note?: string
+}): SystemPhenomenon {
+  return {
+    id,
+    travelEffect: { value: fields.travelEffect ?? '', confidence: 'inferred' },
+    surveyQuestion: { value: fields.surveyQuestion ?? '', confidence: 'inferred' },
+    conflictHook: { value: fields.conflictHook ?? '', confidence: 'inferred' },
+    sceneAnchor: { value: fields.sceneAnchor ?? '', confidence: 'inferred' },
+    note: { value: fields.note ?? 'original note', confidence: 'confirmed' },
+    phenomenon: { value: 'test phenomenon', confidence: 'inferred' },
+  } as unknown as SystemPhenomenon
+}
+
+function makeDestabilizesEdge(subjectId: string, objectId: string, objectDisplayName: string): RelationshipEdge {
+  return {
+    id: `edge-${subjectId}-${objectId}`,
+    type: 'DESTABILIZES',
+    subject: makeEntityRef(subjectId, 'The Signal Bloom', 'phenomenon'),
+    object: makeEntityRef(objectId, objectDisplayName, 'settlement'),
+    visibility: 'public',
+    confidence: 'inferred',
+    groundingFactIds: [],
+    era: 'present',
+    weight: 1,
+  }
+}
+
+describe('graphAwareReshape — phenomenonNote integration', () => {
+  it('replaces note when phenomenonNote flag is on AND DESTABILIZES exists', () => {
+    const phenomenon = makePhenomenonWithFields('p1', {
+      travelEffect: 'Ships must navigate the bloom.',
+      surveyQuestion: 'What pulses behind the static?',
+      conflictHook: 'Whoever owns the recordings owns the question.',
+      sceneAnchor: 'A drift of low-amplitude blooms.',
+    })
+    const edge = makeDestabilizesEdge('p1', 's1', 'Orison Hold')
+    const graph = graphWithEdges([edge])
+    const result = graphAwareReshape({
+      settlements: [],
+      phenomena: [phenomenon],
+      relationshipGraph: graph,
+      options: { ...baseOptions, graphAware: { phenomenonNote: true } },
+      rng: createSeededRng('ph-integration-test'),
+    })
+    expect(result.phenomena[0].note.value).toContain('Orison Hold')
+    expect(result.phenomena[0].note.value).not.toContain('Transit:')
+    expect(result.phenomena[0].note.confidence).toBe('inferred')
+  })
+
+  it('preserves note when phenomenonNote flag is off', () => {
+    const phenomenon = makePhenomenonWithFields('p1', {
+      travelEffect: 'Ships must navigate the bloom.',
+      surveyQuestion: 'What pulses behind the static?',
+    })
+    const originalNote = phenomenon.note
+    const result = graphAwareReshape({
+      settlements: [],
+      phenomena: [phenomenon],
+      relationshipGraph: emptyGraph(),
+      options: baseOptions,
+      rng: createSeededRng('ph-flag-off'),
+    })
+    expect(result.phenomena[0].note).toBe(originalNote)
+  })
+
+  it('preserves note when flag on but reshape returns null (all-empty fields)', () => {
+    const phenomenon = makePhenomenonWithFields('p1', {
+      travelEffect: '', surveyQuestion: '', conflictHook: '', sceneAnchor: '',
+    })
+    const originalNote = phenomenon.note
+    const result = graphAwareReshape({
+      settlements: [],
+      phenomena: [phenomenon],
+      relationshipGraph: emptyGraph(),
+      options: { ...baseOptions, graphAware: { phenomenonNote: true } },
+      rng: createSeededRng('ph-null-fields'),
+    })
+    expect(result.phenomena[0].note).toBe(originalNote)
+  })
+})
+
 describe('graphAwareReshape — settlementWhyHere integration', () => {
   it('replaces whyHere when settlementWhyHere flag is on AND incident DEPENDS_ON exists', () => {
     const settlement = settlementWithAnchor('s1', 'Orison Hold')
