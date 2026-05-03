@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { attachHistoricalEvents } from '../history'
+import { attachHistoricalEvents, HISTORICAL_ELIGIBLE_TYPES } from '../history'
 import type { EdgeType, EntityRef, RelationshipEdge } from '../types'
 import { createSeededRng } from '../../rng'
 import { ERAS } from '../data/eras'
@@ -71,6 +71,17 @@ function makeEdge(overrides: EdgeOverrides): RelationshipEdge {
     weight: overrides.weight ?? 0.6,
   }
 }
+
+describe('HISTORICAL_ELIGIBLE_TYPES', () => {
+  it('contains the expected present-edge types', () => {
+    const expected: EdgeType[] = ['CONTROLS', 'CONTESTS', 'DEPENDS_ON', 'CONTRADICTS', 'DESTABILIZES', 'SUPPRESSES']
+    expect([...HISTORICAL_ELIGIBLE_TYPES].sort()).toEqual(expected.sort())
+  })
+
+  it('is non-empty', () => {
+    expect(HISTORICAL_ELIGIBLE_TYPES.size).toBeGreaterThan(0)
+  })
+})
 
 describe('attachHistoricalEvents', () => {
   it('returns no historical edges when the spine is empty', () => {

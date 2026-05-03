@@ -6,7 +6,7 @@ import {
 } from '../src/features/tools/star_system_generator/lib/generator/domain'
 import { frontierStarTypes, realisticStarTypes } from '../src/features/tools/star_system_generator/lib/generator/tables'
 import { validateSystem, type ValidationFinding, type ValidationSource } from '../src/features/tools/star_system_generator/lib/generator/validation'
-import { isNamedEntity, EDGE_TYPES } from '../src/features/tools/star_system_generator/lib/generator/graph'
+import { isNamedEntity, EDGE_TYPES, HISTORICAL_ELIGIBLE_TYPES } from '../src/features/tools/star_system_generator/lib/generator/graph'
 import type { EdgeType } from '../src/features/tools/star_system_generator/lib/generator/graph'
 import {
   builtForms,
@@ -644,8 +644,7 @@ function auditSystem(system: GeneratedSystem, findings: Finding[], stats: Corpus
     system.relationshipGraph.spineEdgeIds.includes(e.id),
   )
   for (const spine of spineEdges) {
-    const eligible = ['CONTROLS', 'CONTESTS', 'DEPENDS_ON', 'CONTRADICTS', 'DESTABILIZES', 'SUPPRESSES']
-      .includes(spine.type)
+    const eligible = HISTORICAL_ELIGIBLE_TYPES.has(spine.type)
     if (!eligible) continue
     stats.spineEdgesEligibleForHistorical += 1
     const linked = historical.some(h => h.consequenceEdgeIds?.includes(spine.id))

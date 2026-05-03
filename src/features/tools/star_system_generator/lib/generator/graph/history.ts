@@ -36,6 +36,10 @@ const PRESENT_TO_HISTORICAL: Partial<Record<EdgeType, EdgeType>> = {
   CONTRADICTS: 'BETRAYED',
 }
 
+export const HISTORICAL_ELIGIBLE_TYPES: ReadonlySet<EdgeType> = new Set(
+  Object.keys(PRESENT_TO_HISTORICAL) as EdgeType[]
+)
+
 const MAX_HISTORICAL_EDGES = 2
 
 export interface AttachInput {
