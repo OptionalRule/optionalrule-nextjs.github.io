@@ -1,4 +1,4 @@
-import type { EntityRef, RelationshipEdge } from './types'
+import type { EdgeType, EntityRef, RelationshipEdge } from './types'
 import { stableHashString } from './rules/ruleTypes'
 
 export interface ScoreBonuses {
@@ -50,6 +50,65 @@ export function scoreCandidates(candidates: ReadonlyArray<RelationshipEdge>): Sc
     return stableHashString(a.edge.id) - stableHashString(b.edge.id)
   })
   return scored
+}
+
+export interface SelectionOptions {
+  numSettlements: number
+  numPhenomena: number
+}
+
+export interface SelectionResult {
+  spine: RelationshipEdge[]
+  peripheral: RelationshipEdge[]
+  spineIds: string[]
+}
+
+const SPINE_ELIGIBLE_TYPES: ReadonlySet<EdgeType> = new Set<EdgeType>([
+  'CONTESTS', 'DESTABILIZES', 'DEPENDS_ON', 'CONTROLS',
+])
+
+const SPINE_MAX = 3
+const PERIPHERAL_PER_TYPE_CAP = 2
+const TOTAL_HARD_CEILING = 12
+
+export function selectEdges(
+  scored: ReadonlyArray<ScoredCandidate>,
+  options: SelectionOptions,
+): SelectionResult {
+  const totalCap = Math.min(
+    TOTAL_HARD_CEILING,
+    6 + Math.min(6, options.numSettlements + options.numPhenomena),
+  )
+
+  const spineCandidates = scored.filter(c =>
+    SPINE_ELIGIBLE_TYPES.has(c.edge.type)
+    && isNamedEntity(c.edge.subject)
+    && isNamedEntity(c.edge.object),
+  )
+
+  const spine: RelationshipEdge[] = []
+  for (const cand of spineCandidates) {
+    if (spine.length >= SPINE_MAX) break
+    spine.push(cand.edge)
+  }
+
+  const usedIds = new Set(spine.map(e => e.id))
+
+  const peripheral: RelationshipEdge[] = []
+  const perTypeCount: Partial<Record<EdgeType, number>> = {}
+  const remainingBudget = totalCap - spine.length
+  for (const cand of scored) {
+    if (peripheral.length >= remainingBudget) break
+    if (usedIds.has(cand.edge.id)) continue
+    const type = cand.edge.type
+    const currentCount = perTypeCount[type] ?? 0
+    if (currentCount >= PERIPHERAL_PER_TYPE_CAP) continue
+    peripheral.push(cand.edge)
+    perTypeCount[type] = currentCount + 1
+    usedIds.add(cand.edge.id)
+  }
+
+  return { spine, peripheral, spineIds: spine.map(e => e.id) }
 }
 
 function collapseDuplicates(candidates: ReadonlyArray<RelationshipEdge>): RelationshipEdge[] {

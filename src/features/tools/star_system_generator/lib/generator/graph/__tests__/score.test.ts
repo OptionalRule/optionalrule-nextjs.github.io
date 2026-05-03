@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { scoreCandidates, isNamedEntity } from '../score'
+import { scoreCandidates, isNamedEntity, selectEdges } from '../score'
 import type { EntityRef, RelationshipEdge } from '../types'
 
 const settlementRef: EntityRef = { kind: 'settlement', id: 's1', displayName: 'Orison Hold', layer: 'human' }
@@ -103,5 +103,104 @@ describe('scoreCandidates', () => {
     const scored = scoreCandidates([e1, e2])
     expect(scored).toHaveLength(1)
     expect(scored[0].edge.id).toBe('high')
+  })
+})
+
+describe('selectEdges (budget selection)', () => {
+  function makeRefs(): { body: EntityRef; settlement: EntityRef; faction: EntityRef; otherFaction: EntityRef; resource: EntityRef; phenomenon: EntityRef } {
+    return {
+      body: { kind: 'body', id: 'b1', displayName: 'Nosaxa IV-b', layer: 'physical' },
+      settlement: { kind: 'settlement', id: 's1', displayName: 'Orison Hold', layer: 'human' },
+      faction: { kind: 'namedFaction', id: 'f1', displayName: 'Route Authority', layer: 'human' },
+      otherFaction: { kind: 'namedFaction', id: 'f2', displayName: 'Kestrel Free Compact', layer: 'human' },
+      resource: { kind: 'guResource', id: 'gu-resource', displayName: 'chiral ice belt', layer: 'gu' },
+      phenomenon: { kind: 'phenomenon', id: 'p1', displayName: 'flare-amplified bleed season', layer: 'gu' },
+    }
+  }
+
+  it('selects 1-3 spine edges from CONTESTS/DESTABILIZES/DEPENDS_ON, named-on-named, multi-layer', () => {
+    const r = makeRefs()
+    const candidates: RelationshipEdge[] = [
+      makeEdge({ id: 'c1', type: 'CONTESTS', subject: r.faction, object: r.otherFaction, weight: 0.7 }),
+      makeEdge({ id: 'd1', type: 'DEPENDS_ON', subject: r.settlement, object: r.body, weight: 0.6 }),
+      makeEdge({ id: 'h1', type: 'HOSTS', subject: r.body, object: r.settlement, weight: 0.5 }),
+    ]
+    const result = selectEdges(scoreCandidates(candidates), {
+      numSettlements: 1,
+      numPhenomena: 1,
+    })
+    const spineTypes = result.spine.map(e => e.type)
+    expect(spineTypes).toContain('CONTESTS')
+    expect(spineTypes).toContain('DEPENDS_ON')
+    expect(spineTypes).not.toContain('HOSTS')
+    const layers = new Set(result.spine.flatMap(e => [e.subject.layer, e.object.layer]))
+    expect(layers.size).toBeGreaterThanOrEqual(2)
+  })
+
+  it('caps spine at 3 even when more eligible candidates exist', () => {
+    const r = makeRefs()
+    const cands: RelationshipEdge[] = []
+    for (let i = 0; i < 10; i++) {
+      cands.push(makeEdge({
+        id: `c${i}`,
+        type: 'CONTESTS',
+        subject: { ...r.faction, id: `f-a-${i}`, displayName: `Faction A${i}` },
+        object: { ...r.otherFaction, id: `f-b-${i}`, displayName: `Faction B${i}` },
+        weight: 0.7 - i * 0.01,
+      }))
+    }
+    const result = selectEdges(scoreCandidates(cands), { numSettlements: 5, numPhenomena: 5 })
+    expect(result.spine.length).toBeLessThanOrEqual(3)
+  })
+
+  it('peripheral set caps per type at 2', () => {
+    const r = makeRefs()
+    const cands: RelationshipEdge[] = []
+    for (let i = 0; i < 6; i++) {
+      cands.push(makeEdge({
+        id: `h${i}`,
+        type: 'HOSTS',
+        subject: { ...r.body, id: `body-${i}`, displayName: `Body ${i}` },
+        object: { ...r.settlement, id: `settlement-${i}`, displayName: `Settlement ${i}` },
+        weight: 0.5 - i * 0.01,
+      }))
+    }
+    const result = selectEdges(scoreCandidates(cands), { numSettlements: 5, numPhenomena: 5 })
+    const hostsCount = result.peripheral.filter(e => e.type === 'HOSTS').length
+    expect(hostsCount).toBeLessThanOrEqual(2)
+  })
+
+  it('total edges respect cap = 6 + min(6, num_settlements + num_phenomena), hard ceiling 12', () => {
+    const r = makeRefs()
+    const cands: RelationshipEdge[] = []
+    for (let i = 0; i < 20; i++) {
+      cands.push(makeEdge({
+        id: `c${i}`,
+        type: 'CONTESTS',
+        subject: { ...r.faction, id: `f-a-${i}`, displayName: `Faction A${i}` },
+        object: { ...r.otherFaction, id: `f-b-${i}`, displayName: `Faction B${i}` },
+        weight: 0.7 - i * 0.001,
+      }))
+    }
+    const result = selectEdges(scoreCandidates(cands), { numSettlements: 10, numPhenomena: 10 })
+    expect(result.spine.length + result.peripheral.length).toBeLessThanOrEqual(12)
+  })
+
+  it('handles sparse systems (few candidates) without padding', () => {
+    const r = makeRefs()
+    const result = selectEdges(scoreCandidates([
+      makeEdge({ id: 'h1', type: 'HOSTS', subject: r.body, object: r.settlement, weight: 0.5 }),
+    ]), { numSettlements: 1, numPhenomena: 0 })
+    expect(result.spine.length + result.peripheral.length).toBe(1)
+  })
+
+  it('returns spine ids in selection order', () => {
+    const r = makeRefs()
+    const result = selectEdges(scoreCandidates([
+      makeEdge({ id: 'c1', type: 'CONTESTS', subject: r.faction, object: r.otherFaction, weight: 0.8 }),
+      makeEdge({ id: 'd1', type: 'DEPENDS_ON', subject: r.settlement, object: r.resource, weight: 0.6 }),
+    ]), { numSettlements: 1, numPhenomena: 1 })
+    expect(result.spineIds.length).toBe(result.spine.length)
+    expect(result.spineIds).toEqual(result.spine.map(e => e.id))
   })
 })
