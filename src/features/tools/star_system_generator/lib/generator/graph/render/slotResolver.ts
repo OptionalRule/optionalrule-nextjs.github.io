@@ -8,6 +8,7 @@ export interface EdgeRenderContext {
   qualifier?: string
   edgeType: EdgeType
   visibility: EdgeVisibility
+  historical?: { summary?: string; era?: string }
 }
 
 export interface SlotExpression {
@@ -54,7 +55,18 @@ function resolveOne(
   ctx: EdgeRenderContext,
   expects?: Partial<Record<string, SlotShape>>,
 ): string {
-  if (slot.name === 'historical') return ''
+  if (slot.name === 'historical') {
+    const sub = slot.modifier
+    let raw: string | undefined
+    if (sub === 'summary') raw = ctx.historical?.summary
+    else if (sub === 'era') raw = ctx.historical?.era
+    else raw = undefined
+
+    if (raw === undefined || raw === '') return slot.fallback ?? ''
+
+    const shape: SlotShape = sub === 'era' ? 'era' : 'clause'
+    return reshapeSlot(raw, shape)
+  }
 
   let raw: string | undefined
   if (slot.name === 'subject') raw = ctx.subject.displayName

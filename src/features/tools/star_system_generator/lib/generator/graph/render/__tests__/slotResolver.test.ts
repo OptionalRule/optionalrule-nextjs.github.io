@@ -64,11 +64,6 @@ describe('resolveSlots', () => {
     expect(resolveSlots('contests {qualifier|the route asset}', makeCtx({ qualifier: '' }))).toBe('contests the route asset')
   })
 
-  it('returns empty string for unsupported {historical:*} slots in Phase 3', () => {
-    expect(resolveSlots('after {historical:summary}', makeCtx())).toBe('after ')
-    expect(resolveSlots('during {historical:era}', makeCtx())).toBe('during ')
-  })
-
   it('throws on unknown slot name', () => {
     expect(() => resolveSlots('mystery {nonExistentSlot}', makeCtx()))
       .toThrow(/unknown slot/i)
@@ -125,5 +120,50 @@ describe('resolveSlots with per-slot expects', () => {
     })
     expect(resolveSlots('{subject}', ctx, { subject: 'properNoun' }))
       .toBe('The Pale Choir Communion')
+  })
+})
+
+describe('resolveSlots historical slots', () => {
+  it('resolves {historical:summary} from ctx.historical.summary', () => {
+    const ctx = makeCtx({
+      historical: { summary: 'the second-wave terraforming failure' },
+    })
+    expect(resolveSlots('after {historical:summary}', ctx))
+      .toBe('after the second-wave terraforming failure')
+  })
+
+  it('resolves {historical:era} from ctx.historical.era', () => {
+    const ctx = makeCtx({
+      historical: { era: 'the second wave' },
+    })
+    expect(resolveSlots('during {historical:era}', ctx))
+      .toBe('during the second wave')
+  })
+
+  it('uses fallback when historical context is absent', () => {
+    const ctx = makeCtx()
+    expect(resolveSlots('during {historical:era|an unrecorded era}', ctx))
+      .toBe('during an unrecorded era')
+  })
+
+  it('returns empty string when historical context is absent and no fallback', () => {
+    const ctx = makeCtx()
+    expect(resolveSlots('during {historical:era}', ctx)).toBe('during ')
+  })
+
+  it('strips trailing punctuation from {historical:summary}', () => {
+    const ctx = makeCtx({
+      historical: { summary: 'the breach of compact,' },
+    })
+    expect(resolveSlots('after {historical:summary}', ctx))
+      .toBe('after the breach of compact')
+  })
+
+  it('does NOT strip "the " from {historical:era} (era shape)', () => {
+    const ctx = makeCtx({
+      historical: { era: 'the first wave' },
+    })
+    expect(resolveSlots('during {historical:era}', ctx))
+      .toBe('during the first wave')
   })
 })
