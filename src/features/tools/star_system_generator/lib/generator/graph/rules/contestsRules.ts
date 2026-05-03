@@ -69,7 +69,7 @@ export const contestsSharedDomainRule: EdgeRule = {
         matches.push({
           subject: a,
           object: b,
-          qualifier: authFact.subjectId,
+          qualifier: overlap[0],
           groundingFactIds: [...factionAFactIds, ...factionBFactIds, authFact.id],
         })
       }

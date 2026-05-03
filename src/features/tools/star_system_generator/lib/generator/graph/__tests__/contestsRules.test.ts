@@ -112,7 +112,7 @@ describe('CONTESTS:namedFaction-namedFaction-sharedDomain', () => {
     const orderedIds = [factionAId, factionBId].sort()
     expect(match.subject.id).toBe(orderedIds[0])
     expect(match.object.id).toBe(orderedIds[1])
-    expect(match.qualifier).toBe('settlement-1')
+    expect(match.qualifier).toBe(sharedDomain)
     expect(match.groundingFactIds).toContain('f-auth-1')
     expect(match.groundingFactIds).toContain('f-fac-a')
     expect(match.groundingFactIds).toContain('f-fac-b')
