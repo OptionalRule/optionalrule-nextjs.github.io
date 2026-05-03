@@ -1177,6 +1177,19 @@ const totalSettlements = stats.whyHereGraphAwareCount + stats.whyHereFallbackCou
 if (totalSettlements > 0) {
   const whyHerePct = (stats.whyHereGraphAwareCount / totalSettlements * 100).toFixed(1)
   console.log(`whyHere graph-aware rate: ${whyHerePct}% (${stats.whyHereGraphAwareCount}/${totalSettlements})`)
+  // Phase 7 Task 7: deep-run baseline ~54%. The fallback population is dominated by
+  // structural unavoidability — the HOSTS rule fires for ~100% of missing settlements
+  // (they sit on named bodies) but the per-system edge-selection budget
+  // (TOTAL_HARD_CEILING=12, PERIPHERAL_PER_TYPE_CAP=2 in graph/score.ts) drops most
+  // candidates before the graph is finalized. ~46% of missing settlements end up with
+  // zero incident edges; ~41% additionally have no fn/crisis keyword overlap with the
+  // gu resource (no DEPENDS_ON candidate at all). Broadening rule predicates would not
+  // help — the cap is structural. Phase 7 accepts ~50–70% as the realistic ceiling.
+  // Below 50% indicates regression in the host or depends-on rule files.
+  const whyHereRatio = stats.whyHereGraphAwareCount / totalSettlements
+  if (whyHereRatio < 0.5) {
+    console.log(`  WARN: whyHere graph-aware rate below realistic-ceiling floor (50%) — possible regression in HOSTS or DEPENDS_ON rules.`)
+  }
   const hookPct = (stats.hookGraphAwareCount / totalSettlements * 100).toFixed(1)
   console.log(`tagHook graph-aware rate: ${hookPct}% (${stats.hookGraphAwareCount}/${totalSettlements})`)
 }

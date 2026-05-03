@@ -271,3 +271,13 @@ The corpus is internally cohesive at the entity level — names, body anchors, a
 The two flag-gated trigger-rate decisions are clear from data: tagHook fallback dominance is total (20/20) so Task 8 must take Option 2 (separate index for graph-aware closings); whyHere fallback fires in 11/20 systems and 37% of settlements, so Task 7 should richen the remaining fallback templates rather than only documenting. Grammar-level fixes for Task 2 (capitalisation in spine bridge), Task 4 (variant rotation), Task 5 (ruin/DESTABILIZES subject shape), and Task 10 (new audit checks for article-less title-cased noun phrases, verb-agreement collisions, ruin-as-agent, duplicated phenomenon names, doubled-template-within-paragraph) are all empirically grounded in this review.
 
 Phase 8 candidates surfaced: tone-aware spine selection, gu-aware spine selection, and ruin-as-agent semantic classification beyond what Task 5's bridge-shape change covers.
+
+## Task 7 outcome: whyHere documented as realistic ceiling
+
+A diagnostic across 960 systems (10 per option, full distribution × tone × gu × density grid) characterised the ~46% of settlements that fall back to the semicolon-list whyHere. Findings:
+
+- **100% of missing settlements are anchored to a named-shape body** (HOSTS-rule predicate fires for them). The bottleneck is downstream: the per-system edge-selection budget (`TOTAL_HARD_CEILING=12`, `PERIPHERAL_PER_TYPE_CAP=2` in `graph/score.ts`) drops most HOSTS candidates before the graph is finalised, especially in `crowded`/`hub` density.
+- **46.2%** of missing settlements have **zero incident edges** in the final graph — selection budget exhausted by spine and other peripheral types.
+- **41.3%** of missing settlements **also lack any DEPENDS_ON candidate** (no fn/crisis keyword overlap with the gu resource and `guValue<2`), so even an unbounded budget would not surface graph-aware whyHere for them.
+
+No single fixable root cause exceeds the 50% bar. The bottleneck is structural (selection budget) and untouchable without enlarging the graph or rewriting whyHere to look at the candidate pool — both are Phase 8 territory. **Decision: document, do not richen.** The audit script now annotates ~50–70% as the realistic ceiling for the whyHere graph-aware rate and warns below 50% as a regression signal in HOSTS or DEPENDS_ON rules.
