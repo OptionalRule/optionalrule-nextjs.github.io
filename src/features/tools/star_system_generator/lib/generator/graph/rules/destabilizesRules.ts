@@ -1,18 +1,15 @@
 import type { EdgeRule, RuleMatch } from './ruleTypes'
 import { mintEdgeId } from './ruleTypes'
 import type { EntityRef } from '../types'
-import { CRISIS_DESTABILIZE_KEYWORDS } from './settingPatterns'
+import { CRISIS_DESTABILIZE_KEYWORDS, containsWord } from './settingPatterns'
 
 function findGuHazard(entities: ReadonlyArray<EntityRef>): EntityRef | undefined {
   return entities.find(e => e.kind === 'guHazard')
 }
 
 function firstSharedKeyword(textA: string, textB: string, keywords: ReadonlyArray<string>): string | null {
-  const aLower = textA.toLowerCase()
-  const bLower = textB.toLowerCase()
   for (const k of keywords) {
-    const kLower = k.toLowerCase()
-    if (aLower.includes(kLower) && bLower.includes(kLower)) return k
+    if (containsWord(textA, k) && containsWord(textB, k)) return k
   }
   return null
 }

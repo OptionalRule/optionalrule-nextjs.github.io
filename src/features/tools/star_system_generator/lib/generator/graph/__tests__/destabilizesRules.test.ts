@@ -189,6 +189,30 @@ describe('DESTABILIZES:phenomenon-settlement-via-guLayer', () => {
     expect(destabilizesPhenomenonSettlementRule.match(ctx)).toHaveLength(0)
   })
 
+  it('does not match on substring-only keyword overlap (e.g., "metric" inside "asymmetric")', () => {
+    const ctx = makeCtx({
+      input: {
+        systemName: 't', primary: { spectralType: { value: 'G' } }, companions: [],
+        bodies: [],
+        settlements: [{ id: 'settlement-1', name: { value: 'Hold' } }],
+        guOverlay: { resource: { value: 'r' }, hazard: { value: 'h' } },
+        phenomena: [
+          { id: 'phenomenon-1', phenomenon: { value: 'metric drift' }, confidence: 'gu-layer' },
+        ],
+        ruins: [],
+        narrativeFacts: [],
+      },
+      entities: [
+        { kind: 'phenomenon', id: 'phenomenon-1', displayName: 'metric drift', layer: 'gu' },
+        { kind: 'settlement', id: 'settlement-1', displayName: 'Hold', layer: 'human' },
+      ],
+      facts: [
+        makeFact({ id: 'f1', kind: 'settlement.crisis', subjectType: 'settlement', subjectId: 'settlement-1', value: { value: 'asymmetric thrust failure', confidence: 'derived' } }),
+      ],
+    })
+    expect(destabilizesPhenomenonSettlementRule.match(ctx)).toHaveLength(0)
+  })
+
   it('build() produces a complete edge with public visibility and gu-layer confidence', () => {
     const ctx = makeCtx({
       input: {
