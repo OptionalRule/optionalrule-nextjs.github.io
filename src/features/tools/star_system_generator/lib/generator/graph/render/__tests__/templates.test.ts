@@ -210,3 +210,35 @@ describe('CONTRADICTS family', () => {
     expect(story.body[0]).toMatch(/[.!?]$/)
   })
 })
+
+describe('WITNESSES family', () => {
+  const settlement: EntityRef = { kind: 'settlement', id: 's1', displayName: 'Orison Hold', layer: 'human' }
+  const ruin: EntityRef = { kind: 'ruin', id: 'r1', displayName: 'Mira Vault', layer: 'physical' }
+
+  function makeWitnessesGraph(): SystemRelationshipGraph {
+    const edge: RelationshipEdge = {
+      id: 'wt1', type: 'WITNESSES', subject: settlement, object: ruin,
+      qualifier: undefined, visibility: 'public', confidence: 'derived',
+      groundingFactIds: [], era: 'present', weight: 0.45,
+    }
+    return {
+      entities: [], edges: [edge], spineEdgeIds: ['wt1'], historicalEdgeIds: [],
+      edgesByEntity: {},
+      edgesByType: {
+        HOSTS: [], CONTROLS: [], DEPENDS_ON: [],
+        CONTESTS: [], DESTABILIZES: [], SUPPRESSES: [],
+        CONTRADICTS: [], WITNESSES: ['wt1'], HIDES_FROM: [],
+        FOUNDED_BY: [], BETRAYED: [], DISPLACED: [],
+      },
+    }
+  }
+
+  it('renders a body sentence containing subject + object, no unresolved slots, terminal punctuation', () => {
+    const story = renderSystemStory(makeWitnessesGraph(), createSeededRng('witnesses-test'))
+    expect(story.body).toHaveLength(1)
+    expect(story.body[0]).toContain('Orison Hold')
+    expect(story.body[0]).toContain('Mira Vault')
+    expect(story.body[0]).not.toContain('{')
+    expect(story.body[0]).toMatch(/[.!?]$/)
+  })
+})
