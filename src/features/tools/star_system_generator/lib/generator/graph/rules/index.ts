@@ -1,8 +1,9 @@
 import type { EdgeRule } from './ruleTypes'
-import { hostsBodySettlementRule } from './hostsRules'
+import { hostsBodySettlementRule, hostsBodyRuinRule } from './hostsRules'
 
 export const allRules: ReadonlyArray<EdgeRule> = [
   hostsBodySettlementRule,
+  hostsBodyRuinRule,
 ].sort((a, b) => (a.id < b.id ? -1 : a.id > b.id ? 1 : 0))
 
 export type { EdgeRule, RuleMatch, BuildCtx } from './ruleTypes'
