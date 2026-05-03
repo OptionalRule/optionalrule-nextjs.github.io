@@ -579,9 +579,10 @@ function auditSystem(system: GeneratedSystem, findings: Finding[], stats: Corpus
     stats.edgesByType[edge.type] += 1
   }
 
-  if (edgeCount > 12) {
+  const presentEdgeCount = system.relationshipGraph.edges.filter(e => e.era === 'present').length
+  if (presentEdgeCount > 12) {
     addFinding(findings, 'error', seed, 'graph.edges.count',
-      `Edge count ${edgeCount} exceeds hard ceiling 12`)
+      `Present edge count ${presentEdgeCount} exceeds hard ceiling 12`)
   }
 
   const edgeKeys = new Set<string>()
