@@ -21,6 +21,10 @@ import {
   suppressesGardenerInterdictionRule,
   suppressesAuthorityHiddenTruthRule,
 } from './suppressesRules'
+import {
+  contradictsRuinHookAuthorityRule,
+  contradictsHiddenPublicRule,
+} from './contradictsRules'
 
 export const allRules: ReadonlyArray<EdgeRule> = [
   hostsBodySettlementRule,
@@ -36,6 +40,8 @@ export const allRules: ReadonlyArray<EdgeRule> = [
   destabilizesGuHazardSettlementRule,
   suppressesGardenerInterdictionRule,
   suppressesAuthorityHiddenTruthRule,
+  contradictsRuinHookAuthorityRule,
+  contradictsHiddenPublicRule,
 ].sort((a, b) => (a.id < b.id ? -1 : a.id > b.id ? 1 : 0))
 
 export type { EdgeRule, RuleMatch, BuildCtx } from './ruleTypes'
