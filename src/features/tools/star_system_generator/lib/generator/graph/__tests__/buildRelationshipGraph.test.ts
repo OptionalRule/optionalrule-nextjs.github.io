@@ -18,25 +18,30 @@ const minimalInput = (): EntityInventoryInput => ({
   narrativeFacts: [],
 })
 
-describe('buildRelationshipGraph (Phase 1 scaffold — empty edges)', () => {
-  it('returns a populated entity inventory and an empty edge list', () => {
+const inputWithHostedSettlement = (): EntityInventoryInput => ({
+  ...minimalInput(),
+  settlements: [{ id: 'settlement-1', name: { value: 'Orison Hold' }, bodyId: 'body-1' }],
+})
+
+describe('buildRelationshipGraph', () => {
+  it('returns a populated entity inventory and an empty edge list when no rules match', () => {
     const rng = createSeededRng('graph-test-1')
-    const graph = buildRelationshipGraph(minimalInput(), rng)
+    const graph = buildRelationshipGraph(minimalInput(), [], rng)
     expect(graph.entities.length).toBeGreaterThan(0)
     expect(graph.edges).toEqual([])
     expect(graph.spineEdgeIds).toEqual([])
     expect(graph.historicalEdgeIds).toEqual([])
   })
 
-  it('initializes edgesByEntity as an empty object', () => {
+  it('initializes edgesByEntity as an empty object when no rules match', () => {
     const rng = createSeededRng('graph-test-2')
-    const graph = buildRelationshipGraph(minimalInput(), rng)
+    const graph = buildRelationshipGraph(minimalInput(), [], rng)
     expect(graph.edgesByEntity).toEqual({})
   })
 
-  it('initializes edgesByType with all 12 keys mapped to empty arrays', () => {
+  it('initializes edgesByType with all 12 keys mapped to empty arrays when no rules match', () => {
     const rng = createSeededRng('graph-test-3')
-    const graph = buildRelationshipGraph(minimalInput(), rng)
+    const graph = buildRelationshipGraph(minimalInput(), [], rng)
     const expectedKeys = [
       'HOSTS', 'CONTROLS', 'DEPENDS_ON',
       'CONTESTS', 'DESTABILIZES', 'SUPPRESSES',
@@ -50,8 +55,20 @@ describe('buildRelationshipGraph (Phase 1 scaffold — empty edges)', () => {
   })
 
   it('produces deterministic output for the same seed and input', () => {
-    const a = buildRelationshipGraph(minimalInput(), createSeededRng('graph-test-4'))
-    const b = buildRelationshipGraph(minimalInput(), createSeededRng('graph-test-4'))
+    const a = buildRelationshipGraph(minimalInput(), [], createSeededRng('graph-test-4'))
+    const b = buildRelationshipGraph(minimalInput(), [], createSeededRng('graph-test-4'))
     expect(a).toEqual(b)
+  })
+
+  it('produces a HOSTS edge when a settlement has a bodyId', () => {
+    const rng = createSeededRng('graph-test-hosts')
+    const graph = buildRelationshipGraph(inputWithHostedSettlement(), [], rng)
+    expect(graph.edges.length).toBeGreaterThanOrEqual(1)
+    const hostsEdges = graph.edges.filter(e => e.type === 'HOSTS')
+    expect(hostsEdges.length).toBe(1)
+    expect(graph.edgesByType.HOSTS).toHaveLength(1)
+    const edgeId = hostsEdges[0].id
+    expect(graph.edgesByEntity['body-1']).toContain(edgeId)
+    expect(graph.edgesByEntity['settlement-1']).toContain(edgeId)
   })
 })

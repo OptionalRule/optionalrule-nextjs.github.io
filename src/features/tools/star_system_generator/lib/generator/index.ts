@@ -3718,12 +3718,13 @@ export function generateSystem(options: GenerationOptions, knownSystem?: Partial
       primary: { spectralType: primary.spectralType },
       companions,
       bodies,
-      settlements,
+      settlements: settlements.map(s => ({ id: s.id, name: s.name, bodyId: s.bodyId })),
       guOverlay,
       phenomena,
-      ruins,
+      ruins: ruins.map(r => ({ id: r.id, remnantType: r.remnantType, location: r.location })),
       narrativeFacts,
     },
+    narrativeFacts,
     rootRng.fork('graph'),
   )
   const narrativeLines = generateNarrativeLines(rootRng.fork('narrative-lines'), options, narrativeFacts)

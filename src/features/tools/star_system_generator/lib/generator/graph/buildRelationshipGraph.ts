@@ -1,6 +1,10 @@
+import type { NarrativeFact } from '../../../types'
 import type { SeededRng } from '../rng'
 import { buildEntityInventory, type EntityInventoryInput } from './entities'
-import type { EdgeType, SystemRelationshipGraph } from './types'
+import type { EdgeType, RelationshipEdge, SystemRelationshipGraph } from './types'
+import { allRules, buildFactIndexes, type BuildCtx } from './rules'
+import { scoreCandidates, selectEdges } from './score'
+import { buildEdgeIndexes } from './buildIndexes'
 
 const ALL_EDGE_TYPES = [
   'HOSTS', 'CONTROLS', 'DEPENDS_ON',
@@ -19,15 +23,46 @@ function emptyEdgesByType(): Record<EdgeType, string[]> {
 
 export function buildRelationshipGraph(
   input: EntityInventoryInput,
-  _rng: SeededRng,
+  facts: NarrativeFact[],
+  rng: SeededRng,
 ): SystemRelationshipGraph {
   const entities = buildEntityInventory(input)
+  const entitiesById = new Map(entities.map(e => [e.id, e]))
+  const indexes = buildFactIndexes(facts)
+  const ctx: BuildCtx = {
+    facts,
+    entities,
+    input,
+    rng: rng.fork('rules'),
+    ...indexes,
+    entitiesById,
+  }
+
+  const candidates: RelationshipEdge[] = []
+  for (const rule of allRules) {
+    const matches = rule.match(ctx)
+    for (const match of matches) {
+      const edge = rule.build(match, rule, ctx)
+      if (edge !== null) candidates.push(edge)
+    }
+  }
+
+  const scored = scoreCandidates(candidates)
+  const selection = selectEdges(scored, {
+    numSettlements: input.settlements.length,
+    numPhenomena: input.phenomena.length,
+  })
+  const edges = [...selection.spine, ...selection.peripheral]
+
+  const { edgesByEntity, edgesByType } = buildEdgeIndexes(edges)
+  const completeEdgesByType = { ...emptyEdgesByType(), ...edgesByType }
+
   return {
     entities,
-    edges: [],
-    edgesByEntity: {},
-    edgesByType: emptyEdgesByType(),
-    spineEdgeIds: [],
+    edges,
+    edgesByEntity,
+    edgesByType: completeEdgesByType,
+    spineEdgeIds: selection.spineIds,
     historicalEdgeIds: [],
   }
 }
