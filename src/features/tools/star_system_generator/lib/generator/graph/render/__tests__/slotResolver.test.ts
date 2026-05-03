@@ -83,3 +83,47 @@ describe('resolveSlots', () => {
     expect(resolveSlots('— {subject}, in transit —', makeCtx())).toBe('— Orison Hold, in transit —')
   })
 })
+
+describe('resolveSlots with per-slot expects', () => {
+  it('reshapes nounPhrase slots — strips leading "the" before applying :article', () => {
+    const ctx = makeCtx({
+      object: { kind: 'guResource', id: 'gu', displayName: 'the chiral ice belt', layer: 'gu' },
+    })
+    expect(resolveSlots('depends on {object:article}', ctx, { object: 'nounPhrase' }))
+      .toBe('depends on the chiral ice belt')
+  })
+
+  it('reshapes nounPhrase slots — strips trailing punctuation before substitution', () => {
+    const ctx = makeCtx({
+      qualifier: 'the dispute,',
+    })
+    expect(resolveSlots('over {qualifier|fallback}', ctx, { qualifier: 'nounPhrase' }))
+      .toBe('over dispute')
+  })
+
+  it('preserves properNoun shape (default) when expects undeclared', () => {
+    const ctx = makeCtx()
+    expect(resolveSlots('{subject}', ctx)).toBe('Orison Hold')
+  })
+
+  it('preserves properNoun shape (default) when slot is missing from expects', () => {
+    const ctx = makeCtx()
+    expect(resolveSlots('{subject}', ctx, { object: 'nounPhrase' })).toBe('Orison Hold')
+  })
+
+  it('reshape composes idempotently with :article and :lower', () => {
+    const ctx = makeCtx({
+      subject: { kind: 'phenomenon', id: 'p', displayName: 'a flare-amplified bleed season', layer: 'gu' },
+    })
+    expect(resolveSlots('{subject:article}', ctx, { subject: 'nounPhrase' }))
+      .toBe('the flare-amplified bleed season')
+  })
+
+  it('does NOT strip "the " when shape is properNoun', () => {
+    const ctx = makeCtx({
+      subject: { kind: 'namedFaction', id: 'f', displayName: 'The Pale Choir Communion', layer: 'human' },
+    })
+    expect(resolveSlots('{subject}', ctx, { subject: 'properNoun' }))
+      .toBe('The Pale Choir Communion')
+  })
+})

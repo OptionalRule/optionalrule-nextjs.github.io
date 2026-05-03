@@ -1,4 +1,6 @@
 import type { EdgeType, EdgeVisibility, EntityRef } from '../types'
+import type { SlotShape } from './templates/types'
+import { reshapeSlot } from './grammarSafety'
 
 export interface EdgeRenderContext {
   subject: EntityRef
@@ -36,14 +38,22 @@ export function parseSlotExpression(expr: string): SlotExpression {
   return result
 }
 
-export function resolveSlots(template: string, ctx: EdgeRenderContext): string {
+export function resolveSlots(
+  template: string,
+  ctx: EdgeRenderContext,
+  expects?: Partial<Record<string, SlotShape>>,
+): string {
   return template.replace(SLOT_PATTERN, (_full, expr: string) => {
     const slot = parseSlotExpression(expr)
-    return resolveOne(slot, ctx)
+    return resolveOne(slot, ctx, expects)
   })
 }
 
-function resolveOne(slot: SlotExpression, ctx: EdgeRenderContext): string {
+function resolveOne(
+  slot: SlotExpression,
+  ctx: EdgeRenderContext,
+  expects?: Partial<Record<string, SlotShape>>,
+): string {
   if (slot.name === 'historical') return ''
 
   let raw: string | undefined
@@ -55,7 +65,9 @@ function resolveOne(slot: SlotExpression, ctx: EdgeRenderContext): string {
   if (raw === undefined || raw === '') {
     return slot.fallback ?? ''
   }
-  return applyModifier(raw, slot.modifier)
+  const shape: SlotShape = expects?.[slot.name] ?? 'properNoun'
+  const reshaped = reshapeSlot(raw, shape)
+  return applyModifier(reshaped, slot.modifier)
 }
 
 function applyModifier(value: string, modifier: string | undefined): string {

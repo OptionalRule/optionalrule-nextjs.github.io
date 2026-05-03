@@ -49,7 +49,7 @@ function renderHooks(graph: SystemRelationshipGraph, rng: SeededRng): string[] {
       subject: edge.subject, object: edge.object, qualifier: edge.qualifier,
       edgeType: edge.type, visibility: edge.visibility,
     }
-    let rendered = resolveSlots(template.text, ctx)
+    let rendered = resolveSlots(template.text, ctx, template.expects)
     rendered = capitalizeForPosition(rendered, 'sentence-start')
     rendered = guardDoubledNoun(rendered)
     if (seen.has(rendered)) continue
@@ -102,7 +102,7 @@ function renderSpineSummary(graph: SystemRelationshipGraph): string {
     edgeType: edge.type,
     visibility: edge.visibility,
   }
-  let result = resolveSlots(template.text, ctx)
+  let result = resolveSlots(template.text, ctx, template.expects)
   result = capitalizeForPosition(result, 'sentence-start')
   result = guardDoubledNoun(result)
   return result
@@ -146,7 +146,7 @@ function renderTemplate(
   ctx: EdgeRenderContext,
   position: Position,
 ): string {
-  let result = resolveSlots(template.text, ctx)
+  let result = resolveSlots(template.text, ctx, template.expects)
   result = capitalizeForPosition(result, position)
   result = guardDoubledNoun(result)
   return result
