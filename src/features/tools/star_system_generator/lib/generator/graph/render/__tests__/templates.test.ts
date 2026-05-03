@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest'
 import { templateFor } from '../templates'
 import { EDGE_TYPES } from '../../types'
 import { renderSystemStory } from '../renderSystemStory'
+import { resolveSlots } from '../slotResolver'
 import { createSeededRng } from '../../../rng'
 import type { EntityRef, RelationshipEdge, SystemRelationshipGraph } from '../../types'
 
@@ -240,5 +241,25 @@ describe('WITNESSES family', () => {
     expect(story.body[0]).toContain('Mira Vault')
     expect(story.body[0]).not.toContain('{')
     expect(story.body[0]).toMatch(/[.!?]$/)
+  })
+})
+
+describe('FOUNDED_BY family', () => {
+  it('body template renders subject + object + era as a complete sentence', () => {
+    const family = templateFor('FOUNDED_BY')
+    expect(family.body.length).toBeGreaterThanOrEqual(1)
+    const ctx = {
+      subject: { kind: 'namedFaction', id: 'f', displayName: 'Helion Debt Synod', layer: 'human' } as const,
+      object: { kind: 'settlement', id: 's', displayName: 'Orison Hold', layer: 'human' } as const,
+      qualifier: 'the second wave',
+      edgeType: 'FOUNDED_BY' as const,
+      visibility: 'public' as const,
+    }
+    const text = resolveSlots(family.body[0].text, ctx, family.body[0].expects)
+    expect(text).toContain('Helion Debt Synod')
+    expect(text).toContain('Orison Hold')
+    expect(text).toContain('the second wave')
+    expect(text).not.toContain('{')
+    expect(text).toMatch(/[.!?]$/)
   })
 })
