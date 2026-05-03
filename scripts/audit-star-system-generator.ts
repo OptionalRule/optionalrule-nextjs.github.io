@@ -130,6 +130,12 @@ const extremeHotZones = new Set(['Furnace', 'Inferno'])
 // rationale and provenance.
 const DOUBLE_PREPOSITION_PATTERN = /\b(during|in|on|at|to)\s+(in|on|at|to|before|after)\b/i
 const UNSTRIPPED_ARTICLE_BRIDGE_PATTERN = /\bThe [a-z]+(?:\s[a-z]+)? took shape\b/
+// Phase 8 Task 2: catches spine-assembly joiner regressions where a post-bridge
+// clause's proper-noun head was lowercased mid-sentence. Anchors on bridge
+// punctuation (',' or '—' followed by a space) and a "lowercaseWord
+// SpaceUppercaseWord" pair — characteristic of "kestrel Free Compact" /
+// "orison Route Authority". Phase 8 Task 1 fixed the underlying bug.
+const LOWERCASE_FACTION_MID_SENTENCE_PATTERN = /[,—] [a-z][a-zA-Z]+ [A-Z]/
 
 const forbiddenAlienPatterns = [
   /\balien\b/i,
@@ -766,6 +772,11 @@ function auditSystem(system: GeneratedSystem, findings: Finding[], stats: Corpus
   if (UNSTRIPPED_ARTICLE_BRIDGE_PATTERN.test(system.systemStory.spineSummary)) {
     addFinding(findings, 'error', seed, 'prose.unstrippedArticleInBridge',
       `Bridge subject likely retained leading article: "${system.systemStory.spineSummary.slice(0, 200)}"`)
+  }
+
+  if (LOWERCASE_FACTION_MID_SENTENCE_PATTERN.test(system.systemStory.spineSummary)) {
+    addFinding(findings, 'error', seed, 'prose.lowercaseFactionMidSentence',
+      `Spine summary has a lowercased proper-noun head mid-sentence: "${system.systemStory.spineSummary.slice(0, 160)}..."`)
   }
 
   // prose.alwaysFirstHistoricalVariant (Task 4 corpus aggregation): track
