@@ -80,6 +80,7 @@ describe('graph/types', () => {
         FOUNDED_BY: [], BETRAYED: [], DISPLACED: [],
       },
       spineEdgeIds: [],
+      settlementSpineEdgeIds: [],
       historicalEdgeIds: [],
     }
     expect(graph.entities.length).toBe(0)

@@ -8,7 +8,7 @@ const settlement: EntityRef = { kind: 'settlement', id: 's1', displayName: 'Oris
 
 function emptyGraph(): SystemRelationshipGraph {
   return {
-    entities: [], edges: [], spineEdgeIds: [], historicalEdgeIds: [],
+    entities: [], edges: [], spineEdgeIds: [], settlementSpineEdgeIds: [], historicalEdgeIds: [],
     edgesByEntity: {},
     edgesByType: {
       HOSTS: [], CONTROLS: [], DEPENDS_ON: [],

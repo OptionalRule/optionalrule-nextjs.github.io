@@ -31,6 +31,7 @@ function makeGraph(edges: RelationshipEdge[], entityEdgeIds: Record<string, stri
     entities: [],
     edges,
     spineEdgeIds: [],
+    settlementSpineEdgeIds: [],
     historicalEdgeIds: [],
     edgesByEntity: entityEdgeIds,
     edgesByType: {

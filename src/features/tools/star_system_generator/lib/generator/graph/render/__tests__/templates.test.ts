@@ -31,7 +31,7 @@ describe('DEPENDS_ON family', () => {
       groundingFactIds: [], era: 'present', weight: 0.6,
     }
     return {
-      entities: [], edges: [edge], spineEdgeIds: ['d1'], historicalEdgeIds: [],
+      entities: [], edges: [edge], spineEdgeIds: ['d1'], settlementSpineEdgeIds: [], historicalEdgeIds: [],
       edgesByEntity: {},
       edgesByType: {
         HOSTS: [], CONTROLS: [], DEPENDS_ON: ['d1'],
@@ -64,7 +64,7 @@ describe('CONTESTS family', () => {
       groundingFactIds: [], era: 'present', weight: 0.7,
     }
     return {
-      entities: [], edges: [edge], spineEdgeIds: ['c1'], historicalEdgeIds: [],
+      entities: [], edges: [edge], spineEdgeIds: ['c1'], settlementSpineEdgeIds: [], historicalEdgeIds: [],
       edgesByEntity: {},
       edgesByType: {
         HOSTS: [], CONTROLS: [], DEPENDS_ON: [],
@@ -96,7 +96,7 @@ describe('DESTABILIZES family', () => {
       groundingFactIds: [], era: 'present', weight: 0.6,
     }
     return {
-      entities: [], edges: [edge], spineEdgeIds: ['d1'], historicalEdgeIds: [],
+      entities: [], edges: [edge], spineEdgeIds: ['d1'], settlementSpineEdgeIds: [], historicalEdgeIds: [],
       edgesByEntity: {},
       edgesByType: {
         HOSTS: [], CONTROLS: [], DEPENDS_ON: [],
@@ -128,7 +128,7 @@ describe('CONTROLS family', () => {
       groundingFactIds: [], era: 'present', weight: 0.6,
     }
     return {
-      entities: [], edges: [edge], spineEdgeIds: ['cc1'], historicalEdgeIds: [],
+      entities: [], edges: [edge], spineEdgeIds: ['cc1'], settlementSpineEdgeIds: [], historicalEdgeIds: [],
       edgesByEntity: {},
       edgesByType: {
         HOSTS: [], CONTROLS: ['cc1'], DEPENDS_ON: [],
@@ -159,7 +159,7 @@ describe('SUPPRESSES family', () => {
       groundingFactIds: [], era: 'present', weight: 0.5,
     }
     return {
-      entities: [], edges: [edge], spineEdgeIds: ['sp1'], historicalEdgeIds: [],
+      entities: [], edges: [edge], spineEdgeIds: ['sp1'], settlementSpineEdgeIds: [], historicalEdgeIds: [],
       edgesByEntity: {},
       edgesByType: {
         HOSTS: [], CONTROLS: [], DEPENDS_ON: [],
@@ -191,7 +191,7 @@ describe('CONTRADICTS family', () => {
       groundingFactIds: [], era: 'present', weight: 0.5,
     }
     return {
-      entities: [], edges: [edge], spineEdgeIds: ['cd1'], historicalEdgeIds: [],
+      entities: [], edges: [edge], spineEdgeIds: ['cd1'], settlementSpineEdgeIds: [], historicalEdgeIds: [],
       edgesByEntity: {},
       edgesByType: {
         HOSTS: [], CONTROLS: [], DEPENDS_ON: [],
@@ -223,7 +223,7 @@ describe('WITNESSES family', () => {
       groundingFactIds: [], era: 'present', weight: 0.45,
     }
     return {
-      entities: [], edges: [edge], spineEdgeIds: ['wt1'], historicalEdgeIds: [],
+      entities: [], edges: [edge], spineEdgeIds: ['wt1'], settlementSpineEdgeIds: [], historicalEdgeIds: [],
       edgesByEntity: {},
       edgesByType: {
         HOSTS: [], CONTROLS: [], DEPENDS_ON: [],

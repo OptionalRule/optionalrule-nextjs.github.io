@@ -29,12 +29,13 @@ function makeEdge(
 function makeGraph(
   edges: RelationshipEdge[],
   entityEdgeIds: Record<string, string[]>,
-  spineEdgeIds: string[] = [],
+  settlementSpineEdgeIds: string[] = [],
 ): SystemRelationshipGraph {
   return {
     entities: [],
     edges,
-    spineEdgeIds,
+    spineEdgeIds: [],
+    settlementSpineEdgeIds,
     historicalEdgeIds: [],
     edgesByEntity: entityEdgeIds,
     edgesByType: {

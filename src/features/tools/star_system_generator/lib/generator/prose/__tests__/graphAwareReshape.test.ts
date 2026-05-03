@@ -6,7 +6,7 @@ import type { SystemRelationshipGraph, RelationshipEdge, EntityRef } from '../..
 
 function emptyGraph(): SystemRelationshipGraph {
   return {
-    entities: [], edges: [], spineEdgeIds: [], historicalEdgeIds: [],
+    entities: [], edges: [], spineEdgeIds: [], settlementSpineEdgeIds: [], historicalEdgeIds: [],
     edgesByEntity: {},
     edgesByType: {
       HOSTS: [], CONTROLS: [], DEPENDS_ON: [],
@@ -348,6 +348,7 @@ function graphWithEdgesAndSpine(edges: RelationshipEdge[], spineEdgeIds: string[
     edges,
     edgesByEntity,
     spineEdgeIds,
+    settlementSpineEdgeIds: spineEdgeIds,
   }
 }
 

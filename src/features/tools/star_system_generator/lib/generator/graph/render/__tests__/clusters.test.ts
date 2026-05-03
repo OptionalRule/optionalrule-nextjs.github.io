@@ -28,6 +28,7 @@ function makeGraph(edges: RelationshipEdge[], spineEdgeIds: string[] = []): Syst
     entities: [],
     edges,
     spineEdgeIds,
+    settlementSpineEdgeIds: [],
     historicalEdgeIds: [],
     edgesByEntity: {},
     edgesByType: {

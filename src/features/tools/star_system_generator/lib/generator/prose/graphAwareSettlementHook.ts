@@ -15,10 +15,10 @@ export function graphAwareSettlementHook(
     .filter((e): e is RelationshipEdge => e !== undefined)
     .filter(e => ELIGIBLE_TYPES.includes(e.type))
 
-  const spineSet = new Set(graph.spineEdgeIds)
+  const spineSet = new Set(graph.settlementSpineEdgeIds)
   const eligible = incidentEdges
     .filter(e => spineSet.has(e.id))
-    .sort((a, b) => graph.spineEdgeIds.indexOf(a.id) - graph.spineEdgeIds.indexOf(b.id))
+    .sort((a, b) => graph.settlementSpineEdgeIds.indexOf(a.id) - graph.settlementSpineEdgeIds.indexOf(b.id))
 
   if (eligible.length === 0) return null
   const edge = eligible[0]

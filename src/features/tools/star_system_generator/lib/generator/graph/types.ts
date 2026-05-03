@@ -54,6 +54,12 @@ export interface SystemRelationshipGraph {
   edgesByEntity: Record<string, string[]>
   edgesByType: Record<EdgeType, string[]>
   spineEdgeIds: string[]
+  // Settlement-incident eligible spine edges (CONTESTS / DEPENDS_ON / SUPPRESSES with
+  // the settlement as at least one endpoint), capped 1 per settlement, populated
+  // independently of the named-on-named main spineEdgeIds. Only contains edge ids
+  // that survive selection and are present in `edges`. Consumers:
+  // graphAwareSettlementHook (settlementHookSynthesis prose).
+  settlementSpineEdgeIds: string[]
   historicalEdgeIds: string[]
 }
 

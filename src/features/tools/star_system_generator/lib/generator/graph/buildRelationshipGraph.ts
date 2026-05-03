@@ -7,6 +7,7 @@ import { allRules, buildFactIndexes, type BuildCtx } from './rules'
 import { scoreCandidates, selectEdges } from './score'
 import { buildEdgeIndexes } from './buildIndexes'
 import { attachHistoricalEvents } from './history'
+import { selectSettlementSpineEdgeIds } from './settlementSpineEligibility'
 
 function emptyEdgesByType(): Record<EdgeType, string[]> {
   const result = {} as Record<EdgeType, string[]>
@@ -58,12 +59,18 @@ export function buildRelationshipGraph(
   const { edgesByEntity, edgesByType } = buildEdgeIndexes(allEdges)
   const completeEdgesByType = { ...emptyEdgesByType(), ...edgesByType }
 
+  const settlementIds = new Set(input.settlements.map(s => s.id))
+  const finalEdgeIds = new Set(allEdges.map(e => e.id))
+  const candidatesInGraph = scored.filter(c => finalEdgeIds.has(c.edge.id))
+  const settlementSpineEdgeIds = selectSettlementSpineEdgeIds(candidatesInGraph, settlementIds)
+
   return {
     entities,
     edges: allEdges,
     edgesByEntity,
     edgesByType: completeEdgesByType,
     spineEdgeIds: selection.spineIds,
+    settlementSpineEdgeIds,
     historicalEdgeIds: historicalEdges.map(e => e.id),
   }
 }
