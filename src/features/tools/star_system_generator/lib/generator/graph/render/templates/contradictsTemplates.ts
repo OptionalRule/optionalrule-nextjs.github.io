@@ -27,7 +27,10 @@ export const contradictsTemplates: EdgeTemplateFamily = {
     text: '{subject} and {object} are telling two different stories about {qualifier|what really happened}.',
     expects: { subject: 'properNoun', object: 'properNoun', qualifier: 'nounPhrase' },
   },
-  historicalBridge: { text: '', expects: {} },
+  historicalBridge: {
+    text: 'The records were edited during {historical:era|a public-trust breach},',
+    expects: {},
+  },
   hook: [
     {
       text: 'Whose version of {qualifier|the record} would survive a third-party audit?',

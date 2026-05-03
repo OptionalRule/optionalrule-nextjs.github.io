@@ -27,7 +27,10 @@ export const controlsTemplates: EdgeTemplateFamily = {
     text: '{subject} writes the rules everything in {object} has to live by.',
     expects: { subject: 'properNoun', object: 'properNoun' },
   },
-  historicalBridge: { text: '', expects: {} },
+  historicalBridge: {
+    text: '{subject} founded {object} during {historical:era|the early charters},',
+    expects: { subject: 'properNoun', object: 'properNoun' },
+  },
   hook: [
     {
       text: 'What did {subject} pay to lock down {object}?',

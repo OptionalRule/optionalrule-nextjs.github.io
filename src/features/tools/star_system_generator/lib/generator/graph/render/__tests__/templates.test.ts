@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest'
 import { templateFor } from '../templates'
 import { EDGE_TYPES } from '../../types'
 import { renderSystemStory } from '../renderSystemStory'
-import { resolveSlots } from '../slotResolver'
+import { resolveSlots, type EdgeRenderContext } from '../slotResolver'
 import { createSeededRng } from '../../../rng'
 import type { EntityRef, RelationshipEdge, SystemRelationshipGraph } from '../../types'
 
@@ -301,5 +301,163 @@ describe('DISPLACED family', () => {
     expect(text).toContain('the great compaction')
     expect(text).not.toContain('{')
     expect(text).toMatch(/[.!?]$/)
+  })
+})
+
+describe('historicalBridge templates', () => {
+  const faction: EntityRef = { kind: 'namedFaction', id: 'f1', displayName: 'Helion Debt Synod', layer: 'human' }
+  const settlement: EntityRef = { kind: 'settlement', id: 's1', displayName: 'Orison Hold', layer: 'human' }
+  const otherFaction: EntityRef = { kind: 'namedFaction', id: 'f2', displayName: 'Kestrel Free Compact', layer: 'human' }
+  const guResource: EntityRef = { kind: 'guResource', id: 'gu1', displayName: 'chiral ice belt', layer: 'gu' }
+  const phenomenon: EntityRef = { kind: 'phenomenon', id: 'p1', displayName: 'flare-amplified bleed season', layer: 'physical' }
+  const ruin: EntityRef = { kind: 'ruin', id: 'r1', displayName: 'Mira Vault', layer: 'physical' }
+
+  const historical = { summary: 'the second-wave failure', era: 'the second wave' }
+
+  describe('CONTROLS family', () => {
+    it('renders era marker when historical context is present', () => {
+      const family = templateFor('CONTROLS')
+      const ctx: EdgeRenderContext = {
+        subject: faction, object: settlement, edgeType: 'CONTROLS', visibility: 'public', historical,
+      }
+      const text = resolveSlots(family.historicalBridge.text, ctx, family.historicalBridge.expects)
+      expect(text).toContain('Helion Debt Synod')
+      expect(text).toContain('Orison Hold')
+      expect(text).toContain('the second wave')
+      expect(text).not.toContain('{')
+      expect(text).toMatch(/,$/)
+    })
+    it('renders fallback when historical context is absent', () => {
+      const family = templateFor('CONTROLS')
+      const ctx: EdgeRenderContext = {
+        subject: faction, object: settlement, edgeType: 'CONTROLS', visibility: 'public',
+      }
+      const text = resolveSlots(family.historicalBridge.text, ctx, family.historicalBridge.expects)
+      expect(text).toContain('the early charters')
+      expect(text).not.toContain('{')
+      expect(text).toMatch(/,$/)
+    })
+  })
+
+  describe('CONTESTS family', () => {
+    it('renders era marker when historical context is present', () => {
+      const family = templateFor('CONTESTS')
+      const ctx: EdgeRenderContext = {
+        subject: faction, object: otherFaction, edgeType: 'CONTESTS', visibility: 'public', historical,
+      }
+      const text = resolveSlots(family.historicalBridge.text, ctx, family.historicalBridge.expects)
+      expect(text).toContain('Helion Debt Synod')
+      expect(text).toContain('Kestrel Free Compact')
+      expect(text).toContain('the second wave')
+      expect(text).not.toContain('{')
+      expect(text).toMatch(/,$/)
+    })
+    it('renders fallback when historical context is absent', () => {
+      const family = templateFor('CONTESTS')
+      const ctx: EdgeRenderContext = {
+        subject: faction, object: otherFaction, edgeType: 'CONTESTS', visibility: 'public',
+      }
+      const text = resolveSlots(family.historicalBridge.text, ctx, family.historicalBridge.expects)
+      expect(text).toContain('an earlier reckoning')
+      expect(text).not.toContain('{')
+      expect(text).toMatch(/,$/)
+    })
+  })
+
+  describe('DEPENDS_ON family', () => {
+    it('renders era marker and articled object when historical context is present', () => {
+      const family = templateFor('DEPENDS_ON')
+      const ctx: EdgeRenderContext = {
+        subject: settlement, object: guResource, edgeType: 'DEPENDS_ON', visibility: 'public', historical,
+      }
+      const text = resolveSlots(family.historicalBridge.text, ctx, family.historicalBridge.expects)
+      expect(text).toContain('Orison Hold')
+      expect(text).toContain('the chiral ice belt')
+      expect(text).toContain('the second wave')
+      expect(text).not.toContain('{')
+      expect(text).toMatch(/,$/)
+    })
+    it('renders fallback when historical context is absent', () => {
+      const family = templateFor('DEPENDS_ON')
+      const ctx: EdgeRenderContext = {
+        subject: settlement, object: guResource, edgeType: 'DEPENDS_ON', visibility: 'public',
+      }
+      const text = resolveSlots(family.historicalBridge.text, ctx, family.historicalBridge.expects)
+      expect(text).toContain('the chiral ice belt')
+      expect(text).toContain('the great compaction')
+      expect(text).not.toContain('{')
+      expect(text).toMatch(/,$/)
+    })
+  })
+
+  describe('DESTABILIZES family', () => {
+    it('renders era marker when historical context is present', () => {
+      const family = templateFor('DESTABILIZES')
+      const ctx: EdgeRenderContext = {
+        subject: phenomenon, object: settlement, edgeType: 'DESTABILIZES', visibility: 'public', historical,
+      }
+      const text = resolveSlots(family.historicalBridge.text, ctx, family.historicalBridge.expects)
+      expect(text).toContain('flare-amplified bleed season')
+      expect(text).toContain('the second wave')
+      expect(text).not.toContain('{')
+      expect(text).toMatch(/,$/)
+    })
+    it('renders fallback when historical context is absent', () => {
+      const family = templateFor('DESTABILIZES')
+      const ctx: EdgeRenderContext = {
+        subject: phenomenon, object: settlement, edgeType: 'DESTABILIZES', visibility: 'public',
+      }
+      const text = resolveSlots(family.historicalBridge.text, ctx, family.historicalBridge.expects)
+      expect(text).toContain('a flawed founding')
+      expect(text).not.toContain('{')
+      expect(text).toMatch(/,$/)
+    })
+  })
+
+  describe('SUPPRESSES family', () => {
+    it('renders era marker when historical context is present', () => {
+      const family = templateFor('SUPPRESSES')
+      const ctx: EdgeRenderContext = {
+        subject: faction, object: phenomenon, edgeType: 'SUPPRESSES', visibility: 'contested', historical,
+      }
+      const text = resolveSlots(family.historicalBridge.text, ctx, family.historicalBridge.expects)
+      expect(text).toContain('Helion Debt Synod')
+      expect(text).toContain('the second wave')
+      expect(text).not.toContain('{')
+      expect(text).toMatch(/,$/)
+    })
+    it('renders fallback when historical context is absent', () => {
+      const family = templateFor('SUPPRESSES')
+      const ctx: EdgeRenderContext = {
+        subject: faction, object: phenomenon, edgeType: 'SUPPRESSES', visibility: 'contested',
+      }
+      const text = resolveSlots(family.historicalBridge.text, ctx, family.historicalBridge.expects)
+      expect(text).toContain('a broken compact')
+      expect(text).not.toContain('{')
+      expect(text).toMatch(/,$/)
+    })
+  })
+
+  describe('CONTRADICTS family', () => {
+    it('renders era marker when historical context is present', () => {
+      const family = templateFor('CONTRADICTS')
+      const ctx: EdgeRenderContext = {
+        subject: ruin, object: settlement, edgeType: 'CONTRADICTS', visibility: 'contested', historical,
+      }
+      const text = resolveSlots(family.historicalBridge.text, ctx, family.historicalBridge.expects)
+      expect(text).toContain('the second wave')
+      expect(text).not.toContain('{')
+      expect(text).toMatch(/,$/)
+    })
+    it('renders fallback when historical context is absent', () => {
+      const family = templateFor('CONTRADICTS')
+      const ctx: EdgeRenderContext = {
+        subject: ruin, object: settlement, edgeType: 'CONTRADICTS', visibility: 'contested',
+      }
+      const text = resolveSlots(family.historicalBridge.text, ctx, family.historicalBridge.expects)
+      expect(text).toContain('a public-trust breach')
+      expect(text).not.toContain('{')
+      expect(text).toMatch(/,$/)
+    })
   })
 })

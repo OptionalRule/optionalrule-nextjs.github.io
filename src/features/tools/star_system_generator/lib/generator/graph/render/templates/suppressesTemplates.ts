@@ -29,7 +29,10 @@ export const suppressesTemplates: EdgeTemplateFamily = {
     text: '{subject} is making sure no one says {object:article} out loud.',
     expects: { subject: 'properNoun', object: 'nounPhrase' },
   },
-  historicalBridge: { text: '', expects: {} },
+  historicalBridge: {
+    text: '{subject} took control during {historical:era|a broken compact},',
+    expects: { subject: 'properNoun' },
+  },
   hook: [
     {
       text: 'What does {subject} stand to lose if {object} stops being a secret?',

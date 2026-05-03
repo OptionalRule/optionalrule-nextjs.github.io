@@ -12,7 +12,10 @@ export const contestsTemplates: EdgeTemplateFamily = {
     text: "{subject} and {object} can't both set the rules — and the rest of the system knows it.",
     expects: { subject: 'properNoun', object: 'properNoun' },
   },
-  historicalBridge: { text: '', expects: {} },
+  historicalBridge: {
+    text: 'The compact between {subject} and {object} broke during {historical:era|an earlier reckoning},',
+    expects: { subject: 'properNoun', object: 'properNoun' },
+  },
   hook: [
     { text: 'Who profits if {subject} and {object} stay locked in this fight?', expects: { subject: 'properNoun', object: 'properNoun' } },
     { text: 'A neutral broker between {subject} and {object} would have leverage.', expects: { subject: 'properNoun', object: 'properNoun' } },

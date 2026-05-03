@@ -12,7 +12,10 @@ export const dependsOnTemplates: EdgeTemplateFamily = {
     text: '{subject} runs on {object} — a single failure away from collapse.',
     expects: { subject: 'properNoun', object: 'nounPhrase' },
   },
-  historicalBridge: { text: '', expects: {} },
+  historicalBridge: {
+    text: '{subject} ended up on {object:article} during {historical:era|the great compaction},',
+    expects: { subject: 'properNoun', object: 'nounPhrase' },
+  },
   hook: [
     { text: 'What does {subject} owe to keep {object} flowing?', expects: { subject: 'properNoun', object: 'nounPhrase' } },
     { text: 'How long can {subject:lower} last if {object} dries up?', expects: { subject: 'properNoun', object: 'nounPhrase' } },

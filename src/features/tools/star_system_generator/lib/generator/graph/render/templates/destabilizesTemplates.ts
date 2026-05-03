@@ -12,7 +12,10 @@ export const destabilizesTemplates: EdgeTemplateFamily = {
     text: '{subject:article} is rewriting the constants {object} was built around.',
     expects: { subject: 'nounPhrase', object: 'properNoun' },
   },
-  historicalBridge: { text: '', expects: {} },
+  historicalBridge: {
+    text: '{subject} traces back to {historical:era|a flawed founding},',
+    expects: { subject: 'properNoun' },
+  },
   hook: [
     { text: 'Whose models predicted {subject:lower} would behave?', expects: { subject: 'nounPhrase' } },
     { text: "Who profits from {object}'s loss of cushion?", expects: { object: 'properNoun' } },
