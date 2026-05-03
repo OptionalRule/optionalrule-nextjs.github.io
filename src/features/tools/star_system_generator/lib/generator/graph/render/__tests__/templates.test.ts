@@ -263,3 +263,23 @@ describe('FOUNDED_BY family', () => {
     expect(text).toMatch(/[.!?]$/)
   })
 })
+
+describe('BETRAYED family', () => {
+  it('body template renders subject + object + era as a complete sentence', () => {
+    const family = templateFor('BETRAYED')
+    expect(family.body.length).toBeGreaterThanOrEqual(1)
+    const ctx = {
+      subject: { kind: 'namedFaction', id: 'f1', displayName: 'Route Authority', layer: 'human' } as const,
+      object: { kind: 'namedFaction', id: 'f2', displayName: 'Kestrel Free Compact', layer: 'human' } as const,
+      qualifier: 'the long quiet',
+      edgeType: 'BETRAYED' as const,
+      visibility: 'public' as const,
+    }
+    const text = resolveSlots(family.body[0].text, ctx, family.body[0].expects)
+    expect(text).toContain('Route Authority')
+    expect(text).toContain('Kestrel Free Compact')
+    expect(text).toContain('the long quiet')
+    expect(text).not.toContain('{')
+    expect(text).toMatch(/[.!?]$/)
+  })
+})
