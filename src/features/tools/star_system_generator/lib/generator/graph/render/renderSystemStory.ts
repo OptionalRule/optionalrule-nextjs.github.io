@@ -134,15 +134,18 @@ function renderClause(template: EdgeTemplate, ctx: EdgeRenderContext): string {
   return result
 }
 
+const LEADING_ARTICLE_PATTERN = /^(The|A|An)\s/
+
 function composeSpineSummary(bridge: string, summary: string): string {
   if (summary.length === 0) return bridge
-  const first = summary[0]
-  // Bridge ends mid-sentence (',' or '—'), so the summary continues the same
-  // sentence. Lowercase a leading uppercase-alphabetic char (proper-noun head);
-  // leave already-lowercase or non-alphabetic leads (quote, digit) intact.
-  const isUppercaseAlpha = first === first.toUpperCase() && first !== first.toLowerCase()
-  const head = isUppercaseAlpha ? first.toLowerCase() : first
-  return `${bridge} ${head}${summary.slice(1)}`
+  // Narrowed to leading articles only; clobbering any uppercase head would
+  // lowercase proper-noun slot heads (e.g. "Kestrel Free Compact").
+  const articleMatch = summary.match(LEADING_ARTICLE_PATTERN)
+  if (articleMatch !== null) {
+    const lowered = articleMatch[1].toLowerCase()
+    return `${bridge} ${lowered}${summary.slice(articleMatch[1].length)}`
+  }
+  return `${bridge} ${summary}`
 }
 
 function renderParagraph(edges: ReadonlyArray<RelationshipEdge>, rng: SeededRng): string {

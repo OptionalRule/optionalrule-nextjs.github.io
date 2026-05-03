@@ -223,6 +223,27 @@ describe('renderSystemStory', () => {
     expect(a.spineSummary).toEqual(b.spineSummary)
   })
 
+  it('composeSpineSummary preserves the proper-noun head of the post-bridge clause', () => {
+    const auth: EntityRef = { kind: 'namedFaction', id: 'f1', displayName: 'Route Authority', layer: 'human' }
+    const compact: EntityRef = { kind: 'namedFaction', id: 'f2', displayName: 'Kestrel Free Compact', layer: 'human' }
+    const contestsEdge = makeEdge({
+      id: 'c1', type: 'CONTESTS', subject: auth, object: compact, visibility: 'contested',
+    })
+    const historicalEdge = makeEdge({
+      id: 'h1', type: 'BETRAYED', subject: auth, object: compact,
+      era: 'historical',
+      approxEra: 'in the long quiet',
+      summary: 'Records were edited in the long quiet.',
+      consequenceEdgeIds: ['c1'],
+    })
+    const graph = graphWith([contestsEdge, historicalEdge], ['c1'])
+    const story = renderSystemStory(graph, createSeededRng('proper-noun-head'))
+
+    expect(story.spineSummary).not.toMatch(/, [a-z]/)
+    expect(story.spineSummary).toMatch(/Kestrel Free Compact/)
+    expect(story.spineSummary).not.toContain('{')
+  })
+
   it('produces a meaningfully longer spineSummary when bridge is woven in', () => {
     const faction: EntityRef = { kind: 'namedFaction', id: 'f1', displayName: 'Helion Debt Synod', layer: 'human' }
 
