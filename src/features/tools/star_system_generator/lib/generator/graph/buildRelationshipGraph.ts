@@ -6,6 +6,7 @@ import { EDGE_TYPES } from './types'
 import { allRules, buildFactIndexes, type BuildCtx } from './rules'
 import { scoreCandidates, selectEdges } from './score'
 import { buildEdgeIndexes } from './buildIndexes'
+import { attachHistoricalEvents } from './history'
 
 function emptyEdgesByType(): Record<EdgeType, string[]> {
   const result = {} as Record<EdgeType, string[]>
@@ -48,15 +49,21 @@ export function buildRelationshipGraph(
   })
   const edges = [...selection.spine, ...selection.peripheral]
 
-  const { edgesByEntity, edgesByType } = buildEdgeIndexes(edges)
+  const { historicalEdges } = attachHistoricalEvents({
+    spineEdges: selection.spine,
+    rng,
+  })
+  const allEdges = [...edges, ...historicalEdges]
+
+  const { edgesByEntity, edgesByType } = buildEdgeIndexes(allEdges)
   const completeEdgesByType = { ...emptyEdgesByType(), ...edgesByType }
 
   return {
     entities,
-    edges,
+    edges: allEdges,
     edgesByEntity,
     edgesByType: completeEdgesByType,
     spineEdgeIds: selection.spineIds,
-    historicalEdgeIds: [],
+    historicalEdgeIds: historicalEdges.map(e => e.id),
   }
 }
