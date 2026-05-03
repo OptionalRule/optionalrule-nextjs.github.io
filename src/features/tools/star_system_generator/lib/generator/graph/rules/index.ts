@@ -10,6 +10,10 @@ import {
   contestsAuthorityRule,
 } from './contestsRules'
 import {
+  controlsRouteAssetRule,
+  controlsSettlementUniqueDomainRule,
+} from './controlsRules'
+import {
   destabilizesPhenomenonSettlementRule,
   destabilizesGuHazardSettlementRule,
 } from './destabilizesRules'
@@ -22,6 +26,8 @@ export const allRules: ReadonlyArray<EdgeRule> = [
   dependsOnViaPresenceRule,
   contestsSharedDomainRule,
   contestsAuthorityRule,
+  controlsRouteAssetRule,
+  controlsSettlementUniqueDomainRule,
   destabilizesPhenomenonSettlementRule,
   destabilizesGuHazardSettlementRule,
 ].sort((a, b) => (a.id < b.id ? -1 : a.id > b.id ? 1 : 0))
