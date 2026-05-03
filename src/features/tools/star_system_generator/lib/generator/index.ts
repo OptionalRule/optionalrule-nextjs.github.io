@@ -331,7 +331,7 @@ const traitOptions = [
   'old first-wave traffic',
 ] as const
 
-function fact<T>(value: T, confidence: Fact<T>['confidence'], source?: string): Fact<T> {
+export function fact<T>(value: T, confidence: Fact<T>['confidence'], source?: string): Fact<T> {
   return { value, confidence, source }
 }
 

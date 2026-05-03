@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest'
 import { graphAwareReshape } from '../graphAwareReshape'
 import { createSeededRng } from '../../rng'
 import type { Settlement, SystemPhenomenon, GenerationOptions } from '../../../../types'
-import type { SystemRelationshipGraph } from '../../graph'
+import type { SystemRelationshipGraph, RelationshipEdge, EntityRef } from '../../graph'
 
 function emptyGraph(): SystemRelationshipGraph {
   return {
@@ -142,5 +142,88 @@ describe('graphAwareReshape', () => {
       rng: createSeededRng('determinism-seed'),
     })
     expect(resultA).toEqual(resultB)
+  })
+})
+
+function makeEntityRef(id: string, displayName: string, kind: EntityRef['kind']): EntityRef {
+  return { id, displayName, kind, layer: 'human' }
+}
+
+function makeDependsOnEdge(settlementId: string, resourceId: string): RelationshipEdge {
+  return {
+    id: `edge-${settlementId}-${resourceId}`,
+    type: 'DEPENDS_ON',
+    subject: makeEntityRef(settlementId, 'Orison Hold', 'settlement'),
+    object: makeEntityRef(resourceId, 'chiral ice belt', 'guResource'),
+    visibility: 'public',
+    confidence: 'inferred',
+    groundingFactIds: [],
+    era: 'present',
+    weight: 1,
+  }
+}
+
+function graphWithEdges(edges: RelationshipEdge[]): SystemRelationshipGraph {
+  const edgesByEntity: Record<string, string[]> = {}
+  for (const edge of edges) {
+    edgesByEntity[edge.subject.id] = [...(edgesByEntity[edge.subject.id] ?? []), edge.id]
+    edgesByEntity[edge.object.id] = [...(edgesByEntity[edge.object.id] ?? []), edge.id]
+  }
+  return {
+    ...emptyGraph(),
+    edges,
+    edgesByEntity,
+  }
+}
+
+function settlementWithAnchor(id: string, anchorName: string): Settlement {
+  return {
+    id,
+    anchorName: { value: anchorName, confidence: 'confirmed' },
+    whyHere: { value: 'original whyHere', confidence: 'confirmed' },
+  } as unknown as Settlement
+}
+
+describe('graphAwareReshape — settlementWhyHere integration', () => {
+  it('replaces whyHere when settlementWhyHere flag is on AND incident DEPENDS_ON exists', () => {
+    const settlement = settlementWithAnchor('s1', 'Orison Hold')
+    const graph = graphWithEdges([makeDependsOnEdge('s1', 'gu1')])
+    const result = graphAwareReshape({
+      settlements: [settlement],
+      phenomena: [],
+      relationshipGraph: graph,
+      options: { ...baseOptions, graphAware: { settlementWhyHere: true } },
+      rng: createSeededRng('test'),
+    })
+    expect(result.settlements[0].whyHere.value).toContain('Orison Hold')
+    expect(result.settlements[0].whyHere.value).toContain('chiral ice belt')
+    expect(result.settlements[0].whyHere.confidence).toBe('inferred')
+  })
+
+  it('preserves whyHere when settlementWhyHere flag is off', () => {
+    const settlement = settlementWithAnchor('s1', 'Orison Hold')
+    const originalWhyHere = settlement.whyHere
+    const graph = graphWithEdges([makeDependsOnEdge('s1', 'gu1')])
+    const result = graphAwareReshape({
+      settlements: [settlement],
+      phenomena: [],
+      relationshipGraph: graph,
+      options: baseOptions,
+      rng: createSeededRng('test'),
+    })
+    expect(result.settlements[0].whyHere).toBe(originalWhyHere)
+  })
+
+  it('preserves whyHere when flag on but no incident edges', () => {
+    const settlement = settlementWithAnchor('s1', 'Orison Hold')
+    const originalWhyHere = settlement.whyHere
+    const result = graphAwareReshape({
+      settlements: [settlement],
+      phenomena: [],
+      relationshipGraph: emptyGraph(),
+      options: { ...baseOptions, graphAware: { settlementWhyHere: true } },
+      rng: createSeededRng('test'),
+    })
+    expect(result.settlements[0].whyHere).toBe(originalWhyHere)
   })
 })

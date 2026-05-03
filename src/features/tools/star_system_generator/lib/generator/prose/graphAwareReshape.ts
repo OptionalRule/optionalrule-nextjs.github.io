@@ -3,6 +3,8 @@ import type {
   Settlement, SystemPhenomenon, GenerationOptions,
 } from '../../../types'
 import type { SystemRelationshipGraph } from '../graph'
+import { graphAwareSettlementWhyHere } from './graphAwareSettlementWhyHere'
+import { fact } from '../index'
 
 export interface GraphAwareReshapeInput {
   settlements: Settlement[]
@@ -40,11 +42,21 @@ export function graphAwareReshape(input: GraphAwareReshapeInput): GraphAwareResh
 
 function reshapeSettlement(
   settlement: Settlement,
-  _graph: SystemRelationshipGraph,
-  _flags: NonNullable<GenerationOptions['graphAware']>,
+  graph: SystemRelationshipGraph,
+  flags: NonNullable<GenerationOptions['graphAware']>,
   _rng: SeededRng,
 ): Settlement {
-  return settlement
+  let updated = settlement
+  if (flags.settlementWhyHere) {
+    const newWhyHere = graphAwareSettlementWhyHere(updated, graph)
+    if (newWhyHere !== null) {
+      updated = {
+        ...updated,
+        whyHere: fact(newWhyHere, 'inferred', 'Graph-aware reshape from settlementWhyHere'),
+      }
+    }
+  }
+  return updated
 }
 
 function reshapePhenomenon(
