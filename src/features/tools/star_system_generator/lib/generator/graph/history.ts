@@ -101,7 +101,7 @@ function mintHistoricalEdge(
     qualifier: era,
     edgeType: histType,
     visibility: 'public',
-  })
+  }, presentEdge.id)
   if (summary === '') return null
 
   const id = mintEdgeId(`HISTORY:${histType}`, subject.id, object.id, era)
@@ -134,10 +134,12 @@ function pickHistoricalEndpoints(
   return { subject: presentEdge.subject, object: presentEdge.object }
 }
 
-function renderHistoricalSummary(ctx: EdgeRenderContext): string {
+function renderHistoricalSummary(ctx: EdgeRenderContext, rotationKey: string): string {
   const family = templateFor(ctx.edgeType)
-  if (family.body.length === 0 || family.body[0].text === '') return ''
-  const variant = family.body[0]
+  if (family.body.length === 0) return ''
+  const variantIndex = stableHashString(rotationKey) % family.body.length
+  const variant = family.body[variantIndex]
+  if (variant.text === '') return ''
   let text = resolveSlots(variant.text, ctx, variant.expects)
   text = capitalizeForPosition(text, 'sentence-start')
   text = guardDoubledNoun(text)
