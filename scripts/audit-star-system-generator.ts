@@ -6,6 +6,8 @@ import {
 } from '../src/features/tools/star_system_generator/lib/generator/domain'
 import { frontierStarTypes, realisticStarTypes } from '../src/features/tools/star_system_generator/lib/generator/tables'
 import { validateSystem, type ValidationFinding, type ValidationSource } from '../src/features/tools/star_system_generator/lib/generator/validation'
+import { isNamedEntity } from '../src/features/tools/star_system_generator/lib/generator/graph'
+import type { EdgeType } from '../src/features/tools/star_system_generator/lib/generator/graph'
 import {
   builtForms,
   guFractureFunctionsBySiteCategory as settlementGuFractureFunctionsBySiteCategory,
@@ -84,6 +86,10 @@ interface CorpusStats {
   activityModifiers: Map<string, number>
   reachabilityModifiers: Map<string, number>
   reachabilityClasses: Map<string, number>
+  edgeCounts: number[]
+  spineCounts: number[]
+  edgesByType: Record<EdgeType, number>
+  systemsWithZeroEdges: number
 }
 
 const auditProfiles = {
@@ -560,6 +566,52 @@ function auditSystem(system: GeneratedSystem, findings: Finding[], stats: Corpus
     increment(stats.settlementScales, settlement.scale.value)
   })
 
+  const edgeCount = system.relationshipGraph.edges.length
+  stats.edgeCounts.push(edgeCount)
+  stats.spineCounts.push(system.relationshipGraph.spineEdgeIds.length)
+  if (edgeCount === 0) stats.systemsWithZeroEdges += 1
+  for (const edge of system.relationshipGraph.edges) {
+    stats.edgesByType[edge.type] += 1
+  }
+
+  if (edgeCount > 12) {
+    addFinding(findings, 'error', seed, 'graph.edges.count',
+      `Edge count ${edgeCount} exceeds hard ceiling 12`)
+  }
+
+  const edgeKeys = new Set<string>()
+  for (const edge of system.relationshipGraph.edges) {
+    const key = `${edge.subject.id}|${edge.object.id}|${edge.type}`
+    if (edgeKeys.has(key)) {
+      addFinding(findings, 'error', seed, 'graph.edges.duplicate',
+        `Duplicate edge ${key}`)
+    }
+    edgeKeys.add(key)
+  }
+
+  for (const spineId of system.relationshipGraph.spineEdgeIds) {
+    const edge = system.relationshipGraph.edges.find((candidate) => candidate.id === spineId)
+    if (!edge) {
+      addFinding(findings, 'error', seed, 'graph.spine.missing',
+        `Spine edge id ${spineId} not found in edges array`)
+      continue
+    }
+    if (!isNamedEntity(edge.subject) || !isNamedEntity(edge.object)) {
+      addFinding(findings, 'error', seed, 'graph.spine.unnamed',
+        `Spine edge ${edge.id} has un-named endpoint(s)`)
+    }
+  }
+
+  const factIds = new Set(system.narrativeFacts.map((fact) => fact.id))
+  for (const edge of system.relationshipGraph.edges) {
+    for (const fid of edge.groundingFactIds) {
+      if (!factIds.has(fid)) {
+        addFinding(findings, 'error', seed, 'graph.grounding.dangling',
+          `Edge ${edge.id} grounds on non-existent fact ${fid}`)
+      }
+    }
+  }
+
   assertText(findings, seed, 'name', system.name.value, 'System name')
   assertText(findings, seed, 'primary.spectralType', system.primary.spectralType.value, 'Primary spectral type')
 
@@ -704,6 +756,13 @@ function auditCoverage(stats: CorpusStats, findings: Finding[]): void {
 
   auditStarDistribution('realistic', realisticStarTypes, stats, findings)
   auditStarDistribution('frontier', frontierStarTypes, stats, findings)
+
+  const sortedEdges = [...stats.edgeCounts].sort((a, b) => a - b)
+  const median = sortedEdges.length > 0 ? sortedEdges[Math.floor(sortedEdges.length / 2)] : 0
+  if (median < 3) {
+    addFinding(findings, 'warning', 'corpus', 'graph.edges.median',
+      `Median edge count across corpus is ${median}; expected >=3`)
+  }
 }
 
 function auditStarDistribution(
@@ -889,6 +948,10 @@ const stats: CorpusStats = {
   activityModifiers: new Map(),
   reachabilityModifiers: new Map(),
   reachabilityClasses: new Map(),
+  edgeCounts: [],
+  spineCounts: [],
+  edgesByType: { HOSTS: 0, CONTROLS: 0, DEPENDS_ON: 0, CONTESTS: 0, DESTABILIZES: 0, SUPPRESSES: 0, CONTRADICTS: 0, WITNESSES: 0, HIDES_FROM: 0, FOUNDED_BY: 0, BETRAYED: 0, DISPLACED: 0 },
+  systemsWithZeroEdges: 0,
 }
 
 for (const distribution of distributions) {
@@ -926,6 +989,12 @@ console.log(`Unique settlement names: ${uniqueSummary(stats.settlementNames, sta
 console.log(`Body interest phrase openings: ${uniqueSummary(stats.bodyInterestPhrases, stats.bodies)}`)
 console.log(`Settlement reason phrase openings: ${uniqueSummary(stats.settlementWhyHerePhrases, stats.settlements)}`)
 console.log(`Settlement tag hook phrase openings: ${uniqueSummary(stats.settlementTagHookPhrases, stats.settlements)}`)
+console.log(`Edges per system (p10/p50/p90): ${formatPercentiles(stats.edgeCounts)}`)
+console.log(`Spine size per system (p10/p50/p90): ${formatPercentiles(stats.spineCounts)}`)
+console.log(`Systems with zero edges: ${stats.systemsWithZeroEdges} / ${stats.systems}`)
+for (const [type, count] of Object.entries(stats.edgesByType)) {
+  if (count > 0) console.log(`  edges of type ${type}: ${count}`)
+}
 console.log(`Errors: ${errors.length}`)
 console.log(`Warnings: ${warnings.length}`)
 console.log(`Locked fact conflicts: ${lockedConflicts.length}`)
