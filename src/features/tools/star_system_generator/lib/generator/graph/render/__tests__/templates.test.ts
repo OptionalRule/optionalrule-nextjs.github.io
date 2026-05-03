@@ -412,6 +412,25 @@ describe('historicalBridge templates', () => {
       expect(text).not.toContain('{')
       expect(text).toMatch(/,$/)
     })
+    it('historicalBridge subject reshapes as nounPhrase for phenomenon-typed subjects with leading article', () => {
+      const family = templateFor('DESTABILIZES')
+      const articledPhenomenon: EntityRef = {
+        kind: 'phenomenon', id: 'p2', displayName: 'the bleed season', layer: 'physical',
+      }
+      const ctx: EdgeRenderContext = {
+        subject: articledPhenomenon,
+        object: settlement,
+        edgeType: 'DESTABILIZES',
+        visibility: 'public',
+        historical: { summary: 'the first wave', era: 'in the first wave' },
+      }
+      const text = resolveSlots(family.historicalBridge.text, ctx, family.historicalBridge.expects)
+      expect(text.toLowerCase()).toContain('bleed season')
+      expect(text).not.toContain('The bleed season')
+      expect(text).not.toContain('the bleed season')
+      expect(text).not.toContain('{')
+      expect(text).toMatch(/,$/)
+    })
   })
 
   describe('SUPPRESSES family', () => {

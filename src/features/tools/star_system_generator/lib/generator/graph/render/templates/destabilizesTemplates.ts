@@ -14,7 +14,7 @@ export const destabilizesTemplates: EdgeTemplateFamily = {
   },
   historicalBridge: {
     text: '{subject} took shape {historical:era|after a flawed founding},',
-    expects: { subject: 'properNoun' },
+    expects: { subject: 'nounPhrase' },
   },
   hook: [
     { text: 'Whose models predicted {subject:lower} would behave?', expects: { subject: 'nounPhrase' } },
