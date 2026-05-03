@@ -18,4 +18,10 @@ describe('connectiveFor', () => {
   it('is fully deterministic', () => {
     expect(connectiveFor('CONTESTS', 'DESTABILIZES')).toBe(connectiveFor('CONTESTS', 'DESTABILIZES'))
   })
+
+  it('returns connectives for new Phase 4 pairs', () => {
+    expect(connectiveFor('HOSTS', 'CONTROLS')).toBe('Above ground, ')
+    expect(connectiveFor('CONTESTS', 'SUPPRESSES')).toBe('Quietly, ')
+    expect(connectiveFor('CONTRADICTS', 'WITNESSES')).toBe('And yet, ')
+  })
 })

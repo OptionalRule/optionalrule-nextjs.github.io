@@ -9,6 +9,18 @@ const CONNECTIVES: Partial<Record<Pair, string>> = {
   'HOSTS->DEPENDS_ON': 'There, ',
   'CONTESTS->CONTRADICTS': 'Privately, ',
   'DESTABILIZES->CONTESTS': 'And in turn, ',
+
+  'HOSTS->CONTROLS': 'Above ground, ',
+  'CONTROLS->DEPENDS_ON': 'Underneath, ',
+  'DEPENDS_ON->CONTROLS': 'And ',
+
+  'CONTESTS->SUPPRESSES': 'Quietly, ',
+  'DESTABILIZES->SUPPRESSES': 'In the meantime, ',
+  'SUPPRESSES->CONTESTS': 'Predictably, ',
+
+  'CONTRADICTS->WITNESSES': 'And yet, ',
+  'WITNESSES->CONTRADICTS': 'Even so, ',
+  'CONTRADICTS->CONTRADICTS': 'On another front, ',
 }
 
 export function connectiveFor(

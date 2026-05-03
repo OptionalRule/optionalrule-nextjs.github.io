@@ -658,6 +658,30 @@ function auditSystem(system: GeneratedSystem, findings: Finding[], stats: Corpus
       `Body has ${system.systemStory.body.length} paragraphs; expected <= 3.`)
   }
 
+  const hiddenEdgeIds = new Set(
+    system.relationshipGraph.edges
+      .filter(e => e.visibility === 'hidden')
+      .map(e => e.id),
+  )
+
+  if (hiddenEdgeIds.size > 0) {
+    for (const edge of system.relationshipGraph.edges) {
+      if (edge.visibility !== 'hidden') continue
+      for (const para of system.systemStory.body) {
+        if (para.includes(edge.subject.displayName) && para.includes(edge.object.displayName)) {
+          addFinding(findings, 'error', seed, 'story.hiddenLeak',
+            `Hidden edge ${edge.id} appears to leak into body paragraph: "${para}"`)
+          break
+        }
+      }
+    }
+
+    if (system.systemStory.hooks.length === 0) {
+      addFinding(findings, 'warning', seed, 'story.hiddenWithoutHook',
+        `${hiddenEdgeIds.size} hidden edge(s) but no hooks produced.`)
+    }
+  }
+
   assertText(findings, seed, 'name', system.name.value, 'System name')
   assertText(findings, seed, 'primary.spectralType', system.primary.spectralType.value, 'Primary spectral type')
 
@@ -1050,6 +1074,11 @@ console.log(`Story body paragraph count (p10/p50/p90): ${formatPercentiles(stats
 console.log(`Story body sentence count (p10/p50/p90): ${formatPercentiles(stats.bodySentenceCounts)}`)
 console.log(`Story hook count (p10/p50/p90): ${formatPercentiles(stats.hookCounts)}`)
 console.log(`Systems with empty story: ${stats.systemsWithEmptyStory} / ${stats.systems}`)
+const emptyStoryRate = stats.systems > 0 ? stats.systemsWithEmptyStory / stats.systems : 0
+console.log(`Empty-story rate: ${(emptyStoryRate * 100).toFixed(2)}% (${stats.systemsWithEmptyStory}/${stats.systems})`)
+if (emptyStoryRate > 0.03) {
+  console.log(`  WARN: empty-story rate exceeds Phase 4 target (3%) — flagged for Phase 7 tuning.`)
+}
 console.log(`Errors: ${errors.length}`)
 console.log(`Warnings: ${warnings.length}`)
 console.log(`Locked fact conflicts: ${lockedConflicts.length}`)
