@@ -281,3 +281,13 @@ A diagnostic across 960 systems (10 per option, full distribution × tone × gu 
 - **41.3%** of missing settlements **also lack any DEPENDS_ON candidate** (no fn/crisis keyword overlap with the gu resource and `guValue<2`), so even an unbounded budget would not surface graph-aware whyHere for them.
 
 No single fixable root cause exceeds the 50% bar. The bottleneck is structural (selection budget) and untouchable without enlarging the graph or rewriting whyHere to look at the candidate pool — both are Phase 8 territory. **Decision: document, do not richen.** The audit script now annotates ~50–70% as the realistic ceiling for the whyHere graph-aware rate and warns below 50% as a regression signal in HOSTS or DEPENDS_ON rules.
+
+## Task 9 outcome: empty-story rate documented as structural floor
+
+A diagnostic across 4800 systems (deep-audit profile, 50 per option, full distribution × tone × gu × density grid) characterised the 6.77% of systems whose `spineSummary === '' && body.length === 0`. Findings:
+
+- **100% of empty-story systems have zero settlements.** All 325/325 are `sparse` density — sparse rolls 0 settlements 27.08% of the time; `normal`/`crowded`/`hub` never produced an empty story.
+- **100% have zero spine edges.** Median graph edges = 2 (vs corpus median 13). The relationship graph has no human-layer endpoint anchored to a settlement, so the spine selector cannot surface a meaningful named-on-named compact for the system.
+- **Named-faction inventory is baseline.** Median 10 named factions (corpus median 10). Phenomena, ruins, bodies all baseline-level. The bottleneck is not entity inventory; it is the absence of a settlement anchor.
+
+Empty story is the *correct* outcome for these systems — there is no spine to surface. **Decision: document 6.77% as the structural floor, do not fix.** A fix would require either forcing settlements on every system (changes generator semantics, out-of-scope for the 0.5-week budget) or rewriting the spine to surface namedFaction-on-namedFaction edges without a settlement anchor (Phase 8 territory). The audit script's WARN threshold is updated from 3% → 10%; below 10% is the steady-state baseline, above 10% indicates regression in entity inventory or rule generation.
