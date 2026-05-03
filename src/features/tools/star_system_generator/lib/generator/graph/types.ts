@@ -56,3 +56,9 @@ export interface SystemRelationshipGraph {
   spineEdgeIds: string[]
   historicalEdgeIds: string[]
 }
+
+export interface SystemStoryOutput {
+  spineSummary: string
+  body: string[]
+  hooks: string[]
+}

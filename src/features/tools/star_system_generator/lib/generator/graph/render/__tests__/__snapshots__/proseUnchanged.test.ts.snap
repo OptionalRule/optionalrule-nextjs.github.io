@@ -1,0 +1,62 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`Phase 3 existing prose remains byte-identical > seed phase3-prose-1 produces stable existing-prose surfaces 1`] = `
+{
+  "narrativeLineCount": 3,
+  "narrativeThreadCount": 3,
+  "phenomenonNotes": [
+    "Transit: Old landing grids still work but route ships through abandoned hazards. Question: Who erased the last colony updates, and which sealed habitat still has power? Hook: Descendant claimants, insurers, and scavengers need incompatible rulings on the colony's fate. Image: A lit administration dome broadcasts docking instructions to empty streets.",
+    "Transit: The rogue's eccentric orbit creates rare close-pass windows and gravitational surprises. Question: Do its volatiles, heat signature, or crust records contradict local histories? Hook: Colonies, science teams, and GU administrators contest hazard, depot, or archive status. Image: A lightless planet rolls through floodlamp glare and survey tug exhaust.",
+  ],
+  "settlementTagHooks": [
+    "The public tag is Bleed-Chaser Port; the private trouble is Free Captain Nest, because independent crews set the local law when formal authority fails. A failed terraforming release makes the GU work impossible to treat as routine. Privately, the site is an illegal AI lab. Control of the route weather bureau decides who has leverage.",
+    "Perfect Dome, Rotten Outside is the surface story, but AI Whisper Cult shows who benefits from the tension: residents read spiritual or political meaning into narrow-AI behavior. A toxic chiral harvest makes the GU work impossible to treat as routine. Privately, the curse is chiral neurochemistry. Control of the ice-chirality sorting plant decides who has leverage.",
+  ],
+  "settlementWhyHere": [
+    "Irena-61 III route geometry survives because resources are strong here, especially phase-stable superconductive lattice; access is manageable for prepared crews; GU value is high enough to justify danger and secrecy.",
+    "Crews keep choosing Irena-61 V minor-body complex because local materials, volatiles, or fuel justify permanent infrastructure; access is manageable for prepared crews; GU value is high enough to justify danger and secrecy.",
+  ],
+  "systemName": "Irena-61",
+}
+`;
+
+exports[`Phase 3 existing prose remains byte-identical > seed phase3-prose-2 produces stable existing-prose surfaces 1`] = `
+{
+  "narrativeLineCount": 3,
+  "narrativeThreadCount": 3,
+  "phenomenonNotes": [
+    "Transit: A recurring storm disrupts election-window traffic, ballots, and monitors. Question: Is the cycle natural, exploited, or scheduled around known route instability? Hook: Opposition blocs accuse the port council of stranding hostile precincts. Image: A polling station runs on emergency power beyond delayed ballot shuttles.",
+    "Transit: Radiation belts force looping transfers, hardened shelters, and costly orbital delays. Question: Which supposedly safe corridor shifted, and who knew before the convoy entered? Hook: Port authorities, insurers, and smugglers fight over legal and lethal corridor maps. Image: A navigation vault shows a convoy bending toward an uncharted hot belt.",
+  ],
+  "settlementTagHooks": [
+    "Outsiders call it Derelict Yard, but the local pressure is sharper: a failed environmental project is still shaping the crisis. A corporate security crackdown makes the GU work impossible to treat as routine. Privately, the settlement has an evacuation ark nobody knows about. Control of the Pinchdrive tuning station decides who has leverage.",
+    "The public tag is Religious Geometry; the private trouble is Life-Support Union, because repair crews can save or freeze the whole settlement by choosing where work stops. Ships trapped by a metric storm make the GU work impossible to treat as routine. Privately, the curse is chiral neurochemistry. Control of the corporate customs post decides who has leverage.",
+    "Outsiders call it Elegant Core Enclave, but the local pressure is sharper: storm shelter access is allocated by a lottery everyone suspects is rigged. When terraforming mirrors begin an unsafe correction burn, the situation makes the GU work impossible to treat as routine. Privately, the official quarantine boundary protects an illegal facility. Control of the fuel depot decides who has leverage.",
+  ],
+  "settlementWhyHere": [
+    "Meissa's Forge V orbital space: local materials, volatiles, or fuel justify permanent infrastructure; iggygate anchor access keeps traffic viable; the site controls a militarily or commercially important approach.",
+    "Meissa's Forge transit geometry survives because resources are strong here, especially snow-line organochemical feedstock; iggygate anchor access keeps traffic viable; the site controls a militarily or commercially important approach.",
+    "Meissa's Forge II orbital space: local materials, volatiles, or fuel justify permanent infrastructure; iggygate anchor access keeps traffic viable; the site controls a militarily or commercially important approach.",
+  ],
+  "systemName": "Meissa's Forge",
+}
+`;
+
+exports[`Phase 3 existing prose remains byte-identical > seed phase3-prose-3 produces stable existing-prose surfaces 1`] = `
+{
+  "narrativeLineCount": 3,
+  "narrativeThreadCount": 3,
+  "phenomenonNotes": [
+    "Transit: The rogue's eccentric orbit creates rare close-pass windows and gravitational surprises. Question: Do its volatiles, heat signature, or crust records contradict local histories? Hook: Colonies, science teams, and GU administrators contest hazard, depot, or archive status. Image: A lightless planet rolls through floodlamp glare and survey tug exhaust.",
+    "Transit: Unstable weather and toxic biomes make surface routes unreliable beyond maintained corridors. Question: Which failure mode is spreading, and which contractor record explains it? Hook: Liability courts, cleanup firms, and abandoned settlers need incompatible survival evidence. Image: Engineered forest rot crawls across a road built for another climate.",
+    "Transit: Plume windows restrict low-orbit approaches to brief corridors with poor sensor reliability. Question: Which plume holds clean volatiles, hidden organics, or mislabeled contamination? Hook: A GU survey hold stalls extraction while rival crews falsify plume data. Image: A lander skids through glittering ejecta as the plume shadow closes.",
+  ],
+  "settlementTagHooks": [
+    "The public tag is Machine-Run Town; the private trouble is Aristocratic Dome, because elite protection and outside deprivation are tied together. Critical spare-parts vault is empty, which keeps asteroid or belt base politics under stress. Privately, the clinic is hiding a second exposure syndrome. Control of the volatile mine decides who has leverage.",
+  ],
+  "settlementWhyHere": [
+    "At Shengong-Prism Belt III, the settlement logic is resources are strong here, especially medical chirality stock; access is manageable for prepared crews; local metric signatures add research or extraction value.",
+  ],
+  "systemName": "Shengong-Prism",
+}
+`;

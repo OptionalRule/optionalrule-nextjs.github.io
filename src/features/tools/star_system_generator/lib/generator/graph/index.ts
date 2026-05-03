@@ -6,6 +6,8 @@ export type {
   RelationshipEdge, SystemRelationshipGraph,
 } from './types'
 export { EDGE_TYPES } from './types'
+export type { SystemStoryOutput } from './types'
+export { renderSystemStory } from './render'
 export { buildEntityInventory, type EntityInventoryInput } from './entities'
 export { buildRelationshipGraph } from './buildRelationshipGraph'
 export { scoreCandidates, selectEdges, isNamedEntity } from './score'
