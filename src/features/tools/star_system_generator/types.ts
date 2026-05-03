@@ -14,18 +14,12 @@ export type GeneratorTone = 'balanced' | 'astronomy' | 'cinematic'
 export type GuPreference = 'normal' | 'low' | 'high' | 'fracture'
 export type SettlementDensity = 'normal' | 'sparse' | 'crowded' | 'hub'
 
-export interface NarrativeBias {
-  domains?: Record<string, number>
-  structures?: Record<string, number>
-}
-
 export interface GenerationOptions {
   seed: string
   distribution: GeneratorDistribution
   tone: GeneratorTone
   gu: GuPreference
   settlements: SettlementDensity
-  narrativeBias?: NarrativeBias
   graphAware?: {
     settlementWhyHere?: boolean
     phenomenonNote?: boolean
