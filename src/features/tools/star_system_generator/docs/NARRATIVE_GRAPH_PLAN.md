@@ -438,14 +438,14 @@ Detailed per-phase implementation plans live alongside this document under `docs
 | **0** | Extract prose helpers from `index.ts` to `lib/generator/prose/`. No behavior change. Add unit tests for extracted helpers. Land grammar bug fixes (`crisisPressureSentence` verb collision, `hiddenCauseBeatText` doubled noun) inline. | 1 week | All existing tests pass. New unit tests cover the helpers. `index.ts` shrinks below 1500 lines. | ✅ Done — [plan](./NARRATIVE_GRAPH_PHASE_0_PLAN.md) |
 | **1** | Build `graph/types.ts`, `graph/entities.ts`, scaffold `buildRelationshipGraph` returning empty graph. Add `relationshipGraph` to `GeneratedSystem`. | 1 week | All existing tests pass. New `relationshipGraph` field exists, empty. | ✅ Done — [plan](./NARRATIVE_GRAPH_PHASE_1_PLAN.md) |
 | **2** | First 4 rules: `HOSTS`, `DEPENDS_ON`, `CONTESTS`, `DESTABILIZES`. Implement `score.ts` + budget selection. No rendering yet. | 1.5 weeks | Audit shows graphs being generated. Edges visible in JSON export. No prose change. | ✅ Done — [plan](./NARRATIVE_GRAPH_PHASE_2_PLAN.md) |
-| **3** | Renderer + `systemStory` output. Implement `slotResolver`, `grammarSafety`, `clusters`, `connectives`, templates for the 4 rule types from Phase 2. Wire into pipeline. | 1.5 weeks | `systemStory` populated for fixture systems. `narrativeLines/Threads` still populated. | 📋 Planned — [plan](./NARRATIVE_GRAPH_PHASE_3_PLAN.md) |
+| **3** | Renderer + `systemStory` output. Implement `slotResolver`, `grammarSafety`, `clusters`, `connectives`, templates for the 4 rule types from Phase 2. Wire into pipeline. | 1.5 weeks | `systemStory` populated for fixture systems. `narrativeLines/Threads` still populated. | ✅ Done — [plan](./NARRATIVE_GRAPH_PHASE_3_PLAN.md) |
 | **4** | Remaining 5 active/epistemic rules and templates: `CONTROLS`, `SUPPRESSES`, `CONTRADICTS`, `WITNESSES`, `HIDES_FROM`. | 1 week | Full edge coverage. Hooks output populated. | ⏳ Not yet planned |
 | **5** | Historical edges: `attachHistoricalEvents` stage in `history.ts`, era pool in `data/eras.ts`, template families for `FOUNDED_BY` / `BETRAYED` / `DISPLACED`. | 1 week | Backstory sentences appear in `spineSummary` for systems whose spine edges qualify for backstory. | ⏳ Not yet planned |
 | **6** | Downstream integration. Wire `settlementHookSynthesis`, `phenomenonNote`, `settlementWhyHere` to consult the graph. Each independently flag-gated. | 1 week | Settlement cards reference cross-layer entities by name. Phenomenon notes name destabilization targets. | ⏳ Not yet planned |
 | **7** | Add new audit checks. Manual review of 20 sample systems. Tune templates and rules based on review. | 0.5 week | New audit passes. Sample review shows cohesion improvement. | ⏳ Not yet planned |
 | **8** | Deprecate `narrativeLines/Threads`. Remove the parallel population, delete `hiddenCauseBeatText`/`choiceBeatText`. | 0.5 week | `index.ts` clean of dead narrative code. | ⏳ Not yet planned |
 
-**Total: ~8.5 weeks** of focused work. **Completed so far:** Phases 0, 1, 2 (~3.5 weeks of plan-equivalent effort).
+**Total: ~8.5 weeks** of focused work. **Completed so far:** Phases 0, 1, 2, 3 (~5 weeks of plan-equivalent effort).
 
 ## Risk Mitigation
 
