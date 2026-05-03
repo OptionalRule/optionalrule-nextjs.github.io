@@ -150,4 +150,101 @@ describe('renderSystemStory', () => {
     const story = renderSystemStory(graph, createSeededRng('hooks-cap'))
     expect(story.hooks.length).toBeLessThanOrEqual(5)
   })
+
+  it('weaves linked historical bridge clause into spineSummary', () => {
+    const faction: EntityRef = { kind: 'namedFaction', id: 'f1', displayName: 'Helion Debt Synod', layer: 'human' }
+    const controlsEdge = makeEdge({
+      id: 'c1', type: 'CONTROLS', subject: faction, object: settlement,
+    })
+    const foundedByEdge = makeEdge({
+      id: 'h1', type: 'FOUNDED_BY', subject: faction, object: settlement,
+      era: 'historical',
+      approxEra: 'the second wave',
+      summary: 'Helion Debt Synod founded Orison Hold during the second wave.',
+      consequenceEdgeIds: ['c1'],
+    })
+    const graph = graphWith([controlsEdge, foundedByEdge], ['c1'])
+    const story = renderSystemStory(graph, createSeededRng('weave-test'))
+
+    expect(story.spineSummary).toContain('the second wave')
+    expect(story.spineSummary).toContain('Orison Hold')
+    expect(story.spineSummary).toContain('writes the rules')
+    expect(story.spineSummary).not.toContain('{')
+    expect(story.spineSummary).toMatch(/[.!?]$/)
+  })
+
+  it('falls back to Phase 4 spineSummary when no historical edge is linked', () => {
+    const faction: EntityRef = { kind: 'namedFaction', id: 'f1', displayName: 'Helion Debt Synod', layer: 'human' }
+    const controlsEdge = makeEdge({
+      id: 'c1', type: 'CONTROLS', subject: faction, object: settlement,
+    })
+    const graph = graphWith([controlsEdge], ['c1'])
+    const story = renderSystemStory(graph, createSeededRng('no-history-test'))
+
+    expect(story.spineSummary).toContain('writes the rules')
+    expect(story.spineSummary).toContain('Helion Debt Synod')
+    expect(story.spineSummary).toContain('Orison Hold')
+    expect(story.spineSummary).not.toContain('the second wave')
+    expect(story.spineSummary).not.toContain(',')
+    expect(story.spineSummary).not.toContain('{')
+  })
+
+  it('falls back to plain spineSummary when family has empty historicalBridge', () => {
+    const hostsEdge = makeEdge({ id: 'h1', type: 'HOSTS', subject: body, object: settlement })
+    const histEdge = makeEdge({
+      id: 'hist1', type: 'BETRAYED', subject: body, object: settlement,
+      era: 'historical', approxEra: 'the long quiet',
+      summary: 'fictional', consequenceEdgeIds: ['h1'],
+    })
+    const graph = graphWith([hostsEdge, histEdge], ['h1'])
+    const story = renderSystemStory(graph, createSeededRng('hosts-defensive'))
+
+    expect(story.spineSummary).not.toContain('the long quiet')
+    expect(story.spineSummary.length).toBeGreaterThan(0)
+    expect(story.spineSummary).toContain('Orison Hold')
+    expect(story.spineSummary).not.toContain('{')
+  })
+
+  it('produces deterministic spineSummary with linked historical bridge', () => {
+    const faction: EntityRef = { kind: 'namedFaction', id: 'f1', displayName: 'Helion Debt Synod', layer: 'human' }
+    const controlsEdge = makeEdge({
+      id: 'c1', type: 'CONTROLS', subject: faction, object: settlement,
+    })
+    const foundedByEdge = makeEdge({
+      id: 'h1', type: 'FOUNDED_BY', subject: faction, object: settlement,
+      era: 'historical',
+      approxEra: 'the second wave',
+      summary: 'Helion Debt Synod founded Orison Hold during the second wave.',
+      consequenceEdgeIds: ['c1'],
+    })
+    const graph = graphWith([controlsEdge, foundedByEdge], ['c1'])
+    const a = renderSystemStory(graph, createSeededRng('weave-det'))
+    const b = renderSystemStory(graph, createSeededRng('weave-det'))
+    expect(a.spineSummary).toEqual(b.spineSummary)
+  })
+
+  it('produces a meaningfully longer spineSummary when bridge is woven in', () => {
+    const faction: EntityRef = { kind: 'namedFaction', id: 'f1', displayName: 'Helion Debt Synod', layer: 'human' }
+
+    const controlsEdgeA = makeEdge({
+      id: 'c1', type: 'CONTROLS', subject: faction, object: settlement,
+    })
+    const graphWithoutBridge = graphWith([controlsEdgeA], ['c1'])
+    const storyWithout = renderSystemStory(graphWithoutBridge, createSeededRng('len-without'))
+
+    const controlsEdgeB = makeEdge({
+      id: 'c1', type: 'CONTROLS', subject: faction, object: settlement,
+    })
+    const foundedByEdge = makeEdge({
+      id: 'h1', type: 'FOUNDED_BY', subject: faction, object: settlement,
+      era: 'historical',
+      approxEra: 'the second wave',
+      summary: 'Helion Debt Synod founded Orison Hold during the second wave.',
+      consequenceEdgeIds: ['c1'],
+    })
+    const graphWithBridge = graphWith([controlsEdgeB, foundedByEdge], ['c1'])
+    const storyWith = renderSystemStory(graphWithBridge, createSeededRng('len-with'))
+
+    expect(storyWith.spineSummary.length).toBeGreaterThan(storyWithout.spineSummary.length + 30)
+  })
 })

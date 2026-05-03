@@ -93,19 +93,56 @@ function renderSpineSummary(graph: SystemRelationshipGraph): string {
   const edge = graph.edges.find(e => e.id === topSpineId)
   if (!edge) return ''
   const family = templateFor(edge.type)
-  const template = family.spineSummary
-  if (template.text === '') return ''
+  if (family.spineSummary.text === '') return ''
+
+  const linkedHistorical = findLinkedHistoricalEdge(graph, edge.id)
   const ctx: EdgeRenderContext = {
     subject: edge.subject,
     object: edge.object,
     qualifier: edge.qualifier,
     edgeType: edge.type,
     visibility: edge.visibility,
+    historical: linkedHistorical
+      ? { summary: linkedHistorical.summary, era: linkedHistorical.approxEra }
+      : undefined,
   }
+
+  const bridgeText = (linkedHistorical && family.historicalBridge.text !== '')
+    ? renderClause(family.historicalBridge, ctx)
+    : ''
+  const summaryText = renderClause(family.spineSummary, ctx)
+
+  if (bridgeText === '') return summaryText
+  return composeSpineSummary(bridgeText, summaryText)
+}
+
+function findLinkedHistoricalEdge(
+  graph: SystemRelationshipGraph,
+  spineEdgeId: string,
+): RelationshipEdge | undefined {
+  for (const edge of graph.edges) {
+    if (edge.era !== 'historical') continue
+    if (edge.consequenceEdgeIds?.includes(spineEdgeId)) return edge
+  }
+  return undefined
+}
+
+function renderClause(template: EdgeTemplate, ctx: EdgeRenderContext): string {
   let result = resolveSlots(template.text, ctx, template.expects)
   result = capitalizeForPosition(result, 'sentence-start')
   result = guardDoubledNoun(result)
   return result
+}
+
+function composeSpineSummary(bridge: string, summary: string): string {
+  if (summary.length === 0) return bridge
+  const first = summary[0]
+  // Bridge ends mid-sentence (',' or '—'), so the summary continues the same
+  // sentence. Lowercase a leading uppercase-alphabetic char (proper-noun head);
+  // leave already-lowercase or non-alphabetic leads (quote, digit) intact.
+  const isUppercaseAlpha = first === first.toUpperCase() && first !== first.toLowerCase()
+  const head = isUppercaseAlpha ? first.toLowerCase() : first
+  return `${bridge} ${head}${summary.slice(1)}`
 }
 
 function renderParagraph(edges: ReadonlyArray<RelationshipEdge>, rng: SeededRng): string {
