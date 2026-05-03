@@ -184,4 +184,23 @@ describe('buildEntityInventory', () => {
     expect(refs.some(r => r.kind === 'guResource')).toBe(true)
     expect(refs.some(r => r.kind === 'guHazard')).toBe(true)
   })
+
+  it('accepts but does not consume settlement.bodyId and ruin.location fields', () => {
+    const input: EntityInventoryInput = {
+      ...minimalInput(),
+      settlements: [
+        { id: 'settlement-1', name: { value: 'Orison Hold' }, bodyId: 'body-1' },
+      ],
+      ruins: [
+        { id: 'ruin-1', remnantType: { value: 'First-wave colony shell' }, location: { value: 'Nosaxa IV-b' } },
+      ],
+    }
+    const refs = buildEntityInventory(input)
+    const settlement = refs.find(r => r.kind === 'settlement')
+    const ruin = refs.find(r => r.kind === 'ruin')
+    expect(settlement).toBeDefined()
+    expect(settlement).not.toHaveProperty('bodyId')
+    expect(ruin).toBeDefined()
+    expect(ruin).not.toHaveProperty('location')
+  })
 })
