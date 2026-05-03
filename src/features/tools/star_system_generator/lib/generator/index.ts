@@ -3718,7 +3718,12 @@ export function generateSystem(options: GenerationOptions, knownSystem?: Partial
       primary: { spectralType: primary.spectralType },
       companions,
       bodies,
-      settlements: settlements.map(s => ({ id: s.id, name: s.name, bodyId: s.bodyId })),
+      settlements: settlements.map(s => ({
+        id: s.id,
+        name: s.name,
+        bodyId: s.bodyId,
+        presence: { guValue: s.presence.guValue },
+      })),
       guOverlay,
       phenomena,
       ruins: ruins.map(r => ({ id: r.id, remnantType: r.remnantType, location: r.location })),

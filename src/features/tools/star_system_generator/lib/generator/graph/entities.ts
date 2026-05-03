@@ -10,7 +10,12 @@ export interface EntityInventoryInput {
     name?: string
   }>
   bodies: ReadonlyArray<{ id: string; name: { value: string } }>
-  settlements: ReadonlyArray<{ id: string; name: { value: string }; bodyId?: string }>
+  settlements: ReadonlyArray<{
+    id: string
+    name: { value: string }
+    bodyId?: string
+    presence?: { guValue?: { value: number } }
+  }>
   guOverlay: { resource: { value: string }; hazard: { value: string } }
   phenomena: ReadonlyArray<{
     id: string
