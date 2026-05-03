@@ -93,7 +93,6 @@ function mintHistoricalEdge(
   era: Era,
 ): RelationshipEdge | null {
   const { subject, object } = pickHistoricalEndpoints(presentEdge, histType)
-  if (!subject || !object) return null
 
   const summary = renderHistoricalSummary({
     subject,
@@ -124,13 +123,8 @@ function mintHistoricalEdge(
 
 function pickHistoricalEndpoints(
   presentEdge: RelationshipEdge,
-  histType: EdgeType,
-): { subject: EntityRef | undefined; object: EntityRef | undefined } {
-  if (histType === 'DISPLACED') {
-    // DISPLACED: subject = the displaced population (dependent = subject of DEPENDS_ON);
-    // object = the resource (object of DEPENDS_ON).
-    return { subject: presentEdge.subject, object: presentEdge.object }
-  }
+  _histType: EdgeType,
+): { subject: EntityRef; object: EntityRef } {
   return { subject: presentEdge.subject, object: presentEdge.object }
 }
 
