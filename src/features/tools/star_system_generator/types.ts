@@ -26,6 +26,11 @@ export interface GenerationOptions {
   gu: GuPreference
   settlements: SettlementDensity
   narrativeBias?: NarrativeBias
+  graphAware?: {
+    settlementWhyHere?: boolean
+    phenomenonNote?: boolean
+    settlementHookSynthesis?: boolean
+  }
 }
 
 export interface PartialKnownStar {
