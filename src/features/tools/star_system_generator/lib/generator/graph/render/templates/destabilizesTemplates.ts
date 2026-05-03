@@ -13,7 +13,7 @@ export const destabilizesTemplates: EdgeTemplateFamily = {
     expects: { subject: 'nounPhrase', object: 'properNoun' },
   },
   historicalBridge: {
-    text: '{subject} dates from {historical:era|a flawed founding},',
+    text: '{subject} took shape {historical:era|after a flawed founding},',
     expects: { subject: 'properNoun' },
   },
   hook: [
