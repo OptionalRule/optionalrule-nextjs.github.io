@@ -50,3 +50,36 @@ describe('DEPENDS_ON family', () => {
     expect(story.body[0]).toMatch(/[.!?]$/)
   })
 })
+
+describe('CONTESTS family', () => {
+  const authority: EntityRef = { kind: 'namedFaction', id: 'f1', displayName: 'Route Authority', layer: 'human' }
+  const compact: EntityRef = { kind: 'namedFaction', id: 'f2', displayName: 'Kestrel Free Compact', layer: 'human' }
+
+  function makeContestsGraph(): SystemRelationshipGraph {
+    const edge: RelationshipEdge = {
+      id: 'c1', type: 'CONTESTS', subject: authority, object: compact,
+      qualifier: 'the quota over the ice belt',
+      visibility: 'public', confidence: 'inferred',
+      groundingFactIds: [], era: 'present', weight: 0.7,
+    }
+    return {
+      entities: [], edges: [edge], spineEdgeIds: ['c1'], historicalEdgeIds: [],
+      edgesByEntity: {},
+      edgesByType: {
+        HOSTS: [], CONTROLS: [], DEPENDS_ON: [],
+        CONTESTS: ['c1'], DESTABILIZES: [], SUPPRESSES: [],
+        CONTRADICTS: [], WITNESSES: [], HIDES_FROM: [],
+        FOUNDED_BY: [], BETRAYED: [], DISPLACED: [],
+      },
+    }
+  }
+
+  it('renders a body sentence containing both faction names, no unresolved slots, terminal punctuation', () => {
+    const story = renderSystemStory(makeContestsGraph(), createSeededRng('contests-test'))
+    expect(story.body).toHaveLength(1)
+    expect(story.body[0]).toContain('Route Authority')
+    expect(story.body[0]).toContain('Kestrel Free Compact')
+    expect(story.body[0]).not.toContain('{')
+    expect(story.body[0]).toMatch(/[.!?]$/)
+  })
+})
