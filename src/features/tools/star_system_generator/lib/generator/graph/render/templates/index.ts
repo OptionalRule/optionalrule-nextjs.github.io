@@ -11,16 +11,7 @@ import { witnessesTemplates } from './witnessesTemplates'
 import { hidesFromTemplates } from './hidesFromTemplates'
 import { foundedByTemplates } from './foundedByTemplates'
 import { betrayedTemplates } from './betrayedTemplates'
-
-function stubFamily(edgeType: EdgeType): EdgeTemplateFamily {
-  return {
-    edgeType,
-    body: [{ text: '', expects: {} }],
-    spineSummary: { text: '', expects: {} },
-    historicalBridge: { text: '', expects: {} },
-    hook: [{ text: '', expects: {} }],
-  }
-}
+import { displacedTemplates } from './displacedTemplates'
 
 const FAMILIES: Record<EdgeType, EdgeTemplateFamily> = {
   HOSTS: hostsTemplates,
@@ -34,7 +25,7 @@ const FAMILIES: Record<EdgeType, EdgeTemplateFamily> = {
   HIDES_FROM: hidesFromTemplates,
   FOUNDED_BY: foundedByTemplates,
   BETRAYED: betrayedTemplates,
-  DISPLACED: stubFamily('DISPLACED'),
+  DISPLACED: displacedTemplates,
 }
 
 export function templateFor(edgeType: EdgeType): EdgeTemplateFamily {

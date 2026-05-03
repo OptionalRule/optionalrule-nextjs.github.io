@@ -283,3 +283,23 @@ describe('BETRAYED family', () => {
     expect(text).toMatch(/[.!?]$/)
   })
 })
+
+describe('DISPLACED family', () => {
+  it('body template renders subject + object (with article) + era as a complete sentence', () => {
+    const family = templateFor('DISPLACED')
+    expect(family.body.length).toBeGreaterThanOrEqual(1)
+    const ctx = {
+      subject: { kind: 'settlement', id: 's', displayName: 'Orison Hold', layer: 'human' } as const,
+      object: { kind: 'guResource', id: 'gu', displayName: 'chiral ice belt', layer: 'gu' } as const,
+      qualifier: 'the great compaction',
+      edgeType: 'DISPLACED' as const,
+      visibility: 'public' as const,
+    }
+    const text = resolveSlots(family.body[0].text, ctx, family.body[0].expects)
+    expect(text).toContain('Orison Hold')
+    expect(text).toContain('the chiral ice belt')
+    expect(text).toContain('the great compaction')
+    expect(text).not.toContain('{')
+    expect(text).toMatch(/[.!?]$/)
+  })
+})
