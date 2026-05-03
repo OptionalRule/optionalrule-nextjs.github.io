@@ -5,7 +5,7 @@ import { ExportPanel } from './components/ExportPanel'
 import { GeneratorControls } from './components/GeneratorControls'
 import { GuOverlayPanel } from './components/GuOverlayPanel'
 import { OrbitalTable } from './components/OrbitalTable'
-import { HumanRemnantsPanel, NarrativeLinesPanel, SystemPhenomenaPanel } from './components/PlayableLayerPanel'
+import { HumanRemnantsPanel, SystemPhenomenaPanel } from './components/PlayableLayerPanel'
 import { SeedControl } from './components/SeedControl'
 import { SettlementCard } from './components/SettlementCard'
 import { SystemOverview } from './components/SystemOverview'
@@ -90,10 +90,6 @@ export default function StarSystemGenerator({ className }: StarSystemGeneratorPr
             )}
           </div>
         </section>
-
-        <div id="human-layer">
-          <NarrativeLinesPanel system={system} />
-        </div>
 
         <div className="grid items-stretch gap-4 xl:grid-cols-3">
           <div id="human-remnants" className="h-full">
