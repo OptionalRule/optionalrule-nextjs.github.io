@@ -6,7 +6,7 @@ export const contestsTemplates: EdgeTemplateFamily = {
     { text: '{subject} and {object} both want {qualifier|the same leverage}.', expects: { subject: 'properNoun', object: 'properNoun', qualifier: 'nounPhrase' } },
     { text: "{subject} disputes {object}'s claim.", expects: { subject: 'properNoun', object: 'properNoun' } },
     { text: "{subject} refuses to recognize {object}'s authority.", expects: { subject: 'properNoun', object: 'properNoun' } },
-    { text: 'The compact between {subject:lower} and {object:lower} has gone bad.', expects: { subject: 'properNoun', object: 'properNoun' } },
+    { text: 'The compact between {subject} and {object} has gone bad.', expects: { subject: 'properNoun', object: 'properNoun' } },
   ],
   spineSummary: {
     text: "{subject} and {object} can't both set the rules — and the rest of the system knows it.",

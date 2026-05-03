@@ -83,3 +83,35 @@ describe('CONTESTS family', () => {
     expect(story.body[0]).toMatch(/[.!?]$/)
   })
 })
+
+describe('DESTABILIZES family', () => {
+  const phenomenon: EntityRef = { kind: 'phenomenon', id: 'p1', displayName: 'flare-amplified bleed season', layer: 'physical' }
+  const settlement: EntityRef = { kind: 'settlement', id: 's1', displayName: 'Orison Hold', layer: 'human' }
+
+  function makeDestabilizesGraph(): SystemRelationshipGraph {
+    const edge: RelationshipEdge = {
+      id: 'd1', type: 'DESTABILIZES', subject: phenomenon, object: settlement,
+      qualifier: undefined, visibility: 'public', confidence: 'inferred',
+      groundingFactIds: [], era: 'present', weight: 0.6,
+    }
+    return {
+      entities: [], edges: [edge], spineEdgeIds: ['d1'], historicalEdgeIds: [],
+      edgesByEntity: {},
+      edgesByType: {
+        HOSTS: [], CONTROLS: [], DEPENDS_ON: [],
+        CONTESTS: [], DESTABILIZES: ['d1'], SUPPRESSES: [],
+        CONTRADICTS: [], WITNESSES: [], HIDES_FROM: [],
+        FOUNDED_BY: [], BETRAYED: [], DISPLACED: [],
+      },
+    }
+  }
+
+  it('renders a body sentence containing both endpoints, no unresolved slots, terminal punctuation', () => {
+    const story = renderSystemStory(makeDestabilizesGraph(), createSeededRng('destabilizes-test'))
+    expect(story.body).toHaveLength(1)
+    expect(story.body[0]).toContain('Orison Hold')
+    expect(story.body[0]).toMatch(/bleed season|flare-amplified/i)
+    expect(story.body[0]).not.toContain('{')
+    expect(story.body[0]).toMatch(/[.!?]$/)
+  })
+})
