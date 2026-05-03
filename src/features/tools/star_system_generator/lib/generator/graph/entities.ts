@@ -14,7 +14,7 @@ export interface EntityInventoryInput {
     id: string
     name: { value: string }
     bodyId?: string
-    presence?: { guValue?: { value: number } }
+    presence?: { guValue?: { value: number }; hazard?: { value: number } }
   }>
   guOverlay: { resource: { value: string }; hazard: { value: string } }
   phenomena: ReadonlyArray<{

@@ -3722,7 +3722,7 @@ export function generateSystem(options: GenerationOptions, knownSystem?: Partial
         id: s.id,
         name: s.name,
         bodyId: s.bodyId,
-        presence: { guValue: s.presence.guValue },
+        presence: { guValue: s.presence.guValue, hazard: s.presence.hazard },
       })),
       guOverlay,
       phenomena,

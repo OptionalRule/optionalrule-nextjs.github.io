@@ -9,6 +9,10 @@ import {
   contestsSharedDomainRule,
   contestsAuthorityRule,
 } from './contestsRules'
+import {
+  destabilizesPhenomenonSettlementRule,
+  destabilizesGuHazardSettlementRule,
+} from './destabilizesRules'
 
 export const allRules: ReadonlyArray<EdgeRule> = [
   hostsBodySettlementRule,
@@ -18,6 +22,8 @@ export const allRules: ReadonlyArray<EdgeRule> = [
   dependsOnViaPresenceRule,
   contestsSharedDomainRule,
   contestsAuthorityRule,
+  destabilizesPhenomenonSettlementRule,
+  destabilizesGuHazardSettlementRule,
 ].sort((a, b) => (a.id < b.id ? -1 : a.id > b.id ? 1 : 0))
 
 export type { EdgeRule, RuleMatch, BuildCtx } from './ruleTypes'
