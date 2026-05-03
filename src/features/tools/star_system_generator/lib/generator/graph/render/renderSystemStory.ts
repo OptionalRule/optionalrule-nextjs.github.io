@@ -27,11 +27,33 @@ export function renderSystemStory(
   const para3 = renderParagraph(clusters.epistemicCluster, bodyRng)
   if (para3.length > 0) body.push(para3)
 
+  const spineSummary = renderSpineSummary(graph)
   return {
-    spineSummary: '',
+    spineSummary,
     body,
     hooks: [],
   }
+}
+
+function renderSpineSummary(graph: SystemRelationshipGraph): string {
+  const topSpineId = graph.spineEdgeIds[0]
+  if (!topSpineId) return ''
+  const edge = graph.edges.find(e => e.id === topSpineId)
+  if (!edge) return ''
+  const family = templateFor(edge.type)
+  const template = family.spineSummary
+  if (template.text === '') return ''
+  const ctx: EdgeRenderContext = {
+    subject: edge.subject,
+    object: edge.object,
+    qualifier: edge.qualifier,
+    edgeType: edge.type,
+    visibility: edge.visibility,
+  }
+  let result = resolveSlots(template.text, ctx)
+  result = capitalizeForPosition(result, 'sentence-start')
+  result = guardDoubledNoun(result)
+  return result
 }
 
 function renderParagraph(edges: ReadonlyArray<RelationshipEdge>, rng: SeededRng): string {

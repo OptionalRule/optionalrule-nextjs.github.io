@@ -64,7 +64,7 @@ describe('renderSystemStory', () => {
     expect(a).toEqual(b)
   })
 
-  it('renders HOSTS in spine cluster but skips DEPENDS_ON (still stub) without crashing', () => {
+  it('renders multiple spine edges of different types without crashing', () => {
     const guResource: EntityRef = { kind: 'guResource', id: 'gu1', displayName: 'chiral ice belt', layer: 'gu' }
     const hostsEdge = makeEdge({ id: 'h1', type: 'HOSTS', subject: body, object: settlement })
     const dependsEdge = makeEdge({ id: 'd1', type: 'DEPENDS_ON', subject: settlement, object: guResource })
@@ -74,11 +74,18 @@ describe('renderSystemStory', () => {
     expect(story.body[0]).not.toContain('{')
   })
 
-  it('still returns spineSummary === "" and hooks === [] in Task 7', () => {
+  it('renders spineSummary from the top spine edge family', () => {
     const edge = makeEdge({ id: 'h1', type: 'HOSTS', subject: body, object: settlement })
     const graph = graphWith([edge], ['h1'])
     const story = renderSystemStory(graph, createSeededRng('test'))
-    expect(story.spineSummary).toBe('')
+    expect(story.spineSummary).toMatch(/Orison Hold|Nosaxa IV-b/)
+    expect(story.spineSummary).toMatch(/[.!?]$/)
+    expect(story.spineSummary).not.toContain('{')
     expect(story.hooks).toEqual([])
+  })
+
+  it('returns empty spineSummary when no spine edges exist', () => {
+    const story = renderSystemStory(emptyGraph(), createSeededRng('test'))
+    expect(story.spineSummary).toBe('')
   })
 })
