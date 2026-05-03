@@ -6,7 +6,7 @@ import {
 } from '../src/features/tools/star_system_generator/lib/generator/domain'
 import { frontierStarTypes, realisticStarTypes } from '../src/features/tools/star_system_generator/lib/generator/tables'
 import { validateSystem, type ValidationFinding, type ValidationSource } from '../src/features/tools/star_system_generator/lib/generator/validation'
-import { isNamedEntity } from '../src/features/tools/star_system_generator/lib/generator/graph'
+import { isNamedEntity, EDGE_TYPES } from '../src/features/tools/star_system_generator/lib/generator/graph'
 import type { EdgeType } from '../src/features/tools/star_system_generator/lib/generator/graph'
 import {
   builtForms,
@@ -757,10 +757,9 @@ function auditCoverage(stats: CorpusStats, findings: Finding[]): void {
   auditStarDistribution('realistic', realisticStarTypes, stats, findings)
   auditStarDistribution('frontier', frontierStarTypes, stats, findings)
 
-  const sortedEdges = [...stats.edgeCounts].sort((a, b) => a - b)
-  const median = sortedEdges.length > 0 ? sortedEdges[Math.floor(sortedEdges.length / 2)] : 0
+  const median = percentile(stats.edgeCounts, 0.5)
   if (median < 3) {
-    addFinding(findings, 'warning', 'corpus', 'graph.edges.median',
+    addFinding(findings, 'warning', syntheticSeed, 'graph.edges.median',
       `Median edge count across corpus is ${median}; expected >=3`)
   }
 }
@@ -950,7 +949,7 @@ const stats: CorpusStats = {
   reachabilityClasses: new Map(),
   edgeCounts: [],
   spineCounts: [],
-  edgesByType: { HOSTS: 0, CONTROLS: 0, DEPENDS_ON: 0, CONTESTS: 0, DESTABILIZES: 0, SUPPRESSES: 0, CONTRADICTS: 0, WITNESSES: 0, HIDES_FROM: 0, FOUNDED_BY: 0, BETRAYED: 0, DISPLACED: 0 },
+  edgesByType: Object.fromEntries(EDGE_TYPES.map(t => [t, 0])) as Record<EdgeType, number>,
   systemsWithZeroEdges: 0,
 }
 

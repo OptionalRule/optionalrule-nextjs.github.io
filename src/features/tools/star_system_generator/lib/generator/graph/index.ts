@@ -5,6 +5,7 @@ export type {
   EntityRef, EntityKind, EntityLayer, EdgeType, EdgeEra, EdgeVisibility,
   RelationshipEdge, SystemRelationshipGraph,
 } from './types'
+export { EDGE_TYPES } from './types'
 export { buildEntityInventory, type EntityInventoryInput } from './entities'
 export { buildRelationshipGraph } from './buildRelationshipGraph'
 export { scoreCandidates, selectEdges, isNamedEntity } from './score'

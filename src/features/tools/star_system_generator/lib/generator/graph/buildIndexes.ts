@@ -1,11 +1,5 @@
 import type { EdgeType, RelationshipEdge } from './types'
-
-const ALL_EDGE_TYPES = [
-  'HOSTS', 'CONTROLS', 'DEPENDS_ON',
-  'CONTESTS', 'DESTABILIZES', 'SUPPRESSES',
-  'CONTRADICTS', 'WITNESSES', 'HIDES_FROM',
-  'FOUNDED_BY', 'BETRAYED', 'DISPLACED',
-] as const satisfies readonly EdgeType[]
+import { EDGE_TYPES } from './types'
 
 export interface EdgeIndexes {
   edgesByEntity: Record<string, string[]>
@@ -15,7 +9,7 @@ export interface EdgeIndexes {
 export function buildEdgeIndexes(edges: ReadonlyArray<RelationshipEdge>): EdgeIndexes {
   const edgesByEntity: Record<string, string[]> = {}
   const edgesByType = {} as Record<EdgeType, string[]>
-  for (const t of ALL_EDGE_TYPES) edgesByType[t] = []
+  for (const t of EDGE_TYPES) edgesByType[t] = []
 
   for (const edge of edges) {
     pushUnique(edgesByEntity, edge.subject.id, edge.id)

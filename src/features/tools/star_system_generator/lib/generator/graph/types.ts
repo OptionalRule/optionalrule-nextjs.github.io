@@ -19,6 +19,13 @@ export type EdgeType =
   | 'CONTRADICTS' | 'WITNESSES' | 'HIDES_FROM'
   | 'FOUNDED_BY' | 'BETRAYED' | 'DISPLACED'
 
+export const EDGE_TYPES = [
+  'HOSTS', 'CONTROLS', 'DEPENDS_ON',
+  'CONTESTS', 'DESTABILIZES', 'SUPPRESSES',
+  'CONTRADICTS', 'WITNESSES', 'HIDES_FROM',
+  'FOUNDED_BY', 'BETRAYED', 'DISPLACED',
+] as const satisfies readonly EdgeType[]
+
 export type EdgeEra = 'present' | 'historical'
 
 export type EdgeVisibility = 'public' | 'contested' | 'hidden'
