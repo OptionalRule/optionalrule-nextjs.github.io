@@ -146,3 +146,35 @@ describe('CONTROLS family', () => {
     expect(story.body[0]).toMatch(/[.!?]$/)
   })
 })
+
+describe('SUPPRESSES family', () => {
+  const faction: EntityRef = { kind: 'namedFaction', id: 'f1', displayName: 'Pale Choir Communion', layer: 'human' }
+  const phenomenon: EntityRef = { kind: 'phenomenon', id: 'p1', displayName: 'sealed bleed-corridor', layer: 'gu' }
+
+  function makeSuppressesGraph(): SystemRelationshipGraph {
+    const edge: RelationshipEdge = {
+      id: 'sp1', type: 'SUPPRESSES', subject: faction, object: phenomenon,
+      qualifier: undefined, visibility: 'contested', confidence: 'derived',
+      groundingFactIds: [], era: 'present', weight: 0.5,
+    }
+    return {
+      entities: [], edges: [edge], spineEdgeIds: ['sp1'], historicalEdgeIds: [],
+      edgesByEntity: {},
+      edgesByType: {
+        HOSTS: [], CONTROLS: [], DEPENDS_ON: [],
+        CONTESTS: [], DESTABILIZES: [], SUPPRESSES: ['sp1'],
+        CONTRADICTS: [], WITNESSES: [], HIDES_FROM: [],
+        FOUNDED_BY: [], BETRAYED: [], DISPLACED: [],
+      },
+    }
+  }
+
+  it('renders a body sentence containing subject + object, no unresolved slots, terminal punctuation', () => {
+    const story = renderSystemStory(makeSuppressesGraph(), createSeededRng('suppresses-test'))
+    expect(story.body).toHaveLength(1)
+    expect(story.body[0]).toContain('Pale Choir Communion')
+    expect(story.body[0]).toMatch(/sealed|bleed-corridor/)
+    expect(story.body[0]).not.toContain('{')
+    expect(story.body[0]).toMatch(/[.!?]$/)
+  })
+})

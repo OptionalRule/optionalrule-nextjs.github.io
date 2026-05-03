@@ -5,6 +5,7 @@ import { dependsOnTemplates } from './dependsOnTemplates'
 import { contestsTemplates } from './contestsTemplates'
 import { controlsTemplates } from './controlsTemplates'
 import { destabilizesTemplates } from './destabilizesTemplates'
+import { suppressesTemplates } from './suppressesTemplates'
 
 function stubFamily(edgeType: EdgeType): EdgeTemplateFamily {
   return {
@@ -22,7 +23,7 @@ const FAMILIES: Record<EdgeType, EdgeTemplateFamily> = {
   DEPENDS_ON: dependsOnTemplates,
   CONTESTS: contestsTemplates,
   DESTABILIZES: destabilizesTemplates,
-  SUPPRESSES: stubFamily('SUPPRESSES'),
+  SUPPRESSES: suppressesTemplates,
   CONTRADICTS: stubFamily('CONTRADICTS'),
   WITNESSES: stubFamily('WITNESSES'),
   HIDES_FROM: stubFamily('HIDES_FROM'),
