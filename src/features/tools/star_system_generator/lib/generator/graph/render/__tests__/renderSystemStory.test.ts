@@ -159,8 +159,8 @@ describe('renderSystemStory', () => {
     const foundedByEdge = makeEdge({
       id: 'h1', type: 'FOUNDED_BY', subject: faction, object: settlement,
       era: 'historical',
-      approxEra: 'the second wave',
-      summary: 'Helion Debt Synod founded Orison Hold during the second wave.',
+      approxEra: 'in the second wave',
+      summary: 'Helion Debt Synod founded Orison Hold in the second wave.',
       consequenceEdgeIds: ['c1'],
     })
     const graph = graphWith([controlsEdge, foundedByEdge], ['c1'])
@@ -193,13 +193,13 @@ describe('renderSystemStory', () => {
     const hostsEdge = makeEdge({ id: 'h1', type: 'HOSTS', subject: body, object: settlement })
     const histEdge = makeEdge({
       id: 'hist1', type: 'BETRAYED', subject: body, object: settlement,
-      era: 'historical', approxEra: 'the long quiet',
+      era: 'historical', approxEra: 'in the long quiet',
       summary: 'fictional', consequenceEdgeIds: ['h1'],
     })
     const graph = graphWith([hostsEdge, histEdge], ['h1'])
     const story = renderSystemStory(graph, createSeededRng('hosts-defensive'))
 
-    expect(story.spineSummary).not.toContain('the long quiet')
+    expect(story.spineSummary).not.toContain('in the long quiet')
     expect(story.spineSummary.length).toBeGreaterThan(0)
     expect(story.spineSummary).toContain('Orison Hold')
     expect(story.spineSummary).not.toContain('{')
@@ -213,8 +213,8 @@ describe('renderSystemStory', () => {
     const foundedByEdge = makeEdge({
       id: 'h1', type: 'FOUNDED_BY', subject: faction, object: settlement,
       era: 'historical',
-      approxEra: 'the second wave',
-      summary: 'Helion Debt Synod founded Orison Hold during the second wave.',
+      approxEra: 'in the second wave',
+      summary: 'Helion Debt Synod founded Orison Hold in the second wave.',
       consequenceEdgeIds: ['c1'],
     })
     const graph = graphWith([controlsEdge, foundedByEdge], ['c1'])
@@ -238,8 +238,8 @@ describe('renderSystemStory', () => {
     const foundedByEdge = makeEdge({
       id: 'h1', type: 'FOUNDED_BY', subject: faction, object: settlement,
       era: 'historical',
-      approxEra: 'the second wave',
-      summary: 'Helion Debt Synod founded Orison Hold during the second wave.',
+      approxEra: 'in the second wave',
+      summary: 'Helion Debt Synod founded Orison Hold in the second wave.',
       consequenceEdgeIds: ['c1'],
     })
     const graphWithBridge = graphWith([controlsEdgeB, foundedByEdge], ['c1'])

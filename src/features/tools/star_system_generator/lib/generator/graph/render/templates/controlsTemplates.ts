@@ -28,7 +28,7 @@ export const controlsTemplates: EdgeTemplateFamily = {
     expects: { subject: 'properNoun', object: 'properNoun' },
   },
   historicalBridge: {
-    text: '{subject} founded {object} during {historical:era|the early charters},',
+    text: '{subject} founded {object} {historical:era|in the early charters},',
     expects: { subject: 'properNoun', object: 'properNoun' },
   },
   hook: [

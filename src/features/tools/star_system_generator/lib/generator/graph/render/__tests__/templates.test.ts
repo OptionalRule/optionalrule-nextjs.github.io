@@ -251,14 +251,14 @@ describe('FOUNDED_BY family', () => {
     const ctx = {
       subject: { kind: 'namedFaction', id: 'f', displayName: 'Helion Debt Synod', layer: 'human' } as const,
       object: { kind: 'settlement', id: 's', displayName: 'Orison Hold', layer: 'human' } as const,
-      qualifier: 'the second wave',
+      qualifier: 'in the second wave',
       edgeType: 'FOUNDED_BY' as const,
       visibility: 'public' as const,
     }
     const text = resolveSlots(family.body[0].text, ctx, family.body[0].expects)
     expect(text).toContain('Helion Debt Synod')
     expect(text).toContain('Orison Hold')
-    expect(text).toContain('the second wave')
+    expect(text).toContain('in the second wave')
     expect(text).not.toContain('{')
     expect(text).toMatch(/[.!?]$/)
   })
@@ -271,14 +271,14 @@ describe('BETRAYED family', () => {
     const ctx = {
       subject: { kind: 'namedFaction', id: 'f1', displayName: 'Route Authority', layer: 'human' } as const,
       object: { kind: 'namedFaction', id: 'f2', displayName: 'Kestrel Free Compact', layer: 'human' } as const,
-      qualifier: 'the long quiet',
+      qualifier: 'in the long quiet',
       edgeType: 'BETRAYED' as const,
       visibility: 'public' as const,
     }
     const text = resolveSlots(family.body[0].text, ctx, family.body[0].expects)
     expect(text).toContain('Route Authority')
     expect(text).toContain('Kestrel Free Compact')
-    expect(text).toContain('the long quiet')
+    expect(text).toContain('in the long quiet')
     expect(text).not.toContain('{')
     expect(text).toMatch(/[.!?]$/)
   })
@@ -291,14 +291,14 @@ describe('DISPLACED family', () => {
     const ctx = {
       subject: { kind: 'settlement', id: 's', displayName: 'Orison Hold', layer: 'human' } as const,
       object: { kind: 'guResource', id: 'gu', displayName: 'chiral ice belt', layer: 'gu' } as const,
-      qualifier: 'the great compaction',
+      qualifier: 'in the great compaction',
       edgeType: 'DISPLACED' as const,
       visibility: 'public' as const,
     }
     const text = resolveSlots(family.body[0].text, ctx, family.body[0].expects)
     expect(text).toContain('Orison Hold')
     expect(text).toContain('the chiral ice belt')
-    expect(text).toContain('the great compaction')
+    expect(text).toContain('in the great compaction')
     expect(text).not.toContain('{')
     expect(text).toMatch(/[.!?]$/)
   })
@@ -312,7 +312,7 @@ describe('historicalBridge templates', () => {
   const phenomenon: EntityRef = { kind: 'phenomenon', id: 'p1', displayName: 'flare-amplified bleed season', layer: 'physical' }
   const ruin: EntityRef = { kind: 'ruin', id: 'r1', displayName: 'Mira Vault', layer: 'physical' }
 
-  const historical = { summary: 'the second-wave failure', era: 'the second wave' }
+  const historical = { summary: 'the second-wave failure', era: 'in the second wave' }
 
   describe('CONTROLS family', () => {
     it('renders era marker when historical context is present', () => {

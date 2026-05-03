@@ -3,6 +3,13 @@ import { attachHistoricalEvents } from '../history'
 import type { EdgeType, EntityRef, RelationshipEdge } from '../types'
 import { createSeededRng } from '../../rng'
 import { ERAS } from '../data/eras'
+import { contradictsTemplates } from '../render/templates/contradictsTemplates'
+import { controlsTemplates } from '../render/templates/controlsTemplates'
+import { contestsTemplates } from '../render/templates/contestsTemplates'
+import { dependsOnTemplates } from '../render/templates/dependsOnTemplates'
+import { suppressesTemplates } from '../render/templates/suppressesTemplates'
+import { destabilizesTemplates } from '../render/templates/destabilizesTemplates'
+import { resolveSlots, type EdgeRenderContext } from '../render/slotResolver'
 
 const faction1: EntityRef = {
   kind: 'namedFaction',
@@ -276,5 +283,94 @@ describe('attachHistoricalEvents', () => {
     expect(summary.length).toBeGreaterThan(0)
     expect(/[.!?]$/.test(summary)).toBe(true)
     expect(summary[0]).toBe(summary[0].toUpperCase())
+  })
+})
+
+describe('historicalBridge templates: era preposition collision (Phase 7 Task 2)', () => {
+  const HISTORICAL_BRIDGE_FAMILIES = [
+    contradictsTemplates,
+    controlsTemplates,
+    contestsTemplates,
+    dependsOnTemplates,
+    suppressesTemplates,
+    destabilizesTemplates,
+  ] as const
+
+  it('historicalBridge templates do not have a hanging preposition before {historical:era}', () => {
+    for (const family of HISTORICAL_BRIDGE_FAMILIES) {
+      const bridge = family.historicalBridge.text
+      expect(
+        bridge,
+        `${family.edgeType} bridge text contains a hanging preposition before {historical:era}: ${bridge}`,
+      ).not.toMatch(/\b(during|in|on|at|to)\s+\{historical:era/)
+    }
+  })
+
+  const SUBJECT_FACTION: EntityRef = {
+    kind: 'namedFaction', id: 'f1', displayName: 'Helion Debt Synod', layer: 'human',
+  }
+  const OBJECT_SETTLEMENT: EntityRef = {
+    kind: 'settlement', id: 's1', displayName: 'Orison Hold', layer: 'human',
+  }
+
+  it('rendered historicalBridge output has no doubled prepositions for any era (CONTROLS)', () => {
+    for (const era of ERAS) {
+      const ctx: EdgeRenderContext = {
+        subject: SUBJECT_FACTION,
+        object: OBJECT_SETTLEMENT,
+        edgeType: 'CONTROLS',
+        visibility: 'public',
+        historical: { era },
+      }
+      const text = resolveSlots(
+        controlsTemplates.historicalBridge.text,
+        ctx,
+        controlsTemplates.historicalBridge.expects,
+      )
+      expect(text, `era="${era}" produced doubled preposition: ${text}`)
+        .not.toMatch(/\b(during|in|on|at|to)\s+(in|on|at|to|before|after)\b/)
+    }
+  })
+
+  it('every historicalBridge family renders cleanly for every era (no doubled prepositions)', () => {
+    const PHENOMENON: EntityRef = {
+      kind: 'phenomenon', id: 'p1', displayName: 'flare-amplified bleed season', layer: 'physical',
+    }
+    const RUIN: EntityRef = {
+      kind: 'ruin', id: 'r1', displayName: 'Mira Vault', layer: 'physical',
+    }
+    const RESOURCE: EntityRef = {
+      kind: 'guResource', id: 'gu1', displayName: 'chiral ice belt', layer: 'gu',
+    }
+    const cases: Array<{ family: typeof HISTORICAL_BRIDGE_FAMILIES[number]; subject: EntityRef; object: EntityRef }> = [
+      { family: contradictsTemplates, subject: RUIN, object: OBJECT_SETTLEMENT },
+      { family: controlsTemplates, subject: SUBJECT_FACTION, object: OBJECT_SETTLEMENT },
+      { family: contestsTemplates, subject: SUBJECT_FACTION, object: OBJECT_SETTLEMENT },
+      { family: dependsOnTemplates, subject: OBJECT_SETTLEMENT, object: RESOURCE },
+      { family: suppressesTemplates, subject: SUBJECT_FACTION, object: PHENOMENON },
+      { family: destabilizesTemplates, subject: PHENOMENON, object: OBJECT_SETTLEMENT },
+    ]
+    for (const { family, subject, object } of cases) {
+      for (const era of ERAS) {
+        const ctx: EdgeRenderContext = {
+          subject,
+          object,
+          edgeType: family.edgeType,
+          visibility: 'public',
+          historical: { era },
+        }
+        const text = resolveSlots(
+          family.historicalBridge.text,
+          ctx,
+          family.historicalBridge.expects,
+        )
+        expect(
+          text,
+          `${family.edgeType} bridge with era="${era}" produced doubled preposition: ${text}`,
+        ).not.toMatch(/\b(during|in|on|at|to)\s+(in|on|at|to|before|after)\b/)
+        expect(text, `${family.edgeType} bridge with era="${era}" left an unresolved slot: ${text}`)
+          .not.toContain('{')
+      }
+    }
   })
 })

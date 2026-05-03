@@ -12,10 +12,17 @@ describe('ERAS pool', () => {
     }
   })
 
-  it('contains canonical setting era markers', () => {
-    expect(ERAS).toContain('the first wave')
-    expect(ERAS).toContain('the second wave')
+  it('contains canonical setting era markers as preposition-self-contained adjuncts', () => {
+    expect(ERAS).toContain('in the first wave')
+    expect(ERAS).toContain('in the second wave')
     expect(ERAS).toContain('before the quarantine')
+  })
+
+  it('every era entry begins with a preposition (self-contained adjunct phrase)', () => {
+    const PREPOSITIONS = /^(in|before|after|during|at|on)\s/
+    for (const era of ERAS) {
+      expect(era).toMatch(PREPOSITIONS)
+    }
   })
 
   it('pickEra is deterministic for a fixed seed', () => {

@@ -13,7 +13,7 @@ export const contestsTemplates: EdgeTemplateFamily = {
     expects: { subject: 'properNoun', object: 'properNoun' },
   },
   historicalBridge: {
-    text: 'The compact between {subject} and {object} broke during {historical:era|an earlier reckoning},',
+    text: 'The compact between {subject} and {object} broke {historical:era|in an earlier reckoning},',
     expects: { subject: 'properNoun', object: 'properNoun' },
   },
   hook: [

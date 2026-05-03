@@ -13,7 +13,7 @@ export const dependsOnTemplates: EdgeTemplateFamily = {
     expects: { subject: 'properNoun', object: 'nounPhrase' },
   },
   historicalBridge: {
-    text: '{subject} ended up on {object:article} during {historical:era|the great compaction},',
+    text: '{subject} ended up on {object:article} {historical:era|in the great compaction},',
     expects: { subject: 'properNoun', object: 'nounPhrase' },
   },
   hook: [

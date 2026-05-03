@@ -28,7 +28,7 @@ export const contradictsTemplates: EdgeTemplateFamily = {
     expects: { subject: 'properNoun', object: 'properNoun', qualifier: 'nounPhrase' },
   },
   historicalBridge: {
-    text: 'The records were edited during {historical:era|a public-trust breach},',
+    text: 'The records were edited {historical:era|after a public-trust breach},',
     expects: {},
   },
   hook: [

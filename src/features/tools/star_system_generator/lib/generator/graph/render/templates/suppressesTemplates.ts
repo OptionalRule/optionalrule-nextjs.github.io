@@ -30,7 +30,7 @@ export const suppressesTemplates: EdgeTemplateFamily = {
     expects: { subject: 'properNoun', object: 'nounPhrase' },
   },
   historicalBridge: {
-    text: '{subject} took control during {historical:era|a broken compact},',
+    text: '{subject} took control {historical:era|in a broken compact},',
     expects: { subject: 'properNoun' },
   },
   hook: [
