@@ -240,23 +240,24 @@ Raw corpus is not committed.
 | `body[0]` repeats Kestrel/Orison/Glasshouse trio template (variant rotation gap) | 17 | all except 1, 7, 12 (and 11 less sharply) | Task 4 | no |
 | Era/preposition stilted with bare-token eras (`during pre-collapse`) | 3 | seeds 1, 6, 12 | Task 2 | no |
 | `during before the quarantine` collision (carryover-a antipattern) | 0 | none in this corpus | Task 2 (still implement guard; era token "before the quarantine" is in ERAS but did not pair with `during` in this 20-seed sample) | no |
-| Article-less title-cased ruin / GU-noun-phrase mid-sentence ("remembers Frozen refugee convoy firsthand", "back to Quarantine-era cemetery cylinder") | 9 | seeds 2, 3, 4, 8, 10, 12, 14, 16, 17 | Task 10 (new audit check) | no |
+| Article-less title-cased ruin / GU-noun-phrase mid-sentence ("remembers Frozen refugee convoy firsthand", "back to Quarantine-era cemetery cylinder") | 14 | seeds 1, 2, 3, 4, 8, 9, 11, 12, 15, 16, 17, 18, 19, 20 | Task 10 (new audit check) | no |
 | Ruin treated as agent ("Pinchdrive accident scar and X both claim authority over trade") | 1 | seed 12 | Task 5 (DESTABILIZES bridge subject) + Task 10 | maybe |
 | Verb-agreement / verb collision ("AI perception errors keeps shifting") | 1 | seed 9 | Task 10 (new check) | maybe |
 | Doubled template within paragraph ("The story X tells doesn't match...; The story Y tells doesn't match...") | 2 | seeds 6, 11 | Task 10 + Task 4 | no |
 | Adjacent-sentence repeated predicate ("both want trade" twice) | 1 | seed 5 | Task 4 | no |
 | Inconsistent capitalisation of GU hazard noun phrase across adjacent sentences | 1 | seed 8 | Task 10 | no |
 | Ruin slot filled with non-event noun ("watched Old navy depot happen") | 1 | seed 17 | Task 5 + Task 10 | maybe |
-| Settlement on unnamed/unclassed body (anchor body has `class=n/a`) | 4 | seeds 5, 6 (Anomaly IV), 13 (Anomaly III), and others reference Anomaly bodies | Task 7 | no |
+| Settlement on unnamed/unclassed body (anchor body has `class=n/a`) | 1 | seed 5 (Anomaly IV) | Task 7 | no |
 | Hook fallback dominance: tagHook 4th sentence is "Control of the [function] decides who has leverage." | 20 of 20 (57 of 57 settlements) | all 20 seeds | Task 8 → **Option 2 (separate index)** | no |
 | `whyHere` semicolon-list fallback (vs prose "sits on") | 21 of 57 settlements (≈37%); applies to 11 of 20 systems | seeds 3 (3/6), 4 (4/8), 7 (1/2), 9 (4/8), 13 (1/1 fallback opener), 14 (1/2), 15 (1/3), 16 (1/3), 17 (semicolon variant), 18 (1/2), 20 (1/3) | Task 7 → **richen further** (≥10 of 20 systems flagged) | no |
 | Phenomenon duplicated within one system (same name twice) | 1 | seed 13 (`Gardener warning beacon` ×2) | Task 10 (new audit check) | maybe |
-| Body[2] missing entirely (under-paragraphing / empty-story precursor) | 1 | seed 13 | Task 9 (empty-story rate) | no |
+| Body[2] missing entirely (under-paragraphing / empty-story precursor) | 1 | seed 14 (Sulafat-Choir, only 2 body paragraphs) | Task 9 (empty-story rate) | no |
+| Body[2] terse / single-sentence (under-paragraphing, not absent) | 1 | seed 13 (Bake-eo-Tupa Belt) | Task 9 (empty-story rate) | no |
 | Tone divergence not visible in spine (astronomy / cinematic spine reads identical to balanced) | 5 | seeds 11, 12, 13, 14, 15 (all non-balanced tones) | — | yes (Phase 8) |
 | GU intensity (low / high / fracture) not visible in spine | 5 | seeds 16, 17, 18, 19, 20 | — | yes (Phase 8) |
 | Hooks repeat "Who profits if X and Y stay locked in this fight?" 3+ times in one system | 1 | seed 9 | Task 10 (new check) | no |
 
-**Total distinct findings logged across the per-seed and aggregate sections: ~50** (20 spine-grammar instances + 9 ruin-noun-phrase instances + 17 body[0] template repeats + 21 whyHere fallbacks + 57 tagHook fallbacks + ~12 other one-off issues across seeds).
+**Total distinct findings logged across the per-seed and aggregate sections: ~55** (20 spine-grammar instances + 14 ruin-noun-phrase instances + 17 body[0] template repeats + 21 whyHere fallbacks + 57 tagHook fallbacks + ~12 other one-off issues across seeds).
 
 ### Task 7 / Task 8 gate decisions (data-driven)
 
