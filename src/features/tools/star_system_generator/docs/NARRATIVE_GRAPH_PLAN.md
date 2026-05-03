@@ -32,7 +32,7 @@ The brainstorming session settled the following:
 - **Temporal model:** Option 2 (present-tense graph plus 1-2 attached historical events per system that explain present edges; no full Dwarf Fortress timeline).
 - **Edge palette:** 12 types in 4 functional groups (see below).
 - **Integration scope:** Approach B (graph drives a new System Story panel, replaces narrative threads, and serves as a lookup layer that existing settlement / phenomenon / `whyHere` prose consult on demand with graceful fallback).
-- **Existing surfaces:** `narrativeLines` and `narrativeThreads` remain populated for one release as a compatibility shim, then are removed.
+- **Existing surfaces:** `narrativeLines` and `narrativeThreads` were retained as a compatibility shim through Phases 1–7 and RETIRED in Phase 8.
 
 ## Edge Palette
 
@@ -87,8 +87,8 @@ GeneratedSystem {
   ...existing fields...
   relationshipGraph: SystemRelationshipGraph    // NEW (contains both present and historical edges)
   systemStory: SystemStoryOutput                // NEW (primary narrative surface)
-  narrativeLines: NarrativeLine[]               // RETAINED (deprecated, populated for 1 release)
-  narrativeThreads: NarrativeThread[]           // RETAINED (deprecated, populated for 1 release)
+  narrativeLines: NarrativeLine[]               // RETIRED in Phase 8 (deprecated shim through Phases 1–7)
+  narrativeThreads: NarrativeThread[]           // RETIRED in Phase 8 (deprecated shim through Phases 1–7)
 }
 ```
 
@@ -388,7 +388,7 @@ lib/generator/
 
 After Phase 0 extraction, `lib/generator/index.ts` shrinks from 3,927 lines to roughly 600-800 lines (the orchestrator only).
 
-`hiddenCauseBeatText` and `choiceBeatText` are retired - their job is taken over by edge templates. They remain populated for one release, then are deleted in Phase 8.
+`hiddenCauseBeatText` and `choiceBeatText` are retired - their job is taken over by edge templates. They were populated as a compatibility shim through Phases 1–7 and RETIRED in Phase 8.
 
 ## Testing Strategy
 
@@ -443,9 +443,9 @@ Detailed per-phase implementation plans live alongside this document under `docs
 | **5** | Historical edges: `attachHistoricalEvents` stage in `history.ts`, era pool in `data/eras.ts`, template families for `FOUNDED_BY` / `BETRAYED` / `DISPLACED`. **Phase 3 carryover:** historical edges compete for spine slots — re-measure spine-size percentile spread (Phase 3 was uniformly 3 across p10/p50/p90). | 1 week | Backstory sentences appear in `spineSummary` for systems whose spine edges qualify for backstory. | ✅ Done — [plan](./NARRATIVE_GRAPH_PHASE_5_PLAN.md) |
 | **6** | Downstream integration. Wire `settlementHookSynthesis`, `phenomenonNote`, `settlementWhyHere` to consult the graph. Each independently flag-gated. | 1 week | Settlement cards reference cross-layer entities by name. Phenomenon notes name destabilization targets. | ✅ Done — [plan](./NARRATIVE_GRAPH_PHASE_6_PLAN.md) |
 | **7** | Add new audit checks. Manual review of 20 sample systems. Tune templates and rules based on review. **Phase 5 carryovers:** (a) tune CONTRADICTS bridge prepositions vs era-pool entries that already start with "before"/"pre-" (avoids "during before the quarantine"); (b) consider exporting `HISTORICAL_ELIGIBLE_TYPES` from `history.ts` so the audit script doesn't drift from the canonical eligibility set; (c) rotate historical-edge body variants in `renderHistoricalSummary` (currently always picks `family.body[0]`, so variants 1–2 of FOUNDED_BY / BETRAYED / DISPLACED are dead in production — rotate via `stableHashString(presentEdge.id) % family.body.length`); (d) align DESTABILIZES `historicalBridge.expects.subject` to `nounPhrase` to match the family's `body` templates (today's `properNoun` shape skips article-stripping when the subject is a phenomenon); (e) resolve `pickHistoricalEndpoints` in `history.ts` — either land real subject/object inversion logic for DISPLACED (the original intent) or delete the dead-identical branch and tighten the `EntityRef | undefined` return type to non-nullable. **Phase 3 carryover:** spineSummary length variance widened by Phase 5 (p90 jumped from 111–116 to 221 chars — target met). Tune empty-story rate if Phase 5 didn't resolve it (Phase 5 baseline: 6.77%, unchanged). **Phase 6 carryovers:** (f) settlementHookSynthesis trigger rate landed at 0% (target 40–60%) because the spine selector's named-on-named requirement filters out guResource-based DEPENDS_ON edges — either broaden spine eligibility to allow guResource as named-enough, carve a separate settlement-spine-eligibility list, or document 0% as an intentional design choice; (g) whyHere graph-aware rate landed at 54.9% (target 70–90%) — investigate which settlements are missing both DEPENDS_ON and HOSTS edges, likely pointing to gaps in rule files (settlements on unnamed bodies, or settlements without a tagged GU resource dependency). | 0.5 week | New audit passes. Sample review shows cohesion improvement. | ✅ Done — [plan](./NARRATIVE_GRAPH_PHASE_7_PLAN.md) |
-| **8** | Deprecate `narrativeLines/Threads`. Remove the parallel population, delete `hiddenCauseBeatText`/`choiceBeatText`. Phase 7 carryover: spine-summary lowercase-faction bug (proper-noun lowercased mid-sentence after spine-assembly comma joins) — fix in spine-assembly logic before Phase 7 Task 10's prose.lowercaseFactionMidSentence audit check can land. | 0.5 week | `index.ts` clean of dead narrative code. | 📝 Planned — [plan](./NARRATIVE_GRAPH_PHASE_8_PLAN.md) |
+| **8** | Deprecate `narrativeLines/Threads`. Remove the parallel population, delete `hiddenCauseBeatText`/`choiceBeatText`. Phase 7 carryover: spine-summary lowercase-faction bug (proper-noun lowercased mid-sentence after spine-assembly comma joins) — fix in spine-assembly logic before Phase 7 Task 10's prose.lowercaseFactionMidSentence audit check can land. | 0.5 week | `index.ts` clean of dead narrative code. | ✅ Done — [plan](./NARRATIVE_GRAPH_PHASE_8_PLAN.md) |
 
-**Total: ~8.5 weeks** of focused work. **Completed so far:** Phases 0, 1, 2, 3, 4, 5, 6, 7 (~8.5 weeks of plan-equivalent effort).
+**Total: ~9 weeks** of focused work. **Completed so far:** Phases 0, 1, 2, 3, 4, 5, 6, 7, 8 (~9 weeks of plan-equivalent effort).
 
 ## Risk Mitigation
 

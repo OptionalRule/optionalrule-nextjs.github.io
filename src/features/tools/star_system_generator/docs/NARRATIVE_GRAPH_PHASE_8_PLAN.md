@@ -80,7 +80,7 @@ Tasks 3 and 4 could in theory split across 5–6 mini-commits (UI panel, produce
 - `lib/generator/graph/render/renderSystemStory.ts` — Task 1 (`composeSpineSummary` rewrite).
 - `lib/generator/graph/render/__tests__/renderSystemStory.test.ts` — Task 1 (regression test asserting post-bridge clause's proper-noun head is preserved).
 - `scripts/audit-star-system-generator.ts` — Task 2 (new check).
-- `components/PlayableLayerPanel.tsx` — Task 3 (delete file).
+- `components/PlayableLayerPanel.tsx` — Task 3 (surgical removal of the `NarrativeLinesPanel` export only; the file bundles three sibling panels and the other two stay).
 - `index.tsx` — Task 3 (remove `<NarrativeLinesPanel system={system} />` mount).
 - `types.ts` — Task 4 (delete `NarrativeLine`, `NarrativeThread`, `NarrativeBeat`, `NarrativeBeatKind` types; delete `narrativeLines` and `narrativeThreads` fields from `GeneratedSystem`).
 - `lib/generator/index.ts` — Task 4 (delete `generateNarrativeLines`, `generateNarrativeThreads`, `hiddenCauseBeatText`, `choiceBeatText`, the corresponding RNG fork, and the field assignments).
@@ -93,7 +93,6 @@ Tasks 3 and 4 could in theory split across 5–6 mini-commits (UI panel, produce
 - `docs/NARRATIVE_GRAPH_PLAN.md` — Task 5 (mark Phase 8 done, update completed-so-far line).
 
 **Files deleted:**
-- `components/PlayableLayerPanel.tsx` — Task 3.
 - `lib/generator/prose/__tests__/hiddenCauseBeatText.test.ts` — Task 4 (the test file's name already reads `'hiddenCauseBeatText (characterization, retired in Phase 8)'` — explicit retirement signal).
 
 **Files unchanged:**
@@ -368,7 +367,7 @@ Tasks 3 and 4 could in theory split across 5–6 mini-commits (UI panel, produce
 The Star System Generator UI already mounts the graph-aware prose via the system-story panel and the per-settlement / per-phenomenon panels; removing `NarrativeLinesPanel` does not leave a hole — the same narrative surface (system story, settlement hooks, phenomenon notes) is already visible.
 
 **Files:**
-- Delete: `src/features/tools/star_system_generator/components/PlayableLayerPanel.tsx`
+- Modify: `src/features/tools/star_system_generator/components/PlayableLayerPanel.tsx` (the file bundles three sibling panels; remove only the `NarrativeLinesPanel` export — keep the other two)
 - Modify: `src/features/tools/star_system_generator/index.tsx` (remove the mount)
 
 - [ ] **Step 1: Verify the panel is the only place `narrativeThreads` is read by UI code**
@@ -396,11 +395,9 @@ The Star System Generator UI already mounts the graph-aware prose via the system
 
   Do NOT touch other panels' mounts.
 
-- [ ] **Step 4: Delete the panel file**
+- [ ] **Step 4: Surgically remove the `NarrativeLinesPanel` export from `PlayableLayerPanel.tsx`**
 
-  ```bash
-  git rm src/features/tools/star_system_generator/components/PlayableLayerPanel.tsx
-  ```
+  `PlayableLayerPanel.tsx` is a multi-export file bundling three sibling panels. Open it and delete only the `NarrativeLinesPanel` function (and any imports that become unused once it is gone — e.g. types from `../types` referenced only by that panel). Leave the other two exports untouched. The file stays.
 
 - [ ] **Step 5: Static checks**
 
