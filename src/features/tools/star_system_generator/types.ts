@@ -258,38 +258,6 @@ export interface NarrativeFact {
   sourcePath: string
 }
 
-export interface NarrativeLine {
-  id: string
-  structureId: Fact<string>
-  label: Fact<string>
-  motif?: Fact<string>
-  domains: Array<Fact<string>>
-  text: Fact<string>
-  variables: Record<string, Fact<string>>
-  factsUsed: string[]
-  factsIntroduced: string[]
-}
-
-export type NarrativeBeatKind = 'public-premise' | 'pressure' | 'hidden-cause' | 'choice'
-
-export interface NarrativeBeat {
-  id: string
-  kind: NarrativeBeatKind
-  text: Fact<string>
-  factsUsed: string[]
-}
-
-export interface NarrativeThread {
-  id: string
-  title: Fact<string>
-  domains: Array<Fact<string>>
-  motif?: Fact<string>
-  lineIds: string[]
-  beats: NarrativeBeat[]
-  factsUsed: string[]
-  factsIntroduced: string[]
-}
-
 export interface NoAlienCheck {
   passed: boolean
   note: string
@@ -314,8 +282,6 @@ export interface GeneratedSystem {
   narrativeFacts: NarrativeFact[]
   relationshipGraph: SystemRelationshipGraph
   systemStory: SystemStoryOutput
-  narrativeLines: NarrativeLine[]
-  narrativeThreads: NarrativeThread[]
   majorHazards: Array<Fact<string>>
   noAlienCheck: NoAlienCheck
 }

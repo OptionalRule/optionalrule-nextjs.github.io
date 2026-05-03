@@ -336,8 +336,6 @@ describe('generateSystem', () => {
         ruins: system.ruins,
         phenomena: system.phenomena,
         narrativeFacts: system.narrativeFacts,
-        narrativeLines: system.narrativeLines,
-        narrativeThreads: system.narrativeThreads,
         majorHazards: system.majorHazards,
       }).toLowerCase()
 
@@ -840,64 +838,7 @@ describe('generateSystem', () => {
       expect(phenomenon.sceneAnchor.value).toBeTruthy()
     }
     expect(system.narrativeFacts.length).toBeGreaterThan(0)
-    expect(system.narrativeLines.length).toBeGreaterThan(0)
-    expect(system.narrativeThreads).toHaveLength(system.narrativeLines.length)
-    expect(system.narrativeLines.some((line) => line.factsUsed.length > 0)).toBe(true)
-    for (const line of system.narrativeLines) {
-      expect(line.structureId.value).toBeTruthy()
-      expect(line.label.value).toBeTruthy()
-      expect(line.domains.length).toBeGreaterThan(0)
-      expect(line.text.value).not.toContain('{')
-      expect(Object.keys(line.variables).length).toBeGreaterThan(0)
-    }
-    for (const thread of system.narrativeThreads) {
-      expect(thread.beats).toHaveLength(4)
-      expect(thread.factsUsed.length).toBeGreaterThan(0)
-    }
     expect(JSON.stringify(system.ruins).toLowerCase()).not.toContain('alien')
-  })
-
-  it('weights narrative structures from system context and future user bias', () => {
-    const gardenerSystem = generateSystem({ ...options, seed: 'gardener-context-1' })
-    expect(gardenerSystem.reachability.className.value).toBe('Gardener-shadowed')
-    expect(gardenerSystem.narrativeThreads.map((thread) => thread.title.value)).toContain('Interdiction Compliance')
-
-    const biasedSystem = generateSystem({
-      ...options,
-      seed: 'narrative-bias-test',
-      narrativeBias: {
-        structures: {
-          'flare-season-shelter': 1000,
-        },
-      },
-    })
-    expect(biasedSystem.narrativeThreads[0]?.title.value).toBe('Flare Season Shelter')
-
-    const domainBiasedSystem = generateSystem({
-      ...options,
-      seed: 'domain-bias-test',
-      narrativeBias: {
-        domains: {
-          'route-weather': 100,
-        },
-      },
-    })
-    expect(domainBiasedSystem.narrativeThreads[0]?.domains.map((domain) => domain.value)).toContain('route-weather')
-    expect(generateSystem(domainBiasedSystem.options)).toEqual(domainBiasedSystem)
-  })
-
-  it('normalizes narrative fact snippets for slot grammar', () => {
-    const system = generateSystem({ ...options, seed: '64e64d5a63ca1ebe' })
-    const narrativeText = system.narrativeLines.map((line) => line.text.value).join('\n')
-    const exposureTriage = system.narrativeLines.find((line) => line.structureId.value === 'exposure-triage')
-    const movingBleedRush = system.narrativeLines.find((line) => line.structureId.value === 'moving-bleed-rush')
-
-    expect(narrativeText).not.toMatch(/\bwhether is\b/i)
-    expect(narrativeText).not.toMatch(/\bis is\b/i)
-    expect(narrativeText).not.toMatch(/\bthat stable and charted\b/i)
-    expect(narrativeText).not.toMatch(/\bforecasters is\b/i)
-    expect(exposureTriage?.variables.choice.value).toBe('exposing that the site is a fake colony masking extraction is worth the risk')
-    expect(movingBleedRush?.variables.threat.value).toBe('a stable, charted bleed pattern')
   })
 
   it('uses rolled settlement presence and source settlement scales', () => {

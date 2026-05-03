@@ -21,8 +21,6 @@ describe('Phase 3 existing prose remains byte-identical', () => {
         settlementTagHooks: sys.settlements.map(s => s.tagHook?.value ?? ''),
         settlementWhyHere: sys.settlements.map(s => s.whyHere?.value ?? ''),
         phenomenonNotes: sys.phenomena.map(p => p.note?.value ?? ''),
-        narrativeLineCount: sys.narrativeLines.length,
-        narrativeThreadCount: sys.narrativeThreads.length,
       }
 
       expect(surfaces).toMatchSnapshot()

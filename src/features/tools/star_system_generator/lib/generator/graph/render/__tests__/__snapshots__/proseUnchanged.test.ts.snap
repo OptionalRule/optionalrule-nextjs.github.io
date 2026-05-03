@@ -2,8 +2,6 @@
 
 exports[`Phase 3 existing prose remains byte-identical > seed phase3-prose-1 produces stable existing-prose surfaces 1`] = `
 {
-  "narrativeLineCount": 3,
-  "narrativeThreadCount": 3,
   "phenomenonNotes": [
     "Transit: Old landing grids still work but route ships through abandoned hazards. Question: Who erased the last colony updates, and which sealed habitat still has power? Hook: Descendant claimants, insurers, and scavengers need incompatible rulings on the colony's fate. Image: A lit administration dome broadcasts docking instructions to empty streets.",
     "Transit: The rogue's eccentric orbit creates rare close-pass windows and gravitational surprises. Question: Do its volatiles, heat signature, or crust records contradict local histories? Hook: Colonies, science teams, and GU administrators contest hazard, depot, or archive status. Image: A lightless planet rolls through floodlamp glare and survey tug exhaust.",
@@ -22,8 +20,6 @@ exports[`Phase 3 existing prose remains byte-identical > seed phase3-prose-1 pro
 
 exports[`Phase 3 existing prose remains byte-identical > seed phase3-prose-2 produces stable existing-prose surfaces 1`] = `
 {
-  "narrativeLineCount": 3,
-  "narrativeThreadCount": 3,
   "phenomenonNotes": [
     "Transit: A recurring storm disrupts election-window traffic, ballots, and monitors. Question: Is the cycle natural, exploited, or scheduled around known route instability? Hook: Opposition blocs accuse the port council of stranding hostile precincts. Image: A polling station runs on emergency power beyond delayed ballot shuttles.",
     "Transit: Radiation belts force looping transfers, hardened shelters, and costly orbital delays. Question: Which supposedly safe corridor shifted, and who knew before the convoy entered? Hook: Port authorities, insurers, and smugglers fight over legal and lethal corridor maps. Image: A navigation vault shows a convoy bending toward an uncharted hot belt.",
@@ -44,8 +40,6 @@ exports[`Phase 3 existing prose remains byte-identical > seed phase3-prose-2 pro
 
 exports[`Phase 3 existing prose remains byte-identical > seed phase3-prose-3 produces stable existing-prose surfaces 1`] = `
 {
-  "narrativeLineCount": 3,
-  "narrativeThreadCount": 3,
   "phenomenonNotes": [
     "Transit: The rogue's eccentric orbit creates rare close-pass windows and gravitational surprises. Question: Do its volatiles, heat signature, or crust records contradict local histories? Hook: Colonies, science teams, and GU administrators contest hazard, depot, or archive status. Image: A lightless planet rolls through floodlamp glare and survey tug exhaust.",
     "Transit: Unstable weather and toxic biomes make surface routes unreliable beyond maintained corridors. Question: Which failure mode is spreading, and which contractor record explains it? Hook: Liability courts, cleanup firms, and abandoned settlers need incompatible survival evidence. Image: Engineered forest rot crawls across a road built for another climate.",

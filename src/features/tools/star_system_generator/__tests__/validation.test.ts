@@ -120,8 +120,6 @@ function system(overrides: Partial<GeneratedSystem> = {}): GeneratedSystem {
     ruins: [],
     phenomena: [],
     narrativeFacts: [],
-    narrativeLines: [],
-    narrativeThreads: [],
     majorHazards: [],
     noAlienCheck: { passed: true, note: 'passed' },
     ...overrides,
