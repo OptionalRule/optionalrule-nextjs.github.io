@@ -4,6 +4,10 @@ import {
   CRISIS_DESTABILIZE_KEYWORDS,
   CRISIS_DEPENDENCY_KEYWORDS,
   CRISIS_CONTEST_KEYWORDS,
+  INTERDICTION_KEYWORDS,
+  WITNESS_KEYWORDS,
+  CONTRADICTION_KEYWORDS,
+  CONTROL_DOMAINS,
   matchesAny,
   sharedDomains,
   containsWord,
@@ -35,6 +39,38 @@ describe('keyword tables', () => {
     expect(CRISIS_CONTEST_KEYWORDS).toContain('coup')
     expect(CRISIS_CONTEST_KEYWORDS).toContain('crackdown')
     expect(CRISIS_CONTEST_KEYWORDS).toContain('seizes')
+  })
+})
+
+describe('INTERDICTION_KEYWORDS', () => {
+  it('includes the gardener-interdiction theme keywords', () => {
+    expect(INTERDICTION_KEYWORDS).toContain('gardener')
+    expect(INTERDICTION_KEYWORDS).toContain('sol-interdiction')
+    expect(INTERDICTION_KEYWORDS).toContain('sealed')
+  })
+})
+
+describe('WITNESS_KEYWORDS', () => {
+  it('includes "last witness" and era markers', () => {
+    expect(WITNESS_KEYWORDS).toContain('last witness')
+    expect(WITNESS_KEYWORDS).toContain('first wave')
+    expect(WITNESS_KEYWORDS).toContain('archive')
+  })
+})
+
+describe('CONTRADICTION_KEYWORDS', () => {
+  it('includes "edited records" theme markers', () => {
+    expect(CONTRADICTION_KEYWORDS).toContain('edited')
+    expect(CONTRADICTION_KEYWORDS).toContain('falsified')
+    expect(CONTRADICTION_KEYWORDS).toContain('discrepancy')
+  })
+})
+
+describe('CONTROL_DOMAINS', () => {
+  it('includes route/compliance/interdiction control axes', () => {
+    expect(CONTROL_DOMAINS).toContain('route')
+    expect(CONTROL_DOMAINS).toContain('compliance')
+    expect(CONTROL_DOMAINS).toContain('gardener-interdiction')
   })
 })
 

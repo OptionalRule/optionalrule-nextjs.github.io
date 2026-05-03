@@ -18,6 +18,28 @@ export const CRISIS_CONTEST_KEYWORDS = [
   'rival', 'compliance team', 'blockade', 'embargo',
 ] as const
 
+export const INTERDICTION_KEYWORDS = [
+  'sol-interdiction', 'sol interdiction', 'gardener', 'sealed', 'compliance',
+  'exclusion', 'interdiction', 'censored', 'redacted',
+] as const
+
+export const WITNESS_KEYWORDS = [
+  'last witness', 'only witness', 'sole record', 'memory gap', 'memory gaps',
+  'unrecorded', 'before the quarantine', 'first wave', 'second wave',
+  'pre-collapse', 'pre-arrival', 'archive', 'archives',
+] as const
+
+export const CONTRADICTION_KEYWORDS = [
+  'edited', 'falsified', 'reclassified', 'rewritten', 'altered', 'forged',
+  'doctored', 'discrepancy', 'two accounts', 'conflicting', 'official version',
+  'unofficial', 'unrecorded',
+] as const
+
+export const CONTROL_DOMAINS = [
+  'route', 'transit', 'compliance', 'gardener-interdiction', 'authority',
+  'enforcement', 'customs', 'patrol',
+] as const
+
 export function matchesAny(text: string, keywords: ReadonlyArray<string>): boolean {
   if (text.length === 0 || keywords.length === 0) return false
   const lower = text.toLowerCase()
