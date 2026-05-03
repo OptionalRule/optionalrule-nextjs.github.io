@@ -118,6 +118,22 @@ describe('renderSystemStory', () => {
     expect(a.hooks).toEqual(b.hooks)
   })
 
+  it('routes hidden HIDES_FROM edges into hooks, never body', () => {
+    const settlementEntity: EntityRef = { kind: 'settlement', id: 's1', displayName: 'Orison Hold', layer: 'human' }
+    const faction: EntityRef = { kind: 'namedFaction', id: 'f1', displayName: 'Pale Choir Communion', layer: 'human' }
+    const hiddenEdge = makeEdge({
+      id: 'h1', type: 'HIDES_FROM',
+      subject: settlementEntity, object: faction,
+      visibility: 'hidden',
+    })
+    const graph = graphWith([hiddenEdge], [])
+    const story = renderSystemStory(graph, createSeededRng('hidden-test'))
+    for (const para of story.body) {
+      expect(para).not.toContain('Pale Choir Communion')
+    }
+    expect(story.hooks.some(h => h.includes('Pale Choir Communion'))).toBe(true)
+  })
+
   it('caps hooks at 5 even when many eligible edges exist', () => {
     const factions: EntityRef[] = Array.from({ length: 10 }, (_, i) => ({
       kind: 'namedFaction', id: `f${i}`, displayName: `Faction ${i}`, layer: 'human',
