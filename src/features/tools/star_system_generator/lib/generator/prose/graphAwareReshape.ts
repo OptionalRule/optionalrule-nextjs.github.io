@@ -4,6 +4,7 @@ import type {
 } from '../../../types'
 import type { SystemRelationshipGraph } from '../graph'
 import { graphAwareSettlementWhyHere } from './graphAwareSettlementWhyHere'
+import { graphAwareSettlementHook, rewriteFourthSentence } from './graphAwareSettlementHook'
 import { graphAwarePhenomenonNote } from './graphAwarePhenomenonNote'
 import { fact } from '../index'
 
@@ -54,6 +55,18 @@ function reshapeSettlement(
       updated = {
         ...updated,
         whyHere: fact(newWhyHere, 'inferred', 'Graph-aware reshape from settlementWhyHere'),
+      }
+    }
+  }
+  if (flags.settlementHookSynthesis) {
+    const replacement = graphAwareSettlementHook(updated, graph)
+    if (replacement !== null) {
+      const newHook = rewriteFourthSentence(updated.tagHook.value, replacement)
+      if (newHook !== updated.tagHook.value) {
+        updated = {
+          ...updated,
+          tagHook: fact(newHook, 'inferred', 'Graph-aware reshape from settlementHookSynthesis'),
+        }
       }
     }
   }

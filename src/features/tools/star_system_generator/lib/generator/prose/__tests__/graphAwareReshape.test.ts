@@ -313,3 +313,115 @@ describe('graphAwareReshape — settlementWhyHere integration', () => {
     expect(result.settlements[0].whyHere).toBe(originalWhyHere)
   })
 })
+
+function makeContestsEdge(subjectId: string, objectId: string, objectDisplayName: string): RelationshipEdge {
+  return {
+    id: `edge-${subjectId}-${objectId}`,
+    type: 'CONTESTS',
+    subject: makeEntityRef(subjectId, 'Settlement-1', 'settlement'),
+    object: makeEntityRef(objectId, objectDisplayName, 'namedFaction'),
+    visibility: 'public',
+    confidence: 'inferred',
+    groundingFactIds: [],
+    era: 'present',
+    weight: 1,
+  }
+}
+
+function settlementWithTagHook(id: string, anchorName: string, tagHookValue: string): Settlement {
+  return {
+    id,
+    anchorName: { value: anchorName, confidence: 'confirmed' },
+    whyHere: { value: 'original whyHere', confidence: 'confirmed' },
+    tagHook: { value: tagHookValue, confidence: 'human-layer' },
+  } as unknown as Settlement
+}
+
+function graphWithEdgesAndSpine(edges: RelationshipEdge[], spineEdgeIds: string[]): SystemRelationshipGraph {
+  const edgesByEntity: Record<string, string[]> = {}
+  for (const edge of edges) {
+    edgesByEntity[edge.subject.id] = [...(edgesByEntity[edge.subject.id] ?? []), edge.id]
+    edgesByEntity[edge.object.id] = [...(edgesByEntity[edge.object.id] ?? []), edge.id]
+  }
+  return {
+    ...emptyGraph(),
+    edges,
+    edgesByEntity,
+    spineEdgeIds,
+  }
+}
+
+describe('graphAwareReshape — settlementHookSynthesis integration', () => {
+  it('rewrites tagHook 4th sentence when settlementHookSynthesis flag on + spine edge exists', () => {
+    const tagHookValue = 'Sentence one. Pressure sentence. Privately, secret. Control of the function decides who has leverage.'
+    const settlement = settlementWithTagHook('s1', 'Settlement-1', tagHookValue)
+    const edge = makeContestsEdge('s1', 'f1', 'Route Authority')
+    const graph = graphWithEdgesAndSpine([edge], [edge.id])
+    const result = graphAwareReshape({
+      settlements: [settlement],
+      phenomena: [],
+      relationshipGraph: graph,
+      options: { ...baseOptions, graphAware: { settlementHookSynthesis: true } },
+      rng: createSeededRng('hook-test'),
+    })
+    expect(result.settlements[0].tagHook.value).toContain('standoff with Route Authority')
+    expect(result.settlements[0].tagHook.value).not.toContain('decides who has leverage')
+    expect(result.settlements[0].tagHook.confidence).toBe('inferred')
+  })
+
+  it('combines whyHere + settlementHookSynthesis flags independently', () => {
+    const tagHookValue = 'Sentence one. Pressure sentence. Privately, secret. Control of the function decides who has leverage.'
+    const settlement = {
+      id: 's1',
+      anchorName: { value: 'Orison Hold', confidence: 'confirmed' },
+      whyHere: { value: 'original whyHere', confidence: 'confirmed' },
+      tagHook: { value: tagHookValue, confidence: 'human-layer' },
+    } as unknown as Settlement
+
+    const depEdge = makeDependsOnEdge('s1', 'gu1')
+    const contestsEdge = makeContestsEdge('s1', 'f1', 'Route Authority')
+    const graph = graphWithEdgesAndSpine([depEdge, contestsEdge], [contestsEdge.id])
+
+    const result = graphAwareReshape({
+      settlements: [settlement],
+      phenomena: [],
+      relationshipGraph: graph,
+      options: { ...baseOptions, graphAware: { settlementWhyHere: true, settlementHookSynthesis: true } },
+      rng: createSeededRng('combined-test'),
+    })
+    expect(result.settlements[0].whyHere.value).toContain('Orison Hold')
+    expect(result.settlements[0].whyHere.value).toContain('chiral ice belt')
+    expect(result.settlements[0].tagHook.value).toContain('standoff with Route Authority')
+    expect(result.settlements[0].tagHook.value).not.toContain('decides who has leverage')
+  })
+
+  it('preserves tagHook when settlementHookSynthesis flag is off', () => {
+    const tagHookValue = 'Sentence one. Pressure sentence. Privately, secret. Control of the function decides who has leverage.'
+    const settlement = settlementWithTagHook('s1', 'Settlement-1', tagHookValue)
+    const edge = makeContestsEdge('s1', 'f1', 'Route Authority')
+    const graph = graphWithEdgesAndSpine([edge], [edge.id])
+    const originalTagHook = settlement.tagHook
+    const result = graphAwareReshape({
+      settlements: [settlement],
+      phenomena: [],
+      relationshipGraph: graph,
+      options: baseOptions,
+      rng: createSeededRng('hook-off-test'),
+    })
+    expect(result.settlements[0].tagHook).toBe(originalTagHook)
+  })
+
+  it('preserves tagHook when flag on but no eligible spine edge', () => {
+    const tagHookValue = 'Sentence one. Pressure sentence. Privately, secret. Control of the function decides who has leverage.'
+    const settlement = settlementWithTagHook('s1', 'Settlement-1', tagHookValue)
+    const originalTagHook = settlement.tagHook
+    const result = graphAwareReshape({
+      settlements: [settlement],
+      phenomena: [],
+      relationshipGraph: emptyGraph(),
+      options: { ...baseOptions, graphAware: { settlementHookSynthesis: true } },
+      rng: createSeededRng('hook-no-edge-test'),
+    })
+    expect(result.settlements[0].tagHook).toBe(originalTagHook)
+  })
+})
