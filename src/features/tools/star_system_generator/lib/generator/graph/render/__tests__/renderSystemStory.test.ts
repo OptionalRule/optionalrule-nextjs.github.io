@@ -88,4 +88,50 @@ describe('renderSystemStory', () => {
     const story = renderSystemStory(emptyGraph(), createSeededRng('test'))
     expect(story.spineSummary).toBe('')
   })
+
+  it('produces hooks for contested visibility edges', () => {
+    const auth: EntityRef = { kind: 'namedFaction', id: 'f1', displayName: 'Route Authority', layer: 'human' }
+    const compact: EntityRef = { kind: 'namedFaction', id: 'f2', displayName: 'Kestrel Free Compact', layer: 'human' }
+    const edge = makeEdge({ id: 'c1', type: 'CONTESTS', subject: auth, object: compact, visibility: 'contested' })
+    const graph = graphWith([edge], ['c1'])
+    const story = renderSystemStory(graph, createSeededRng('hooks-contested'))
+    expect(story.hooks.length).toBeGreaterThanOrEqual(1)
+    expect(story.hooks.length).toBeLessThanOrEqual(5)
+    for (const hook of story.hooks) {
+      expect(hook).not.toContain('{')
+      expect(hook).toMatch(/[.!?]$/)
+    }
+  })
+
+  it('returns empty hooks for an empty graph', () => {
+    const story = renderSystemStory(emptyGraph(), createSeededRng('test'))
+    expect(story.hooks).toEqual([])
+  })
+
+  it('produces deterministic hooks for the same seed', () => {
+    const auth: EntityRef = { kind: 'namedFaction', id: 'f1', displayName: 'Route Authority', layer: 'human' }
+    const compact: EntityRef = { kind: 'namedFaction', id: 'f2', displayName: 'Kestrel Free Compact', layer: 'human' }
+    const edge = makeEdge({ id: 'c1', type: 'CONTESTS', subject: auth, object: compact, visibility: 'contested' })
+    const graph = graphWith([edge], ['c1'])
+    const a = renderSystemStory(graph, createSeededRng('hooks-det'))
+    const b = renderSystemStory(graph, createSeededRng('hooks-det'))
+    expect(a.hooks).toEqual(b.hooks)
+  })
+
+  it('caps hooks at 5 even when many eligible edges exist', () => {
+    const factions: EntityRef[] = Array.from({ length: 10 }, (_, i) => ({
+      kind: 'namedFaction', id: `f${i}`, displayName: `Faction ${i}`, layer: 'human',
+    }))
+    const edges: RelationshipEdge[] = []
+    for (let i = 0; i < 9; i += 2) {
+      edges.push(makeEdge({
+        id: `c${i}`, type: 'CONTESTS',
+        subject: factions[i], object: factions[i + 1],
+        visibility: 'contested',
+      }))
+    }
+    const graph = graphWith(edges, [])
+    const story = renderSystemStory(graph, createSeededRng('hooks-cap'))
+    expect(story.hooks.length).toBeLessThanOrEqual(5)
+  })
 })

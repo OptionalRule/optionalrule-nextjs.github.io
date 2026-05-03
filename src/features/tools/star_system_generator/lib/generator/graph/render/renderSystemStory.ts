@@ -31,8 +31,60 @@ export function renderSystemStory(
   return {
     spineSummary,
     body,
-    hooks: [],
+    hooks: renderHooks(graph, rng.fork('hooks')),
   }
+}
+
+function renderHooks(graph: SystemRelationshipGraph, rng: SeededRng): string[] {
+  const eligibleEdges = pickHookEligibleEdges(graph)
+  const hooks: string[] = []
+  const seen = new Set<string>()
+  for (const edge of eligibleEdges) {
+    if (hooks.length >= 5) break
+    const family = templateFor(edge.type)
+    if (family.hook.length === 0) continue
+    const template = pickVariant(family.hook, rng)
+    if (template.text === '') continue
+    const ctx: EdgeRenderContext = {
+      subject: edge.subject, object: edge.object, qualifier: edge.qualifier,
+      edgeType: edge.type, visibility: edge.visibility,
+    }
+    let rendered = resolveSlots(template.text, ctx)
+    rendered = capitalizeForPosition(rendered, 'sentence-start')
+    rendered = guardDoubledNoun(rendered)
+    if (seen.has(rendered)) continue
+    seen.add(rendered)
+    hooks.push(rendered)
+  }
+  return hooks
+}
+
+function pickHookEligibleEdges(graph: SystemRelationshipGraph): RelationshipEdge[] {
+  const spineIds = new Set(graph.spineEdgeIds)
+  const seenIds = new Set<string>()
+  const out: RelationshipEdge[] = []
+
+  for (const e of graph.edges) {
+    if (e.visibility === 'contested' && !seenIds.has(e.id)) {
+      out.push(e)
+      seenIds.add(e.id)
+    }
+  }
+  for (const e of graph.edges) {
+    if (e.visibility === 'hidden' && !seenIds.has(e.id)) {
+      out.push(e)
+      seenIds.add(e.id)
+    }
+  }
+  for (const e of graph.edges) {
+    if (spineIds.has(e.id)) continue
+    if (seenIds.has(e.id)) continue
+    if (e.type === 'CONTESTS' || e.type === 'DESTABILIZES' || e.type === 'SUPPRESSES') {
+      out.push(e)
+      seenIds.add(e.id)
+    }
+  }
+  return out
 }
 
 function renderSpineSummary(graph: SystemRelationshipGraph): string {
