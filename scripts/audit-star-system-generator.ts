@@ -586,6 +586,10 @@ function auditSystem(system: GeneratedSystem, findings: Finding[], stats: Corpus
     increment(stats.settlementScales, settlement.scale.value)
   })
 
+  // Per-consumer trigger-rate detection (Phase 6). Heuristic: relies on stable
+  // Phase 6 templates — fallback whyHere uses ';' joiner; fallback tagHook ends
+  // 'decides who has leverage'; fallback note carries 'Transit:'. If a Phase 7
+  // template change alters those markers, update this block.
   for (const settlement of system.settlements) {
     if (settlement.whyHere.value.includes(';')) {
       stats.whyHereFallbackCount += 1
