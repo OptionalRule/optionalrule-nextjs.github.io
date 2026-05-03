@@ -95,6 +95,10 @@ interface CorpusStats {
   bodySentenceCounts: number[]
   hookCounts: number[]
   systemsWithEmptyStory: number
+  historicalEdgeCounts: number[]
+  systemsWithAnyHistorical: number
+  spineEdgesWithHistorical: number
+  spineEdgesEligibleForHistorical: number
 }
 
 const auditProfiles = {
@@ -585,6 +589,43 @@ function auditSystem(system: GeneratedSystem, findings: Finding[], stats: Corpus
       `Present edge count ${presentEdgeCount} exceeds hard ceiling 12`)
   }
 
+  const historical = system.relationshipGraph.edges.filter(e => e.era === 'historical')
+  stats.historicalEdgeCounts.push(historical.length)
+  if (historical.length > 0) stats.systemsWithAnyHistorical += 1
+
+  const spineEdges = system.relationshipGraph.edges.filter(e =>
+    system.relationshipGraph.spineEdgeIds.includes(e.id),
+  )
+  for (const spine of spineEdges) {
+    const eligible = ['CONTROLS', 'CONTESTS', 'DEPENDS_ON', 'CONTRADICTS', 'DESTABILIZES', 'SUPPRESSES']
+      .includes(spine.type)
+    if (!eligible) continue
+    stats.spineEdgesEligibleForHistorical += 1
+    const linked = historical.some(h => h.consequenceEdgeIds?.includes(spine.id))
+    if (linked) stats.spineEdgesWithHistorical += 1
+  }
+
+  for (const edge of system.relationshipGraph.edges) {
+    if (edge.era !== 'historical') continue
+
+    if (!edge.summary || edge.summary === '') {
+      addFinding(findings, 'error', seed, 'history.missingSummary',
+        `Historical edge ${edge.id} has no summary string.`)
+    }
+    if (!edge.consequenceEdgeIds || edge.consequenceEdgeIds.length === 0) {
+      addFinding(findings, 'error', seed, 'history.orphan',
+        `Historical edge ${edge.id} has no consequenceEdgeIds linking to a present spine edge.`)
+    } else {
+      for (const targetId of edge.consequenceEdgeIds) {
+        const target = system.relationshipGraph.edges.find(e => e.id === targetId)
+        if (!target) {
+          addFinding(findings, 'error', seed, 'history.orphan',
+            `Historical edge ${edge.id} references missing consequence edge ${targetId}.`)
+        }
+      }
+    }
+  }
+
   const edgeKeys = new Set<string>()
   for (const edge of system.relationshipGraph.edges) {
     const key = `${edge.subject.id}|${edge.object.id}|${edge.type}`
@@ -1027,6 +1068,10 @@ const stats: CorpusStats = {
   bodySentenceCounts: [],
   hookCounts: [],
   systemsWithEmptyStory: 0,
+  historicalEdgeCounts: [],
+  systemsWithAnyHistorical: 0,
+  spineEdgesWithHistorical: 0,
+  spineEdgesEligibleForHistorical: 0,
 }
 
 for (const distribution of distributions) {
@@ -1069,6 +1114,12 @@ console.log(`Spine size per system (p10/p50/p90): ${formatPercentiles(stats.spin
 console.log(`Systems with zero edges: ${stats.systemsWithZeroEdges} / ${stats.systems}`)
 for (const [type, count] of Object.entries(stats.edgesByType)) {
   if (count > 0) console.log(`  edges of type ${type}: ${count}`)
+}
+console.log(`Historical edges per system (p10/p50/p90): ${formatPercentiles(stats.historicalEdgeCounts)}`)
+console.log(`Systems with any historical edge: ${stats.systemsWithAnyHistorical} / ${stats.systems}`)
+if (stats.spineEdgesEligibleForHistorical > 0) {
+  const rate = stats.spineEdgesWithHistorical / stats.spineEdgesEligibleForHistorical
+  console.log(`Spine edges with attached history: ${(rate * 100).toFixed(1)}% (${stats.spineEdgesWithHistorical}/${stats.spineEdgesEligibleForHistorical})`)
 }
 console.log(`Story spineSummary length (p10/p50/p90): ${formatPercentiles(stats.spineSummaryLengths)} chars`)
 console.log(`Story body paragraph count (p10/p50/p90): ${formatPercentiles(stats.bodyParagraphCounts)}`)
