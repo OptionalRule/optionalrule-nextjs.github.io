@@ -81,6 +81,6 @@ function renderTemplate(
 function pickVariant(variants: ReadonlyArray<EdgeTemplate>, rng: SeededRng): EdgeTemplate {
   if (variants.length === 0) throw new Error('renderSystemStory: empty variants array')
   if (variants.length === 1) return variants[0]
-  const index = Math.floor(rng.next() * variants.length) % variants.length
+  const index = Math.floor(rng.next() * variants.length)
   return variants[index]
 }

@@ -1,6 +1,7 @@
 import type { EdgeType } from '../../types'
 import type { EdgeTemplateFamily } from './types'
 import { hostsTemplates } from './hostsTemplates'
+import { dependsOnTemplates } from './dependsOnTemplates'
 
 function stubFamily(edgeType: EdgeType): EdgeTemplateFamily {
   return {
@@ -15,7 +16,7 @@ function stubFamily(edgeType: EdgeType): EdgeTemplateFamily {
 const FAMILIES: Record<EdgeType, EdgeTemplateFamily> = {
   HOSTS: hostsTemplates,
   CONTROLS: stubFamily('CONTROLS'),
-  DEPENDS_ON: stubFamily('DEPENDS_ON'),
+  DEPENDS_ON: dependsOnTemplates,
   CONTESTS: stubFamily('CONTESTS'),
   DESTABILIZES: stubFamily('DESTABILIZES'),
   SUPPRESSES: stubFamily('SUPPRESSES'),
