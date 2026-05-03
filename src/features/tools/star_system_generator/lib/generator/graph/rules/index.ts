@@ -25,6 +25,10 @@ import {
   contradictsRuinHookAuthorityRule,
   contradictsHiddenPublicRule,
 } from './contradictsRules'
+import {
+  witnessesAiSituationRuinRule,
+  witnessesRuinHookEventRule,
+} from './witnessesRules'
 
 export const allRules: ReadonlyArray<EdgeRule> = [
   hostsBodySettlementRule,
@@ -42,6 +46,8 @@ export const allRules: ReadonlyArray<EdgeRule> = [
   suppressesAuthorityHiddenTruthRule,
   contradictsRuinHookAuthorityRule,
   contradictsHiddenPublicRule,
+  witnessesAiSituationRuinRule,
+  witnessesRuinHookEventRule,
 ].sort((a, b) => (a.id < b.id ? -1 : a.id > b.id ? 1 : 0))
 
 export type { EdgeRule, RuleMatch, BuildCtx } from './ruleTypes'
