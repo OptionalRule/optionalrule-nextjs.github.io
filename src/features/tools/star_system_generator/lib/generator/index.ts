@@ -122,6 +122,7 @@ import { conditionAsPressure, crisisAsPressure } from './prose/crisisShaping'
 import { settlementHookSynthesis, settlementWhyHere } from './prose/settlementProse'
 import { phenomenonNote } from './prose/phenomenonProse'
 import { buildRelationshipGraph, renderSystemStory } from './graph'
+import { graphAwareReshape } from './prose'
 import { createSeededRng, type SeededRng } from './rng'
 
 export { architectureBodyPlanRules } from './architecture'
@@ -3732,6 +3733,15 @@ export function generateSystem(options: GenerationOptions, knownSystem?: Partial
     narrativeFacts,
     rootRng.fork('graph'),
   )
+  const reshaped = graphAwareReshape({
+    settlements,
+    phenomena,
+    relationshipGraph,
+    options,
+    rng: rootRng,
+  })
+  const reshapedSettlements = reshaped.settlements
+  const reshapedPhenomena = reshaped.phenomena
   const systemStory = renderSystemStory(relationshipGraph, rootRng.fork('story'))
   const narrativeLines = generateNarrativeLines(rootRng.fork('narrative-lines'), options, narrativeFacts)
   const narrativeThreads = generateNarrativeThreads(narrativeLines, narrativeFacts)
@@ -3757,9 +3767,9 @@ export function generateSystem(options: GenerationOptions, knownSystem?: Partial
     },
     bodies,
     guOverlay,
-    settlements,
+    settlements: reshapedSettlements,
     ruins,
-    phenomena,
+    phenomena: reshapedPhenomena,
     narrativeFacts,
     relationshipGraph,
     systemStory,
