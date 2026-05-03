@@ -115,3 +115,34 @@ describe('DESTABILIZES family', () => {
     expect(story.body[0]).toMatch(/[.!?]$/)
   })
 })
+
+describe('CONTROLS family', () => {
+  const faction: EntityRef = { kind: 'namedFaction', id: 'f1', displayName: 'Route Authority', layer: 'human' }
+  const body: EntityRef = { kind: 'body', id: 'b1', displayName: 'Nosaxa IV-b', layer: 'physical' }
+
+  function makeControlsGraph(): SystemRelationshipGraph {
+    const edge: RelationshipEdge = {
+      id: 'cc1', type: 'CONTROLS', subject: faction, object: body,
+      qualifier: 'route', visibility: 'public', confidence: 'derived',
+      groundingFactIds: [], era: 'present', weight: 0.6,
+    }
+    return {
+      entities: [], edges: [edge], spineEdgeIds: ['cc1'], historicalEdgeIds: [],
+      edgesByEntity: {},
+      edgesByType: {
+        HOSTS: [], CONTROLS: ['cc1'], DEPENDS_ON: [],
+        CONTESTS: [], DESTABILIZES: [], SUPPRESSES: [],
+        CONTRADICTS: [], WITNESSES: [], HIDES_FROM: [],
+        FOUNDED_BY: [], BETRAYED: [], DISPLACED: [],
+      },
+    }
+  }
+
+  it('renders a body sentence with subject + object, no unresolved slots, terminal punctuation', () => {
+    const story = renderSystemStory(makeControlsGraph(), createSeededRng('controls-test'))
+    expect(story.body).toHaveLength(1)
+    expect(story.body[0]).toContain('Route Authority')
+    expect(story.body[0]).not.toContain('{')
+    expect(story.body[0]).toMatch(/[.!?]$/)
+  })
+})
