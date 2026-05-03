@@ -5,6 +5,10 @@ import {
   dependsOnViaCrisisRule,
   dependsOnViaPresenceRule,
 } from './dependsOnRules'
+import {
+  contestsSharedDomainRule,
+  contestsAuthorityRule,
+} from './contestsRules'
 
 export const allRules: ReadonlyArray<EdgeRule> = [
   hostsBodySettlementRule,
@@ -12,6 +16,8 @@ export const allRules: ReadonlyArray<EdgeRule> = [
   dependsOnViaFunctionRule,
   dependsOnViaCrisisRule,
   dependsOnViaPresenceRule,
+  contestsSharedDomainRule,
+  contestsAuthorityRule,
 ].sort((a, b) => (a.id < b.id ? -1 : a.id > b.id ? 1 : 0))
 
 export type { EdgeRule, RuleMatch, BuildCtx } from './ruleTypes'
