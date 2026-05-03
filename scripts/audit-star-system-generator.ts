@@ -105,6 +105,7 @@ interface CorpusStats {
   noteFallbackCount: number
   hookGraphAwareCount: number
   hookFallbackCount: number
+  historicalSummariesByBucket: Map<string, { count: number; distinct: Set<string> }>
 }
 
 const auditProfiles = {
@@ -124,6 +125,11 @@ const guPreferences: GuPreference[] = ['low', 'normal', 'high', 'fracture']
 const settlementDensities: SettlementDensity[] = ['sparse', 'normal', 'crowded', 'hub']
 
 const extremeHotZones = new Set(['Furnace', 'Inferno'])
+
+// Phase 7 Task 10 regression guards. See per-system block in auditSystem for
+// rationale and provenance.
+const DOUBLE_PREPOSITION_PATTERN = /\b(during|in|on|at|to)\s+(in|on|at|to|before|after)\b/i
+const UNSTRIPPED_ARTICLE_BRIDGE_PATTERN = /\bThe [a-z]+(?:\s[a-z]+)? took shape\b/
 
 const forbiddenAlienPatterns = [
   /\balien\b/i,
@@ -735,6 +741,48 @@ function auditSystem(system: GeneratedSystem, findings: Finding[], stats: Corpus
     }
   }
 
+  // Phase 7 Task 10 regression guards.
+  //
+  // prose.doublePreposition (Task 2): catches era/preposition collisions if a
+  // future template change re-introduces shapes like "during before the
+  // quarantine" or "during in the long quiet". The broad pattern produces 0
+  // findings against the deep-audit corpus (50 systems × 96 option combos),
+  // so we keep the broad form rather than tightening to `during\s+(in|before|after)`.
+  const proseSurfaces = [system.systemStory.spineSummary, ...system.systemStory.body]
+  for (const surface of proseSurfaces) {
+    if (DOUBLE_PREPOSITION_PATTERN.test(surface)) {
+      addFinding(findings, 'error', seed, 'prose.doublePreposition',
+        `Double preposition detected in story prose: "${surface.slice(0, 160)}"`)
+    }
+  }
+
+  // prose.unstrippedArticleInBridge (Task 5): catches phenomenon-typed
+  // DESTABILIZES bridge subjects that fail to strip a leading article. Task 5
+  // changed the bridge subject shape from `properNoun` to `nounPhrase`, so a
+  // phenomenon "the bleed season" now renders as "Bleed season took shape ...".
+  // If the regression re-introduces the unstripped form, the spineSummary will
+  // contain `The <lowercase noun phrase> took shape`. Verified 0 findings
+  // against the deep-audit corpus.
+  if (UNSTRIPPED_ARTICLE_BRIDGE_PATTERN.test(system.systemStory.spineSummary)) {
+    addFinding(findings, 'error', seed, 'prose.unstrippedArticleInBridge',
+      `Bridge subject likely retained leading article: "${system.systemStory.spineSummary.slice(0, 200)}"`)
+  }
+
+  // prose.alwaysFirstHistoricalVariant (Task 4 corpus aggregation): track
+  // distinct rendered historical-summary strings per (edgeType, era) bucket.
+  // Evaluation happens after all systems are processed, in auditCoverage.
+  for (const edge of system.relationshipGraph.edges) {
+    if (edge.era !== 'historical' || !edge.summary) continue
+    const bucket = `${edge.type}|${edge.approxEra ?? 'unknown'}`
+    let info = stats.historicalSummariesByBucket.get(bucket)
+    if (!info) {
+      info = { count: 0, distinct: new Set<string>() }
+      stats.historicalSummariesByBucket.set(bucket, info)
+    }
+    info.count += 1
+    info.distinct.add(edge.summary)
+  }
+
   if (system.systemStory.spineSummary.length > 0
       && !/[.!?]$/.test(system.systemStory.spineSummary)) {
     addFinding(findings, 'warning', seed, 'story.terminalPunct',
@@ -919,6 +967,19 @@ function auditCoverage(stats: CorpusStats, findings: Finding[]): void {
   if (median < 3) {
     addFinding(findings, 'warning', syntheticSeed, 'graph.edges.median',
       `Median edge count across corpus is ${median}; expected >=3`)
+  }
+
+  // prose.alwaysFirstHistoricalVariant (Task 10, Task 4 regression guard).
+  // Flag any (edgeType × era) bucket of size >= 10 that produced only a single
+  // distinct rendered historical-summary string — a signal that
+  // stableHashString-based variant rotation has degenerated. Verified 0
+  // findings against the deep-audit corpus (each historical bucket renders
+  // 6 distinct variants across ~900 edges per bucket).
+  for (const [bucket, info] of stats.historicalSummariesByBucket) {
+    if (info.count >= 10 && info.distinct.size === 1) {
+      addFinding(findings, 'warning', syntheticSeed, 'prose.alwaysFirstHistoricalVariant',
+        `Historical bucket ${bucket} (${info.count} edges) used only one body variant; rotation may be degenerate.`)
+    }
   }
 }
 
@@ -1124,6 +1185,7 @@ const stats: CorpusStats = {
   noteFallbackCount: 0,
   hookGraphAwareCount: 0,
   hookFallbackCount: 0,
+  historicalSummariesByBucket: new Map(),
 }
 
 for (const distribution of distributions) {
