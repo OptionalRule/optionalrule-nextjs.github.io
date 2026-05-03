@@ -90,6 +90,11 @@ interface CorpusStats {
   spineCounts: number[]
   edgesByType: Record<EdgeType, number>
   systemsWithZeroEdges: number
+  spineSummaryLengths: number[]
+  bodyParagraphCounts: number[]
+  bodySentenceCounts: number[]
+  hookCounts: number[]
+  systemsWithEmptyStory: number
 }
 
 const auditProfiles = {
@@ -612,6 +617,47 @@ function auditSystem(system: GeneratedSystem, findings: Finding[], stats: Corpus
     }
   }
 
+  stats.spineSummaryLengths.push(system.systemStory.spineSummary.length)
+  stats.bodyParagraphCounts.push(system.systemStory.body.length)
+  stats.bodySentenceCounts.push(
+    system.systemStory.body.reduce((sum, p) => sum + p.split(/(?<=[.!?])\s+/).length, 0),
+  )
+  stats.hookCounts.push(system.systemStory.hooks.length)
+  if (system.systemStory.spineSummary === '' && system.systemStory.body.length === 0) {
+    stats.systemsWithEmptyStory += 1
+  }
+
+  const allOutputs = [
+    system.systemStory.spineSummary,
+    ...system.systemStory.body,
+    ...system.systemStory.hooks,
+  ]
+
+  for (const output of allOutputs) {
+    if (output.includes('{')) {
+      addFinding(findings, 'error', seed, 'story.unresolvedSlot',
+        `Rendered output contains unresolved slot: "${output}"`)
+    }
+  }
+
+  for (const output of allOutputs) {
+    if (/\b(evidence|records|logs|claims|reports)\s+\S+\s+\1\s+(of|that)\b/i.test(output)) {
+      addFinding(findings, 'error', seed, 'story.doubledNoun',
+        `Doubled-noun pattern: "${output}"`)
+    }
+  }
+
+  if (system.systemStory.spineSummary.length > 0
+      && !/[.!?]$/.test(system.systemStory.spineSummary)) {
+    addFinding(findings, 'warning', seed, 'story.terminalPunct',
+      `spineSummary missing terminal punctuation: "${system.systemStory.spineSummary}"`)
+  }
+
+  if (system.systemStory.body.length > 3) {
+    addFinding(findings, 'error', seed, 'story.bodyParagraphs',
+      `Body has ${system.systemStory.body.length} paragraphs; expected <= 3.`)
+  }
+
   assertText(findings, seed, 'name', system.name.value, 'System name')
   assertText(findings, seed, 'primary.spectralType', system.primary.spectralType.value, 'Primary spectral type')
 
@@ -951,6 +997,11 @@ const stats: CorpusStats = {
   spineCounts: [],
   edgesByType: Object.fromEntries(EDGE_TYPES.map(t => [t, 0])) as Record<EdgeType, number>,
   systemsWithZeroEdges: 0,
+  spineSummaryLengths: [],
+  bodyParagraphCounts: [],
+  bodySentenceCounts: [],
+  hookCounts: [],
+  systemsWithEmptyStory: 0,
 }
 
 for (const distribution of distributions) {
@@ -994,6 +1045,11 @@ console.log(`Systems with zero edges: ${stats.systemsWithZeroEdges} / ${stats.sy
 for (const [type, count] of Object.entries(stats.edgesByType)) {
   if (count > 0) console.log(`  edges of type ${type}: ${count}`)
 }
+console.log(`Story spineSummary length (p10/p50/p90): ${formatPercentiles(stats.spineSummaryLengths)} chars`)
+console.log(`Story body paragraph count (p10/p50/p90): ${formatPercentiles(stats.bodyParagraphCounts)}`)
+console.log(`Story body sentence count (p10/p50/p90): ${formatPercentiles(stats.bodySentenceCounts)}`)
+console.log(`Story hook count (p10/p50/p90): ${formatPercentiles(stats.hookCounts)}`)
+console.log(`Systems with empty story: ${stats.systemsWithEmptyStory} / ${stats.systems}`)
 console.log(`Errors: ${errors.length}`)
 console.log(`Warnings: ${warnings.length}`)
 console.log(`Locked fact conflicts: ${lockedConflicts.length}`)
