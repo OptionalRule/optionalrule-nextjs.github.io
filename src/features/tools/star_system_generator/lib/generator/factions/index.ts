@@ -19,3 +19,5 @@ export interface GeneratedFaction {
   domains: readonly string[]
   publicFace: string
 }
+
+export { generateFactions } from './generateFactions'
