@@ -22,6 +22,7 @@ export interface SettlementNameDescriptors {
   category: Record<string, string>
   authority: RuleBackedDescriptorSet
   scale: ScaleDescriptorSet
+  population: { exact: Record<string, string>; default: string }
 }
 
 interface NamesData {

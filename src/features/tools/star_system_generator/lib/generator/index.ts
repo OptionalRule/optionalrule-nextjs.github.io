@@ -2519,6 +2519,13 @@ function settlementDescriptorForHabitationPattern(habitationPattern: SettlementH
   )
 }
 
+function settlementDescriptorForPopulation(population: SettlementPopulation): string {
+  return (
+    settlementNameDescriptors.population.exact[population] ??
+    settlementNameDescriptors.population.default
+  )
+}
+
 function generateSettlementName(
   rng: SeededRng,
   body: OrbitingBody,
@@ -2526,6 +2533,7 @@ function generateSettlementName(
   siteCategory: string,
   settlementFunction: string,
   authority: string,
+  population: SettlementPopulation,
   habitationPattern: SettlementHabitationPattern
 ): string {
   const anchorStem = anchor.name.split(',')[0].replace(/\s+(orbital space|route geometry|traffic pattern|transit geometry)$/i, '')
@@ -2533,12 +2541,16 @@ function generateSettlementName(
   const categoryDescriptor = settlementDescriptorForCategory(siteCategory)
   const authorityDescriptor = settlementDescriptorForAuthority(authority)
   const habitationDescriptor = settlementDescriptorForHabitationPattern(habitationPattern)
+  const populationDescriptor = settlementDescriptorForPopulation(population)
 
   const pattern = rng.int(1, 5)
   if (pattern === 1) return `${anchorStem} ${functionDescriptor}`
   if (pattern === 2) return `${anchorStem} ${categoryDescriptor}`
   if (pattern === 3) return `${body.name.value} ${authorityDescriptor}`
-  if (pattern === 4) return `${anchorStem} ${habitationDescriptor}`
+  if (pattern === 4) {
+    const useHabitation = rng.chance(0.5)
+    return `${anchorStem} ${useHabitation ? habitationDescriptor : populationDescriptor}`
+  }
   return `${body.name.value} ${functionDescriptor} ${rng.int(2, 99).toString().padStart(2, '0')}`
 }
 
@@ -2587,7 +2599,16 @@ function generateSettlements(
       encounterSites: encounterSiteValues,
       guIntensity: guOverlay.intensity.value,
     })
-    const baseSettlementName = generateSettlementName(rng.fork(`settlement-name-${index + 1}`), body, anchor, locationOption.category, settlementFunction, authority, habitationPattern)
+    const baseSettlementName = generateSettlementName(
+      rng.fork(`settlement-name-${index + 1}`),
+      body,
+      anchor,
+      locationOption.category,
+      settlementFunction,
+      authority,
+      population,
+      habitationPattern,
+    )
     const settlementId = `settlement-${index + 1}`
     const settlementName = nameRegistry.uniqueGeneratedName(baseSettlementName, {
       bodyName: body.name.value,
