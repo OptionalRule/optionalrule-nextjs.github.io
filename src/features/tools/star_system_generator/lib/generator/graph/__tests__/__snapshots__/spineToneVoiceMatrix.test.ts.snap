@@ -1,0 +1,25 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`spine tone × edge type voice matrix > tone=astronomy: spine prose reads in tone voice 1`] = `
+{
+  "body0": "The amplitude of flare-amplified bleed season exceeds the operating envelope of Custos Echo-58 Belt IV. The amplitude of flare-amplified bleed season exceeds the operating envelope of Custos Echo-58 Belt V. Refugee ark parking orbit introduces a measurable perturbation in Custos Echo-58 Belt V. Custos Echo-58 Belt IV Charter is the only major foothold on Custos Echo-58 Belt IV.",
+  "spineEdgeType": "DESTABILIZES",
+  "spineSummary": "Flare-amplified bleed season took shape after Cycle 7, the perturbation from flare-amplified bleed season now exceeds Custos Echo-58 Belt IV's tolerance margin.",
+}
+`;
+
+exports[`spine tone × edge type voice matrix > tone=balanced: spine prose reads in tone voice 1`] = `
+{
+  "body0": "Glasshouse Biosafety Compact can't plan around black-market route beacon lattice anymore. Black-market route beacon lattice keeps shifting under Danfeng's Flare Belt IV. Derelict fleet cluster keeps shifting under Danfeng's Flare Belt IV. Danfeng's Flare Belt IV carries Danfeng's Flare Belt IV Hold on its surface.",
+  "spineEdgeType": "DESTABILIZES",
+  "spineSummary": "Black-market route beacon lattice took shape in the great compaction, Black-market route beacon lattice is rewriting the constants Glasshouse Biosafety Compact was built around.",
+}
+`;
+
+exports[`spine tone × edge type voice matrix > tone=cinematic: spine prose reads in tone voice 1`] = `
+{
+  "body0": "Between Bone Lantern Order and Salt Wound Wake the knife is already drawn. Carrion Synod keeps the receipts. Crown of Dust Pact keeps the witnesses. Pale Saint Wake swore the pact would hold; Salt Wound Wake swore otherwise.",
+  "spineEdgeType": "CONTESTS",
+  "spineSummary": "The compact between Bone Lantern Order and Salt Wound Wake broke in the silent decade, Bone Lantern Order and Salt Wound Wake are bleeding each other dry, and the system cheers them on.",
+}
+`;
