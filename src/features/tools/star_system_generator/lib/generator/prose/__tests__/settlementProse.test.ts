@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { settlementHookSynthesis, settlementTagHook } from '../settlementProse'
 import { createSeededRng } from '../../rng'
+import type { SettlementHabitationPattern } from '../../../../types'
 
 describe('settlementHookSynthesis', () => {
   it('produces a four-sentence hook for a regular habitationPattern settlement', () => {
@@ -66,6 +67,41 @@ describe('settlementHookSynthesis', () => {
     })
     expect(result).toContain('makes the GU work impossible to treat as routine')
   })
+})
+
+describe('settlementHookSynthesis — habitation-pattern variants', () => {
+  const cases: Array<{ pattern: SettlementHabitationPattern; needle: string }> = [
+    { pattern: 'Distributed swarm', needle: 'Coordination drift across the swarm' },
+    { pattern: 'Ring station', needle: 'Ring-rotation politics' },
+    { pattern: "O'Neill cylinder", needle: 'Centripetal-axis politics' },
+    { pattern: 'Modular island station', needle: 'shuttle schedule between modules' },
+    { pattern: 'Hub complex', needle: 'satellite outposts will refuse to accept' },
+    { pattern: 'Hollow asteroid', needle: 'Spin-axis vibrations' },
+    { pattern: 'Belt cluster', needle: "tether-bridges are fraying" },
+    { pattern: 'Underground city', needle: 'Surface signals never reach' },
+    { pattern: 'Sealed arcology', needle: 'Internal-weather faults' },
+    { pattern: 'Sky platform', needle: 'one storm from rebuild' },
+    { pattern: 'Tethered tower', needle: 'Tether-tension reports' },
+    { pattern: 'Drift colony', needle: 'no gate, no route, and no rescue lane' },
+    { pattern: 'Generation ship', needle: 'mid-voyage politics' },
+  ]
+
+  for (const { pattern, needle } of cases) {
+    it(`uses pattern-specific pressure for ${pattern}`, () => {
+      const rng = createSeededRng(`pattern-${pattern}`)
+      const result = settlementHookSynthesis(rng, 'Gate Shadow', 'Archive War', {
+        habitationPattern: pattern,
+        siteCategory: 'orbital',
+        settlementFunction: 'fueling depot',
+        condition: 'Cramped',
+        crisis: 'Bleed node changed course',
+        hiddenTruth: 'A debt ledger nobody wants audited',
+        encounterSites: ['Cargo dock', 'Maintenance airlock'],
+        guIntensity: 'normal',
+      })
+      expect(result).toContain(needle)
+    })
+  }
 })
 
 describe('settlementTagHook', () => {
