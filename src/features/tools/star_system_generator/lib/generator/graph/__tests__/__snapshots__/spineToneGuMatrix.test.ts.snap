@@ -1,0 +1,97 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`spine tone × gu matrix (structural fields only) > tone=astronomy gu=fracture produces stable spine structural fields 1`] = `
+{
+  "spineEdgeType": "DESTABILIZES",
+  "spineObjectKind": "body",
+  "spineSubjectKind": "phenomenon",
+}
+`;
+
+exports[`spine tone × gu matrix (structural fields only) > tone=astronomy gu=high produces stable spine structural fields 1`] = `
+{
+  "spineEdgeType": "DESTABILIZES",
+  "spineObjectKind": "settlement",
+  "spineSubjectKind": "guHazard",
+}
+`;
+
+exports[`spine tone × gu matrix (structural fields only) > tone=astronomy gu=low produces stable spine structural fields 1`] = `
+{
+  "spineEdgeType": "DESTABILIZES",
+  "spineObjectKind": "settlement",
+  "spineSubjectKind": "guHazard",
+}
+`;
+
+exports[`spine tone × gu matrix (structural fields only) > tone=astronomy gu=normal produces stable spine structural fields 1`] = `
+{
+  "spineEdgeType": "DESTABILIZES",
+  "spineObjectKind": "body",
+  "spineSubjectKind": "phenomenon",
+}
+`;
+
+exports[`spine tone × gu matrix (structural fields only) > tone=balanced gu=fracture produces stable spine structural fields 1`] = `
+{
+  "spineEdgeType": "DESTABILIZES",
+  "spineObjectKind": "body",
+  "spineSubjectKind": "phenomenon",
+}
+`;
+
+exports[`spine tone × gu matrix (structural fields only) > tone=balanced gu=high produces stable spine structural fields 1`] = `
+{
+  "spineEdgeType": "DESTABILIZES",
+  "spineObjectKind": "body",
+  "spineSubjectKind": "phenomenon",
+}
+`;
+
+exports[`spine tone × gu matrix (structural fields only) > tone=balanced gu=low produces stable spine structural fields 1`] = `
+{
+  "spineEdgeType": "CONTESTS",
+  "spineObjectKind": "namedFaction",
+  "spineSubjectKind": "namedFaction",
+}
+`;
+
+exports[`spine tone × gu matrix (structural fields only) > tone=balanced gu=normal produces stable spine structural fields 1`] = `
+{
+  "spineEdgeType": "DESTABILIZES",
+  "spineObjectKind": "namedFaction",
+  "spineSubjectKind": "phenomenon",
+}
+`;
+
+exports[`spine tone × gu matrix (structural fields only) > tone=cinematic gu=fracture produces stable spine structural fields 1`] = `
+{
+  "spineEdgeType": "CONTESTS",
+  "spineObjectKind": "namedFaction",
+  "spineSubjectKind": "namedFaction",
+}
+`;
+
+exports[`spine tone × gu matrix (structural fields only) > tone=cinematic gu=high produces stable spine structural fields 1`] = `
+{
+  "spineEdgeType": "CONTESTS",
+  "spineObjectKind": "namedFaction",
+  "spineSubjectKind": "namedFaction",
+}
+`;
+
+exports[`spine tone × gu matrix (structural fields only) > tone=cinematic gu=low produces stable spine structural fields 1`] = `
+{
+  "spineEdgeType": "CONTESTS",
+  "spineObjectKind": "namedFaction",
+  "spineSubjectKind": "namedFaction",
+}
+`;
+
+exports[`spine tone × gu matrix (structural fields only) > tone=cinematic gu=normal produces stable spine structural fields 1`] = `
+{
+  "spineEdgeType": "CONTESTS",
+  "spineObjectKind": "namedFaction",
+  "spineSubjectKind": "namedFaction",
+}
+`;
