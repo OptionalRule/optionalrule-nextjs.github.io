@@ -305,3 +305,12 @@ Re-ran the same 20 seeds via a one-shot script after Tasks 2–10 landed. Confir
 **Phase 8 candidate still pervasive (expected, deferred):** The lowercase-faction-after-comma-and-conjunction bug ("orison Route Authority", "kestrel Free Compact", "glasshouse Biosafety Compact") fired in 20/20 spine summaries — exactly as Task 1 found. Task 10 correctly dropped the `prose.lowercaseFactionMidSentence` audit check until the spine-assembly fix lands in Phase 8.
 
 No regressions surfaced. Phase 7 fixes hold under the same seed grid that drove the original review.
+
+## Phase 8 closeout
+
+Phase 8 landed the deferred spine-summary fix and the audit check that Task 10 had dropped:
+
+- **Spine-summary lowercase-faction bug fixed** (commit `c92981f`). `composeSpineSummary` in `renderSystemStory.ts` was unconditionally lowercasing the leading character of the post-bridge clause. Phase 8 narrowed the rule to a leading English article (`/^(The|A|An)\s/`); proper-noun heads now pass through with original case intact. Deep audit (4800 systems): 4475/4800 affected pre-fix → 0 post-fix.
+- **`prose.lowercaseFactionMidSentence` audit check shipped** (commit `5acfd5e`). Codifies the antipattern as a regression guard. 0 findings against the post-fix corpus.
+
+The Phase 8 candidates surfaced in this review (tone-aware spine selection, gu-aware spine selection, ruin-as-agent semantic classification beyond Task 5's bridge-shape change) were NOT addressed in Phase 8 — they remain future-tuning candidates. Phase 8's scope was the deprecation of `narrativeLines` / `narrativeThreads` plus the spine-bug carryover; the master plan reaches its planned end state at Phase 8.
