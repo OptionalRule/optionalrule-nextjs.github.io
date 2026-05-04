@@ -4,6 +4,7 @@ import type {
   Fact,
   GeneratedSystem,
   GenerationOptions,
+  GeneratorTone,
   GuPreference,
   HumanRemnant,
   Moon,
@@ -2262,12 +2263,15 @@ function settlementHabitationPatternFromRoll(
   presence: SettlementPresenceScore,
   siteCategory: SettlementSiteCategory,
   body: OrbitingBody,
+  tone: GeneratorTone,
 ): SettlementHabitationPattern {
   const defaultPattern = habitationPatternDefaults[siteCategory]
 
   if (defaultPattern === 'Distributed swarm') {
-    if (rng.chance(0.1)) return 'Generation ship'
-    if (rng.chance(0.1)) return 'Drift colony'
+    const generationShipRate = tone === 'cinematic' ? 0.18 : tone === 'astronomy' ? 0.04 : 0.1
+    const driftColonyRate = tone === 'cinematic' ? 0.18 : tone === 'astronomy' ? 0.04 : 0.1
+    if (rng.chance(generationShipRate)) return 'Generation ship'
+    if (rng.chance(driftColonyRate)) return 'Drift colony'
     return defaultPattern
   }
   if (defaultPattern === 'Abandoned') return defaultPattern
@@ -2277,6 +2281,9 @@ function settlementHabitationPatternFromRoll(
   if (presence.score === 7 || presence.score === 8) roll -= 2
   if (presence.score >= 12) roll += 2
   if (presence.score >= 15) roll += 4
+
+  if (tone === 'cinematic' && rng.chance(0.25)) roll -= 2
+  if (tone === 'astronomy') roll = Math.max(5, Math.min(18, roll))
 
   if (roll <= 1) return 'Abandoned'
   if (roll === 2) return 'Automated'
@@ -2702,6 +2709,7 @@ function generateSettlements(
       presence,
       locationOption.category,
       body,
+      options.tone,
     )
     const population = applyHabitationPopulationConstraint(
       habitationPattern,

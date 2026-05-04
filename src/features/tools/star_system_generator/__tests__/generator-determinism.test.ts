@@ -966,6 +966,27 @@ describe('generateSystem', () => {
     expect(sawAbandoned).toBe(true)
   })
 
+  it('tone-axis shifts settlement habitation distribution', () => {
+    const settlementsByTone = (tone: GenerationOptions['tone']) =>
+      Array.from({ length: 60 }, (_, index) =>
+        generateSystem({
+          ...options,
+          tone,
+          settlements: 'crowded',
+          seed: `tone-axis-${tone}-${index.toString(16).padStart(4, '0')}`,
+        }),
+      ).flatMap((sys) => sys.settlements)
+
+    const cinematic = settlementsByTone('cinematic')
+    const astronomy = settlementsByTone('astronomy')
+
+    const rate = (settlements: typeof cinematic, pattern: string) =>
+      settlements.filter((s) => s.habitationPattern.value === pattern).length / settlements.length
+
+    expect(rate(cinematic, 'Abandoned')).toBeGreaterThan(rate(astronomy, 'Abandoned'))
+    expect(rate(cinematic, 'Distributed swarm')).toBeGreaterThan(rate(astronomy, 'Distributed swarm'))
+  })
+
   it('ties settlement hooks to hidden truths and immediate scene pressure', () => {
     for (let index = 0; index < 60; index++) {
       const system = generateSystem({ ...options, settlements: 'crowded', seed: `hook-coherence-${index.toString(16).padStart(4, '0')}` })
