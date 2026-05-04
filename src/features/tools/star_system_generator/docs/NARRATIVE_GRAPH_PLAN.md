@@ -514,6 +514,10 @@ Plus, downstream:
 - The phenomenon card for the bleed season gets "...corrupting Orison Hold's chiral feedstock" instead of generic "shapes travel and survey."
 - `whyHere` for Orison Hold reads as 1-2 prose sentences instead of a semicolon list.
 
+## Future work (post-Phase-8)
+
+- **Tone-aware / gu-aware spine selection** — [plan](./NARRATIVE_GRAPH_TONE_GU_AWARE_SPINE_PLAN.md). Phase 7's 20-sample review surfaced that body[0] reads identically across distribution × tone × gu inputs in 15+/20 systems; deferred from Phase 8 (deprecation phase).
+
 ## Acceptance Criteria
 
 - `relationshipGraph` and `systemStory` fields are populated on every generated system.
