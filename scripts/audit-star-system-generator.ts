@@ -776,6 +776,9 @@ function auditSystem(system: GeneratedSystem, findings: Finding[], stats: Corpus
       `Bridge subject likely retained leading article: "${system.systemStory.spineSummary.slice(0, 200)}"`)
   }
 
+  // prose.lowercaseFactionMidSentence (Phase 8 Task 2 + post-Phase-8 Task 1):
+  // see LOWERCASE_FACTION_MID_SENTENCE_PATTERN above for the antipattern shape
+  // and the article-narrowing rationale.
   if (LOWERCASE_FACTION_MID_SENTENCE_PATTERN.test(system.systemStory.spineSummary)) {
     addFinding(findings, 'error', seed, 'prose.lowercaseFactionMidSentence',
       `Spine summary has a lowercased proper-noun head mid-sentence: "${system.systemStory.spineSummary.slice(0, 160)}..."`)
