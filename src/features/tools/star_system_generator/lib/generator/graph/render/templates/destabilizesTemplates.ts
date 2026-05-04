@@ -35,6 +35,18 @@ export const destabilizesTemplates: EdgeTemplateFamily = {
     text: '{subject:article} is rewriting the constants {object} was built around.',
     expects: { subject: 'nounPhrase', object: 'properNoun' },
   },
+  spineSummaryByTone: {
+    cinematic: [
+      { text: '{subject:article} is hunting {object} a degree at a time.', expects: { subject: 'nounPhrase', object: 'properNoun' } },
+      { text: 'Everything {object} was built to outlast is being unmade by {subject:lower}.', expects: { subject: 'nounPhrase', object: 'properNoun' } },
+      { text: '{subject:article} is the wound {object} cannot dress.', expects: { subject: 'nounPhrase', object: 'properNoun' } },
+    ],
+    astronomy: [
+      { text: '{subject:article} is shifting the operating envelope {object} was calibrated against.', expects: { subject: 'nounPhrase', object: 'properNoun' } },
+      { text: 'The perturbation from {subject:lower} now exceeds {object}\'s tolerance margin.', expects: { subject: 'nounPhrase', object: 'properNoun' } },
+      { text: '{subject:article} is drifting the baselines on which {object} was sited.', expects: { subject: 'nounPhrase', object: 'properNoun' } },
+    ],
+  },
   historicalBridge: {
     text: '{subject} took shape {historical:era|after a flawed founding},',
     expects: { subject: 'nounPhrase' },

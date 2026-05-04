@@ -31,6 +31,18 @@ export const contestsTemplates: EdgeTemplateFamily = {
     text: "{subject} and {object} can't both set the rules — and the rest of the system knows it.",
     expects: { subject: 'properNoun', object: 'properNoun' },
   },
+  spineSummaryByTone: {
+    cinematic: [
+      { text: '{subject} and {object} are bleeding each other dry, and the system cheers them on.', expects: { subject: 'properNoun', object: 'properNoun' } },
+      { text: 'Between {subject} and {object} the war is already lost; only the funerals remain.', expects: { subject: 'properNoun', object: 'properNoun' } },
+      { text: '{subject} wants {object} broken before the next thaw.', expects: { subject: 'properNoun', object: 'properNoun' } },
+    ],
+    astronomy: [
+      { text: '{subject} and {object} hold incompatible records on the same observation; the resolution is jurisdictional.', expects: { subject: 'properNoun', object: 'properNoun' } },
+      { text: "A standards dispute between {subject} and {object} is the system's open question.", expects: { subject: 'properNoun', object: 'properNoun' } },
+      { text: '{subject} and {object} maintain conflicting calibration baselines — neither side will defer.', expects: { subject: 'properNoun', object: 'properNoun' } },
+    ],
+  },
   historicalBridge: {
     text: 'The compact between {subject} and {object} broke {historical:era|in an earlier reckoning},',
     expects: { subject: 'properNoun', object: 'properNoun' },
