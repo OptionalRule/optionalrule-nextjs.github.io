@@ -2591,7 +2591,7 @@ function generateSettlements(
     const hiddenTruth = chooseHiddenTruth(rng, habitationPattern)
     const encounterSiteValues = chooseEncounterSites(rng.fork(`encounter-sites-${index + 1}`), habitationPattern, settlementFunction)
     const tagHook = settlementHookSynthesis(rng.fork(`tag-hook-${index + 1}`), tags[0], tags[1], {
-      scale,
+      habitationPattern,
       siteCategory: locationOption.category,
       settlementFunction,
       condition,

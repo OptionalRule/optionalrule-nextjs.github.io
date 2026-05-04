@@ -3,10 +3,10 @@ import { settlementHookSynthesis, settlementTagHook } from '../settlementProse'
 import { createSeededRng } from '../../rng'
 
 describe('settlementHookSynthesis', () => {
-  it('produces a four-sentence hook for a regular-scale settlement', () => {
+  it('produces a four-sentence hook for a regular habitationPattern settlement', () => {
     const rng = createSeededRng('test-seed-1')
     const result = settlementHookSynthesis(rng, 'Gate Shadow', 'Archive War', {
-      scale: 'Outpost',
+      habitationPattern: 'Orbital station',
       siteCategory: 'orbital',
       settlementFunction: 'Iggygate control station',
       condition: 'Cramped and noisy',
@@ -22,10 +22,10 @@ describe('settlementHookSynthesis', () => {
     expect(result).toMatch(/Privately, the route weather board sells safe windows twice\./)
   })
 
-  it('uses automation-specific pressure for "Automated only" scale', () => {
+  it('uses automation-specific pressure for "Automated" habitationPattern', () => {
     const rng = createSeededRng('test-seed-2')
     const result = settlementHookSynthesis(rng, 'Gate Shadow', 'Archive War', {
-      scale: 'Automated only',
+      habitationPattern: 'Automated',
       siteCategory: 'orbital',
       settlementFunction: 'fueling depot',
       condition: 'Dormant',
@@ -37,10 +37,10 @@ describe('settlementHookSynthesis', () => {
     expect(result).toMatch(/Automation failure turns maintenance airlock into the key scene\./)
   })
 
-  it('uses salvage pressure for "Abandoned" scale', () => {
+  it('uses salvage pressure for "Abandoned" habitationPattern', () => {
     const rng = createSeededRng('test-seed-3')
     const result = settlementHookSynthesis(rng, 'Gate Shadow', 'Archive War', {
-      scale: 'Abandoned',
+      habitationPattern: 'Abandoned',
       siteCategory: 'orbital',
       settlementFunction: 'survey rig',
       condition: 'Stripped',
@@ -55,7 +55,7 @@ describe('settlementHookSynthesis', () => {
   it('uses fracture-specific consequence when guIntensity contains "fracture"', () => {
     const rng = createSeededRng('test-seed-4')
     const result = settlementHookSynthesis(rng, 'Gate Shadow', 'Archive War', {
-      scale: 'Outpost',
+      habitationPattern: 'Orbital station',
       siteCategory: 'orbital',
       settlementFunction: 'fueling depot',
       condition: 'Cramped',

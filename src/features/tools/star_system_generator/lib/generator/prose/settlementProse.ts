@@ -1,4 +1,5 @@
 import type { SeededRng } from '../rng'
+import type { SettlementHabitationPattern } from '../../../types'
 import { sentenceStart, sentenceFragment, definiteNounPhrase } from './helpers'
 import { crisisPressureSentence } from './crisisShaping'
 import { settlementTagPairHooks, settlementTagPressures } from '../data/settlements'
@@ -22,7 +23,7 @@ export function settlementHookSynthesis(
   obviousTag: string,
   deeperTag: string,
   context: {
-    scale: string
+    habitationPattern: SettlementHabitationPattern
     siteCategory: string
     settlementFunction: string
     condition: string
@@ -34,8 +35,8 @@ export function settlementHookSynthesis(
 ): string {
   const base = settlementTagHook(rng, obviousTag, deeperTag)
   const pressure =
-    context.scale === 'Automated only' ? `Automation failure turns ${context.encounterSites[0].toLowerCase()} into the key scene.` :
-    context.scale === 'Abandoned' ? `Salvage pressure centers on ${context.encounterSites[0].toLowerCase()}.` :
+    context.habitationPattern === 'Automated' ? `Automation failure turns ${context.encounterSites[0].toLowerCase()} into the key scene.` :
+    context.habitationPattern === 'Abandoned' ? `Salvage pressure centers on ${context.encounterSites[0].toLowerCase()}.` :
     context.guIntensity.includes('fracture') || context.guIntensity.includes('shear') ? crisisPressureSentence(context.crisis, 'makes the GU work impossible to treat as routine') :
     crisisPressureSentence(context.crisis, `keeps ${context.siteCategory.toLowerCase()} politics under stress`)
   const secret = sentenceFragment(context.hiddenTruth)

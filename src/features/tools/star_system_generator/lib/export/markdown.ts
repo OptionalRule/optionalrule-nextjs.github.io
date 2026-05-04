@@ -139,7 +139,8 @@ function formatSettlement(settlement: Settlement): string[] {
   return [
     `### ${settlement.name.value}`,
     '',
-    `**Scale:** ${settlement.scale.value}.`,
+    `**Population:** ${settlement.population.value}.`,
+    `**Habitation:** ${settlement.habitationPattern.value}.`,
     `**Location:** ${settlement.location.value}; ${settlement.anchorName.value} (${settlement.anchorKind.value}).`,
     `**Authority:** ${settlement.authority.value}.`,
     `**Function:** ${settlement.function.value}.`,
