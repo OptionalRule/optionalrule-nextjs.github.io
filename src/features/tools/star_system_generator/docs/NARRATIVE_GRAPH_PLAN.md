@@ -516,7 +516,11 @@ Plus, downstream:
 
 ## Future work (post-Phase-8)
 
-- **Tone-aware / gu-aware spine selection** — [plan](./NARRATIVE_GRAPH_TONE_GU_AWARE_SPINE_PLAN.md). Phase 7's 20-sample review surfaced that body[0] reads identically across distribution × tone × gu inputs in 15+/20 systems; deferred from Phase 8 (deprecation phase).
+- **Input-aware output (tone / gu / distribution / settlements)** — sequenced as a 4-phase mini-plan after a team review found that the original single-phase Option A plan solved the wrong problem at the wrong layer. The original `NARRATIVE_GRAPH_TONE_GU_AWARE_SPINE_PLAN.md` was rewritten as the master/overview after that review. Per-phase plans:
+  - **Phase A — Plumbing + structural gate fix** ([plan](./NARRATIVE_GRAPH_TONE_GU_PHASE_A_PLAN.md)). `BuildGraphOptions` channel; widen `NAMED_KINDS` so DESTABILIZES can reach the spine; per-tone scoring multiplier; per-gu eligibility predicate. Without Phase A, most tone weights are dead letters at the spine layer.
+  - **Phase B — Per-tone faction generation** ([plan](./NARRATIVE_GRAPH_TONE_GU_PHASE_B_PLAN.md)). Replace the static 10-faction shared pool with per-tone composable generators. Highest single-phase leverage — dissolves the "Kestrel/Red Vane everywhere" complaint at the corpus level.
+  - **Phase C — Per-tone voice (template diction) + per-tone era pools** ([plan](./NARRATIVE_GRAPH_TONE_GU_PHASE_C_PLAN.md)). Per-tone body[0] template variants for the top-4 spine-eligible edge types; per-tone connectives; per-tone era pools. Finishes the "reads different" win at the voice layer.
+  - **Phase D — Distribution + density axes** ([plan](./NARRATIVE_GRAPH_TONE_GU_PHASE_D_PLAN.md)). Distribution-axis scoring weights; density-conditioned cluster pulling; 16-cell representative axis-matrix snapshot. Extends the same channel to the last two axes Phase 7's review flagged.
 
 ## Acceptance Criteria
 
