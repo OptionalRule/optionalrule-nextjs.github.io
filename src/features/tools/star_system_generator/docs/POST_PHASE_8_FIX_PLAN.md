@@ -470,3 +470,22 @@ After this fix plan:
 - The subagent-driven-development workflow has explicit guards against the two failure modes Phase 8 surfaced (orphan-after-deletion misses; plan-vs-reality drift).
 - A concrete plan exists for the most user-visible spine quality gap, ready for a future phase to execute.
 - The `vitest.local.config.ts` situation has a clear status (fixed / removed / documented) so future developers don't trip over inconsistent test results.
+
+---
+
+## Status: Done
+
+All 5 tasks shipped via parallel subagent dispatch (3 in-repo worktrees + 2 out-of-repo skill edits) with two-stage review per task.
+
+| Task | Status | Commit(s) |
+|---|---|---|
+| Task 1: Tighten `lowercaseFactionMidSentence` regex | ✅ Shipped | `6cc93f9` (fix), `5c7568f` (merge) |
+| Task 2: Spec-reviewer post-deletion orphan check | ✅ Shipped | Out-of-repo skill edit at `~/.claude/plugins/cache/claude-plugins-official/superpowers/5.0.7/skills/subagent-driven-development/spec-reviewer-prompt.md` |
+| Task 3: Plan-validation pre-flight in subagent skill | ✅ Shipped | Out-of-repo skill edit at `~/.claude/plugins/cache/claude-plugins-official/superpowers/5.0.7/skills/subagent-driven-development/SKILL.md` |
+| Task 4: Bootstrap tone-aware / gu-aware spine plan | ✅ Shipped | `d7225f1` (plan), `d828550` (review fixups), `5b9887e` (merge). New plan: `NARRATIVE_GRAPH_TONE_GU_AWARE_SPINE_PLAN.md` (1034 lines, 6 numbered tasks, recommends Option A: tone multiplier in `score.ts` + GU eligibility in `selectEdges`). |
+| Task 5: Decide `vitest.local.config.ts` fate | ✅ Shipped (Path B: delete) | `07de1b0` (delete + CLAUDE.md note), `39273f9` (merge). Investigation revealed the plan's premise about which config was happy-dom was inverted; deletion was correct on the actual state. |
+| Simplify-pass follow-up | ✅ Shipped | `ac76cc5` — added missing call-site WHY-comment on the new audit check to match sibling style. |
+
+Quality bar at close: 944/944 tests, `tsc --noEmit` clean, `lint` clean, `audit:star-system-generator:quick` errors=0, warnings=0.
+
+**Notable from execution:** the parallel-dispatch pattern caught two real plan defects via independent reviewers — Task 4's wrong import path (3 vs. 4 dots up) and Task 5's inverted config framing. Both would have wasted a future implementer's time. The subagent-driven-development workflow's two-stage review (spec compliance, then code quality) was load-bearing here, not ceremonial.
