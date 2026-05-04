@@ -1,3 +1,4 @@
+import type { SettlementDensity } from '../../../../types'
 import type { SeededRng } from '../../rng'
 import type {
   EdgeType, RelationshipEdge, SystemRelationshipGraph,
@@ -12,11 +13,16 @@ import { connectiveFor } from './connectives'
 import { clusterEdges } from './clusters'
 import { templateFor, type EdgeTemplate } from './templates'
 
+export interface RenderSystemStoryOptions {
+  settlements: SettlementDensity
+}
+
 export function renderSystemStory(
   graph: SystemRelationshipGraph,
   rng: SeededRng,
+  options: RenderSystemStoryOptions = { settlements: 'normal' },
 ): SystemStoryOutput {
-  const clusters = clusterEdges(graph)
+  const clusters = clusterEdges(graph, { settlements: options.settlements })
   const bodyRng = rng.fork('body')
 
   const body: string[] = []
