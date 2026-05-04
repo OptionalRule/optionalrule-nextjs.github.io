@@ -9,25 +9,19 @@
       "guFractureFunctionsBySiteCategory": "Function overrides favored when GU intensity is dangerous or fractured.",
       "builtForms": "Habitat/building forms constrained by site category, exact location, mobility, and mining use.",
       "authorities": "Political, corporate, military, civic, or illicit powers that can run a site.",
-      "authorityByScale": "Authority overrides for automated or abandoned places.",
+      "authorityByHabitationPattern": "Authority overrides keyed by habitation pattern (Automated, Abandoned).",
       "aiSituations": "Local narrow-AI conditions and complications.",
       "conditions": "Current visible operating state of a settlement.",
-      "conditionByScale": "Condition overrides for automated or abandoned places.",
+      "conditionByHabitationPattern": "Condition overrides keyed by habitation pattern (Automated, Abandoned).",
       "tags": "Two-tag prompt pool; each tag carries a pressure phrase for hook synthesis.",
       "tagPairHooks": "Specific connective tissue for known tag combinations.",
       "crises": "Open crisis pool for inhabited sites.",
-      "crisisByScale": "Scale-specific crisis overrides.",
-      "hiddenTruths": "Secret or buried truth pool for inhabited sites.",
-      "hiddenTruthByScale": "Scale-specific hidden-truth overrides.",
-      "encounterSites": "Local scene locations for play.",
-      "encounterSitesByScale": "Scale-specific encounter-site overrides.",
-      "encounterSitesByFunctionKeyword": "Function-keyword rules that add specialized encounter sites.",
-      "scaleTable": "d12 settlement scale table (LEGACY — superseded by populationTable + habitationPatternDefaults; retained during Phase A migration).",
-      "authorityByHabitationPattern": "Authority overrides keyed by habitation pattern (Automated, Abandoned).",
-      "conditionByHabitationPattern": "Condition overrides keyed by habitation pattern (Automated, Abandoned).",
       "crisisByHabitationPattern": "Crisis overrides keyed by habitation pattern (Automated, Abandoned).",
+      "hiddenTruths": "Secret or buried truth pool for inhabited sites.",
       "hiddenTruthByHabitationPattern": "Hidden-truth overrides keyed by habitation pattern (Automated, Abandoned).",
+      "encounterSites": "Local scene locations for play.",
       "encounterSitesByHabitationPattern": "Encounter-site overrides keyed by habitation pattern (Automated, Abandoned).",
+      "encounterSitesByFunctionKeyword": "Function-keyword rules that add specialized encounter sites.",
       "populationTable": "d10 settlement population table (magnitude only).",
       "habitationPatternDefaults": "Default habitation pattern derived from siteCategory."
     }
@@ -317,10 +311,6 @@
     "Unknown sponsor",
     "Official records are falsified"
   ],
-  "authorityByScale": {
-    "Automated only": ["AI-supervised technocracy", "Gate authority", "Sol-interdiction compliance office", "Unknown sponsor", "Official records are falsified"],
-    "Abandoned": ["No recognized authority", "Quarantine authority", "Salvage court", "Unknown sponsor", "Official records are falsified"]
-  },
   "aiSituations": [
     "No AI; dangerously manual",
     "Obsolete but loyal AI",
@@ -397,10 +387,6 @@
     "Hidden civil war",
     "Hidden reason it cannot be abandoned"
   ],
-  "conditionByScale": {
-    "Automated only": ["Efficient but joyless", "Understaffed", "Life support near failure", "Hidden AI incident", "Under quarantine", "Officially safe, actually hazardous"],
-    "Abandoned": ["Half-abandoned", "Recently evacuated", "Reoccupied ruin", "Decaying first-wave infrastructure", "Hidden reason it cannot be abandoned"]
-  },
   "tags": [
     { "id": "abandoned-first-wave", "label": "Abandoned First Wave", "pressure": "old first-wave decisions still decide who has shelter, air, and legal standing." },
     { "id": "air-is-money", "label": "Air Is Money", "pressure": "life support has become the settlement currency and the main lever of control." },
@@ -597,10 +583,6 @@
     "Maintenance logs prove the disaster was forecast",
     "Evacuation ark launches without most of its manifest"
   ],
-  "crisisByScale": {
-    "Automated only": ["Life-support cascade", "AI refuses unsafe operation", "Illegal AI expansion discovered", "Sabotage of the refinery, gate, or AI systems", "Essential expert missing", "The base broadcasts two contradictory distress calls", "Critical spare-parts vault is empty", "Route weather forecast failed publicly", "AI witness testimony becomes publicly accessible"],
-    "Abandoned": ["Salvage claim dispute", "Old first-wave map found", "Ship full of dead arrives", "A whole district goes silent", "The base broadcasts two contradictory distress calls", "Crisis is staged to hide something worse", "Failed garden dome breaches containment", "Maintenance logs prove the disaster was forecast", "Evacuation ark launches without most of its manifest"]
-  },
   "hiddenTruths": [
     "The settlement is insolvent",
     "The mine is nearly exhausted",
@@ -657,10 +639,6 @@
     "The casualty register merges two different disasters",
     "The official quarantine boundary protects an illegal facility"
   ],
-  "hiddenTruthByScale": {
-    "Automated only": ["The local AI deleted evidence", "The local AI preserved forbidden evidence", "The site is an illegal AI lab", "The AI is sane; the humans are not listening", "The system official survey is deliberately wrong", "The route weather board sells safe windows twice", "The maintenance logs were rewritten after the breach", "The AI witness has already testified in a sealed simulation"],
-    "Abandoned": ["The official death toll is false", "A first-wave expedition survived in hiding", "The ghosts are old human recordings", "The settlement has an evacuation ark nobody knows about", "The quarantine is political", "The mirror swarm is being kept broken for legal leverage", "The evacuation ark manifest contains people who never existed", "The casualty register merges two different disasters"]
-  },
   "encounterSites": [
     "Half-flooded maintenance tunnels",
     "Shielding crawlspace district",
@@ -701,10 +679,6 @@
     "Sealed evidence room",
     "Evacuation ark manifest office"
   ],
-  "encounterSitesByScale": {
-    "Automated only": ["AI core vault", "Drone hangar", "Closed habitat ring", "Place the maps say does not exist", "Route weather board", "AI witness vault", "Life-support spine"],
-    "Abandoned": ["Old first-wave command bunker", "Hidden launch bay", "Half-flooded maintenance tunnels", "Place the maps say does not exist", "Dead mirror-control room", "Public casualty register", "Sealed evidence room"]
-  },
   "encounterSitesByFunctionKeyword": [
     { "keywords": ["quarantine", "biosphere"], "sites": ["Quarantine ward", "Black-market clinic", "Water plant", "Exposure clinic", "Triage lottery hall"] },
     { "keywords": ["mine", "extraction", "harvest", "refinery"], "sites": ["Chiral refinery floor", "Bleed-harvest control room", "Worker barracks"] },
@@ -715,20 +689,6 @@
     { "keywords": ["terraforming", "garden", "mirror", "volatile"], "sites": ["Dead mirror-control room", "Failed garden dome", "Volatile import manifold", "Water plant"] },
     { "keywords": ["interdiction", "gardener", "sol"], "sites": ["Sol/Gardener compliance archive", "Exclusion picket command deck", "Religious geometry chapel"] },
     { "keywords": ["archive", "records", "court"], "sites": ["AI witness vault", "Public casualty register", "Sealed evidence room", "Courtroom / debt registry"] }
-  ],
-  "scaleTable": [
-    "Abandoned",
-    "Automated only",
-    "1-20 people",
-    "21-100 people",
-    "101-1,000 people",
-    "1,001-10,000 people",
-    "10,001-100,000 people",
-    "100,001-1 million people",
-    "1-10 million people",
-    "10+ million people",
-    "Distributed swarm settlement",
-    "Population unknown or deliberately falsified"
   ],
   "populationTable": [
     "Minimal (<5)",

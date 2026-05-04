@@ -2252,18 +2252,6 @@ function applyHabitationPopulationConstraint(
   return population
 }
 
-function legacyScaleFromPopulationAndHabitation(
-  population: SettlementPopulation,
-  habitationPattern: SettlementHabitationPattern,
-): string {
-  if (habitationPattern === 'Abandoned') return 'Abandoned'
-  if (habitationPattern === 'Automated') return 'Automated only'
-  if (habitationPattern === 'Distributed swarm') return 'Distributed swarm settlement'
-  if (population === 'Unknown') return 'Population unknown or deliberately falsified'
-  if (population === 'Minimal (<5)') return '1-20 people'
-  return `${population} people`
-}
-
 function chooseSettlementAuthority(rng: SeededRng, habitationPattern: SettlementHabitationPattern): string {
   if (settlementAuthorityByHabitationPattern[habitationPattern]) {
     return pickOne(rng, settlementAuthorityByHabitationPattern[habitationPattern])
@@ -2584,7 +2572,6 @@ function generateSettlements(
       rolledPopulation,
     )
     const population = applyHabitationPopulationConstraint(habitationPattern, rolledPopulation)
-    const scale = legacyScaleFromPopulationAndHabitation(population, habitationPattern)
     const authority = chooseSettlementAuthority(rng, habitationPattern)
     const condition = chooseSettlementCondition(rng, habitationPattern)
     const crisis = chooseSettlementCrisis(rng, habitationPattern)
@@ -2621,8 +2608,8 @@ function generateSettlements(
         settlementName,
         'human-layer',
         settlementName === baseSettlementName
-          ? 'Generated settlement name from anchor, function, authority, and scale'
-          : 'Generated settlement name from anchor, function, authority, and scale; duplicate repaired by deterministic name registry'
+          ? 'Generated settlement name from anchor, function, authority, and habitation pattern'
+          : 'Generated settlement name from anchor, function, authority, and habitation pattern; duplicate repaired by deterministic name registry'
       ),
       anchorKind: fact(anchor.kind, 'human-layer', 'Generated site-to-body relationship'),
       anchorName: fact(anchor.name, 'human-layer', 'Generated site-to-body relationship'),
@@ -2630,7 +2617,6 @@ function generateSettlements(
       siteCategory: fact(locationOption.category, 'human-layer', 'MASS-GU section 18 constrained site category'),
       location: fact(locationOption.label, 'human-layer', 'MASS-GU 18.3 site location table with body constraints'),
       function: fact(settlementFunction, 'human-layer', 'MASS-GU settlement function table with body constraints'),
-      scale: fact(scale, 'human-layer', 'MASS-GU 18.2 settlement scale (Phase B transitional: synthesized from population + habitationPattern; field removed in Phase D)'),
       population: fact(population, 'human-layer', 'Population magnitude (d10 with presence modifier); habitation override applied'),
       habitationPattern: fact(habitationPattern, 'human-layer', 'Habitation pattern (siteCategory default with d12 special-pattern roll)'),
       authority: fact(authority, 'human-layer', 'MASS-GU 18.5 authority table'),

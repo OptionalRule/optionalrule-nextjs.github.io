@@ -5,8 +5,8 @@ import { bodyDesignation, moonDesignation } from '../lib/generator/designations'
 import {
   builtForms,
   guFractureFunctionsBySiteCategory,
-  settlementConditionByScale,
-  settlementCrisisByScale,
+  settlementConditionByHabitationPattern,
+  settlementCrisisByHabitationPattern,
   settlementLocations,
 } from '../lib/generator/data/settlements'
 import { architectures, frontierStarTypes, realisticStarTypes } from '../lib/generator/tables'
@@ -810,7 +810,8 @@ describe('generateSystem', () => {
       expect(settlement.presence.roll.value).toBeLessThanOrEqual(12)
       expect(settlement.presence.tier.value).toBeTruthy()
       expect(settlement.function.value).toBeTruthy()
-      expect(settlement.scale.source).toContain('MASS-GU 18.2')
+      expect(settlement.population.value).toBeTruthy()
+      expect(settlement.habitationPattern.value).toBeTruthy()
       expect(settlement.builtForm.value).toBeTruthy()
       expect(settlement.aiSituation.value).toBeTruthy()
       expect(settlement.condition.value).toBeTruthy()
@@ -841,7 +842,7 @@ describe('generateSystem', () => {
     expect(JSON.stringify(system.ruins).toLowerCase()).not.toContain('alien')
   })
 
-  it('uses rolled settlement presence and source settlement scales', () => {
+  it('uses rolled settlement presence and produces varied population + habitation', () => {
     const systems = Array.from({ length: 160 }, (_, index) =>
       generateSystem({
         ...options,
@@ -854,10 +855,11 @@ describe('generateSystem', () => {
     expect(settlements.length).toBeGreaterThan(0)
     expect(new Set(settlements.map((settlement) => settlement.presence.roll.value)).size).toBeGreaterThan(4)
     expect(new Set(settlements.map((settlement) => settlement.presence.tier.value)).size).toBeGreaterThan(3)
-    expect(new Set(settlements.map((settlement) => settlement.scale.value)).size).toBeGreaterThan(5)
-    expect(settlements.some((settlement) => settlement.scale.value.includes('people') || settlement.scale.value === 'Automated only')).toBe(true)
+    expect(new Set(settlements.map((settlement) => settlement.population.value)).size).toBeGreaterThan(4)
+    expect(new Set(settlements.map((settlement) => settlement.habitationPattern.value)).size).toBeGreaterThan(3)
     expect(settlements.every((settlement) => settlement.presence.roll.source?.includes('MASS-GU 18.1'))).toBe(true)
-    expect(settlements.every((settlement) => settlement.scale.source?.includes('MASS-GU 18.2'))).toBe(true)
+    expect(settlements.every((settlement) => Boolean(settlement.population.source))).toBe(true)
+    expect(settlements.every((settlement) => Boolean(settlement.habitationPattern.source))).toBe(true)
   })
 
   it('varies settlement count by density and system context', () => {
@@ -898,26 +900,28 @@ describe('generateSystem', () => {
     }
   })
 
-  it('keeps automated and abandoned settlement crises scale-aware', () => {
-    const automatedCrises = new Set(settlementCrisisByScale['Automated only'])
-    const abandonedCrises = new Set(settlementCrisisByScale.Abandoned)
-    const automatedConditions = new Set(settlementConditionByScale['Automated only'])
-    const abandonedConditions = new Set(settlementConditionByScale.Abandoned)
+  it('keeps automated and abandoned settlement crises habitationPattern-aware and enforces the joint population constraint', () => {
+    const automatedCrises = new Set(settlementCrisisByHabitationPattern.Automated)
+    const abandonedCrises = new Set(settlementCrisisByHabitationPattern.Abandoned)
+    const automatedConditions = new Set(settlementConditionByHabitationPattern.Automated)
+    const abandonedConditions = new Set(settlementConditionByHabitationPattern.Abandoned)
     let sawAutomated = false
     let sawAbandoned = false
 
     for (let index = 0; index < 180; index++) {
       const system = generateSystem({ ...options, settlements: 'hub', seed: `scale-coherence-${index.toString(16).padStart(4, '0')}` })
       for (const settlement of system.settlements) {
-        if (settlement.scale.value === 'Automated only') {
+        if (settlement.habitationPattern.value === 'Automated') {
           sawAutomated = true
           expect(automatedCrises.has(settlement.crisis.value)).toBe(true)
           expect(automatedConditions.has(settlement.condition.value)).toBe(true)
+          expect(settlement.population.value).toBe('Minimal (<5)')
         }
-        if (settlement.scale.value === 'Abandoned') {
+        if (settlement.habitationPattern.value === 'Abandoned') {
           sawAbandoned = true
           expect(abandonedCrises.has(settlement.crisis.value)).toBe(true)
           expect(abandonedConditions.has(settlement.condition.value)).toBe(true)
+          expect(settlement.population.value).toBe('Unknown')
         }
       }
     }

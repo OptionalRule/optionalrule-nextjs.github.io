@@ -206,7 +206,6 @@ export interface Settlement {
   siteCategory: Fact<string>
   location: Fact<string>
   function: Fact<string>
-  scale: Fact<string>
   population: Fact<SettlementPopulation>
   habitationPattern: Fact<SettlementHabitationPattern>
   authority: Fact<string>

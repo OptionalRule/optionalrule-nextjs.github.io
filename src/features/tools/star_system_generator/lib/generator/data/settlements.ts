@@ -48,20 +48,14 @@ interface SettlementsData {
     miningBySiteCategory: Partial<Record<SettlementSiteCategory, readonly string[]>> & { default: readonly string[] }
   }
   authorities: readonly string[]
-  authorityByScale: Record<string, readonly string[]>
   aiSituations: readonly string[]
   conditions: readonly string[]
-  conditionByScale: Record<string, readonly string[]>
   tags: readonly SettlementTagOption[]
   tagPairHooks: Record<string, string>
   crises: readonly string[]
-  crisisByScale: Record<string, readonly string[]>
   hiddenTruths: readonly string[]
-  hiddenTruthByScale: Record<string, readonly string[]>
   encounterSites: readonly string[]
-  encounterSitesByScale: Record<string, readonly string[]>
   encounterSitesByFunctionKeyword: readonly KeywordSitePool[]
-  scaleTable: readonly string[]
   populationTable: readonly SettlementPopulation[]
   habitationPatternDefaults: Record<SettlementSiteCategory, SettlementHabitationPattern>
   authorityByHabitationPattern: Record<string, readonly string[]>
@@ -94,10 +88,8 @@ export const restrictedFunctions = typedSettlementsData.functionPools.restricted
 export const guFractureFunctionsBySiteCategory = typedSettlementsData.guFractureFunctionsBySiteCategory
 export const builtForms = typedSettlementsData.builtForms
 export const settlementAuthorities = typedSettlementsData.authorities
-export const settlementAuthorityByScale = typedSettlementsData.authorityByScale
 export const aiSituations = typedSettlementsData.aiSituations
 export const settlementConditions = typedSettlementsData.conditions
-export const settlementConditionByScale = typedSettlementsData.conditionByScale
 export const settlementTagOptions = typedSettlementsData.tags
 export const settlementTags = settlementTagOptions.map((tag) => tag.label)
 export const settlementTagPressures = Object.fromEntries(
@@ -105,13 +97,9 @@ export const settlementTagPressures = Object.fromEntries(
 ) as Record<string, string>
 export const settlementTagPairHooks = typedSettlementsData.tagPairHooks
 export const settlementCrises = typedSettlementsData.crises
-export const settlementCrisisByScale = typedSettlementsData.crisisByScale
 export const hiddenTruths = typedSettlementsData.hiddenTruths
-export const hiddenTruthByScale = typedSettlementsData.hiddenTruthByScale
 export const encounterSites = typedSettlementsData.encounterSites
-export const encounterSitesByScale = typedSettlementsData.encounterSitesByScale
 export const encounterSitesByFunctionKeyword = typedSettlementsData.encounterSitesByFunctionKeyword
-export const settlementScaleTable = typedSettlementsData.scaleTable
 export const settlementPopulationTable = typedSettlementsData.populationTable
 export const habitationPatternDefaults = typedSettlementsData.habitationPatternDefaults
 export const settlementAuthorityByHabitationPattern = typedSettlementsData.authorityByHabitationPattern

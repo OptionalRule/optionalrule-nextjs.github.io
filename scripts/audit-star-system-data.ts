@@ -58,11 +58,12 @@ import {
   deepSpaceFunctions,
   encounterSites,
   encounterSitesByFunctionKeyword,
-  encounterSitesByScale,
+  encounterSitesByHabitationPattern,
   extractionFunctions,
   giantOrbitalFunctions,
   guFractureFunctionsBySiteCategory,
-  hiddenTruthByScale,
+  habitationPatternDefaults,
+  hiddenTruthByHabitationPattern,
   hiddenTruths,
   mobileFunctions,
   moonBaseFunctions,
@@ -71,13 +72,13 @@ import {
   routeFunctions,
   securityFunctions,
   settlementAuthorities,
-  settlementAuthorityByScale,
-  settlementConditionByScale,
+  settlementAuthorityByHabitationPattern,
+  settlementConditionByHabitationPattern,
   settlementConditions,
-  settlementCrisisByScale,
+  settlementCrisisByHabitationPattern,
   settlementCrises,
   settlementLocations,
-  settlementScaleTable,
+  settlementPopulationTable,
   settlementSiteCategories,
   settlementTagOptions,
   settlementTagPairHooks,
@@ -209,9 +210,10 @@ function validateNames(): void {
   if (!settlementNameDescriptors.function.default) addError('names.settlementNameDescriptors.function.default', 'Missing function descriptor fallback.')
   if (!settlementNameDescriptors.category.default) addError('names.settlementNameDescriptors.category.default', 'Missing category descriptor fallback.')
   if (!settlementNameDescriptors.authority.default) addError('names.settlementNameDescriptors.authority.default', 'Missing authority descriptor fallback.')
-  if (!settlementNameDescriptors.scale.default) addError('names.settlementNameDescriptors.scale.default', 'Missing scale descriptor fallback.')
-  if (!settlementNameDescriptors.scale.exact['Automated only']) addError('names.settlementNameDescriptors.scale.exact.Automated only', 'Missing automated-only scale descriptor.')
-  if (!settlementNameDescriptors.scale.exact.Abandoned) addError('names.settlementNameDescriptors.scale.exact.Abandoned', 'Missing abandoned scale descriptor.')
+  if (!settlementNameDescriptors.scale.default) addError('names.settlementNameDescriptors.scale.default', 'Missing habitation pattern descriptor fallback.')
+  if (!settlementNameDescriptors.scale.exact.Automated) addError('names.settlementNameDescriptors.scale.exact.Automated', 'Missing Automated habitation pattern descriptor.')
+  if (!settlementNameDescriptors.scale.exact.Abandoned) addError('names.settlementNameDescriptors.scale.exact.Abandoned', 'Missing Abandoned habitation pattern descriptor.')
+  if (!settlementNameDescriptors.scale.exact['Distributed swarm']) addError('names.settlementNameDescriptors.scale.exact["Distributed swarm"]', 'Missing Distributed swarm habitation pattern descriptor.')
 
   warnIfThin('names.systemNameCores', systemNameCores.length, 40)
   // Body and moon name pools are retained only as future optional local-alias
@@ -267,9 +269,15 @@ function validateSettlements(): void {
   assertNonEmpty('settlements.crises', settlementCrises)
   assertNonEmpty('settlements.hiddenTruths', hiddenTruths)
   assertNonEmpty('settlements.encounterSites', encounterSites)
-  assertNonEmpty('settlements.scaleTable', settlementScaleTable)
+  assertNonEmpty('settlements.populationTable', settlementPopulationTable)
 
-  if (settlementScaleTable.length !== 12) addError('settlements.scaleTable', `Expected 12 entries; got ${settlementScaleTable.length}.`)
+  if (settlementPopulationTable.length !== 10) addError('settlements.populationTable', `Expected 10 entries; got ${settlementPopulationTable.length}.`)
+
+  settlementSiteCategories.forEach((category) => {
+    if (!habitationPatternDefaults[category]) {
+      addError(`settlements.habitationPatternDefaults.${category}`, 'Missing default habitationPattern for site category.')
+    }
+  })
 
   warnIfThin('settlements.tags', settlementTagOptions.length, 50)
   warnIfThin('settlements.tagPairHooks', Object.keys(settlementTagPairHooks).length, 55)
@@ -292,12 +300,12 @@ function validateSettlements(): void {
     if (!settlementTags.includes(deeperTag)) addError('settlements.tagPairHooks', `Unknown deeper tag "${deeperTag}" in pair "${pair}".`)
   })
 
-  ;['Automated only', 'Abandoned'].forEach((scale) => {
-    assertNonEmpty(`settlements.authorityByScale.${scale}`, settlementAuthorityByScale[scale])
-    assertNonEmpty(`settlements.conditionByScale.${scale}`, settlementConditionByScale[scale])
-    assertNonEmpty(`settlements.crisisByScale.${scale}`, settlementCrisisByScale[scale])
-    assertNonEmpty(`settlements.hiddenTruthByScale.${scale}`, hiddenTruthByScale[scale])
-    assertNonEmpty(`settlements.encounterSitesByScale.${scale}`, encounterSitesByScale[scale])
+  ;['Automated', 'Abandoned'].forEach((pattern) => {
+    assertNonEmpty(`settlements.authorityByHabitationPattern.${pattern}`, settlementAuthorityByHabitationPattern[pattern])
+    assertNonEmpty(`settlements.conditionByHabitationPattern.${pattern}`, settlementConditionByHabitationPattern[pattern])
+    assertNonEmpty(`settlements.crisisByHabitationPattern.${pattern}`, settlementCrisisByHabitationPattern[pattern])
+    assertNonEmpty(`settlements.hiddenTruthByHabitationPattern.${pattern}`, hiddenTruthByHabitationPattern[pattern])
+    assertNonEmpty(`settlements.encounterSitesByHabitationPattern.${pattern}`, encounterSitesByHabitationPattern[pattern])
   })
 
   encounterSitesByFunctionKeyword.forEach((pool, index) => {
@@ -500,7 +508,7 @@ function printReport(): void {
     ['crises', settlementCrises.length],
     ['hiddenTruths', hiddenTruths.length],
     ['encounterSites', encounterSites.length],
-    ['scaleTable', settlementScaleTable.length],
+    ['populationTable', settlementPopulationTable.length],
   ])
 
   printSection('Settlement Locations By Category', settlementSiteCategories.map((category) => [category, locationCounts[category]]))
