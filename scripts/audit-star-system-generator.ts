@@ -1088,6 +1088,57 @@ function auditCoverage(stats: CorpusStats, findings: Finding[]): void {
     addFinding(findings, 'warning', syntheticSeed, 'narrative.spineToneSensitivity',
       `0/${stats.astronomySpineSamples} astronomy-tone systems produced a non-CONTESTS spine. Expected >=1 (Phase A tone-multiplier regression).`)
   }
+
+  if (auditProfile === 'deep') {
+    auditDistributionAxisSensitivity(findings, syntheticSeed)
+    auditDensityAxisSensitivity(findings, syntheticSeed)
+  }
+}
+
+function auditDistributionAxisSensitivity(findings: Finding[], syntheticSeed: string): void {
+  const sampleSize = 100
+  const baseFlags = { settlementWhyHere: true, phenomenonNote: true, settlementHookSynthesis: true }
+  let differing = 0
+  for (let i = 0; i < sampleSize; i++) {
+    const seed = `dist-axis-audit-${i}`
+    const frontier = generateSystem({
+      seed, distribution: 'frontier', tone: 'balanced', gu: 'normal', settlements: 'normal', graphAware: baseFlags,
+    })
+    const realistic = generateSystem({
+      seed, distribution: 'realistic', tone: 'balanced', gu: 'normal', settlements: 'normal', graphAware: baseFlags,
+    })
+    const fb = frontier.systemStory.body[0] ?? ''
+    const rb = realistic.systemStory.body[0] ?? ''
+    if (fb !== rb) differing++
+  }
+  const ratio = differing / sampleSize
+  if (ratio < 0.4) {
+    addFinding(findings, 'warning', syntheticSeed, 'narrative.distributionAxisSensitivity',
+      `Distribution axis differentiation: ${differing}/${sampleSize} seeds (${Math.round(100 * ratio)}%, expected >=40%). Phase D distribution-axis multipliers may have regressed.`)
+  }
+}
+
+function auditDensityAxisSensitivity(findings: Finding[], syntheticSeed: string): void {
+  const sampleSize = 100
+  const baseFlags = { settlementWhyHere: true, phenomenonNote: true, settlementHookSynthesis: true }
+  let differing = 0
+  for (let i = 0; i < sampleSize; i++) {
+    const seed = `density-axis-audit-${i}`
+    const sparse = generateSystem({
+      seed, distribution: 'frontier', tone: 'balanced', gu: 'normal', settlements: 'sparse', graphAware: baseFlags,
+    })
+    const hub = generateSystem({
+      seed, distribution: 'frontier', tone: 'balanced', gu: 'normal', settlements: 'hub', graphAware: baseFlags,
+    })
+    const sb = sparse.systemStory.body[0] ?? ''
+    const hb = hub.systemStory.body[0] ?? ''
+    if (sb !== hb) differing++
+  }
+  const ratio = differing / sampleSize
+  if (ratio < 0.4) {
+    addFinding(findings, 'warning', syntheticSeed, 'narrative.densityAxisSensitivity',
+      `Density axis differentiation: ${differing}/${sampleSize} seeds (${Math.round(100 * ratio)}%, expected >=40%). Phase D density-conditioned cluster pulling may have regressed.`)
+  }
 }
 
 function auditStarDistribution(
