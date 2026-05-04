@@ -87,6 +87,9 @@ import {
   encounterSitesByFunctionKeyword,
   encounterSitesByHabitationPattern,
   encounterSitesByPopulationBand,
+  GENERATION_SHIP_POPULATION_BAND,
+  HABITATION_POPULATION_FLOORS,
+  POPULATION_BAND_INDEX,
   populationBandFor,
   extractionFunctions,
   giantOrbitalFunctions,
@@ -2320,36 +2323,11 @@ function settlementHabitationPatternFromRoll(
   return defaultPattern
 }
 
-const POPULATION_ORDER: readonly SettlementPopulation[] = [
-  'Minimal (<5)',
-  '1-20',
-  '21-100',
-  '101-1,000',
-  '1,001-10,000',
-  '10,001-100,000',
-  '100,001-1 million',
-  '1-10 million',
-  '10+ million',
-]
-
-const POPULATION_BAND_INDEX: Record<SettlementPopulation, number> = {
-  'Minimal (<5)': 0,
-  '1-20': 1,
-  '21-100': 2,
-  '101-1,000': 3,
-  '1,001-10,000': 4,
-  '10,001-100,000': 5,
-  '100,001-1 million': 6,
-  '1-10 million': 7,
-  '10+ million': 8,
-  Unknown: -1,
-}
-
 function clampPopulationToFloor(population: SettlementPopulation, floorIndex: number): SettlementPopulation {
   const idx = POPULATION_BAND_INDEX[population]
-  if (idx < 0) return POPULATION_ORDER[floorIndex]
+  if (idx < 0) return settlementPopulationTable[floorIndex]
   if (idx >= floorIndex) return population
-  return POPULATION_ORDER[floorIndex]
+  return settlementPopulationTable[floorIndex]
 }
 
 function clampPopulationToBand(
@@ -2360,10 +2338,10 @@ function clampPopulationToBand(
 ): SettlementPopulation {
   const idx = POPULATION_BAND_INDEX[population]
   if (idx < 0) {
-    return POPULATION_ORDER[rng.int(floorIndex, ceilingIndex)]
+    return settlementPopulationTable[rng.int(floorIndex, ceilingIndex)]
   }
-  if (idx < floorIndex) return POPULATION_ORDER[floorIndex]
-  if (idx > ceilingIndex) return POPULATION_ORDER[ceilingIndex]
+  if (idx < floorIndex) return settlementPopulationTable[floorIndex]
+  if (idx > ceilingIndex) return settlementPopulationTable[ceilingIndex]
   return population
 }
 
@@ -2374,14 +2352,11 @@ function applyHabitationPopulationConstraint(
 ): SettlementPopulation {
   if (habitationPattern === 'Abandoned') return 'Unknown'
   if (habitationPattern === 'Automated') return 'Minimal (<5)'
-  if (habitationPattern === 'Underground city') return clampPopulationToFloor(population, 3)
-  if (habitationPattern === 'Hollow asteroid') return clampPopulationToFloor(population, 3)
-  if (habitationPattern === 'Belt cluster') return clampPopulationToFloor(population, 3)
-  if (habitationPattern === 'Sky platform') return clampPopulationToFloor(population, 2)
-  if (habitationPattern === 'Ring station') return clampPopulationToFloor(population, 4)
-  if (habitationPattern === 'Hub complex') return clampPopulationToFloor(population, 4)
-  if (habitationPattern === "O'Neill cylinder") return clampPopulationToFloor(population, 5)
-  if (habitationPattern === 'Generation ship') return clampPopulationToBand(population, 4, 6, rng)
+  if (habitationPattern === 'Generation ship') {
+    return clampPopulationToBand(population, GENERATION_SHIP_POPULATION_BAND.floor, GENERATION_SHIP_POPULATION_BAND.ceiling, rng)
+  }
+  const floor = HABITATION_POPULATION_FLOORS[habitationPattern]
+  if (floor !== undefined) return clampPopulationToFloor(population, floor)
   return population
 }
 

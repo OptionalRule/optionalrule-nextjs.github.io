@@ -4,7 +4,10 @@ import { applyNoAlienTextGuard, architectureBodyPlanRules, generateSystem } from
 import { bodyDesignation, moonDesignation } from '../lib/generator/designations'
 import {
   builtForms,
+  GENERATION_SHIP_POPULATION_BAND,
   guFractureFunctionsBySiteCategory,
+  HABITATION_POPULATION_FLOORS,
+  POPULATION_BAND_INDEX,
   settlementConditionByHabitationPattern,
   settlementCrisisByHabitationPattern,
   settlementLocations,
@@ -906,17 +909,6 @@ describe('generateSystem', () => {
     const abandonedCrises = new Set(settlementCrisisByHabitationPattern.Abandoned)
     const automatedConditions = new Set(settlementConditionByHabitationPattern.Automated)
     const abandonedConditions = new Set(settlementConditionByHabitationPattern.Abandoned)
-    const POPULATION_BAND_INDEX_TEST: Record<string, number> = {
-      'Minimal (<5)': 0,
-      '1-20': 1,
-      '21-100': 2,
-      '101-1,000': 3,
-      '1,001-10,000': 4,
-      '10,001-100,000': 5,
-      '100,001-1 million': 6,
-      '1-10 million': 7,
-      '10+ million': 8,
-    }
     let sawAutomated = false
     let sawAbandoned = false
 
@@ -935,30 +927,13 @@ describe('generateSystem', () => {
           expect(abandonedConditions.has(settlement.condition.value)).toBe(true)
           expect(settlement.population.value).toBe('Unknown')
         }
-        if (settlement.habitationPattern.value === 'Underground city') {
-          expect(POPULATION_BAND_INDEX_TEST[settlement.population.value]).toBeGreaterThanOrEqual(3)
-        }
-        if (settlement.habitationPattern.value === 'Hollow asteroid') {
-          expect(POPULATION_BAND_INDEX_TEST[settlement.population.value]).toBeGreaterThanOrEqual(3)
-        }
-        if (settlement.habitationPattern.value === 'Belt cluster') {
-          expect(POPULATION_BAND_INDEX_TEST[settlement.population.value]).toBeGreaterThanOrEqual(3)
-        }
-        if (settlement.habitationPattern.value === 'Sky platform') {
-          expect(POPULATION_BAND_INDEX_TEST[settlement.population.value]).toBeGreaterThanOrEqual(2)
-        }
-        if (settlement.habitationPattern.value === 'Ring station') {
-          expect(POPULATION_BAND_INDEX_TEST[settlement.population.value]).toBeGreaterThanOrEqual(4)
-        }
-        if (settlement.habitationPattern.value === 'Hub complex') {
-          expect(POPULATION_BAND_INDEX_TEST[settlement.population.value]).toBeGreaterThanOrEqual(4)
-        }
-        if (settlement.habitationPattern.value === "O'Neill cylinder") {
-          expect(POPULATION_BAND_INDEX_TEST[settlement.population.value]).toBeGreaterThanOrEqual(5)
+        const floor = HABITATION_POPULATION_FLOORS[settlement.habitationPattern.value]
+        if (floor !== undefined) {
+          expect(POPULATION_BAND_INDEX[settlement.population.value]).toBeGreaterThanOrEqual(floor)
         }
         if (settlement.habitationPattern.value === 'Generation ship') {
-          expect(POPULATION_BAND_INDEX_TEST[settlement.population.value]).toBeGreaterThanOrEqual(4)
-          expect(POPULATION_BAND_INDEX_TEST[settlement.population.value]).toBeLessThanOrEqual(6)
+          expect(POPULATION_BAND_INDEX[settlement.population.value]).toBeGreaterThanOrEqual(GENERATION_SHIP_POPULATION_BAND.floor)
+          expect(POPULATION_BAND_INDEX[settlement.population.value]).toBeLessThanOrEqual(GENERATION_SHIP_POPULATION_BAND.ceiling)
         }
       }
     }

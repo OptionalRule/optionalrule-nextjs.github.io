@@ -1,6 +1,31 @@
 import settlementsData from '../../../data/settlements.json'
 import type { SettlementHabitationPattern, SettlementPopulation } from '../../../types'
 
+export const POPULATION_BAND_INDEX: Record<SettlementPopulation, number> = {
+  'Minimal (<5)': 0,
+  '1-20': 1,
+  '21-100': 2,
+  '101-1,000': 3,
+  '1,001-10,000': 4,
+  '10,001-100,000': 5,
+  '100,001-1 million': 6,
+  '1-10 million': 7,
+  '10+ million': 8,
+  Unknown: -1,
+}
+
+export const HABITATION_POPULATION_FLOORS: Partial<Record<SettlementHabitationPattern, number>> = {
+  'Sky platform': 2,
+  'Underground city': 3,
+  'Hollow asteroid': 3,
+  'Belt cluster': 3,
+  'Ring station': 4,
+  'Hub complex': 4,
+  "O'Neill cylinder": 5,
+}
+
+export const GENERATION_SHIP_POPULATION_BAND: { floor: number; ceiling: number } = { floor: 4, ceiling: 6 }
+
 export type SettlementSiteCategory =
   | 'Surface settlement'
   | 'Orbital station'

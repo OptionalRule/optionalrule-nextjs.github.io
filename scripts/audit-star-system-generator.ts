@@ -10,7 +10,10 @@ import { isNamedEntity, EDGE_TYPES, HISTORICAL_ELIGIBLE_TYPES } from '../src/fea
 import type { EdgeType } from '../src/features/tools/star_system_generator/lib/generator/graph'
 import {
   builtForms,
+  GENERATION_SHIP_POPULATION_BAND,
   guFractureFunctionsBySiteCategory as settlementGuFractureFunctionsBySiteCategory,
+  HABITATION_POPULATION_FLOORS,
+  POPULATION_BAND_INDEX,
   settlementLocations,
 } from '../src/features/tools/star_system_generator/lib/generator/data/settlements'
 import type {
@@ -133,28 +136,6 @@ const guPreferences: GuPreference[] = ['low', 'normal', 'high', 'fracture']
 const settlementDensities: SettlementDensity[] = ['sparse', 'normal', 'crowded', 'hub']
 
 const extremeHotZones = new Set(['Furnace', 'Inferno'])
-
-const POPULATION_BAND_INDEX: Record<string, number> = {
-  'Minimal (<5)': 0,
-  '1-20': 1,
-  '21-100': 2,
-  '101-1,000': 3,
-  '1,001-10,000': 4,
-  '10,001-100,000': 5,
-  '100,001-1 million': 6,
-  '1-10 million': 7,
-  '10+ million': 8,
-}
-
-const FLOOR_PATTERNS: Array<[string, number]> = [
-  ['Underground city', 3],
-  ['Hollow asteroid', 3],
-  ['Belt cluster', 3],
-  ['Sky platform', 2],
-  ['Ring station', 4],
-  ['Hub complex', 4],
-  ["O'Neill cylinder", 5],
-]
 
 // Phase 7 Task 10 regression guards. See per-system block in auditSystem for
 // rationale and provenance.
@@ -563,19 +544,19 @@ function auditSettlement(system: GeneratedSystem, settlement: Settlement, settle
     addFinding(findings, 'error', seed, `${path}.population`, `Automated habitationPattern must force population to "Minimal (<5)"; got "${settlement.population.value}".`)
   }
 
-  for (const [pattern, floor] of FLOOR_PATTERNS) {
-    if (settlement.habitationPattern.value === pattern) {
-      const idx = POPULATION_BAND_INDEX[settlement.population.value]
-      if (idx === undefined || idx < floor) {
-        addFinding(findings, 'error', seed, `${path}.population`, `${pattern} requires population band >= ${floor}; got "${settlement.population.value}".`)
-      }
+  const floor = HABITATION_POPULATION_FLOORS[settlement.habitationPattern.value]
+  if (floor !== undefined) {
+    const idx = POPULATION_BAND_INDEX[settlement.population.value]
+    if (idx === undefined || idx < floor) {
+      addFinding(findings, 'error', seed, `${path}.population`, `${settlement.habitationPattern.value} requires population band >= ${floor}; got "${settlement.population.value}".`)
     }
   }
 
   if (settlement.habitationPattern.value === 'Generation ship') {
     const idx = POPULATION_BAND_INDEX[settlement.population.value]
-    if (idx === undefined || idx < 4 || idx > 6) {
-      addFinding(findings, 'error', seed, `${path}.population`, `Generation ship population must be band 4..6; got "${settlement.population.value}".`)
+    const { floor: shipFloor, ceiling: shipCeiling } = GENERATION_SHIP_POPULATION_BAND
+    if (idx === undefined || idx < shipFloor || idx > shipCeiling) {
+      addFinding(findings, 'error', seed, `${path}.population`, `Generation ship population must be band ${shipFloor}..${shipCeiling}; got "${settlement.population.value}".`)
     }
   }
 }
