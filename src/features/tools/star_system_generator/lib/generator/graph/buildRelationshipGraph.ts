@@ -54,6 +54,7 @@ export function buildRelationshipGraph(
   const { historicalEdges } = attachHistoricalEvents({
     spineEdges: selection.spine,
     rng,
+    tone: options.tone,
   })
   const allEdges = [...edges, ...historicalEdges]
 
