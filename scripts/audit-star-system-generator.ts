@@ -130,12 +130,14 @@ const extremeHotZones = new Set(['Furnace', 'Inferno'])
 // rationale and provenance.
 const DOUBLE_PREPOSITION_PATTERN = /\b(during|in|on|at|to)\s+(in|on|at|to|before|after)\b/i
 const UNSTRIPPED_ARTICLE_BRIDGE_PATTERN = /\bThe [a-z]+(?:\s[a-z]+)? took shape\b/
-// Phase 8 Task 2: catches spine-assembly joiner regressions where a post-bridge
-// clause's proper-noun head was lowercased mid-sentence. Anchors on bridge
-// punctuation (',' or '—' followed by a space) and a "lowercaseWord
-// SpaceUppercaseWord" pair — characteristic of "kestrel Free Compact" /
-// "orison Route Authority". Phase 8 Task 1 fixed the underlying bug.
-const LOWERCASE_FACTION_MID_SENTENCE_PATTERN = /[,—] [a-z][a-zA-Z]+ [A-Z]/
+// Phase 8 Task 2 + post-Phase-8 Task 1: catches spine-assembly joiner
+// regressions where a post-bridge clause's proper-noun head was lowercased
+// mid-sentence. Anchors on bridge punctuation (',' or '—' followed by a
+// space) and a "lowercaseWord SpaceUppercaseWord" pair. The negative
+// lookahead excludes leading English articles ("the"/"a"/"an") which
+// composeSpineSummary deliberately lowercases as part of the article
+// narrowing rule — those are correct, not regressions.
+const LOWERCASE_FACTION_MID_SENTENCE_PATTERN = /[,—] (?!(?:the|a|an) )[a-z][a-zA-Z]+ [A-Z]/
 
 const forbiddenAlienPatterns = [
   /\balien\b/i,
