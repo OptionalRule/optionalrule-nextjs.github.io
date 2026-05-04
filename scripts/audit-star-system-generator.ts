@@ -10,7 +10,10 @@ import { isNamedEntity, EDGE_TYPES, HISTORICAL_ELIGIBLE_TYPES } from '../src/fea
 import type { EdgeType } from '../src/features/tools/star_system_generator/lib/generator/graph'
 import {
   builtForms,
+  GENERATION_SHIP_POPULATION_BAND,
   guFractureFunctionsBySiteCategory as settlementGuFractureFunctionsBySiteCategory,
+  HABITATION_POPULATION_FLOORS,
+  POPULATION_BAND_INDEX,
   settlementLocations,
 } from '../src/features/tools/star_system_generator/lib/generator/data/settlements'
 import type {
@@ -75,7 +78,8 @@ interface CorpusStats {
   settlementCountsByDensity: Record<SettlementDensity, number[]>
   settlementPresenceRolls: Map<number, number>
   settlementPresenceTiers: Map<string, number>
-  settlementScales: Map<string, number>
+  settlementPopulations: Map<string, number>
+  settlementHabitationPatterns: Map<string, number>
   guIntensityByPreference: Record<GuPreference, Map<string, number>>
   guBehaviors: Map<string, number>
   guResources: Map<string, number>
@@ -279,7 +283,6 @@ function makeOptions(
     ...options,
     seed: makeSeed(options, index),
     graphAware: {
-      settlementWhyHere: true,
       phenomenonNote: true,
       settlementHookSynthesis: true,
     },
@@ -528,8 +531,33 @@ function auditSettlement(system: GeneratedSystem, settlement: Settlement, settle
     addFinding(findings, 'error', seed, `${path}.presence.roll`, `Presence roll must be 2-12; got ${settlement.presence.roll.value}.`)
   }
 
-  if (!settlement.scale.value.trim()) {
-    addFinding(findings, 'error', seed, `${path}.scale`, 'Settlement scale is blank.')
+  if (!settlement.population.value.trim()) {
+    addFinding(findings, 'error', seed, `${path}.population`, 'Settlement population is blank.')
+  }
+  if (!settlement.habitationPattern.value.trim()) {
+    addFinding(findings, 'error', seed, `${path}.habitationPattern`, 'Settlement habitationPattern is blank.')
+  }
+  if (settlement.habitationPattern.value === 'Abandoned' && settlement.population.value !== 'Unknown') {
+    addFinding(findings, 'error', seed, `${path}.population`, `Abandoned habitationPattern must force population to "Unknown"; got "${settlement.population.value}".`)
+  }
+  if (settlement.habitationPattern.value === 'Automated' && settlement.population.value !== 'Minimal (<5)') {
+    addFinding(findings, 'error', seed, `${path}.population`, `Automated habitationPattern must force population to "Minimal (<5)"; got "${settlement.population.value}".`)
+  }
+
+  const floor = HABITATION_POPULATION_FLOORS[settlement.habitationPattern.value]
+  if (floor !== undefined) {
+    const idx = POPULATION_BAND_INDEX[settlement.population.value]
+    if (idx === undefined || idx < floor) {
+      addFinding(findings, 'error', seed, `${path}.population`, `${settlement.habitationPattern.value} requires population band >= ${floor}; got "${settlement.population.value}".`)
+    }
+  }
+
+  if (settlement.habitationPattern.value === 'Generation ship') {
+    const idx = POPULATION_BAND_INDEX[settlement.population.value]
+    const { floor: shipFloor, ceiling: shipCeiling } = GENERATION_SHIP_POPULATION_BAND
+    if (idx === undefined || idx < shipFloor || idx > shipCeiling) {
+      addFinding(findings, 'error', seed, `${path}.population`, `Generation ship population must be band ${shipFloor}..${shipCeiling}; got "${settlement.population.value}".`)
+    }
   }
 }
 
@@ -604,7 +632,8 @@ function auditSystem(system: GeneratedSystem, findings: Finding[], stats: Corpus
     increment(stats.settlementCategories, settlement.siteCategory.value)
     increment(stats.settlementPresenceRolls, settlement.presence.roll.value)
     increment(stats.settlementPresenceTiers, settlement.presence.tier.value)
-    increment(stats.settlementScales, settlement.scale.value)
+    increment(stats.settlementPopulations, settlement.population.value)
+    increment(stats.settlementHabitationPatterns, settlement.habitationPattern.value)
   })
 
   // Per-consumer trigger-rate detection (Phase 6). Heuristic: relies on stable
@@ -1129,7 +1158,7 @@ function auditCoverage(stats: CorpusStats, findings: Finding[]): void {
 
 function auditDistributionAxisSensitivity(findings: Finding[], syntheticSeed: string): void {
   const sampleSize = 100
-  const baseFlags = { settlementWhyHere: true, phenomenonNote: true, settlementHookSynthesis: true }
+  const baseFlags = { phenomenonNote: true, settlementHookSynthesis: true }
   let differing = 0
   for (let i = 0; i < sampleSize; i++) {
     const seed = `dist-axis-audit-${i}`
@@ -1152,7 +1181,7 @@ function auditDistributionAxisSensitivity(findings: Finding[], syntheticSeed: st
 
 function auditDensityAxisSensitivity(findings: Finding[], syntheticSeed: string): void {
   const sampleSize = 100
-  const baseFlags = { settlementWhyHere: true, phenomenonNote: true, settlementHookSynthesis: true }
+  const baseFlags = { phenomenonNote: true, settlementHookSynthesis: true }
   let differing = 0
   for (let i = 0; i < sampleSize; i++) {
     const seed = `density-axis-audit-${i}`
@@ -1340,7 +1369,8 @@ const stats: CorpusStats = {
   },
   settlementPresenceRolls: new Map(),
   settlementPresenceTiers: new Map(),
-  settlementScales: new Map(),
+  settlementPopulations: new Map(),
+  settlementHabitationPatterns: new Map(),
   guIntensityByPreference: {
     low: new Map(),
     normal: new Map(),
@@ -1502,7 +1532,8 @@ console.log(`Ring types: ${formatMap(stats.ringTypes)}`)
 console.log(`Settlement categories: ${formatMap(stats.settlementCategories)}`)
 console.log(`Settlement presence rolls: ${formatMap(stats.settlementPresenceRolls)}`)
 console.log(`Settlement presence tiers: ${formatMap(stats.settlementPresenceTiers)}`)
-console.log(`Settlement scales: ${formatMap(stats.settlementScales)}`)
+console.log(`Settlement populations: ${formatMap(stats.settlementPopulations)}`)
+console.log(`Settlement habitation patterns: ${formatMap(stats.settlementHabitationPatterns)}`)
 console.log(`Architectures: ${formatMap(stats.architectures)}`)
 console.log(`Outermost orbit AU percentiles: ${formatPercentiles(stats.outermostAu, ' AU')}`)
 console.log(`Outermost / HZ center percentiles: ${formatPercentiles(stats.outermostHzRatio, 'x')}`)

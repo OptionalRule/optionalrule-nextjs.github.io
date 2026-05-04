@@ -1,12 +1,13 @@
 import { describe, expect, it } from 'vitest'
-import { settlementHookSynthesis, settlementWhyHere, settlementTagHook } from '../settlementProse'
+import { settlementHookSynthesis, settlementTagHook } from '../settlementProse'
 import { createSeededRng } from '../../rng'
+import type { SettlementHabitationPattern } from '../../../../types'
 
 describe('settlementHookSynthesis', () => {
-  it('produces a four-sentence hook for a regular-scale settlement', () => {
+  it('produces a four-sentence hook for a regular habitationPattern settlement', () => {
     const rng = createSeededRng('test-seed-1')
     const result = settlementHookSynthesis(rng, 'Gate Shadow', 'Archive War', {
-      scale: 'Outpost',
+      habitationPattern: 'Orbital station',
       siteCategory: 'orbital',
       settlementFunction: 'Iggygate control station',
       condition: 'Cramped and noisy',
@@ -22,10 +23,10 @@ describe('settlementHookSynthesis', () => {
     expect(result).toMatch(/Privately, the route weather board sells safe windows twice\./)
   })
 
-  it('uses automation-specific pressure for "Automated only" scale', () => {
+  it('uses automation-specific pressure for "Automated" habitationPattern', () => {
     const rng = createSeededRng('test-seed-2')
     const result = settlementHookSynthesis(rng, 'Gate Shadow', 'Archive War', {
-      scale: 'Automated only',
+      habitationPattern: 'Automated',
       siteCategory: 'orbital',
       settlementFunction: 'fueling depot',
       condition: 'Dormant',
@@ -37,10 +38,10 @@ describe('settlementHookSynthesis', () => {
     expect(result).toMatch(/Automation failure turns maintenance airlock into the key scene\./)
   })
 
-  it('uses salvage pressure for "Abandoned" scale', () => {
+  it('uses salvage pressure for "Abandoned" habitationPattern', () => {
     const rng = createSeededRng('test-seed-3')
     const result = settlementHookSynthesis(rng, 'Gate Shadow', 'Archive War', {
-      scale: 'Abandoned',
+      habitationPattern: 'Abandoned',
       siteCategory: 'orbital',
       settlementFunction: 'survey rig',
       condition: 'Stripped',
@@ -55,7 +56,7 @@ describe('settlementHookSynthesis', () => {
   it('uses fracture-specific consequence when guIntensity contains "fracture"', () => {
     const rng = createSeededRng('test-seed-4')
     const result = settlementHookSynthesis(rng, 'Gate Shadow', 'Archive War', {
-      scale: 'Outpost',
+      habitationPattern: 'Orbital station',
       siteCategory: 'orbital',
       settlementFunction: 'fueling depot',
       condition: 'Cramped',
@@ -68,25 +69,39 @@ describe('settlementHookSynthesis', () => {
   })
 })
 
-describe('settlementWhyHere', () => {
-  it('is exported as a function from settlementProse', () => {
-    expect(typeof settlementWhyHere).toBe('function')
-  })
+describe('settlementHookSynthesis — habitation-pattern variants', () => {
+  const cases: Array<{ pattern: SettlementHabitationPattern; needle: string }> = [
+    { pattern: 'Distributed swarm', needle: 'Coordination drift across the swarm' },
+    { pattern: 'Ring station', needle: 'Ring-rotation politics' },
+    { pattern: "O'Neill cylinder", needle: 'Centripetal-axis politics' },
+    { pattern: 'Modular island station', needle: 'shuttle schedule between modules' },
+    { pattern: 'Hub complex', needle: 'satellite outposts will refuse to accept' },
+    { pattern: 'Hollow asteroid', needle: 'Spin-axis vibrations' },
+    { pattern: 'Belt cluster', needle: "tether-bridges are fraying" },
+    { pattern: 'Underground city', needle: 'Surface signals never reach' },
+    { pattern: 'Sealed arcology', needle: 'Internal-weather faults' },
+    { pattern: 'Sky platform', needle: 'one storm from rebuild' },
+    { pattern: 'Tethered tower', needle: 'Tether-tension reports' },
+    { pattern: 'Drift colony', needle: 'no gate, no route, and no rescue lane' },
+    { pattern: 'Generation ship', needle: 'mid-voyage politics' },
+  ]
 
-  it('produces a non-empty string for a typical settlement', async () => {
-    const { generateSystem } = await import('../../index')
-    const system = generateSystem({ seed: 'phase0-whyhere-1' })
-    const settlement = system.settlements[0]
-    expect(settlement.whyHere?.value).toBeTruthy()
-    expect(settlement.whyHere?.value.length).toBeGreaterThan(20)
-  })
-
-  it('produces deterministic output for the same seed', async () => {
-    const { generateSystem } = await import('../../index')
-    const a = generateSystem({ seed: 'phase0-whyhere-2' })
-    const b = generateSystem({ seed: 'phase0-whyhere-2' })
-    expect(a.settlements[0]?.whyHere?.value).toBe(b.settlements[0]?.whyHere?.value)
-  })
+  for (const { pattern, needle } of cases) {
+    it(`uses pattern-specific pressure for ${pattern}`, () => {
+      const rng = createSeededRng(`pattern-${pattern}`)
+      const result = settlementHookSynthesis(rng, 'Gate Shadow', 'Archive War', {
+        habitationPattern: pattern,
+        siteCategory: 'orbital',
+        settlementFunction: 'fueling depot',
+        condition: 'Cramped',
+        crisis: 'Bleed node changed course',
+        hiddenTruth: 'A debt ledger nobody wants audited',
+        encounterSites: ['Cargo dock', 'Maintenance airlock'],
+        guIntensity: 'normal',
+      })
+      expect(result).toContain(needle)
+    })
+  }
 })
 
 describe('settlementTagHook', () => {

@@ -9,9 +9,17 @@
     <managingEditor>scott@optionalrule.com (Scott Turnbull)</managingEditor>
     <webMaster>scott@optionalrule.com (Scott Turnbull)</webMaster>
     <copyright>Copyright 2026 Optional Rule Games</copyright>
-    <lastBuildDate>Mon, 23 Mar 2026 00:00:00 GMT</lastBuildDate>
+    <lastBuildDate>Mon, 04 May 2026 00:00:00 GMT</lastBuildDate>
     <ttl>60</ttl>
     
+    <item>
+      <title><![CDATA[Star System Generator v2: scale, habitation, and a Why Here that finally reads]]></title>
+      <description><![CDATA[The Star System Generator just shipped its biggest reshape since launch. Population and habitation are now separate fields, twelve new exotic habitation forms cover the Expanse and Culture-series vocabulary, and the Why Here paragraph is finally graph-aware.]]></description>
+      <link>https://www.optionalrule.com/2026/05/04/star-system-generator-v2/</link>
+      <guid isPermaLink="true">https://www.optionalrule.com/2026/05/04/star-system-generator-v2/</guid>
+      <pubDate>Mon, 04 May 2026 00:00:00 GMT</pubDate>
+      <category><![CDATA[Star System Generator, Tools, Game Development, TTRPG]]></category>
+    </item>
     <item>
       <title><![CDATA[IBO Design Diary - The Progressive Resolution System]]></title>
       <description><![CDATA[How IBO's Progressive Resolution System turns every skill check into a multi-stage risk decision, from sword fights to lockpicking to crafting legendary gear.]]></description>

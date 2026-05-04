@@ -8,16 +8,16 @@ exports[`Phase 6 graph-aware prose surfaces (all flags on) > seed phase6-on-1 pr
     "Tight orbital timing creates narrow transfer corridors and expensive missed-burn delays. Meanwhile, Who mapped the stable windows, and what installations are protected by withheld ephemerides? Route controllers, smugglers, and settlement clocks all depend on one resonance model. Three close worlds cross the display in metronome sequence.",
   ],
   "settlementTagHooks": [
-    "Free Captain Nest is the surface story, but Memory-Loss Zone shows who benefits from the tension: missing records and altered recollections decide the dispute. The crisis around stolen medical supplies keeps gate or route node politics under stress. Privately, the ghosts are old human recordings. Control of the naval logistics depot decides who has leverage.",
-    "Outsiders call it Interdiction Profiteers, but the local pressure is sharper: humans depend on systems they do not fully control. A detected Sol or Gardener warning sign keeps gate or route node politics under stress. Privately, the founders committed a crime. Control of the civilian colony decides who has leverage.",
-    "High-G Research is what visitors notice first; survival protocols double as social control. A silent district keeps gate or route node politics under stress. Privately, the bleed node is being illegally stabilized. Control of the corporate customs post decides who has leverage.",
-    "Broken Terraformer is the surface story, but False Evacuation List shows who benefits from the tension: survival priority was assigned by a list nobody trusts. A quarantine violation keeps mobile site politics under stress. Privately, the spare-parts shortage is a manufactured monopoly. Everything here turns on access to Snow-line organochemical feedstock.",
+    "Penal Extraction is the surface story, but Aristocratic Dome shows who benefits from the tension: elite protection and outside deprivation are tied together. An unknown native microbial hazard keeps gate or route node politics under stress. Privately, the official quarantine boundary protects an illegal facility. Control of the naval logistics depot decides who has leverage.",
+    "Outsiders call it Plague/Biosafety Fear, but the local pressure is sharper: missing records and altered recollections decide the dispute. When district-wide rolling blackouts, the situation keeps gate or route node politics under stress. Privately, the settlement is insolvent. Control of the exposure clinic decides who has leverage.",
+    "Life-Support Union is what visitors notice first; temporary populations outnumber the institutions meant to govern them. When route weather forecast failed publicly, the situation keeps gate or route node politics under stress. Privately, the route weather board sells safe windows twice. Control of the quarantine station decides who has leverage.",
+    "Outlaw Court is the surface story, but Medical Triage State shows who benefits from the tension: clinic decisions have become law because exposure and scarcity decide who gets treated. Coordination drift across the swarm makes water plant the choke point everyone fights over. Privately, the site is a black prison. Everything here turns on access to Snow-line organochemical feedstock.",
   ],
   "settlementWhyHere": [
-    "Crews keep choosing Gomeisa Waypoint-895 transit geometry because local materials, volatiles, or fuel justify permanent infrastructure; iggygate anchor access keeps traffic viable; the site controls a militarily or commercially important approach.",
-    "The case for Gomeisa Waypoint-895 transit geometry is practical: local materials, volatiles, or fuel justify permanent infrastructure; iggygate anchor access keeps traffic viable; the site controls a militarily or commercially important approach.",
-    "Gomeisa Waypoint-895 transit geometry sits on Gomeisa Waypoint-895 V.",
-    "Gomeisa Waypoint-895 traffic pattern sits on Gomeisa Waypoint-895 VII and depends on Snow-line organochemical feedstock.",
+    "Gomeisa Waypoint-895 transit geometry occupies the seat from which the surrounding traffic is most easily watched.",
+    "Gomeisa Waypoint-895 transit geometry sits on a route that nothing in this volume can move around easily.",
+    "Gomeisa Waypoint-895 transit geometry is built into this orbital and works the surface from there. Iggygate throat instability sits across the approach, and Gomeisa Waypoint-895 transit geometry works around it daily.",
+    "Gomeisa Waypoint-895 VII - Moon I occupies Gomeisa Waypoint-895 VII and is held in place by Snow-line organochemical feedstock. Gomeisa Waypoint-895 VII - Moon I stays because the yield outweighs everything that wants it gone.",
   ],
 }
 `;
@@ -30,14 +30,14 @@ exports[`Phase 6 graph-aware prose surfaces (all flags on) > seed phase6-on-2 pr
     "Phase-dust crossings scramble sensors and force slow approaches through marked lanes. And, What cargo or wreckage is hidden inside the phase-dust blind spots? Rival salvagers accuse lane authorities of selling clean transponder routes. A beacon skiff drifts beside a glittering arc, hull abraded raw.",
   ],
   "settlementTagHooks": [
-    "Broken Mirror Swarm is what visitors notice first; AIs agree on facts but not on which human orders can be obeyed. When life-support repair crews walk out, the situation keeps orbital station politics under stress. Privately, the artifact rumor is a natural GU formation. Everything here turns on access to Phase-stable superconductive lattice.",
-    "Penal Extraction is what visitors notice first; storm shelter access is allocated by a lottery everyone suspects is rigged. A missing essential expert keeps moon base politics under stress. Privately, corporate records were altered. Control of the quarantine station decides who has leverage.",
-    "The public tag is Hidden Navy; the private trouble is Shelter Lottery, because storm shelter access is allocated by a lottery everyone suspects is rigged. A military coup keeps deep-space platform politics under stress. Privately, the AI witness has already testified in a sealed simulation. Everything here turns on access to Phase-stable superconductive lattice.",
+    "Plague/Biosafety Fear is what visitors notice first; missing records and altered recollections decide the dispute. A detected Sol or Gardener warning sign keeps orbital station politics under stress. Privately, the flare forecast was softened to keep traffic moving. Control of the weapons test range decides who has leverage.",
+    "Route Weather Board is what visitors notice first; survival priority was assigned by a list nobody trusts. Coordination drift across the swarm makes subway shelter platform the choke point everyone fights over. Privately, the shelter lottery excludes an entire labor district. Control of the planetology lab decides who has leverage.",
+    "The public tag is Gate Shadow; the private trouble is Ghost City, Human, because the haunting is human history, not the supernatural. A staged crisis keeps orbital station politics under stress. Privately, the medical stockpile was traded for route access. Everything here turns on access to Phase-stable superconductive lattice.",
   ],
   "settlementWhyHere": [
-    "Noquisi Transit-948 Belt V orbital space sits on Noquisi Transit-948 Belt V and depends on Phase-stable superconductive lattice.",
-    "Noquisi Transit-948 VII - Moon I: local materials, volatiles, or fuel justify permanent infrastructure; resonance hub access keeps traffic viable; the site watches a useful route or resource.",
-    "Noquisi Transit-948 IV route geometry sits on Noquisi Transit-948 IV and depends on Phase-stable superconductive lattice.",
+    "Noquisi Transit-948 Belt V orbital space is built into this orbital and works the surface from there. Noquisi Transit-948 Belt V orbital space stays because the yield outweighs everything that wants it gone.",
+    "Noquisi Transit-948 transit geometry grew here because the body underneath asks less of its people than most.",
+    "Noquisi Transit-948 IV orbital space is anchored to Noquisi Transit-948 IV, with Phase-stable superconductive lattice keeping it viable. There is enough of value under Noquisi Transit-948 IV orbital space to justify both the danger and the secrecy.",
   ],
 }
 `;
@@ -50,11 +50,11 @@ exports[`Phase 6 graph-aware prose surfaces (all flags on) > seed phase6-on-3 pr
   ],
   "settlementTagHooks": [
     "Debt Labor binds the workforce to fees; Chiral Monopoly controls the medicine and materials that keep those debts growing. The crisis around stolen medical supplies keeps surface settlement politics under stress. Privately, the Iggygate is misaligned on purpose. Control of the exposure clinic decides who has leverage.",
-    "Aristocratic Dome is what visitors notice first; short-lived opportunity is pushing people into unsafe choices. A Pinchdrive calibration accident keeps asteroid or belt base politics under stress. Privately, the site is an illegal AI lab. Control of the refinery decides who has leverage.",
+    "High-G Research is what visitors notice first; military presence is deeper than the public registry admits. The single backup generator failed in private keeps asteroid or belt base politics under stress. Privately, the site is a smuggling hub. Control of the refinery decides who has leverage.",
   ],
   "settlementWhyHere": [
-    "Nosaxa-Array IV sits on Nosaxa-Array IV.",
-    "The case for Nosaxa-Array Belt VI is practical: resources are strong here, especially shielding-grade chiral plating feedstock; trade spoke access keeps traffic viable; hazards shape operations but do not prevent occupation.",
+    "Nosaxa-Array IV is built into this orbital and works the surface from there.",
+    "Nosaxa-Array Belt VI maintains its footprint on the body it occupies.",
   ],
 }
 `;

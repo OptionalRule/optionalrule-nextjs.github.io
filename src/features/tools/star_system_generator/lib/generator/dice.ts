@@ -26,6 +26,10 @@ export function d8(rng: SeededRng): number {
   return rollDie(rng, 8)
 }
 
+export function d10(rng: SeededRng): number {
+  return rollDie(rng, 10)
+}
+
 export function d12(rng: SeededRng): number {
   return rollDie(rng, 12)
 }

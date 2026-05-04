@@ -1,9 +1,8 @@
-import type { OrbitingBody } from '../../../types'
 import type { SeededRng } from '../rng'
+import type { SettlementHabitationPattern } from '../../../types'
 import { sentenceStart, sentenceFragment, definiteNounPhrase } from './helpers'
 import { crisisPressureSentence } from './crisisShaping'
 import { settlementTagPairHooks, settlementTagPressures } from '../data/settlements'
-import type { SettlementPresenceScore, GuOverlay, Reachability, SettlementAnchor } from '..'
 
 export function settlementTagHook(rng: SeededRng, obviousTag: string, deeperTag: string): string {
   const exactPair = `${obviousTag} + ${deeperTag}`
@@ -24,7 +23,7 @@ export function settlementHookSynthesis(
   obviousTag: string,
   deeperTag: string,
   context: {
-    scale: string
+    habitationPattern: SettlementHabitationPattern
     siteCategory: string
     settlementFunction: string
     condition: string
@@ -35,53 +34,48 @@ export function settlementHookSynthesis(
   }
 ): string {
   const base = settlementTagHook(rng, obviousTag, deeperTag)
-  const pressure =
-    context.scale === 'Automated only' ? `Automation failure turns ${context.encounterSites[0].toLowerCase()} into the key scene.` :
-    context.scale === 'Abandoned' ? `Salvage pressure centers on ${context.encounterSites[0].toLowerCase()}.` :
-    context.guIntensity.includes('fracture') || context.guIntensity.includes('shear') ? crisisPressureSentence(context.crisis, 'makes the GU work impossible to treat as routine') :
-    crisisPressureSentence(context.crisis, `keeps ${context.siteCategory.toLowerCase()} politics under stress`)
+  const pressure = (() => {
+    const site = context.encounterSites[0].toLowerCase()
+    switch (context.habitationPattern) {
+      case 'Automated':
+        return `Automation failure turns ${site} into the key scene.`
+      case 'Abandoned':
+        return `Salvage pressure centers on ${site}.`
+      case 'Distributed swarm':
+        return `Coordination drift across the swarm makes ${site} the choke point everyone fights over.`
+      case 'Ring station':
+        return `Ring-rotation politics — outer-rim labor against axis governance — tip into open conflict at ${site}.`
+      case "O'Neill cylinder":
+        return `Centripetal-axis politics divide the cylinder, and ${site} is where the floor-and-roof factions actually meet.`
+      case 'Modular island station':
+        return `The shuttle schedule between modules is the real political weapon, and ${site} is the next bottleneck.`
+      case 'Hub complex':
+        return `What the main reach decides about ${site} the satellite outposts will refuse to accept by morning.`
+      case 'Hollow asteroid':
+        return `Spin-axis vibrations and rock-failure rumors converge on ${site}.`
+      case 'Belt cluster':
+        return `The cluster's tether-bridges are fraying, and ${site} is the chokepoint for everyone trying to cross.`
+      case 'Underground city':
+        return `Surface signals never reach ${site}; whatever happens there stays buried.`
+      case 'Sealed arcology':
+        return `Internal-weather faults make ${site} the lung that keeps everyone alive.`
+      case 'Sky platform':
+        return `One bad updraft drops ${site} into the deck below; everyone here lives one storm from rebuild.`
+      case 'Tethered tower':
+        return `Tether-tension reports are political theater here — ${site} is where the bracing shows the truth.`
+      case 'Drift colony':
+        return `There is no gate, no route, and no rescue lane — ${site} is the only place to corner anyone.`
+      case 'Generation ship':
+        return `Decades of mid-voyage politics converge on ${site} the moment outsiders board.`
+      default:
+        if (context.guIntensity.includes('fracture') || context.guIntensity.includes('shear')) {
+          return crisisPressureSentence(context.crisis, 'makes the GU work impossible to treat as routine')
+        }
+        return crisisPressureSentence(context.crisis, `keeps ${context.siteCategory.toLowerCase()} politics under stress`)
+    }
+  })()
   const secret = sentenceFragment(context.hiddenTruth)
   const functionPressure = definiteNounPhrase(context.settlementFunction)
 
   return `${sentenceStart(base)} ${pressure} Privately, ${secret}. Control of ${functionPressure} decides who has leverage.`
-}
-
-export function settlementWhyHere(
-  rng: SeededRng,
-  body: OrbitingBody,
-  presence: SettlementPresenceScore,
-  guOverlay: GuOverlay,
-  reachability: Reachability,
-  anchor: SettlementAnchor
-): string {
-  const reasons: string[] = []
-
-  if (presence.resource >= 3) reasons.push(`resources are strong here, especially ${guOverlay.resource.value.toLowerCase()}`)
-  else if (presence.resource >= 2) reasons.push('local materials, volatiles, or fuel justify permanent infrastructure')
-
-  if (presence.access >= 3) reasons.push(`${reachability.className.value.toLowerCase()} access keeps traffic viable`)
-  else if (presence.access >= 2) reasons.push('access is manageable for prepared crews')
-
-  if (presence.strategic >= 3) reasons.push('the site controls a militarily or commercially important approach')
-  else if (presence.strategic >= 2) reasons.push('the site watches a useful route or resource')
-
-  if (presence.guValue >= 3) reasons.push('GU value is high enough to justify danger and secrecy')
-  else if (presence.guValue >= 1) reasons.push('local metric signatures add research or extraction value')
-
-  if (presence.habitability >= 2) reasons.push(`${body.name.value} offers unusually forgiving environmental support`)
-  if (presence.hazard >= 3) reasons.push('hazards are severe, so the site exists because the payoff is worth the risk')
-  else if (presence.hazard >= 1) reasons.push('hazards shape operations but do not prevent occupation')
-  if (presence.legalHeat >= 2) reasons.push('legal or interdiction pressure explains the secrecy and tension')
-
-  const selected = reasons.slice(0, 3)
-  if (selected.length === 0) {
-    selected.push(`${anchor.name} is the best available compromise between access, shelter, and useful work`)
-  }
-
-  const template = rng.int(1, 5)
-  if (template === 1) return `${anchor.name}: ${selected.join('; ')}.`
-  if (template === 2) return `Crews keep choosing ${anchor.name} because ${selected.join('; ')}.`
-  if (template === 3) return `The case for ${anchor.name} is practical: ${selected.join('; ')}.`
-  if (template === 4) return `${anchor.name} survives because ${selected.join('; ')}.`
-  return `At ${anchor.name}, the settlement logic is ${selected.join('; ')}.`
 }

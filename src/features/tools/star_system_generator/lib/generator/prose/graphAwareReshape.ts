@@ -1,6 +1,6 @@
 import type { SeededRng } from '../rng'
 import type {
-  Settlement, SystemPhenomenon, GenerationOptions,
+  Settlement, SystemPhenomenon, GenerationOptions, GeneratorTone,
 } from '../../../types'
 import type { SystemRelationshipGraph } from '../graph'
 import { graphAwareSettlementWhyHere } from './graphAwareSettlementWhyHere'
@@ -23,18 +23,9 @@ export interface GraphAwareReshapeResult {
 
 export function graphAwareReshape(input: GraphAwareReshapeInput): GraphAwareReshapeResult {
   const flags = input.options.graphAware ?? {}
-  const noFlags =
-    !flags.settlementWhyHere &&
-    !flags.phenomenonNote &&
-    !flags.settlementHookSynthesis
-  if (noFlags) {
-    return { settlements: input.settlements, phenomena: input.phenomena }
-  }
-
+  const tone: GeneratorTone = input.options.tone ?? 'balanced'
   const rng = input.rng.fork('graph-prose')
-  const settlements = (flags.settlementWhyHere || flags.settlementHookSynthesis)
-    ? input.settlements.map(s => reshapeSettlement(s, input.relationshipGraph, flags, rng))
-    : input.settlements
+  const settlements = input.settlements.map(s => reshapeSettlement(s, input.relationshipGraph, flags, rng, tone))
   const phenomena = flags.phenomenonNote
     ? input.phenomena.map(p => reshapePhenomenon(p, input.relationshipGraph, rng))
     : input.phenomena
@@ -46,16 +37,16 @@ function reshapeSettlement(
   settlement: Settlement,
   graph: SystemRelationshipGraph,
   flags: NonNullable<GenerationOptions['graphAware']>,
-  _rng: SeededRng,
+  rng: SeededRng,
+  tone: GeneratorTone,
 ): Settlement {
   let updated = settlement
-  if (flags.settlementWhyHere) {
-    const newWhyHere = graphAwareSettlementWhyHere(updated, graph)
-    if (newWhyHere !== null) {
-      updated = {
-        ...updated,
-        whyHere: fact(newWhyHere, 'inferred', 'Graph-aware reshape from settlementWhyHere'),
-      }
+  const whyHereRng = rng.fork(`why-here-${settlement.id}`)
+  const newWhyHere = graphAwareSettlementWhyHere(updated, graph, whyHereRng, tone)
+  if (newWhyHere !== null) {
+    updated = {
+      ...updated,
+      whyHere: fact(newWhyHere, 'inferred', 'Graph-aware reshape from settlementWhyHere'),
     }
   }
   if (flags.settlementHookSynthesis) {

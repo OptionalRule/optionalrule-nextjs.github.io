@@ -21,7 +21,9 @@ export function SettlementCard({ settlement }: { settlement: Settlement }) {
             <InlineDetail label="Activity level" value={settlement.presence.tier.value} />
             <InlineDetail label="Anchor" value={`${settlement.anchorName.value} (${settlement.anchorKind.value})`} />
             <InlineDetail label="Placement" value={settlement.anchorDetail.value} />
-            <InlineDetail label="Why here" value={settlement.whyHere.value} />
+            {settlement.whyHere.value && (
+              <InlineDetail label="Why here" value={settlement.whyHere.value} />
+            )}
           </dl>
         </section>
 
@@ -29,7 +31,8 @@ export function SettlementCard({ settlement }: { settlement: Settlement }) {
           <Section title="Operations" icon={Cog} variant="card">
             <dl className="space-y-2">
               <InlineDetail label="Function" value={settlement.function.value} />
-              <InlineDetail label="Scale" value={settlement.scale.value} />
+              <InlineDetail label="Population" value={settlement.population.value} />
+              <InlineDetail label="Habitation" value={settlement.habitationPattern.value} />
               <InlineDetail label="Authority" value={settlement.authority.value} />
               <InlineDetail label="Built form" value={settlement.builtForm.value} />
             </dl>

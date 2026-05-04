@@ -7,12 +7,12 @@ exports[`Phase 3 existing prose remains byte-identical > seed phase3-prose-1 pro
     "Transit: The rogue's eccentric orbit creates rare close-pass windows and gravitational surprises. Question: Do its volatiles, heat signature, or crust records contradict local histories? Hook: Colonies, science teams, and GU administrators contest hazard, depot, or archive status. Image: A lightless planet rolls through floodlamp glare and survey tug exhaust.",
   ],
   "settlementTagHooks": [
-    "The public tag is Bleed-Chaser Port; the private trouble is Free Captain Nest, because independent crews set the local law when formal authority fails. A failed terraforming release makes the GU work impossible to treat as routine. Privately, the site is an illegal AI lab. Control of the route weather bureau decides who has leverage.",
-    "Perfect Dome, Rotten Outside is the surface story, but AI Whisper Cult shows who benefits from the tension: residents read spiritual or political meaning into narrow-AI behavior. A toxic chiral harvest makes the GU work impossible to treat as routine. Privately, the curse is chiral neurochemistry. Control of the ice-chirality sorting plant decides who has leverage.",
+    "The public tag is Free Captain Nest; the private trouble is Flare Refuge, because survival protocols double as social control. A failed terraforming release makes the GU work impossible to treat as routine. Privately, the site is an illegal AI lab. Control of the route weather bureau decides who has leverage.",
+    "AI Whisper Cult is the surface story, but Spare Parts Monarchy shows who benefits from the tension: control of replacement parts has hardened into hereditary or cartel power. The cluster's tether-bridges are fraying, and mass-clinic intake corridor is the chokepoint for everyone trying to cross. Privately, the founders committed a crime. Control of the ice-chirality sorting plant decides who has leverage.",
   ],
   "settlementWhyHere": [
-    "Irena-61 III route geometry survives because resources are strong here, especially phase-stable superconductive lattice; access is manageable for prepared crews; GU value is high enough to justify danger and secrecy.",
-    "Crews keep choosing Irena-61 V minor-body complex because local materials, volatiles, or fuel justify permanent infrastructure; access is manageable for prepared crews; GU value is high enough to justify danger and secrecy.",
+    "Irena-61 III route geometry stays because the yield here is not duplicated anywhere nearby.",
+    "Irena-61 V minor-body complex maintains its footprint on the body it occupies. The reading here is high enough that Irena-61 V minor-body complex accepts the risk and the silence.",
   ],
   "systemName": "Irena-61",
 }
@@ -25,14 +25,14 @@ exports[`Phase 3 existing prose remains byte-identical > seed phase3-prose-2 pro
     "Transit: Radiation belts force looping transfers, hardened shelters, and costly orbital delays. Question: Which supposedly safe corridor shifted, and who knew before the convoy entered? Hook: Port authorities, insurers, and smugglers fight over legal and lethal corridor maps. Image: A navigation vault shows a convoy bending toward an uncharted hot belt.",
   ],
   "settlementTagHooks": [
-    "Outsiders call it Derelict Yard, but the local pressure is sharper: a failed environmental project is still shaping the crisis. A corporate security crackdown makes the GU work impossible to treat as routine. Privately, the settlement has an evacuation ark nobody knows about. Control of the Pinchdrive tuning station decides who has leverage.",
-    "The public tag is Religious Geometry; the private trouble is Life-Support Union, because repair crews can save or freeze the whole settlement by choosing where work stops. Ships trapped by a metric storm make the GU work impossible to treat as routine. Privately, the curse is chiral neurochemistry. Control of the corporate customs post decides who has leverage.",
-    "Outsiders call it Elegant Core Enclave, but the local pressure is sharper: storm shelter access is allocated by a lottery everyone suspects is rigged. When terraforming mirrors begin an unsafe correction burn, the situation makes the GU work impossible to treat as routine. Privately, the official quarantine boundary protects an illegal facility. Control of the fuel depot decides who has leverage.",
+    "Outsiders call it Broken Terraformer, but the local pressure is sharper: survival protocols double as social control. A corporate security crackdown makes the GU work impossible to treat as routine. Privately, the settlement has an evacuation ark nobody knows about. Control of the Pinchdrive tuning station decides who has leverage.",
+    "The public tag is Life-Support Union; the private trouble is Penal Extraction, because punishment and resource production are the same system. The crisis around mass shelter lottery riot makes the GU work impossible to treat as routine. Privately, the quarantine is political. Control of the corporate customs post decides who has leverage.",
+    "Outsiders call it Shelter Lottery, but the local pressure is sharper: belief and GU observation are tangled in local politics. Coordination drift across the swarm makes town hall annex the choke point everyone fights over. Privately, the official quarantine boundary protects an illegal facility. Control of the interdiction compliance office decides who has leverage.",
   ],
   "settlementWhyHere": [
-    "Meissa's Forge V orbital space: local materials, volatiles, or fuel justify permanent infrastructure; iggygate anchor access keeps traffic viable; the site controls a militarily or commercially important approach.",
-    "Meissa's Forge transit geometry survives because resources are strong here, especially snow-line organochemical feedstock; iggygate anchor access keeps traffic viable; the site controls a militarily or commercially important approach.",
-    "Meissa's Forge II orbital space: local materials, volatiles, or fuel justify permanent infrastructure; iggygate anchor access keeps traffic viable; the site controls a militarily or commercially important approach.",
+    "There is something rare in this volume, and Meissa's Forge V orbital space is the answer to it.",
+    "There is something rare in this volume, and Meissa's Forge transit geometry is the answer to it.",
+    "Meissa's Forge transit geometry is built into this orbital and works the surface from there. The presence of Pinchdrive misjump risk is the standing condition Meissa's Forge transit geometry plans against.",
   ],
   "systemName": "Meissa's Forge",
 }
@@ -46,10 +46,10 @@ exports[`Phase 3 existing prose remains byte-identical > seed phase3-prose-3 pro
     "Transit: Plume windows restrict low-orbit approaches to brief corridors with poor sensor reliability. Question: Which plume holds clean volatiles, hidden organics, or mislabeled contamination? Hook: A GU survey hold stalls extraction while rival crews falsify plume data. Image: A lander skids through glittering ejecta as the plume shadow closes.",
   ],
   "settlementTagHooks": [
-    "The public tag is Machine-Run Town; the private trouble is Aristocratic Dome, because elite protection and outside deprivation are tied together. Critical spare-parts vault is empty, which keeps asteroid or belt base politics under stress. Privately, the clinic is hiding a second exposure syndrome. Control of the volatile mine decides who has leverage.",
+    "The public tag is Anti-Corporate Commune; the private trouble is Moving Node Rush, because short-lived opportunity is pushing people into unsafe choices. Coordination drift across the swarm makes transit lock overflow the choke point everyone fights over. Privately, the terraforming directorate falsified the climate model. Control of the volatile mine decides who has leverage.",
   ],
   "settlementWhyHere": [
-    "At Shengong-Prism Belt III, the settlement logic is resources are strong here, especially medical chirality stock; access is manageable for prepared crews; local metric signatures add research or extraction value.",
+    "Shengong-Prism Belt III maintains its footprint on the body it occupies. Shengong-Prism Belt III stays because the yield outweighs everything that wants it gone.",
   ],
   "systemName": "Shengong-Prism",
 }

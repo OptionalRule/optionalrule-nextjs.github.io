@@ -3,14 +3,17 @@ import {
   builtForms,
   encounterSites,
   encounterSitesByFunctionKeyword,
-  encounterSitesByScale,
+  encounterSitesByHabitationPattern,
+  encounterSitesByPopulationBand,
   guFractureFunctionsBySiteCategory,
-  hiddenTruthByScale,
-  settlementAuthorityByScale,
-  settlementConditionByScale,
-  settlementCrisisByScale,
+  habitationPatternDefaults,
+  hiddenTruthByHabitationPattern,
+  settlementAuthorityByHabitationPattern,
+  settlementConditionByHabitationPattern,
+  settlementCrisisByHabitationPattern,
+  settlementCrisisByPopulationBand,
   settlementLocations,
-  settlementScaleTable,
+  settlementPopulationTable,
   settlementSiteCategories,
   settlementTagOptions,
   settlementTagPairHooks,
@@ -51,23 +54,52 @@ describe('star system settlement data', () => {
     }
 
     expect(Object.keys(settlementTagPairHooks).length).toBeGreaterThanOrEqual(55)
+
+    const civicScales = ['civic', 'remote', 'neutral'] as const
+    for (const tag of settlementTagOptions) {
+      if (tag.civicScale !== undefined) {
+        expect(civicScales).toContain(tag.civicScale)
+      }
+    }
+    const civicCount = settlementTagOptions.filter((tag) => tag.civicScale === 'civic').length
+    const remoteCount = settlementTagOptions.filter((tag) => tag.civicScale === 'remote').length
+    expect(civicCount).toBeGreaterThan(0)
+    expect(remoteCount).toBeGreaterThan(0)
+    expect(civicCount).toBeLessThan(settlementTagOptions.length / 2)
+    expect(remoteCount).toBeLessThan(settlementTagOptions.length / 2)
   })
 
-  it('keeps scale and contextual override pools usable', () => {
-    expect(settlementScaleTable).toHaveLength(12)
+  it('keeps population, habitation pattern, and contextual override pools usable', () => {
+    expect(settlementPopulationTable).toHaveLength(10)
 
-    for (const scale of ['Automated only', 'Abandoned']) {
-      expect(settlementAuthorityByScale[scale]?.length, `${scale} authority`).toBeGreaterThan(0)
-      expect(settlementConditionByScale[scale]?.length, `${scale} condition`).toBeGreaterThan(0)
-      expect(settlementCrisisByScale[scale]?.length, `${scale} crisis`).toBeGreaterThan(0)
-      expect(hiddenTruthByScale[scale]?.length, `${scale} hidden truth`).toBeGreaterThan(0)
-      expect(encounterSitesByScale[scale]?.length, `${scale} encounter sites`).toBeGreaterThan(0)
+    for (const category of settlementSiteCategories) {
+      expect(habitationPatternDefaults[category], `${category} default`).toBeTruthy()
+    }
+
+    for (const pattern of ['Automated', 'Abandoned'] as const) {
+      expect(settlementAuthorityByHabitationPattern[pattern]?.length, `${pattern} authority`).toBeGreaterThan(0)
+      expect(settlementConditionByHabitationPattern[pattern]?.length, `${pattern} condition`).toBeGreaterThan(0)
+      expect(settlementCrisisByHabitationPattern[pattern]?.length, `${pattern} crisis`).toBeGreaterThan(0)
+      expect(hiddenTruthByHabitationPattern[pattern]?.length, `${pattern} hidden truth`).toBeGreaterThan(0)
+      expect(encounterSitesByHabitationPattern[pattern]?.length, `${pattern} encounter sites`).toBeGreaterThan(0)
     }
 
     expect(encounterSites.length).toBeGreaterThan(0)
     for (const pool of encounterSitesByFunctionKeyword) {
       expect(pool.keywords.length).toBeGreaterThan(0)
       expect(pool.sites.length).toBeGreaterThan(0)
+    }
+
+    expect(encounterSitesByPopulationBand.urban?.length).toBeGreaterThan(0)
+    expect(encounterSitesByPopulationBand.town?.length).toBeGreaterThan(0)
+    expect(encounterSitesByPopulationBand.outpost?.length).toBeGreaterThan(0)
+    expect(settlementCrisisByPopulationBand.urban?.length).toBeGreaterThan(0)
+    expect(settlementCrisisByPopulationBand.outpost?.length).toBeGreaterThan(0)
+
+    for (const sites of Object.values(encounterSitesByPopulationBand)) {
+      for (const site of sites) {
+        expect(encounterSites).toContain(site)
+      }
     }
   })
 })

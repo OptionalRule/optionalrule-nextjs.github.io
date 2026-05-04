@@ -9,20 +9,21 @@
       "guFractureFunctionsBySiteCategory": "Function overrides favored when GU intensity is dangerous or fractured.",
       "builtForms": "Habitat/building forms constrained by site category, exact location, mobility, and mining use.",
       "authorities": "Political, corporate, military, civic, or illicit powers that can run a site.",
-      "authorityByScale": "Authority overrides for automated or abandoned places.",
+      "authorityByHabitationPattern": "Authority overrides keyed by habitation pattern (Automated, Abandoned).",
       "aiSituations": "Local narrow-AI conditions and complications.",
       "conditions": "Current visible operating state of a settlement.",
-      "conditionByScale": "Condition overrides for automated or abandoned places.",
+      "conditionByHabitationPattern": "Condition overrides keyed by habitation pattern (Automated, Abandoned).",
       "tags": "Two-tag prompt pool; each tag carries a pressure phrase for hook synthesis.",
       "tagPairHooks": "Specific connective tissue for known tag combinations.",
       "crises": "Open crisis pool for inhabited sites.",
-      "crisisByScale": "Scale-specific crisis overrides.",
+      "crisisByHabitationPattern": "Crisis overrides keyed by habitation pattern (Automated, Abandoned).",
       "hiddenTruths": "Secret or buried truth pool for inhabited sites.",
-      "hiddenTruthByScale": "Scale-specific hidden-truth overrides.",
+      "hiddenTruthByHabitationPattern": "Hidden-truth overrides keyed by habitation pattern (Automated, Abandoned).",
       "encounterSites": "Local scene locations for play.",
-      "encounterSitesByScale": "Scale-specific encounter-site overrides.",
+      "encounterSitesByHabitationPattern": "Encounter-site overrides keyed by habitation pattern (Automated, Abandoned).",
       "encounterSitesByFunctionKeyword": "Function-keyword rules that add specialized encounter sites.",
-      "scaleTable": "d12 settlement scale table."
+      "populationTable": "d10 settlement population table (magnitude only). Top two slots both map to 10+ million so high-presence systems favor large urban centers; Unknown is reserved for the Abandoned joint constraint and never rolled organically.",
+      "habitationPatternDefaults": "Default habitation pattern derived from siteCategory."
     }
   },
   "siteCategories": [
@@ -310,10 +311,6 @@
     "Unknown sponsor",
     "Official records are falsified"
   ],
-  "authorityByScale": {
-    "Automated only": ["AI-supervised technocracy", "Gate authority", "Sol-interdiction compliance office", "Unknown sponsor", "Official records are falsified"],
-    "Abandoned": ["No recognized authority", "Quarantine authority", "Salvage court", "Unknown sponsor", "Official records are falsified"]
-  },
   "aiSituations": [
     "No AI; dangerously manual",
     "Obsolete but loyal AI",
@@ -390,63 +387,59 @@
     "Hidden civil war",
     "Hidden reason it cannot be abandoned"
   ],
-  "conditionByScale": {
-    "Automated only": ["Efficient but joyless", "Understaffed", "Life support near failure", "Hidden AI incident", "Under quarantine", "Officially safe, actually hazardous"],
-    "Abandoned": ["Half-abandoned", "Recently evacuated", "Reoccupied ruin", "Decaying first-wave infrastructure", "Hidden reason it cannot be abandoned"]
-  },
   "tags": [
-    { "id": "abandoned-first-wave", "label": "Abandoned First Wave", "pressure": "old first-wave decisions still decide who has shelter, air, and legal standing." },
-    { "id": "air-is-money", "label": "Air Is Money", "pressure": "life support has become the settlement currency and the main lever of control." },
+    { "id": "abandoned-first-wave", "label": "Abandoned First Wave", "pressure": "old first-wave decisions still decide who has shelter, air, and legal standing.", "civicScale": "remote" },
+    { "id": "air-is-money", "label": "Air Is Money", "pressure": "life support has become the settlement currency and the main lever of control.", "civicScale": "civic" },
     { "id": "ai-whisper-cult", "label": "AI Whisper Cult", "pressure": "residents read spiritual or political meaning into narrow-AI behavior." },
-    { "id": "anti-corporate-commune", "label": "Anti-Corporate Commune", "pressure": "the public story hides a working political break with corporate control." },
-    { "id": "aristocratic-dome", "label": "Aristocratic Dome", "pressure": "elite protection and outside deprivation are tied together." },
-    { "id": "automated-but-haunted", "label": "Automated but Haunted", "pressure": "old automation keeps producing patterns locals treat as messages." },
+    { "id": "anti-corporate-commune", "label": "Anti-Corporate Commune", "pressure": "the public story hides a working political break with corporate control.", "civicScale": "civic" },
+    { "id": "aristocratic-dome", "label": "Aristocratic Dome", "pressure": "elite protection and outside deprivation are tied together.", "civicScale": "civic" },
+    { "id": "automated-but-haunted", "label": "Automated but Haunted", "pressure": "old automation keeps producing patterns locals treat as messages.", "civicScale": "remote" },
     { "id": "bleed-chaser-port", "label": "Bleed-Chaser Port", "pressure": "travel, debt, and risk all orbit the next moving bleed opportunity." },
     { "id": "border-fort", "label": "Border Fort", "pressure": "military necessity is being used to justify civilian restrictions." },
     { "id": "broken-terraformer", "label": "Broken Terraformer", "pressure": "a failed environmental project is still shaping the crisis." },
     { "id": "chiral-monopoly", "label": "Chiral Monopoly", "pressure": "one faction controls access to the resource everyone needs." },
-    { "id": "debt-labor", "label": "Debt Labor", "pressure": "contracts and life-support fees make departure functionally impossible." },
-    { "id": "deep-ice", "label": "Deep Ice", "pressure": "buried volatiles or under-ice habitats conceal the real value of the site." },
-    { "id": "derelict-yard", "label": "Derelict Yard", "pressure": "salvage law and old wreckage hide the deeper conflict." },
+    { "id": "debt-labor", "label": "Debt Labor", "pressure": "contracts and life-support fees make departure functionally impossible.", "civicScale": "civic" },
+    { "id": "deep-ice", "label": "Deep Ice", "pressure": "buried volatiles or under-ice habitats conceal the real value of the site.", "civicScale": "remote" },
+    { "id": "derelict-yard", "label": "Derelict Yard", "pressure": "salvage law and old wreckage hide the deeper conflict.", "civicScale": "remote" },
     { "id": "elegant-core-enclave", "label": "Elegant Core Enclave", "pressure": "polished public spaces mask a harsher dependent economy." },
     { "id": "exile-haven", "label": "Exile Haven", "pressure": "people with incompatible pasts are forced to rely on each other." },
     { "id": "flare-refuge", "label": "Flare Refuge", "pressure": "survival protocols double as social control." },
     { "id": "free-captain-nest", "label": "Free Captain Nest", "pressure": "independent crews set the local law when formal authority fails." },
     { "id": "gate-shadow", "label": "Gate Shadow", "pressure": "route access determines who prospers and who is trapped." },
-    { "id": "ghost-city-human", "label": "Ghost City, Human", "pressure": "the haunting is human history, not the supernatural." },
-    { "id": "high-g-research", "label": "High-G Research", "pressure": "dangerous science is being treated as necessary infrastructure." },
+    { "id": "ghost-city-human", "label": "Ghost City, Human", "pressure": "the haunting is human history, not the supernatural.", "civicScale": "remote" },
+    { "id": "high-g-research", "label": "High-G Research", "pressure": "dangerous science is being treated as necessary infrastructure.", "civicScale": "remote" },
     { "id": "hidden-navy", "label": "Hidden Navy", "pressure": "military presence is deeper than the public registry admits." },
     { "id": "hydrocarbon-frontier", "label": "Hydrocarbon Frontier", "pressure": "volatile extraction keeps everyone solvent and vulnerable." },
     { "id": "kessler-cloud", "label": "Kessler Cloud", "pressure": "debris hazards make movement, rescue, and evacuation political." },
     { "id": "machine-run-town", "label": "Machine-Run Town", "pressure": "humans depend on systems they do not fully control." },
     { "id": "memory-loss-zone", "label": "Memory-Loss Zone", "pressure": "missing records and altered recollections decide the dispute." },
-    { "id": "migrant-swarm", "label": "Migrant Swarm", "pressure": "temporary populations outnumber the institutions meant to govern them." },
+    { "id": "migrant-swarm", "label": "Migrant Swarm", "pressure": "temporary populations outnumber the institutions meant to govern them.", "civicScale": "civic" },
     { "id": "moving-node-rush", "label": "Moving Node Rush", "pressure": "short-lived opportunity is pushing people into unsafe choices." },
     { "id": "narrow-ai-schism", "label": "Narrow-AI Schism", "pressure": "AIs agree on facts but not on which human orders can be obeyed." },
-    { "id": "old-war-minefield", "label": "Old War Minefield", "pressure": "legacy weapons make ordinary operations into negotiations." },
+    { "id": "old-war-minefield", "label": "Old War Minefield", "pressure": "legacy weapons make ordinary operations into negotiations.", "civicScale": "remote" },
     { "id": "outlaw-court", "label": "Outlaw Court", "pressure": "local justice answers to power before law." },
-    { "id": "penal-extraction", "label": "Penal Extraction", "pressure": "punishment and resource production are the same system." },
-    { "id": "perfect-dome-rotten-outside", "label": "Perfect Dome, Rotten Outside", "pressure": "comfort inside depends on sacrifice outside." },
-    { "id": "plague-biosafety-fear", "label": "Plague/Biosafety Fear", "pressure": "containment policy is shaping every personal choice." },
-    { "id": "precious-water", "label": "Precious Water", "pressure": "water ownership is the settlement constitution." },
+    { "id": "penal-extraction", "label": "Penal Extraction", "pressure": "punishment and resource production are the same system.", "civicScale": "civic" },
+    { "id": "perfect-dome-rotten-outside", "label": "Perfect Dome, Rotten Outside", "pressure": "comfort inside depends on sacrifice outside.", "civicScale": "civic" },
+    { "id": "plague-biosafety-fear", "label": "Plague/Biosafety Fear", "pressure": "containment policy is shaping every personal choice.", "civicScale": "civic" },
+    { "id": "precious-water", "label": "Precious Water", "pressure": "water ownership is the settlement constitution.", "civicScale": "civic" },
     { "id": "religious-geometry", "label": "Religious Geometry", "pressure": "belief and GU observation are tangled in local politics." },
-    { "id": "strikebreaker-city", "label": "Strikebreaker City", "pressure": "labor peace is being maintained by coercion." },
+    { "id": "strikebreaker-city", "label": "Strikebreaker City", "pressure": "labor peace is being maintained by coercion.", "civicScale": "civic" },
     { "id": "archive-war", "label": "Archive War", "pressure": "whoever controls the records controls legal truth, casualty counts, and property claims." },
     { "id": "broken-mirror-swarm", "label": "Broken Mirror Swarm", "pressure": "failed terraforming hardware still decides climate, power, and blame." },
-    { "id": "false-evacuation-list", "label": "False Evacuation List", "pressure": "survival priority was assigned by a list nobody trusts." },
+    { "id": "false-evacuation-list", "label": "False Evacuation List", "pressure": "survival priority was assigned by a list nobody trusts.", "civicScale": "civic" },
     { "id": "gardener-compliance-zone", "label": "Gardener Compliance Zone", "pressure": "opaque Sol/Gardener rules can override local law without explanation." },
-    { "id": "life-support-union", "label": "Life-Support Union", "pressure": "repair crews can save or freeze the whole settlement by choosing where work stops." },
-    { "id": "medical-triage-state", "label": "Medical Triage State", "pressure": "clinic decisions have become law because exposure and scarcity decide who gets treated." },
+    { "id": "life-support-union", "label": "Life-Support Union", "pressure": "repair crews can save or freeze the whole settlement by choosing where work stops.", "civicScale": "civic" },
+    { "id": "medical-triage-state", "label": "Medical Triage State", "pressure": "clinic decisions have become law because exposure and scarcity decide who gets treated.", "civicScale": "civic" },
     { "id": "route-weather-board", "label": "Route Weather Board", "pressure": "safe windows are forecasts, markets, and political weapons at the same time." },
     { "id": "spare-parts-monarchy", "label": "Spare Parts Monarchy", "pressure": "control of replacement parts has hardened into hereditary or cartel power." },
-    { "id": "storm-shelter-politics", "label": "Storm Shelter Politics", "pressure": "the shelter plan reveals whose lives the settlement values first." },
+    { "id": "storm-shelter-politics", "label": "Storm Shelter Politics", "pressure": "the shelter plan reveals whose lives the settlement values first.", "civicScale": "civic" },
     { "id": "terraforming-liability", "label": "Terraforming Liability", "pressure": "old climate promises have become debts, lawsuits, and bodies." },
     { "id": "exposure-records-sealed", "label": "Exposure Records Sealed", "pressure": "medical truth is being hidden to protect authority or prevent panic." },
     { "id": "interdiction-profiteers", "label": "Interdiction Profiteers", "pressure": "some locals profit whenever Sol/Gardener fear closes routes." },
     { "id": "ai-witness-custody", "label": "AI Witness Custody", "pressure": "a narrow AI can prove what happened, so every faction wants lawful control of it." },
     { "id": "shelter-lottery", "label": "Shelter Lottery", "pressure": "storm shelter access is allocated by a lottery everyone suspects is rigged." },
     { "id": "route-tithe", "label": "Route Tithe", "pressure": "every safe transit window is taxed before anyone knows whether it will hold." },
-    { "id": "clinic-black-market", "label": "Clinic Black Market", "pressure": "treatment, exposure data, and medical chirality stock all move off-book." }
+    { "id": "clinic-black-market", "label": "Clinic Black Market", "pressure": "treatment, exposure data, and medical chirality stock all move off-book.", "civicScale": "civic" }
   ],
   "tagPairHooks": {
     "Air Is Money + Debt Labor": "Air Is Money is visible in every meter and airlock; Debt Labor means workers cannot afford passage out.",
@@ -590,10 +583,6 @@
     "Maintenance logs prove the disaster was forecast",
     "Evacuation ark launches without most of its manifest"
   ],
-  "crisisByScale": {
-    "Automated only": ["Life-support cascade", "AI refuses unsafe operation", "Illegal AI expansion discovered", "Sabotage of the refinery, gate, or AI systems", "Essential expert missing", "The base broadcasts two contradictory distress calls", "Critical spare-parts vault is empty", "Route weather forecast failed publicly", "AI witness testimony becomes publicly accessible"],
-    "Abandoned": ["Salvage claim dispute", "Old first-wave map found", "Ship full of dead arrives", "A whole district goes silent", "The base broadcasts two contradictory distress calls", "Crisis is staged to hide something worse", "Failed garden dome breaches containment", "Maintenance logs prove the disaster was forecast", "Evacuation ark launches without most of its manifest"]
-  },
   "hiddenTruths": [
     "The settlement is insolvent",
     "The mine is nearly exhausted",
@@ -650,10 +639,6 @@
     "The casualty register merges two different disasters",
     "The official quarantine boundary protects an illegal facility"
   ],
-  "hiddenTruthByScale": {
-    "Automated only": ["The local AI deleted evidence", "The local AI preserved forbidden evidence", "The site is an illegal AI lab", "The AI is sane; the humans are not listening", "The system official survey is deliberately wrong", "The route weather board sells safe windows twice", "The maintenance logs were rewritten after the breach", "The AI witness has already testified in a sealed simulation"],
-    "Abandoned": ["The official death toll is false", "A first-wave expedition survived in hiding", "The ghosts are old human recordings", "The settlement has an evacuation ark nobody knows about", "The quarantine is political", "The mirror swarm is being kept broken for legal leverage", "The evacuation ark manifest contains people who never existed", "The casualty register merges two different disasters"]
-  },
   "encounterSites": [
     "Half-flooded maintenance tunnels",
     "Shielding crawlspace district",
@@ -692,12 +677,19 @@
     "AI witness vault",
     "Public casualty register",
     "Sealed evidence room",
-    "Evacuation ark manifest office"
+    "Evacuation ark manifest office",
+    "Transit lock overflow",
+    "Debt court queue",
+    "District triage line",
+    "Subway shelter platform",
+    "Mass-clinic intake corridor",
+    "Town hall annex",
+    "Open-air market dock",
+    "Single-bay clinic",
+    "Single-room briefing cell",
+    "Shared mess that doubles as a hearing",
+    "Two-witness sealed lock"
   ],
-  "encounterSitesByScale": {
-    "Automated only": ["AI core vault", "Drone hangar", "Closed habitat ring", "Place the maps say does not exist", "Route weather board", "AI witness vault", "Life-support spine"],
-    "Abandoned": ["Old first-wave command bunker", "Hidden launch bay", "Half-flooded maintenance tunnels", "Place the maps say does not exist", "Dead mirror-control room", "Public casualty register", "Sealed evidence room"]
-  },
   "encounterSitesByFunctionKeyword": [
     { "keywords": ["quarantine", "biosphere"], "sites": ["Quarantine ward", "Black-market clinic", "Water plant", "Exposure clinic", "Triage lottery hall"] },
     { "keywords": ["mine", "extraction", "harvest", "refinery"], "sites": ["Chiral refinery floor", "Bleed-harvest control room", "Worker barracks"] },
@@ -709,18 +701,80 @@
     { "keywords": ["interdiction", "gardener", "sol"], "sites": ["Sol/Gardener compliance archive", "Exclusion picket command deck", "Religious geometry chapel"] },
     { "keywords": ["archive", "records", "court"], "sites": ["AI witness vault", "Public casualty register", "Sealed evidence room", "Courtroom / debt registry"] }
   ],
-  "scaleTable": [
-    "Abandoned",
-    "Automated only",
-    "1-20 people",
-    "21-100 people",
-    "101-1,000 people",
-    "1,001-10,000 people",
-    "10,001-100,000 people",
-    "100,001-1 million people",
-    "1-10 million people",
-    "10+ million people",
-    "Distributed swarm settlement",
-    "Population unknown or deliberately falsified"
-  ]
+  "populationTable": [
+    "Minimal (<5)",
+    "1-20",
+    "21-100",
+    "101-1,000",
+    "1,001-10,000",
+    "10,001-100,000",
+    "100,001-1 million",
+    "1-10 million",
+    "10+ million",
+    "10+ million"
+  ],
+  "habitationPatternDefaults": {
+    "Surface settlement": "Surface settlement",
+    "Orbital station": "Orbital station",
+    "Asteroid or belt base": "Asteroid or belt base",
+    "Moon base": "Moon base",
+    "Deep-space platform": "Deep-space platform",
+    "Gate or route node": "Gate or route node",
+    "Mobile site": "Distributed swarm",
+    "Derelict or restricted site": "Abandoned"
+  },
+  "authorityByHabitationPattern": {
+    "Automated": ["AI-supervised technocracy", "Gate authority", "Sol-interdiction compliance office", "Unknown sponsor", "Official records are falsified"],
+    "Abandoned": ["No recognized authority", "Quarantine authority", "Salvage court", "Unknown sponsor", "Official records are falsified"]
+  },
+  "conditionByHabitationPattern": {
+    "Automated": ["Efficient but joyless", "Understaffed", "Life support near failure", "Hidden AI incident", "Under quarantine", "Officially safe, actually hazardous"],
+    "Abandoned": ["Half-abandoned", "Recently evacuated", "Reoccupied ruin", "Decaying first-wave infrastructure", "Hidden reason it cannot be abandoned"]
+  },
+  "crisisByHabitationPattern": {
+    "Automated": ["Life-support cascade", "AI refuses unsafe operation", "Illegal AI expansion discovered", "Sabotage of the refinery, gate, or AI systems", "Essential expert missing", "The base broadcasts two contradictory distress calls", "Critical spare-parts vault is empty", "Route weather forecast failed publicly", "AI witness testimony becomes publicly accessible"],
+    "Abandoned": ["Salvage claim dispute", "Old first-wave map found", "Ship full of dead arrives", "A whole district goes silent", "The base broadcasts two contradictory distress calls", "Crisis is staged to hide something worse", "Failed garden dome breaches containment", "Maintenance logs prove the disaster was forecast", "Evacuation ark launches without most of its manifest"]
+  },
+  "hiddenTruthByHabitationPattern": {
+    "Automated": ["The local AI deleted evidence", "The local AI preserved forbidden evidence", "The site is an illegal AI lab", "The AI is sane; the humans are not listening", "The system official survey is deliberately wrong", "The route weather board sells safe windows twice", "The maintenance logs were rewritten after the breach", "The AI witness has already testified in a sealed simulation"],
+    "Abandoned": ["The official death toll is false", "A first-wave expedition survived in hiding", "The ghosts are old human recordings", "The settlement has an evacuation ark nobody knows about", "The quarantine is political", "The mirror swarm is being kept broken for legal leverage", "The evacuation ark manifest contains people who never existed", "The casualty register merges two different disasters"]
+  },
+  "encounterSitesByHabitationPattern": {
+    "Automated": ["AI core vault", "Drone hangar", "Closed habitat ring", "Place the maps say does not exist", "Route weather board", "AI witness vault", "Life-support spine"],
+    "Abandoned": ["Old first-wave command bunker", "Hidden launch bay", "Half-flooded maintenance tunnels", "Place the maps say does not exist", "Dead mirror-control room", "Public casualty register", "Sealed evidence room"]
+  },
+  "encounterSitesByPopulationBand": {
+    "urban": [
+      "Transit lock overflow",
+      "Debt court queue",
+      "District triage line",
+      "Subway shelter platform",
+      "Mass-clinic intake corridor"
+    ],
+    "town": [
+      "Town hall annex",
+      "Open-air market dock",
+      "Single-bay clinic"
+    ],
+    "outpost": [
+      "Single-room briefing cell",
+      "Shared mess that doubles as a hearing",
+      "Two-witness sealed lock"
+    ]
+  },
+  "crisisByPopulationBand": {
+    "urban": [
+      "District-wide rolling blackouts",
+      "Mass shelter lottery riot",
+      "Transit grid failure during storm",
+      "Debt court mass-eviction order",
+      "Civic AI unionizes against operators"
+    ],
+    "outpost": [
+      "Only qualified medic refuses to work",
+      "The single backup generator failed in private",
+      "One team member is lying about contamination",
+      "The relief ship has been quietly diverted"
+    ]
+  }
 }

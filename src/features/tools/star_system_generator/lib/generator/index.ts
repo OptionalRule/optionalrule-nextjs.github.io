@@ -4,6 +4,7 @@ import type {
   Fact,
   GeneratedSystem,
   GenerationOptions,
+  GeneratorTone,
   GuPreference,
   HumanRemnant,
   Moon,
@@ -15,6 +16,8 @@ import type {
   PartialKnownSystem,
   RingSystem,
   Settlement,
+  SettlementHabitationPattern,
+  SettlementPopulation,
   Star,
   StellarCompanion,
   SystemPhenomenon,
@@ -29,7 +32,7 @@ import {
 } from './architecture'
 import { generateBodyInterest, generateBodyProfile, generateGiantEconomy } from './bodyInterest'
 import { calculateHabitableZone, calculateInsolation, calculateSnowLine, classifyThermalZone, roundTo } from './calculations'
-import { d8, d12, d20, d100, pickOne, pickTable, twoD6 } from './dice'
+import { d8, d10, d12, d20, d100, pickOne, pickTable, twoD6 } from './dice'
 import { bodyDesignation, moonDesignation } from './designations'
 import { extremeHotThermalZones, hotThermalZones, type BodyPlanKind, type WorldClassOption } from './domain'
 import { deriveEnvironmentPolicy, normalizeDetailForEnvironment } from './environmentPolicy'
@@ -82,11 +85,17 @@ import {
   deepSpaceFunctions,
   encounterSites,
   encounterSitesByFunctionKeyword,
-  encounterSitesByScale,
+  encounterSitesByHabitationPattern,
+  encounterSitesByPopulationBand,
+  GENERATION_SHIP_POPULATION_BAND,
+  HABITATION_POPULATION_FLOORS,
+  POPULATION_BAND_INDEX,
+  populationBandFor,
   extractionFunctions,
   giantOrbitalFunctions,
   guFractureFunctionsBySiteCategory,
-  hiddenTruthByScale,
+  habitationPatternDefaults,
+  hiddenTruthByHabitationPattern,
   hiddenTruths,
   mobileFunctions,
   moonBaseFunctions,
@@ -95,17 +104,19 @@ import {
   routeFunctions,
   securityFunctions,
   settlementAuthorities,
-  settlementAuthorityByScale,
-  settlementConditionByScale,
+  settlementAuthorityByHabitationPattern,
+  settlementConditionByHabitationPattern,
   settlementConditions,
-  settlementCrisisByScale,
+  settlementCrisisByHabitationPattern,
+  settlementCrisisByPopulationBand,
   settlementCrises,
   settlementLocations,
-  settlementScaleTable,
-  settlementTags,
+  settlementPopulationTable,
+  settlementTagOptions,
   surveyFunctions,
   surfaceIceFunctions,
   type SettlementLocationOption,
+  type SettlementSiteCategory,
 } from './data/settlements'
 import {
   ageStates,
@@ -117,7 +128,7 @@ import {
 } from './data/stellar'
 import { NameRegistry } from './nameRegistry'
 import { lowerFirst, sentenceFragment } from './prose/helpers'
-import { settlementHookSynthesis, settlementWhyHere } from './prose/settlementProse'
+import { settlementHookSynthesis } from './prose/settlementProse'
 import { phenomenonNote } from './prose/phenomenonProse'
 import { buildRelationshipGraph, renderSystemStory } from './graph'
 import { graphAwareReshape } from './prose'
@@ -2057,11 +2068,28 @@ function assertNever(value: never): never {
   throw new Error(`Unhandled settlement category: ${value}`)
 }
 
-function chooseSettlementTags(rng: SeededRng): [string, string] {
-  const obviousTag = pickOne(rng, settlementTags)
-  const deeperOptions = settlementTags.filter((tag) => tag !== obviousTag)
-  const deeperTag = deeperOptions.length ? pickOne(rng, deeperOptions) : settlementTags[(settlementTags.indexOf(obviousTag) + 1) % settlementTags.length]
-  return [obviousTag, deeperTag]
+function chooseSettlementTags(rng: SeededRng, population: SettlementPopulation): [string, string] {
+  const band = populationBandFor(population)
+  const weighted: string[] = []
+  for (const tag of settlementTagOptions) {
+    const civicScale = tag.civicScale ?? 'neutral'
+    let weight = 1
+    if (band === 'urban') {
+      if (civicScale === 'civic') weight = 3
+      if (civicScale === 'remote') weight = 0
+    } else if (band === 'outpost') {
+      if (civicScale === 'remote') weight = 3
+      if (civicScale === 'civic') weight = 0
+    }
+    for (let i = 0; i < weight; i++) weighted.push(tag.label)
+  }
+  if (weighted.length === 0) {
+    settlementTagOptions.forEach((tag) => weighted.push(tag.label))
+  }
+  const obvious = pickOne(rng, weighted)
+  const remaining = weighted.filter((label) => label !== obvious)
+  const deeper = pickOne(rng, remaining.length > 0 ? remaining : weighted)
+  return [obvious, deeper]
 }
 
 function settlementPresenceTier(score: number): string {
@@ -2205,41 +2233,181 @@ function targetSettlementCount(
   return Math.max(0, Math.min(scored.length, Math.max(min, Math.min(max, count))))
 }
 
-function settlementScaleFromRoll(rng: SeededRng, presence: SettlementPresenceScore): string {
-  let roll = d12(rng)
+function settlementPopulationFromRoll(rng: SeededRng, presence: SettlementPresenceScore): SettlementPopulation {
+  let roll = d10(rng)
   if (presence.score <= 6) roll -= 2
   if (presence.score === 7 || presence.score === 8) roll -= 1
   if (presence.score >= 12) roll += 1
   if (presence.score >= 15) roll += 2
-  roll = Math.max(1, Math.min(12, roll))
-  return settlementScaleTable[roll - 1]
+  roll = Math.max(1, Math.min(10, roll))
+  return settlementPopulationTable[roll - 1]
 }
 
-function chooseSettlementAuthority(rng: SeededRng, scale: string): string {
-  if (settlementAuthorityByScale[scale]) return pickOne(rng, settlementAuthorityByScale[scale])
+const HABITATION_LOW_EXOTICS: Record<SettlementSiteCategory, readonly SettlementHabitationPattern[]> = {
+  'Surface settlement': ['Underground city', 'Sealed arcology'],
+  'Orbital station': ['Modular island station'],
+  'Asteroid or belt base': ['Hollow asteroid'],
+  'Moon base': ['Underground city', 'Sealed arcology'],
+  'Deep-space platform': ['Drift colony', 'Modular island station'],
+  'Gate or route node': ['Modular island station'],
+  'Mobile site': [],
+  'Derelict or restricted site': [],
+}
+
+const HABITATION_HIGH_EXOTICS_BASE: Record<SettlementSiteCategory, readonly SettlementHabitationPattern[]> = {
+  'Surface settlement': ['Tethered tower', 'Hub complex'],
+  'Orbital station': ['Ring station', "O'Neill cylinder", 'Tethered tower', 'Hub complex'],
+  'Asteroid or belt base': ['Belt cluster', 'Modular island station', 'Hub complex'],
+  'Moon base': ['Hub complex'],
+  'Deep-space platform': ['Ring station', "O'Neill cylinder", 'Generation ship', 'Hub complex'],
+  'Gate or route node': ['Hub complex'],
+  'Mobile site': [],
+  'Derelict or restricted site': [],
+}
+
+function bodyHasAtmosphere(body: OrbitingBody): boolean {
+  const atm = body.detail.atmosphere.value
+  return atm !== 'None / hard vacuum' && atm !== 'Trace exosphere'
+}
+
+function highExoticsFor(siteCategory: SettlementSiteCategory, body: OrbitingBody): readonly SettlementHabitationPattern[] {
+  const base = HABITATION_HIGH_EXOTICS_BASE[siteCategory]
+  if (siteCategory === 'Surface settlement' && bodyHasAtmosphere(body)) {
+    return [...base, 'Sky platform']
+  }
+  return base
+}
+
+function settlementHabitationPatternFromRoll(
+  rng: SeededRng,
+  presence: SettlementPresenceScore,
+  siteCategory: SettlementSiteCategory,
+  body: OrbitingBody,
+  tone: GeneratorTone,
+): SettlementHabitationPattern {
+  const defaultPattern = habitationPatternDefaults[siteCategory]
+
+  if (defaultPattern === 'Distributed swarm') {
+    const generationShipRate = tone === 'cinematic' ? 0.18 : tone === 'astronomy' ? 0.04 : 0.1
+    const driftColonyRate = tone === 'cinematic' ? 0.18 : tone === 'astronomy' ? 0.04 : 0.1
+    if (rng.chance(generationShipRate)) return 'Generation ship'
+    if (rng.chance(driftColonyRate)) return 'Drift colony'
+    return defaultPattern
+  }
+  if (defaultPattern === 'Abandoned') return defaultPattern
+
+  let roll = d20(rng)
+  if (presence.score <= 6) roll -= 4
+  if (presence.score === 7 || presence.score === 8) roll -= 2
+  if (presence.score >= 12) roll += 2
+  if (presence.score >= 15) roll += 4
+
+  if (tone === 'cinematic' && rng.chance(0.25)) roll -= 2
+  if (tone === 'astronomy') roll = Math.max(5, Math.min(18, roll))
+
+  if (roll <= 1) return 'Abandoned'
+  if (roll === 2) return 'Automated'
+
+  if (roll === 3) {
+    const pool = HABITATION_LOW_EXOTICS[siteCategory]
+    if (pool.length > 0) return pickOne(rng, pool)
+    return defaultPattern
+  }
+  if (roll === 18 || roll === 19) {
+    const pool = highExoticsFor(siteCategory, body)
+    if (pool.length > 0) return pickOne(rng, pool)
+    return defaultPattern
+  }
+  if (roll >= 20) return 'Distributed swarm'
+
+  return defaultPattern
+}
+
+function clampPopulationToFloor(population: SettlementPopulation, floorIndex: number): SettlementPopulation {
+  const idx = POPULATION_BAND_INDEX[population]
+  if (idx < 0) return settlementPopulationTable[floorIndex]
+  if (idx >= floorIndex) return population
+  return settlementPopulationTable[floorIndex]
+}
+
+function clampPopulationToBand(
+  population: SettlementPopulation,
+  floorIndex: number,
+  ceilingIndex: number,
+  rng: SeededRng,
+): SettlementPopulation {
+  const idx = POPULATION_BAND_INDEX[population]
+  if (idx < 0) {
+    return settlementPopulationTable[rng.int(floorIndex, ceilingIndex)]
+  }
+  if (idx < floorIndex) return settlementPopulationTable[floorIndex]
+  if (idx > ceilingIndex) return settlementPopulationTable[ceilingIndex]
+  return population
+}
+
+function applyHabitationPopulationConstraint(
+  habitationPattern: SettlementHabitationPattern,
+  population: SettlementPopulation,
+  rng: SeededRng,
+): SettlementPopulation {
+  if (habitationPattern === 'Abandoned') return 'Unknown'
+  if (habitationPattern === 'Automated') return 'Minimal (<5)'
+  if (habitationPattern === 'Generation ship') {
+    return clampPopulationToBand(population, GENERATION_SHIP_POPULATION_BAND.floor, GENERATION_SHIP_POPULATION_BAND.ceiling, rng)
+  }
+  const floor = HABITATION_POPULATION_FLOORS[habitationPattern]
+  if (floor !== undefined) return clampPopulationToFloor(population, floor)
+  return population
+}
+
+function chooseSettlementAuthority(rng: SeededRng, habitationPattern: SettlementHabitationPattern): string {
+  if (settlementAuthorityByHabitationPattern[habitationPattern]) {
+    return pickOne(rng, settlementAuthorityByHabitationPattern[habitationPattern])
+  }
   return pickOne(rng, settlementAuthorities)
 }
 
-function chooseSettlementCondition(rng: SeededRng, scale: string): string {
-  if (settlementConditionByScale[scale]) return pickOne(rng, settlementConditionByScale[scale])
+function chooseSettlementCondition(rng: SeededRng, habitationPattern: SettlementHabitationPattern): string {
+  if (settlementConditionByHabitationPattern[habitationPattern]) {
+    return pickOne(rng, settlementConditionByHabitationPattern[habitationPattern])
+  }
   return pickOne(rng, settlementConditions)
 }
 
-function chooseSettlementCrisis(rng: SeededRng, scale: string): string {
-  if (settlementCrisisByScale[scale]) return pickOne(rng, settlementCrisisByScale[scale])
+function chooseSettlementCrisis(
+  rng: SeededRng,
+  habitationPattern: SettlementHabitationPattern,
+  population: SettlementPopulation,
+): string {
+  if (settlementCrisisByHabitationPattern[habitationPattern]) {
+    return pickOne(rng, settlementCrisisByHabitationPattern[habitationPattern])
+  }
+  const band = populationBandFor(population)
+  if (band && settlementCrisisByPopulationBand[band] && rng.chance(0.4)) {
+    return pickOne(rng, settlementCrisisByPopulationBand[band])
+  }
   return pickOne(rng, settlementCrises)
 }
 
-function chooseHiddenTruth(rng: SeededRng, scale: string): string {
-  if (hiddenTruthByScale[scale]) return pickOne(rng, hiddenTruthByScale[scale])
+function chooseHiddenTruth(rng: SeededRng, habitationPattern: SettlementHabitationPattern): string {
+  if (hiddenTruthByHabitationPattern[habitationPattern]) {
+    return pickOne(rng, hiddenTruthByHabitationPattern[habitationPattern])
+  }
   return pickOne(rng, hiddenTruths)
 }
 
-function chooseEncounterSites(rng: SeededRng, scale: string, settlementFunction: string): string[] {
+function chooseEncounterSites(
+  rng: SeededRng,
+  habitationPattern: SettlementHabitationPattern,
+  population: SettlementPopulation,
+  settlementFunction: string,
+): string[] {
   const value = settlementFunction.toLowerCase()
   const candidates = new Set<string>()
 
-  encounterSitesByScale[scale]?.forEach((site) => candidates.add(site))
+  encounterSitesByHabitationPattern[habitationPattern]?.forEach((site) => candidates.add(site))
+  const band = populationBandFor(population)
+  if (band) encounterSitesByPopulationBand[band]?.forEach((site) => candidates.add(site))
   encounterSitesByFunctionKeyword.forEach((pool) => {
     if (pool.keywords.some((keyword) => value.includes(keyword))) {
       pool.sites.forEach((site) => candidates.add(site))
@@ -2463,8 +2631,18 @@ function settlementDescriptorForAuthority(authority: string): string {
   return descriptorFromRules(authority, settlementNameDescriptors.authority)
 }
 
-function settlementDescriptorForScale(scale: string): string {
-  return settlementNameDescriptors.scale.exact[scale] ?? descriptorFromRules(scale, settlementNameDescriptors.scale)
+function settlementDescriptorForHabitationPattern(habitationPattern: SettlementHabitationPattern): string {
+  return (
+    settlementNameDescriptors.scale.exact[habitationPattern] ??
+    descriptorFromRules(habitationPattern, settlementNameDescriptors.scale)
+  )
+}
+
+function settlementDescriptorForPopulation(population: SettlementPopulation): string {
+  return (
+    settlementNameDescriptors.population.exact[population] ??
+    settlementNameDescriptors.population.default
+  )
 }
 
 function generateSettlementName(
@@ -2474,19 +2652,24 @@ function generateSettlementName(
   siteCategory: string,
   settlementFunction: string,
   authority: string,
-  scale: string
+  population: SettlementPopulation,
+  habitationPattern: SettlementHabitationPattern
 ): string {
   const anchorStem = anchor.name.split(',')[0].replace(/\s+(orbital space|route geometry|traffic pattern|transit geometry)$/i, '')
   const functionDescriptor = settlementDescriptorForFunction(settlementFunction)
   const categoryDescriptor = settlementDescriptorForCategory(siteCategory)
   const authorityDescriptor = settlementDescriptorForAuthority(authority)
-  const scaleDescriptor = settlementDescriptorForScale(scale)
+  const habitationDescriptor = settlementDescriptorForHabitationPattern(habitationPattern)
+  const populationDescriptor = settlementDescriptorForPopulation(population)
 
   const pattern = rng.int(1, 5)
   if (pattern === 1) return `${anchorStem} ${functionDescriptor}`
   if (pattern === 2) return `${anchorStem} ${categoryDescriptor}`
   if (pattern === 3) return `${body.name.value} ${authorityDescriptor}`
-  if (pattern === 4) return `${anchorStem} ${scaleDescriptor}`
+  if (pattern === 4) {
+    const useHabitation = rng.chance(0.5)
+    return `${anchorStem} ${useHabitation ? habitationDescriptor : populationDescriptor}`
+  }
   return `${body.name.value} ${functionDescriptor} ${rng.int(2, 99).toString().padStart(2, '0')}`
 }
 
@@ -2511,16 +2694,27 @@ function generateSettlements(
     const settlementFunction = chooseSettlementFunction(rng, body, locationOption, guOverlay)
     const builtForm = chooseBuiltForm(rng, locationOption, settlementFunction)
     const anchor = chooseSettlementAnchor(rng, systemName, body, locationOption)
-    const whyHere = settlementWhyHere(rng.fork(`why-here-${index + 1}`), body, presence, guOverlay, reachability, anchor)
-    const tags = chooseSettlementTags(rng)
-    const scale = settlementScaleFromRoll(rng, presence)
-    const authority = chooseSettlementAuthority(rng, scale)
-    const condition = chooseSettlementCondition(rng, scale)
-    const crisis = chooseSettlementCrisis(rng, scale)
-    const hiddenTruth = chooseHiddenTruth(rng, scale)
-    const encounterSiteValues = chooseEncounterSites(rng.fork(`encounter-sites-${index + 1}`), scale, settlementFunction)
+    const rolledPopulation = settlementPopulationFromRoll(rng, presence)
+    const habitationPattern = settlementHabitationPatternFromRoll(
+      rng.fork(`habitation-pattern-${index + 1}`),
+      presence,
+      locationOption.category,
+      body,
+      options.tone,
+    )
+    const population = applyHabitationPopulationConstraint(
+      habitationPattern,
+      rolledPopulation,
+      rng.fork(`population-clamp-${index + 1}`),
+    )
+    const tags = chooseSettlementTags(rng, population)
+    const authority = chooseSettlementAuthority(rng, habitationPattern)
+    const condition = chooseSettlementCondition(rng, habitationPattern)
+    const crisis = chooseSettlementCrisis(rng, habitationPattern, population)
+    const hiddenTruth = chooseHiddenTruth(rng, habitationPattern)
+    const encounterSiteValues = chooseEncounterSites(rng.fork(`encounter-sites-${index + 1}`), habitationPattern, population, settlementFunction)
     const tagHook = settlementHookSynthesis(rng.fork(`tag-hook-${index + 1}`), tags[0], tags[1], {
-      scale,
+      habitationPattern,
       siteCategory: locationOption.category,
       settlementFunction,
       condition,
@@ -2529,7 +2723,16 @@ function generateSettlements(
       encounterSites: encounterSiteValues,
       guIntensity: guOverlay.intensity.value,
     })
-    const baseSettlementName = generateSettlementName(rng.fork(`settlement-name-${index + 1}`), body, anchor, locationOption.category, settlementFunction, authority, scale)
+    const baseSettlementName = generateSettlementName(
+      rng.fork(`settlement-name-${index + 1}`),
+      body,
+      anchor,
+      locationOption.category,
+      settlementFunction,
+      authority,
+      population,
+      habitationPattern,
+    )
     const settlementId = `settlement-${index + 1}`
     const settlementName = nameRegistry.uniqueGeneratedName(baseSettlementName, {
       bodyName: body.name.value,
@@ -2550,8 +2753,8 @@ function generateSettlements(
         settlementName,
         'human-layer',
         settlementName === baseSettlementName
-          ? 'Generated settlement name from anchor, function, authority, and scale'
-          : 'Generated settlement name from anchor, function, authority, and scale; duplicate repaired by deterministic name registry'
+          ? 'Generated settlement name from anchor, function, authority, and habitation pattern'
+          : 'Generated settlement name from anchor, function, authority, and habitation pattern; duplicate repaired by deterministic name registry'
       ),
       anchorKind: fact(anchor.kind, 'human-layer', 'Generated site-to-body relationship'),
       anchorName: fact(anchor.name, 'human-layer', 'Generated site-to-body relationship'),
@@ -2559,7 +2762,8 @@ function generateSettlements(
       siteCategory: fact(locationOption.category, 'human-layer', 'MASS-GU section 18 constrained site category'),
       location: fact(locationOption.label, 'human-layer', 'MASS-GU 18.3 site location table with body constraints'),
       function: fact(settlementFunction, 'human-layer', 'MASS-GU settlement function table with body constraints'),
-      scale: fact(scale, 'human-layer', 'MASS-GU 18.2 settlement scale d12 table'),
+      population: fact(population, 'human-layer', 'Population magnitude (d10 with presence modifier); habitation override applied'),
+      habitationPattern: fact(habitationPattern, 'human-layer', 'Habitation pattern (siteCategory default with d12 special-pattern roll)'),
       authority: fact(authority, 'human-layer', 'MASS-GU 18.5 authority table'),
       builtForm: fact(builtForm, 'human-layer', 'MASS-GU built form table with location/function constraints'),
       aiSituation: fact(pickOne(rng, aiSituations), 'human-layer', 'MASS-GU AI situation table'),
@@ -2569,7 +2773,7 @@ function generateSettlements(
       crisis: fact(crisis, 'human-layer', 'MASS-GU 18.10 crisis table with scale compatibility'),
       hiddenTruth: fact(hiddenTruth, 'human-layer', 'MASS-GU 18.11 hidden truth table with scale compatibility; no-alien conversion applied where needed'),
       encounterSites: encounterSiteValues.map((site) => fact(site, 'human-layer', 'MASS-GU 18.12 local encounter site table with function/scale weighting')),
-      whyHere: fact(whyHere, 'human-layer', 'Generated from MASS-GU 18.1 presence score components'),
+      whyHere: fact('', 'human-layer', 'Populated by graph-aware reshape'),
       methodNotes: [
         fact('Source-derived from MASS-GU section 18; current implementation adds compatibility constraints between body, site category, function, built form, and physical anchor.', 'human-layer', 'Implementation note'),
       ],

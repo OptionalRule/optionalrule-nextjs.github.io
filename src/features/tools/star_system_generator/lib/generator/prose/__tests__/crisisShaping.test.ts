@@ -122,9 +122,9 @@ describe('crisisPressureSentence', () => {
 describe('crisisPressureSentence — full pool characterization', () => {
   const allCrises = (() => {
     const set = new Set<string>()
-    const data = settlementsData as { crises: string[]; crisisByScale: Record<string, string[]> }
+    const data = settlementsData as { crises: string[]; crisisByHabitationPattern: Record<string, string[]> }
     for (const c of data.crises ?? []) set.add(c)
-    for (const arr of Object.values(data.crisisByScale ?? {})) {
+    for (const arr of Object.values(data.crisisByHabitationPattern ?? {})) {
       for (const c of arr) set.add(c)
     }
     return Array.from(set).sort()

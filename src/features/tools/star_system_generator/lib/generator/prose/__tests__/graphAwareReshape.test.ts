@@ -18,7 +18,24 @@ function emptyGraph(): SystemRelationshipGraph {
 }
 
 function minimalSettlement(id: string): Settlement {
-  return { id } as unknown as Settlement
+  return {
+    id,
+    anchorName: { value: `Anchor-${id}`, confidence: 'confirmed', source: 'test' },
+    whyHere: { value: 'original whyHere', confidence: 'confirmed', source: 'test' },
+    tagHook: { value: 'original tagHook', confidence: 'human-layer', source: 'test' },
+    presence: {
+      score: { value: 5, confidence: 'human-layer', source: 'test' },
+      roll: { value: 7, confidence: 'human-layer', source: 'test' },
+      tier: { value: 'Active', confidence: 'human-layer', source: 'test' },
+      resource: { value: 1, confidence: 'human-layer', source: 'test' },
+      access: { value: 1, confidence: 'human-layer', source: 'test' },
+      strategic: { value: 1, confidence: 'human-layer', source: 'test' },
+      guValue: { value: 0, confidence: 'gu-layer', source: 'test' },
+      habitability: { value: 1, confidence: 'inferred', source: 'test' },
+      hazard: { value: 0, confidence: 'inferred', source: 'test' },
+      legalHeat: { value: 0, confidence: 'human-layer', source: 'test' },
+    },
+  } as unknown as Settlement
 }
 
 function minimalPhenomenon(id: string): SystemPhenomenon {
@@ -31,7 +48,22 @@ const baseOptions: GenerationOptions = {
 }
 
 describe('graphAwareReshape', () => {
-  it('returns input unchanged when no flags are set', () => {
+  it('iterates settlements unconditionally (whyHere runs without flags)', () => {
+    const settlements: Settlement[] = [minimalSettlement('s1'), minimalSettlement('s2')]
+    const phenomena: SystemPhenomenon[] = [minimalPhenomenon('p1')]
+    const result = graphAwareReshape({
+      settlements, phenomena,
+      relationshipGraph: emptyGraph(),
+      options: baseOptions,
+      rng: createSeededRng('reshape-test'),
+    })
+    expect(result.settlements).not.toBe(settlements)
+    expect(result.settlements).toHaveLength(2)
+    expect(result.settlements[0].whyHere.value).toContain('Anchor-s1')
+    expect(result.settlements[1].whyHere.value).toContain('Anchor-s2')
+  })
+
+  it('preserves phenomena reference when phenomenonNote flag is off', () => {
     const settlements: Settlement[] = [minimalSettlement('s1')]
     const phenomena: SystemPhenomenon[] = [minimalPhenomenon('p1')]
     const result = graphAwareReshape({
@@ -40,11 +72,10 @@ describe('graphAwareReshape', () => {
       options: baseOptions,
       rng: createSeededRng('reshape-test'),
     })
-    expect(result.settlements).toBe(settlements)
     expect(result.phenomena).toBe(phenomena)
   })
 
-  it('returns input unchanged when graphAware is empty object', () => {
+  it('preserves phenomena reference when graphAware is empty object', () => {
     const settlements: Settlement[] = [minimalSettlement('s1')]
     const phenomena: SystemPhenomenon[] = [minimalPhenomenon('p1')]
     const result = graphAwareReshape({
@@ -53,21 +84,7 @@ describe('graphAwareReshape', () => {
       options: { ...baseOptions, graphAware: {} },
       rng: createSeededRng('reshape-test'),
     })
-    expect(result.settlements).toBe(settlements)
     expect(result.phenomena).toBe(phenomena)
-  })
-
-  it('iterates settlements when settlementWhyHere flag is on', () => {
-    const settlements: Settlement[] = [minimalSettlement('s1'), minimalSettlement('s2')]
-    const phenomena: SystemPhenomenon[] = [minimalPhenomenon('p1')]
-    const result = graphAwareReshape({
-      settlements, phenomena,
-      relationshipGraph: emptyGraph(),
-      options: { ...baseOptions, graphAware: { settlementWhyHere: true } },
-      rng: createSeededRng('reshape-test'),
-    })
-    expect(result.settlements).not.toBe(settlements)
-    expect(result.settlements).toEqual(settlements)
   })
 
   it('iterates phenomena when phenomenonNote flag is on', () => {
@@ -83,19 +100,19 @@ describe('graphAwareReshape', () => {
     expect(result.phenomena).toEqual(phenomena)
   })
 
-  it('does not iterate phenomena when only settlement flags are on', () => {
+  it('does not iterate phenomena when only settlementHookSynthesis flag is on', () => {
     const settlements: Settlement[] = [minimalSettlement('s1')]
     const phenomena: SystemPhenomenon[] = [minimalPhenomenon('p1')]
     const result = graphAwareReshape({
       settlements, phenomena,
       relationshipGraph: emptyGraph(),
-      options: { ...baseOptions, graphAware: { settlementWhyHere: true } },
+      options: { ...baseOptions, graphAware: { settlementHookSynthesis: true } },
       rng: createSeededRng('reshape-test'),
     })
     expect(result.phenomena).toBe(phenomena)
   })
 
-  it('does not iterate settlements when only phenomenonNote flag is on', () => {
+  it('iterates settlements even when only phenomenonNote flag is on', () => {
     const settlements: Settlement[] = [minimalSettlement('s1')]
     const phenomena: SystemPhenomenon[] = [minimalPhenomenon('p1')]
     const result = graphAwareReshape({
@@ -104,7 +121,8 @@ describe('graphAwareReshape', () => {
       options: { ...baseOptions, graphAware: { phenomenonNote: true } },
       rng: createSeededRng('reshape-test'),
     })
-    expect(result.settlements).toBe(settlements)
+    expect(result.settlements).not.toBe(settlements)
+    expect(result.settlements[0].whyHere.value).toContain('Anchor-s1')
   })
 
   it('forks rng with label "graph-prose"', () => {
@@ -113,13 +131,13 @@ describe('graphAwareReshape', () => {
     const resultA = graphAwareReshape({
       settlements, phenomena,
       relationshipGraph: emptyGraph(),
-      options: { ...baseOptions, graphAware: { settlementWhyHere: true } },
+      options: baseOptions,
       rng: createSeededRng('fork-label-test'),
     })
     const resultB = graphAwareReshape({
       settlements, phenomena,
       relationshipGraph: emptyGraph(),
-      options: { ...baseOptions, graphAware: { settlementWhyHere: true } },
+      options: baseOptions,
       rng: createSeededRng('fork-label-test'),
     })
     expect(resultA).toEqual(resultB)
@@ -128,7 +146,7 @@ describe('graphAwareReshape', () => {
   it('preserves determinism: same input + same seed → identical output', () => {
     const settlements: Settlement[] = [minimalSettlement('s1'), minimalSettlement('s2')]
     const phenomena: SystemPhenomenon[] = [minimalPhenomenon('p1')]
-    const options: GenerationOptions = { ...baseOptions, graphAware: { settlementWhyHere: true, phenomenonNote: true } }
+    const options: GenerationOptions = { ...baseOptions, graphAware: { phenomenonNote: true } }
     const resultA = graphAwareReshape({
       settlements, phenomena,
       relationshipGraph: emptyGraph(),
@@ -179,8 +197,20 @@ function graphWithEdges(edges: RelationshipEdge[]): SystemRelationshipGraph {
 function settlementWithAnchor(id: string, anchorName: string): Settlement {
   return {
     id,
-    anchorName: { value: anchorName, confidence: 'confirmed' },
-    whyHere: { value: 'original whyHere', confidence: 'confirmed' },
+    anchorName: { value: anchorName, confidence: 'confirmed', source: 'test' },
+    whyHere: { value: 'original whyHere', confidence: 'confirmed', source: 'test' },
+    presence: {
+      score: { value: 5, confidence: 'human-layer', source: 'test' },
+      roll: { value: 7, confidence: 'human-layer', source: 'test' },
+      tier: { value: 'Active', confidence: 'human-layer', source: 'test' },
+      resource: { value: 1, confidence: 'human-layer', source: 'test' },
+      access: { value: 1, confidence: 'human-layer', source: 'test' },
+      strategic: { value: 1, confidence: 'human-layer', source: 'test' },
+      guValue: { value: 0, confidence: 'gu-layer', source: 'test' },
+      habitability: { value: 1, confidence: 'inferred', source: 'test' },
+      hazard: { value: 0, confidence: 'inferred', source: 'test' },
+      legalHeat: { value: 0, confidence: 'human-layer', source: 'test' },
+    },
   } as unknown as Settlement
 }
 
@@ -271,24 +301,8 @@ describe('graphAwareReshape — phenomenonNote integration', () => {
 })
 
 describe('graphAwareReshape — settlementWhyHere integration', () => {
-  it('replaces whyHere when settlementWhyHere flag is on AND incident DEPENDS_ON exists', () => {
+  it('replaces whyHere when incident DEPENDS_ON exists', () => {
     const settlement = settlementWithAnchor('s1', 'Orison Hold')
-    const graph = graphWithEdges([makeDependsOnEdge('s1', 'gu1')])
-    const result = graphAwareReshape({
-      settlements: [settlement],
-      phenomena: [],
-      relationshipGraph: graph,
-      options: { ...baseOptions, graphAware: { settlementWhyHere: true } },
-      rng: createSeededRng('test'),
-    })
-    expect(result.settlements[0].whyHere.value).toContain('Orison Hold')
-    expect(result.settlements[0].whyHere.value).toContain('chiral ice belt')
-    expect(result.settlements[0].whyHere.confidence).toBe('inferred')
-  })
-
-  it('preserves whyHere when settlementWhyHere flag is off', () => {
-    const settlement = settlementWithAnchor('s1', 'Orison Hold')
-    const originalWhyHere = settlement.whyHere
     const graph = graphWithEdges([makeDependsOnEdge('s1', 'gu1')])
     const result = graphAwareReshape({
       settlements: [settlement],
@@ -297,20 +311,23 @@ describe('graphAwareReshape — settlementWhyHere integration', () => {
       options: baseOptions,
       rng: createSeededRng('test'),
     })
-    expect(result.settlements[0].whyHere).toBe(originalWhyHere)
+    expect(result.settlements[0].whyHere.value).toContain('Orison Hold')
+    expect(result.settlements[0].whyHere.value).toContain('chiral ice belt')
+    expect(result.settlements[0].whyHere.confidence).toBe('inferred')
   })
 
-  it('preserves whyHere when flag on but no incident edges', () => {
+  it('replaces whyHere with presence/generic fallback content when no incident edges exist', () => {
     const settlement = settlementWithAnchor('s1', 'Orison Hold')
-    const originalWhyHere = settlement.whyHere
     const result = graphAwareReshape({
       settlements: [settlement],
       phenomena: [],
       relationshipGraph: emptyGraph(),
-      options: { ...baseOptions, graphAware: { settlementWhyHere: true } },
+      options: baseOptions,
       rng: createSeededRng('test'),
     })
-    expect(result.settlements[0].whyHere).toBe(originalWhyHere)
+    expect(result.settlements[0].whyHere.value).toContain('Orison Hold')
+    expect(result.settlements[0].whyHere.value).not.toBe('original whyHere')
+    expect(result.settlements[0].whyHere.confidence).toBe('inferred')
   })
 })
 
@@ -331,9 +348,21 @@ function makeContestsEdge(subjectId: string, objectId: string, objectDisplayName
 function settlementWithTagHook(id: string, anchorName: string, tagHookValue: string): Settlement {
   return {
     id,
-    anchorName: { value: anchorName, confidence: 'confirmed' },
-    whyHere: { value: 'original whyHere', confidence: 'confirmed' },
-    tagHook: { value: tagHookValue, confidence: 'human-layer' },
+    anchorName: { value: anchorName, confidence: 'confirmed', source: 'test' },
+    whyHere: { value: 'original whyHere', confidence: 'confirmed', source: 'test' },
+    tagHook: { value: tagHookValue, confidence: 'human-layer', source: 'test' },
+    presence: {
+      score: { value: 5, confidence: 'human-layer', source: 'test' },
+      roll: { value: 7, confidence: 'human-layer', source: 'test' },
+      tier: { value: 'Active', confidence: 'human-layer', source: 'test' },
+      resource: { value: 1, confidence: 'human-layer', source: 'test' },
+      access: { value: 1, confidence: 'human-layer', source: 'test' },
+      strategic: { value: 1, confidence: 'human-layer', source: 'test' },
+      guValue: { value: 0, confidence: 'gu-layer', source: 'test' },
+      habitability: { value: 1, confidence: 'inferred', source: 'test' },
+      hazard: { value: 0, confidence: 'inferred', source: 'test' },
+      legalHeat: { value: 0, confidence: 'human-layer', source: 'test' },
+    },
   } as unknown as Settlement
 }
 
@@ -387,7 +416,7 @@ describe('graphAwareReshape — settlementHookSynthesis integration', () => {
       settlements: [settlement],
       phenomena: [],
       relationshipGraph: graph,
-      options: { ...baseOptions, graphAware: { settlementWhyHere: true, settlementHookSynthesis: true } },
+      options: { ...baseOptions, graphAware: { settlementHookSynthesis: true } },
       rng: createSeededRng('combined-test'),
     })
     expect(result.settlements[0].whyHere.value).toContain('Orison Hold')

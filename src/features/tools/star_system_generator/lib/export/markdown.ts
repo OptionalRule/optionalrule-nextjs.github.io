@@ -139,7 +139,8 @@ function formatSettlement(settlement: Settlement): string[] {
   return [
     `### ${settlement.name.value}`,
     '',
-    `**Scale:** ${settlement.scale.value}.`,
+    `**Population:** ${settlement.population.value}.`,
+    `**Habitation:** ${settlement.habitationPattern.value}.`,
     `**Location:** ${settlement.location.value}; ${settlement.anchorName.value} (${settlement.anchorKind.value}).`,
     `**Authority:** ${settlement.authority.value}.`,
     `**Function:** ${settlement.function.value}.`,
@@ -148,7 +149,7 @@ function formatSettlement(settlement: Settlement): string[] {
     `**AI:** ${settlement.aiSituation.value}.`,
     `**Crisis:** ${settlement.crisis.value}.`,
     `**Hidden Truth:** ${settlement.hiddenTruth.value}.`,
-    `**Why Here:** ${settlement.whyHere.value}.`,
+    ...(settlement.whyHere.value ? [`**Why Here:** ${settlement.whyHere.value}.`] : []),
     `**Local Sites:** ${settlement.encounterSites.map((site) => site.value).join(', ')}.`,
   ]
 }
