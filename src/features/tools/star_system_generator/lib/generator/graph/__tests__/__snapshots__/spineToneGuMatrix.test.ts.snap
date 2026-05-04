@@ -34,17 +34,17 @@ exports[`spine tone × gu matrix (structural fields only) > tone=astronomy gu=no
 
 exports[`spine tone × gu matrix (structural fields only) > tone=balanced gu=fracture produces stable spine structural fields 1`] = `
 {
-  "spineEdgeType": "DESTABILIZES",
-  "spineObjectKind": "body",
-  "spineSubjectKind": "phenomenon",
+  "spineEdgeType": "CONTESTS",
+  "spineObjectKind": "namedFaction",
+  "spineSubjectKind": "namedFaction",
 }
 `;
 
 exports[`spine tone × gu matrix (structural fields only) > tone=balanced gu=high produces stable spine structural fields 1`] = `
 {
-  "spineEdgeType": "DESTABILIZES",
-  "spineObjectKind": "body",
-  "spineSubjectKind": "phenomenon",
+  "spineEdgeType": "CONTESTS",
+  "spineObjectKind": "namedFaction",
+  "spineSubjectKind": "namedFaction",
 }
 `;
 
@@ -58,9 +58,9 @@ exports[`spine tone × gu matrix (structural fields only) > tone=balanced gu=low
 
 exports[`spine tone × gu matrix (structural fields only) > tone=balanced gu=normal produces stable spine structural fields 1`] = `
 {
-  "spineEdgeType": "DESTABILIZES",
+  "spineEdgeType": "CONTESTS",
   "spineObjectKind": "namedFaction",
-  "spineSubjectKind": "phenomenon",
+  "spineSubjectKind": "namedFaction",
 }
 `;
 

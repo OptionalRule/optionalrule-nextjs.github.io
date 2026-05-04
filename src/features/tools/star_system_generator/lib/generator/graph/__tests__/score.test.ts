@@ -52,7 +52,7 @@ describe('scoreCandidates', () => {
     expect(second!.bonuses.novelty).toBe(0)
     expect(second!.bonuses.crossLayer).toBe(0)
     expect(second!.bonuses.namedEntity).toBe(0)
-    expect(second!.score).toBeCloseTo(0.4)
+    expect(second!.score).toBeCloseTo(0.48)
   })
 
   it('adds +0.1 for novelty when this is the first edge of its type', () => {
@@ -331,5 +331,36 @@ describe('guScoreAdjustment via scoreCandidates', () => {
     const normal = scoreCandidates([edge], 'balanced', 'normal')
     const defaulted = scoreCandidates([edge])
     expect(normal[0].score).toBeCloseTo(defaulted[0].score)
+  })
+})
+
+describe('distributionMultiplier via scoreCandidates', () => {
+  function makeNamedFaction(id: string, name: string): EntityRef {
+    return { kind: 'namedFaction', id, displayName: name, layer: 'human' }
+  }
+
+  it('frontier boosts contested edges over public', () => {
+    const factionA = makeNamedFaction('fa', 'Kestrel Compact')
+    const factionB = makeNamedFaction('fb', 'Red Vane Guild')
+    const contestedEdge = makeEdge({ id: 'cont', type: 'CONTESTS', subject: factionA, object: factionB, visibility: 'contested', weight: 1.0 })
+    const publicEdge = makeEdge({ id: 'pub', type: 'CONTROLS', subject: factionA, object: factionB, visibility: 'public', weight: 1.0 })
+    const frontier = scoreCandidates([contestedEdge, publicEdge], 'balanced', 'normal', 'frontier')
+    expect(frontier[0].edge.id).toBe('cont')
+  })
+
+  it('realistic boosts public edges over contested', () => {
+    const factionA = makeNamedFaction('fa', 'Kestrel Compact')
+    const factionB = makeNamedFaction('fb', 'Red Vane Guild')
+    const contestedEdge = makeEdge({ id: 'cont', type: 'CONTESTS', subject: factionA, object: factionB, visibility: 'contested', weight: 1.0 })
+    const publicEdge = makeEdge({ id: 'pub', type: 'CONTROLS', subject: factionA, object: factionB, visibility: 'public', weight: 1.0 })
+    const realistic = scoreCandidates([contestedEdge, publicEdge], 'balanced', 'normal', 'realistic')
+    expect(realistic[0].edge.id).toBe('pub')
+  })
+
+  it('hidden visibility passes through both distributions', () => {
+    const hiddenEdge = makeEdge({ id: 'h1', type: 'HIDES_FROM', visibility: 'hidden', weight: 1.0 })
+    const realistic = scoreCandidates([hiddenEdge], 'balanced', 'normal', 'realistic')
+    const frontier = scoreCandidates([hiddenEdge], 'balanced', 'normal', 'frontier')
+    expect(realistic[0].score).toBeCloseTo(frontier[0].score, 5)
   })
 })
