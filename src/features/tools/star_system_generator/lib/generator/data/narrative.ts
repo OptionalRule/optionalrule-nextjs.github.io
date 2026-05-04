@@ -51,6 +51,15 @@ const typedNarrativeData = narrativeData as unknown as NarrativeData
 export const humanRemnants = typedNarrativeData.humanRemnants
 export const remnantHooks = typedNarrativeData.remnantHooks
 export const phenomena = typedNarrativeData.phenomena
+/**
+ * @deprecated Phase B replaced runtime use of this list with per-tone
+ * generateFactions() in lib/generator/factions/. The 10 entries below
+ * have been migrated verbatim to balancedBank.ts:seedFactions and are
+ * still produced (in deterministic per-system subsets) for tone='balanced'
+ * systems. This export is retained only for legacy graph-rule tests and
+ * the audit-star-system-data.ts data-shape validator. Do not introduce
+ * new runtime consumers.
+ */
 export const namedFactions = typedNarrativeData.namedFactions ?? []
 export const narrativeDomains = typedNarrativeData.narrativeDomains ?? {}
 export const narrativeVariablePools = typedNarrativeData.narrativeVariablePools
