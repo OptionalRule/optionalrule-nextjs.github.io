@@ -1,4 +1,9 @@
-import type { Confidence } from '../../../types'
+import type { Confidence, GeneratorTone, GuPreference } from '../../../types'
+
+export interface BuildGraphOptions {
+  tone: GeneratorTone
+  gu: GuPreference
+}
 
 export type EntityKind =
   | 'system' | 'star' | 'body' | 'settlement' | 'guResource' | 'guHazard'

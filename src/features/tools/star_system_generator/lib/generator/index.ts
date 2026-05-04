@@ -3161,6 +3161,7 @@ export function generateSystem(options: GenerationOptions, knownSystem?: Partial
       ruins: ruins.map(r => ({ id: r.id, remnantType: r.remnantType, location: r.location })),
       narrativeFacts,
     },
+    { tone: options.tone, gu: options.gu },
     narrativeFacts,
     rootRng.fork('graph'),
   )

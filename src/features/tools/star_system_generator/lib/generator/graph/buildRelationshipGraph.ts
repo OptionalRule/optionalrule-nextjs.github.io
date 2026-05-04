@@ -1,7 +1,7 @@
 import type { NarrativeFact } from '../../../types'
 import type { SeededRng } from '../rng'
 import { buildEntityInventory, type EntityInventoryInput } from './entities'
-import type { EdgeType, RelationshipEdge, SystemRelationshipGraph } from './types'
+import type { BuildGraphOptions, EdgeType, RelationshipEdge, SystemRelationshipGraph } from './types'
 import { EDGE_TYPES } from './types'
 import { allRules, buildFactIndexes, type BuildCtx } from './rules'
 import { scoreCandidates, selectEdges } from './score'
@@ -19,9 +19,11 @@ function emptyEdgesByType(): Record<EdgeType, string[]> {
 
 export function buildRelationshipGraph(
   input: EntityInventoryInput,
+  options: BuildGraphOptions,
   facts: NarrativeFact[],
   rng: SeededRng,
 ): SystemRelationshipGraph {
+  void options
   const entities = buildEntityInventory(input)
   const entitiesById = new Map(entities.map(e => [e.id, e]))
   const indexes = buildFactIndexes(facts)
