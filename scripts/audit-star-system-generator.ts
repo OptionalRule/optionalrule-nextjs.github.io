@@ -95,6 +95,7 @@ interface CorpusStats {
   bodySentenceCounts: number[]
   hookCounts: number[]
   systemsWithEmptyStory: number
+  factionNames: Set<string>
   historicalEdgeCounts: number[]
   systemsWithAnyHistorical: number
   spineEdgesWithHistorical: number
@@ -719,6 +720,22 @@ function auditSystem(system: GeneratedSystem, findings: Finding[], stats: Corpus
     }
   }
 
+  const systemFactionNames: string[] = []
+  for (const fact of system.narrativeFacts) {
+    if (fact.kind === 'namedFaction') {
+      stats.factionNames.add(fact.value.value)
+      systemFactionNames.push(fact.value.value)
+    }
+  }
+  const cinematicMarkers = ['Carrion', 'Brothers of', 'Sisters of', 'Pale Saint', 'Vow-Breaker', 'Black Comet', 'Bone Lantern', 'Gravewatch', 'Knife-and-Crown', 'Salt Wound']
+  const astronomyMarkers = ['Bonn-Tycho', 'Stellar Survey', 'Calibration', 'Aperture', 'Pulsar Timing', 'Spectral Census', 'Coronagraph', 'Heliometric', 'Photometric', 'Ephemeris']
+  const hasCinematic = systemFactionNames.some(n => cinematicMarkers.some(m => n.includes(m)))
+  const hasAstronomy = systemFactionNames.some(n => astronomyMarkers.some(m => n.includes(m)))
+  if (hasCinematic && hasAstronomy) {
+    addFinding(findings, 'error', seed, 'narrative.factionCohesionWithinSystem',
+      `System mixes cinematic and astronomy faction registers: ${systemFactionNames.join(', ')}`)
+  }
+
   stats.spineSummaryLengths.push(system.systemStory.spineSummary.length)
   stats.bodyParagraphCounts.push(system.systemStory.body.length)
   stats.bodySentenceCounts.push(
@@ -827,12 +844,22 @@ function auditSystem(system: GeneratedSystem, findings: Finding[], stats: Corpus
       if (edge.visibility !== 'hidden') continue
       const pairKey = `${edge.subject.id}|${edge.object.id}`
       if (visibleEndpointPairs.has(pairKey)) continue
+      let leakingPara: string | undefined
       for (const para of system.systemStory.body) {
-        if (para.includes(edge.subject.displayName) && para.includes(edge.object.displayName)) {
-          addFinding(findings, 'error', seed, 'story.hiddenLeak',
-            `Hidden edge ${edge.id} appears to leak into body paragraph: "${para}"`)
+        if (!para.includes(edge.subject.displayName)) continue
+        if (!para.includes(edge.object.displayName)) continue
+        const sentences = para.split(/(?<=[.!?])\s+/)
+        const sentenceWithBoth = sentences.find(s =>
+          s.includes(edge.subject.displayName) && s.includes(edge.object.displayName)
+        )
+        if (sentenceWithBoth) {
+          leakingPara = para
           break
         }
+      }
+      if (leakingPara) {
+        addFinding(findings, 'error', seed, 'story.hiddenLeak',
+          `Hidden edge ${edge.id} appears to leak into body paragraph: "${leakingPara}"`)
       }
     }
 
@@ -1004,6 +1031,16 @@ function auditCoverage(stats: CorpusStats, findings: Finding[]): void {
       addFinding(findings, 'warning', syntheticSeed, 'prose.alwaysFirstHistoricalVariant',
         `Historical bucket ${bucket} (${info.count} edges) used only one body variant; rotation may be degenerate.`)
     }
+  }
+
+  // narrative.factionNameDiversity (Phase B Task 5): pre-Phase-B the corpus
+  // surfaced exactly 10 unique faction names (the static namedFactions[] pool).
+  // Per-tone generateFactions() should produce >=100 across the deep-audit
+  // corpus (3 tones x ~96 stem/suffix combinations). Below the floor signals
+  // a regression in bank size or generator determinism.
+  if (auditProfile === 'deep' && stats.factionNames.size < 100) {
+    addFinding(findings, 'warning', syntheticSeed, 'narrative.factionNameDiversity',
+      `Faction name diversity collapsed to ${stats.factionNames.size} unique names across the deep-audit corpus (${stats.systems} systems). Expected >=100 (Phase B per-tone faction generator regression).`)
   }
 }
 
@@ -1199,6 +1236,7 @@ const stats: CorpusStats = {
   bodySentenceCounts: [],
   hookCounts: [],
   systemsWithEmptyStory: 0,
+  factionNames: new Set<string>(),
   historicalEdgeCounts: [],
   systemsWithAnyHistorical: 0,
   spineEdgesWithHistorical: 0,
@@ -1244,6 +1282,7 @@ console.log(`Unique body names: ${uniqueSummary(stats.bodyNames, stats.bodies)}`
 console.log(`Unique first-body names: ${uniqueSummary(stats.firstBodyNames, stats.systems)}`)
 console.log(`Unique moon names: ${uniqueSummary(stats.moonNames, stats.moons)}`)
 console.log(`Unique settlement names: ${uniqueSummary(stats.settlementNames, stats.settlements)}`)
+console.log(`Unique faction names: ${stats.factionNames.size} across ${stats.systems} systems`)
 console.log(`Body interest phrase openings: ${uniqueSummary(stats.bodyInterestPhrases, stats.bodies)}`)
 console.log(`Settlement reason phrase openings: ${uniqueSummary(stats.settlementWhyHerePhrases, stats.settlements)}`)
 console.log(`Settlement tag hook phrase openings: ${uniqueSummary(stats.settlementTagHookPhrases, stats.settlements)}`)
