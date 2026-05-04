@@ -44,11 +44,11 @@ export function buildRelationshipGraph(
     }
   }
 
-  const scored = scoreCandidates(candidates, options.tone)
+  const scored = scoreCandidates(candidates, options.tone, options.gu)
   const selection = selectEdges(scored, {
     numSettlements: input.settlements.length,
     numPhenomena: input.phenomena.length,
-  })
+  }, options.gu)
   const edges = [...selection.spine, ...selection.peripheral]
 
   const { historicalEdges } = attachHistoricalEvents({

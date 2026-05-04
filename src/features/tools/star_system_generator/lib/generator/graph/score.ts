@@ -1,4 +1,4 @@
-import type { GeneratorTone } from '../../../types'
+import type { GeneratorTone, GuPreference } from '../../../types'
 import type { EdgeType, EntityRef, RelationshipEdge } from './types'
 import { stableHashString } from './rules/ruleTypes'
 
@@ -43,6 +43,25 @@ function toneMultiplier(edgeType: EdgeType, tone: GeneratorTone): number {
   return TONE_WEIGHTS[tone][edgeType] ?? 1.0
 }
 
+const LOW_GU_DAMPENERS: Partial<Record<EdgeType, number>> = {
+  DESTABILIZES: 0.7,
+  HIDES_FROM: 0.7,
+}
+const HIGH_GU_HAZARD_BONUS = 0.2
+
+function guScoreAdjustment(edge: RelationshipEdge, gu: GuPreference): number {
+  if (gu === 'low') {
+    return LOW_GU_DAMPENERS[edge.type] ?? 1.0
+  }
+  if (gu === 'high') {
+    const hazardAnchored = edge.subject.kind === 'guHazard' || edge.object.kind === 'guHazard'
+    if (edge.type === 'DESTABILIZES' && hazardAnchored) {
+      return 1.0 + HIGH_GU_HAZARD_BONUS
+    }
+  }
+  return 1.0
+}
+
 const NAMED_KINDS = new Set<EntityRef['kind']>([
   'settlement', 'namedFaction', 'body', 'ruin', 'system',
   'phenomenon', 'guHazard',
@@ -56,6 +75,7 @@ export function isNamedEntity(ref: EntityRef): boolean {
 export function scoreCandidates(
   candidates: ReadonlyArray<RelationshipEdge>,
   tone: GeneratorTone = 'balanced',
+  gu: GuPreference = 'normal',
 ): ScoredCandidate[] {
   const collapsed = collapseDuplicates(candidates)
   const sortedForNovelty = [...collapsed].sort((a, b) => {
@@ -72,7 +92,7 @@ export function scoreCandidates(
       : 0
     const bonuses: ScoreBonuses = { novelty, crossLayer, namedEntity }
     const baseScore = edge.weight + novelty + crossLayer + namedEntity
-    const score = baseScore * toneMultiplier(edge.type, tone)
+    const score = baseScore * toneMultiplier(edge.type, tone) * guScoreAdjustment(edge, gu)
     return { edge, score, bonuses }
   })
 
@@ -98,6 +118,21 @@ const SPINE_ELIGIBLE_TYPES: ReadonlySet<EdgeType> = new Set<EdgeType>([
   'CONTESTS', 'DESTABILIZES', 'DEPENDS_ON', 'CONTROLS',
 ])
 
+export function isSpineEligibleForGu(
+  edge: RelationshipEdge,
+  gu: GuPreference,
+): boolean {
+  if (!SPINE_ELIGIBLE_TYPES.has(edge.type)) return false
+  const baselineEligible = isNamedEntity(edge.subject) && isNamedEntity(edge.object)
+  if (gu === 'fracture') {
+    const phenomenonAnchored =
+      (edge.subject.kind === 'phenomenon' && (edge.object.kind === 'phenomenon' || edge.object.kind === 'guHazard'))
+      || (edge.object.kind === 'phenomenon' && (edge.subject.kind === 'phenomenon' || edge.subject.kind === 'guHazard'))
+    return baselineEligible || phenomenonAnchored
+  }
+  return baselineEligible
+}
+
 const SPINE_MAX = 3
 const PERIPHERAL_PER_TYPE_CAP = 2
 const TOTAL_HARD_CEILING = 12
@@ -105,17 +140,14 @@ const TOTAL_HARD_CEILING = 12
 export function selectEdges(
   scored: ReadonlyArray<ScoredCandidate>,
   options: SelectionOptions,
+  gu: GuPreference = 'normal',
 ): SelectionResult {
   const totalCap = Math.min(
     TOTAL_HARD_CEILING,
     6 + Math.min(6, options.numSettlements + options.numPhenomena),
   )
 
-  const spineCandidates = scored.filter(c =>
-    SPINE_ELIGIBLE_TYPES.has(c.edge.type)
-    && isNamedEntity(c.edge.subject)
-    && isNamedEntity(c.edge.object),
-  )
+  const spineCandidates = scored.filter(c => isSpineEligibleForGu(c.edge, gu))
 
   const spine: RelationshipEdge[] = []
   for (const cand of spineCandidates) {
