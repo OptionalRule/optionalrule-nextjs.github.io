@@ -35,7 +35,7 @@ exports[`spine full axis matrix (16 representative cells) > baseline-frontier-ci
 
 exports[`spine full axis matrix (16 representative cells) > baseline-realistic-astronomy: stable spine + body[0] structural fields 1`] = `
 {
-  "body0": "Black-market route beacon lattice drifts the baselines Tau Reticuli Observatory relies on. Public festival tied to safe transit windows drifts the baselines Suhail-37 Belt VI relies on. The amplitude of black-market route beacon lattice exceeds the operating envelope of Suhail-37 Belt VI. Suhail-37 Belt VI Hold is the only major foothold on Suhail-37 Belt VI.",
+  "body0": "Black-market route beacon lattice drifts the baselines Tau Reticuli Observatory relies on. Public festival tied to safe transit windows drifts the baselines Suhail-37 Belt VI relies on. The amplitude of black-market route beacon lattice exceeds the operating envelope of Suhail-37 Belt VI. Suhail-37 Belt VI Swarm is the only major foothold on Suhail-37 Belt VI.",
   "spineEdgeType": "DESTABILIZES",
   "spineObjectKind": "namedFaction",
   "spineSubjectKind": "phenomenon",
@@ -79,7 +79,7 @@ exports[`spine full axis matrix (16 representative cells) > corner-frontier-cine
 
 exports[`spine full axis matrix (16 representative cells) > corner-realistic-astronomy-low-sparse: stable spine + body[0] structural fields 1`] = `
 {
-  "body0": "The amplitude of narrow-ai perception fog exceeds the operating envelope of Guniibuu-Apdu Minor VII. Election-day metric storm cycle drifts the baselines Guniibuu-Apdu Minor VII relies on. Election-day metric storm cycle drifts the baselines Watch-Order Working Group relies on. Guniibuu-Apdu Minor VII carries Guniibuu-Apdu Minor VII - Moon I Hub on its surface.",
+  "body0": "The amplitude of narrow-ai perception fog exceeds the operating envelope of Guniibuu-Apdu Minor VII. Election-day metric storm cycle drifts the baselines Guniibuu-Apdu Minor VII relies on. Election-day metric storm cycle drifts the baselines Watch-Order Working Group relies on. Guniibuu-Apdu Minor VII carries Guniibuu-Apdu Minor VII - Moon I Hold on its surface.",
   "spineEdgeType": "DESTABILIZES",
   "spineObjectKind": "body",
   "spineSubjectKind": "phenomenon",
