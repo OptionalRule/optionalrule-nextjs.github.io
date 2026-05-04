@@ -1,5 +1,10 @@
 import type { EdgeTemplateFamily } from './types'
 
+// CONTESTS edges: subject = namedFaction; object = namedFaction.
+// Phase C bodyByTone variants:
+//   cinematic — short, agentive, threatened. Knife/oath/blood register.
+//   astronomy — passive, technical, dated. Standards-dispute / measurement-court register.
+//   balanced — falls back to family.body[] (existing voice-neutral templates).
 export const contestsTemplates: EdgeTemplateFamily = {
   edgeType: 'CONTESTS',
   body: [
@@ -8,6 +13,20 @@ export const contestsTemplates: EdgeTemplateFamily = {
     { text: "{subject} refuses to recognize {object}'s authority.", expects: { subject: 'properNoun', object: 'properNoun' } },
     { text: 'The compact between {subject} and {object} has gone bad.', expects: { subject: 'properNoun', object: 'properNoun' } },
   ],
+  bodyByTone: {
+    cinematic: [
+      { text: '{subject} wants {object} to bleed first.', expects: { subject: 'properNoun', object: 'properNoun' } },
+      { text: 'Between {subject} and {object} the knife is already drawn.', expects: { subject: 'properNoun', object: 'properNoun' } },
+      { text: '{subject} keeps the receipts. {object} keeps the witnesses.', expects: { subject: 'properNoun', object: 'properNoun' } },
+      { text: '{subject} swore the pact would hold; {object} swore otherwise.', expects: { subject: 'properNoun', object: 'properNoun' } },
+    ],
+    astronomy: [
+      { text: '{subject} and {object} report incompatible measurements of {qualifier|the same instrument-time}.', expects: { subject: 'properNoun', object: 'properNoun', qualifier: 'nounPhrase' } },
+      { text: "{subject}'s observation cohort and {object}'s cohort cannot agree on the calibration record.", expects: { subject: 'properNoun', object: 'properNoun' } },
+      { text: 'A standards dispute between {subject} and {object} is open in the measurement court.', expects: { subject: 'properNoun', object: 'properNoun' } },
+      { text: 'Two operators dispute jurisdiction; {subject} and {object} cannot reconcile their logs.', expects: { subject: 'properNoun', object: 'properNoun' } },
+    ],
+  },
   spineSummary: {
     text: "{subject} and {object} can't both set the rules — and the rest of the system knows it.",
     expects: { subject: 'properNoun', object: 'properNoun' },

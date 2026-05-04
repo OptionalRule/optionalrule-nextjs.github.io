@@ -1,5 +1,14 @@
 import type { EdgeTemplateFamily } from './types'
 
+// DESTABILIZES edges: subject = phenomenon or guHazard (nounPhrase, surfaced
+// with the :article modifier so a noun-phrase head reads as "the bleed
+// season" rather than a bare noun); object = settlement, body, or faction
+// (properNoun or nounPhrase).
+//
+// Phase C bodyByTone variants:
+//   cinematic — dread, encroachment, tide-of-darkness register.
+//   astronomy — perturbations, amplitudes, phase-shift register.
+//   balanced — falls back to family.body[] (existing voice-neutral templates).
 export const destabilizesTemplates: EdgeTemplateFamily = {
   edgeType: 'DESTABILIZES',
   body: [
@@ -8,6 +17,20 @@ export const destabilizesTemplates: EdgeTemplateFamily = {
     { text: "Each pass of {subject:article} costs {object} a margin it doesn't have.", expects: { subject: 'nounPhrase', object: 'properNoun' } },
     { text: "{object} can't plan around {subject:lower} anymore.", expects: { subject: 'nounPhrase', object: 'properNoun' } },
   ],
+  bodyByTone: {
+    cinematic: [
+      { text: '{subject:article} is closing on {object} like a tide.', expects: { subject: 'nounPhrase', object: 'properNoun' } },
+      { text: 'Something is wrong under {object}, and {subject:lower} is the name people whisper for it.', expects: { subject: 'nounPhrase', object: 'properNoun' } },
+      { text: '{object} has been watching {subject:lower} eat its margins for a generation.', expects: { subject: 'nounPhrase', object: 'properNoun' } },
+      { text: '{subject:article} is hollowing {object} from underneath.', expects: { subject: 'nounPhrase', object: 'properNoun' } },
+    ],
+    astronomy: [
+      { text: '{subject:article} introduces a measurable perturbation in {object}.', expects: { subject: 'nounPhrase', object: 'properNoun' } },
+      { text: 'The amplitude of {subject:lower} exceeds the operating envelope of {object}.', expects: { subject: 'nounPhrase', object: 'properNoun' } },
+      { text: '{subject:article} drifts the baselines {object} relies on.', expects: { subject: 'nounPhrase', object: 'properNoun' } },
+      { text: '{object} records a phase shift each time {subject:lower} passes through.', expects: { subject: 'nounPhrase', object: 'properNoun' } },
+    ],
+  },
   spineSummary: {
     text: '{subject:article} is rewriting the constants {object} was built around.',
     expects: { subject: 'nounPhrase', object: 'properNoun' },
