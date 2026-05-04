@@ -23,7 +23,6 @@ export function buildRelationshipGraph(
   facts: NarrativeFact[],
   rng: SeededRng,
 ): SystemRelationshipGraph {
-  void options
   const entities = buildEntityInventory(input)
   const entitiesById = new Map(entities.map(e => [e.id, e]))
   const indexes = buildFactIndexes(facts)
@@ -45,7 +44,7 @@ export function buildRelationshipGraph(
     }
   }
 
-  const scored = scoreCandidates(candidates)
+  const scored = scoreCandidates(candidates, options.tone)
   const selection = selectEdges(scored, {
     numSettlements: input.settlements.length,
     numPhenomena: input.phenomena.length,

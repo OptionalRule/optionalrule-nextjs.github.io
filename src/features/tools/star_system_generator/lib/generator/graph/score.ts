@@ -1,3 +1,4 @@
+import type { GeneratorTone } from '../../../types'
 import type { EdgeType, EntityRef, RelationshipEdge } from './types'
 import { stableHashString } from './rules/ruleTypes'
 
@@ -17,6 +18,31 @@ const NOVELTY_BONUS = 0.1
 const CROSS_LAYER_BONUS = 0.15
 const NAMED_ENTITY_BONUS = 0.1
 
+type ToneWeights = Partial<Record<EdgeType, number>>
+
+const TONE_WEIGHTS: Record<GeneratorTone, ToneWeights> = {
+  balanced: {},
+  astronomy: {
+    DESTABILIZES: 1.5,
+    HIDES_FROM: 1.3,
+    HOSTS: 1.2,
+    WITNESSES: 1.2,
+    CONTESTS: 0.7,
+    CONTRADICTS: 0.7,
+  },
+  cinematic: {
+    CONTESTS: 1.5,
+    CONTRADICTS: 1.4,
+    BETRAYED: 1.3,
+    DESTABILIZES: 0.8,
+    HIDES_FROM: 0.9,
+  },
+}
+
+function toneMultiplier(edgeType: EdgeType, tone: GeneratorTone): number {
+  return TONE_WEIGHTS[tone][edgeType] ?? 1.0
+}
+
 const NAMED_KINDS = new Set<EntityRef['kind']>([
   'settlement', 'namedFaction', 'body', 'ruin', 'system',
   'phenomenon', 'guHazard',
@@ -27,7 +53,10 @@ export function isNamedEntity(ref: EntityRef): boolean {
   return /[A-Z][a-z]+/.test(ref.displayName)
 }
 
-export function scoreCandidates(candidates: ReadonlyArray<RelationshipEdge>): ScoredCandidate[] {
+export function scoreCandidates(
+  candidates: ReadonlyArray<RelationshipEdge>,
+  tone: GeneratorTone = 'balanced',
+): ScoredCandidate[] {
   const collapsed = collapseDuplicates(candidates)
   const sortedForNovelty = [...collapsed].sort((a, b) => {
     return stableHashString(a.id) - stableHashString(b.id)
@@ -42,7 +71,8 @@ export function scoreCandidates(candidates: ReadonlyArray<RelationshipEdge>): Sc
       ? NAMED_ENTITY_BONUS
       : 0
     const bonuses: ScoreBonuses = { novelty, crossLayer, namedEntity }
-    const score = edge.weight + novelty + crossLayer + namedEntity
+    const baseScore = edge.weight + novelty + crossLayer + namedEntity
+    const score = baseScore * toneMultiplier(edge.type, tone)
     return { edge, score, bonuses }
   })
 

@@ -246,3 +246,36 @@ describe('isNamedEntity post-Phase-A widening', () => {
     expect(isNamedEntity(ref)).toBe(false)
   })
 })
+
+describe('toneMultiplier and per-tone scoring', () => {
+  function makeNamedFaction(id: string, name: string): EntityRef {
+    return { kind: 'namedFaction', id, displayName: name, layer: 'human' }
+  }
+
+  it('cinematic tone re-ranks CONTESTS above equally-weighted DESTABILIZES', () => {
+    const factionA = makeNamedFaction('fa', 'Kestrel Compact')
+    const factionB = makeNamedFaction('fb', 'Red Vane Guild')
+    const phenomenon: EntityRef = { kind: 'phenomenon', id: 'p1', displayName: 'Bonn-Tycho aurora', layer: 'gu' }
+    const contestsEdge = makeEdge({ id: 'c1', type: 'CONTESTS', subject: factionA, object: factionB, weight: 1.0 })
+    const destabilizesEdge = makeEdge({ id: 'd1', type: 'DESTABILIZES', subject: phenomenon, object: factionA, weight: 1.0 })
+    const cinematic = scoreCandidates([contestsEdge, destabilizesEdge], 'cinematic')
+    expect(cinematic[0].edge.type).toBe('CONTESTS')
+  })
+
+  it('astronomy tone re-ranks DESTABILIZES above equally-weighted CONTESTS', () => {
+    const factionA = makeNamedFaction('fa', 'Kestrel Compact')
+    const factionB = makeNamedFaction('fb', 'Red Vane Guild')
+    const phenomenon: EntityRef = { kind: 'phenomenon', id: 'p1', displayName: 'Bonn-Tycho aurora', layer: 'gu' }
+    const contestsEdge = makeEdge({ id: 'c1', type: 'CONTESTS', subject: factionA, object: factionB, weight: 1.0 })
+    const destabilizesEdge = makeEdge({ id: 'd1', type: 'DESTABILIZES', subject: phenomenon, object: factionA, weight: 1.0 })
+    const astronomy = scoreCandidates([contestsEdge, destabilizesEdge], 'astronomy')
+    expect(astronomy[0].edge.type).toBe('DESTABILIZES')
+  })
+
+  it('balanced tone produces unchanged scores (multiplier 1.0 across all types)', () => {
+    const edge = makeEdge({ id: 'e1', type: 'CONTESTS', subject: bodyRef, object: settlementRef, weight: 0.7 })
+    const balanced = scoreCandidates([edge], 'balanced')
+    const unweighted = scoreCandidates([edge])
+    expect(balanced[0].score).toBeCloseTo(unweighted[0].score)
+  })
+})
