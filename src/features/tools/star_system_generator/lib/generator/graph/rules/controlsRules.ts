@@ -3,11 +3,7 @@ import type { EdgeRule, RuleMatch, BuildCtx } from './ruleTypes'
 import { mintEdgeId } from './ruleTypes'
 import { containsWord, CONTROL_DOMAINS } from './settingPatterns'
 import type { EntityRef } from '../types'
-import { namedFactions, type NamedFaction } from '../../data/narrative'
-
-const FACTIONS_BY_NAME: ReadonlyMap<string, NamedFaction> = new Map(
-  namedFactions.map(f => [f.name, f]),
-)
+import { buildFactionMetadataByName } from '../../factions'
 
 function getFactionEntities(entities: ReadonlyArray<EntityRef>): EntityRef[] {
   return entities.filter(e => e.kind === 'namedFaction')
@@ -35,6 +31,8 @@ export const controlsRouteAssetRule: EdgeRule = {
     const factionEntities = getFactionEntities(ctx.entities)
     if (factionEntities.length === 0) return matches
 
+    const factionMeta = buildFactionMetadataByName(ctx.factsByKind)
+
     const candidateFactKinds = ['gu.bleedLocation', 'settlement.location'] as const
     const routeAssetFacts: NarrativeFact[] = []
     for (const kind of candidateFactKinds) {
@@ -49,7 +47,7 @@ export const controlsRouteAssetRule: EdgeRule = {
       if (!targetEntity) continue
 
       for (const factionEntity of factionEntities) {
-        const faction = FACTIONS_BY_NAME.get(factionEntity.displayName)
+        const faction = factionMeta.get(factionEntity.displayName)
         if (!faction) continue
         const controlDomain = faction.domains.find(d =>
           (CONTROL_DOMAINS as ReadonlyArray<string>).includes(d),
@@ -102,6 +100,8 @@ export const controlsSettlementUniqueDomainRule: EdgeRule = {
     const authorityFacts = ctx.factsByKind.get('settlement.authority') ?? []
     if (authorityFacts.length === 0) return matches
 
+    const factionMeta = buildFactionMetadataByName(ctx.factsByKind)
+
     for (const fact of authorityFacts) {
       if (!fact.subjectId) continue
       const settlementRef = ctx.entitiesById.get(fact.subjectId)
@@ -109,7 +109,7 @@ export const controlsSettlementUniqueDomainRule: EdgeRule = {
 
       const matchingFactions: { faction: EntityRef; domain: string }[] = []
       for (const factionEntity of factionEntities) {
-        const faction = FACTIONS_BY_NAME.get(factionEntity.displayName)
+        const faction = factionMeta.get(factionEntity.displayName)
         if (!faction) continue
         const matchedDomain = faction.domains.find(d =>
           containsWord(fact.value.value, d),

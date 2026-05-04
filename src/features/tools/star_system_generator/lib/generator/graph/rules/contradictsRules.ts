@@ -4,21 +4,18 @@ import {
   containsWord, sharedDomains, matchesAny, CONTRADICTION_KEYWORDS,
 } from './settingPatterns'
 import type { EntityRef } from '../types'
-import { namedFactions, type NamedFaction } from '../../data/narrative'
-
-const FACTIONS_BY_NAME: ReadonlyMap<string, NamedFaction> = new Map(
-  namedFactions.map(f => [f.name, f]),
-)
+import { buildFactionMetadataByName } from '../../factions'
 
 function findControllingFaction(settlement: EntityRef, ctx: BuildCtx): EntityRef | undefined {
   const authorityFacts = (ctx.factsBySubjectId.get(settlement.id) ?? [])
     .filter(f => f.kind === 'settlement.authority')
   if (authorityFacts.length === 0) return undefined
   const authorityText = authorityFacts[0].value.value
+  const factionMeta = buildFactionMetadataByName(ctx.factsByKind)
   const factionEntities = ctx.entities.filter(e => e.kind === 'namedFaction')
   const matched: EntityRef[] = []
   for (const factionEntity of factionEntities) {
-    const faction = FACTIONS_BY_NAME.get(factionEntity.displayName)
+    const faction = factionMeta.get(factionEntity.displayName)
     if (!faction) continue
     if (faction.domains.some(d => containsWord(authorityText, d))) {
       matched.push(factionEntity)

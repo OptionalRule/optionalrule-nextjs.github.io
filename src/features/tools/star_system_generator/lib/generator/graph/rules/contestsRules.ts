@@ -3,11 +3,7 @@ import type { EdgeRule, RuleMatch } from './ruleTypes'
 import { mintEdgeId } from './ruleTypes'
 import { sharedDomains, containsWord } from './settingPatterns'
 import type { EntityRef } from '../types'
-import { namedFactions, type NamedFaction } from '../../data/narrative'
-
-const FACTIONS_BY_NAME: ReadonlyMap<string, NamedFaction> = new Map(
-  namedFactions.map(f => [f.name, f]),
-)
+import { buildFactionMetadataByName } from '../../factions'
 
 function getFactionEntities(entities: ReadonlyArray<EntityRef>): EntityRef[] {
   return entities.filter(e => e.kind === 'namedFaction')
@@ -45,14 +41,15 @@ export const contestsSharedDomainRule: EdgeRule = {
     })
     if (validAuthorityFacts.length === 0) return matches
 
+    const factionMeta = buildFactionMetadataByName(ctx.factsByKind)
     const sorted = [...factionEntities].sort((a, b) => (a.id < b.id ? -1 : 1))
 
     for (let i = 0; i < sorted.length; i++) {
       for (let j = i + 1; j < sorted.length; j++) {
         const a = sorted[i]
         const b = sorted[j]
-        const factionA = FACTIONS_BY_NAME.get(a.displayName)
-        const factionB = FACTIONS_BY_NAME.get(b.displayName)
+        const factionA = factionMeta.get(a.displayName)
+        const factionB = factionMeta.get(b.displayName)
         if (!factionA || !factionB) continue
         const overlap = sharedDomains(factionA.domains, factionB.domains)
         if (overlap.length === 0) continue
@@ -106,13 +103,15 @@ export const contestsAuthorityRule: EdgeRule = {
     const authorityFacts = ctx.factsByKind.get('settlement.authority') ?? []
     if (authorityFacts.length === 0) return matches
 
+    const factionMeta = buildFactionMetadataByName(ctx.factsByKind)
+
     for (const fact of authorityFacts) {
       if (!fact.subjectId) continue
       const settlementRef = ctx.entitiesById.get(fact.subjectId)
       if (!settlementRef || settlementRef.kind !== 'settlement') continue
 
       for (const factionEntity of factionEntities) {
-        const faction = FACTIONS_BY_NAME.get(factionEntity.displayName)
+        const faction = factionMeta.get(factionEntity.displayName)
         if (!faction) continue
         const matchedDomain = faction.domains.find(d =>
           containsWord(fact.value.value, d),

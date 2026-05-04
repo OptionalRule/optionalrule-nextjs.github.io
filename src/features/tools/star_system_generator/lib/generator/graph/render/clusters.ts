@@ -34,7 +34,7 @@ export function clusterEdges(graph: SystemRelationshipGraph): EdgeClusters {
       }
       continue
     }
-    if (ACTIVE_TYPES.has(edge.type)) {
+    if (ACTIVE_TYPES.has(edge.type) && edge.visibility !== 'hidden') {
       activeCluster.push(edge)
       continue
     }

@@ -3,11 +3,7 @@ import type { EdgeRule, RuleMatch, BuildCtx } from './ruleTypes'
 import { mintEdgeId } from './ruleTypes'
 import { containsWord, matchesAny } from './settingPatterns'
 import type { EntityRef } from '../types'
-import { namedFactions, type NamedFaction } from '../../data/narrative'
-
-const FACTIONS_BY_NAME: ReadonlyMap<string, NamedFaction> = new Map(
-  namedFactions.map(f => [f.name, f]),
-)
+import { buildFactionMetadataByName } from '../../factions'
 
 function factionFactIdsForName(
   factsByKind: ReadonlyMap<string, ReadonlyArray<NarrativeFact>>,
@@ -26,10 +22,11 @@ function findControllingFaction(settlement: EntityRef, ctx: BuildCtx): EntityRef
     .filter(f => f.kind === 'settlement.authority')
   if (authorityFacts.length === 0) return undefined
   const authorityText = authorityFacts[0].value.value
+  const factionMeta = buildFactionMetadataByName(ctx.factsByKind)
   const factionEntities = ctx.entities.filter(e => e.kind === 'namedFaction')
   const matched: EntityRef[] = []
   for (const factionEntity of factionEntities) {
-    const faction = FACTIONS_BY_NAME.get(factionEntity.displayName)
+    const faction = factionMeta.get(factionEntity.displayName)
     if (!faction) continue
     if (faction.domains.some(d => containsWord(authorityText, d))) {
       matched.push(factionEntity)
@@ -48,9 +45,10 @@ export const hidesFromHiddenTruthGardenerRule: EdgeRule = {
     const hiddenFacts = ctx.factsByKind.get('settlement.hiddenTruth') ?? []
     if (hiddenFacts.length === 0) return matches
 
+    const factionMeta = buildFactionMetadataByName(ctx.factsByKind)
     const gardenerFactions = ctx.entities.filter(e => {
       if (e.kind !== 'namedFaction') return false
-      const faction = FACTIONS_BY_NAME.get(e.displayName)
+      const faction = factionMeta.get(e.displayName)
       return faction?.domains.includes('gardener-interdiction') ?? false
     })
     if (gardenerFactions.length === 0) return matches

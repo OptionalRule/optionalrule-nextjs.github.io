@@ -71,7 +71,8 @@ import {
   siteOptions,
   temperateClimateTags,
 } from './data/mechanics'
-import { humanRemnants, namedFactions, phenomena, remnantHooks } from './data/narrative'
+import { humanRemnants, phenomena, remnantHooks } from './data/narrative'
+import { generateFactions } from './factions'
 import {
   aiSituations,
   asteroidBaseFunctions,
@@ -2630,6 +2631,7 @@ interface NarrativeGenerationContext {
   settlements: Settlement[]
   ruins: HumanRemnant[]
   phenomena: SystemPhenomenon[]
+  factionRng: SeededRng
 }
 
 function narrativeDomainsForText(value: string): string[] {
@@ -2696,6 +2698,7 @@ function radiationCreatesNarrativeHazard(value: string): boolean {
 }
 
 function buildNarrativeFacts(ctx: NarrativeGenerationContext): NarrativeFact[] {
+  const factions = generateFactions(ctx.factionRng, ctx.options.tone, 8)
   const facts: NarrativeFact[] = [
     narrativeFact({
       id: 'system.reachability',
@@ -2786,14 +2789,14 @@ function buildNarrativeFacts(ctx: NarrativeGenerationContext): NarrativeFact[] {
       tags: ['gu', 'pressure'],
       domains: domainsForGuValue('bleedBehaviors', ctx.guOverlay.bleedBehavior.value, ['science', 'disaster', 'trade']),
     }),
-    ...namedFactions.map((faction) => narrativeFact({
+    ...factions.map((faction) => narrativeFact({
       id: `faction.${faction.id}`,
       kind: 'namedFaction',
       subjectType: 'faction' as const,
       value: faction.name,
       confidence: 'human-layer',
       source: `${faction.publicFace}; ${faction.kind}`,
-      sourcePath: `namedFactions.${faction.id}`,
+      sourcePath: `factions.${faction.id}`,
       tags: ['actor', faction.kind],
       domains: [...faction.domains],
     })),
@@ -3139,6 +3142,7 @@ export function generateSystem(options: GenerationOptions, knownSystem?: Partial
     settlements,
     ruins,
     phenomena,
+    factionRng: rootRng.fork('factions'),
   })
   const relationshipGraph = buildRelationshipGraph(
     {
