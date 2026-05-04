@@ -1,5 +1,5 @@
-import type { GeneratorTone, GuPreference } from '../../../types'
-import type { EdgeType, EntityRef, RelationshipEdge } from './types'
+import type { GeneratorTone, GuPreference, GeneratorDistribution } from '../../../types'
+import type { EdgeType, EdgeVisibility, EntityRef, RelationshipEdge } from './types'
 import { stableHashString } from './rules/ruleTypes'
 
 export interface ScoreBonuses {
@@ -62,6 +62,23 @@ function guScoreAdjustment(edge: RelationshipEdge, gu: GuPreference): number {
   return 1.0
 }
 
+const DISTRIBUTION_VISIBILITY_WEIGHTS: Record<GeneratorDistribution, Record<EdgeVisibility, number>> = {
+  realistic: {
+    public: 1.2,
+    contested: 0.8,
+    hidden: 1.0,
+  },
+  frontier: {
+    public: 0.8,
+    contested: 1.3,
+    hidden: 1.0,
+  },
+}
+
+function distributionMultiplier(visibility: EdgeVisibility, distribution: GeneratorDistribution): number {
+  return DISTRIBUTION_VISIBILITY_WEIGHTS[distribution][visibility]
+}
+
 const NAMED_KINDS = new Set<EntityRef['kind']>([
   'settlement', 'namedFaction', 'body', 'ruin', 'system',
   'phenomenon', 'guHazard',
@@ -76,6 +93,7 @@ export function scoreCandidates(
   candidates: ReadonlyArray<RelationshipEdge>,
   tone: GeneratorTone = 'balanced',
   gu: GuPreference = 'normal',
+  distribution: GeneratorDistribution = 'realistic',
 ): ScoredCandidate[] {
   const collapsed = collapseDuplicates(candidates)
   const sortedForNovelty = [...collapsed].sort((a, b) => {
@@ -92,7 +110,10 @@ export function scoreCandidates(
       : 0
     const bonuses: ScoreBonuses = { novelty, crossLayer, namedEntity }
     const baseScore = edge.weight + novelty + crossLayer + namedEntity
-    const score = baseScore * toneMultiplier(edge.type, tone) * guScoreAdjustment(edge, gu)
+    const score = baseScore
+      * toneMultiplier(edge.type, tone)
+      * guScoreAdjustment(edge, gu)
+      * distributionMultiplier(edge.visibility, distribution)
     return { edge, score, bonuses }
   })
 

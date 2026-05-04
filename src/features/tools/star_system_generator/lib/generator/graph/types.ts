@@ -1,8 +1,10 @@
-import type { Confidence, GeneratorTone, GuPreference } from '../../../types'
+import type { Confidence, GeneratorTone, GuPreference, GeneratorDistribution, SettlementDensity } from '../../../types'
 
 export interface BuildGraphOptions {
   tone: GeneratorTone
   gu: GuPreference
+  distribution: GeneratorDistribution
+  settlements: SettlementDensity
 }
 
 export type EntityKind =

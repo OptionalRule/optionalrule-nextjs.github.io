@@ -92,3 +92,65 @@ describe('clusterEdges', () => {
     expect(result.activeCluster.map(e => e.id)).toEqual(['e1', 'e2'])
   })
 })
+
+describe('clusterEdges density conditioning', () => {
+  const factionA: EntityRef = { kind: 'namedFaction', id: 'fa', displayName: 'Kestrel Compact', layer: 'human' }
+  const factionB: EntityRef = { kind: 'namedFaction', id: 'fb', displayName: 'Red Vane Guild', layer: 'human' }
+  const factionC: EntityRef = { kind: 'namedFaction', id: 'fc', displayName: 'Glasshouse Compact', layer: 'human' }
+  const orphanA: EntityRef = { kind: 'namedFaction', id: 'orphan-a', displayName: 'Orphan Alpha', layer: 'human' }
+  const orphanB: EntityRef = { kind: 'namedFaction', id: 'orphan-b', displayName: 'Orphan Beta', layer: 'human' }
+
+  it('sparse drops multi-faction structural edges from spineCluster', () => {
+    const spine = makeEdge({ id: 'spine', type: 'CONTESTS', subject: factionA, object: factionB })
+    const multiFactionEdge = makeEdge({
+      id: 'mf',
+      type: 'CONTROLS',
+      subject: factionA,
+      object: factionC,
+    })
+    const graph = makeGraph([spine, multiFactionEdge], ['spine'])
+    const sparse = clusterEdges(graph, { settlements: 'sparse' })
+    const normal = clusterEdges(graph, { settlements: 'normal' })
+    expect(sparse.spineCluster.map(e => e.id)).not.toContain('mf')
+    expect(normal.spineCluster.map(e => e.id)).toContain('mf')
+  })
+
+  it('hub pulls non-spine-touching CONTROLS into spineCluster', () => {
+    const spine = makeEdge({ id: 'spine', type: 'CONTESTS', subject: factionA, object: factionB })
+    const orphanCtrl = makeEdge({
+      id: 'orphan-ctrl',
+      type: 'CONTROLS',
+      subject: orphanA,
+      object: orphanB,
+    })
+    const graph = makeGraph([spine, orphanCtrl], ['spine'])
+    const hub = clusterEdges(graph, { settlements: 'hub' })
+    const normal = clusterEdges(graph, { settlements: 'normal' })
+    expect(hub.spineCluster.map(e => e.id)).toContain('orphan-ctrl')
+    expect(normal.spineCluster.map(e => e.id)).not.toContain('orphan-ctrl')
+  })
+
+  it('hub pulls non-spine-touching DEPENDS_ON into spineCluster', () => {
+    const spine = makeEdge({ id: 'spine', type: 'CONTESTS', subject: factionA, object: factionB })
+    const orphanDep = makeEdge({
+      id: 'orphan-dep',
+      type: 'DEPENDS_ON',
+      subject: orphanA,
+      object: orphanB,
+    })
+    const graph = makeGraph([spine, orphanDep], ['spine'])
+    const hub = clusterEdges(graph, { settlements: 'hub' })
+    const normal = clusterEdges(graph, { settlements: 'normal' })
+    expect(hub.spineCluster.map(e => e.id)).toContain('orphan-dep')
+    expect(normal.spineCluster.map(e => e.id)).not.toContain('orphan-dep')
+  })
+
+  it('normal preserves baseline behavior (default)', () => {
+    const spine = makeEdge({ id: 'spine', type: 'CONTESTS', subject: factionA, object: factionB })
+    const neighbor = makeEdge({ id: 'neighbor', type: 'CONTROLS', subject: factionA, object: factionC })
+    const graph = makeGraph([spine, neighbor], ['spine'])
+    const explicit = clusterEdges(graph, { settlements: 'normal' })
+    const defaulted = clusterEdges(graph)
+    expect(defaulted.spineCluster.map(e => e.id)).toEqual(explicit.spineCluster.map(e => e.id))
+  })
+})

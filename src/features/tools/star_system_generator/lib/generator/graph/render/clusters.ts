@@ -1,3 +1,4 @@
+import type { SettlementDensity } from '../../../../types'
 import type { EdgeType, RelationshipEdge, SystemRelationshipGraph } from '../types'
 
 const ACTIVE_TYPES: ReadonlySet<EdgeType> = new Set(['CONTESTS', 'DESTABILIZES', 'SUPPRESSES'])
@@ -10,7 +11,18 @@ export interface EdgeClusters {
   epistemicCluster: RelationshipEdge[]
 }
 
-export function clusterEdges(graph: SystemRelationshipGraph): EdgeClusters {
+export interface ClusterEdgesOptions {
+  settlements: SettlementDensity
+}
+
+function isMultiFactionEdge(edge: RelationshipEdge): boolean {
+  return edge.subject.kind === 'namedFaction' && edge.object.kind === 'namedFaction'
+}
+
+export function clusterEdges(
+  graph: SystemRelationshipGraph,
+  options: ClusterEdgesOptions = { settlements: 'normal' },
+): EdgeClusters {
   const spineIds = new Set(graph.spineEdgeIds)
   const spineEdges = graph.edges.filter(e => spineIds.has(e.id))
   const spinedEntityIds = new Set<string>()
@@ -29,7 +41,16 @@ export function clusterEdges(graph: SystemRelationshipGraph): EdgeClusters {
       continue
     }
     if (STRUCTURAL_TYPES.has(edge.type)) {
-      if (spinedEntityIds.has(edge.subject.id) || spinedEntityIds.has(edge.object.id)) {
+      const touchesSpine = spinedEntityIds.has(edge.subject.id) || spinedEntityIds.has(edge.object.id)
+      if (touchesSpine) {
+        if (options.settlements === 'sparse' && isMultiFactionEdge(edge)) {
+          continue
+        }
+        spineCluster.push(edge)
+        continue
+      }
+      if (options.settlements === 'hub'
+          && (edge.type === 'CONTROLS' || edge.type === 'DEPENDS_ON')) {
         spineCluster.push(edge)
       }
       continue

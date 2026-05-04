@@ -3161,7 +3161,7 @@ export function generateSystem(options: GenerationOptions, knownSystem?: Partial
       ruins: ruins.map(r => ({ id: r.id, remnantType: r.remnantType, location: r.location })),
       narrativeFacts,
     },
-    { tone: options.tone, gu: options.gu },
+    { tone: options.tone, gu: options.gu, distribution: options.distribution, settlements: options.settlements },
     narrativeFacts,
     rootRng.fork('graph'),
   )
@@ -3174,7 +3174,7 @@ export function generateSystem(options: GenerationOptions, knownSystem?: Partial
   })
   const reshapedSettlements = reshaped.settlements
   const reshapedPhenomena = reshaped.phenomena
-  const systemStory = renderSystemStory(relationshipGraph, rootRng.fork('story'))
+  const systemStory = renderSystemStory(relationshipGraph, rootRng.fork('story'), { settlements: options.settlements })
 
   return runNoAlienGuard({
     id: knownSystem?.id ?? `system-${options.seed}`,
