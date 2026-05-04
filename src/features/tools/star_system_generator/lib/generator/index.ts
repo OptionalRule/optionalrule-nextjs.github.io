@@ -3174,7 +3174,16 @@ export function generateSystem(options: GenerationOptions, knownSystem?: Partial
   })
   const reshapedSettlements = reshaped.settlements
   const reshapedPhenomena = reshaped.phenomena
-  const systemStory = renderSystemStory(relationshipGraph, rootRng.fork('story'), { settlements: options.settlements })
+  const systemStory = renderSystemStory(
+    relationshipGraph,
+    rootRng.fork('story'),
+    {
+      tone: options.tone,
+      gu: options.gu,
+      distribution: options.distribution,
+      settlements: options.settlements,
+    },
+  )
 
   return runNoAlienGuard({
     id: knownSystem?.id ?? `system-${options.seed}`,

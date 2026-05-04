@@ -1,3 +1,4 @@
+import type { GeneratorTone } from '../../../../types'
 import type { EdgeType, EdgeVisibility, EntityRef } from '../types'
 import type { SlotShape } from './templates/types'
 import { reshapeSlot } from './grammarSafety'
@@ -9,6 +10,7 @@ export interface EdgeRenderContext {
   edgeType: EdgeType
   visibility: EdgeVisibility
   historical?: { summary?: string; era?: string }
+  tone?: GeneratorTone
 }
 
 export interface SlotExpression {

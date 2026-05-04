@@ -1,7 +1,7 @@
-import type { SettlementDensity } from '../../../../types'
+import type { GeneratorTone } from '../../../../types'
 import type { SeededRng } from '../../rng'
 import type {
-  EdgeType, RelationshipEdge, SystemRelationshipGraph,
+  BuildGraphOptions, EdgeType, RelationshipEdge, SystemRelationshipGraph,
   SystemStoryOutput,
 } from '../types'
 import { resolveSlots, type EdgeRenderContext } from './slotResolver'
@@ -13,35 +13,36 @@ import { connectiveFor } from './connectives'
 import { clusterEdges } from './clusters'
 import { templateFor, type EdgeTemplate } from './templates'
 
-export interface RenderSystemStoryOptions {
-  settlements: SettlementDensity
-}
-
 export function renderSystemStory(
   graph: SystemRelationshipGraph,
   rng: SeededRng,
-  options: RenderSystemStoryOptions = { settlements: 'normal' },
+  options?: BuildGraphOptions,
 ): SystemStoryOutput {
-  const clusters = clusterEdges(graph, { settlements: options.settlements })
+  const tone: GeneratorTone = options?.tone ?? 'balanced'
+  const clusters = clusterEdges(graph, { settlements: options?.settlements ?? 'normal' })
   const bodyRng = rng.fork('body')
 
   const body: string[] = []
-  const para1 = renderParagraph(clusters.spineCluster, bodyRng)
+  const para1 = renderParagraph(clusters.spineCluster, bodyRng, tone)
   if (para1.length > 0) body.push(para1)
-  const para2 = renderParagraph(clusters.activeCluster, bodyRng)
+  const para2 = renderParagraph(clusters.activeCluster, bodyRng, tone)
   if (para2.length > 0) body.push(para2)
-  const para3 = renderParagraph(clusters.epistemicCluster, bodyRng)
+  const para3 = renderParagraph(clusters.epistemicCluster, bodyRng, tone)
   if (para3.length > 0) body.push(para3)
 
-  const spineSummary = renderSpineSummary(graph)
+  const spineSummary = renderSpineSummary(graph, rng.fork('spine-summary'), tone)
   return {
     spineSummary,
     body,
-    hooks: renderHooks(graph, rng.fork('hooks')),
+    hooks: renderHooks(graph, rng.fork('hooks'), tone),
   }
 }
 
-function renderHooks(graph: SystemRelationshipGraph, rng: SeededRng): string[] {
+function renderHooks(
+  graph: SystemRelationshipGraph,
+  rng: SeededRng,
+  tone: GeneratorTone,
+): string[] {
   const eligibleEdges = pickHookEligibleEdges(graph)
   const hooks: string[] = []
   const seen = new Set<string>()
@@ -53,7 +54,7 @@ function renderHooks(graph: SystemRelationshipGraph, rng: SeededRng): string[] {
     if (template.text === '') continue
     const ctx: EdgeRenderContext = {
       subject: edge.subject, object: edge.object, qualifier: edge.qualifier,
-      edgeType: edge.type, visibility: edge.visibility,
+      edgeType: edge.type, visibility: edge.visibility, tone,
     }
     let rendered = resolveSlots(template.text, ctx, template.expects)
     rendered = capitalizeForPosition(rendered, 'sentence-start')
@@ -93,13 +94,23 @@ function pickHookEligibleEdges(graph: SystemRelationshipGraph): RelationshipEdge
   return out
 }
 
-function renderSpineSummary(graph: SystemRelationshipGraph): string {
+function renderSpineSummary(
+  graph: SystemRelationshipGraph,
+  rng: SeededRng,
+  tone: GeneratorTone,
+): string {
   const topSpineId = graph.spineEdgeIds[0]
   if (!topSpineId) return ''
   const edge = graph.edges.find(e => e.id === topSpineId)
   if (!edge) return ''
   const family = templateFor(edge.type)
-  if (family.spineSummary.text === '') return ''
+  const summaryVariants = family.spineSummaryByTone?.[tone]
+  const fallbackSummary = family.spineSummary
+  const variants: ReadonlyArray<EdgeTemplate> = summaryVariants && summaryVariants.length > 0
+    ? summaryVariants
+    : [fallbackSummary]
+  const summaryTemplate = pickVariant(variants, rng)
+  if (summaryTemplate.text === '') return ''
 
   const linkedHistorical = findLinkedHistoricalEdge(graph, edge.id)
   const ctx: EdgeRenderContext = {
@@ -108,6 +119,7 @@ function renderSpineSummary(graph: SystemRelationshipGraph): string {
     qualifier: edge.qualifier,
     edgeType: edge.type,
     visibility: edge.visibility,
+    tone,
     historical: linkedHistorical
       ? { summary: linkedHistorical.summary, era: linkedHistorical.approxEra }
       : undefined,
@@ -116,7 +128,7 @@ function renderSpineSummary(graph: SystemRelationshipGraph): string {
   const bridgeText = (linkedHistorical && family.historicalBridge.text !== '')
     ? renderClause(family.historicalBridge, ctx)
     : ''
-  const summaryText = renderClause(family.spineSummary, ctx)
+  const summaryText = renderClause(summaryTemplate, ctx)
 
   if (bridgeText === '') return summaryText
   return composeSpineSummary(bridgeText, summaryText)
@@ -154,12 +166,16 @@ function composeSpineSummary(bridge: string, summary: string): string {
   return `${bridge} ${summary}`
 }
 
-function renderParagraph(edges: ReadonlyArray<RelationshipEdge>, rng: SeededRng): string {
+function renderParagraph(
+  edges: ReadonlyArray<RelationshipEdge>,
+  rng: SeededRng,
+  tone: GeneratorTone,
+): string {
   if (edges.length === 0) return ''
   const sentences: string[] = []
   let prev: EdgeType | undefined
   for (const edge of edges) {
-    const sentence = renderEdgeSentence(edge, prev, rng)
+    const sentence = renderEdgeSentence(edge, prev, rng, tone)
     if (sentence.length === 0) continue
     sentences.push(sentence)
     prev = edge.type
@@ -171,19 +187,22 @@ function renderEdgeSentence(
   edge: RelationshipEdge,
   prev: EdgeType | undefined,
   rng: SeededRng,
+  tone: GeneratorTone,
 ): string {
   const family = templateFor(edge.type)
-  if (family.body.length === 0 || family.body[0].text === '') return ''
-  const variant = pickVariant(family.body, rng)
+  const tonedBody = family.bodyByTone?.[tone] ?? family.body
+  if (tonedBody.length === 0 || tonedBody[0].text === '') return ''
+  const variant = pickVariant(tonedBody, rng)
   const ctx: EdgeRenderContext = {
     subject: edge.subject,
     object: edge.object,
     qualifier: edge.qualifier,
     edgeType: edge.type,
     visibility: edge.visibility,
+    tone,
   }
   const rendered = renderTemplate(variant, ctx, prev === undefined ? 'sentence-start' : 'mid-clause')
-  const connective = connectiveFor(prev, edge.type)
+  const connective = connectiveFor(prev, edge.type, tone)
   return connective + rendered
 }
 

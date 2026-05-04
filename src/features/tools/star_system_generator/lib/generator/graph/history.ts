@@ -1,4 +1,5 @@
 import type { SeededRng } from '../rng'
+import type { GeneratorTone } from '../../../types'
 import type {
   EdgeType,
   EntityRef,
@@ -45,6 +46,7 @@ const MAX_HISTORICAL_EDGES = 2
 export interface AttachInput {
   spineEdges: RelationshipEdge[]
   rng: SeededRng
+  tone?: GeneratorTone
 }
 
 export interface AttachResult {
@@ -55,6 +57,7 @@ export function attachHistoricalEvents(input: AttachInput): AttachResult {
   const candidates = scoreSpineEdges(input.spineEdges)
   if (candidates.length === 0) return { historicalEdges: [] }
 
+  const tone: GeneratorTone = input.tone ?? 'balanced'
   const historyRng = input.rng.fork('history')
   const out: RelationshipEdge[] = []
   for (const candidate of candidates) {
@@ -62,7 +65,7 @@ export function attachHistoricalEvents(input: AttachInput): AttachResult {
     const histType = PRESENT_TO_HISTORICAL[candidate.edge.type]
     if (!histType) continue
 
-    const era = pickEra(historyRng)
+    const era = pickEra(historyRng, tone)
     const histEdge = mintHistoricalEdge(candidate.edge, histType, era)
     if (histEdge !== null) out.push(histEdge)
   }

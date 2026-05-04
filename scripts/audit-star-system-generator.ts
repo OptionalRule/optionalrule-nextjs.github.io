@@ -112,6 +112,7 @@ interface CorpusStats {
   fracturePhenomenonAnchoredSpines: number
   astronomySpineSamples: number
   astronomyNonContestsSpines: number
+  body0ByTone: Map<GeneratorTone, { samples: number; uniqueStrings: Set<string> }>
 }
 
 const auditProfiles = {
@@ -768,6 +769,18 @@ function auditSystem(system: GeneratedSystem, findings: Finding[], stats: Corpus
     stats.systemsWithEmptyStory += 1
   }
 
+  const tone = system.options.tone
+  const body0 = system.systemStory.body[0] ?? ''
+  if (body0 !== '') {
+    let bucket = stats.body0ByTone.get(tone)
+    if (!bucket) {
+      bucket = { samples: 0, uniqueStrings: new Set<string>() }
+      stats.body0ByTone.set(tone, bucket)
+    }
+    bucket.samples += 1
+    bucket.uniqueStrings.add(body0)
+  }
+
   const allOutputs = [
     system.systemStory.spineSummary,
     ...system.systemStory.body,
@@ -1093,6 +1106,25 @@ function auditCoverage(stats: CorpusStats, findings: Finding[]): void {
     auditDistributionAxisSensitivity(findings, syntheticSeed)
     auditDensityAxisSensitivity(findings, syntheticSeed)
   }
+
+  // narrative.body0VoiceDiversity (Phase C task 7): across the deep-audit
+  // corpus, body[0] strings within a single tone should be >=50% unique.
+  // Catches a regression where one bodyByTone variant collapses to dominate
+  // (e.g. all balanced systems pick body[0] index 0). Threshold 50% leaves
+  // room for legitimate cluster shape variation that produces overlapping
+  // body[0] cluster prose; the floor is set per the plan's task 7 spec.
+  // Only enforced under the deep audit profile (corpus large enough for the
+  // ratio to be meaningful, samples >=100 per tone).
+  if (auditProfile === 'deep') {
+    for (const [tone, bucket] of stats.body0ByTone) {
+      if (bucket.samples < 100) continue
+      const uniquenessRate = bucket.uniqueStrings.size / bucket.samples
+      if (uniquenessRate < 0.5) {
+        addFinding(findings, 'warning', syntheticSeed, 'narrative.body0VoiceDiversity',
+          `body[0] uniqueness for tone=${tone}: ${bucket.uniqueStrings.size}/${bucket.samples} (${Math.round(100 * uniquenessRate)}%, expected >=50%). Variant array may be collapsing.`)
+      }
+    }
+  }
 }
 
 function auditDistributionAxisSensitivity(findings: Finding[], syntheticSeed: string): void {
@@ -1350,6 +1382,7 @@ const stats: CorpusStats = {
   fracturePhenomenonAnchoredSpines: 0,
   astronomySpineSamples: 0,
   astronomyNonContestsSpines: 0,
+  body0ByTone: new Map<GeneratorTone, { samples: number; uniqueStrings: Set<string> }>(),
 }
 
 for (const distribution of distributions) {
