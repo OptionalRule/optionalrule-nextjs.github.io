@@ -12,6 +12,7 @@ This is a Next.js 15 static blog site for Optional Rule Games that deploys to Gi
 - `npm run build` - Build static site for production (excludes draft posts)
 - `npm run start` - Start production server  
 - `npm run lint` - Run ESLint for code quality checks
+- `npm run test` - Run unit tests with Vitest (uses `vitest.unit.config.ts`)
 - `npm run generate-search-index` - Generate search index from all posts
 - `npm run find-empty-links` - Scan content for broken markdown links
 - `npm run create-post` - Create new blog post with frontmatter template

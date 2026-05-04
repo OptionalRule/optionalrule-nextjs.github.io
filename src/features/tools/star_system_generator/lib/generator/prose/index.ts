@@ -5,3 +5,5 @@
 // (`export { foo, bar } from './module'`) over `export * from` to avoid silent
 // symbol collisions across files.
 export {}
+export { graphAwareReshape } from './graphAwareReshape'
+export type { GraphAwareReshapeInput, GraphAwareReshapeResult } from './graphAwareReshape'

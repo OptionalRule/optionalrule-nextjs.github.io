@@ -32,26 +32,6 @@ export function exportSystemMarkdown(system: GeneratedSystem): string {
     }
   }
 
-  if (system.narrativeThreads.length) {
-    lines.push('## Narrative Threads', '')
-    for (const thread of system.narrativeThreads) {
-      lines.push(`### ${thread.title.value}`)
-      lines.push(`**Domains:** ${thread.domains.map((domain) => domain.value).join(', ')}.`)
-      if (thread.motif) lines.push(`**Motif:** ${thread.motif.value}.`)
-      lines.push('')
-      for (const beat of thread.beats) {
-        lines.push(`- **${beat.kind.replace('-', ' ')}:** ${beat.text.value}`)
-      }
-      lines.push('')
-    }
-  } else if (system.narrativeLines.length) {
-    lines.push('## Narrative Lines', '')
-    for (const line of system.narrativeLines) {
-      lines.push(`- **${line.label.value}:** ${line.text.value}`)
-    }
-    lines.push('')
-  }
-
   if (system.ruins.length) {
     lines.push('## Human Remnants', '')
     for (const ruin of system.ruins) {

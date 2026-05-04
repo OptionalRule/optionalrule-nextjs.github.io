@@ -32,7 +32,7 @@ The brainstorming session settled the following:
 - **Temporal model:** Option 2 (present-tense graph plus 1-2 attached historical events per system that explain present edges; no full Dwarf Fortress timeline).
 - **Edge palette:** 12 types in 4 functional groups (see below).
 - **Integration scope:** Approach B (graph drives a new System Story panel, replaces narrative threads, and serves as a lookup layer that existing settlement / phenomenon / `whyHere` prose consult on demand with graceful fallback).
-- **Existing surfaces:** `narrativeLines` and `narrativeThreads` remain populated for one release as a compatibility shim, then are removed.
+- **Existing surfaces:** `narrativeLines` and `narrativeThreads` were retained as a compatibility shim through Phases 1–7 and RETIRED in Phase 8.
 
 ## Edge Palette
 
@@ -87,8 +87,8 @@ GeneratedSystem {
   ...existing fields...
   relationshipGraph: SystemRelationshipGraph    // NEW (contains both present and historical edges)
   systemStory: SystemStoryOutput                // NEW (primary narrative surface)
-  narrativeLines: NarrativeLine[]               // RETAINED (deprecated, populated for 1 release)
-  narrativeThreads: NarrativeThread[]           // RETAINED (deprecated, populated for 1 release)
+  narrativeLines: NarrativeLine[]               // RETIRED in Phase 8 (deprecated shim through Phases 1–7)
+  narrativeThreads: NarrativeThread[]           // RETIRED in Phase 8 (deprecated shim through Phases 1–7)
 }
 ```
 
@@ -388,7 +388,7 @@ lib/generator/
 
 After Phase 0 extraction, `lib/generator/index.ts` shrinks from 3,927 lines to roughly 600-800 lines (the orchestrator only).
 
-`hiddenCauseBeatText` and `choiceBeatText` are retired - their job is taken over by edge templates. They remain populated for one release, then are deleted in Phase 8.
+`hiddenCauseBeatText` and `choiceBeatText` are retired - their job is taken over by edge templates. They were populated as a compatibility shim through Phases 1–7 and RETIRED in Phase 8.
 
 ## Testing Strategy
 
@@ -431,19 +431,21 @@ A small library chosen to exercise: sparse system, hub system, GU-heavy, GU-ligh
 
 Each phase is independently shippable. No phase removes capability until Phase 8.
 
-| Phase | Work | Effort | Verifiable end state |
-|---|---|---|---|
-| **0** | Extract prose helpers from `index.ts` to `lib/generator/prose/`. No behavior change. Add unit tests for extracted helpers. Land grammar bug fixes (`crisisPressureSentence` verb collision, `hiddenCauseBeatText` doubled noun) inline. | 1 week | All existing tests pass. New unit tests cover the helpers. `index.ts` shrinks below 1500 lines. |
-| **1** | Build `graph/types.ts`, `graph/entities.ts`, scaffold `buildRelationshipGraph` returning empty graph. Add `relationshipGraph` to `GeneratedSystem`. | 1 week | All existing tests pass. New `relationshipGraph` field exists, empty. |
-| **2** | First 4 rules: `HOSTS`, `DEPENDS_ON`, `CONTESTS`, `DESTABILIZES`. Implement `score.ts` + budget selection. No rendering yet. | 1.5 weeks | Audit shows graphs being generated. Edges visible in JSON export. No prose change. |
-| **3** | Renderer + `systemStory` output. Implement `slotResolver`, `grammarSafety`, `clusters`, `connectives`, templates for the 4 rule types from Phase 2. Wire into pipeline. | 1.5 weeks | `systemStory` populated for fixture systems. `narrativeLines/Threads` still populated. |
-| **4** | Remaining 5 active/epistemic rules and templates: `CONTROLS`, `SUPPRESSES`, `CONTRADICTS`, `WITNESSES`, `HIDES_FROM`. | 1 week | Full edge coverage. Hooks output populated. |
-| **5** | Historical edges: `attachHistoricalEvents` stage in `history.ts`, era pool in `data/eras.ts`, template families for `FOUNDED_BY` / `BETRAYED` / `DISPLACED`. | 1 week | Backstory sentences appear in `spineSummary` for systems whose spine edges qualify for backstory. |
-| **6** | Downstream integration. Wire `settlementHookSynthesis`, `phenomenonNote`, `settlementWhyHere` to consult the graph. Each independently flag-gated. | 1 week | Settlement cards reference cross-layer entities by name. Phenomenon notes name destabilization targets. |
-| **7** | Add new audit checks. Manual review of 20 sample systems. Tune templates and rules based on review. | 0.5 week | New audit passes. Sample review shows cohesion improvement. |
-| **8** | Deprecate `narrativeLines/Threads`. Remove the parallel population, delete `hiddenCauseBeatText`/`choiceBeatText`. | 0.5 week | `index.ts` clean of dead narrative code. |
+Detailed per-phase implementation plans live alongside this document under `docs/NARRATIVE_GRAPH_PHASE_<N>_PLAN.md` and are linked in the Status column below.
 
-**Total: ~8.5 weeks** of focused work.
+| Phase | Work | Effort | Verifiable end state | Status |
+|---|---|---|---|---|
+| **0** | Extract prose helpers from `index.ts` to `lib/generator/prose/`. No behavior change. Add unit tests for extracted helpers. Land grammar bug fixes (`crisisPressureSentence` verb collision, `hiddenCauseBeatText` doubled noun) inline. | 1 week | All existing tests pass. New unit tests cover the helpers. `index.ts` shrinks below 1500 lines. | ✅ Done — [plan](./NARRATIVE_GRAPH_PHASE_0_PLAN.md) |
+| **1** | Build `graph/types.ts`, `graph/entities.ts`, scaffold `buildRelationshipGraph` returning empty graph. Add `relationshipGraph` to `GeneratedSystem`. | 1 week | All existing tests pass. New `relationshipGraph` field exists, empty. | ✅ Done — [plan](./NARRATIVE_GRAPH_PHASE_1_PLAN.md) |
+| **2** | First 4 rules: `HOSTS`, `DEPENDS_ON`, `CONTESTS`, `DESTABILIZES`. Implement `score.ts` + budget selection. No rendering yet. | 1.5 weeks | Audit shows graphs being generated. Edges visible in JSON export. No prose change. | ✅ Done — [plan](./NARRATIVE_GRAPH_PHASE_2_PLAN.md) |
+| **3** | Renderer + `systemStory` output. Implement `slotResolver`, `grammarSafety`, `clusters`, `connectives`, templates for the 4 rule types from Phase 2. Wire into pipeline. | 1.5 weeks | `systemStory` populated for fixture systems. `narrativeLines/Threads` still populated. | ✅ Done — [plan](./NARRATIVE_GRAPH_PHASE_3_PLAN.md) |
+| **4** | Remaining 5 active/epistemic rules and templates: `CONTROLS`, `SUPPRESSES`, `CONTRADICTS`, `WITNESSES`, `HIDES_FROM`. **Phase 3 carryover:** wire `template.expects[slotName]` through `slotResolver` for per-slot `nounPhrase`/article reshape (deferred from Phase 3). Re-measure empty-story rate after the 5 new rule types land — escalate to Phase 7 if still >3%. | 1 week | Full edge coverage. Hooks output populated. Per-slot reshape live. | ✅ Done — [plan](./NARRATIVE_GRAPH_PHASE_4_PLAN.md) |
+| **5** | Historical edges: `attachHistoricalEvents` stage in `history.ts`, era pool in `data/eras.ts`, template families for `FOUNDED_BY` / `BETRAYED` / `DISPLACED`. **Phase 3 carryover:** historical edges compete for spine slots — re-measure spine-size percentile spread (Phase 3 was uniformly 3 across p10/p50/p90). | 1 week | Backstory sentences appear in `spineSummary` for systems whose spine edges qualify for backstory. | ✅ Done — [plan](./NARRATIVE_GRAPH_PHASE_5_PLAN.md) |
+| **6** | Downstream integration. Wire `settlementHookSynthesis`, `phenomenonNote`, `settlementWhyHere` to consult the graph. Each independently flag-gated. | 1 week | Settlement cards reference cross-layer entities by name. Phenomenon notes name destabilization targets. | ✅ Done — [plan](./NARRATIVE_GRAPH_PHASE_6_PLAN.md) |
+| **7** | Add new audit checks. Manual review of 20 sample systems. Tune templates and rules based on review. **Phase 5 carryovers:** (a) tune CONTRADICTS bridge prepositions vs era-pool entries that already start with "before"/"pre-" (avoids "during before the quarantine"); (b) consider exporting `HISTORICAL_ELIGIBLE_TYPES` from `history.ts` so the audit script doesn't drift from the canonical eligibility set; (c) rotate historical-edge body variants in `renderHistoricalSummary` (currently always picks `family.body[0]`, so variants 1–2 of FOUNDED_BY / BETRAYED / DISPLACED are dead in production — rotate via `stableHashString(presentEdge.id) % family.body.length`); (d) align DESTABILIZES `historicalBridge.expects.subject` to `nounPhrase` to match the family's `body` templates (today's `properNoun` shape skips article-stripping when the subject is a phenomenon); (e) resolve `pickHistoricalEndpoints` in `history.ts` — either land real subject/object inversion logic for DISPLACED (the original intent) or delete the dead-identical branch and tighten the `EntityRef | undefined` return type to non-nullable. **Phase 3 carryover:** spineSummary length variance widened by Phase 5 (p90 jumped from 111–116 to 221 chars — target met). Tune empty-story rate if Phase 5 didn't resolve it (Phase 5 baseline: 6.77%, unchanged). **Phase 6 carryovers:** (f) settlementHookSynthesis trigger rate landed at 0% (target 40–60%) because the spine selector's named-on-named requirement filters out guResource-based DEPENDS_ON edges — either broaden spine eligibility to allow guResource as named-enough, carve a separate settlement-spine-eligibility list, or document 0% as an intentional design choice; (g) whyHere graph-aware rate landed at 54.9% (target 70–90%) — investigate which settlements are missing both DEPENDS_ON and HOSTS edges, likely pointing to gaps in rule files (settlements on unnamed bodies, or settlements without a tagged GU resource dependency). | 0.5 week | New audit passes. Sample review shows cohesion improvement. | ✅ Done — [plan](./NARRATIVE_GRAPH_PHASE_7_PLAN.md) |
+| **8** | Deprecate `narrativeLines/Threads`. Remove the parallel population, delete `hiddenCauseBeatText`/`choiceBeatText`. Phase 7 carryover: spine-summary lowercase-faction bug (proper-noun lowercased mid-sentence after spine-assembly comma joins) — fix in spine-assembly logic before Phase 7 Task 10's prose.lowercaseFactionMidSentence audit check can land. | 0.5 week | `index.ts` clean of dead narrative code. | ✅ Done — [plan](./NARRATIVE_GRAPH_PHASE_8_PLAN.md) |
+
+**Total: ~9 weeks** of focused work. **Completed so far:** Phases 0, 1, 2, 3, 4, 5, 6, 7, 8 (~9 weeks of plan-equivalent effort).
 
 ## Risk Mitigation
 
@@ -511,6 +513,16 @@ Plus, downstream:
 - The settlement card for Orison Hold gets a final sentence that names the chiral ice belt and the bleed season instead of "Control of the loading dock decides who has leverage."
 - The phenomenon card for the bleed season gets "...corrupting Orison Hold's chiral feedstock" instead of generic "shapes travel and survey."
 - `whyHere` for Orison Hold reads as 1-2 prose sentences instead of a semicolon list.
+
+## Future work (post-Phase-8)
+
+- **Input-aware output (tone / gu / distribution / settlements)** — ✅ **Shipped** as a 4-phase sequence. See [master overview](./NARRATIVE_GRAPH_TONE_GU_AWARE_SPINE_PLAN.md). The original single-phase Option A plan was rewritten as the 4-phase master/overview after a team review (4 parallel reviewers: generation-quality, completeness, architecture, adversarial) found Option A solved the wrong problem at the wrong layer. Per-phase plans:
+  - **Phase A — Plumbing + structural gate fix** ([plan](./NARRATIVE_GRAPH_TONE_GU_PHASE_A_PLAN.md)) — ✅ Done. `BuildGraphOptions` channel landed; `NAMED_KINDS` widened (admits phenomenon + guHazard); per-tone scoring multiplier + per-gu eligibility predicate live; matrix snapshot pins structural fields; `narrative.spineToneSensitivity` audit + 2 per-sub-corpus floors active.
+  - **Phase B — Per-tone faction generation** ([plan](./NARRATIVE_GRAPH_TONE_GU_PHASE_B_PLAN.md)) — ✅ Done. New `lib/generator/factions/` module (3 tone banks × 16 stems × 10 suffixes = 480 combinations per tone). Deep audit shows **330 unique faction names across 4800 systems** (33× the pre-Phase-B baseline of 10).
+  - **Phase C — Per-tone voice + per-tone era pools** ([plan](./NARRATIVE_GRAPH_TONE_GU_PHASE_C_PLAN.md)) — ✅ Done. Per-tone era pools (3×10), per-tone body[0] + spineSummary variants for the 2 spine-eligible edge types that actually fire at scale (DESTABILIZES + CONTESTS — empirical Task 1 survey showed CONTROLS only 2/600 systems and CONTRADICTS/BETRAYED never), per-tone connectives, `narrative.body0VoiceDiversity` audit live.
+  - **Phase D — Distribution + density axes** ([plan](./NARRATIVE_GRAPH_TONE_GU_PHASE_D_PLAN.md)) — ✅ Done. `BuildGraphOptions` extended to all 4 axes; `DISTRIBUTION_VISIBILITY_WEIGHTS` table live; density-conditioned cluster pulling in `clusters.ts` (sparse drops multi-faction; hub pulls extra structural); 16-cell `spineFullAxisMatrix.test.ts` snapshot; `narrative.distributionAxisSensitivity` + `narrative.densityAxisSensitivity` audits active.
+
+  All four input axes (`tone`, `gu`, `distribution`, `settlements`) now produce distinguishable output. 1014/1014 tests passing post-merge. Deep audit clean (errors=0, warnings=0).
 
 ## Acceptance Criteria
 

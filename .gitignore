@@ -58,3 +58,6 @@ next-env.d.ts
  
 # Avoid Windows reserved device filename accidentally committed
 /CON
+
+# Git worktrees
+.worktrees/

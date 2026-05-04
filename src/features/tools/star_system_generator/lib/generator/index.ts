@@ -8,8 +8,6 @@ import type {
   HumanRemnant,
   Moon,
   NarrativeFact,
-  NarrativeLine,
-  NarrativeThread,
   OrbitingBody,
   PlanetaryDetail,
   PartialKnownBody,
@@ -73,7 +71,8 @@ import {
   siteOptions,
   temperateClimateTags,
 } from './data/mechanics'
-import { humanRemnants, namedFactions, narrativeStructures, narrativeVariablePools, phenomena, remnantHooks, type NarrativeStructure } from './data/narrative'
+import { humanRemnants, phenomena, remnantHooks } from './data/narrative'
+import { generateFactions } from './factions'
 import {
   aiSituations,
   asteroidBaseFunctions,
@@ -103,8 +102,6 @@ import {
   settlementCrises,
   settlementLocations,
   settlementScaleTable,
-  settlementTagPairHooks,
-  settlementTagPressures,
   settlementTags,
   surveyFunctions,
   surfaceIceFunctions,
@@ -119,10 +116,11 @@ import {
   realisticStarTypes,
 } from './data/stellar'
 import { NameRegistry } from './nameRegistry'
-import { lowerFirst, sentenceFragment, sentenceStart, stripTerminalPunctuation, smoothTechnicalPhrase, definiteNounPhrase, normalizeNarrativeText } from './prose/helpers'
-import { conditionAsPressure, crisisAsPressure } from './prose/crisisShaping'
+import { lowerFirst, sentenceFragment } from './prose/helpers'
 import { settlementHookSynthesis, settlementWhyHere } from './prose/settlementProse'
 import { phenomenonNote } from './prose/phenomenonProse'
+import { buildRelationshipGraph, renderSystemStory } from './graph'
+import { graphAwareReshape } from './prose'
 import { createSeededRng, type SeededRng } from './rng'
 
 export { architectureBodyPlanRules } from './architecture'
@@ -331,108 +329,12 @@ const traitOptions = [
   'old first-wave traffic',
 ] as const
 
-function fact<T>(value: T, confidence: Fact<T>['confidence'], source?: string): Fact<T> {
+export function fact<T>(value: T, confidence: Fact<T>['confidence'], source?: string): Fact<T> {
   return { value, confidence, source }
 }
 
 function uniqueStrings(values: readonly string[]): string[] {
   return [...new Set(values.filter(Boolean))]
-}
-
-function uniqueByNormalizedValue<T extends { value: string }>(values: readonly T[]): T[] {
-  const seen = new Set<string>()
-  const result: T[] = []
-
-  for (const value of values) {
-    const key = value.value.trim().toLowerCase()
-    if (!key || seen.has(key)) continue
-    seen.add(key)
-    result.push(value)
-  }
-
-  return result
-}
-
-export function hiddenCauseBeatText(secretText: string): string {
-  const secret = stripTerminalPunctuation(lowerFirst(secretText))
-  if (/^(records|evidence|proof)\b/i.test(secret)) {
-    const verb = /^records\b/i.test(secret) ? 'are' : 'is'
-    return `${sentenceStart(secret)} ${verb} driving the conflict.`
-  }
-  if (/^(the|a|an)\s+.+\s+(is|are|was|were|has|have|cannot|can|will|would)\b/i.test(secret)) {
-    return `The hidden cause is that ${secret}.`
-  }
-  return `The hidden evidence is ${secret}.`
-}
-
-function domainProtectionPhrase(domain: string | undefined): string {
-  switch (domain) {
-    case 'archaeology':
-      return 'the archaeological record'
-    case 'ecology':
-      return 'ecological stability'
-    case 'science':
-      return 'scientific access'
-    case 'trade':
-      return 'trade access'
-    case 'governance':
-      return 'public legitimacy'
-    case 'law':
-      return 'lawful title'
-    case 'public-life':
-    case 'daily-life':
-      return 'civilian life'
-    case 'labor':
-      return 'worker survival'
-    case 'war':
-      return 'defense readiness'
-    case 'espionage':
-      return 'operational secrecy'
-    case 'crime':
-      return 'off-book leverage'
-    case 'migration':
-      return 'refugee safety'
-    case 'disaster':
-      return 'containment'
-    case 'religion':
-      return 'public ritual'
-    case 'ai':
-      return 'AI custody'
-    case 'exploration':
-      return 'safe passage'
-    case 'stellar-events':
-      return 'storm readiness'
-    case 'gardener-interdiction':
-      return 'interdiction safety'
-    case 'infrastructure':
-      return 'critical systems'
-    case 'terraforming':
-      return 'climate stability'
-    case 'route-weather':
-      return 'the safe transit window'
-    case 'information-integrity':
-      return 'the public record'
-    case 'medicine':
-      return 'medical triage'
-    default:
-      return 'public order'
-  }
-}
-
-function exposurePhrase(secretText: string): string {
-  const secret = stripTerminalPunctuation(lowerFirst(secretText))
-  if (/^(the|a|an)\s+.+\s+(is|are|was|were|has|have|cannot|can|will|would)\b/i.test(secret)) {
-    return `that ${secret}`
-  }
-  return secret
-}
-
-function choiceBeatText(domains: readonly string[], secretText: string | undefined, publicSubject: string): string {
-  const protectedValue = domainProtectionPhrase(domains[0])
-  const exposedValue = secretText
-    ? exposurePhrase(secretText)
-    : `what ${lowerFirst(publicSubject)} is hiding`
-  return `Choice: protect ${protectedValue} or expose ${exposedValue}.`
 }
 
 export function mergeLockedFact<T>(generated: Fact<T>, known?: Fact<T>): Fact<T> {
@@ -561,7 +463,7 @@ function applyCompanionActivityModifier(primary: Star, companions: StellarCompan
   }
 }
 
-export function generateReachability(rng: SeededRng, options: GenerationOptions, primary: Star, companions: StellarCompanion[]) {
+function generateReachability(rng: SeededRng, options: GenerationOptions, primary: Star, companions: StellarCompanion[]) {
   let roll = d12(rng)
   const modifiers: Array<Fact<string>> = []
 
@@ -588,6 +490,7 @@ export function generateReachability(rng: SeededRng, options: GenerationOptions,
     modifiers,
   }
 }
+export type Reachability = ReturnType<typeof generateReachability>
 
 function companionThreshold(spectralType: string): number {
   if (spectralType === 'Brown dwarf/substellar primary') return 11
@@ -2084,7 +1987,7 @@ function intensityFromRoll(roll: number): string {
   return guIntensityTable.find((entry) => roll <= entry.max)?.value ?? guIntensityTable[guIntensityTable.length - 1].value
 }
 
-export function generateGuOverlay(rng: SeededRng, preference: GuPreference, primary: Star, companions: StellarCompanion[], bodies: OrbitingBody[], architectureName: string) {
+function generateGuOverlay(rng: SeededRng, preference: GuPreference, primary: Star, companions: StellarCompanion[], bodies: OrbitingBody[], architectureName: string) {
   let intensityRoll = twoD6(rng)
   const intensityModifiers: Array<Fact<string>> = []
 
@@ -2144,6 +2047,7 @@ export function generateGuOverlay(rng: SeededRng, preference: GuPreference, prim
     intensityModifiers,
   }
 }
+export type GuOverlay = ReturnType<typeof generateGuOverlay>
 
 function clampScore(value: number): number {
   return Math.max(0, Math.min(5, value))
@@ -2151,20 +2055,6 @@ function clampScore(value: number): number {
 
 function assertNever(value: never): never {
   throw new Error(`Unhandled settlement category: ${value}`)
-}
-
-export function settlementTagHook(rng: SeededRng, obviousTag: string, deeperTag: string): string {
-  const exactPair = `${obviousTag} + ${deeperTag}`
-  if (settlementTagPairHooks[exactPair]) return settlementTagPairHooks[exactPair]
-  const reversePair = `${deeperTag} + ${obviousTag}`
-  if (settlementTagPairHooks[reversePair]) return settlementTagPairHooks[reversePair]
-
-  const deeperText = settlementTagPressures[deeperTag] ?? `${deeperTag.toLowerCase()} is the deeper pressure driving the site.`
-  const template = rng.int(1, 4)
-  if (template === 1) return `${obviousTag} is what visitors notice first; ${deeperText}`
-  if (template === 2) return `Outsiders call it ${obviousTag}, but the local pressure is sharper: ${deeperText}`
-  if (template === 3) return `${obviousTag} is the surface story, but ${deeperTag} shows who benefits from the tension: ${deeperText}`
-  return `The public tag is ${obviousTag}; the private trouble is ${deeperTag}, because ${deeperText}`
 }
 
 function chooseSettlementTags(rng: SeededRng): [string, string] {
@@ -2189,7 +2079,7 @@ function settlementPresenceTier(score: number): string {
   return 'Major campaign location'
 }
 
-export function scoreSettlementPresence(rng: SeededRng, body: OrbitingBody, guOverlay: ReturnType<typeof generateGuOverlay>, reachability: ReturnType<typeof generateReachability>) {
+function scoreSettlementPresence(rng: SeededRng, body: OrbitingBody, guOverlay: GuOverlay, reachability: Reachability) {
   const roll = twoD6(rng)
   const resource = clampScore(
     (body.category.value === 'belt' || body.category.value === 'gas-giant' || body.category.value === 'ice-giant' ? 2 : 0) +
@@ -2233,8 +2123,7 @@ export function scoreSettlementPresence(rng: SeededRng, body: OrbitingBody, guOv
 
   return { score, roll, tier, resource, access, strategic, guValue, habitability, hazard, legalHeat }
 }
-
-type SettlementPresenceScore = ReturnType<typeof scoreSettlementPresence>
+export type SettlementPresenceScore = ReturnType<typeof scoreSettlementPresence>
 
 interface ScoredSettlementBody {
   body: OrbitingBody
@@ -2279,8 +2168,8 @@ function targetSettlementCount(
   rng: SeededRng,
   options: GenerationOptions,
   scored: ScoredSettlementBody[],
-  guOverlay: ReturnType<typeof generateGuOverlay>,
-  reachability: ReturnType<typeof generateReachability>,
+  guOverlay: GuOverlay,
+  reachability: Reachability,
   architectureName: string
 ): number {
   const [min, max] = settlementCountBounds(options.settlements)
@@ -2364,7 +2253,7 @@ function chooseEncounterSites(rng: SeededRng, scale: string, settlementFunction:
   return [first, pickOne(rng, secondPool.length ? secondPool : pool)]
 }
 
-function chooseSettlementLocation(rng: SeededRng, body: OrbitingBody, reachability: ReturnType<typeof generateReachability>): SettlementLocationOption {
+function chooseSettlementLocation(rng: SeededRng, body: OrbitingBody, reachability: Reachability): SettlementLocationOption {
   const orbitalOptions = settlementLocations.orbital
   const routeOptions = settlementLocations.route
   const asteroidOptions = settlementLocations.asteroid
@@ -2396,7 +2285,7 @@ function chooseSettlementFunction(
   rng: SeededRng,
   body: OrbitingBody,
   locationOption: SettlementLocationOption,
-  guOverlay: ReturnType<typeof generateGuOverlay>
+  guOverlay: GuOverlay
 ): string {
   if (guOverlay.intensity.value.includes('fracture') || guOverlay.intensity.value.includes('shear')) {
     return pickOne(rng, guFractureFunctionsBySiteCategory[locationOption.category])
@@ -2606,8 +2495,8 @@ function generateSettlements(
   options: GenerationOptions,
   systemName: string,
   bodies: OrbitingBody[],
-  guOverlay: ReturnType<typeof generateGuOverlay>,
-  reachability: ReturnType<typeof generateReachability>,
+  guOverlay: GuOverlay,
+  reachability: Reachability,
   architectureName: string
 ): Settlement[] {
   const scored = bodies
@@ -2700,7 +2589,7 @@ function generateSettlements(
   })
 }
 
-function generateHumanRemnants(rng: SeededRng, bodies: OrbitingBody[], guOverlay: ReturnType<typeof generateGuOverlay>): HumanRemnant[] {
+function generateHumanRemnants(rng: SeededRng, bodies: OrbitingBody[], guOverlay: GuOverlay): HumanRemnant[] {
   const count = guOverlay.intensity.value.includes('fracture') || guOverlay.intensity.value.includes('shear') ? 3 : 2
   return Array.from({ length: count }, (_, index) => {
     const body = pickOne(rng, bodies)
@@ -2713,7 +2602,7 @@ function generateHumanRemnants(rng: SeededRng, bodies: OrbitingBody[], guOverlay
   })
 }
 
-function generatePhenomena(rng: SeededRng, architectureName: string, guOverlay: ReturnType<typeof generateGuOverlay>): SystemPhenomenon[] {
+function generatePhenomena(rng: SeededRng, architectureName: string, guOverlay: GuOverlay): SystemPhenomenon[] {
   const count = guOverlay.intensity.value.includes('Rich') || architectureName.includes('Major') ? 3 : 2
   return Array.from({ length: count }, (_, index) => {
     const phenomenon = pickOne(rng, phenomena)
@@ -2735,21 +2624,14 @@ interface NarrativeGenerationContext {
   systemName: Fact<string>
   primary: Star
   companions: StellarCompanion[]
-  reachability: ReturnType<typeof generateReachability>
+  reachability: Reachability
   architectureName: string
   bodies: OrbitingBody[]
-  guOverlay: ReturnType<typeof generateGuOverlay>
+  guOverlay: GuOverlay
   settlements: Settlement[]
   ruins: HumanRemnant[]
   phenomena: SystemPhenomenon[]
-}
-
-interface NarrativeSlotCandidate {
-  value: string
-  factId?: string
-  confidence: Fact<string>['confidence']
-  source: string
-  weight?: number
+  factionRng: SeededRng
 }
 
 function narrativeDomainsForText(value: string): string[] {
@@ -2815,13 +2697,8 @@ function radiationCreatesNarrativeHazard(value: string): boolean {
   return !/^(benign|manageable)$/i.test(value.trim())
 }
 
-function secretCandidateFromFact(factEntry: NarrativeFact): boolean {
-  if (factEntry.kind === 'settlement.hiddenTruth' || factEntry.kind === 'settlement.tagHook' || factEntry.kind === 'ruin.hook') return true
-  if (factEntry.kind !== 'settlement.aiSituation') return false
-  return /(hidden|illegal|memory gaps|only witness|censored|impostor|secret|missing|cut down|wrong authority|catastrophe|gardener)/i.test(factEntry.value.value)
-}
-
 function buildNarrativeFacts(ctx: NarrativeGenerationContext): NarrativeFact[] {
+  const factions = generateFactions(ctx.factionRng, ctx.options.tone, 8)
   const facts: NarrativeFact[] = [
     narrativeFact({
       id: 'system.reachability',
@@ -2912,14 +2789,14 @@ function buildNarrativeFacts(ctx: NarrativeGenerationContext): NarrativeFact[] {
       tags: ['gu', 'pressure'],
       domains: domainsForGuValue('bleedBehaviors', ctx.guOverlay.bleedBehavior.value, ['science', 'disaster', 'trade']),
     }),
-    ...namedFactions.map((faction) => narrativeFact({
+    ...factions.map((faction) => narrativeFact({
       id: `faction.${faction.id}`,
       kind: 'namedFaction',
       subjectType: 'faction' as const,
       value: faction.name,
       confidence: 'human-layer',
       source: `${faction.publicFace}; ${faction.kind}`,
-      sourcePath: `namedFactions.${faction.id}`,
+      sourcePath: `factions.${faction.id}`,
       tags: ['actor', faction.kind],
       domains: [...faction.domains],
     })),
@@ -3159,466 +3036,6 @@ function buildNarrativeFacts(ctx: NarrativeGenerationContext): NarrativeFact[] {
   return facts
 }
 
-function candidatesFromFacts(facts: readonly NarrativeFact[], poolName: string): NarrativeSlotCandidate[] {
-  const byKind = (kinds: string[]) => facts.filter((factEntry) => kinds.includes(factEntry.kind))
-  const byTag = (tags: string[]) => facts.filter((factEntry) => tags.some((tag) => factEntry.tags.includes(tag)))
-
-  const selected =
-    poolName === 'groups' ? byKind(['settlement.authority', 'namedFaction']) :
-    poolName === 'stakes' ? [...byKind(['gu.resource', 'route.reachability', 'settlement.function', 'body.biosphere', 'body.site']), ...byTag(['stake'])] :
-    poolName === 'leverage' ? [...byKind(['gu.bleedLocation', 'settlement.location', 'settlement.encounterSite']), ...byTag(['routeAsset', 'sceneAnchor'])] :
-    poolName === 'pressures' ? [...byKind(['settlement.crisis', 'settlement.condition', 'settlement.tag', 'settlement.tagHook', 'gu.hazard', 'gu.bleedBehavior']), ...byTag(['pressure'])] :
-    poolName === 'threats' ? [...byKind(['gu.hazard', 'gu.bleedBehavior', 'body.radiation', 'settlement.crisis']), ...byTag(['hazard'])].filter((factEntry) => factEntry.kind !== 'body.radiation' || factEntry.tags.includes('hazard')) :
-    poolName === 'secrets' ? [...byKind(['settlement.hiddenTruth', 'settlement.tagHook', 'settlement.aiSituation', 'ruin.hook']), ...byTag(['secret'])].filter(secretCandidateFromFact) :
-    poolName === 'routeAssets' ? [...byKind(['gu.bleedLocation', 'settlement.location']), ...byTag(['routeAsset'])] :
-    poolName === 'claims' ? [...byKind(['ruin.hook', 'settlement.hiddenTruth', 'settlement.tagHook']), ...byTag(['claim'])] :
-    poolName === 'sceneAnchors' ? [...byKind(['settlement.encounterSite', 'settlement.location']), ...byTag(['sceneAnchor'])] :
-    poolName === 'publics' ? byKind(['settlement.function', 'settlement.location']) :
-    poolName === 'choices' ? [...byKind(['settlement.hiddenTruth', 'settlement.tagHook', 'ruin.hook']), ...byTag(['claim', 'secret'])] :
-    []
-
-  return uniqueByNormalizedValue(selected.map((factEntry) => ({
-    value: narrativeSlotDisplayValue(factEntry, poolName),
-    factId: factEntry.id,
-    confidence: factEntry.value.confidence,
-    source: `Narrative fact ledger: ${factEntry.sourcePath}`,
-    weight: narrativeCandidateWeight(factEntry, poolName),
-  })))
-}
-
-function narrativeCandidateWeight(factEntry: NarrativeFact, poolName: string): number {
-  if (poolName === 'groups') return factEntry.kind === 'settlement.authority' ? 1.5 : 1
-  if (factEntry.kind === 'settlement.crisis') return 5
-  if (factEntry.kind === 'settlement.hiddenTruth') return 5
-  if (factEntry.kind === 'settlement.tag') return 4.4
-  if (factEntry.kind === 'settlement.tagHook') return 4.1
-  if (factEntry.kind === 'gu.resource' || factEntry.kind === 'gu.hazard') return 4
-  if (factEntry.kind === 'settlement.function') return 3.2
-  if (factEntry.kind === 'settlement.location') return 2.8
-  if (factEntry.kind === 'gu.bleedLocation') return 2.6
-  if (factEntry.kind === 'gu.bleedBehavior') return 2.4
-  if (factEntry.kind === 'ruin.hook') return 2
-  if (factEntry.kind === 'settlement.aiSituation') return 1.8
-  if (factEntry.kind === 'settlement.encounterSite') return 1.2
-  return 1
-}
-
-function pickWeightedCandidate(rng: SeededRng, candidates: readonly NarrativeSlotCandidate[]): NarrativeSlotCandidate {
-  const totalWeight = candidates.reduce((sum, candidate) => sum + Math.max(candidate.weight ?? 1, 0), 0)
-  if (totalWeight <= 0) return pickOne(rng, candidates)
-
-  let roll = rng.float(0, totalWeight)
-  for (const candidate of candidates) {
-    roll -= Math.max(candidate.weight ?? 1, 0)
-    if (roll <= 0) return candidate
-  }
-
-  return candidates[candidates.length - 1]
-}
-
-function tagHookSentences(value: string): string[] {
-  return value
-    .split(/(?<=[.!?])\s+/)
-    .map((sentence) => stripTerminalPunctuation(sentence.trim()))
-    .filter(Boolean)
-}
-
-function tagHookSecret(value: string): string | undefined {
-  const privateSentence = tagHookSentences(value).find((sentence) => /^Privately,\s+/i.test(sentence))
-  if (!privateSentence) return undefined
-  return lowerFirst(privateSentence.replace(/^Privately,\s*/i, ''))
-}
-
-function tagHookPressure(value: string): string | undefined {
-  const sentences = tagHookSentences(value)
-  const localPressure = sentences
-    .map((sentence) => sentence.match(/local pressure is sharper:\s*(.+)$/i)?.[1])
-    .find((sentence): sentence is string => Boolean(sentence))
-  if (localPressure) return lowerFirst(localPressure)
-
-  const crisisSentence = sentences.find((sentence) => /^The crisis around\s+/i.test(sentence))
-  if (crisisSentence) return lowerFirst(crisisSentence)
-
-  return undefined
-}
-
-function factAsChoiceClause(factEntry: NarrativeFact, value: string): string {
-  if (factEntry.kind === 'settlement.tagHook') {
-    const secret = tagHookSecret(factEntry.value.value)
-    if (secret) return `exposing that ${secret} is worth the risk`
-  }
-
-  if (factEntry.status === 'secret') return `exposing that ${value} is worth the risk`
-
-  if (factEntry.kind === 'ruin.hook') {
-    if (/^(is|was|appears|sits)\b/i.test(value)) return `the remnant ${value}`
-    if (/^contains\s+(.+)$/i.test(value)) return value.replace(/^contains\s+/i, 'the remnant contains ')
-    if (/^holds\s+(.+)$/i.test(value)) return value.replace(/^holds\s+/i, 'the remnant holds ')
-  }
-
-  return value
-}
-
-function bleedBehaviorThreat(value: string): string {
-  if (/^stable and charted$/i.test(value)) return 'a stable, charted bleed pattern'
-  if (/^stable but weakening$/i.test(value)) return 'a stable but weakening bleed pattern'
-  if (/^seasonal\/orbital cycle$/i.test(value)) return 'a seasonal orbital bleed cycle'
-  if (/^(flare-triggered|tidal-cycle triggered)$/i.test(value)) return `a ${value.toLowerCase()} bleed pattern`
-  if (/^(migrates|splits|appears|follows|reacts)\b/i.test(value)) return `a bleed pattern that ${value}`
-  if (/^apparently anticipatory/i.test(value)) return 'an apparently anticipatory bleed pattern'
-  return `a bleed pattern shaped by ${value}`
-}
-
-function narrativeSlotDisplayValue(factEntry: NarrativeFact, poolName: string): string {
-  const rawValue = factEntry.value.value
-  const value = factEntry.kind === 'namedFaction' ? rawValue : smoothTechnicalPhrase(sentenceFragment(rawValue))
-
-  if (poolName === 'groups') {
-    if (value === 'no recognized authority') return 'unrecognized local crews'
-    if (value === 'official records are falsified') return 'officially falsified records'
-    return value
-  }
-
-  if (poolName === 'publics') {
-    if (factEntry.kind === 'settlement.function') return `${value} crews`
-    if (factEntry.kind === 'settlement.location') return `${value.toLowerCase()} residents`
-  }
-
-  if (poolName === 'choices') {
-    return factAsChoiceClause(factEntry, value)
-  }
-
-  if (poolName === 'claims') {
-    if (factEntry.kind === 'settlement.tagHook') return tagHookSecret(rawValue) ?? value
-    if (factEntry.kind === 'ruin.hook') {
-      if (/^contains\s+(.+)$/i.test(value)) return value.replace(/^contains\s+/i, 'the remnant contains ')
-      if (/^holds\s+(.+)$/i.test(value)) return value.replace(/^holds\s+/i, 'the remnant holds ')
-      if (/^proves\s+(.+)$/i.test(value)) return value.replace(/^proves\s+/i, '')
-      if (/^shows\s+(.+)$/i.test(value)) return value.replace(/^shows\s+/i, '')
-      if (/^(appears|sits|was|is|keeps|has|hides|marks)\b/i.test(value)) return `the remnant ${value}`
-    }
-    if (factEntry.kind === 'settlement.hiddenTruth') return lowerFirst(value)
-  }
-
-  if (poolName === 'secrets') {
-    if (factEntry.kind === 'settlement.tagHook') return tagHookSecret(rawValue) ?? value
-    if (factEntry.kind === 'ruin.hook') {
-      if (/^contains\s+(.+)$/i.test(value)) return value.replace(/^contains\s+/i, '')
-      if (/^holds\s+(.+)$/i.test(value)) return value.replace(/^holds\s+/i, '')
-      if (/^proves\s+(.+)$/i.test(value)) return value.replace(/^proves\s+/i, 'proof that ')
-      if (/^shows\s+(.+)$/i.test(value)) return value.replace(/^shows\s+/i, 'evidence that ')
-      if (/^(marks|has|hides|keeps)\b/i.test(value)) return `evidence that it ${value}`
-      if (/^(is|was|appears|sits)\b/i.test(value)) return `evidence that the remnant ${value}`
-    }
-    if (factEntry.kind === 'settlement.hiddenTruth') return lowerFirst(value)
-  }
-
-  if (poolName === 'pressures') {
-    if (factEntry.kind === 'settlement.tagHook') return tagHookPressure(rawValue) ?? value
-    if (factEntry.kind === 'settlement.crisis') return crisisAsPressure(rawValue)
-    if (factEntry.kind === 'settlement.condition') {
-      const match = value.match(/^(.+) at (.+)$/)
-      if (match) return conditionAsPressure(match[1], match[2])
-    }
-    if (factEntry.kind === 'settlement.tag') return `${value.toLowerCase()} tensions`
-  }
-
-  if (poolName === 'threats') {
-    if (factEntry.kind === 'settlement.crisis') return crisisAsPressure(rawValue)
-    if (factEntry.kind === 'body.radiation') return value
-    if (factEntry.kind === 'gu.bleedBehavior') return bleedBehaviorThreat(value)
-  }
-
-  if (poolName === 'routeAssets') {
-    if (factEntry.kind === 'gu.bleedLocation' || factEntry.kind === 'settlement.location' || factEntry.kind === 'body.site') {
-      return definiteNounPhrase(value)
-    }
-  }
-
-  if (poolName === 'leverage') {
-    if (factEntry.kind === 'settlement.location' || factEntry.kind === 'settlement.encounterSite' || factEntry.kind === 'gu.bleedLocation') {
-      return definiteNounPhrase(value)
-    }
-  }
-
-  if (poolName === 'stakes' && factEntry.kind === 'settlement.function') {
-    const match = value.match(/^(.+) at (.+)$/)
-    if (match) return `control of ${definiteNounPhrase(match[1])} at ${match[2]}`
-  }
-
-  return value
-}
-
-function fallbackCandidates(poolName: string, values: readonly string[]): NarrativeSlotCandidate[] {
-  return values.map((value) => ({
-    value: fallbackSlotDisplayValue(poolName, value),
-    confidence: 'human-layer',
-    source: `Narrative variable pool "${poolName}"`,
-    weight: 1,
-  }))
-}
-
-function fallbackSlotDisplayValue(poolName: string, value: string): string {
-  if (poolName !== 'groups') return value
-
-  return value
-    .replace(/^revolutionary cells$/i, 'revolutionary cell network')
-    .replace(/^route forecasters$/i, 'route forecasting office')
-    .replace(/^archive auditors$/i, 'archive audit office')
-    .replace(/^flare-season forecasters$/i, 'flare-season forecasting office')
-    .replace(/^medical\/biosafety board$/i, 'medical and biosafety board')
-}
-
-function addNarrativeDomainBoost(boosts: Map<string, number>, domain: string, amount: number): void {
-  boosts.set(domain, Math.min((boosts.get(domain) ?? 0) + amount, 6))
-}
-
-function boostDomains(boosts: Map<string, number>, domains: readonly string[], amount: number): void {
-  domains.forEach((domain) => addNarrativeDomainBoost(boosts, domain, amount))
-}
-
-function deriveNarrativeDomainBoosts(narrativeFacts: readonly NarrativeFact[]): Map<string, number> {
-  const boosts = new Map<string, number>()
-
-  narrativeFacts.forEach((factEntry) => {
-    const text = `${factEntry.kind} ${factEntry.value.value} ${factEntry.tags.join(' ')} ${factEntry.domains.join(' ')}`.toLowerCase()
-
-    if (factEntry.kind.startsWith('gu.')) boostDomains(boosts, factEntry.domains, 0.55)
-    if (factEntry.kind === 'phenomenon') boostDomains(boosts, factEntry.domains, 0.35)
-    if (factEntry.kind.startsWith('settlement.')) boostDomains(boosts, factEntry.domains, 0.04)
-
-    if (factEntry.kind === 'route.reachability') {
-      if (text.includes('gardener-shadowed')) addNarrativeDomainBoost(boosts, 'gardener-interdiction', 4)
-      if (/(route|gate|pinch|hub|anchor|crossroads|corridor)/.test(text)) addNarrativeDomainBoost(boosts, 'route-weather', 1.4)
-    }
-
-    if (factEntry.kind === 'star.activity' && !/quiet|moderate/.test(text)) {
-      addNarrativeDomainBoost(boosts, 'stellar-events', 2.5)
-      addNarrativeDomainBoost(boosts, 'medicine', 0.6)
-      addNarrativeDomainBoost(boosts, 'disaster', 0.6)
-    }
-
-    if (factEntry.kind === 'gu.intensity') {
-      if (/rich/.test(text)) addNarrativeDomainBoost(boosts, 'route-weather', 0.8)
-      if (/dangerous|fracture|major|shear/.test(text)) {
-        addNarrativeDomainBoost(boosts, 'route-weather', 1.8)
-        addNarrativeDomainBoost(boosts, 'disaster', 0.8)
-      }
-    }
-
-    if (/(flare|coronal|eclipse|stellar|white-dwarf|brown dwarf|periastron|radiation storm)/.test(text)) {
-      addNarrativeDomainBoost(boosts, 'stellar-events', 1.6)
-    }
-    if (/(gardener|sol-interdiction|interdiction|exclusion picket|compliance office|sealed sol)/.test(text)) {
-      addNarrativeDomainBoost(boosts, 'gardener-interdiction', 1.8)
-    }
-    if (/(life-support|shipyard|repair|maintenance|radiator|power|shield|replacement part|fuel depot)/.test(text)) {
-      addNarrativeDomainBoost(boosts, 'infrastructure', 1.3)
-    }
-    if (/(terraform|climate|mirror|volatile import|garden dome|greenhouse|failed garden|failed terraforming)/.test(text)) {
-      addNarrativeDomainBoost(boosts, 'terraforming', 1.5)
-    }
-    if (/(route weather|safe window|bleed-window|metric weather|pinch forecast|stormbound|schedule failure|calibration scar|moving node|iggygate|pinchdrive)/.test(text)) {
-      addNarrativeDomainBoost(boosts, 'route-weather', 1.2)
-    }
-    if (/(falsified|censored|erased|records|archive|casualty|evidence|forged|deleted|witness)/.test(text)) {
-      addNarrativeDomainBoost(boosts, 'information-integrity', 1.3)
-    }
-    if (/(medical|medicine|clinic|triage|exposure|neurological|vestibular|treatment|quarantine ward|chiral contamination|chirality stock)/.test(text)) {
-      addNarrativeDomainBoost(boosts, 'medicine', 1.4)
-    }
-  })
-
-  return boosts
-}
-
-function finiteNonNegative(value: number | undefined, fallback: number): number {
-  return typeof value === 'number' && Number.isFinite(value) ? Math.max(0, value) : fallback
-}
-
-function narrativeStructureWeight(
-  structure: NarrativeStructure,
-  options: GenerationOptions,
-  domainBoosts: ReadonlyMap<string, number>
-): number {
-  const domains = structure.domains ?? []
-  const baseWeight = finiteNonNegative(structure.baseWeight, 1)
-  const contextBoost = domains.length
-    ? domains.reduce((sum, domain) => sum + (domainBoosts.get(domain) ?? 0), 0) / domains.length
-    : 0
-  const domainBias = domains.length
-    ? Math.max(...domains.map((domain) => finiteNonNegative(options.narrativeBias?.domains?.[domain], 1)))
-    : 1
-  const structureBias = finiteNonNegative(options.narrativeBias?.structures?.[structure.id], 1)
-
-  return baseWeight * (1 + contextBoost) * domainBias * structureBias
-}
-
-function pickWeightedNarrativeStructure(
-  rng: SeededRng,
-  structures: readonly NarrativeStructure[],
-  options: GenerationOptions,
-  domainBoosts: ReadonlyMap<string, number>
-): NarrativeStructure {
-  const weighted = structures.map((structure) => ({
-    structure,
-    weight: narrativeStructureWeight(structure, options, domainBoosts),
-  }))
-  const totalWeight = weighted.reduce((sum, entry) => sum + entry.weight, 0)
-
-  if (totalWeight <= 0) return pickOne(rng, structures)
-
-  let roll = rng.float(0, totalWeight)
-  for (const entry of weighted) {
-    roll -= entry.weight
-    if (roll <= 0) return entry.structure
-  }
-
-  return weighted[weighted.length - 1].structure
-}
-
-function narrativeDomainsForStructure(structureDomains: readonly string[] | undefined, variables: Record<string, Fact<string>>): string[] {
-  const variableDomains = Object.values(variables).flatMap((variable) => narrativeDomainsForText(variable.value))
-  return uniqueStrings([...(structureDomains ?? []), ...variableDomains]).slice(0, 4)
-}
-
-function generateNarrativeLines(
-  rng: SeededRng,
-  options: GenerationOptions,
-  narrativeFacts: readonly NarrativeFact[]
-): NarrativeLine[] {
-  const count =
-    options.tone === 'cinematic' || options.gu === 'fracture' ? 5 :
-    options.gu === 'high' || options.settlements === 'hub' || options.settlements === 'crowded' ? 4 :
-    3
-  const availableStructures = [...narrativeStructures]
-  const domainBoosts = deriveNarrativeDomainBoosts(narrativeFacts)
-
-  return Array.from({ length: Math.min(count, availableStructures.length) }, (_, index) => {
-    const structure = pickWeightedNarrativeStructure(rng, availableStructures, options, domainBoosts)
-    availableStructures.splice(availableStructures.findIndex((candidate) => candidate.id === structure.id), 1)
-    const variables: Record<string, Fact<string>> = {}
-    const factsUsed = new Set<string>()
-
-    for (const [slot, poolName] of Object.entries(structure.slots)) {
-      const factPool = candidatesFromFacts(narrativeFacts, poolName)
-      const fallbackPool = fallbackCandidates(poolName, narrativeVariablePools[poolName] ?? [])
-      const pool = uniqueByNormalizedValue([...factPool, ...fallbackPool])
-      const blockedValues = new Set(
-        (structure.distinctSlots ?? [])
-          .filter(([left, right]) => right === slot && variables[left])
-          .map(([left]) => variables[left].value)
-      )
-      const eligibleFactPool = factPool.filter((candidate) => !blockedValues.has(candidate.value))
-      const eligiblePool = pool.filter((candidate) => !blockedValues.has(candidate.value))
-      const preferredPool = eligibleFactPool.length && rng.chance(0.85) ? eligibleFactPool : eligiblePool
-      const value = pickWeightedCandidate(rng, preferredPool.length ? preferredPool : pool)
-      if (value.factId) factsUsed.add(value.factId)
-      variables[slot] = fact(value.value, value.confidence, value.source)
-    }
-
-    if (!factsUsed.size) {
-      for (const [slot, poolName] of Object.entries(structure.slots)) {
-        const factCandidate = candidatesFromFacts(narrativeFacts, poolName).find((candidate) =>
-          !(structure.distinctSlots ?? []).some(([left, right]) =>
-            right === slot && variables[left]?.value === candidate.value
-          )
-        )
-        if (!factCandidate) continue
-        if (factCandidate.factId) factsUsed.add(factCandidate.factId)
-        variables[slot] = fact(factCandidate.value, factCandidate.confidence, factCandidate.source)
-        break
-      }
-    }
-
-    const text = normalizeNarrativeText(structure.template.replace(/\{([A-Za-z0-9_]+)\}/g, (placeholder, slot: string) => {
-      return variables[slot]?.value ?? placeholder
-    }))
-    const domains = narrativeDomainsForStructure(structure.domains, variables)
-
-    return {
-      id: `narrative-${index + 1}`,
-      structureId: fact(structure.id, 'human-layer', 'Narrative structure id'),
-      label: fact(structure.label, 'human-layer', 'Narrative structure label'),
-      motif: structure.motif ? fact(structure.motif, 'human-layer', 'Narrative motif') : undefined,
-      domains: domains.map((domain) => fact(domain, 'human-layer', 'Narrative domain inferred from structure and resolved facts')),
-      text: fact(text, 'human-layer', 'Generated narrative structure with narrative fact ledger and fallback variable pools'),
-      variables,
-      factsUsed: [...factsUsed],
-      factsIntroduced: [],
-    }
-  })
-}
-
-function generateNarrativeThreads(lines: readonly NarrativeLine[], narrativeFacts: readonly NarrativeFact[]): NarrativeThread[] {
-  const factsById = new Map(narrativeFacts.map((factEntry) => [factEntry.id, factEntry]))
-
-  return lines.map((line, index) => {
-    const usedFacts = line.factsUsed.map((factId) => factsById.get(factId)).filter((factEntry): factEntry is NarrativeFact => Boolean(factEntry))
-    const pressureFact = usedFacts.find((factEntry) => factEntry.tags.includes('pressure') || factEntry.tags.includes('hazard'))
-    const secretFact = usedFacts.find((factEntry) => factEntry.status === 'secret' || factEntry.tags.includes('secret'))
-    const publicFact = usedFacts.find((factEntry) => factEntry.subjectType === 'settlement' || factEntry.subjectType === 'ruin')
-    const domains = line.domains.map((domain) => domain.value)
-    const publicSubject = smoothTechnicalPhrase(publicFact ? sentenceFragment(publicFact.value.value) : line.label.value.toLowerCase())
-    const pressureText =
-      (pressureFact ? narrativeSlotDisplayValue(pressureFact, 'pressures') : undefined) ??
-      line.variables.pressure?.value ??
-      line.variables.threat?.value ??
-      line.variables.stake?.value
-    const secretText = (secretFact ? narrativeSlotDisplayValue(secretFact, 'secrets') : undefined) ?? Object.values(line.variables).find((variable) => variable.source?.includes('secrets'))?.value
-
-    const beats = [
-      {
-        id: `${line.id}-beat-1`,
-        kind: 'public-premise' as const,
-        text: fact(line.text.value, 'human-layer', 'Narrative thread premise from generated line'),
-        factsUsed: line.factsUsed,
-      },
-      {
-        id: `${line.id}-beat-2`,
-        kind: 'pressure' as const,
-        text: fact(
-          pressureText
-            ? `Immediate pressure centers on ${stripTerminalPunctuation(lowerFirst(pressureText))}.`
-            : 'Immediate pressure comes from the dispute itself.',
-          'human-layer',
-          'Narrative thread pressure synthesized from fact ledger'
-        ),
-        factsUsed: pressureFact ? [pressureFact.id] : line.factsUsed,
-      },
-      {
-        id: `${line.id}-beat-3`,
-        kind: 'hidden-cause' as const,
-        text: fact(
-          secretText
-            ? hiddenCauseBeatText(secretText)
-            : `The hidden cause is still disputed because ${lowerFirst(publicSubject)} is the only reliable anchor.`,
-          'human-layer',
-          'Narrative thread hidden cause synthesized from fact ledger'
-        ),
-        factsUsed: secretFact ? [secretFact.id] : line.factsUsed,
-      },
-      {
-        id: `${line.id}-beat-4`,
-        kind: 'choice' as const,
-        text: fact(choiceBeatText(domains, secretText, publicSubject), 'human-layer', 'Narrative thread choice synthesized from domains and fact ledger'),
-        factsUsed: line.factsUsed,
-      },
-    ]
-
-    return {
-      id: `thread-${index + 1}`,
-      title: fact(line.label.value, 'human-layer', 'Narrative thread title from source line'),
-      domains: line.domains,
-      motif: line.motif,
-      lineIds: [line.id],
-      beats,
-      factsUsed: line.factsUsed,
-      factsIntroduced: line.factsIntroduced,
-    }
-  })
-}
-
 const noAlienReplacements: Array<{ pattern: RegExp; replacement: string; label: string }> = [
   { pattern: /\balien\s+civilizations?\b/gi, replacement: 'human polities', label: 'alien civilization -> human polity' },
   { pattern: /\balien\s+ruins?\b/gi, replacement: 'first-wave human ruins', label: 'alien ruin -> first-wave human ruin' },
@@ -3725,9 +3142,48 @@ export function generateSystem(options: GenerationOptions, knownSystem?: Partial
     settlements,
     ruins,
     phenomena,
+    factionRng: rootRng.fork('factions'),
   })
-  const narrativeLines = generateNarrativeLines(rootRng.fork('narrative-lines'), options, narrativeFacts)
-  const narrativeThreads = generateNarrativeThreads(narrativeLines, narrativeFacts)
+  const relationshipGraph = buildRelationshipGraph(
+    {
+      systemName: name.value,
+      primary: { spectralType: primary.spectralType },
+      companions,
+      bodies,
+      settlements: settlements.map(s => ({
+        id: s.id,
+        name: s.name,
+        bodyId: s.bodyId,
+        presence: { guValue: s.presence.guValue, hazard: s.presence.hazard },
+      })),
+      guOverlay,
+      phenomena,
+      ruins: ruins.map(r => ({ id: r.id, remnantType: r.remnantType, location: r.location })),
+      narrativeFacts,
+    },
+    { tone: options.tone, gu: options.gu, distribution: options.distribution, settlements: options.settlements },
+    narrativeFacts,
+    rootRng.fork('graph'),
+  )
+  const reshaped = graphAwareReshape({
+    settlements,
+    phenomena,
+    relationshipGraph,
+    options,
+    rng: rootRng,
+  })
+  const reshapedSettlements = reshaped.settlements
+  const reshapedPhenomena = reshaped.phenomena
+  const systemStory = renderSystemStory(
+    relationshipGraph,
+    rootRng.fork('story'),
+    {
+      tone: options.tone,
+      gu: options.gu,
+      distribution: options.distribution,
+      settlements: options.settlements,
+    },
+  )
 
   return runNoAlienGuard({
     id: knownSystem?.id ?? `system-${options.seed}`,
@@ -3750,12 +3206,12 @@ export function generateSystem(options: GenerationOptions, knownSystem?: Partial
     },
     bodies,
     guOverlay,
-    settlements,
+    settlements: reshapedSettlements,
     ruins,
-    phenomena,
+    phenomena: reshapedPhenomena,
     narrativeFacts,
-    narrativeLines,
-    narrativeThreads,
+    relationshipGraph,
+    systemStory,
     majorHazards: [guOverlay.hazard, fact(primary.activity.value, 'inferred', 'Stellar activity hazard')],
   })
 }

@@ -1,3 +1,5 @@
+import type { SystemRelationshipGraph, SystemStoryOutput } from './lib/generator/graph/types'
+
 export type Confidence = 'confirmed' | 'derived' | 'inferred' | 'gu-layer' | 'human-layer'
 
 export interface Fact<T> {
@@ -12,18 +14,17 @@ export type GeneratorTone = 'balanced' | 'astronomy' | 'cinematic'
 export type GuPreference = 'normal' | 'low' | 'high' | 'fracture'
 export type SettlementDensity = 'normal' | 'sparse' | 'crowded' | 'hub'
 
-export interface NarrativeBias {
-  domains?: Record<string, number>
-  structures?: Record<string, number>
-}
-
 export interface GenerationOptions {
   seed: string
   distribution: GeneratorDistribution
   tone: GeneratorTone
   gu: GuPreference
   settlements: SettlementDensity
-  narrativeBias?: NarrativeBias
+  graphAware?: {
+    settlementWhyHere?: boolean
+    phenomenonNote?: boolean
+    settlementHookSynthesis?: boolean
+  }
 }
 
 export interface PartialKnownStar {
@@ -251,38 +252,6 @@ export interface NarrativeFact {
   sourcePath: string
 }
 
-export interface NarrativeLine {
-  id: string
-  structureId: Fact<string>
-  label: Fact<string>
-  motif?: Fact<string>
-  domains: Array<Fact<string>>
-  text: Fact<string>
-  variables: Record<string, Fact<string>>
-  factsUsed: string[]
-  factsIntroduced: string[]
-}
-
-export type NarrativeBeatKind = 'public-premise' | 'pressure' | 'hidden-cause' | 'choice'
-
-export interface NarrativeBeat {
-  id: string
-  kind: NarrativeBeatKind
-  text: Fact<string>
-  factsUsed: string[]
-}
-
-export interface NarrativeThread {
-  id: string
-  title: Fact<string>
-  domains: Array<Fact<string>>
-  motif?: Fact<string>
-  lineIds: string[]
-  beats: NarrativeBeat[]
-  factsUsed: string[]
-  factsIntroduced: string[]
-}
-
 export interface NoAlienCheck {
   passed: boolean
   note: string
@@ -305,8 +274,8 @@ export interface GeneratedSystem {
   ruins: HumanRemnant[]
   phenomena: SystemPhenomenon[]
   narrativeFacts: NarrativeFact[]
-  narrativeLines: NarrativeLine[]
-  narrativeThreads: NarrativeThread[]
+  relationshipGraph: SystemRelationshipGraph
+  systemStory: SystemStoryOutput
   majorHazards: Array<Fact<string>>
   noAlienCheck: NoAlienCheck
 }

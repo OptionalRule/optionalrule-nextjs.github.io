@@ -1,41 +1,6 @@
-import { Landmark, ScrollText, Zap } from 'lucide-react'
+import { Landmark, Zap } from 'lucide-react'
 import type { GeneratedSystem } from '../types'
 import { SectionHeader, sectionShellClasses } from './visual'
-
-export function NarrativeLinesPanel({ system }: { system: GeneratedSystem }) {
-  return (
-    <section className={sectionShellClasses('human')}>
-      <SectionHeader
-        layer="human"
-        icon={ScrollText}
-        title="Narrative Lines"
-        caption="System-level tensions built from reusable structures."
-      />
-      <div className="mt-4 grid gap-3 md:grid-cols-2 xl:grid-cols-3">
-        {system.narrativeThreads.map((thread) => (
-          <div
-            key={thread.id}
-            className="rounded-md border border-[var(--border-light)] bg-[var(--card-elevated)] p-3 text-sm"
-          >
-            <div className="flex flex-wrap items-start justify-between gap-2">
-              <p className="text-xs uppercase tracking-wide text-[var(--text-tertiary)]">{thread.title.value}</p>
-              <p className="text-xs text-[var(--text-tertiary)]">{thread.domains.map((domain) => domain.value).join(' / ')}</p>
-            </div>
-            <p className="mt-2 leading-relaxed text-[var(--text-secondary)]">{thread.beats[0]?.text.value}</p>
-            <div className="mt-3 space-y-2 border-t border-[var(--border-light)] pt-3">
-              {thread.beats.slice(1).map((beat) => (
-                <p key={beat.id} className="leading-relaxed text-[var(--text-tertiary)]">
-                  <span className="font-medium text-[var(--text-secondary)]">{beat.kind.replace('-', ' ')}:</span>{' '}
-                  {beat.text.value}
-                </p>
-              ))}
-            </div>
-          </div>
-        ))}
-      </div>
-    </section>
-  )
-}
 
 export function HumanRemnantsPanel({ system }: { system: GeneratedSystem }) {
   return (

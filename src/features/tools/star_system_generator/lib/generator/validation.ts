@@ -75,10 +75,6 @@ export const validationCodes = {
   repairApplied: 'REPAIR_APPLIED',
   proseSingularMoonGrammar: 'PROSE_SINGULAR_MOON_GRAMMAR',
   proseRedundantZoneWording: 'PROSE_REDUNDANT_ZONE_WORDING',
-  narrativeNoConcreteFact: 'NARRATIVE_NO_CONCRETE_FACT',
-  narrativeUnknownFactRef: 'NARRATIVE_UNKNOWN_FACT_REF',
-  narrativeUnresolvedSlot: 'NARRATIVE_UNRESOLVED_SLOT',
-  narrativeThreadMissingBeat: 'NARRATIVE_THREAD_MISSING_BEAT',
 } as const
 
 export type ValidationCode = typeof validationCodes[keyof typeof validationCodes] | (string & {})
@@ -586,91 +582,6 @@ export function validateLockedBodyDetail(body: OrbitingBody, path = 'body'): Val
   return validateBodyEnvironment(body, path).filter((finding) => finding.source === validationSources.lockedConflict)
 }
 
-export function validateNarrativeCoherence(system: GeneratedSystem): ValidationFinding[] {
-  const findings: ValidationFinding[] = []
-  const factIds = new Set(system.narrativeFacts.map((factEntry) => factEntry.id))
-  const lineIds = new Set(system.narrativeLines.map((line) => line.id))
-
-  system.narrativeLines.forEach((line, index) => {
-    if (line.text.value.includes('{') || line.text.value.includes('}')) {
-      findings.push(finding({
-        severity: 'error',
-        code: validationCodes.narrativeUnresolvedSlot,
-        path: `narrativeLines[${index}].text`,
-        message: `Narrative line has unresolved template slot: "${line.text.value}".`,
-        targetId: line.id,
-        targetKind: 'system',
-        source: validationSources.generatedError,
-        observed: line.text.value,
-        expected: 'fully resolved narrative text',
-      }))
-    }
-
-    if (!line.factsUsed.length) {
-      findings.push(finding({
-        severity: 'warning',
-        code: validationCodes.narrativeNoConcreteFact,
-        path: `narrativeLines[${index}].factsUsed`,
-        message: `Narrative line "${line.label.value}" does not reference a generated narrative fact.`,
-        targetId: line.id,
-        targetKind: 'system',
-        source: validationSources.audit,
-        expected: 'at least one generated fact reference',
-      }))
-    }
-
-    line.factsUsed.forEach((factId, factIndex) => {
-      if (!factIds.has(factId)) {
-        findings.push(finding({
-          severity: 'error',
-          code: validationCodes.narrativeUnknownFactRef,
-          path: `narrativeLines[${index}].factsUsed[${factIndex}]`,
-          message: `Narrative line references unknown narrative fact "${factId}".`,
-          targetId: line.id,
-          targetKind: 'system',
-          source: validationSources.generatedError,
-          observed: factId,
-          expected: 'known narrative fact id',
-        }))
-      }
-    })
-  })
-
-  system.narrativeThreads.forEach((thread, index) => {
-    if (thread.beats.length < 4) {
-      findings.push(finding({
-        severity: 'warning',
-        code: validationCodes.narrativeThreadMissingBeat,
-        path: `narrativeThreads[${index}].beats`,
-        message: `Narrative thread "${thread.title.value}" has fewer than four beats.`,
-        targetId: thread.id,
-        targetKind: 'system',
-        source: validationSources.audit,
-        observed: thread.beats.length,
-        expected: 'public premise, pressure, hidden cause, and choice beats',
-      }))
-    }
-
-    thread.lineIds.forEach((lineId, lineIndex) => {
-      if (!lineIds.has(lineId)) {
-        findings.push(finding({
-          severity: 'error',
-          code: validationCodes.narrativeUnknownFactRef,
-          path: `narrativeThreads[${index}].lineIds[${lineIndex}]`,
-          message: `Narrative thread references unknown line "${lineId}".`,
-          targetId: thread.id,
-          targetKind: 'system',
-          source: validationSources.generatedError,
-          observed: lineId,
-          expected: 'known narrative line id',
-        }))
-      }
-    })
-  })
-
-  return findings
-}
-
 export function validateSystem(system: GeneratedSystem): ValidationFinding[] {
   return [
     ...validateArchitecture(system),
@@ -681,7 +592,6 @@ export function validateSystem(system: GeneratedSystem): ValidationFinding[] {
       ...validateBodyInterestText(body, `bodies[${index}]`),
     ]),
     ...system.settlements.flatMap((settlement, index) => validateSettlementCompatibility(system, settlement, `settlements[${index}]`)),
-    ...validateNarrativeCoherence(system),
     ...validateNoAlienText(system),
   ]
 }

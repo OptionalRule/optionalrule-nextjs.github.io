@@ -193,7 +193,7 @@ Acceptance checks:
 
 ## Priority 5 - Make Narrative Variable Pools Grammar-Safe
 
-Status: not started.
+Status: subsumed by [NARRATIVE_GRAPH_PLAN.md](./NARRATIVE_GRAPH_PLAN.md). Phase 0 landed `grammarSafety.ts` with slot-shape contracts, boundary-aware capitalization, and the doubled-noun guard; Phases 3–6 routed downstream prose through that layer (per-edge templates, `slotResolver`, graph-aware reshapes for `whyHere` / `phenomenonNote` / `settlementHookSynthesis`). Remaining grammar tuning is tracked as Phase 7 carryovers in the narrative graph plan.
 
 Problem:
 
@@ -223,7 +223,7 @@ Acceptance checks:
 
 ## Priority 6 - Add Local-Scale Institutions
 
-Status: not started.
+Status: subsumed by [NARRATIVE_GRAPH_PLAN.md](./NARRATIVE_GRAPH_PLAN.md). The relationship graph + downstream consumer integration (Phase 6) now surface named factions, GU resources, and host bodies in `whyHere` / `phenomenonNote` / `tagHook` prose, addressing the underlying "lived-in, less dominated by setting-scale powers" goal through structural cohesion rather than a flat institution-name expansion. Authoring more local-institution names remains a separate data-content task and can be revisited if Phase 7 manual review of 20 sample systems shows a gap.
 
 Problem:
 

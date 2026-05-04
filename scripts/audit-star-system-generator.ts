@@ -6,6 +6,8 @@ import {
 } from '../src/features/tools/star_system_generator/lib/generator/domain'
 import { frontierStarTypes, realisticStarTypes } from '../src/features/tools/star_system_generator/lib/generator/tables'
 import { validateSystem, type ValidationFinding, type ValidationSource } from '../src/features/tools/star_system_generator/lib/generator/validation'
+import { isNamedEntity, EDGE_TYPES, HISTORICAL_ELIGIBLE_TYPES } from '../src/features/tools/star_system_generator/lib/generator/graph'
+import type { EdgeType } from '../src/features/tools/star_system_generator/lib/generator/graph'
 import {
   builtForms,
   guFractureFunctionsBySiteCategory as settlementGuFractureFunctionsBySiteCategory,
@@ -84,6 +86,33 @@ interface CorpusStats {
   activityModifiers: Map<string, number>
   reachabilityModifiers: Map<string, number>
   reachabilityClasses: Map<string, number>
+  edgeCounts: number[]
+  spineCounts: number[]
+  edgesByType: Record<EdgeType, number>
+  systemsWithZeroEdges: number
+  spineSummaryLengths: number[]
+  bodyParagraphCounts: number[]
+  bodySentenceCounts: number[]
+  hookCounts: number[]
+  systemsWithEmptyStory: number
+  factionNames: Set<string>
+  historicalEdgeCounts: number[]
+  systemsWithAnyHistorical: number
+  spineEdgesWithHistorical: number
+  spineEdgesEligibleForHistorical: number
+  whyHereGraphAwareCount: number
+  whyHereFallbackCount: number
+  noteGraphAwareCount: number
+  noteFallbackCount: number
+  hookGraphAwareCount: number
+  hookFallbackCount: number
+  historicalSummariesByBucket: Map<string, { count: number; distinct: Set<string> }>
+  spineEdgeTypesAcrossCorpus: Set<EdgeType>
+  fractureSpineSamples: number
+  fracturePhenomenonAnchoredSpines: number
+  astronomySpineSamples: number
+  astronomyNonContestsSpines: number
+  body0ByTone: Map<GeneratorTone, { samples: number; uniqueStrings: Set<string> }>
 }
 
 const auditProfiles = {
@@ -103,6 +132,19 @@ const guPreferences: GuPreference[] = ['low', 'normal', 'high', 'fracture']
 const settlementDensities: SettlementDensity[] = ['sparse', 'normal', 'crowded', 'hub']
 
 const extremeHotZones = new Set(['Furnace', 'Inferno'])
+
+// Phase 7 Task 10 regression guards. See per-system block in auditSystem for
+// rationale and provenance.
+const DOUBLE_PREPOSITION_PATTERN = /\b(during|in|on|at|to)\s+(in|on|at|to|before|after)\b/i
+const UNSTRIPPED_ARTICLE_BRIDGE_PATTERN = /\bThe [a-z]+(?:\s[a-z]+)? took shape\b/
+// Phase 8 Task 2 + post-Phase-8 Task 1: catches spine-assembly joiner
+// regressions where a post-bridge clause's proper-noun head was lowercased
+// mid-sentence. Anchors on bridge punctuation (',' or '—' followed by a
+// space) and a "lowercaseWord SpaceUppercaseWord" pair. The negative
+// lookahead excludes leading English articles ("the"/"a"/"an") which
+// composeSpineSummary deliberately lowercases as part of the article
+// narrowing rule — those are correct, not regressions.
+const LOWERCASE_FACTION_MID_SENTENCE_PATTERN = /[,—] (?!(?:the|a|an) )[a-z][a-zA-Z]+ [A-Z]/
 
 const forbiddenAlienPatterns = [
   /\balien\b/i,
@@ -236,6 +278,11 @@ function makeOptions(
   return {
     ...options,
     seed: makeSeed(options, index),
+    graphAware: {
+      settlementWhyHere: true,
+      phenomenonNote: true,
+      settlementHookSynthesis: true,
+    },
   }
 }
 
@@ -560,6 +607,303 @@ function auditSystem(system: GeneratedSystem, findings: Finding[], stats: Corpus
     increment(stats.settlementScales, settlement.scale.value)
   })
 
+  // Per-consumer trigger-rate detection (Phase 6). Heuristic: relies on stable
+  // Phase 6 templates — fallback whyHere uses ';' joiner; fallback tagHook ends
+  // 'decides who has leverage'; fallback note carries 'Transit:'. If a Phase 7
+  // template change alters those markers, update this block.
+  for (const settlement of system.settlements) {
+    if (settlement.whyHere.value.includes(';')) {
+      stats.whyHereFallbackCount += 1
+    } else {
+      stats.whyHereGraphAwareCount += 1
+    }
+    if (settlement.tagHook.value.includes('decides who has leverage')) {
+      stats.hookFallbackCount += 1
+    } else {
+      stats.hookGraphAwareCount += 1
+    }
+    if (settlement.whyHere.value.includes('{')) {
+      addFinding(findings, 'error', seed, 'prose.unresolvedSlot',
+        `Settlement ${settlement.id} whyHere contains unresolved slot.`)
+    }
+    if (settlement.tagHook.value.includes('{')) {
+      addFinding(findings, 'error', seed, 'prose.unresolvedSlot',
+        `Settlement ${settlement.id} tagHook contains unresolved slot.`)
+    }
+  }
+  for (const phenomenon of system.phenomena) {
+    if (phenomenon.note.value.includes('Transit:')) {
+      stats.noteFallbackCount += 1
+    } else {
+      stats.noteGraphAwareCount += 1
+    }
+    if (phenomenon.note.value.includes('{')) {
+      addFinding(findings, 'error', seed, 'prose.unresolvedSlot',
+        `Phenomenon ${phenomenon.id} note contains unresolved slot.`)
+    }
+  }
+
+  const edgeCount = system.relationshipGraph.edges.length
+  stats.edgeCounts.push(edgeCount)
+  stats.spineCounts.push(system.relationshipGraph.spineEdgeIds.length)
+  if (edgeCount === 0) stats.systemsWithZeroEdges += 1
+  for (const edge of system.relationshipGraph.edges) {
+    stats.edgesByType[edge.type] += 1
+  }
+
+  const presentEdgeCount = system.relationshipGraph.edges.filter(e => e.era === 'present').length
+  if (presentEdgeCount > 12) {
+    addFinding(findings, 'error', seed, 'graph.edges.count',
+      `Present edge count ${presentEdgeCount} exceeds hard ceiling 12`)
+  }
+
+  const historical = system.relationshipGraph.edges.filter(e => e.era === 'historical')
+  stats.historicalEdgeCounts.push(historical.length)
+  if (historical.length > 0) stats.systemsWithAnyHistorical += 1
+
+  const spineEdges = system.relationshipGraph.edges.filter(e =>
+    system.relationshipGraph.spineEdgeIds.includes(e.id),
+  )
+  for (const spine of spineEdges) {
+    const eligible = HISTORICAL_ELIGIBLE_TYPES.has(spine.type)
+    if (!eligible) continue
+    stats.spineEdgesEligibleForHistorical += 1
+    const linked = historical.some(h => h.consequenceEdgeIds?.includes(spine.id))
+    if (linked) stats.spineEdgesWithHistorical += 1
+  }
+
+  const topSpine = system.relationshipGraph.edges.find(
+    e => e.id === system.relationshipGraph.spineEdgeIds[0],
+  )
+  if (topSpine) {
+    stats.spineEdgeTypesAcrossCorpus.add(topSpine.type)
+    if (system.options.gu === 'fracture') {
+      stats.fractureSpineSamples += 1
+      const phenomenonAnchored =
+        topSpine.subject.kind === 'phenomenon' || topSpine.object.kind === 'phenomenon'
+      if (phenomenonAnchored) stats.fracturePhenomenonAnchoredSpines += 1
+    }
+    if (system.options.tone === 'astronomy') {
+      stats.astronomySpineSamples += 1
+      if (topSpine.type !== 'CONTESTS') stats.astronomyNonContestsSpines += 1
+    }
+  }
+
+  for (const edge of system.relationshipGraph.edges) {
+    if (edge.era !== 'historical') continue
+
+    if (!edge.summary || edge.summary === '') {
+      addFinding(findings, 'error', seed, 'history.missingSummary',
+        `Historical edge ${edge.id} has no summary string.`)
+    }
+    if (!edge.consequenceEdgeIds || edge.consequenceEdgeIds.length === 0) {
+      addFinding(findings, 'error', seed, 'history.orphan',
+        `Historical edge ${edge.id} has no consequenceEdgeIds linking to a present spine edge.`)
+    } else {
+      for (const targetId of edge.consequenceEdgeIds) {
+        const target = system.relationshipGraph.edges.find(e => e.id === targetId)
+        if (!target) {
+          addFinding(findings, 'error', seed, 'history.orphan',
+            `Historical edge ${edge.id} references missing consequence edge ${targetId}.`)
+        }
+      }
+    }
+  }
+
+  const edgeKeys = new Set<string>()
+  for (const edge of system.relationshipGraph.edges) {
+    const key = `${edge.subject.id}|${edge.object.id}|${edge.type}`
+    if (edgeKeys.has(key)) {
+      addFinding(findings, 'error', seed, 'graph.edges.duplicate',
+        `Duplicate edge ${key}`)
+    }
+    edgeKeys.add(key)
+  }
+
+  for (const spineId of system.relationshipGraph.spineEdgeIds) {
+    const edge = system.relationshipGraph.edges.find((candidate) => candidate.id === spineId)
+    if (!edge) {
+      addFinding(findings, 'error', seed, 'graph.spine.missing',
+        `Spine edge id ${spineId} not found in edges array`)
+      continue
+    }
+    if (!isNamedEntity(edge.subject) || !isNamedEntity(edge.object)) {
+      addFinding(findings, 'error', seed, 'graph.spine.unnamed',
+        `Spine edge ${edge.id} has un-named endpoint(s)`)
+    }
+  }
+
+  const factIds = new Set(system.narrativeFacts.map((fact) => fact.id))
+  for (const edge of system.relationshipGraph.edges) {
+    for (const fid of edge.groundingFactIds) {
+      if (!factIds.has(fid)) {
+        addFinding(findings, 'error', seed, 'graph.grounding.dangling',
+          `Edge ${edge.id} grounds on non-existent fact ${fid}`)
+      }
+    }
+  }
+
+  const systemFactionNames: string[] = []
+  for (const fact of system.narrativeFacts) {
+    if (fact.kind === 'namedFaction') {
+      stats.factionNames.add(fact.value.value)
+      systemFactionNames.push(fact.value.value)
+    }
+  }
+  const cinematicMarkers = ['Carrion', 'Brothers of', 'Sisters of', 'Pale Saint', 'Vow-Breaker', 'Black Comet', 'Bone Lantern', 'Gravewatch', 'Knife-and-Crown', 'Salt Wound']
+  const astronomyMarkers = ['Bonn-Tycho', 'Stellar Survey', 'Calibration', 'Aperture', 'Pulsar Timing', 'Spectral Census', 'Coronagraph', 'Heliometric', 'Photometric', 'Ephemeris']
+  const hasCinematic = systemFactionNames.some(n => cinematicMarkers.some(m => n.includes(m)))
+  const hasAstronomy = systemFactionNames.some(n => astronomyMarkers.some(m => n.includes(m)))
+  if (hasCinematic && hasAstronomy) {
+    addFinding(findings, 'error', seed, 'narrative.factionCohesionWithinSystem',
+      `System mixes cinematic and astronomy faction registers: ${systemFactionNames.join(', ')}`)
+  }
+
+  stats.spineSummaryLengths.push(system.systemStory.spineSummary.length)
+  stats.bodyParagraphCounts.push(system.systemStory.body.length)
+  stats.bodySentenceCounts.push(
+    system.systemStory.body.reduce((sum, p) => sum + p.split(/(?<=[.!?])\s+/).length, 0),
+  )
+  stats.hookCounts.push(system.systemStory.hooks.length)
+  if (system.systemStory.spineSummary === '' && system.systemStory.body.length === 0) {
+    stats.systemsWithEmptyStory += 1
+  }
+
+  const tone = system.options.tone
+  const body0 = system.systemStory.body[0] ?? ''
+  if (body0 !== '') {
+    let bucket = stats.body0ByTone.get(tone)
+    if (!bucket) {
+      bucket = { samples: 0, uniqueStrings: new Set<string>() }
+      stats.body0ByTone.set(tone, bucket)
+    }
+    bucket.samples += 1
+    bucket.uniqueStrings.add(body0)
+  }
+
+  const allOutputs = [
+    system.systemStory.spineSummary,
+    ...system.systemStory.body,
+    ...system.systemStory.hooks,
+  ]
+
+  for (const output of allOutputs) {
+    if (output.includes('{')) {
+      addFinding(findings, 'error', seed, 'story.unresolvedSlot',
+        `Rendered output contains unresolved slot: "${output}"`)
+    }
+  }
+
+  for (const output of allOutputs) {
+    if (/\b(evidence|records|logs|claims|reports)\s+\S+\s+\1\s+(of|that)\b/i.test(output)) {
+      addFinding(findings, 'error', seed, 'story.doubledNoun',
+        `Doubled-noun pattern: "${output}"`)
+    }
+  }
+
+  // Phase 7 Task 10 regression guards.
+  //
+  // prose.doublePreposition (Task 2): catches era/preposition collisions if a
+  // future template change re-introduces shapes like "during before the
+  // quarantine" or "during in the long quiet". The broad pattern produces 0
+  // findings against the deep-audit corpus (50 systems × 96 option combos),
+  // so we keep the broad form rather than tightening to `during\s+(in|before|after)`.
+  const proseSurfaces = [system.systemStory.spineSummary, ...system.systemStory.body]
+  for (const surface of proseSurfaces) {
+    if (DOUBLE_PREPOSITION_PATTERN.test(surface)) {
+      addFinding(findings, 'error', seed, 'prose.doublePreposition',
+        `Double preposition detected in story prose: "${surface.slice(0, 160)}"`)
+    }
+  }
+
+  // prose.unstrippedArticleInBridge (Task 5): catches phenomenon-typed
+  // DESTABILIZES bridge subjects that fail to strip a leading article. Task 5
+  // changed the bridge subject shape from `properNoun` to `nounPhrase`, so a
+  // phenomenon "the bleed season" now renders as "Bleed season took shape ...".
+  // If the regression re-introduces the unstripped form, the spineSummary will
+  // contain `The <lowercase noun phrase> took shape`. Verified 0 findings
+  // against the deep-audit corpus.
+  if (UNSTRIPPED_ARTICLE_BRIDGE_PATTERN.test(system.systemStory.spineSummary)) {
+    addFinding(findings, 'error', seed, 'prose.unstrippedArticleInBridge',
+      `Bridge subject likely retained leading article: "${system.systemStory.spineSummary.slice(0, 200)}"`)
+  }
+
+  // prose.lowercaseFactionMidSentence (Phase 8 Task 2 + post-Phase-8 Task 1):
+  // see LOWERCASE_FACTION_MID_SENTENCE_PATTERN above for the antipattern shape
+  // and the article-narrowing rationale.
+  if (LOWERCASE_FACTION_MID_SENTENCE_PATTERN.test(system.systemStory.spineSummary)) {
+    addFinding(findings, 'error', seed, 'prose.lowercaseFactionMidSentence',
+      `Spine summary has a lowercased proper-noun head mid-sentence: "${system.systemStory.spineSummary.slice(0, 160)}..."`)
+  }
+
+  // prose.alwaysFirstHistoricalVariant (Task 4 corpus aggregation): track
+  // distinct rendered historical-summary strings per (edgeType, era) bucket.
+  // Evaluation happens after all systems are processed, in auditCoverage.
+  for (const edge of system.relationshipGraph.edges) {
+    if (edge.era !== 'historical' || !edge.summary) continue
+    const bucket = `${edge.type}|${edge.approxEra ?? 'unknown'}`
+    let info = stats.historicalSummariesByBucket.get(bucket)
+    if (!info) {
+      info = { count: 0, distinct: new Set<string>() }
+      stats.historicalSummariesByBucket.set(bucket, info)
+    }
+    info.count += 1
+    info.distinct.add(edge.summary)
+  }
+
+  if (system.systemStory.spineSummary.length > 0
+      && !/[.!?]$/.test(system.systemStory.spineSummary)) {
+    addFinding(findings, 'warning', seed, 'story.terminalPunct',
+      `spineSummary missing terminal punctuation: "${system.systemStory.spineSummary}"`)
+  }
+
+  if (system.systemStory.body.length > 3) {
+    addFinding(findings, 'error', seed, 'story.bodyParagraphs',
+      `Body has ${system.systemStory.body.length} paragraphs; expected <= 3.`)
+  }
+
+  const hiddenEdgeIds = new Set(
+    system.relationshipGraph.edges
+      .filter(e => e.visibility === 'hidden')
+      .map(e => e.id),
+  )
+
+  if (hiddenEdgeIds.size > 0) {
+    const visibleEndpointPairs = new Set<string>()
+    for (const edge of system.relationshipGraph.edges) {
+      if (edge.visibility === 'hidden') continue
+      visibleEndpointPairs.add(`${edge.subject.id}|${edge.object.id}`)
+      visibleEndpointPairs.add(`${edge.object.id}|${edge.subject.id}`)
+    }
+    for (const edge of system.relationshipGraph.edges) {
+      if (edge.visibility !== 'hidden') continue
+      const pairKey = `${edge.subject.id}|${edge.object.id}`
+      if (visibleEndpointPairs.has(pairKey)) continue
+      let leakingPara: string | undefined
+      for (const para of system.systemStory.body) {
+        if (!para.includes(edge.subject.displayName)) continue
+        if (!para.includes(edge.object.displayName)) continue
+        const sentences = para.split(/(?<=[.!?])\s+/)
+        const sentenceWithBoth = sentences.find(s =>
+          s.includes(edge.subject.displayName) && s.includes(edge.object.displayName)
+        )
+        if (sentenceWithBoth) {
+          leakingPara = para
+          break
+        }
+      }
+      if (leakingPara) {
+        addFinding(findings, 'error', seed, 'story.hiddenLeak',
+          `Hidden edge ${edge.id} appears to leak into body paragraph: "${leakingPara}"`)
+      }
+    }
+
+    if (system.systemStory.hooks.length === 0) {
+      addFinding(findings, 'warning', seed, 'story.hiddenWithoutHook',
+        `${hiddenEdgeIds.size} hidden edge(s) but no hooks produced.`)
+    }
+  }
+
   assertText(findings, seed, 'name', system.name.value, 'System name')
   assertText(findings, seed, 'primary.spectralType', system.primary.spectralType.value, 'Primary spectral type')
 
@@ -704,6 +1048,129 @@ function auditCoverage(stats: CorpusStats, findings: Finding[]): void {
 
   auditStarDistribution('realistic', realisticStarTypes, stats, findings)
   auditStarDistribution('frontier', frontierStarTypes, stats, findings)
+
+  const median = percentile(stats.edgeCounts, 0.5)
+  if (median < 3) {
+    addFinding(findings, 'warning', syntheticSeed, 'graph.edges.median',
+      `Median edge count across corpus is ${median}; expected >=3`)
+  }
+
+  // prose.alwaysFirstHistoricalVariant (Task 10, Task 4 regression guard).
+  // Flag any (edgeType × era) bucket of size >= 10 that produced only a single
+  // distinct rendered historical-summary string — a signal that
+  // stableHashString-based variant rotation has degenerated. Verified 0
+  // findings against the deep-audit corpus (each historical bucket renders
+  // 6 distinct variants across ~900 edges per bucket).
+  for (const [bucket, info] of stats.historicalSummariesByBucket) {
+    if (info.count >= 10 && info.distinct.size === 1) {
+      addFinding(findings, 'warning', syntheticSeed, 'prose.alwaysFirstHistoricalVariant',
+        `Historical bucket ${bucket} (${info.count} edges) used only one body variant; rotation may be degenerate.`)
+    }
+  }
+
+  // narrative.factionNameDiversity (Phase B Task 5): pre-Phase-B the corpus
+  // surfaced exactly 10 unique faction names (the static namedFactions[] pool).
+  // Per-tone generateFactions() should produce >=100 across the deep-audit
+  // corpus (3 tones x ~96 stem/suffix combinations). Below the floor signals
+  // a regression in bank size or generator determinism.
+  if (auditProfile === 'deep' && stats.factionNames.size < 100) {
+    addFinding(findings, 'warning', syntheticSeed, 'narrative.factionNameDiversity',
+      `Faction name diversity collapsed to ${stats.factionNames.size} unique names across the deep-audit corpus (${stats.systems} systems). Expected >=100 (Phase B per-tone faction generator regression).`)
+  }
+
+  // narrative.spineToneSensitivity (Phase A Task 7): across a corpus that varies
+  // tone × gu, at least 2 distinct spine edge types should appear. The original
+  // plan called for >=3 but the rule corpus realistically supports 2 spine-eligible
+  // families at scale (CONTESTS for faction-on-faction; DESTABILIZES via the new
+  // phenomenon-anchored sub-fork rules). A regression to 1 distinct type signals
+  // tone weights or eligibility predicate collapse.
+  const spineTypeCount = stats.spineEdgeTypesAcrossCorpus.size
+  if (spineTypeCount < 2) {
+    addFinding(findings, 'warning', syntheticSeed, 'narrative.spineToneSensitivity',
+      `Spine edge types collapsed to ${spineTypeCount} distinct values across the tone × gu corpus: ${[...stats.spineEdgeTypesAcrossCorpus].join(', ')}. Expected >=2 (regression of Phase A tone-aware spine).`)
+  }
+
+  // Per-sub-corpus floors: at least 1 phenomenon-anchored spine across the
+  // fracture sub-corpus (Task 5 predicate widening), and at least 1 non-CONTESTS
+  // spine across the astronomy sub-corpus (Task 4 tone-multiplier).
+  if (stats.fractureSpineSamples > 0 && stats.fracturePhenomenonAnchoredSpines === 0) {
+    addFinding(findings, 'warning', syntheticSeed, 'narrative.spineToneSensitivity',
+      `0/${stats.fractureSpineSamples} fracture-GU systems produced a phenomenon-anchored spine. Expected >=1 (Phase A predicate widening regression).`)
+  }
+  if (stats.astronomySpineSamples > 0 && stats.astronomyNonContestsSpines === 0) {
+    addFinding(findings, 'warning', syntheticSeed, 'narrative.spineToneSensitivity',
+      `0/${stats.astronomySpineSamples} astronomy-tone systems produced a non-CONTESTS spine. Expected >=1 (Phase A tone-multiplier regression).`)
+  }
+
+  if (auditProfile === 'deep') {
+    auditDistributionAxisSensitivity(findings, syntheticSeed)
+    auditDensityAxisSensitivity(findings, syntheticSeed)
+  }
+
+  // narrative.body0VoiceDiversity (Phase C task 7): across the deep-audit
+  // corpus, body[0] strings within a single tone should be >=50% unique.
+  // Catches a regression where one bodyByTone variant collapses to dominate
+  // (e.g. all balanced systems pick body[0] index 0). Threshold 50% leaves
+  // room for legitimate cluster shape variation that produces overlapping
+  // body[0] cluster prose; the floor is set per the plan's task 7 spec.
+  // Only enforced under the deep audit profile (corpus large enough for the
+  // ratio to be meaningful, samples >=100 per tone).
+  if (auditProfile === 'deep') {
+    for (const [tone, bucket] of stats.body0ByTone) {
+      if (bucket.samples < 100) continue
+      const uniquenessRate = bucket.uniqueStrings.size / bucket.samples
+      if (uniquenessRate < 0.5) {
+        addFinding(findings, 'warning', syntheticSeed, 'narrative.body0VoiceDiversity',
+          `body[0] uniqueness for tone=${tone}: ${bucket.uniqueStrings.size}/${bucket.samples} (${Math.round(100 * uniquenessRate)}%, expected >=50%). Variant array may be collapsing.`)
+      }
+    }
+  }
+}
+
+function auditDistributionAxisSensitivity(findings: Finding[], syntheticSeed: string): void {
+  const sampleSize = 100
+  const baseFlags = { settlementWhyHere: true, phenomenonNote: true, settlementHookSynthesis: true }
+  let differing = 0
+  for (let i = 0; i < sampleSize; i++) {
+    const seed = `dist-axis-audit-${i}`
+    const frontier = generateSystem({
+      seed, distribution: 'frontier', tone: 'balanced', gu: 'normal', settlements: 'normal', graphAware: baseFlags,
+    })
+    const realistic = generateSystem({
+      seed, distribution: 'realistic', tone: 'balanced', gu: 'normal', settlements: 'normal', graphAware: baseFlags,
+    })
+    const fb = frontier.systemStory.body[0] ?? ''
+    const rb = realistic.systemStory.body[0] ?? ''
+    if (fb !== rb) differing++
+  }
+  const ratio = differing / sampleSize
+  if (ratio < 0.4) {
+    addFinding(findings, 'warning', syntheticSeed, 'narrative.distributionAxisSensitivity',
+      `Distribution axis differentiation: ${differing}/${sampleSize} seeds (${Math.round(100 * ratio)}%, expected >=40%). Phase D distribution-axis multipliers may have regressed.`)
+  }
+}
+
+function auditDensityAxisSensitivity(findings: Finding[], syntheticSeed: string): void {
+  const sampleSize = 100
+  const baseFlags = { settlementWhyHere: true, phenomenonNote: true, settlementHookSynthesis: true }
+  let differing = 0
+  for (let i = 0; i < sampleSize; i++) {
+    const seed = `density-axis-audit-${i}`
+    const sparse = generateSystem({
+      seed, distribution: 'frontier', tone: 'balanced', gu: 'normal', settlements: 'sparse', graphAware: baseFlags,
+    })
+    const hub = generateSystem({
+      seed, distribution: 'frontier', tone: 'balanced', gu: 'normal', settlements: 'hub', graphAware: baseFlags,
+    })
+    const sb = sparse.systemStory.body[0] ?? ''
+    const hb = hub.systemStory.body[0] ?? ''
+    if (sb !== hb) differing++
+  }
+  const ratio = differing / sampleSize
+  if (ratio < 0.4) {
+    addFinding(findings, 'warning', syntheticSeed, 'narrative.densityAxisSensitivity',
+      `Density axis differentiation: ${differing}/${sampleSize} seeds (${Math.round(100 * ratio)}%, expected >=40%). Phase D density-conditioned cluster pulling may have regressed.`)
+  }
 }
 
 function auditStarDistribution(
@@ -889,6 +1356,33 @@ const stats: CorpusStats = {
   activityModifiers: new Map(),
   reachabilityModifiers: new Map(),
   reachabilityClasses: new Map(),
+  edgeCounts: [],
+  spineCounts: [],
+  edgesByType: Object.fromEntries(EDGE_TYPES.map(t => [t, 0])) as Record<EdgeType, number>,
+  systemsWithZeroEdges: 0,
+  spineSummaryLengths: [],
+  bodyParagraphCounts: [],
+  bodySentenceCounts: [],
+  hookCounts: [],
+  systemsWithEmptyStory: 0,
+  factionNames: new Set<string>(),
+  historicalEdgeCounts: [],
+  systemsWithAnyHistorical: 0,
+  spineEdgesWithHistorical: 0,
+  spineEdgesEligibleForHistorical: 0,
+  whyHereGraphAwareCount: 0,
+  whyHereFallbackCount: 0,
+  noteGraphAwareCount: 0,
+  noteFallbackCount: 0,
+  hookGraphAwareCount: 0,
+  hookFallbackCount: 0,
+  historicalSummariesByBucket: new Map(),
+  spineEdgeTypesAcrossCorpus: new Set<EdgeType>(),
+  fractureSpineSamples: 0,
+  fracturePhenomenonAnchoredSpines: 0,
+  astronomySpineSamples: 0,
+  astronomyNonContestsSpines: 0,
+  body0ByTone: new Map<GeneratorTone, { samples: number; uniqueStrings: Set<string> }>(),
 }
 
 for (const distribution of distributions) {
@@ -923,9 +1417,68 @@ console.log(`Unique body names: ${uniqueSummary(stats.bodyNames, stats.bodies)}`
 console.log(`Unique first-body names: ${uniqueSummary(stats.firstBodyNames, stats.systems)}`)
 console.log(`Unique moon names: ${uniqueSummary(stats.moonNames, stats.moons)}`)
 console.log(`Unique settlement names: ${uniqueSummary(stats.settlementNames, stats.settlements)}`)
+console.log(`Unique faction names: ${stats.factionNames.size} across ${stats.systems} systems`)
 console.log(`Body interest phrase openings: ${uniqueSummary(stats.bodyInterestPhrases, stats.bodies)}`)
 console.log(`Settlement reason phrase openings: ${uniqueSummary(stats.settlementWhyHerePhrases, stats.settlements)}`)
 console.log(`Settlement tag hook phrase openings: ${uniqueSummary(stats.settlementTagHookPhrases, stats.settlements)}`)
+console.log(`Edges per system (p10/p50/p90): ${formatPercentiles(stats.edgeCounts)}`)
+console.log(`Spine size per system (p10/p50/p90): ${formatPercentiles(stats.spineCounts)}`)
+console.log(`Systems with zero edges: ${stats.systemsWithZeroEdges} / ${stats.systems}`)
+for (const [type, count] of Object.entries(stats.edgesByType)) {
+  if (count > 0) console.log(`  edges of type ${type}: ${count}`)
+}
+console.log(`Historical edges per system (p10/p50/p90): ${formatPercentiles(stats.historicalEdgeCounts)}`)
+console.log(`Systems with any historical edge: ${stats.systemsWithAnyHistorical} / ${stats.systems}`)
+if (stats.spineEdgesEligibleForHistorical > 0) {
+  const rate = stats.spineEdgesWithHistorical / stats.spineEdgesEligibleForHistorical
+  console.log(`Spine edges with attached history: ${(rate * 100).toFixed(1)}% (${stats.spineEdgesWithHistorical}/${stats.spineEdgesEligibleForHistorical})`)
+}
+const totalSettlements = stats.whyHereGraphAwareCount + stats.whyHereFallbackCount
+if (totalSettlements > 0) {
+  const whyHerePct = (stats.whyHereGraphAwareCount / totalSettlements * 100).toFixed(1)
+  console.log(`whyHere graph-aware rate: ${whyHerePct}% (${stats.whyHereGraphAwareCount}/${totalSettlements})`)
+  // Phase 7 Task 7: deep-run baseline ~54%. The fallback population is dominated by
+  // structural unavoidability — the HOSTS rule fires for ~100% of missing settlements
+  // (they sit on named bodies) but the per-system edge-selection budget
+  // (TOTAL_HARD_CEILING=12, PERIPHERAL_PER_TYPE_CAP=2 in graph/score.ts) drops most
+  // candidates before the graph is finalized. ~46% of missing settlements end up with
+  // zero incident edges; ~41% additionally have no fn/crisis keyword overlap with the
+  // gu resource (no DEPENDS_ON candidate at all). Broadening rule predicates would not
+  // help — the cap is structural. Phase 7 accepts ~50–70% as the realistic ceiling.
+  // Below 50% indicates regression in the host or depends-on rule files.
+  const whyHereRatio = stats.whyHereGraphAwareCount / totalSettlements
+  if (whyHereRatio < 0.5) {
+    console.log(`  WARN: whyHere graph-aware rate below realistic-ceiling floor (50%) — possible regression in HOSTS or DEPENDS_ON rules.`)
+  }
+  const hookPct = (stats.hookGraphAwareCount / totalSettlements * 100).toFixed(1)
+  console.log(`tagHook graph-aware rate: ${hookPct}% (${stats.hookGraphAwareCount}/${totalSettlements})`)
+}
+const totalPhenomena = stats.noteGraphAwareCount + stats.noteFallbackCount
+if (totalPhenomena > 0) {
+  const notePct = (stats.noteGraphAwareCount / totalPhenomena * 100).toFixed(1)
+  console.log(`phenomenonNote graph-aware rate: ${notePct}% (${stats.noteGraphAwareCount}/${totalPhenomena})`)
+}
+console.log(`Story spineSummary length (p10/p50/p90): ${formatPercentiles(stats.spineSummaryLengths)} chars`)
+console.log(`Story body paragraph count (p10/p50/p90): ${formatPercentiles(stats.bodyParagraphCounts)}`)
+console.log(`Story body sentence count (p10/p50/p90): ${formatPercentiles(stats.bodySentenceCounts)}`)
+console.log(`Story hook count (p10/p50/p90): ${formatPercentiles(stats.hookCounts)}`)
+console.log(`Systems with empty story: ${stats.systemsWithEmptyStory} / ${stats.systems}`)
+const emptyStoryRate = stats.systems > 0 ? stats.systemsWithEmptyStory / stats.systems : 0
+console.log(`Empty-story rate: ${(emptyStoryRate * 100).toFixed(2)}% (${stats.systemsWithEmptyStory}/${stats.systems})`)
+// Phase 7 Task 9: deep-run baseline ~6.77%. Diagnostic across 4800 systems
+// (full distribution × tone × gu × density grid, 50 per option) showed empty-story
+// systems are structurally homogeneous: 100% of empty-story systems have zero
+// settlements (sparse density only — 27.08% of sparse systems roll 0 settlements;
+// non-sparse densities never produce empty stories). Median spineEdges=0,
+// median edges=2 vs corpus median 13. Named-faction count is baseline (10/10):
+// the bottleneck isn't entity inventory but the absence of a settlement anchor —
+// there is no human-layer endpoint to surface named-on-named compacts against.
+// Empty story is the *correct* outcome for these systems. Phase 7 accepts ~6.77%
+// as the structural floor. Above 10% indicates regression in entity inventory or
+// rule generation (Phase 3 carryover).
+if (emptyStoryRate > 0.10) {
+  console.log(`  WARN: empty-story rate above structural floor (10%) — possible regression in entity inventory or rule generation.`)
+}
 console.log(`Errors: ${errors.length}`)
 console.log(`Warnings: ${warnings.length}`)
 console.log(`Locked fact conflicts: ${lockedConflicts.length}`)
