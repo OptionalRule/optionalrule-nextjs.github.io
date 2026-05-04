@@ -16,7 +16,7 @@ export function generateFactions(
   tone: GeneratorTone,
   count: number,
 ): GeneratedFaction[] {
-  const bank = BANK_BY_TONE[tone]
+  const bank = BANK_BY_TONE[tone] ?? balancedBank
   const out: GeneratedFaction[] = []
   const usedNames = new Set<string>()
 
