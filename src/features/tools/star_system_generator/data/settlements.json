@@ -22,7 +22,14 @@
       "encounterSites": "Local scene locations for play.",
       "encounterSitesByScale": "Scale-specific encounter-site overrides.",
       "encounterSitesByFunctionKeyword": "Function-keyword rules that add specialized encounter sites.",
-      "scaleTable": "d12 settlement scale table."
+      "scaleTable": "d12 settlement scale table (LEGACY — superseded by populationTable + habitationPatternDefaults; retained during Phase A migration).",
+      "authorityByHabitationPattern": "Authority overrides keyed by habitation pattern (Automated, Abandoned).",
+      "conditionByHabitationPattern": "Condition overrides keyed by habitation pattern (Automated, Abandoned).",
+      "crisisByHabitationPattern": "Crisis overrides keyed by habitation pattern (Automated, Abandoned).",
+      "hiddenTruthByHabitationPattern": "Hidden-truth overrides keyed by habitation pattern (Automated, Abandoned).",
+      "encounterSitesByHabitationPattern": "Encounter-site overrides keyed by habitation pattern (Automated, Abandoned).",
+      "populationTable": "d10 settlement population table (magnitude only).",
+      "habitationPatternDefaults": "Default habitation pattern derived from siteCategory."
     }
   },
   "siteCategories": [
@@ -722,5 +729,47 @@
     "10+ million people",
     "Distributed swarm settlement",
     "Population unknown or deliberately falsified"
-  ]
+  ],
+  "populationTable": [
+    "Minimal (<5)",
+    "1-20",
+    "21-100",
+    "101-1,000",
+    "1,001-10,000",
+    "10,001-100,000",
+    "100,001-1 million",
+    "1-10 million",
+    "10+ million",
+    "Unknown"
+  ],
+  "habitationPatternDefaults": {
+    "Surface settlement": "Surface settlement",
+    "Orbital station": "Orbital station",
+    "Asteroid or belt base": "Asteroid or belt base",
+    "Moon base": "Moon base",
+    "Deep-space platform": "Deep-space platform",
+    "Gate or route node": "Gate or route node",
+    "Mobile site": "Distributed swarm",
+    "Derelict or restricted site": "Abandoned"
+  },
+  "authorityByHabitationPattern": {
+    "Automated": ["AI-supervised technocracy", "Gate authority", "Sol-interdiction compliance office", "Unknown sponsor", "Official records are falsified"],
+    "Abandoned": ["No recognized authority", "Quarantine authority", "Salvage court", "Unknown sponsor", "Official records are falsified"]
+  },
+  "conditionByHabitationPattern": {
+    "Automated": ["Efficient but joyless", "Understaffed", "Life support near failure", "Hidden AI incident", "Under quarantine", "Officially safe, actually hazardous"],
+    "Abandoned": ["Half-abandoned", "Recently evacuated", "Reoccupied ruin", "Decaying first-wave infrastructure", "Hidden reason it cannot be abandoned"]
+  },
+  "crisisByHabitationPattern": {
+    "Automated": ["Life-support cascade", "AI refuses unsafe operation", "Illegal AI expansion discovered", "Sabotage of the refinery, gate, or AI systems", "Essential expert missing", "The base broadcasts two contradictory distress calls", "Critical spare-parts vault is empty", "Route weather forecast failed publicly", "AI witness testimony becomes publicly accessible"],
+    "Abandoned": ["Salvage claim dispute", "Old first-wave map found", "Ship full of dead arrives", "A whole district goes silent", "The base broadcasts two contradictory distress calls", "Crisis is staged to hide something worse", "Failed garden dome breaches containment", "Maintenance logs prove the disaster was forecast", "Evacuation ark launches without most of its manifest"]
+  },
+  "hiddenTruthByHabitationPattern": {
+    "Automated": ["The local AI deleted evidence", "The local AI preserved forbidden evidence", "The site is an illegal AI lab", "The AI is sane; the humans are not listening", "The system official survey is deliberately wrong", "The route weather board sells safe windows twice", "The maintenance logs were rewritten after the breach", "The AI witness has already testified in a sealed simulation"],
+    "Abandoned": ["The official death toll is false", "A first-wave expedition survived in hiding", "The ghosts are old human recordings", "The settlement has an evacuation ark nobody knows about", "The quarantine is political", "The mirror swarm is being kept broken for legal leverage", "The evacuation ark manifest contains people who never existed", "The casualty register merges two different disasters"]
+  },
+  "encounterSitesByHabitationPattern": {
+    "Automated": ["AI core vault", "Drone hangar", "Closed habitat ring", "Place the maps say does not exist", "Route weather board", "AI witness vault", "Life-support spine"],
+    "Abandoned": ["Old first-wave command bunker", "Hidden launch bay", "Half-flooded maintenance tunnels", "Place the maps say does not exist", "Dead mirror-control room", "Public casualty register", "Sealed evidence room"]
+  }
 }

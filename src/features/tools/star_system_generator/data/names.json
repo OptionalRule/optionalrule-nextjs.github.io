@@ -1021,7 +1021,9 @@
       ],
       "exact": {
         "Automated only": "Array",
-        "Abandoned": "Remnant"
+        "Automated": "Array",
+        "Abandoned": "Remnant",
+        "Distributed swarm": "Swarm"
       },
       "default": "Hold"
     }

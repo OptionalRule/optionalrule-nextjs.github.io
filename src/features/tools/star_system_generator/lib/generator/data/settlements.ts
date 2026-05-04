@@ -1,4 +1,5 @@
 import settlementsData from '../../../data/settlements.json'
+import type { SettlementHabitationPattern, SettlementPopulation } from '../../../types'
 
 export type SettlementSiteCategory =
   | 'Surface settlement'
@@ -61,6 +62,13 @@ interface SettlementsData {
   encounterSitesByScale: Record<string, readonly string[]>
   encounterSitesByFunctionKeyword: readonly KeywordSitePool[]
   scaleTable: readonly string[]
+  populationTable: readonly SettlementPopulation[]
+  habitationPatternDefaults: Record<SettlementSiteCategory, SettlementHabitationPattern>
+  authorityByHabitationPattern: Record<string, readonly string[]>
+  conditionByHabitationPattern: Record<string, readonly string[]>
+  crisisByHabitationPattern: Record<string, readonly string[]>
+  hiddenTruthByHabitationPattern: Record<string, readonly string[]>
+  encounterSitesByHabitationPattern: Record<string, readonly string[]>
 }
 
 const typedSettlementsData = settlementsData as SettlementsData
@@ -104,3 +112,10 @@ export const encounterSites = typedSettlementsData.encounterSites
 export const encounterSitesByScale = typedSettlementsData.encounterSitesByScale
 export const encounterSitesByFunctionKeyword = typedSettlementsData.encounterSitesByFunctionKeyword
 export const settlementScaleTable = typedSettlementsData.scaleTable
+export const settlementPopulationTable = typedSettlementsData.populationTable
+export const habitationPatternDefaults = typedSettlementsData.habitationPatternDefaults
+export const settlementAuthorityByHabitationPattern = typedSettlementsData.authorityByHabitationPattern
+export const settlementConditionByHabitationPattern = typedSettlementsData.conditionByHabitationPattern
+export const settlementCrisisByHabitationPattern = typedSettlementsData.crisisByHabitationPattern
+export const hiddenTruthByHabitationPattern = typedSettlementsData.hiddenTruthByHabitationPattern
+export const encounterSitesByHabitationPattern = typedSettlementsData.encounterSitesByHabitationPattern

@@ -14,6 +14,29 @@ export type GeneratorTone = 'balanced' | 'astronomy' | 'cinematic'
 export type GuPreference = 'normal' | 'low' | 'high' | 'fracture'
 export type SettlementDensity = 'normal' | 'sparse' | 'crowded' | 'hub'
 
+export type SettlementPopulation =
+  | 'Minimal (<5)'
+  | '1-20'
+  | '21-100'
+  | '101-1,000'
+  | '1,001-10,000'
+  | '10,001-100,000'
+  | '100,001-1 million'
+  | '1-10 million'
+  | '10+ million'
+  | 'Unknown'
+
+export type SettlementHabitationPattern =
+  | 'Surface settlement'
+  | 'Orbital station'
+  | 'Asteroid or belt base'
+  | 'Moon base'
+  | 'Deep-space platform'
+  | 'Gate or route node'
+  | 'Distributed swarm'
+  | 'Automated'
+  | 'Abandoned'
+
 export interface GenerationOptions {
   seed: string
   distribution: GeneratorDistribution
@@ -184,6 +207,8 @@ export interface Settlement {
   location: Fact<string>
   function: Fact<string>
   scale: Fact<string>
+  population: Fact<SettlementPopulation>
+  habitationPattern: Fact<SettlementHabitationPattern>
   authority: Fact<string>
   builtForm: Fact<string>
   aiSituation: Fact<string>

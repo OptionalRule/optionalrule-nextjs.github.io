@@ -15,6 +15,8 @@ import type {
   PartialKnownSystem,
   RingSystem,
   Settlement,
+  SettlementHabitationPattern,
+  SettlementPopulation,
   Star,
   StellarCompanion,
   SystemPhenomenon,
@@ -86,6 +88,7 @@ import {
   extractionFunctions,
   giantOrbitalFunctions,
   guFractureFunctionsBySiteCategory,
+  habitationPatternDefaults,
   hiddenTruthByScale,
   hiddenTruths,
   mobileFunctions,
@@ -106,6 +109,7 @@ import {
   surveyFunctions,
   surfaceIceFunctions,
   type SettlementLocationOption,
+  type SettlementSiteCategory,
 } from './data/settlements'
 import {
   ageStates,
@@ -2215,6 +2219,35 @@ function settlementScaleFromRoll(rng: SeededRng, presence: SettlementPresenceSco
   return settlementScaleTable[roll - 1]
 }
 
+const SCALE_TO_POPULATION: Record<string, SettlementPopulation> = {
+  Abandoned: 'Unknown',
+  'Automated only': 'Minimal (<5)',
+  '1-20 people': '1-20',
+  '21-100 people': '21-100',
+  '101-1,000 people': '101-1,000',
+  '1,001-10,000 people': '1,001-10,000',
+  '10,001-100,000 people': '10,001-100,000',
+  '100,001-1 million people': '100,001-1 million',
+  '1-10 million people': '1-10 million',
+  '10+ million people': '10+ million',
+  'Distributed swarm settlement': 'Unknown',
+  'Population unknown or deliberately falsified': 'Unknown',
+}
+
+function populationFromScaleString(scale: string): SettlementPopulation {
+  return SCALE_TO_POPULATION[scale] ?? 'Unknown'
+}
+
+function habitationPatternFromScaleAndCategory(
+  scale: string,
+  siteCategory: SettlementSiteCategory,
+): SettlementHabitationPattern {
+  if (scale === 'Abandoned') return 'Abandoned'
+  if (scale === 'Automated only') return 'Automated'
+  if (scale === 'Distributed swarm settlement') return 'Distributed swarm'
+  return habitationPatternDefaults[siteCategory]
+}
+
 function chooseSettlementAuthority(rng: SeededRng, scale: string): string {
   if (settlementAuthorityByScale[scale]) return pickOne(rng, settlementAuthorityByScale[scale])
   return pickOne(rng, settlementAuthorities)
@@ -2559,6 +2592,8 @@ function generateSettlements(
       location: fact(locationOption.label, 'human-layer', 'MASS-GU 18.3 site location table with body constraints'),
       function: fact(settlementFunction, 'human-layer', 'MASS-GU settlement function table with body constraints'),
       scale: fact(scale, 'human-layer', 'MASS-GU 18.2 settlement scale d12 table'),
+      population: fact(populationFromScaleString(scale), 'human-layer', 'Phase A bridge: derived from legacy scale string'),
+      habitationPattern: fact(habitationPatternFromScaleAndCategory(scale, locationOption.category), 'human-layer', 'Phase A bridge: derived from legacy scale + siteCategory'),
       authority: fact(authority, 'human-layer', 'MASS-GU 18.5 authority table'),
       builtForm: fact(builtForm, 'human-layer', 'MASS-GU built form table with location/function constraints'),
       aiSituation: fact(pickOne(rng, aiSituations), 'human-layer', 'MASS-GU AI situation table'),
