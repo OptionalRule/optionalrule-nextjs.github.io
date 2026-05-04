@@ -31,7 +31,22 @@ const baseOptions: GenerationOptions = {
 }
 
 describe('graphAwareReshape', () => {
-  it('returns input unchanged when no flags are set', () => {
+  it('iterates settlements unconditionally (whyHere runs without flags)', () => {
+    const settlements: Settlement[] = [minimalSettlement('s1'), minimalSettlement('s2')]
+    const phenomena: SystemPhenomenon[] = [minimalPhenomenon('p1')]
+    const result = graphAwareReshape({
+      settlements, phenomena,
+      relationshipGraph: emptyGraph(),
+      options: baseOptions,
+      rng: createSeededRng('reshape-test'),
+    })
+    expect(result.settlements).not.toBe(settlements)
+    expect(result.settlements).toEqual(settlements)
+    expect(result.settlements[0]).toBe(settlements[0])
+    expect(result.settlements[1]).toBe(settlements[1])
+  })
+
+  it('preserves phenomena reference when phenomenonNote flag is off', () => {
     const settlements: Settlement[] = [minimalSettlement('s1')]
     const phenomena: SystemPhenomenon[] = [minimalPhenomenon('p1')]
     const result = graphAwareReshape({
@@ -40,11 +55,10 @@ describe('graphAwareReshape', () => {
       options: baseOptions,
       rng: createSeededRng('reshape-test'),
     })
-    expect(result.settlements).toBe(settlements)
     expect(result.phenomena).toBe(phenomena)
   })
 
-  it('returns input unchanged when graphAware is empty object', () => {
+  it('preserves phenomena reference when graphAware is empty object', () => {
     const settlements: Settlement[] = [minimalSettlement('s1')]
     const phenomena: SystemPhenomenon[] = [minimalPhenomenon('p1')]
     const result = graphAwareReshape({
@@ -53,21 +67,7 @@ describe('graphAwareReshape', () => {
       options: { ...baseOptions, graphAware: {} },
       rng: createSeededRng('reshape-test'),
     })
-    expect(result.settlements).toBe(settlements)
     expect(result.phenomena).toBe(phenomena)
-  })
-
-  it('iterates settlements when settlementWhyHere flag is on', () => {
-    const settlements: Settlement[] = [minimalSettlement('s1'), minimalSettlement('s2')]
-    const phenomena: SystemPhenomenon[] = [minimalPhenomenon('p1')]
-    const result = graphAwareReshape({
-      settlements, phenomena,
-      relationshipGraph: emptyGraph(),
-      options: { ...baseOptions, graphAware: { settlementWhyHere: true } },
-      rng: createSeededRng('reshape-test'),
-    })
-    expect(result.settlements).not.toBe(settlements)
-    expect(result.settlements).toEqual(settlements)
   })
 
   it('iterates phenomena when phenomenonNote flag is on', () => {
@@ -83,19 +83,19 @@ describe('graphAwareReshape', () => {
     expect(result.phenomena).toEqual(phenomena)
   })
 
-  it('does not iterate phenomena when only settlement flags are on', () => {
+  it('does not iterate phenomena when only settlementHookSynthesis flag is on', () => {
     const settlements: Settlement[] = [minimalSettlement('s1')]
     const phenomena: SystemPhenomenon[] = [minimalPhenomenon('p1')]
     const result = graphAwareReshape({
       settlements, phenomena,
       relationshipGraph: emptyGraph(),
-      options: { ...baseOptions, graphAware: { settlementWhyHere: true } },
+      options: { ...baseOptions, graphAware: { settlementHookSynthesis: true } },
       rng: createSeededRng('reshape-test'),
     })
     expect(result.phenomena).toBe(phenomena)
   })
 
-  it('does not iterate settlements when only phenomenonNote flag is on', () => {
+  it('iterates settlements even when only phenomenonNote flag is on', () => {
     const settlements: Settlement[] = [minimalSettlement('s1')]
     const phenomena: SystemPhenomenon[] = [minimalPhenomenon('p1')]
     const result = graphAwareReshape({
@@ -104,7 +104,8 @@ describe('graphAwareReshape', () => {
       options: { ...baseOptions, graphAware: { phenomenonNote: true } },
       rng: createSeededRng('reshape-test'),
     })
-    expect(result.settlements).toBe(settlements)
+    expect(result.settlements).not.toBe(settlements)
+    expect(result.settlements[0]).toBe(settlements[0])
   })
 
   it('forks rng with label "graph-prose"', () => {
@@ -113,13 +114,13 @@ describe('graphAwareReshape', () => {
     const resultA = graphAwareReshape({
       settlements, phenomena,
       relationshipGraph: emptyGraph(),
-      options: { ...baseOptions, graphAware: { settlementWhyHere: true } },
+      options: baseOptions,
       rng: createSeededRng('fork-label-test'),
     })
     const resultB = graphAwareReshape({
       settlements, phenomena,
       relationshipGraph: emptyGraph(),
-      options: { ...baseOptions, graphAware: { settlementWhyHere: true } },
+      options: baseOptions,
       rng: createSeededRng('fork-label-test'),
     })
     expect(resultA).toEqual(resultB)
@@ -128,7 +129,7 @@ describe('graphAwareReshape', () => {
   it('preserves determinism: same input + same seed → identical output', () => {
     const settlements: Settlement[] = [minimalSettlement('s1'), minimalSettlement('s2')]
     const phenomena: SystemPhenomenon[] = [minimalPhenomenon('p1')]
-    const options: GenerationOptions = { ...baseOptions, graphAware: { settlementWhyHere: true, phenomenonNote: true } }
+    const options: GenerationOptions = { ...baseOptions, graphAware: { phenomenonNote: true } }
     const resultA = graphAwareReshape({
       settlements, phenomena,
       relationshipGraph: emptyGraph(),
@@ -271,24 +272,8 @@ describe('graphAwareReshape — phenomenonNote integration', () => {
 })
 
 describe('graphAwareReshape — settlementWhyHere integration', () => {
-  it('replaces whyHere when settlementWhyHere flag is on AND incident DEPENDS_ON exists', () => {
+  it('replaces whyHere when incident DEPENDS_ON exists', () => {
     const settlement = settlementWithAnchor('s1', 'Orison Hold')
-    const graph = graphWithEdges([makeDependsOnEdge('s1', 'gu1')])
-    const result = graphAwareReshape({
-      settlements: [settlement],
-      phenomena: [],
-      relationshipGraph: graph,
-      options: { ...baseOptions, graphAware: { settlementWhyHere: true } },
-      rng: createSeededRng('test'),
-    })
-    expect(result.settlements[0].whyHere.value).toContain('Orison Hold')
-    expect(result.settlements[0].whyHere.value).toContain('chiral ice belt')
-    expect(result.settlements[0].whyHere.confidence).toBe('inferred')
-  })
-
-  it('preserves whyHere when settlementWhyHere flag is off', () => {
-    const settlement = settlementWithAnchor('s1', 'Orison Hold')
-    const originalWhyHere = settlement.whyHere
     const graph = graphWithEdges([makeDependsOnEdge('s1', 'gu1')])
     const result = graphAwareReshape({
       settlements: [settlement],
@@ -297,17 +282,19 @@ describe('graphAwareReshape — settlementWhyHere integration', () => {
       options: baseOptions,
       rng: createSeededRng('test'),
     })
-    expect(result.settlements[0].whyHere).toBe(originalWhyHere)
+    expect(result.settlements[0].whyHere.value).toContain('Orison Hold')
+    expect(result.settlements[0].whyHere.value).toContain('chiral ice belt')
+    expect(result.settlements[0].whyHere.confidence).toBe('inferred')
   })
 
-  it('preserves whyHere when flag on but no incident edges', () => {
+  it('preserves whyHere when no incident edges exist', () => {
     const settlement = settlementWithAnchor('s1', 'Orison Hold')
     const originalWhyHere = settlement.whyHere
     const result = graphAwareReshape({
       settlements: [settlement],
       phenomena: [],
       relationshipGraph: emptyGraph(),
-      options: { ...baseOptions, graphAware: { settlementWhyHere: true } },
+      options: baseOptions,
       rng: createSeededRng('test'),
     })
     expect(result.settlements[0].whyHere).toBe(originalWhyHere)

@@ -23,18 +23,8 @@ export interface GraphAwareReshapeResult {
 
 export function graphAwareReshape(input: GraphAwareReshapeInput): GraphAwareReshapeResult {
   const flags = input.options.graphAware ?? {}
-  const noFlags =
-    !flags.settlementWhyHere &&
-    !flags.phenomenonNote &&
-    !flags.settlementHookSynthesis
-  if (noFlags) {
-    return { settlements: input.settlements, phenomena: input.phenomena }
-  }
-
   const rng = input.rng.fork('graph-prose')
-  const settlements = (flags.settlementWhyHere || flags.settlementHookSynthesis)
-    ? input.settlements.map(s => reshapeSettlement(s, input.relationshipGraph, flags, rng))
-    : input.settlements
+  const settlements = input.settlements.map(s => reshapeSettlement(s, input.relationshipGraph, flags, rng))
   const phenomena = flags.phenomenonNote
     ? input.phenomena.map(p => reshapePhenomenon(p, input.relationshipGraph, rng))
     : input.phenomena
@@ -49,13 +39,11 @@ function reshapeSettlement(
   _rng: SeededRng,
 ): Settlement {
   let updated = settlement
-  if (flags.settlementWhyHere) {
-    const newWhyHere = graphAwareSettlementWhyHere(updated, graph)
-    if (newWhyHere !== null) {
-      updated = {
-        ...updated,
-        whyHere: fact(newWhyHere, 'inferred', 'Graph-aware reshape from settlementWhyHere'),
-      }
+  const newWhyHere = graphAwareSettlementWhyHere(updated, graph)
+  if (newWhyHere !== null) {
+    updated = {
+      ...updated,
+      whyHere: fact(newWhyHere, 'inferred', 'Graph-aware reshape from settlementWhyHere'),
     }
   }
   if (flags.settlementHookSynthesis) {

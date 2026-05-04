@@ -803,7 +803,7 @@ describe('generateSystem', () => {
       expect(settlement.anchorName.value).toBeTruthy()
       expect(settlement.anchorDetail.value).toBeTruthy()
       expect(settlement.whyHere.value).toContain(settlement.anchorName.value)
-      expect(settlement.whyHere.source).toContain('MASS-GU 18.1')
+      expect(settlement.whyHere.source).toMatch(/MASS-GU 18\.1|Graph-aware reshape/)
       expect(settlement.siteCategory.value).toBeTruthy()
       expect(settlement.presence.score.value).toBeGreaterThan(0)
       expect(settlement.presence.roll.value).toBeGreaterThanOrEqual(2)

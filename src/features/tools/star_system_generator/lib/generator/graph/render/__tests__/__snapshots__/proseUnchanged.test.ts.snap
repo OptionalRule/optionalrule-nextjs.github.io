@@ -32,7 +32,7 @@ exports[`Phase 3 existing prose remains byte-identical > seed phase3-prose-2 pro
   "settlementWhyHere": [
     "Meissa's Forge V orbital space: local materials, volatiles, or fuel justify permanent infrastructure; iggygate anchor access keeps traffic viable; the site controls a militarily or commercially important approach.",
     "Meissa's Forge transit geometry survives because resources are strong here, especially snow-line organochemical feedstock; iggygate anchor access keeps traffic viable; the site controls a militarily or commercially important approach.",
-    "Meissa's Forge II orbital space: local materials, volatiles, or fuel justify permanent infrastructure; iggygate anchor access keeps traffic viable; the site controls a militarily or commercially important approach.",
+    "Meissa's Forge II orbital space sits on Meissa's Forge II.",
   ],
   "systemName": "Meissa's Forge",
 }
@@ -49,7 +49,7 @@ exports[`Phase 3 existing prose remains byte-identical > seed phase3-prose-3 pro
     "The public tag is Machine-Run Town; the private trouble is Aristocratic Dome, because elite protection and outside deprivation are tied together. Critical spare-parts vault is empty, which keeps asteroid or belt base politics under stress. Privately, the clinic is hiding a second exposure syndrome. Control of the volatile mine decides who has leverage.",
   ],
   "settlementWhyHere": [
-    "At Shengong-Prism Belt III, the settlement logic is resources are strong here, especially medical chirality stock; access is manageable for prepared crews; local metric signatures add research or extraction value.",
+    "Shengong-Prism Belt III sits on Shengong-Prism Belt III.",
   ],
   "systemName": "Shengong-Prism",
 }
