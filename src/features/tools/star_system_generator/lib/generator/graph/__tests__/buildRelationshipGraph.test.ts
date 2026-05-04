@@ -63,7 +63,7 @@ const controlsFacts = (): NarrativeFact[] => [
 describe('buildRelationshipGraph', () => {
   it('returns a populated entity inventory and an empty edge list when no rules match', () => {
     const rng = createSeededRng('graph-test-1')
-    const graph = buildRelationshipGraph(minimalInput(), [], rng)
+    const graph = buildRelationshipGraph(minimalInput(), { tone: 'balanced', gu: 'normal' }, [], rng)
     expect(graph.entities.length).toBeGreaterThan(0)
     expect(graph.edges).toEqual([])
     expect(graph.spineEdgeIds).toEqual([])
@@ -72,13 +72,13 @@ describe('buildRelationshipGraph', () => {
 
   it('initializes edgesByEntity as an empty object when no rules match', () => {
     const rng = createSeededRng('graph-test-2')
-    const graph = buildRelationshipGraph(minimalInput(), [], rng)
+    const graph = buildRelationshipGraph(minimalInput(), { tone: 'balanced', gu: 'normal' }, [], rng)
     expect(graph.edgesByEntity).toEqual({})
   })
 
   it('initializes edgesByType with all 12 keys mapped to empty arrays when no rules match', () => {
     const rng = createSeededRng('graph-test-3')
-    const graph = buildRelationshipGraph(minimalInput(), [], rng)
+    const graph = buildRelationshipGraph(minimalInput(), { tone: 'balanced', gu: 'normal' }, [], rng)
     const expectedKeys = [
       'HOSTS', 'CONTROLS', 'DEPENDS_ON',
       'CONTESTS', 'DESTABILIZES', 'SUPPRESSES',
@@ -92,14 +92,14 @@ describe('buildRelationshipGraph', () => {
   })
 
   it('produces deterministic output for the same seed and input', () => {
-    const a = buildRelationshipGraph(minimalInput(), [], createSeededRng('graph-test-4'))
-    const b = buildRelationshipGraph(minimalInput(), [], createSeededRng('graph-test-4'))
+    const a = buildRelationshipGraph(minimalInput(), { tone: 'balanced', gu: 'normal' }, [], createSeededRng('graph-test-4'))
+    const b = buildRelationshipGraph(minimalInput(), { tone: 'balanced', gu: 'normal' }, [], createSeededRng('graph-test-4'))
     expect(a).toEqual(b)
   })
 
   it('produces a HOSTS edge when a settlement has a bodyId', () => {
     const rng = createSeededRng('graph-test-hosts')
-    const graph = buildRelationshipGraph(inputWithHostedSettlement(), [], rng)
+    const graph = buildRelationshipGraph(inputWithHostedSettlement(), { tone: 'balanced', gu: 'normal' }, [], rng)
     expect(graph.edges.length).toBeGreaterThanOrEqual(1)
     const hostsEdges = graph.edges.filter(e => e.type === 'HOSTS')
     expect(hostsEdges.length).toBe(1)
@@ -111,7 +111,7 @@ describe('buildRelationshipGraph', () => {
 
   it('attaches historical edges for CONTROLS spine edges', () => {
     const rng = createSeededRng('graph-test-history-1')
-    const graph = buildRelationshipGraph(inputWithControlsFixture(), controlsFacts(), rng)
+    const graph = buildRelationshipGraph(inputWithControlsFixture(), { tone: 'balanced', gu: 'normal' }, controlsFacts(), rng)
 
     const controlsSpineEdges = graph.edges.filter(
       e => e.type === 'CONTROLS' && graph.spineEdgeIds.includes(e.id),
@@ -136,7 +136,7 @@ describe('buildRelationshipGraph', () => {
 
   it('produces no historical edges when no spine edges qualify for backstory', () => {
     const rng = createSeededRng('graph-test-history-2')
-    const graph = buildRelationshipGraph(minimalInput(), [], rng)
+    const graph = buildRelationshipGraph(minimalInput(), { tone: 'balanced', gu: 'normal' }, [], rng)
     expect(graph.historicalEdgeIds).toEqual([])
     expect(graph.edges.filter(e => e.era === 'historical')).toEqual([])
   })
@@ -144,11 +144,13 @@ describe('buildRelationshipGraph', () => {
   it('produces deterministic edges and historicalEdgeIds for the same seed', () => {
     const a = buildRelationshipGraph(
       inputWithControlsFixture(),
+      { tone: 'balanced', gu: 'normal' },
       controlsFacts(),
       createSeededRng('graph-test-history-3'),
     )
     const b = buildRelationshipGraph(
       inputWithControlsFixture(),
+      { tone: 'balanced', gu: 'normal' },
       controlsFacts(),
       createSeededRng('graph-test-history-3'),
     )

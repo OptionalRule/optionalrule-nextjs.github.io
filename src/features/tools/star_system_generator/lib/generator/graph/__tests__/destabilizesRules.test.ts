@@ -2,6 +2,9 @@ import { describe, expect, it } from 'vitest'
 import {
   destabilizesPhenomenonSettlementRule,
   destabilizesGuHazardSettlementRule,
+  destabilizesPhenomenonSettlementBodyRule,
+  destabilizesPhenomenonRouteAssetBodyRule,
+  destabilizesPhenomenonPhysicsFactionRule,
 } from '../rules/destabilizesRules'
 import { buildFactIndexes } from '../rules/ruleTypes'
 import type { BuildCtx } from '../rules/ruleTypes'
@@ -363,5 +366,294 @@ describe('DESTABILIZES:guHazard-settlement-via-hazardScore', () => {
     expect(edge!.confidence).toBe('gu-layer')
     expect(edge!.weight).toBe(0.55)
     expect(edge!.id).toContain('DESTABILIZES:guHazard-settlement-via-hazardScore')
+  })
+})
+
+describe('DESTABILIZES:phenomenon-settlement-body', () => {
+  it('produces a match for each phenomenon × body-with-settlement pair', () => {
+    const ctx = makeCtx({
+      input: {
+        systemName: 't', primary: { spectralType: { value: 'G' } }, companions: [],
+        bodies: [
+          { id: 'body-1', name: { value: 'Body One' } },
+          { id: 'body-2', name: { value: 'Body Two' } },
+        ],
+        settlements: [{ id: 'settlement-1', name: { value: 'Hold' }, bodyId: 'body-1' }],
+        guOverlay: { resource: { value: 'r' }, hazard: { value: 'h' } },
+        phenomena: [
+          { id: 'phen-1', phenomenon: { value: 'Bonn-Tycho aurora' }, confidence: 'inferred' },
+        ],
+        ruins: [], narrativeFacts: [],
+      },
+      entities: [
+        { kind: 'body', id: 'body-1', displayName: 'Body One', layer: 'physical' },
+        { kind: 'body', id: 'body-2', displayName: 'Body Two', layer: 'physical' },
+        { kind: 'settlement', id: 'settlement-1', displayName: 'Hold', layer: 'human' },
+        { kind: 'phenomenon', id: 'phen-1', displayName: 'Bonn-Tycho aurora', layer: 'gu' },
+      ],
+      facts: [],
+    })
+    const matches = destabilizesPhenomenonSettlementBodyRule.match(ctx)
+    expect(matches).toHaveLength(1)
+    expect(matches[0].subject.id).toBe('phen-1')
+    expect(matches[0].object.id).toBe('body-1')
+  })
+
+  it('produces no match when no settlements have bodies', () => {
+    const ctx = makeCtx({
+      input: {
+        systemName: 't', primary: { spectralType: { value: 'G' } }, companions: [],
+        bodies: [{ id: 'body-1', name: { value: 'Body One' } }],
+        settlements: [{ id: 'settlement-1', name: { value: 'Hold' } }],
+        guOverlay: { resource: { value: 'r' }, hazard: { value: 'h' } },
+        phenomena: [
+          { id: 'phen-1', phenomenon: { value: 'aurora' }, confidence: 'inferred' },
+        ],
+        ruins: [], narrativeFacts: [],
+      },
+      entities: [
+        { kind: 'body', id: 'body-1', displayName: 'Body One', layer: 'physical' },
+        { kind: 'phenomenon', id: 'phen-1', displayName: 'aurora', layer: 'gu' },
+      ],
+      facts: [],
+    })
+    expect(destabilizesPhenomenonSettlementBodyRule.match(ctx)).toHaveLength(0)
+  })
+
+  it('build() produces a complete edge with phenomenon subject and body object', () => {
+    const ctx = makeCtx({
+      input: {
+        systemName: 't', primary: { spectralType: { value: 'G' } }, companions: [],
+        bodies: [{ id: 'body-1', name: { value: 'Body One' } }],
+        settlements: [{ id: 'settlement-1', name: { value: 'Hold' }, bodyId: 'body-1' }],
+        guOverlay: { resource: { value: 'r' }, hazard: { value: 'h' } },
+        phenomena: [{ id: 'phen-1', phenomenon: { value: 'Bonn-Tycho aurora' }, confidence: 'inferred' }],
+        ruins: [], narrativeFacts: [],
+      },
+      entities: [
+        { kind: 'body', id: 'body-1', displayName: 'Body One', layer: 'physical' },
+        { kind: 'settlement', id: 'settlement-1', displayName: 'Hold', layer: 'human' },
+        { kind: 'phenomenon', id: 'phen-1', displayName: 'Bonn-Tycho aurora', layer: 'gu' },
+      ],
+      facts: [],
+    })
+    const [match] = destabilizesPhenomenonSettlementBodyRule.match(ctx)
+    const edge = destabilizesPhenomenonSettlementBodyRule.build(
+      match,
+      destabilizesPhenomenonSettlementBodyRule,
+      ctx,
+    )
+    expect(edge).not.toBeNull()
+    expect(edge!.type).toBe('DESTABILIZES')
+    expect(edge!.subject.kind).toBe('phenomenon')
+    expect(edge!.object.kind).toBe('body')
+    expect(edge!.weight).toBe(0.6)
+    expect(edge!.id).toContain('DESTABILIZES:phenomenon-settlement-body')
+  })
+})
+
+describe('DESTABILIZES:phenomenon-routeAsset-body', () => {
+  it('produces a match for phenomenon × body when settlement.location fact is tagged routeAsset', () => {
+    const ctx = makeCtx({
+      input: {
+        systemName: 't', primary: { spectralType: { value: 'G' } }, companions: [],
+        bodies: [{ id: 'body-1', name: { value: 'Body One' } }],
+        settlements: [{ id: 'settlement-1', name: { value: 'Hold' }, bodyId: 'body-1' }],
+        guOverlay: { resource: { value: 'r' }, hazard: { value: 'h' } },
+        phenomena: [{ id: 'phen-1', phenomenon: { value: 'aurora' }, confidence: 'inferred' }],
+        ruins: [], narrativeFacts: [],
+      },
+      entities: [
+        { kind: 'body', id: 'body-1', displayName: 'Body One', layer: 'physical' },
+        { kind: 'settlement', id: 'settlement-1', displayName: 'Hold', layer: 'human' },
+        { kind: 'phenomenon', id: 'phen-1', displayName: 'aurora', layer: 'gu' },
+      ],
+      facts: [
+        makeFact({
+          id: 'f-loc-1',
+          kind: 'settlement.location',
+          subjectId: 'settlement-1',
+          value: { value: 'Equatorial belt', confidence: 'derived' },
+          tags: ['routeAsset'],
+        }),
+      ],
+    })
+    const matches = destabilizesPhenomenonRouteAssetBodyRule.match(ctx)
+    expect(matches).toHaveLength(1)
+    expect(matches[0].subject.id).toBe('phen-1')
+    expect(matches[0].object.id).toBe('body-1')
+    expect(matches[0].qualifier).toBe('route')
+  })
+
+  it('produces no match when no facts carry the routeAsset tag', () => {
+    const ctx = makeCtx({
+      input: {
+        systemName: 't', primary: { spectralType: { value: 'G' } }, companions: [],
+        bodies: [{ id: 'body-1', name: { value: 'Body One' } }],
+        settlements: [{ id: 'settlement-1', name: { value: 'Hold' }, bodyId: 'body-1' }],
+        guOverlay: { resource: { value: 'r' }, hazard: { value: 'h' } },
+        phenomena: [{ id: 'phen-1', phenomenon: { value: 'aurora' }, confidence: 'inferred' }],
+        ruins: [], narrativeFacts: [],
+      },
+      entities: [
+        { kind: 'body', id: 'body-1', displayName: 'Body One', layer: 'physical' },
+        { kind: 'phenomenon', id: 'phen-1', displayName: 'aurora', layer: 'gu' },
+      ],
+      facts: [
+        makeFact({
+          id: 'f-loc-1',
+          kind: 'settlement.location',
+          subjectId: 'settlement-1',
+          value: { value: 'Equatorial belt', confidence: 'derived' },
+          tags: [],
+        }),
+      ],
+    })
+    expect(destabilizesPhenomenonRouteAssetBodyRule.match(ctx)).toHaveLength(0)
+  })
+
+  it('build() produces a complete edge with route qualifier', () => {
+    const ctx = makeCtx({
+      input: {
+        systemName: 't', primary: { spectralType: { value: 'G' } }, companions: [],
+        bodies: [{ id: 'body-1', name: { value: 'Body One' } }],
+        settlements: [{ id: 'settlement-1', name: { value: 'Hold' }, bodyId: 'body-1' }],
+        guOverlay: { resource: { value: 'r' }, hazard: { value: 'h' } },
+        phenomena: [{ id: 'phen-1', phenomenon: { value: 'aurora' }, confidence: 'inferred' }],
+        ruins: [], narrativeFacts: [],
+      },
+      entities: [
+        { kind: 'body', id: 'body-1', displayName: 'Body One', layer: 'physical' },
+        { kind: 'settlement', id: 'settlement-1', displayName: 'Hold', layer: 'human' },
+        { kind: 'phenomenon', id: 'phen-1', displayName: 'aurora', layer: 'gu' },
+      ],
+      facts: [
+        makeFact({
+          id: 'f-loc-1',
+          kind: 'settlement.location',
+          subjectId: 'settlement-1',
+          value: { value: 'Equatorial belt', confidence: 'derived' },
+          tags: ['routeAsset'],
+        }),
+      ],
+    })
+    const [match] = destabilizesPhenomenonRouteAssetBodyRule.match(ctx)
+    const edge = destabilizesPhenomenonRouteAssetBodyRule.build(
+      match,
+      destabilizesPhenomenonRouteAssetBodyRule,
+      ctx,
+    )
+    expect(edge).not.toBeNull()
+    expect(edge!.type).toBe('DESTABILIZES')
+    expect(edge!.subject.kind).toBe('phenomenon')
+    expect(edge!.object.kind).toBe('body')
+    expect(edge!.qualifier).toBe('route')
+    expect(edge!.weight).toBe(0.55)
+    expect(edge!.id).toContain('DESTABILIZES:phenomenon-routeAsset-body')
+  })
+})
+
+describe('DESTABILIZES:phenomenon-physicsFaction', () => {
+  it('produces a match when a faction has an ecology or science domain', () => {
+    const ctx = makeCtx({
+      input: {
+        systemName: 't', primary: { spectralType: { value: 'G' } }, companions: [],
+        bodies: [{ id: 'body-1', name: { value: 'Body One' } }],
+        settlements: [],
+        guOverlay: { resource: { value: 'r' }, hazard: { value: 'h' } },
+        phenomena: [{ id: 'phen-1', phenomenon: { value: 'aurora' }, confidence: 'inferred' }],
+        ruins: [], narrativeFacts: [],
+      },
+      entities: [
+        { kind: 'phenomenon', id: 'phen-1', displayName: 'aurora', layer: 'gu' },
+        { kind: 'namedFaction', id: 'faction-1', displayName: 'Glasshouse Compact', layer: 'human' },
+      ],
+      facts: [
+        makeFact({
+          id: 'f-fac-1',
+          kind: 'namedFaction',
+          subjectType: 'system',
+          subjectId: 'system',
+          value: { value: 'Glasshouse Compact', confidence: 'derived' },
+          domains: ['ecology'],
+          tags: ['biosafety'],
+        }),
+      ],
+    })
+    const matches = destabilizesPhenomenonPhysicsFactionRule.match(ctx)
+    expect(matches).toHaveLength(1)
+    expect(matches[0].subject.id).toBe('phen-1')
+    expect(matches[0].object.id).toBe('faction-1')
+    expect(matches[0].qualifier).toBe('ecology')
+  })
+
+  it('produces no match when factions exist but none have ecology or science domains', () => {
+    const ctx = makeCtx({
+      input: {
+        systemName: 't', primary: { spectralType: { value: 'G' } }, companions: [],
+        bodies: [{ id: 'body-1', name: { value: 'Body One' } }],
+        settlements: [],
+        guOverlay: { resource: { value: 'r' }, hazard: { value: 'h' } },
+        phenomena: [{ id: 'phen-1', phenomenon: { value: 'aurora' }, confidence: 'inferred' }],
+        ruins: [], narrativeFacts: [],
+      },
+      entities: [
+        { kind: 'phenomenon', id: 'phen-1', displayName: 'aurora', layer: 'gu' },
+        { kind: 'namedFaction', id: 'faction-1', displayName: 'Trade Guild', layer: 'human' },
+      ],
+      facts: [
+        makeFact({
+          id: 'f-fac-1',
+          kind: 'namedFaction',
+          subjectType: 'system',
+          subjectId: 'system',
+          value: { value: 'Trade Guild', confidence: 'derived' },
+          domains: ['economy'],
+          tags: ['guild'],
+        }),
+      ],
+    })
+    expect(destabilizesPhenomenonPhysicsFactionRule.match(ctx)).toHaveLength(0)
+  })
+
+  it('build() produces a complete edge with phenomenon subject and namedFaction object', () => {
+    const ctx = makeCtx({
+      input: {
+        systemName: 't', primary: { spectralType: { value: 'G' } }, companions: [],
+        bodies: [{ id: 'body-1', name: { value: 'Body One' } }],
+        settlements: [],
+        guOverlay: { resource: { value: 'r' }, hazard: { value: 'h' } },
+        phenomena: [{ id: 'phen-1', phenomenon: { value: 'aurora' }, confidence: 'inferred' }],
+        ruins: [], narrativeFacts: [],
+      },
+      entities: [
+        { kind: 'phenomenon', id: 'phen-1', displayName: 'aurora', layer: 'gu' },
+        { kind: 'namedFaction', id: 'faction-1', displayName: 'Survey Cohort', layer: 'human' },
+      ],
+      facts: [
+        makeFact({
+          id: 'f-fac-1',
+          kind: 'namedFaction',
+          subjectType: 'system',
+          subjectId: 'system',
+          value: { value: 'Survey Cohort', confidence: 'derived' },
+          domains: ['science'],
+          tags: ['cohort'],
+        }),
+      ],
+    })
+    const [match] = destabilizesPhenomenonPhysicsFactionRule.match(ctx)
+    const edge = destabilizesPhenomenonPhysicsFactionRule.build(
+      match,
+      destabilizesPhenomenonPhysicsFactionRule,
+      ctx,
+    )
+    expect(edge).not.toBeNull()
+    expect(edge!.type).toBe('DESTABILIZES')
+    expect(edge!.subject.kind).toBe('phenomenon')
+    expect(edge!.object.kind).toBe('namedFaction')
+    expect(edge!.qualifier).toBe('science')
+    expect(edge!.weight).toBe(0.5)
+    expect(edge!.id).toContain('DESTABILIZES:phenomenon-physicsFaction')
   })
 })

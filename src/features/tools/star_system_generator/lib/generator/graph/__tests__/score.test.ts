@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { scoreCandidates, isNamedEntity, selectEdges } from '../score'
+import { scoreCandidates, isNamedEntity, selectEdges, isSpineEligibleForGu } from '../score'
 import type { EntityRef, RelationshipEdge } from '../types'
 
 const settlementRef: EntityRef = { kind: 'settlement', id: 's1', displayName: 'Orison Hold', layer: 'human' }
@@ -202,5 +202,134 @@ describe('selectEdges (budget selection)', () => {
     ]), { numSettlements: 1, numPhenomena: 1 })
     expect(result.spineIds.length).toBe(result.spine.length)
     expect(result.spineIds).toEqual(result.spine.map(e => e.id))
+  })
+})
+
+describe('isNamedEntity post-Phase-A widening', () => {
+  it('admits a phenomenon with proper-noun displayName', () => {
+    const ref: EntityRef = {
+      kind: 'phenomenon',
+      id: 'p1',
+      displayName: 'Bonn-Tycho aurora',
+      layer: 'gu',
+    }
+    expect(isNamedEntity(ref)).toBe(true)
+  })
+
+  it('rejects a phenomenon with all-lowercase displayName', () => {
+    const ref: EntityRef = {
+      kind: 'phenomenon',
+      id: 'p1',
+      displayName: 'aurora bloom',
+      layer: 'gu',
+    }
+    expect(isNamedEntity(ref)).toBe(false)
+  })
+
+  it('admits a guHazard with proper-noun displayName', () => {
+    const ref: EntityRef = {
+      kind: 'guHazard',
+      id: 'g1',
+      displayName: 'Kestrel Bleed Event',
+      layer: 'gu',
+    }
+    expect(isNamedEntity(ref)).toBe(true)
+  })
+
+  it('still rejects guResource (intentionally not widened)', () => {
+    const ref: EntityRef = {
+      kind: 'guResource',
+      id: 'gr1',
+      displayName: 'Chiral Ice Belt',
+      layer: 'gu',
+    }
+    expect(isNamedEntity(ref)).toBe(false)
+  })
+})
+
+describe('toneMultiplier and per-tone scoring', () => {
+  function makeNamedFaction(id: string, name: string): EntityRef {
+    return { kind: 'namedFaction', id, displayName: name, layer: 'human' }
+  }
+
+  it('cinematic tone re-ranks CONTESTS above equally-weighted DESTABILIZES', () => {
+    const factionA = makeNamedFaction('fa', 'Kestrel Compact')
+    const factionB = makeNamedFaction('fb', 'Red Vane Guild')
+    const phenomenon: EntityRef = { kind: 'phenomenon', id: 'p1', displayName: 'Bonn-Tycho aurora', layer: 'gu' }
+    const contestsEdge = makeEdge({ id: 'c1', type: 'CONTESTS', subject: factionA, object: factionB, weight: 1.0 })
+    const destabilizesEdge = makeEdge({ id: 'd1', type: 'DESTABILIZES', subject: phenomenon, object: factionA, weight: 1.0 })
+    const cinematic = scoreCandidates([contestsEdge, destabilizesEdge], 'cinematic')
+    expect(cinematic[0].edge.type).toBe('CONTESTS')
+  })
+
+  it('astronomy tone re-ranks DESTABILIZES above equally-weighted CONTESTS', () => {
+    const factionA = makeNamedFaction('fa', 'Kestrel Compact')
+    const factionB = makeNamedFaction('fb', 'Red Vane Guild')
+    const phenomenon: EntityRef = { kind: 'phenomenon', id: 'p1', displayName: 'Bonn-Tycho aurora', layer: 'gu' }
+    const contestsEdge = makeEdge({ id: 'c1', type: 'CONTESTS', subject: factionA, object: factionB, weight: 1.0 })
+    const destabilizesEdge = makeEdge({ id: 'd1', type: 'DESTABILIZES', subject: phenomenon, object: factionA, weight: 1.0 })
+    const astronomy = scoreCandidates([contestsEdge, destabilizesEdge], 'astronomy')
+    expect(astronomy[0].edge.type).toBe('DESTABILIZES')
+  })
+
+  it('balanced tone produces unchanged scores (multiplier 1.0 across all types)', () => {
+    const edge = makeEdge({ id: 'e1', type: 'CONTESTS', subject: bodyRef, object: settlementRef, weight: 0.7 })
+    const balanced = scoreCandidates([edge], 'balanced')
+    const unweighted = scoreCandidates([edge])
+    expect(balanced[0].score).toBeCloseTo(unweighted[0].score)
+  })
+})
+
+describe('isSpineEligibleForGu', () => {
+  it('allows phenomenon-on-phenomenon DESTABILIZES at fracture', () => {
+    const phenA: EntityRef = { kind: 'phenomenon', id: 'p1', displayName: 'Bonn-Tycho aurora', layer: 'gu' }
+    const phenB: EntityRef = { kind: 'phenomenon', id: 'p2', displayName: 'Kestrel Bleed', layer: 'gu' }
+    const edge = makeEdge({ id: 'd1', type: 'DESTABILIZES', subject: phenA, object: phenB })
+    expect(isSpineEligibleForGu(edge, 'fracture')).toBe(true)
+    expect(isSpineEligibleForGu(edge, 'normal')).toBe(true)
+    expect(isSpineEligibleForGu(edge, 'high')).toBe(true)
+    expect(isSpineEligibleForGu(edge, 'low')).toBe(true)
+  })
+
+  it('allows phenomenon-on-guHazard DESTABILIZES at fracture only when both lack proper-noun shape', () => {
+    const phenA: EntityRef = { kind: 'phenomenon', id: 'p1', displayName: 'lowercase aurora', layer: 'gu' }
+    const haz: EntityRef = { kind: 'guHazard', id: 'h1', displayName: 'lowercase storm', layer: 'gu' }
+    const edge = makeEdge({ id: 'd1', type: 'DESTABILIZES', subject: phenA, object: haz })
+    expect(isSpineEligibleForGu(edge, 'fracture')).toBe(true)
+    expect(isSpineEligibleForGu(edge, 'normal')).toBe(false)
+  })
+
+  it('rejects non-eligible types regardless of GU', () => {
+    const factionA: EntityRef = { kind: 'namedFaction', id: 'fa', displayName: 'Kestrel', layer: 'human' }
+    const factionB: EntityRef = { kind: 'namedFaction', id: 'fb', displayName: 'Red Vane', layer: 'human' }
+    const edge = makeEdge({ id: 'w1', type: 'WITNESSES', subject: factionA, object: factionB })
+    for (const gu of ['low', 'normal', 'high', 'fracture'] as const) {
+      expect(isSpineEligibleForGu(edge, gu)).toBe(false)
+    }
+  })
+})
+
+describe('guScoreAdjustment via scoreCandidates', () => {
+  it('low dampens DESTABILIZES weight', () => {
+    const phen: EntityRef = { kind: 'phenomenon', id: 'p1', displayName: 'Bonn-Tycho aurora', layer: 'gu' }
+    const edge = makeEdge({ id: 'd1', type: 'DESTABILIZES', subject: phen, object: bodyRef, weight: 1.0 })
+    const low = scoreCandidates([edge], 'astronomy', 'low')
+    const normal = scoreCandidates([edge], 'astronomy', 'normal')
+    expect(low[0].score).toBeLessThan(normal[0].score)
+  })
+
+  it('high boosts hazard-anchored DESTABILIZES', () => {
+    const haz: EntityRef = { kind: 'guHazard', id: 'h1', displayName: 'Kestrel Bleed', layer: 'gu' }
+    const edge = makeEdge({ id: 'd1', type: 'DESTABILIZES', subject: haz, object: settlementRef, weight: 1.0 })
+    const high = scoreCandidates([edge], 'balanced', 'high')
+    const normal = scoreCandidates([edge], 'balanced', 'normal')
+    expect(high[0].score).toBeGreaterThan(normal[0].score)
+  })
+
+  it('normal gu pass-through is identical to default behavior', () => {
+    const edge = makeEdge({ id: 'c1', type: 'CONTESTS', subject: bodyRef, object: settlementRef, weight: 0.7 })
+    const normal = scoreCandidates([edge], 'balanced', 'normal')
+    const defaulted = scoreCandidates([edge])
+    expect(normal[0].score).toBeCloseTo(defaulted[0].score)
   })
 })
