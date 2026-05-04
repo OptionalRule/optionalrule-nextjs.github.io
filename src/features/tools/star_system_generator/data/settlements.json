@@ -22,7 +22,7 @@
       "encounterSites": "Local scene locations for play.",
       "encounterSitesByHabitationPattern": "Encounter-site overrides keyed by habitation pattern (Automated, Abandoned).",
       "encounterSitesByFunctionKeyword": "Function-keyword rules that add specialized encounter sites.",
-      "populationTable": "d10 settlement population table (magnitude only).",
+      "populationTable": "d10 settlement population table (magnitude only). Top two slots both map to 10+ million so high-presence systems favor large urban centers; Unknown is reserved for the Abandoned joint constraint and never rolled organically.",
       "habitationPatternDefaults": "Default habitation pattern derived from siteCategory."
     }
   },
@@ -700,7 +700,7 @@
     "100,001-1 million",
     "1-10 million",
     "10+ million",
-    "Unknown"
+    "10+ million"
   ],
   "habitationPatternDefaults": {
     "Surface settlement": "Surface settlement",

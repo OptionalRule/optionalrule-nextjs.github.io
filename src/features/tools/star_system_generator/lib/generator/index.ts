@@ -2238,8 +2238,8 @@ function settlementHabitationPatternFromRoll(
 
   if (roll <= 1) return 'Abandoned'
   if (roll === 2) return 'Automated'
-  if (roll >= 11) return 'Distributed swarm'
-  if (population === 'Minimal (<5)' && roll <= 5) return 'Automated'
+  if (roll >= 12) return 'Distributed swarm'
+  void population
   return defaultPattern
 }
 
