@@ -16,6 +16,9 @@ import {
 import {
   destabilizesPhenomenonSettlementRule,
   destabilizesGuHazardSettlementRule,
+  destabilizesPhenomenonSettlementBodyRule,
+  destabilizesPhenomenonRouteAssetBodyRule,
+  destabilizesPhenomenonPhysicsFactionRule,
 } from './destabilizesRules'
 import {
   suppressesGardenerInterdictionRule,
@@ -46,6 +49,9 @@ export const allRules: ReadonlyArray<EdgeRule> = [
   controlsSettlementUniqueDomainRule,
   destabilizesPhenomenonSettlementRule,
   destabilizesGuHazardSettlementRule,
+  destabilizesPhenomenonSettlementBodyRule,
+  destabilizesPhenomenonRouteAssetBodyRule,
+  destabilizesPhenomenonPhysicsFactionRule,
   suppressesGardenerInterdictionRule,
   suppressesAuthorityHiddenTruthRule,
   contradictsRuinHookAuthorityRule,
