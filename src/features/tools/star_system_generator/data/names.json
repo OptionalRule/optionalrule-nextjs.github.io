@@ -1022,7 +1022,19 @@
       "exact": {
         "Automated": "Array",
         "Abandoned": "Remnant",
-        "Distributed swarm": "Swarm"
+        "Distributed swarm": "Swarm",
+        "Ring station": "Ring",
+        "O'Neill cylinder": "Cylinder",
+        "Modular island station": "Cluster",
+        "Hub complex": "Reach",
+        "Hollow asteroid": "Spinhab",
+        "Belt cluster": "Chain",
+        "Underground city": "Warrens",
+        "Sealed arcology": "Arcology",
+        "Sky platform": "Float",
+        "Tethered tower": "Beanstalk",
+        "Drift colony": "Drift",
+        "Generation ship": "Ark"
       },
       "default": "Hold"
     },

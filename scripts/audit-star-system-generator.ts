@@ -134,6 +134,28 @@ const settlementDensities: SettlementDensity[] = ['sparse', 'normal', 'crowded',
 
 const extremeHotZones = new Set(['Furnace', 'Inferno'])
 
+const POPULATION_BAND_INDEX: Record<string, number> = {
+  'Minimal (<5)': 0,
+  '1-20': 1,
+  '21-100': 2,
+  '101-1,000': 3,
+  '1,001-10,000': 4,
+  '10,001-100,000': 5,
+  '100,001-1 million': 6,
+  '1-10 million': 7,
+  '10+ million': 8,
+}
+
+const FLOOR_PATTERNS: Array<[string, number]> = [
+  ['Underground city', 3],
+  ['Hollow asteroid', 3],
+  ['Belt cluster', 3],
+  ['Sky platform', 2],
+  ['Ring station', 4],
+  ['Hub complex', 4],
+  ["O'Neill cylinder", 5],
+]
+
 // Phase 7 Task 10 regression guards. See per-system block in auditSystem for
 // rationale and provenance.
 const DOUBLE_PREPOSITION_PATTERN = /\b(during|in|on|at|to)\s+(in|on|at|to|before|after)\b/i
@@ -539,6 +561,22 @@ function auditSettlement(system: GeneratedSystem, settlement: Settlement, settle
   }
   if (settlement.habitationPattern.value === 'Automated' && settlement.population.value !== 'Minimal (<5)') {
     addFinding(findings, 'error', seed, `${path}.population`, `Automated habitationPattern must force population to "Minimal (<5)"; got "${settlement.population.value}".`)
+  }
+
+  for (const [pattern, floor] of FLOOR_PATTERNS) {
+    if (settlement.habitationPattern.value === pattern) {
+      const idx = POPULATION_BAND_INDEX[settlement.population.value]
+      if (idx === undefined || idx < floor) {
+        addFinding(findings, 'error', seed, `${path}.population`, `${pattern} requires population band >= ${floor}; got "${settlement.population.value}".`)
+      }
+    }
+  }
+
+  if (settlement.habitationPattern.value === 'Generation ship') {
+    const idx = POPULATION_BAND_INDEX[settlement.population.value]
+    if (idx === undefined || idx < 4 || idx > 6) {
+      addFinding(findings, 'error', seed, `${path}.population`, `Generation ship population must be band 4..6; got "${settlement.population.value}".`)
+    }
   }
 }
 

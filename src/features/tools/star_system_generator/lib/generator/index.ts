@@ -2219,36 +2219,142 @@ function settlementPopulationFromRoll(rng: SeededRng, presence: SettlementPresen
   return settlementPopulationTable[roll - 1]
 }
 
+const HABITATION_LOW_EXOTICS: Record<SettlementSiteCategory, readonly SettlementHabitationPattern[]> = {
+  'Surface settlement': ['Underground city', 'Sealed arcology'],
+  'Orbital station': ['Modular island station'],
+  'Asteroid or belt base': ['Hollow asteroid'],
+  'Moon base': ['Underground city', 'Sealed arcology'],
+  'Deep-space platform': ['Drift colony', 'Modular island station'],
+  'Gate or route node': ['Modular island station'],
+  'Mobile site': [],
+  'Derelict or restricted site': [],
+}
+
+const HABITATION_HIGH_EXOTICS_BASE: Record<SettlementSiteCategory, readonly SettlementHabitationPattern[]> = {
+  'Surface settlement': ['Tethered tower', 'Hub complex'],
+  'Orbital station': ['Ring station', "O'Neill cylinder", 'Tethered tower', 'Hub complex'],
+  'Asteroid or belt base': ['Belt cluster', 'Modular island station', 'Hub complex'],
+  'Moon base': ['Hub complex'],
+  'Deep-space platform': ['Ring station', "O'Neill cylinder", 'Generation ship', 'Hub complex'],
+  'Gate or route node': ['Hub complex'],
+  'Mobile site': [],
+  'Derelict or restricted site': [],
+}
+
+function bodyHasAtmosphere(body: OrbitingBody): boolean {
+  const atm = body.detail.atmosphere.value
+  return atm !== 'None / hard vacuum' && atm !== 'Trace exosphere'
+}
+
+function highExoticsFor(siteCategory: SettlementSiteCategory, body: OrbitingBody): readonly SettlementHabitationPattern[] {
+  const base = HABITATION_HIGH_EXOTICS_BASE[siteCategory]
+  if (siteCategory === 'Surface settlement' && bodyHasAtmosphere(body)) {
+    return [...base, 'Sky platform']
+  }
+  return base
+}
+
 function settlementHabitationPatternFromRoll(
   rng: SeededRng,
   presence: SettlementPresenceScore,
   siteCategory: SettlementSiteCategory,
-  population: SettlementPopulation,
+  body: OrbitingBody,
 ): SettlementHabitationPattern {
   const defaultPattern = habitationPatternDefaults[siteCategory]
-  if (defaultPattern === 'Distributed swarm' || defaultPattern === 'Abandoned') {
+
+  if (defaultPattern === 'Distributed swarm') {
+    if (rng.chance(0.1)) return 'Generation ship'
+    if (rng.chance(0.1)) return 'Drift colony'
     return defaultPattern
   }
+  if (defaultPattern === 'Abandoned') return defaultPattern
 
-  let roll = d12(rng)
-  if (presence.score <= 6) roll -= 2
-  if (presence.score === 7 || presence.score === 8) roll -= 1
-  if (presence.score >= 12) roll += 1
-  if (presence.score >= 15) roll += 2
+  let roll = d20(rng)
+  if (presence.score <= 6) roll -= 4
+  if (presence.score === 7 || presence.score === 8) roll -= 2
+  if (presence.score >= 12) roll += 2
+  if (presence.score >= 15) roll += 4
 
   if (roll <= 1) return 'Abandoned'
   if (roll === 2) return 'Automated'
-  if (roll >= 12) return 'Distributed swarm'
-  void population
+
+  if (roll === 3) {
+    const pool = HABITATION_LOW_EXOTICS[siteCategory]
+    if (pool.length > 0) return pickOne(rng, pool)
+    return defaultPattern
+  }
+  if (roll === 18 || roll === 19) {
+    const pool = highExoticsFor(siteCategory, body)
+    if (pool.length > 0) return pickOne(rng, pool)
+    return defaultPattern
+  }
+  if (roll >= 20) return 'Distributed swarm'
+
   return defaultPattern
+}
+
+const POPULATION_ORDER: readonly SettlementPopulation[] = [
+  'Minimal (<5)',
+  '1-20',
+  '21-100',
+  '101-1,000',
+  '1,001-10,000',
+  '10,001-100,000',
+  '100,001-1 million',
+  '1-10 million',
+  '10+ million',
+]
+
+const POPULATION_BAND_INDEX: Record<SettlementPopulation, number> = {
+  'Minimal (<5)': 0,
+  '1-20': 1,
+  '21-100': 2,
+  '101-1,000': 3,
+  '1,001-10,000': 4,
+  '10,001-100,000': 5,
+  '100,001-1 million': 6,
+  '1-10 million': 7,
+  '10+ million': 8,
+  Unknown: -1,
+}
+
+function clampPopulationToFloor(population: SettlementPopulation, floorIndex: number): SettlementPopulation {
+  const idx = POPULATION_BAND_INDEX[population]
+  if (idx < 0) return POPULATION_ORDER[floorIndex]
+  if (idx >= floorIndex) return population
+  return POPULATION_ORDER[floorIndex]
+}
+
+function clampPopulationToBand(
+  population: SettlementPopulation,
+  floorIndex: number,
+  ceilingIndex: number,
+  rng: SeededRng,
+): SettlementPopulation {
+  const idx = POPULATION_BAND_INDEX[population]
+  if (idx < 0) {
+    return POPULATION_ORDER[rng.int(floorIndex, ceilingIndex)]
+  }
+  if (idx < floorIndex) return POPULATION_ORDER[floorIndex]
+  if (idx > ceilingIndex) return POPULATION_ORDER[ceilingIndex]
+  return population
 }
 
 function applyHabitationPopulationConstraint(
   habitationPattern: SettlementHabitationPattern,
   population: SettlementPopulation,
+  rng: SeededRng,
 ): SettlementPopulation {
   if (habitationPattern === 'Abandoned') return 'Unknown'
   if (habitationPattern === 'Automated') return 'Minimal (<5)'
+  if (habitationPattern === 'Underground city') return clampPopulationToFloor(population, 3)
+  if (habitationPattern === 'Hollow asteroid') return clampPopulationToFloor(population, 3)
+  if (habitationPattern === 'Belt cluster') return clampPopulationToFloor(population, 3)
+  if (habitationPattern === 'Sky platform') return clampPopulationToFloor(population, 2)
+  if (habitationPattern === 'Ring station') return clampPopulationToFloor(population, 4)
+  if (habitationPattern === 'Hub complex') return clampPopulationToFloor(population, 4)
+  if (habitationPattern === "O'Neill cylinder") return clampPopulationToFloor(population, 5)
+  if (habitationPattern === 'Generation ship') return clampPopulationToBand(population, 4, 6, rng)
   return population
 }
 
@@ -2581,9 +2687,13 @@ function generateSettlements(
       rng.fork(`habitation-pattern-${index + 1}`),
       presence,
       locationOption.category,
-      rolledPopulation,
+      body,
     )
-    const population = applyHabitationPopulationConstraint(habitationPattern, rolledPopulation)
+    const population = applyHabitationPopulationConstraint(
+      habitationPattern,
+      rolledPopulation,
+      rng.fork(`population-clamp-${index + 1}`),
+    )
     const authority = chooseSettlementAuthority(rng, habitationPattern)
     const condition = chooseSettlementCondition(rng, habitationPattern)
     const crisis = chooseSettlementCrisis(rng, habitationPattern)

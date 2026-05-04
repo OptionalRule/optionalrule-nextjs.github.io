@@ -36,6 +36,18 @@ export type SettlementHabitationPattern =
   | 'Distributed swarm'
   | 'Automated'
   | 'Abandoned'
+  | 'Ring station'
+  | "O'Neill cylinder"
+  | 'Modular island station'
+  | 'Hub complex'
+  | 'Hollow asteroid'
+  | 'Belt cluster'
+  | 'Underground city'
+  | 'Sealed arcology'
+  | 'Sky platform'
+  | 'Tethered tower'
+  | 'Drift colony'
+  | 'Generation ship'
 
 export interface GenerationOptions {
   seed: string
