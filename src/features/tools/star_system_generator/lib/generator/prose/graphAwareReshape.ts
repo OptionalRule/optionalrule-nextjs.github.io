@@ -1,6 +1,6 @@
 import type { SeededRng } from '../rng'
 import type {
-  Settlement, SystemPhenomenon, GenerationOptions,
+  Settlement, SystemPhenomenon, GenerationOptions, GeneratorTone,
 } from '../../../types'
 import type { SystemRelationshipGraph } from '../graph'
 import { graphAwareSettlementWhyHere } from './graphAwareSettlementWhyHere'
@@ -23,8 +23,9 @@ export interface GraphAwareReshapeResult {
 
 export function graphAwareReshape(input: GraphAwareReshapeInput): GraphAwareReshapeResult {
   const flags = input.options.graphAware ?? {}
+  const tone: GeneratorTone = input.options.tone ?? 'balanced'
   const rng = input.rng.fork('graph-prose')
-  const settlements = input.settlements.map(s => reshapeSettlement(s, input.relationshipGraph, flags, rng))
+  const settlements = input.settlements.map(s => reshapeSettlement(s, input.relationshipGraph, flags, rng, tone))
   const phenomena = flags.phenomenonNote
     ? input.phenomena.map(p => reshapePhenomenon(p, input.relationshipGraph, rng))
     : input.phenomena
@@ -36,10 +37,12 @@ function reshapeSettlement(
   settlement: Settlement,
   graph: SystemRelationshipGraph,
   flags: NonNullable<GenerationOptions['graphAware']>,
-  _rng: SeededRng,
+  rng: SeededRng,
+  tone: GeneratorTone,
 ): Settlement {
   let updated = settlement
-  const newWhyHere = graphAwareSettlementWhyHere(updated, graph)
+  const whyHereRng = rng.fork(`why-here-${settlement.id}`)
+  const newWhyHere = graphAwareSettlementWhyHere(updated, graph, whyHereRng, tone)
   if (newWhyHere !== null) {
     updated = {
       ...updated,

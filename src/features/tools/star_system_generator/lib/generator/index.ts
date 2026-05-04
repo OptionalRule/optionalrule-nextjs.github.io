@@ -117,7 +117,7 @@ import {
 } from './data/stellar'
 import { NameRegistry } from './nameRegistry'
 import { lowerFirst, sentenceFragment } from './prose/helpers'
-import { settlementHookSynthesis, settlementWhyHere } from './prose/settlementProse'
+import { settlementHookSynthesis } from './prose/settlementProse'
 import { phenomenonNote } from './prose/phenomenonProse'
 import { buildRelationshipGraph, renderSystemStory } from './graph'
 import { graphAwareReshape } from './prose'
@@ -2511,7 +2511,6 @@ function generateSettlements(
     const settlementFunction = chooseSettlementFunction(rng, body, locationOption, guOverlay)
     const builtForm = chooseBuiltForm(rng, locationOption, settlementFunction)
     const anchor = chooseSettlementAnchor(rng, systemName, body, locationOption)
-    const whyHere = settlementWhyHere(rng.fork(`why-here-${index + 1}`), body, presence, guOverlay, reachability, anchor)
     const tags = chooseSettlementTags(rng)
     const scale = settlementScaleFromRoll(rng, presence)
     const authority = chooseSettlementAuthority(rng, scale)
@@ -2569,7 +2568,7 @@ function generateSettlements(
       crisis: fact(crisis, 'human-layer', 'MASS-GU 18.10 crisis table with scale compatibility'),
       hiddenTruth: fact(hiddenTruth, 'human-layer', 'MASS-GU 18.11 hidden truth table with scale compatibility; no-alien conversion applied where needed'),
       encounterSites: encounterSiteValues.map((site) => fact(site, 'human-layer', 'MASS-GU 18.12 local encounter site table with function/scale weighting')),
-      whyHere: fact(whyHere, 'human-layer', 'Generated from MASS-GU 18.1 presence score components'),
+      whyHere: fact('', 'human-layer', 'Populated by graph-aware reshape'),
       methodNotes: [
         fact('Source-derived from MASS-GU section 18; current implementation adds compatibility constraints between body, site category, function, built form, and physical anchor.', 'human-layer', 'Implementation note'),
       ],

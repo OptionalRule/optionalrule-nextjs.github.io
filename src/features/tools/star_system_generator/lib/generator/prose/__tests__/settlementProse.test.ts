@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { settlementHookSynthesis, settlementWhyHere, settlementTagHook } from '../settlementProse'
+import { settlementHookSynthesis, settlementTagHook } from '../settlementProse'
 import { createSeededRng } from '../../rng'
 
 describe('settlementHookSynthesis', () => {
@@ -65,27 +65,6 @@ describe('settlementHookSynthesis', () => {
       guIntensity: 'major fracture',
     })
     expect(result).toContain('makes the GU work impossible to treat as routine')
-  })
-})
-
-describe('settlementWhyHere', () => {
-  it('is exported as a function from settlementProse', () => {
-    expect(typeof settlementWhyHere).toBe('function')
-  })
-
-  it('produces a non-empty string for a typical settlement', async () => {
-    const { generateSystem } = await import('../../index')
-    const system = generateSystem({ seed: 'phase0-whyhere-1' })
-    const settlement = system.settlements[0]
-    expect(settlement.whyHere?.value).toBeTruthy()
-    expect(settlement.whyHere?.value.length).toBeGreaterThan(20)
-  })
-
-  it('produces deterministic output for the same seed', async () => {
-    const { generateSystem } = await import('../../index')
-    const a = generateSystem({ seed: 'phase0-whyhere-2' })
-    const b = generateSystem({ seed: 'phase0-whyhere-2' })
-    expect(a.settlements[0]?.whyHere?.value).toBe(b.settlements[0]?.whyHere?.value)
   })
 })
 

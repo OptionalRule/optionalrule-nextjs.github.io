@@ -148,7 +148,7 @@ function formatSettlement(settlement: Settlement): string[] {
     `**AI:** ${settlement.aiSituation.value}.`,
     `**Crisis:** ${settlement.crisis.value}.`,
     `**Hidden Truth:** ${settlement.hiddenTruth.value}.`,
-    `**Why Here:** ${settlement.whyHere.value}.`,
+    ...(settlement.whyHere.value ? [`**Why Here:** ${settlement.whyHere.value}.`] : []),
     `**Local Sites:** ${settlement.encounterSites.map((site) => site.value).join(', ')}.`,
   ]
 }

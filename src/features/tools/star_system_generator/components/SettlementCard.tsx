@@ -21,7 +21,9 @@ export function SettlementCard({ settlement }: { settlement: Settlement }) {
             <InlineDetail label="Activity level" value={settlement.presence.tier.value} />
             <InlineDetail label="Anchor" value={`${settlement.anchorName.value} (${settlement.anchorKind.value})`} />
             <InlineDetail label="Placement" value={settlement.anchorDetail.value} />
-            <InlineDetail label="Why here" value={settlement.whyHere.value} />
+            {settlement.whyHere.value && (
+              <InlineDetail label="Why here" value={settlement.whyHere.value} />
+            )}
           </dl>
         </section>
 

@@ -18,7 +18,24 @@ function emptyGraph(): SystemRelationshipGraph {
 }
 
 function minimalSettlement(id: string): Settlement {
-  return { id } as unknown as Settlement
+  return {
+    id,
+    anchorName: { value: `Anchor-${id}`, confidence: 'confirmed', source: 'test' },
+    whyHere: { value: 'original whyHere', confidence: 'confirmed', source: 'test' },
+    tagHook: { value: 'original tagHook', confidence: 'human-layer', source: 'test' },
+    presence: {
+      score: { value: 5, confidence: 'human-layer', source: 'test' },
+      roll: { value: 7, confidence: 'human-layer', source: 'test' },
+      tier: { value: 'Active', confidence: 'human-layer', source: 'test' },
+      resource: { value: 1, confidence: 'human-layer', source: 'test' },
+      access: { value: 1, confidence: 'human-layer', source: 'test' },
+      strategic: { value: 1, confidence: 'human-layer', source: 'test' },
+      guValue: { value: 0, confidence: 'gu-layer', source: 'test' },
+      habitability: { value: 1, confidence: 'inferred', source: 'test' },
+      hazard: { value: 0, confidence: 'inferred', source: 'test' },
+      legalHeat: { value: 0, confidence: 'human-layer', source: 'test' },
+    },
+  } as unknown as Settlement
 }
 
 function minimalPhenomenon(id: string): SystemPhenomenon {
@@ -41,9 +58,9 @@ describe('graphAwareReshape', () => {
       rng: createSeededRng('reshape-test'),
     })
     expect(result.settlements).not.toBe(settlements)
-    expect(result.settlements).toEqual(settlements)
-    expect(result.settlements[0]).toBe(settlements[0])
-    expect(result.settlements[1]).toBe(settlements[1])
+    expect(result.settlements).toHaveLength(2)
+    expect(result.settlements[0].whyHere.value).toContain('Anchor-s1')
+    expect(result.settlements[1].whyHere.value).toContain('Anchor-s2')
   })
 
   it('preserves phenomena reference when phenomenonNote flag is off', () => {
@@ -105,7 +122,7 @@ describe('graphAwareReshape', () => {
       rng: createSeededRng('reshape-test'),
     })
     expect(result.settlements).not.toBe(settlements)
-    expect(result.settlements[0]).toBe(settlements[0])
+    expect(result.settlements[0].whyHere.value).toContain('Anchor-s1')
   })
 
   it('forks rng with label "graph-prose"', () => {
@@ -180,8 +197,20 @@ function graphWithEdges(edges: RelationshipEdge[]): SystemRelationshipGraph {
 function settlementWithAnchor(id: string, anchorName: string): Settlement {
   return {
     id,
-    anchorName: { value: anchorName, confidence: 'confirmed' },
-    whyHere: { value: 'original whyHere', confidence: 'confirmed' },
+    anchorName: { value: anchorName, confidence: 'confirmed', source: 'test' },
+    whyHere: { value: 'original whyHere', confidence: 'confirmed', source: 'test' },
+    presence: {
+      score: { value: 5, confidence: 'human-layer', source: 'test' },
+      roll: { value: 7, confidence: 'human-layer', source: 'test' },
+      tier: { value: 'Active', confidence: 'human-layer', source: 'test' },
+      resource: { value: 1, confidence: 'human-layer', source: 'test' },
+      access: { value: 1, confidence: 'human-layer', source: 'test' },
+      strategic: { value: 1, confidence: 'human-layer', source: 'test' },
+      guValue: { value: 0, confidence: 'gu-layer', source: 'test' },
+      habitability: { value: 1, confidence: 'inferred', source: 'test' },
+      hazard: { value: 0, confidence: 'inferred', source: 'test' },
+      legalHeat: { value: 0, confidence: 'human-layer', source: 'test' },
+    },
   } as unknown as Settlement
 }
 
@@ -287,9 +316,8 @@ describe('graphAwareReshape — settlementWhyHere integration', () => {
     expect(result.settlements[0].whyHere.confidence).toBe('inferred')
   })
 
-  it('preserves whyHere when no incident edges exist', () => {
+  it('replaces whyHere with presence/generic fallback content when no incident edges exist', () => {
     const settlement = settlementWithAnchor('s1', 'Orison Hold')
-    const originalWhyHere = settlement.whyHere
     const result = graphAwareReshape({
       settlements: [settlement],
       phenomena: [],
@@ -297,7 +325,9 @@ describe('graphAwareReshape — settlementWhyHere integration', () => {
       options: baseOptions,
       rng: createSeededRng('test'),
     })
-    expect(result.settlements[0].whyHere).toBe(originalWhyHere)
+    expect(result.settlements[0].whyHere.value).toContain('Orison Hold')
+    expect(result.settlements[0].whyHere.value).not.toBe('original whyHere')
+    expect(result.settlements[0].whyHere.confidence).toBe('inferred')
   })
 })
 
@@ -318,9 +348,21 @@ function makeContestsEdge(subjectId: string, objectId: string, objectDisplayName
 function settlementWithTagHook(id: string, anchorName: string, tagHookValue: string): Settlement {
   return {
     id,
-    anchorName: { value: anchorName, confidence: 'confirmed' },
-    whyHere: { value: 'original whyHere', confidence: 'confirmed' },
-    tagHook: { value: tagHookValue, confidence: 'human-layer' },
+    anchorName: { value: anchorName, confidence: 'confirmed', source: 'test' },
+    whyHere: { value: 'original whyHere', confidence: 'confirmed', source: 'test' },
+    tagHook: { value: tagHookValue, confidence: 'human-layer', source: 'test' },
+    presence: {
+      score: { value: 5, confidence: 'human-layer', source: 'test' },
+      roll: { value: 7, confidence: 'human-layer', source: 'test' },
+      tier: { value: 'Active', confidence: 'human-layer', source: 'test' },
+      resource: { value: 1, confidence: 'human-layer', source: 'test' },
+      access: { value: 1, confidence: 'human-layer', source: 'test' },
+      strategic: { value: 1, confidence: 'human-layer', source: 'test' },
+      guValue: { value: 0, confidence: 'gu-layer', source: 'test' },
+      habitability: { value: 1, confidence: 'inferred', source: 'test' },
+      hazard: { value: 0, confidence: 'inferred', source: 'test' },
+      legalHeat: { value: 0, confidence: 'human-layer', source: 'test' },
+    },
   } as unknown as Settlement
 }
 

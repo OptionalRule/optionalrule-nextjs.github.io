@@ -14,10 +14,10 @@ exports[`Phase 6 graph-aware prose surfaces (all flags on) > seed phase6-on-1 pr
     "Broken Terraformer is the surface story, but False Evacuation List shows who benefits from the tension: survival priority was assigned by a list nobody trusts. A quarantine violation keeps mobile site politics under stress. Privately, the spare-parts shortage is a manufactured monopoly. Everything here turns on access to Snow-line organochemical feedstock.",
   ],
   "settlementWhyHere": [
-    "Crews keep choosing Gomeisa Waypoint-895 transit geometry because local materials, volatiles, or fuel justify permanent infrastructure; iggygate anchor access keeps traffic viable; the site controls a militarily or commercially important approach.",
-    "The case for Gomeisa Waypoint-895 transit geometry is practical: local materials, volatiles, or fuel justify permanent infrastructure; iggygate anchor access keeps traffic viable; the site controls a militarily or commercially important approach.",
-    "Gomeisa Waypoint-895 transit geometry sits on Gomeisa Waypoint-895 V.",
-    "Gomeisa Waypoint-895 traffic pattern sits on Gomeisa Waypoint-895 VII and depends on Snow-line organochemical feedstock.",
+    "Gomeisa Waypoint-895 transit geometry occupies the seat from which the surrounding traffic is most easily watched.",
+    "Gomeisa Waypoint-895 transit geometry sits on a route that nothing in this volume can move around easily.",
+    "Gomeisa Waypoint-895 transit geometry is built into this orbital and works the surface from there. Iggygate throat instability sits across the approach, and Gomeisa Waypoint-895 transit geometry works around it daily.",
+    "Gomeisa Waypoint-895 traffic pattern occupies Gomeisa Waypoint-895 VII and is held in place by Snow-line organochemical feedstock. Gomeisa Waypoint-895 traffic pattern stays because the yield outweighs everything that wants it gone.",
   ],
 }
 `;
@@ -35,9 +35,9 @@ exports[`Phase 6 graph-aware prose surfaces (all flags on) > seed phase6-on-2 pr
     "The public tag is Hidden Navy; the private trouble is Shelter Lottery, because storm shelter access is allocated by a lottery everyone suspects is rigged. A military coup keeps deep-space platform politics under stress. Privately, the AI witness has already testified in a sealed simulation. Everything here turns on access to Phase-stable superconductive lattice.",
   ],
   "settlementWhyHere": [
-    "Noquisi Transit-948 Belt V orbital space sits on Noquisi Transit-948 Belt V and depends on Phase-stable superconductive lattice.",
-    "Noquisi Transit-948 VII - Moon I: local materials, volatiles, or fuel justify permanent infrastructure; resonance hub access keeps traffic viable; the site watches a useful route or resource.",
-    "Noquisi Transit-948 IV route geometry sits on Noquisi Transit-948 IV and depends on Phase-stable superconductive lattice.",
+    "Noquisi Transit-948 Belt V orbital space keeps a footprint on Noquisi Transit-948 Belt V only because of Phase-stable superconductive lattice. Noquisi Transit-948 Belt V orbital space stays because the yield outweighs everything that wants it gone.",
+    "Noquisi Transit-948 VII - Moon I grew here because the body underneath asks less of its people than most.",
+    "Noquisi Transit-948 IV route geometry is anchored to Noquisi Transit-948 IV, with Phase-stable superconductive lattice keeping it viable. There is enough of value under Noquisi Transit-948 IV route geometry to justify both the danger and the secrecy.",
   ],
 }
 `;
@@ -53,8 +53,8 @@ exports[`Phase 6 graph-aware prose surfaces (all flags on) > seed phase6-on-3 pr
     "Aristocratic Dome is what visitors notice first; short-lived opportunity is pushing people into unsafe choices. A Pinchdrive calibration accident keeps asteroid or belt base politics under stress. Privately, the site is an illegal AI lab. Control of the refinery decides who has leverage.",
   ],
   "settlementWhyHere": [
-    "Nosaxa-Array IV sits on Nosaxa-Array IV.",
-    "The case for Nosaxa-Array Belt VI is practical: resources are strong here, especially shielding-grade chiral plating feedstock; trade spoke access keeps traffic viable; hazards shape operations but do not prevent occupation.",
+    "Nosaxa-Array IV is built into this orbital and works the surface from there.",
+    "The yields under Nosaxa-Array Belt VI are concrete enough to keep crews on station year over year.",
   ],
 }
 `;
