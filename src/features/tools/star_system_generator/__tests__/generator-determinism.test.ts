@@ -8,6 +8,7 @@ import {
   settlementConditionByHabitationPattern,
   settlementCrisisByHabitationPattern,
   settlementLocations,
+  settlementTagOptions,
 } from '../lib/generator/data/settlements'
 import { architectures, frontierStarTypes, realisticStarTypes } from '../lib/generator/tables'
 import { validateSystem } from '../lib/generator/validation'
@@ -964,6 +965,31 @@ describe('generateSystem', () => {
 
     expect(sawAutomated).toBe(true)
     expect(sawAbandoned).toBe(true)
+  })
+
+  it('weights settlement tags toward civic at urban scale and remote at outpost scale', () => {
+    const allSettlements = Array.from({ length: 200 }, (_, index) =>
+      generateSystem({
+        ...options,
+        settlements: 'crowded',
+        seed: `tag-band-${index.toString(16).padStart(4, '0')}`,
+      }),
+    ).flatMap((sys) => sys.settlements)
+
+    const tagsByLabel = new Map(settlementTagOptions.map((tag) => [tag.label, tag.civicScale ?? 'neutral']))
+    const urban = allSettlements.filter((s) => ['10+ million', '1-10 million', '100,001-1 million'].includes(s.population.value))
+    const outpost = allSettlements.filter((s) => ['Minimal (<5)', '1-20', '21-100', '101-1,000'].includes(s.population.value))
+
+    if (urban.length > 10) {
+      const urbanCivicShare = urban.flatMap((s) => s.tags.map((t) => tagsByLabel.get(t.value))).filter((c) => c === 'civic').length
+      const urbanRemoteShare = urban.flatMap((s) => s.tags.map((t) => tagsByLabel.get(t.value))).filter((c) => c === 'remote').length
+      expect(urbanCivicShare).toBeGreaterThan(urbanRemoteShare)
+    }
+    if (outpost.length > 10) {
+      const outpostCivicShare = outpost.flatMap((s) => s.tags.map((t) => tagsByLabel.get(t.value))).filter((c) => c === 'civic').length
+      const outpostRemoteShare = outpost.flatMap((s) => s.tags.map((t) => tagsByLabel.get(t.value))).filter((c) => c === 'remote').length
+      expect(outpostRemoteShare).toBeGreaterThan(outpostCivicShare)
+    }
   })
 
   it('tone-axis shifts settlement habitation distribution', () => {

@@ -20,6 +20,7 @@ export interface SettlementTagOption {
   id: string
   label: string
   pressure: string
+  civicScale?: 'civic' | 'remote' | 'neutral'
 }
 
 export interface KeywordSitePool {

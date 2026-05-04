@@ -18,8 +18,8 @@ exports[`spine tone × edge type voice matrix > tone=balanced: spine prose reads
 
 exports[`spine tone × edge type voice matrix > tone=cinematic: spine prose reads in tone voice 1`] = `
 {
-  "body0": "Between Brothers of Choir and Long Knife Choir the knife is already drawn. Carrion Synod keeps the receipts. Crown of Dust Pact keeps the witnesses. Bone Lantern Order swore the pact would hold; Pale Saint Wake swore otherwise.",
+  "body0": "Between Brothers of Choir and Red Wake Wake the knife is already drawn. Bone Lantern Order keeps the receipts. Salt Wound Wake keeps the witnesses. Bone Lantern Order swore the pact would hold; Brothers of Choir swore otherwise.",
   "spineEdgeType": "CONTESTS",
-  "spineSummary": "The compact between Brothers of Choir and Long Knife Choir broke in the silent decade, Brothers of Choir and Long Knife Choir are bleeding each other dry, and the system cheers them on.",
+  "spineSummary": "The compact between Brothers of Choir and Red Wake Wake broke in the silent decade, Brothers of Choir and Red Wake Wake are bleeding each other dry, and the system cheers them on.",
 }
 `;

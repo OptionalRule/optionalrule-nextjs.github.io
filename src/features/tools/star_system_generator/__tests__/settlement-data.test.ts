@@ -54,6 +54,19 @@ describe('star system settlement data', () => {
     }
 
     expect(Object.keys(settlementTagPairHooks).length).toBeGreaterThanOrEqual(55)
+
+    const civicScales = ['civic', 'remote', 'neutral'] as const
+    for (const tag of settlementTagOptions) {
+      if (tag.civicScale !== undefined) {
+        expect(civicScales).toContain(tag.civicScale)
+      }
+    }
+    const civicCount = settlementTagOptions.filter((tag) => tag.civicScale === 'civic').length
+    const remoteCount = settlementTagOptions.filter((tag) => tag.civicScale === 'remote').length
+    expect(civicCount).toBeGreaterThan(0)
+    expect(remoteCount).toBeGreaterThan(0)
+    expect(civicCount).toBeLessThan(settlementTagOptions.length / 2)
+    expect(remoteCount).toBeLessThan(settlementTagOptions.length / 2)
   })
 
   it('keeps population, habitation pattern, and contextual override pools usable', () => {

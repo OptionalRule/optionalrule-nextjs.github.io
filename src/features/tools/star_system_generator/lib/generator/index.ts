@@ -109,7 +109,7 @@ import {
   settlementCrises,
   settlementLocations,
   settlementPopulationTable,
-  settlementTags,
+  settlementTagOptions,
   surveyFunctions,
   surfaceIceFunctions,
   type SettlementLocationOption,
@@ -2065,11 +2065,28 @@ function assertNever(value: never): never {
   throw new Error(`Unhandled settlement category: ${value}`)
 }
 
-function chooseSettlementTags(rng: SeededRng): [string, string] {
-  const obviousTag = pickOne(rng, settlementTags)
-  const deeperOptions = settlementTags.filter((tag) => tag !== obviousTag)
-  const deeperTag = deeperOptions.length ? pickOne(rng, deeperOptions) : settlementTags[(settlementTags.indexOf(obviousTag) + 1) % settlementTags.length]
-  return [obviousTag, deeperTag]
+function chooseSettlementTags(rng: SeededRng, population: SettlementPopulation): [string, string] {
+  const band = populationBandFor(population)
+  const weighted: string[] = []
+  for (const tag of settlementTagOptions) {
+    const civicScale = tag.civicScale ?? 'neutral'
+    let weight = 1
+    if (band === 'urban') {
+      if (civicScale === 'civic') weight = 3
+      if (civicScale === 'remote') weight = 0
+    } else if (band === 'outpost') {
+      if (civicScale === 'remote') weight = 3
+      if (civicScale === 'civic') weight = 0
+    }
+    for (let i = 0; i < weight; i++) weighted.push(tag.label)
+  }
+  if (weighted.length === 0) {
+    settlementTagOptions.forEach((tag) => weighted.push(tag.label))
+  }
+  const obvious = pickOne(rng, weighted)
+  const remaining = weighted.filter((label) => label !== obvious)
+  const deeper = pickOne(rng, remaining.length > 0 ? remaining : weighted)
+  return [obvious, deeper]
 }
 
 function settlementPresenceTier(score: number): string {
@@ -2702,7 +2719,6 @@ function generateSettlements(
     const settlementFunction = chooseSettlementFunction(rng, body, locationOption, guOverlay)
     const builtForm = chooseBuiltForm(rng, locationOption, settlementFunction)
     const anchor = chooseSettlementAnchor(rng, systemName, body, locationOption)
-    const tags = chooseSettlementTags(rng)
     const rolledPopulation = settlementPopulationFromRoll(rng, presence)
     const habitationPattern = settlementHabitationPatternFromRoll(
       rng.fork(`habitation-pattern-${index + 1}`),
@@ -2716,6 +2732,7 @@ function generateSettlements(
       rolledPopulation,
       rng.fork(`population-clamp-${index + 1}`),
     )
+    const tags = chooseSettlementTags(rng, population)
     const authority = chooseSettlementAuthority(rng, habitationPattern)
     const condition = chooseSettlementCondition(rng, habitationPattern)
     const crisis = chooseSettlementCrisis(rng, habitationPattern, population)
