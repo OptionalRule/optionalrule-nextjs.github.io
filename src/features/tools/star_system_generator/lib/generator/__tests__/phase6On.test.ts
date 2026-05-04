@@ -8,7 +8,6 @@ const baseOptions: Omit<GenerationOptions, 'seed'> = {
   gu: 'normal',
   settlements: 'normal',
   graphAware: {
-    settlementWhyHere: true,
     phenomenonNote: true,
     settlementHookSynthesis: true,
   },
@@ -33,18 +32,6 @@ describe('Phase 6 graph-aware prose surfaces (all flags on)', () => {
 })
 
 describe('Phase 6 isolation: flag toggles only affect their own surface', () => {
-  it('settlementWhyHere flag alone does not change tagHook or note', () => {
-    const allOff = generateSystem({ seed: 'isolate-1', ...baseOptions, graphAware: {} })
-    const onlyWhy = generateSystem({
-      seed: 'isolate-1', ...baseOptions,
-      graphAware: { settlementWhyHere: true },
-    })
-    expect(onlyWhy.settlements.map(s => s.tagHook.value))
-      .toEqual(allOff.settlements.map(s => s.tagHook.value))
-    expect(onlyWhy.phenomena.map(p => p.note.value))
-      .toEqual(allOff.phenomena.map(p => p.note.value))
-  })
-
   it('phenomenonNote flag alone does not change settlement surfaces', () => {
     const allOff = generateSystem({ seed: 'isolate-2', ...baseOptions, graphAware: {} })
     const onlyNote = generateSystem({

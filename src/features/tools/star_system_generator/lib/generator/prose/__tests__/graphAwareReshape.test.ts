@@ -416,7 +416,7 @@ describe('graphAwareReshape — settlementHookSynthesis integration', () => {
       settlements: [settlement],
       phenomena: [],
       relationshipGraph: graph,
-      options: { ...baseOptions, graphAware: { settlementWhyHere: true, settlementHookSynthesis: true } },
+      options: { ...baseOptions, graphAware: { settlementHookSynthesis: true } },
       rng: createSeededRng('combined-test'),
     })
     expect(result.settlements[0].whyHere.value).toContain('Orison Hold')

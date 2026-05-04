@@ -279,7 +279,6 @@ function makeOptions(
     ...options,
     seed: makeSeed(options, index),
     graphAware: {
-      settlementWhyHere: true,
       phenomenonNote: true,
       settlementHookSynthesis: true,
     },
@@ -1129,7 +1128,7 @@ function auditCoverage(stats: CorpusStats, findings: Finding[]): void {
 
 function auditDistributionAxisSensitivity(findings: Finding[], syntheticSeed: string): void {
   const sampleSize = 100
-  const baseFlags = { settlementWhyHere: true, phenomenonNote: true, settlementHookSynthesis: true }
+  const baseFlags = { phenomenonNote: true, settlementHookSynthesis: true }
   let differing = 0
   for (let i = 0; i < sampleSize; i++) {
     const seed = `dist-axis-audit-${i}`
@@ -1152,7 +1151,7 @@ function auditDistributionAxisSensitivity(findings: Finding[], syntheticSeed: st
 
 function auditDensityAxisSensitivity(findings: Finding[], syntheticSeed: string): void {
   const sampleSize = 100
-  const baseFlags = { settlementWhyHere: true, phenomenonNote: true, settlementHookSynthesis: true }
+  const baseFlags = { phenomenonNote: true, settlementHookSynthesis: true }
   let differing = 0
   for (let i = 0; i < sampleSize; i++) {
     const seed = `density-axis-audit-${i}`

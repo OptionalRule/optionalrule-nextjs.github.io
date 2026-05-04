@@ -14,18 +14,17 @@ describe('GenerationOptions', () => {
 
     const optsWithFlags: GenerationOptions = {
       ...opts,
-      graphAware: { settlementWhyHere: true },
+      graphAware: { phenomenonNote: true },
     }
-    expect(optsWithFlags.graphAware?.settlementWhyHere).toBe(true)
+    expect(optsWithFlags.graphAware?.phenomenonNote).toBe(true)
 
     const optsAllFlags: GenerationOptions = {
       ...opts,
       graphAware: {
-        settlementWhyHere: true,
         phenomenonNote: true,
         settlementHookSynthesis: true,
       },
     }
-    expect(Object.keys(optsAllFlags.graphAware ?? {})).toHaveLength(3)
+    expect(Object.keys(optsAllFlags.graphAware ?? {})).toHaveLength(2)
   })
 })

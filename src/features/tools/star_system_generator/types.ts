@@ -21,7 +21,6 @@ export interface GenerationOptions {
   gu: GuPreference
   settlements: SettlementDensity
   graphAware?: {
-    settlementWhyHere?: boolean
     phenomenonNote?: boolean
     settlementHookSynthesis?: boolean
   }
