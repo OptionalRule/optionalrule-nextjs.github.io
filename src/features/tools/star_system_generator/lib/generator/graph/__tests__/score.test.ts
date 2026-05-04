@@ -204,3 +204,45 @@ describe('selectEdges (budget selection)', () => {
     expect(result.spineIds).toEqual(result.spine.map(e => e.id))
   })
 })
+
+describe('isNamedEntity post-Phase-A widening', () => {
+  it('admits a phenomenon with proper-noun displayName', () => {
+    const ref: EntityRef = {
+      kind: 'phenomenon',
+      id: 'p1',
+      displayName: 'Bonn-Tycho aurora',
+      layer: 'gu',
+    }
+    expect(isNamedEntity(ref)).toBe(true)
+  })
+
+  it('rejects a phenomenon with all-lowercase displayName', () => {
+    const ref: EntityRef = {
+      kind: 'phenomenon',
+      id: 'p1',
+      displayName: 'aurora bloom',
+      layer: 'gu',
+    }
+    expect(isNamedEntity(ref)).toBe(false)
+  })
+
+  it('admits a guHazard with proper-noun displayName', () => {
+    const ref: EntityRef = {
+      kind: 'guHazard',
+      id: 'g1',
+      displayName: 'Kestrel Bleed Event',
+      layer: 'gu',
+    }
+    expect(isNamedEntity(ref)).toBe(true)
+  })
+
+  it('still rejects guResource (intentionally not widened)', () => {
+    const ref: EntityRef = {
+      kind: 'guResource',
+      id: 'gr1',
+      displayName: 'Chiral Ice Belt',
+      layer: 'gu',
+    }
+    expect(isNamedEntity(ref)).toBe(false)
+  })
+})

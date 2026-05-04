@@ -19,6 +19,7 @@ const NAMED_ENTITY_BONUS = 0.1
 
 const NAMED_KINDS = new Set<EntityRef['kind']>([
   'settlement', 'namedFaction', 'body', 'ruin', 'system',
+  'phenomenon', 'guHazard',
 ])
 
 export function isNamedEntity(ref: EntityRef): boolean {
