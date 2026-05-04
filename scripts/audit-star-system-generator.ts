@@ -817,8 +817,16 @@ function auditSystem(system: GeneratedSystem, findings: Finding[], stats: Corpus
   )
 
   if (hiddenEdgeIds.size > 0) {
+    const visibleEndpointPairs = new Set<string>()
+    for (const edge of system.relationshipGraph.edges) {
+      if (edge.visibility === 'hidden') continue
+      visibleEndpointPairs.add(`${edge.subject.id}|${edge.object.id}`)
+      visibleEndpointPairs.add(`${edge.object.id}|${edge.subject.id}`)
+    }
     for (const edge of system.relationshipGraph.edges) {
       if (edge.visibility !== 'hidden') continue
+      const pairKey = `${edge.subject.id}|${edge.object.id}`
+      if (visibleEndpointPairs.has(pairKey)) continue
       for (const para of system.systemStory.body) {
         if (para.includes(edge.subject.displayName) && para.includes(edge.object.displayName)) {
           addFinding(findings, 'error', seed, 'story.hiddenLeak',

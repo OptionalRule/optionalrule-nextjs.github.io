@@ -3,11 +3,7 @@ import type { EdgeRule, RuleMatch, BuildCtx } from './ruleTypes'
 import { mintEdgeId } from './ruleTypes'
 import { containsWord, matchesAny, INTERDICTION_KEYWORDS } from './settingPatterns'
 import type { EntityRef } from '../types'
-import { namedFactions, type NamedFaction } from '../../data/narrative'
-
-const FACTIONS_BY_NAME: ReadonlyMap<string, NamedFaction> = new Map(
-  namedFactions.map(f => [f.name, f]),
-)
+import { buildFactionMetadataByName } from '../../factions'
 
 function getFactionEntities(entities: ReadonlyArray<EntityRef>): EntityRef[] {
   return entities.filter(e => e.kind === 'namedFaction')
@@ -30,10 +26,11 @@ function findControllingFaction(settlement: EntityRef, ctx: BuildCtx): EntityRef
     .filter(f => f.kind === 'settlement.authority')
   if (authorityFacts.length === 0) return undefined
   const authorityText = authorityFacts[0].value.value
+  const factionMeta = buildFactionMetadataByName(ctx.factsByKind)
   const factionEntities = ctx.entities.filter(e => e.kind === 'namedFaction')
   const matched: EntityRef[] = []
   for (const factionEntity of factionEntities) {
-    const faction = FACTIONS_BY_NAME.get(factionEntity.displayName)
+    const faction = factionMeta.get(factionEntity.displayName)
     if (!faction) continue
     if (faction.domains.some(d => containsWord(authorityText, d))) {
       matched.push(factionEntity)
@@ -49,8 +46,9 @@ export const suppressesGardenerInterdictionRule: EdgeRule = {
   defaultVisibility: 'contested',
   match(ctx) {
     const matches: RuleMatch[] = []
+    const factionMeta = buildFactionMetadataByName(ctx.factsByKind)
     const interdictionFactions = getFactionEntities(ctx.entities).filter(f => {
-      const faction = FACTIONS_BY_NAME.get(f.displayName)
+      const faction = factionMeta.get(f.displayName)
       return faction?.domains.includes('gardener-interdiction') ?? false
     })
     if (interdictionFactions.length === 0) return matches

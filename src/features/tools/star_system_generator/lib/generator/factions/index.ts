@@ -21,3 +21,4 @@ export interface GeneratedFaction {
 }
 
 export { generateFactions } from './generateFactions'
+export { buildFactionMetadataByName, type FactionMetadata } from './factionLookup'
