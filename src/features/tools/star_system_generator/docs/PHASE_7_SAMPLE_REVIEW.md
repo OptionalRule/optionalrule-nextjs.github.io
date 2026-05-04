@@ -314,3 +314,14 @@ Phase 8 landed the deferred spine-summary fix and the audit check that Task 10 h
 - **`prose.lowercaseFactionMidSentence` audit check shipped** (commit `5acfd5e`). Codifies the antipattern as a regression guard. 0 findings against the post-fix corpus.
 
 The Phase 8 candidates surfaced in this review (tone-aware spine selection, gu-aware spine selection, ruin-as-agent semantic classification beyond Task 5's bridge-shape change) were NOT addressed in Phase 8 — they remain future-tuning candidates. Phase 8's scope was the deprecation of `narrativeLines` / `narrativeThreads` plus the spine-bug carryover; the master plan reaches its planned end state at Phase 8.
+
+## Tone / GU / distribution / density carryover closeout
+
+The two specific Phase-8-candidate items at lines 256-257 of the findings table — "tone divergence not visible in spine" (5 seeds) and "GU intensity not visible in spine" (5 seeds) — were addressed in the post-Phase-8 4-phase tone/gu-aware spine sequence, alongside distribution + density coverage that Phase 7 also flagged. Closeout state per the merged sequence:
+
+- **Phase A (commit `2e59b5d`):** `BuildGraphOptions` threading channel + `NAMED_KINDS` widening + tone scoring multiplier + gu eligibility predicate. Without these, most tone weights were dead letters at the spine layer.
+- **Phase B (commit `521414c`):** Per-tone faction generation. The 10-faction shared pool that produced "Kestrel / Red Vane everywhere" is gone — corpus now ships 330 unique faction names across 4800 systems.
+- **Phase C (commit `fb0eaff`):** Per-tone body[0] + spineSummary variants for the 2 spine-eligible edge types that actually fire at scale (DESTABILIZES + CONTESTS — empirical survey showed CONTROLS only 2/600 systems and CONTRADICTS/BETRAYED never), per-tone era pools, per-tone connectives.
+- **Phase D (commit `580cbbd`):** Distribution + density axes wired through the same channel. `frontier` boosts contested visibility 1.3×; `realistic` boosts public 1.2×. Density-conditioned cluster pulling in `clusters.ts`.
+
+All four input axes now produce distinguishable output. 1014/1014 tests passing; deep audit clean. The remaining Phase-8-candidate item from this review (ruin-as-agent semantic classification) was NOT included in the 4-phase sequence and remains future-tuning work.
