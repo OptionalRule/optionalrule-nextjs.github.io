@@ -62,6 +62,10 @@ Tone and GU control different intents:
 
 Conflating them into a single knob produces the wrong cross-product. A `cinematic`/`low` system should have human-vs-human spine drama with no GU spillover. An `astronomy`/`fracture` system should have phenomenon-on-phenomenon spine reads with the bleed as protagonist. The two-layer design lets each axis independently bias the spine.
 
+### Why ship tone + gu in one phase instead of two
+
+A reasonable counter-plan is to ship Tasks 1–2 (tone-multiplier scoring) as one PR and Task 3 (gu-eligibility) as a follow-up — that would shrink each PR's snapshot-diff blast radius and let a reviewer verify each axis independently. The reason to bundle is the matrix snapshot in Task 5: `spineToneGuMatrix.test.ts` pins the cross-axis behavior (3 tones × 3 gu levels = 9 cells of expected spine selection), and that contract can only be written and committed once both axes are wired. Splitting the work would either ship Task 1+2 with no matrix snapshot (leaving the tone axis unpinned until the follow-up lands) or require re-baselining the matrix snapshot in the second PR (defeating the point of having it). The `phase6On.test.ts` cascade risk attaches only to gu-eligibility, so it's contained inside Task 3 and its verification — not a reason to defer.
+
 ### Why bias at scoring + eligibility, not at template selection
 
 Three brainstormed designs (see "Design options considered" below) — biasing at the score, biasing at the eligibility filter, and biasing at the template-family selection. The recommended design biases at scoring (tone) and eligibility (GU) because:
@@ -240,7 +244,7 @@ The multiplier is per-edge-type, not per-edge, so the tuning surface is bounded.
   }
   ```
 
-  Add `import type { GeneratorTone } from '../../../types'` at the top of the file. Verify the import path matches the project's existing pattern (read the first 5 lines of the file to confirm).
+  Add `import type { GeneratorTone } from '../../../../types'` at the top of the file. Verify the import path matches the project's existing pattern (read the first 5 lines of the file to confirm).
 
 - [ ] **Step 4: Apply the multiplier inside `scoreCandidates`**
 
@@ -368,7 +372,7 @@ The multiplier is per-edge-type, not per-edge, so the tuning surface is bounded.
 
   Optional with a default of `'balanced'` / `'normal'` so existing tests that build inputs by hand don't break — Task 4 makes the threading explicit at the integration point.
 
-  Add `import type { GeneratorTone, GuPreference } from '../../../types'`.
+  Add `import type { GeneratorTone, GuPreference } from '../../../../types'`.
 
 - [ ] **Step 3: Update `buildRelationshipGraph` to pass tone to `scoreCandidates`**
 
@@ -497,7 +501,7 @@ The change is a per-GU widening of the eligibility predicate. The widening only 
   }
   ```
 
-  Add `import type { GuPreference } from '../../../types'`.
+  Add `import type { GuPreference } from '../../../../types'`.
 
 - [ ] **Step 3: Update `selectEdges` signature and filter**
 
