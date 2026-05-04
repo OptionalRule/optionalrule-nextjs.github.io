@@ -4,12 +4,14 @@ import {
   encounterSites,
   encounterSitesByFunctionKeyword,
   encounterSitesByHabitationPattern,
+  encounterSitesByPopulationBand,
   guFractureFunctionsBySiteCategory,
   habitationPatternDefaults,
   hiddenTruthByHabitationPattern,
   settlementAuthorityByHabitationPattern,
   settlementConditionByHabitationPattern,
   settlementCrisisByHabitationPattern,
+  settlementCrisisByPopulationBand,
   settlementLocations,
   settlementPopulationTable,
   settlementSiteCategories,
@@ -73,6 +75,18 @@ describe('star system settlement data', () => {
     for (const pool of encounterSitesByFunctionKeyword) {
       expect(pool.keywords.length).toBeGreaterThan(0)
       expect(pool.sites.length).toBeGreaterThan(0)
+    }
+
+    expect(encounterSitesByPopulationBand.urban?.length).toBeGreaterThan(0)
+    expect(encounterSitesByPopulationBand.town?.length).toBeGreaterThan(0)
+    expect(encounterSitesByPopulationBand.outpost?.length).toBeGreaterThan(0)
+    expect(settlementCrisisByPopulationBand.urban?.length).toBeGreaterThan(0)
+    expect(settlementCrisisByPopulationBand.outpost?.length).toBeGreaterThan(0)
+
+    for (const sites of Object.values(encounterSitesByPopulationBand)) {
+      for (const site of sites) {
+        expect(encounterSites).toContain(site)
+      }
     }
   })
 })

@@ -85,6 +85,8 @@ import {
   encounterSites,
   encounterSitesByFunctionKeyword,
   encounterSitesByHabitationPattern,
+  encounterSitesByPopulationBand,
+  populationBandFor,
   extractionFunctions,
   giantOrbitalFunctions,
   guFractureFunctionsBySiteCategory,
@@ -102,6 +104,7 @@ import {
   settlementConditionByHabitationPattern,
   settlementConditions,
   settlementCrisisByHabitationPattern,
+  settlementCrisisByPopulationBand,
   settlementCrises,
   settlementLocations,
   settlementPopulationTable,
@@ -2372,9 +2375,17 @@ function chooseSettlementCondition(rng: SeededRng, habitationPattern: Settlement
   return pickOne(rng, settlementConditions)
 }
 
-function chooseSettlementCrisis(rng: SeededRng, habitationPattern: SettlementHabitationPattern): string {
+function chooseSettlementCrisis(
+  rng: SeededRng,
+  habitationPattern: SettlementHabitationPattern,
+  population: SettlementPopulation,
+): string {
   if (settlementCrisisByHabitationPattern[habitationPattern]) {
     return pickOne(rng, settlementCrisisByHabitationPattern[habitationPattern])
+  }
+  const band = populationBandFor(population)
+  if (band && settlementCrisisByPopulationBand[band] && rng.chance(0.4)) {
+    return pickOne(rng, settlementCrisisByPopulationBand[band])
   }
   return pickOne(rng, settlementCrises)
 }
@@ -2389,12 +2400,15 @@ function chooseHiddenTruth(rng: SeededRng, habitationPattern: SettlementHabitati
 function chooseEncounterSites(
   rng: SeededRng,
   habitationPattern: SettlementHabitationPattern,
+  population: SettlementPopulation,
   settlementFunction: string,
 ): string[] {
   const value = settlementFunction.toLowerCase()
   const candidates = new Set<string>()
 
   encounterSitesByHabitationPattern[habitationPattern]?.forEach((site) => candidates.add(site))
+  const band = populationBandFor(population)
+  if (band) encounterSitesByPopulationBand[band]?.forEach((site) => candidates.add(site))
   encounterSitesByFunctionKeyword.forEach((pool) => {
     if (pool.keywords.some((keyword) => value.includes(keyword))) {
       pool.sites.forEach((site) => candidates.add(site))
@@ -2696,9 +2710,9 @@ function generateSettlements(
     )
     const authority = chooseSettlementAuthority(rng, habitationPattern)
     const condition = chooseSettlementCondition(rng, habitationPattern)
-    const crisis = chooseSettlementCrisis(rng, habitationPattern)
+    const crisis = chooseSettlementCrisis(rng, habitationPattern, population)
     const hiddenTruth = chooseHiddenTruth(rng, habitationPattern)
-    const encounterSiteValues = chooseEncounterSites(rng.fork(`encounter-sites-${index + 1}`), habitationPattern, settlementFunction)
+    const encounterSiteValues = chooseEncounterSites(rng.fork(`encounter-sites-${index + 1}`), habitationPattern, population, settlementFunction)
     const tagHook = settlementHookSynthesis(rng.fork(`tag-hook-${index + 1}`), tags[0], tags[1], {
       habitationPattern,
       siteCategory: locationOption.category,

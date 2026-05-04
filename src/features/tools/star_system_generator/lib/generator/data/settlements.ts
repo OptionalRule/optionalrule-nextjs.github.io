@@ -63,6 +63,8 @@ interface SettlementsData {
   crisisByHabitationPattern: Record<string, readonly string[]>
   hiddenTruthByHabitationPattern: Record<string, readonly string[]>
   encounterSitesByHabitationPattern: Record<string, readonly string[]>
+  encounterSitesByPopulationBand: Record<string, readonly string[]>
+  crisisByPopulationBand: Record<string, readonly string[]>
 }
 
 const typedSettlementsData = settlementsData as SettlementsData
@@ -107,3 +109,26 @@ export const settlementConditionByHabitationPattern = typedSettlementsData.condi
 export const settlementCrisisByHabitationPattern = typedSettlementsData.crisisByHabitationPattern
 export const hiddenTruthByHabitationPattern = typedSettlementsData.hiddenTruthByHabitationPattern
 export const encounterSitesByHabitationPattern = typedSettlementsData.encounterSitesByHabitationPattern
+export const encounterSitesByPopulationBand = typedSettlementsData.encounterSitesByPopulationBand
+export const settlementCrisisByPopulationBand = typedSettlementsData.crisisByPopulationBand
+
+export type SettlementPopulationBand = 'urban' | 'town' | 'outpost'
+
+export function populationBandFor(population: SettlementPopulation): SettlementPopulationBand | null {
+  switch (population) {
+    case '10+ million':
+    case '1-10 million':
+    case '100,001-1 million':
+      return 'urban'
+    case '10,001-100,000':
+    case '1,001-10,000':
+      return 'town'
+    case '101-1,000':
+    case '21-100':
+    case '1-20':
+    case 'Minimal (<5)':
+      return 'outpost'
+    case 'Unknown':
+      return null
+  }
+}

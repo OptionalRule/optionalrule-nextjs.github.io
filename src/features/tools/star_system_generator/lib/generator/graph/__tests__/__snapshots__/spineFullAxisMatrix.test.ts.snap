@@ -2,7 +2,7 @@
 
 exports[`spine full axis matrix (16 representative cells) > baseline-frontier-astronomy: stable spine + body[0] structural fields 1`] = `
 {
-  "body0": "Atlas-Bridge IV records a phase shift each time first-wave ghost colony passes through. First-wave ghost colony drifts the baselines Atlas-Bridge V relies on. Industrial mirror swarm failure introduces a measurable perturbation in Atlas-Bridge VII. Atlas-Bridge V carries Atlas-Bridge V Gate 06 on its surface. Atlas-Bridge IV hosts Atlas-Bridge IV Claim 18.",
+  "body0": "Atlas-Bridge IV records a phase shift each time first-wave ghost colony passes through. First-wave ghost colony drifts the baselines Atlas-Bridge V relies on. Industrial mirror swarm failure introduces a measurable perturbation in Atlas-Bridge VII. Atlas-Bridge V carries Atlas-Bridge V Cordon 06 on its surface. Atlas-Bridge IV hosts Atlas-Bridge IV Claim 18.",
   "spineEdgeType": "DESTABILIZES",
   "spineObjectKind": "body",
   "spineSubjectKind": "phenomenon",
@@ -57,7 +57,7 @@ exports[`spine full axis matrix (16 representative cells) > baseline-realistic-b
 
 exports[`spine full axis matrix (16 representative cells) > baseline-realistic-cinematic: stable spine + body[0] structural fields 1`] = `
 {
-  "body0": "Tarandus Route-211 IV has been watching captured rogue world eat its margins for a generation. So of course, Iron Crown Cabal swore the pact would hold; Salt Wound Cabal swore otherwise. And then, Something is wrong under Tarandus Route-211 Belt V, and captured rogue world is the name people whisper for it. Tarandus Route-211 Belt V hosts Dead relay buoy. Tarandus Route-211 IV carries Tarandus Route-211 IV Laboratory on its surface.",
+  "body0": "Tarandus Route-211 IV has been watching captured rogue world eat its margins for a generation. So of course, Iron Crown Cabal swore the pact would hold; Salt Wound Cabal swore otherwise. And then, Something is wrong under Tarandus Route-211 Belt V, and captured rogue world is the name people whisper for it. Tarandus Route-211 Belt V hosts Dead relay buoy. Tarandus Route-211 IV carries Tarandus Route-211 IV - Moon I Station on its surface.",
   "spineEdgeType": "DESTABILIZES",
   "spineObjectKind": "body",
   "spineSubjectKind": "phenomenon",
@@ -68,7 +68,7 @@ exports[`spine full axis matrix (16 representative cells) > baseline-realistic-c
 
 exports[`spine full axis matrix (16 representative cells) > corner-frontier-cinematic-fracture-hub: stable spine + body[0] structural fields 1`] = `
 {
-  "body0": "Bone Lantern Wake keeps the receipts. Sisters of Synod keeps the witnesses. Between Last Ledger Cabal and Long Knife Run the knife is already drawn. Long Knife Run swore the pact would hold; Widow Star Synod swore otherwise. Pipit's Delta VI - Moon I Base draws everything it consumes from Illegal Sol-prohibited geometry sample. Pipit's Delta VII Station 30 depends on Illegal Sol-prohibited geometry sample for everything.",
+  "body0": "Bone Lantern Wake keeps the receipts. Sisters of Synod keeps the witnesses. Between Long Knife Run and Sisters of Choir the knife is already drawn. Last Ledger Synod swore the pact would hold; Sisters of Choir swore otherwise. Pipit's Delta VI - Moon I Base draws everything it consumes from Illegal Sol-prohibited geometry sample. Pipit's Delta VII Laboratory 30 depends on Illegal Sol-prohibited geometry sample for everything.",
   "spineEdgeType": "CONTESTS",
   "spineObjectKind": "namedFaction",
   "spineSubjectKind": "namedFaction",
@@ -101,7 +101,7 @@ exports[`spine full axis matrix (16 representative cells) > density-crowded: sta
 
 exports[`spine full axis matrix (16 representative cells) > density-hub: stable spine + body[0] structural fields 1`] = `
 {
-  "body0": "Intan's Crown Belt X records a phase shift each time metric mirage zone passes through. Intan's Crown V records a phase shift each time metric mirage zone passes through. Refugee ark parking orbit introduces a measurable perturbation in Intan's Crown Belt X. Intan's Crown V - Moon I Claim is the only major foothold on Intan's Crown V.",
+  "body0": "Intan's Crown Belt X records a phase shift each time metric mirage zone passes through. Intan's Crown V records a phase shift each time metric mirage zone passes through. Refugee ark parking orbit introduces a measurable perturbation in Intan's Crown Belt X. Intan's Crown V - Moon I Bastion is the only major foothold on Intan's Crown V.",
   "spineEdgeType": "DESTABILIZES",
   "spineObjectKind": "body",
   "spineSubjectKind": "phenomenon",

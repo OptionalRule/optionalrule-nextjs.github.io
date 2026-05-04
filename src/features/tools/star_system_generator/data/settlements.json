@@ -677,7 +677,18 @@
     "AI witness vault",
     "Public casualty register",
     "Sealed evidence room",
-    "Evacuation ark manifest office"
+    "Evacuation ark manifest office",
+    "Transit lock overflow",
+    "Debt court queue",
+    "District triage line",
+    "Subway shelter platform",
+    "Mass-clinic intake corridor",
+    "Town hall annex",
+    "Open-air market dock",
+    "Single-bay clinic",
+    "Single-room briefing cell",
+    "Shared mess that doubles as a hearing",
+    "Two-witness sealed lock"
   ],
   "encounterSitesByFunctionKeyword": [
     { "keywords": ["quarantine", "biosphere"], "sites": ["Quarantine ward", "Black-market clinic", "Water plant", "Exposure clinic", "Triage lottery hall"] },
@@ -731,5 +742,39 @@
   "encounterSitesByHabitationPattern": {
     "Automated": ["AI core vault", "Drone hangar", "Closed habitat ring", "Place the maps say does not exist", "Route weather board", "AI witness vault", "Life-support spine"],
     "Abandoned": ["Old first-wave command bunker", "Hidden launch bay", "Half-flooded maintenance tunnels", "Place the maps say does not exist", "Dead mirror-control room", "Public casualty register", "Sealed evidence room"]
+  },
+  "encounterSitesByPopulationBand": {
+    "urban": [
+      "Transit lock overflow",
+      "Debt court queue",
+      "District triage line",
+      "Subway shelter platform",
+      "Mass-clinic intake corridor"
+    ],
+    "town": [
+      "Town hall annex",
+      "Open-air market dock",
+      "Single-bay clinic"
+    ],
+    "outpost": [
+      "Single-room briefing cell",
+      "Shared mess that doubles as a hearing",
+      "Two-witness sealed lock"
+    ]
+  },
+  "crisisByPopulationBand": {
+    "urban": [
+      "District-wide rolling blackouts",
+      "Mass shelter lottery riot",
+      "Transit grid failure during storm",
+      "Debt court mass-eviction order",
+      "Civic AI unionizes against operators"
+    ],
+    "outpost": [
+      "Only qualified medic refuses to work",
+      "The single backup generator failed in private",
+      "One team member is lying about contamination",
+      "The relief ship has been quietly diverted"
+    ]
   }
 }
