@@ -107,6 +107,11 @@ interface CorpusStats {
   hookGraphAwareCount: number
   hookFallbackCount: number
   historicalSummariesByBucket: Map<string, { count: number; distinct: Set<string> }>
+  spineEdgeTypesAcrossCorpus: Set<EdgeType>
+  fractureSpineSamples: number
+  fracturePhenomenonAnchoredSpines: number
+  astronomySpineSamples: number
+  astronomyNonContestsSpines: number
 }
 
 const auditProfiles = {
@@ -666,6 +671,23 @@ function auditSystem(system: GeneratedSystem, findings: Finding[], stats: Corpus
     if (linked) stats.spineEdgesWithHistorical += 1
   }
 
+  const topSpine = system.relationshipGraph.edges.find(
+    e => e.id === system.relationshipGraph.spineEdgeIds[0],
+  )
+  if (topSpine) {
+    stats.spineEdgeTypesAcrossCorpus.add(topSpine.type)
+    if (system.options.gu === 'fracture') {
+      stats.fractureSpineSamples += 1
+      const phenomenonAnchored =
+        topSpine.subject.kind === 'phenomenon' || topSpine.object.kind === 'phenomenon'
+      if (phenomenonAnchored) stats.fracturePhenomenonAnchoredSpines += 1
+    }
+    if (system.options.tone === 'astronomy') {
+      stats.astronomySpineSamples += 1
+      if (topSpine.type !== 'CONTESTS') stats.astronomyNonContestsSpines += 1
+    }
+  }
+
   for (const edge of system.relationshipGraph.edges) {
     if (edge.era !== 'historical') continue
 
@@ -1042,6 +1064,30 @@ function auditCoverage(stats: CorpusStats, findings: Finding[]): void {
     addFinding(findings, 'warning', syntheticSeed, 'narrative.factionNameDiversity',
       `Faction name diversity collapsed to ${stats.factionNames.size} unique names across the deep-audit corpus (${stats.systems} systems). Expected >=100 (Phase B per-tone faction generator regression).`)
   }
+
+  // narrative.spineToneSensitivity (Phase A Task 7): across a corpus that varies
+  // tone × gu, at least 2 distinct spine edge types should appear. The original
+  // plan called for >=3 but the rule corpus realistically supports 2 spine-eligible
+  // families at scale (CONTESTS for faction-on-faction; DESTABILIZES via the new
+  // phenomenon-anchored sub-fork rules). A regression to 1 distinct type signals
+  // tone weights or eligibility predicate collapse.
+  const spineTypeCount = stats.spineEdgeTypesAcrossCorpus.size
+  if (spineTypeCount < 2) {
+    addFinding(findings, 'warning', syntheticSeed, 'narrative.spineToneSensitivity',
+      `Spine edge types collapsed to ${spineTypeCount} distinct values across the tone × gu corpus: ${[...stats.spineEdgeTypesAcrossCorpus].join(', ')}. Expected >=2 (regression of Phase A tone-aware spine).`)
+  }
+
+  // Per-sub-corpus floors: at least 1 phenomenon-anchored spine across the
+  // fracture sub-corpus (Task 5 predicate widening), and at least 1 non-CONTESTS
+  // spine across the astronomy sub-corpus (Task 4 tone-multiplier).
+  if (stats.fractureSpineSamples > 0 && stats.fracturePhenomenonAnchoredSpines === 0) {
+    addFinding(findings, 'warning', syntheticSeed, 'narrative.spineToneSensitivity',
+      `0/${stats.fractureSpineSamples} fracture-GU systems produced a phenomenon-anchored spine. Expected >=1 (Phase A predicate widening regression).`)
+  }
+  if (stats.astronomySpineSamples > 0 && stats.astronomyNonContestsSpines === 0) {
+    addFinding(findings, 'warning', syntheticSeed, 'narrative.spineToneSensitivity',
+      `0/${stats.astronomySpineSamples} astronomy-tone systems produced a non-CONTESTS spine. Expected >=1 (Phase A tone-multiplier regression).`)
+  }
 }
 
 function auditStarDistribution(
@@ -1248,6 +1294,11 @@ const stats: CorpusStats = {
   hookGraphAwareCount: 0,
   hookFallbackCount: 0,
   historicalSummariesByBucket: new Map(),
+  spineEdgeTypesAcrossCorpus: new Set<EdgeType>(),
+  fractureSpineSamples: 0,
+  fracturePhenomenonAnchoredSpines: 0,
+  astronomySpineSamples: 0,
+  astronomyNonContestsSpines: 0,
 }
 
 for (const distribution of distributions) {
