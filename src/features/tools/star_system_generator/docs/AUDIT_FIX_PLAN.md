@@ -21,7 +21,7 @@ Work items:
 - Prevent hot-zone forced dwarf/rogue/debris classes from producing misleading cold-body labels.
 - Split or constrain anomaly handling so `Brown-dwarf companion`, `Black-lab platform`, and similar non-planet labels do not receive ordinary planet geology, rings, or Earth-radius framing.
 - Constrain GU fracture/shear settlement functions by site category so mobile/fleet functions do not appear as lava-tube cities, moon bunkers, or fixed ruins.
-- Fix `observerse` / `observiverse` terminology after confirming intended setting term.
+- ~~Fix `observerse` / `observiverse` terminology after confirming intended setting term.~~ Done in `refactor(star-gen): align with GU glossary v2.0 and overhaul local sites` — unified on `observerse` per glossary v2.0 across data, code, regex literals, and tests.
 - Make no-alien guard recursive or share its text traversal with the audit.
 
 Acceptance checks:

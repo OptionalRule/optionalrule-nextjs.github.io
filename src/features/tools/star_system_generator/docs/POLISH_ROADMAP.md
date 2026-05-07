@@ -20,6 +20,9 @@ Current baseline after the celestial designation, body-interest prose, settlemen
 - generated body and moon names are designation-first
 - old body/moon name pools are retired alias material
 - body-interest summaries use category-aware prompt pools plus context modifiers for moons, rings, biospheres, hydrospheres, radiation, GU conditions, rogue captures, and human-altered sites
+- body-level site prompts (`bodySites`) live in 6 category-keyed pools (any/terrestrial/envelope/minor/anomaly/rogueCaptured), 100 hook-style entries total, picker filters by body category
+- settlement Local Sites (`encounterSites`) are 85 hook-style entries with function-keyword, habitation-pattern, and population-band routing; inline prose templates use `siteLeadNoun()` to keep templates grammatically clean
+- terminology unified on `observerse` (per GU glossary v2.0) across data, code, regex literals, and tests
 - settlement tag-pair hooks cover the highest-value survival, route/GU, AI/evidence, labor, extraction, terraforming, biosafety, evacuation, and governance combinations
 - system phenomena expose structured transit, question, hook, and image beats in UI, JSON export, and Markdown export
 - `npm run audit:star-system-data` reports zero structural errors and zero thin-pool warnings
@@ -33,49 +36,46 @@ Current next priorities:
 
 ## Priority 1 - Expand Body Site Prompts
 
+Status: implemented and re-implemented as hook-style category pools.
+
+Problem (original):
+
+`mechanics.siteOptions` was a small flat pool of bureaucratic instrument labels (`magnetometer sweep zone`, `utility meter cluster`, `commodity price relay`). They surfaced unfiltered on every body category and read as furniture-inventory rather than adventure prompts.
+
+Implementation note:
+
+- Initial pass expanded the flat `siteOptions` pool to 86 short labels with a 60-entry audit floor.
+- Second pass (`refactor(star-gen): align with GU glossary v2.0 and overhaul local sites`) replaced the flat array with `bodySites`, a category-keyed structure: `any` (universal), `terrestrial`, `envelope`, `minor`, `anomaly`, `rogueCaptured`. Total **100 unique evocative entries**, each phrased as a hook (location + an unanswered question or implied conflict).
+- Generator picker (`pickBodySite` in `lib/generator/index.ts`) mixes the universal `any` pool with the category-matched pool by `BodyCategory`, so envelope-only sites never land on rocky worlds and vice versa.
+- Audit script and `mechanical-data.test.ts` enforce per-pool minimums (any ≥15, terrestrial ≥12, envelope ≥8, minor ≥10, anomaly ≥6, rogueCaptured ≥6) plus an aggregate ≥80 unique floor.
+
+Acceptance checks (passed):
+
+- `npm run audit:star-system-data` reports zero structural errors and zero thin-pool warnings.
+- focused Star System Generator tests pass (625/625).
+- manual sample review across rocky / gas-giant / belt / anomaly bodies confirms category-appropriate output.
+
+## Priority 1b - Rewrite Settlement Local Sites as Hooks
+
 Status: implemented.
 
 Problem:
 
-`mechanics.siteOptions` is still a very small pool. These prompts appear directly on generated bodies, so repetition is visible in the orbital table and body detail panels.
-
-Current examples:
-
-- `automated survey rig`
-- `chiral mining claim`
-- `fuel depot`
-- `quarantine beacon`
-- `first-wave ruin`
-- `free captain hideout`
+`settlements.json` `encounterSites` (surfaced as **Local Sites** in Markdown export and SettlementCard) contained ~50 mostly-bare labels (`Drone hangar`, `Worker barracks`, `Water plant`, `Town hall annex`). They named furniture, not scenes.
 
 Implementation note:
 
-- Expanded `siteOptions` to 86 entries after a second curated vector pass.
-- Added an audit warning threshold so the pool should not regress below 60 entries.
-- Kept the pool flat for now, using wording that can plausibly refer to surface, orbital, belt, nearby-space, or anomaly-adjacent sites.
-- Deferred category-specific site filtering until the flat pool has more usage feedback.
-- Reviewed candidate additions for surface-coded, interior-specific, or duplicate wording before adding the strongest cross-context options.
+- Rewrote the master list to **85 hook-style entries**, each implying who/what/why-it-matters in the phrasing itself.
+- Expanded function-keyword, habitation-pattern, and population-band pools so each context now has 5–12 candidates instead of the prior 3–7.
+- Added `siteLeadNoun()` helper in `lib/generator/prose/helpers.ts`. Inline prose templates (e.g. `settlementProse.ts`) now extract the lead noun phrase before the relative clause, so display surfaces show the full hook while inline templates stay terse.
+- Strengthened `settlement-data.test.ts` to verify every keyword/habitation/population pool reference resolves to the master list (catches future typos at test time).
+- Follow-up commit `refactor(star-gen): clarify six muddled local-site entries` rewrote six entries that read as jargon (Two-witness sealed lock, AI service chapel tick rate, etc.).
 
-Recommended work:
+Acceptance checks (passed):
 
-- Keep `siteOptions` above 60 entries unless category-specific pools replace the flat pool.
-- Prefer compact, concrete, table-facing prompts.
-- Include enough variety for survey, extraction, salvage, quarantine, military, route, religious, medical, and refugee uses.
-- Keep labels short enough for orbital-table display.
-
-Future option:
-
-- Split `siteOptions` by category or context after the flat pool improves:
-  - body category
-  - thermal zone
-  - GU intensity
-  - settlement density
-
-Acceptance checks:
-
-- `npm run audit:star-system-data`
-- focused generator tests
-- manual sample review of 20-30 systems
+- All pool references resolve to master list (validated by test).
+- 625/625 tests pass; three prose snapshots refreshed for seeded pool drift.
+- manual generation of three sample systems confirms variety and clarity.
 
 ## Priority 2 - Improve Body Interest Prose
 
