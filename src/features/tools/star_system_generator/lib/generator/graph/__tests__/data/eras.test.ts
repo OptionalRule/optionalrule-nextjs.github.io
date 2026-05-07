@@ -3,11 +3,13 @@ import { ERAS, pickEra } from '../../data/eras'
 import { createSeededRng } from '../../../rng'
 
 describe('ERAS pool', () => {
-  it('contains 10-12 lowercase era strings', () => {
+  it('contains 8-20 lowercase-leading era strings', () => {
     expect(ERAS.length).toBeGreaterThanOrEqual(8)
-    expect(ERAS.length).toBeLessThanOrEqual(12)
+    expect(ERAS.length).toBeLessThanOrEqual(20)
     for (const era of ERAS) {
-      expect(era).toBe(era.toLowerCase())
+      // First character must be lowercase (era is a sentence-internal adjunct).
+      // Internal capitals are permitted for setting proper nouns ("Iggygate", "Pinchdrive").
+      expect(era[0]).toBe(era[0].toLowerCase())
       expect(era.length).toBeGreaterThan(3)
     }
   })

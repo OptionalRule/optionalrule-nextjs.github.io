@@ -76,6 +76,13 @@ export function settlementHookSynthesis(
   })()
   const secret = sentenceFragment(context.hiddenTruth)
   const functionPressure = definiteNounPhrase(context.settlementFunction)
+  const closing = (() => {
+    const choice = rng.int(1, 4)
+    if (choice === 1) return `Control of ${functionPressure} decides who has leverage.`
+    if (choice === 2) return `Whoever runs ${functionPressure} sets the terms here.`
+    if (choice === 3) return `Every faction here measures itself against ${functionPressure}.`
+    return `The fight for ${functionPressure} is the only one that lasts.`
+  })()
 
-  return `${sentenceStart(base)} ${pressure} Privately, ${secret}. Control of ${functionPressure} decides who has leverage.`
+  return `${sentenceStart(base)} ${pressure} Privately, ${secret}. ${closing}`
 }

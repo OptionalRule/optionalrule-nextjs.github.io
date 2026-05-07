@@ -44,7 +44,8 @@ export function buildRelationshipGraph(
     }
   }
 
-  const scored = scoreCandidates(candidates, options.tone, options.gu, options.distribution)
+  const seedSalt = String(rng.fork('score').next())
+  const scored = scoreCandidates(candidates, options.tone, options.gu, options.distribution, seedSalt)
   const selection = selectEdges(scored, {
     numSettlements: input.settlements.length,
     numPhenomena: input.phenomena.length,

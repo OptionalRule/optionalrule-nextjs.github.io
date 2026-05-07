@@ -94,10 +94,11 @@ export function scoreCandidates(
   tone: GeneratorTone = 'balanced',
   gu: GuPreference = 'normal',
   distribution: GeneratorDistribution = 'realistic',
+  seedSalt: string = '',
 ): ScoredCandidate[] {
   const collapsed = collapseDuplicates(candidates)
   const sortedForNovelty = [...collapsed].sort((a, b) => {
-    return stableHashString(a.id) - stableHashString(b.id)
+    return stableHashString(seedSalt + a.id) - stableHashString(seedSalt + b.id)
   })
 
   const seenTypes = new Set<RelationshipEdge['type']>()
@@ -119,7 +120,7 @@ export function scoreCandidates(
 
   scored.sort((a, b) => {
     if (b.score !== a.score) return b.score - a.score
-    return stableHashString(a.edge.id) - stableHashString(b.edge.id)
+    return stableHashString(seedSalt + a.edge.id) - stableHashString(seedSalt + b.edge.id)
   })
   return scored
 }

@@ -1,7 +1,7 @@
 import type { EdgeRule, RuleMatch, BuildCtx } from './ruleTypes'
 import { mintEdgeId } from './ruleTypes'
 import {
-  containsWord, sharedDomains, matchesAny, CONTRADICTION_KEYWORDS,
+  containsWord, sharedDomains, matchesAny, CONTRADICTION_KEYWORDS, concretizeDomain,
 } from './settingPatterns'
 import type { EntityRef } from '../types'
 import { buildFactionMetadataByName } from '../../factions'
@@ -62,7 +62,7 @@ export const contradictsRuinHookAuthorityRule: EdgeRule = {
         matches.push({
           subject: ruinRef,
           object: settlementRef,
-          qualifier: overlap[0],
+          qualifier: concretizeDomain(overlap[0]),
           groundingFactIds: [ruinFact.id, authFact.id],
         })
       }
@@ -120,7 +120,7 @@ export const contradictsHiddenPublicRule: EdgeRule = {
       matches.push({
         subject: settlementRef,
         object: objectRef,
-        qualifier: matchingTagHooks[0].domains[0],
+        qualifier: concretizeDomain(matchingTagHooks[0].domains[0]),
         groundingFactIds: [hiddenFact.id, matchingTagHooks[0].id],
       })
     }

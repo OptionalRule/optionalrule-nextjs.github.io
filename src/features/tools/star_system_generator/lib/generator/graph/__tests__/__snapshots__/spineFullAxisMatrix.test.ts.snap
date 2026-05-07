@@ -2,176 +2,176 @@
 
 exports[`spine full axis matrix (16 representative cells) > baseline-frontier-astronomy: stable spine + body[0] structural fields 1`] = `
 {
-  "body0": "Atlas-Bridge IV records a phase shift each time first-wave ghost colony passes through. First-wave ghost colony drifts the baselines Atlas-Bridge V relies on. Industrial mirror swarm failure introduces a measurable perturbation in Atlas-Bridge VII. Atlas-Bridge V carries Atlas-Bridge V Cordon 06 on its surface. Atlas-Bridge IV hosts Atlas-Bridge IV Claim 18.",
+  "body0": "Atlas-Bridge V records a phase shift each time the failed terraforming biosphere passes through. The industrial mirror swarm failure drifts the baselines Atlas-Bridge V relies on. The industrial mirror swarm failure introduces a measurable perturbation in Atlas-Bridge VII. Atlas-Bridge VII carries Atlas-Bridge VII Station 88 on its surface.",
   "spineEdgeType": "DESTABILIZES",
   "spineObjectKind": "body",
   "spineSubjectKind": "phenomenon",
-  "spineSummary": "First-wave ghost colony took shape before the photometric reset, First-wave ghost colony is drifting the baselines on which Atlas-Bridge IV was sited.",
+  "spineSummary": "Failed terraforming biosphere took shape before the photometric reset, the failed terraforming biosphere is drifting the baselines on which Atlas-Bridge V was sited.",
   "spineVisibility": "public",
 }
 `;
 
 exports[`spine full axis matrix (16 representative cells) > baseline-frontier-balanced: stable spine + body[0] structural fields 1`] = `
 {
-  "body0": "Glasshouse Biosafety Compact and Veyra-Locke Concession both want ecology. Glasshouse Biosafety Compact refuses to recognize Ninth Ledger Office's authority. The compact between Pale Choir Communion and Red Vane Labor Combine has gone bad.",
+  "body0": "Ash Meridian Navy and Helion Debt Synod both want the chain of authority. Helion Debt Synod refuses to recognize Ninth Ledger Office's authority. The compact between Glasshouse Biosafety Compact and Ninth Ledger Office has gone bad.",
   "spineEdgeType": "CONTESTS",
   "spineObjectKind": "namedFaction",
   "spineSubjectKind": "namedFaction",
-  "spineSummary": "The compact between Glasshouse Biosafety Compact and Veyra-Locke Concession broke in the bleed years, Glasshouse Biosafety Compact and Veyra-Locke Concession can't both set the rules — and the rest of the system knows it.",
+  "spineSummary": "The compact between Ash Meridian Navy and Helion Debt Synod broke before the gate cooled, Ash Meridian Navy and Helion Debt Synod can't both set the rules — and the rest of the system knows it.",
   "spineVisibility": "contested",
 }
 `;
 
 exports[`spine full axis matrix (16 representative cells) > baseline-frontier-cinematic: stable spine + body[0] structural fields 1`] = `
 {
-  "body0": "Brothers of Choir keeps the receipts. Carrion Wake keeps the witnesses. Between Brothers of Choir and Pale Saint Pact the knife is already drawn. Brothers of Choir wants Vow-Breaker Wake to bleed first.",
+  "body0": "Carrion Wake keeps the receipts. Vow-Breaker Wake keeps the witnesses. Between Pale Saint Pact and Vow-Breaker Wake the knife is already drawn. Brothers of Choir wants Carrion Wake to bleed first.",
   "spineEdgeType": "CONTESTS",
   "spineObjectKind": "namedFaction",
   "spineSubjectKind": "namedFaction",
-  "spineSummary": "The compact between Brothers of Choir and Carrion Wake broke after the keep was sealed, Between Brothers of Choir and Carrion Wake the war is already lost; only the funerals remain.",
+  "spineSummary": "Between Carrion Wake and Vow-Breaker Wake the war is already lost; only the funerals remain.",
   "spineVisibility": "contested",
 }
 `;
 
 exports[`spine full axis matrix (16 representative cells) > baseline-realistic-astronomy: stable spine + body[0] structural fields 1`] = `
 {
-  "body0": "Black-market route beacon lattice drifts the baselines Tau Reticuli Observatory relies on. Public festival tied to safe transit windows drifts the baselines Suhail-37 Belt VI relies on. The amplitude of black-market route beacon lattice exceeds the operating envelope of Suhail-37 Belt VI. Suhail-37 Belt VI Reach is the only major foothold on Suhail-37 Belt VI.",
+  "body0": "The black-market route beacon lattice drifts the baselines Aperture Trust relies on. The black-market route beacon lattice drifts the baselines Suhail-37 Belt VI relies on. The amplitude of the public festival tied to safe transit windows exceeds the operating envelope of Suhail-37 Belt VI. Suhail-37 Belt VI Reach is the only major foothold on Suhail-37 Belt VI.",
   "spineEdgeType": "DESTABILIZES",
   "spineObjectKind": "namedFaction",
   "spineSubjectKind": "phenomenon",
-  "spineSummary": "Black-market route beacon lattice took shape in the long-baseline era, Black-market route beacon lattice is shifting the operating envelope Tau Reticuli Observatory was calibrated against.",
+  "spineSummary": "Black-market route beacon lattice took shape in the long-baseline era, the black-market route beacon lattice is shifting the operating envelope Aperture Trust was calibrated against.",
   "spineVisibility": "public",
 }
 `;
 
 exports[`spine full axis matrix (16 representative cells) > baseline-realistic-balanced: stable spine + body[0] structural fields 1`] = `
 {
-  "body0": "Metric mirage zone keeps shifting under Wouri Survey-176 IV. Each pass of Metric mirage zone costs Wouri Survey-176 V a margin it doesn't have. Wouri Survey-176 III can't plan around metric mirage zone anymore. Wouri Survey-176 V Charter sits on Wouri Survey-176 V. Wouri Survey-176 IV hosts Wouri Survey-176 Station.",
+  "body0": "The narrow-AI perception fog keeps shifting under Wouri Survey-176 III. Each pass of the narrow-AI perception fog costs Wouri Survey-176 IV a margin it doesn't have. Wouri Survey-176 V can't plan around the narrow-AI perception fog anymore. Wouri Survey-176 III Bastion 18 sits on Wouri Survey-176 III. Wouri Survey-176 V hosts Wouri Survey-176 V Charter.",
   "spineEdgeType": "DESTABILIZES",
   "spineObjectKind": "body",
   "spineSubjectKind": "phenomenon",
-  "spineSummary": "Metric mirage zone took shape before the collapse, Metric mirage zone is rewriting the constants Wouri Survey-176 IV was built around.",
+  "spineSummary": "Narrow-AI perception fog took shape after the great rerouting, the narrow-AI perception fog is rewriting the constants Wouri Survey-176 III was built around.",
   "spineVisibility": "public",
 }
 `;
 
 exports[`spine full axis matrix (16 representative cells) > baseline-realistic-cinematic: stable spine + body[0] structural fields 1`] = `
 {
-  "body0": "Tarandus Route-211 IV has been watching captured rogue world eat its margins for a generation. So of course, Iron Crown Cabal swore the pact would hold; Salt Wound Cabal swore otherwise. And then, Something is wrong under Tarandus Route-211 Belt V, and captured rogue world is the name people whisper for it. Tarandus Route-211 Belt V hosts Dead relay buoy. Tarandus Route-211 IV carries Tarandus Route-211 IV - Moon I Station on its surface.",
+  "body0": "Tarandus Route-211 Belt V has been watching the long-period comet storm eat its margins for a generation. So of course, Salt Wound Cabal swore the pact would hold; Salt Wound Order swore otherwise. And then, Something is wrong under Tarandus Route-211 IV, and flare-amplified bleed season is the name people whisper for it. Tarandus Route-211 Belt V hosts Tarandus Route-211 Belt V Hold.",
   "spineEdgeType": "DESTABILIZES",
   "spineObjectKind": "body",
   "spineSubjectKind": "phenomenon",
-  "spineSummary": "Captured rogue world took shape in the reckoning era, Everything Tarandus Route-211 IV was built to outlast is being unmade by captured rogue world.",
+  "spineSummary": "Everything Tarandus Route-211 Belt V was built to outlast is being unmade by the long-period comet storm.",
   "spineVisibility": "public",
 }
 `;
 
 exports[`spine full axis matrix (16 representative cells) > corner-frontier-cinematic-fracture-hub: stable spine + body[0] structural fields 1`] = `
 {
-  "body0": "Bone Lantern Wake keeps the receipts. Sisters of Synod keeps the witnesses. Between Long Knife Run and Sisters of Choir the knife is already drawn. Last Ledger Synod swore the pact would hold; Sisters of Choir swore otherwise. Pipit's Delta VI - Moon I Base draws everything it consumes from Illegal Sol-prohibited geometry sample. Pipit's Delta VII Laboratory 30 depends on Illegal Sol-prohibited geometry sample for everything.",
+  "body0": "Bone Lantern Wake keeps the receipts. Last Ledger Synod keeps the witnesses. Between Last Ledger Synod and Sisters of Synod the knife is already drawn. Red Wake Pact swore the pact would hold; Sisters of Synod swore otherwise. Pipit's Delta V - Moon I Station draws everything it consumes from Illegal Sol-prohibited geometry sample. Pipit's Delta I Charter depends on Illegal Sol-prohibited geometry sample for everything.",
   "spineEdgeType": "CONTESTS",
   "spineObjectKind": "namedFaction",
   "spineSubjectKind": "namedFaction",
-  "spineSummary": "The compact between Bone Lantern Wake and Sisters of Synod broke in the silent decade, Between Bone Lantern Wake and Sisters of Synod the war is already lost; only the funerals remain.",
+  "spineSummary": "Between Bone Lantern Wake and Last Ledger Synod the war is already lost; only the funerals remain.",
   "spineVisibility": "contested",
 }
 `;
 
 exports[`spine full axis matrix (16 representative cells) > corner-realistic-astronomy-low-sparse: stable spine + body[0] structural fields 1`] = `
 {
-  "body0": "The amplitude of narrow-ai perception fog exceeds the operating envelope of Guniibuu-Apdu Minor VII. Election-day metric storm cycle drifts the baselines Guniibuu-Apdu Minor VII relies on. Election-day metric storm cycle drifts the baselines Watch-Order Working Group relies on. Guniibuu-Apdu Minor VII carries Guniibuu-Apdu Minor VII - Moon I Hold on its surface.",
+  "body0": "The amplitude of the debt-fleet anchor graveyard exceeds the operating envelope of Watch-Order Working Group. The narrow-AI perception fog drifts the baselines Guniibuu-Apdu Minor VII relies on. The debt-fleet anchor graveyard drifts the baselines Guniibuu-Apdu Minor VII relies on. Guniibuu-Apdu Minor VII carries Guniibuu-Apdu Minor VII - Moon I Hold on its surface.",
   "spineEdgeType": "DESTABILIZES",
-  "spineObjectKind": "body",
+  "spineObjectKind": "namedFaction",
   "spineSubjectKind": "phenomenon",
-  "spineSummary": "Narrow-AI perception fog took shape in the long-baseline era, Narrow-AI perception fog is drifting the baselines on which Guniibuu-Apdu Minor VII was sited.",
+  "spineSummary": "Debt-fleet anchor graveyard took shape before the catalog was sealed, the debt-fleet anchor graveyard is drifting the baselines on which Watch-Order Working Group was sited.",
   "spineVisibility": "public",
 }
 `;
 
 exports[`spine full axis matrix (16 representative cells) > density-crowded: stable spine + body[0] structural fields 1`] = `
 {
-  "body0": "Debt-fleet anchor graveyard drifts the baselines Yuyu's Field Belt IX relies on. Election-day metric storm cycle drifts the baselines Yuyu's Field V relies on. Yuyu's Field VIII records a phase shift each time debt-fleet anchor graveyard passes through. Yuyu's Field VIII carries Yuyu's Field Node on its surface.",
+  "body0": "The debt-fleet anchor graveyard drifts the baselines Yuyu's Field Anomaly II relies on. The debt-fleet anchor graveyard drifts the baselines Yuyu's Field VIII relies on. Yuyu's Field Anomaly II records a phase shift each time the Gardener warning beacon passes through. Yuyu's Field VIII carries Yuyu's Field Node on its surface.",
   "spineEdgeType": "DESTABILIZES",
   "spineObjectKind": "body",
   "spineSubjectKind": "phenomenon",
-  "spineSummary": "Debt-fleet anchor graveyard took shape in the long-baseline era, Debt-fleet anchor graveyard is drifting the baselines on which Yuyu's Field Belt IX was sited.",
+  "spineSummary": "The debt-fleet anchor graveyard is drifting the baselines on which Yuyu's Field Anomaly II was sited.",
   "spineVisibility": "public",
 }
 `;
 
 exports[`spine full axis matrix (16 representative cells) > density-hub: stable spine + body[0] structural fields 1`] = `
 {
-  "body0": "Intan's Crown Belt X records a phase shift each time metric mirage zone passes through. Intan's Crown V records a phase shift each time metric mirage zone passes through. Refugee ark parking orbit introduces a measurable perturbation in Intan's Crown Belt X. Intan's Crown V - Moon I Bastion is the only major foothold on Intan's Crown V.",
+  "body0": "Intan's Crown Belt IX records a phase shift each time the moving bleed-node river passes through. Intan's Crown V records a phase shift each time the refugee ark parking orbit passes through. The moving bleed-node river introduces a measurable perturbation in Intan's Crown II. Intan's Crown Belt IX Cordon is the only major foothold on Intan's Crown Belt IX.",
   "spineEdgeType": "DESTABILIZES",
   "spineObjectKind": "body",
   "spineSubjectKind": "phenomenon",
-  "spineSummary": "Metric mirage zone took shape after Cycle 7, Metric mirage zone is drifting the baselines on which Intan's Crown Belt X was sited.",
+  "spineSummary": "The moving bleed-node river is drifting the baselines on which Intan's Crown Belt IX was sited.",
   "spineVisibility": "public",
 }
 `;
 
 exports[`spine full axis matrix (16 representative cells) > density-normal: stable spine + body[0] structural fields 1`] = `
 {
-  "body0": "Long-period comet storm drifts the baselines Vey Picket-265 I relies on. The amplitude of chiral contamination bloom exceeds the operating envelope of Vey Picket-265 Belt IV. Chiral contamination bloom introduces a measurable perturbation in Vey Picket-265 Belt III. Vey Picket-265 Belt IV Platform sits on Vey Picket-265 Belt IV. Vey Picket-265 Belt III hosts Vey Picket-265 Belt III Outpost.",
+  "body0": "The long-period comet storm drifts the baselines Coronagraph Bureau relies on. The amplitude of the long-period comet storm exceeds the operating envelope of Vey Picket-265 II. The chiral contamination bloom introduces a measurable perturbation in Vey Picket-265 II.",
   "spineEdgeType": "DESTABILIZES",
-  "spineObjectKind": "body",
+  "spineObjectKind": "namedFaction",
   "spineSubjectKind": "phenomenon",
-  "spineSummary": "Long-period comet storm took shape between the calibration runs, Long-period comet storm is drifting the baselines on which Vey Picket-265 I was sited.",
+  "spineSummary": "The long-period comet storm is drifting the baselines on which Coronagraph Bureau was sited.",
   "spineVisibility": "public",
 }
 `;
 
 exports[`spine full axis matrix (16 representative cells) > density-sparse: stable spine + body[0] structural fields 1`] = `
 {
-  "body0": "Chiral contamination bloom drifts the baselines Long Baseline Authority relies on. Arneb Trace-209 III records a phase shift each time refugee ark parking orbit passes through. Chiral contamination bloom drifts the baselines Arneb Trace-209 III relies on. Arneb Trace-209 III hosts Arneb Trace-209 III Station 85.",
+  "body0": "The chiral contamination bloom drifts the baselines Arneb Trace-209 III relies on. Arneb Trace-209 III records a phase shift each time the debt-fleet anchor graveyard passes through. The debt-fleet anchor graveyard drifts the baselines Long Baseline Authority relies on. Arneb Trace-209 III hosts Arneb Trace-209 III Station 85.",
   "spineEdgeType": "DESTABILIZES",
-  "spineObjectKind": "namedFaction",
+  "spineObjectKind": "body",
   "spineSubjectKind": "phenomenon",
-  "spineSummary": "Chiral contamination bloom took shape in the first ephemeris pass, Chiral contamination bloom is shifting the operating envelope Long Baseline Authority was calibrated against.",
+  "spineSummary": "Chiral contamination bloom took shape before the catalog was sealed, the chiral contamination bloom is shifting the operating envelope Arneb Trace-209 III was calibrated against.",
   "spineVisibility": "public",
 }
 `;
 
 exports[`spine full axis matrix (16 representative cells) > gu-axis-fracture: stable spine + body[0] structural fields 1`] = `
 {
-  "body0": "Kestrel Free Compact refuses to recognize Red Vane Labor Combine's authority. Orison Route Authority disputes Red Vane Labor Combine's claim. The compact between Orison Route Authority and Veyra-Locke Concession has gone bad.",
+  "body0": "Helion Debt Synod refuses to recognize Kestrel Free Compact's authority. Kestrel Free Compact disputes Veyra-Locke Concession's claim. The compact between Helion Debt Synod and Red Vane Labor Combine has gone bad.",
   "spineEdgeType": "CONTESTS",
   "spineObjectKind": "namedFaction",
   "spineSubjectKind": "namedFaction",
-  "spineSummary": "The compact between Kestrel Free Compact and Red Vane Labor Combine broke in the second wave, Kestrel Free Compact and Red Vane Labor Combine can't both set the rules — and the rest of the system knows it.",
+  "spineSummary": "The compact between Helion Debt Synod and Kestrel Free Compact broke in the second wave, Helion Debt Synod and Kestrel Free Compact can't both set the rules — and the rest of the system knows it.",
   "spineVisibility": "contested",
 }
 `;
 
 exports[`spine full axis matrix (16 representative cells) > gu-axis-high: stable spine + body[0] structural fields 1`] = `
 {
-  "body0": "Kestrel Free Compact disputes Red Vane Labor Combine's claim. The compact between Glasshouse Biosafety Compact and Veyra-Locke Concession has gone bad. Orison Route Authority refuses to recognize Red Vane Labor Combine's authority.",
+  "body0": "Kestrel Free Compact disputes Sepulcher Archive Court's claim. The compact between Sepulcher Archive Court and Veyra-Locke Concession has gone bad. Orison Route Authority refuses to recognize Veyra-Locke Concession's authority.",
   "spineEdgeType": "CONTESTS",
   "spineObjectKind": "namedFaction",
   "spineSubjectKind": "namedFaction",
-  "spineSummary": "The compact between Kestrel Free Compact and Red Vane Labor Combine broke in the iggygate dawn, Kestrel Free Compact and Red Vane Labor Combine can't both set the rules — and the rest of the system knows it.",
+  "spineSummary": "The compact between Kestrel Free Compact and Sepulcher Archive Court broke in the manifest wars, Kestrel Free Compact and Sepulcher Archive Court can't both set the rules — and the rest of the system knows it.",
   "spineVisibility": "contested",
 }
 `;
 
 exports[`spine full axis matrix (16 representative cells) > gu-axis-low: stable spine + body[0] structural fields 1`] = `
 {
-  "body0": "Kestrel Free Compact and Red Vane Labor Combine both want trade. Glasshouse Biosafety Compact and Ninth Ledger Office both want governance. Ash Meridian Navy refuses to recognize Glasshouse Biosafety Compact's authority.",
+  "body0": "Helion Debt Synod and Red Vane Labor Combine both want the trade ledger. Ash Meridian Navy and Glasshouse Biosafety Compact both want the chain of authority. Helion Debt Synod refuses to recognize Kestrel Free Compact's authority.",
   "spineEdgeType": "CONTESTS",
   "spineObjectKind": "namedFaction",
   "spineSubjectKind": "namedFaction",
-  "spineSummary": "The compact between Kestrel Free Compact and Red Vane Labor Combine broke in the pinchdrive era, Kestrel Free Compact and Red Vane Labor Combine can't both set the rules — and the rest of the system knows it.",
+  "spineSummary": "Helion Debt Synod and Red Vane Labor Combine can't both set the rules — and the rest of the system knows it.",
   "spineVisibility": "contested",
 }
 `;
 
 exports[`spine full axis matrix (16 representative cells) > gu-axis-normal: stable spine + body[0] structural fields 1`] = `
 {
-  "body0": "Kestrel Free Compact refuses to recognize Red Vane Labor Combine's authority. The compact between Glasshouse Biosafety Compact and Veyra-Locke Concession has gone bad. Orison Route Authority and Red Vane Labor Combine both want trade.",
+  "body0": "Orison Route Authority refuses to recognize Pale Choir Communion's authority. The compact between Red Vane Labor Combine and Veyra-Locke Concession has gone bad. Orison Route Authority and Veyra-Locke Concession both want the trade ledger.",
   "spineEdgeType": "CONTESTS",
   "spineObjectKind": "namedFaction",
   "spineSubjectKind": "namedFaction",
-  "spineSummary": "The compact between Kestrel Free Compact and Red Vane Labor Combine broke in the bleed years, Kestrel Free Compact and Red Vane Labor Combine can't both set the rules — and the rest of the system knows it.",
+  "spineSummary": "Orison Route Authority and Pale Choir Communion can't both set the rules — and the rest of the system knows it.",
   "spineVisibility": "contested",
 }
 `;

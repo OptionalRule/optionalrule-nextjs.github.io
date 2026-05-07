@@ -8,7 +8,7 @@ import type { EdgeTemplateFamily } from './types'
 export const contestsTemplates: EdgeTemplateFamily = {
   edgeType: 'CONTESTS',
   body: [
-    { text: '{subject} and {object} both want {qualifier|the same leverage}.', expects: { subject: 'properNoun', object: 'properNoun', qualifier: 'nounPhrase' } },
+    { text: '{subject} and {object} both want the {qualifier|same leverage}.', expects: { subject: 'properNoun', object: 'properNoun', qualifier: 'nounPhrase' } },
     { text: "{subject} disputes {object}'s claim.", expects: { subject: 'properNoun', object: 'properNoun' } },
     { text: "{subject} refuses to recognize {object}'s authority.", expects: { subject: 'properNoun', object: 'properNoun' } },
     { text: 'The compact between {subject} and {object} has gone bad.', expects: { subject: 'properNoun', object: 'properNoun' } },
@@ -21,7 +21,7 @@ export const contestsTemplates: EdgeTemplateFamily = {
       { text: '{subject} swore the pact would hold; {object} swore otherwise.', expects: { subject: 'properNoun', object: 'properNoun' } },
     ],
     astronomy: [
-      { text: '{subject} and {object} report incompatible measurements of {qualifier|the same instrument-time}.', expects: { subject: 'properNoun', object: 'properNoun', qualifier: 'nounPhrase' } },
+      { text: '{subject} and {object} report incompatible measurements of the {qualifier|same instrument-time}.', expects: { subject: 'properNoun', object: 'properNoun', qualifier: 'nounPhrase' } },
       { text: "{subject}'s observation cohort and {object}'s cohort cannot agree on the calibration record.", expects: { subject: 'properNoun', object: 'properNoun' } },
       { text: 'A standards dispute between {subject} and {object} is open in the measurement court.', expects: { subject: 'properNoun', object: 'properNoun' } },
       { text: 'Two operators dispute jurisdiction; {subject} and {object} cannot reconcile their logs.', expects: { subject: 'properNoun', object: 'properNoun' } },
@@ -51,5 +51,7 @@ export const contestsTemplates: EdgeTemplateFamily = {
     { text: 'Who profits if {subject} and {object} stay locked in this fight?', expects: { subject: 'properNoun', object: 'properNoun' } },
     { text: 'A neutral broker between {subject} and {object} would have leverage.', expects: { subject: 'properNoun', object: 'properNoun' } },
     { text: "What's the original wrong neither side will name?", expects: {} },
+    { text: "What did {subject} sign that {object} won't honor anymore?", expects: { subject: 'properNoun', object: 'properNoun' } },
+    { text: 'What can {subject} prove about {object} that no court will hear?', expects: { subject: 'properNoun', object: 'properNoun' } },
   ],
 }

@@ -2808,19 +2808,34 @@ function generateHumanRemnants(rng: SeededRng, bodies: OrbitingBody[], guOverlay
 
 function generatePhenomena(rng: SeededRng, architectureName: string, guOverlay: GuOverlay): SystemPhenomenon[] {
   const count = guOverlay.intensity.value.includes('Rich') || architectureName.includes('Major') ? 3 : 2
+  const used = new Set<string>()
   return Array.from({ length: count }, (_, index) => {
-    const phenomenon = pickOne(rng, phenomena)
-    const note = phenomenonNote(phenomenon)
+    const remaining = phenomena.filter(p => !used.has(p.label))
+    const pool = remaining.length > 0 ? remaining : phenomena
+    const phenomenon = pickOne(rng, pool)
+    used.add(phenomenon.label)
+    const travelEffect = pickPhenomenonField(rng, phenomenon.travelEffect, phenomenon.variants?.travelEffect)
+    const surveyQuestion = pickPhenomenonField(rng, phenomenon.surveyQuestion, phenomenon.variants?.surveyQuestion)
+    const conflictHook = pickPhenomenonField(rng, phenomenon.conflictHook, phenomenon.variants?.conflictHook)
+    const sceneAnchor = pickPhenomenonField(rng, phenomenon.sceneAnchor, phenomenon.variants?.sceneAnchor)
+    const resolved = { ...phenomenon, travelEffect, surveyQuestion, conflictHook, sceneAnchor }
+    const note = phenomenonNote(resolved)
     return {
       id: `phenomenon-${index + 1}`,
       phenomenon: fact(phenomenon.label, phenomenon.confidence, 'MASS-GU expanded phenomena table'),
       note: fact(note, phenomenon.confidence, 'Generated structured phenomenon consequences'),
-      travelEffect: fact(phenomenon.travelEffect, phenomenon.confidence, 'Generated phenomenon travel consequence'),
-      surveyQuestion: fact(phenomenon.surveyQuestion, phenomenon.confidence, 'Generated phenomenon survey question'),
-      conflictHook: fact(phenomenon.conflictHook, phenomenon.confidence, 'Generated phenomenon conflict hook'),
-      sceneAnchor: fact(phenomenon.sceneAnchor, phenomenon.confidence, 'Generated phenomenon scene anchor'),
+      travelEffect: fact(travelEffect, phenomenon.confidence, 'Generated phenomenon travel consequence'),
+      surveyQuestion: fact(surveyQuestion, phenomenon.confidence, 'Generated phenomenon survey question'),
+      conflictHook: fact(conflictHook, phenomenon.confidence, 'Generated phenomenon conflict hook'),
+      sceneAnchor: fact(sceneAnchor, phenomenon.confidence, 'Generated phenomenon scene anchor'),
     }
   })
+}
+
+function pickPhenomenonField(rng: SeededRng, base: string, variants?: readonly string[]): string {
+  if (!variants || variants.length === 0) return base
+  const pool: readonly string[] = [base, ...variants]
+  return pickOne(rng, pool)
 }
 
 interface NarrativeGenerationContext {

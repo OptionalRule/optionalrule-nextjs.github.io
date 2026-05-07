@@ -201,8 +201,9 @@ function renderEdgeSentence(
     visibility: edge.visibility,
     tone,
   }
-  const rendered = renderTemplate(variant, ctx, prev === undefined ? 'sentence-start' : 'mid-clause')
   const connective = connectiveFor(prev, edge.type, tone)
+  const position: Position = prev === undefined || connective === '' ? 'sentence-start' : 'mid-clause'
+  const rendered = renderTemplate(variant, ctx, position)
   return connective + rendered
 }
 

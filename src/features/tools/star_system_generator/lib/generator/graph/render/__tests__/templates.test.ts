@@ -238,7 +238,7 @@ describe('WITNESSES family', () => {
     const story = renderSystemStory(makeWitnessesGraph(), createSeededRng('witnesses-test'))
     expect(story.body).toHaveLength(1)
     expect(story.body[0]).toContain('Orison Hold')
-    expect(story.body[0]).toContain('Mira Vault')
+    expect(story.body[0].toLowerCase()).toContain('mira vault')
     expect(story.body[0]).not.toContain('{')
     expect(story.body[0]).toMatch(/[.!?]$/)
   })

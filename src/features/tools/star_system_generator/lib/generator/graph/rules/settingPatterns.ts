@@ -66,3 +66,32 @@ export function sharedDomains(
   }
   return out
 }
+
+const DOMAIN_TO_PHRASE: Record<string, string> = {
+  'war': 'conflict record',
+  'trade': 'trade ledger',
+  'science': 'survey data',
+  'ecology': 'biosphere dispute',
+  'crime': 'criminal record',
+  'governance': 'chain of authority',
+  'route-weather': 'safe-window forecast',
+  'medicine': 'medical findings',
+  'religion': 'doctrinal record',
+  'law': 'legal ruling',
+  'labor': 'labor agreement',
+  'archaeology': 'recovered-relic record',
+  'exploration': 'exploration log',
+  'stellar-events': 'flare record',
+  'disaster': 'casualty register',
+  'daily-life': 'daily record',
+  'public-life': 'public record',
+  'espionage': 'intelligence report',
+  'gardener-interdiction': 'Gardener interdiction notice',
+  'ai': 'AI testimony',
+  'information-integrity': 'audit trail',
+}
+
+export function concretizeDomain(domain: string | undefined): string {
+  if (!domain) return 'record'
+  return DOMAIN_TO_PHRASE[domain] ?? `${domain.replace(/-/g, ' ')} record`
+}

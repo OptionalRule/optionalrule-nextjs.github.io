@@ -21,10 +21,16 @@ export const ERAS = [
   'before the quarantine',
   'in the early charters',
   'in the great compaction',
-  'in the pinchdrive era',
-  'in the iggygate dawn',
+  'in the Pinchdrive era',
+  'in the Iggygate dawn',
   'in the bleed years',
   'before the collapse',
+  'after the first audit',
+  'in the manifest wars',
+  'before the gate cooled',
+  'during the convoy decade',
+  'after the great rerouting',
+  'in the seal-down years',
 ] as const
 
 const CINEMATIC_ERAS = [

@@ -20,6 +20,13 @@ export interface NamedFaction {
   publicFace: string
 }
 
+export interface PhenomenonVariants {
+  travelEffect?: readonly string[]
+  surveyQuestion?: readonly string[]
+  conflictHook?: readonly string[]
+  sceneAnchor?: readonly string[]
+}
+
 export interface PhenomenonEntry {
   label: string
   confidence: 'gu-layer' | 'human-layer' | 'inferred'
@@ -27,6 +34,7 @@ export interface PhenomenonEntry {
   surveyQuestion: string
   conflictHook: string
   sceneAnchor: string
+  variants?: PhenomenonVariants
 }
 
 interface NarrativeData {

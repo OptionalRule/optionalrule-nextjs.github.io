@@ -2,24 +2,24 @@
 
 exports[`spine tone × edge type voice matrix > tone=astronomy: spine prose reads in tone voice 1`] = `
 {
-  "body0": "The amplitude of flare-amplified bleed season exceeds the operating envelope of Custos Echo-58 Belt IV. The amplitude of flare-amplified bleed season exceeds the operating envelope of Custos Echo-58 Belt V. Refugee ark parking orbit introduces a measurable perturbation in Custos Echo-58 Belt V. Custos Echo-58 Belt IV Charter is the only major foothold on Custos Echo-58 Belt IV.",
+  "body0": "The amplitude of the captured rogue world exceeds the operating envelope of Tau Reticuli Cohort. The amplitude of the captured rogue world exceeds the operating envelope of Custos Echo-58 Belt V. The captured rogue world introduces a measurable perturbation in Custos Echo-58 Belt IV. Custos Echo-58 Belt IV Charter is the only major foothold on Custos Echo-58 Belt IV.",
   "spineEdgeType": "DESTABILIZES",
-  "spineSummary": "Flare-amplified bleed season took shape after Cycle 7, the perturbation from flare-amplified bleed season now exceeds Custos Echo-58 Belt IV's tolerance margin.",
+  "spineSummary": "Captured rogue world took shape in the third pulse cycle, the perturbation from the captured rogue world now exceeds Tau Reticuli Cohort's tolerance margin.",
 }
 `;
 
 exports[`spine tone × edge type voice matrix > tone=balanced: spine prose reads in tone voice 1`] = `
 {
-  "body0": "The compact between Kestrel Free Compact and Red Vane Labor Combine has gone bad. Glasshouse Biosafety Compact disputes Ninth Ledger Office's claim. Helion Debt Synod disputes Veyra-Locke Concession's claim.",
+  "body0": "The compact between Ash Meridian Navy and Helion Debt Synod has gone bad. Glasshouse Biosafety Compact disputes Helion Debt Synod's claim. Kestrel Free Compact disputes Red Vane Labor Combine's claim.",
   "spineEdgeType": "CONTESTS",
-  "spineSummary": "The compact between Kestrel Free Compact and Red Vane Labor Combine broke in the great compaction, Kestrel Free Compact and Red Vane Labor Combine can't both set the rules — and the rest of the system knows it.",
+  "spineSummary": "The compact between Ash Meridian Navy and Helion Debt Synod broke after the first audit, Ash Meridian Navy and Helion Debt Synod can't both set the rules — and the rest of the system knows it.",
 }
 `;
 
 exports[`spine tone × edge type voice matrix > tone=cinematic: spine prose reads in tone voice 1`] = `
 {
-  "body0": "Between Brothers of Choir and Red Wake Wake the knife is already drawn. Bone Lantern Order keeps the receipts. Salt Wound Wake keeps the witnesses. Bone Lantern Order swore the pact would hold; Brothers of Choir swore otherwise.",
+  "body0": "Between Pale Saint Wake and Salt Wound Wake the knife is already drawn. Carrion Synod keeps the receipts. Crown of Dust Pact keeps the witnesses. Bone Lantern Order swore the pact would hold; Brothers of Choir swore otherwise.",
   "spineEdgeType": "CONTESTS",
-  "spineSummary": "The compact between Brothers of Choir and Red Wake Wake broke in the silent decade, Brothers of Choir and Red Wake Wake are bleeding each other dry, and the system cheers them on.",
+  "spineSummary": "The compact between Pale Saint Wake and Salt Wound Wake broke in the silent decade, Pale Saint Wake and Salt Wound Wake are bleeding each other dry, and the system cheers them on.",
 }
 `;

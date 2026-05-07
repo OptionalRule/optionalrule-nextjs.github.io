@@ -19,7 +19,9 @@ describe('settlementHookSynthesis', () => {
     const sentences = result.split(/(?<=[.])\s+/)
     expect(sentences.length).toBeGreaterThanOrEqual(3)
     expect(sentences.length).toBeLessThanOrEqual(4)
-    expect(result).toMatch(/Control of the Iggygate control station decides who has leverage\.$/)
+    expect(result).toMatch(
+      /(Control of the Iggygate control station decides who has leverage|Whoever runs the Iggygate control station sets the terms here|Every faction here measures itself against the Iggygate control station|The fight for the Iggygate control station is the only one that lasts)\.$/
+    )
     expect(result).toMatch(/Privately, the route weather board sells safe windows twice\./)
   })
 

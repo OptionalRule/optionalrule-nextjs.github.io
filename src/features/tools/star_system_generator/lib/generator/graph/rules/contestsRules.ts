@@ -1,7 +1,7 @@
 import type { NarrativeFact } from '../../../../types'
 import type { EdgeRule, RuleMatch } from './ruleTypes'
 import { mintEdgeId } from './ruleTypes'
-import { sharedDomains, containsWord } from './settingPatterns'
+import { sharedDomains, containsWord, concretizeDomain } from './settingPatterns'
 import type { EntityRef } from '../types'
 import { buildFactionMetadataByName } from '../../factions'
 
@@ -66,7 +66,7 @@ export const contestsSharedDomainRule: EdgeRule = {
         matches.push({
           subject: a,
           object: b,
-          qualifier: overlap[0],
+          qualifier: concretizeDomain(overlap[0]),
           groundingFactIds: [...factionAFactIds, ...factionBFactIds, authFact.id],
         })
       }
@@ -122,7 +122,7 @@ export const contestsAuthorityRule: EdgeRule = {
         matches.push({
           subject: factionEntity,
           object: settlementRef,
-          qualifier: matchedDomain,
+          qualifier: concretizeDomain(matchedDomain),
           groundingFactIds: [...factionFactIds, fact.id],
         })
       }

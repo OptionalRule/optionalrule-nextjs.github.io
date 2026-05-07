@@ -15,8 +15,8 @@
     { "max": 6, "value": "Low bleed" },
     { "max": 8, "value": "Useful bleed" },
     { "max": 10, "value": "Rich bleed" },
-    { "max": 12, "value": "Dangerous fracture system" },
-    { "max": null, "value": "Major observiverse shear zone" }
+    { "max": 12, "value": "Major observiverse shear zone" },
+    { "max": null, "value": "Dangerous fracture system" }
   ],
   "bleedLocations": [
     "Inner star-skimming orbit",

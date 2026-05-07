@@ -134,4 +134,57 @@ describe('graphAwarePhenomenonNote', () => {
     const b = graphAwarePhenomenonNote(fullPhenomenon, emptyGraph, createSeededRng('det-1'))
     expect(a).toBe(b)
   })
+
+  it('does not prepend a contrast conjunction before the survey question', () => {
+    const rng = createSeededRng('p-no-conjunction')
+    const result = graphAwarePhenomenonNote(fullPhenomenon, emptyGraph, rng)
+    expect(result).not.toBeNull()
+    expect(result).not.toMatch(/\b(And|But|Meanwhile),\s/)
+  })
+
+  it('reframes the survey question as a declarative clause', () => {
+    const rng = createSeededRng('p-declarative')
+    const result = graphAwarePhenomenonNote(fullPhenomenon, emptyGraph, rng)
+    expect(result).not.toBeNull()
+    expect(result).toContain('what pulses behind the static')
+    expect(result).not.toContain('What pulses behind the static?')
+  })
+
+  it('sweeps every framer-seeded variant across many seeds without producing a conjunction-before-question', () => {
+    for (let i = 0; i < 200; i++) {
+      const rng = createSeededRng(`sweep-${i}`)
+      const result = graphAwarePhenomenonNote(fullPhenomenon, emptyGraph, rng)
+      expect(result).not.toBeNull()
+      expect(result).not.toMatch(/\b(And|But|Meanwhile),\s+[A-Z]/)
+    }
+  })
+
+  it('keeps yes/no surveyQuestions as questions with an interrogative framer', () => {
+    const yesNoPhenomenon = makePhenomenon('p-yn', {
+      travelEffect: 'Drives subliminal between transits',
+      surveyQuestion: 'Is the cycle natural, exploited, or scheduled around known route instability?',
+      conflictHook: 'Whoever owns the recordings owns the question.',
+      sceneAnchor: 'A drift of low-amplitude blooms.',
+    })
+    const rng = createSeededRng('p-yn-seed')
+    const result = graphAwarePhenomenonNote(yesNoPhenomenon, emptyGraph, rng)
+    expect(result).not.toBeNull()
+    expect(result).toContain('Is the cycle natural, exploited, or scheduled around known route instability?')
+    expect(result).not.toMatch(/\b(And|But|Meanwhile),\s+/)
+  })
+
+  it('keeps wh+aux-inverted surveyQuestions as questions to avoid embedded-clause clunkiness', () => {
+    const whInvertedPhenomenon = makePhenomenon('p-wh-inv', {
+      travelEffect: 'Drives subliminal between transits',
+      surveyQuestion: 'What is the picket watching, and why has its patrol shifted?',
+      conflictHook: 'Whoever owns the recordings owns the question.',
+      sceneAnchor: 'A drift of low-amplitude blooms.',
+    })
+    const rng = createSeededRng('p-wh-inv-seed')
+    const result = graphAwarePhenomenonNote(whInvertedPhenomenon, emptyGraph, rng)
+    expect(result).not.toBeNull()
+    expect(result).toContain('What is the picket watching, and why has its patrol shifted?')
+    expect(result).not.toMatch(/has settled what is/)
+    expect(result).not.toMatch(/question is what is/)
+  })
 })

@@ -4,6 +4,7 @@ import {
   contradictsRuinHookAuthorityRule,
   contradictsHiddenPublicRule,
 } from '../rules/contradictsRules'
+import { concretizeDomain } from '../rules/settingPatterns'
 import { buildFactIndexes } from '../rules/ruleTypes'
 import type { BuildCtx } from '../rules/ruleTypes'
 import type { EntityRef } from '../types'
@@ -124,7 +125,7 @@ describe('CONTRADICTS:ruinHook-vs-settlementAuthority', () => {
     expect(matches[0].object.id).toBe('settlement-1')
     expect(matches[0].groundingFactIds).toContain('f-ruin-hook-1')
     expect(matches[0].groundingFactIds).toContain('f-auth-1')
-    expect(matches[0].qualifier).toBe('archive')
+    expect(matches[0].qualifier).toBe(concretizeDomain('archive'))
 
     const edge = contradictsRuinHookAuthorityRule.build(
       matches[0],
@@ -393,7 +394,7 @@ describe('CONTRADICTS:hiddenTruth-vs-publicSurface', () => {
     expect(matches).toHaveLength(1)
     expect(matches[0].subject.id).toBe('settlement-1')
     expect(matches[0].object.id).toBe('faction-a')
-    expect(matches[0].qualifier).toBe('archive')
+    expect(matches[0].qualifier).toBe(concretizeDomain('archive'))
     expect(matches[0].groundingFactIds).toContain('f-hidden-1')
     expect(matches[0].groundingFactIds).toContain('f-tag-1')
 

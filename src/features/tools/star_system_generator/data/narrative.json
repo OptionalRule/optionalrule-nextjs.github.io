@@ -148,7 +148,25 @@
       "travelEffect": "Plume windows restrict low-orbit approaches to brief corridors with poor sensor reliability.",
       "surveyQuestion": "Which plume holds clean volatiles, hidden organics, or mislabeled contamination?",
       "conflictHook": "A GU survey hold stalls extraction while rival crews falsify plume data.",
-      "sceneAnchor": "A lander skids through glittering ejecta as the plume shadow closes."
+      "sceneAnchor": "A lander skids through glittering ejecta as the plume shadow closes.",
+      "variants": {
+        "travelEffect": [
+          "Vent geysers force ships into a shifting safe-corridor that closes without warning.",
+          "Approach burns must thread the shadow of an ice shell that flexes with every transit."
+        ],
+        "surveyQuestion": [
+          "Whose sample chain proves the plume is venting clean isotopes and not laundered cargo?",
+          "What inside the ocean keeps re-pressurising the vent on a schedule no one will publish?"
+        ],
+        "conflictHook": [
+          "Permitted miners and freelance haulers fight over plume-window access while inspectors stall the docket.",
+          "The biosafety arbiter freezes extraction; affected crews counter that the freeze is a market move."
+        ],
+        "sceneAnchor": [
+          "An impactor probe punches through the shell mid-survey and the venting timetable rewrites itself.",
+          "A drill crew in tethered suits watches a plume curl over their station floodlights."
+        ]
+      }
     },
     {
       "label": "Gas giant radiation maze",
@@ -180,7 +198,25 @@
       "travelEffect": "Distance, mass, and velocity readings disagree, making autopilot corrections unreliable.",
       "surveyQuestion": "Which measurements remain trustworthy enough to certify a navigation standard?",
       "conflictHook": "A shipping combine blames lost cargo on math survivors call knowingly oversold.",
-      "sceneAnchor": "A bridge display shows three certified and incompatible approach vectors."
+      "sceneAnchor": "A bridge display shows three certified and incompatible approach vectors.",
+      "variants": {
+        "travelEffect": [
+          "Inertial systems drift inside the zone, forcing crews to time-share calibration buoys.",
+          "Range, doppler, and laser-ranging tell three different stories on the same approach."
+        ],
+        "surveyQuestion": [
+          "Which baseline survey would still certify against post-incident reality?",
+          "Whose calibration record is the system actually using when traffic gets cleared?"
+        ],
+        "conflictHook": [
+          "Insurers and freight lines fight over which mirage reading counts as the legal one.",
+          "Independent surveyors publish contradicting baselines, and the port arbiter takes a side."
+        ],
+        "sceneAnchor": [
+          "Two pilots argue across an open hatch while a beacon strobes three claimed positions.",
+          "A bridge map shows the same hazard at two ranges; the crew has to pick one."
+        ]
+      }
     },
     {
       "label": "Native microbial biosphere",
@@ -292,7 +328,25 @@
       "travelEffect": "Transit plans account for inspection shadows, silent tracking, and sudden interdiction claims.",
       "surveyQuestion": "What is the picket watching, and why has its patrol shifted?",
       "conflictHook": "Local rulers invoke Sol authority while captains seek proof of mandate abuse.",
-      "sceneAnchor": "A patrol silhouette tags civilian ships for audit without answering hails."
+      "sceneAnchor": "A patrol silhouette tags civilian ships for audit without answering hails.",
+      "variants": {
+        "travelEffect": [
+          "Approaches must clear an unannounced patrol band before any civilian dock-clear is granted.",
+          "Crews file false ETAs to avoid being routed through the picket's shadow corridor."
+        ],
+        "surveyQuestion": [
+          "Which logs would survive a Sol-mandate audit and which were quietly retired?",
+          "Whose vessels has the picket boarded without producing a written warrant?"
+        ],
+        "conflictHook": [
+          "Sector officials lean on Sol authority to suspend crews who challenge the picket's reach.",
+          "A captains' guild publishes uncensored boarding records, and the picket schedule changes overnight."
+        ],
+        "sceneAnchor": [
+          "An unmarked tender drifts near a civilian dock, refusing to identify and refusing to move.",
+          "The picket's shadow paints a freighter's transponder while the bridge crew waits in silence."
+        ]
+      }
     },
     {
       "label": "Public festival tied to safe transit windows",
@@ -316,7 +370,25 @@
       "travelEffect": "Cache approaches trigger claim holds and court-licensed patrols.",
       "surveyQuestion": "Which wreck record would overturn the current salvage rights?",
       "conflictHook": "Judges, insurers, and crews need the evidence preserved, altered, or lost.",
-      "sceneAnchor": "A locked evidence container transmits chain-of-custody pings to every claimant."
+      "sceneAnchor": "A locked evidence container transmits chain-of-custody pings to every claimant.",
+      "variants": {
+        "travelEffect": [
+          "Court holds suspend transponders within the cache exclusion shell until a clerk signs off.",
+          "Movement around the cache requires a docket number, and the docket number changes weekly."
+        ],
+        "surveyQuestion": [
+          "Whose manifest, if recovered intact, voids three currently-paid salvage claims?",
+          "What part of the chain-of-custody got rewritten between the seizure and the seal?"
+        ],
+        "conflictHook": [
+          "Litigators and salvagers compete to control which records survive the next scheduled audit.",
+          "A court clerk leaks a duplicate manifest, and three rival firms recall their crews simultaneously."
+        ],
+        "sceneAnchor": [
+          "A bonded crew loads sealed cylinders onto a dock under three watching legal teams.",
+          "A clerk's shuttle carries one manifest while a freelance copy is already on the move."
+        ]
+      }
     }
   ],
   "namedFactions": [

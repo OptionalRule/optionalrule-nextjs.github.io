@@ -81,13 +81,34 @@ function resolveOne(
   }
   const shape: SlotShape = expects?.[slot.name] ?? 'properNoun'
   const reshaped = reshapeSlot(raw, shape)
-  return applyModifier(reshaped, slot.modifier)
+  return applyModifier(reshaped, slot.modifier, shape)
 }
 
-function applyModifier(value: string, modifier: string | undefined): string {
+// Setting-specific proper nouns whose capitalization is preserved when a
+// noun-phrase label is articleized (so "Gardener attention risk" doesn't
+// become "the gardener attention risk").
+const SETTING_PROPER_FIRST_WORDS = new Set([
+  'Sol', 'Gardener', 'Iggygate', 'Pinchdrive',
+])
+
+function articleizeNounPhrase(value: string): string {
+  if (value.length === 0) return 'the'
+  const firstSpace = value.indexOf(' ')
+  const firstWord = firstSpace > 0 ? value.slice(0, firstSpace) : value
+  const compoundRoot = firstWord.split('-')[0]
+  if (SETTING_PROPER_FIRST_WORDS.has(firstWord) || SETTING_PROPER_FIRST_WORDS.has(compoundRoot)) {
+    return `the ${value}`
+  }
+  return `the ${value[0].toLowerCase()}${value.slice(1)}`
+}
+
+function applyModifier(value: string, modifier: string | undefined, shape: SlotShape): string {
   if (modifier === undefined) return value
   if (modifier === 'lower') return value.toLowerCase()
-  if (modifier === 'article') return startsWithUppercase(value) ? value : `the ${value}`
+  if (modifier === 'article') {
+    if (shape === 'nounPhrase') return articleizeNounPhrase(value)
+    return startsWithUppercase(value) ? value : `the ${value}`
+  }
   return value
 }
 

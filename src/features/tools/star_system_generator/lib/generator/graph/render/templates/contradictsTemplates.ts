@@ -7,11 +7,11 @@ export const contradictsTemplates: EdgeTemplateFamily = {
   edgeType: 'CONTRADICTS',
   body: [
     {
-      text: "{subject}'s record disagrees with {object}'s on {qualifier|the same point}.",
+      text: "{subject}'s record disagrees with {object}'s on the {qualifier|same point}.",
       expects: { subject: 'properNoun', object: 'properNoun', qualifier: 'nounPhrase' },
     },
     {
-      text: '{subject} says one thing about {qualifier|what happened}; {object} says another.',
+      text: '{subject} says one thing about the {qualifier|matter at hand}; {object} says another.',
       expects: { subject: 'properNoun', object: 'properNoun', qualifier: 'nounPhrase' },
     },
     {
@@ -19,12 +19,12 @@ export const contradictsTemplates: EdgeTemplateFamily = {
       expects: { subject: 'properNoun', object: 'properNoun' },
     },
     {
-      text: '{subject} and {object} both claim authority over {qualifier|the record}.',
+      text: '{subject} and {object} both claim authority over the {qualifier|record}.',
       expects: { subject: 'properNoun', object: 'properNoun', qualifier: 'nounPhrase' },
     },
   ],
   spineSummary: {
-    text: '{subject} and {object} are telling two different stories about {qualifier|what really happened}.',
+    text: '{subject} and {object} are telling two different stories about the {qualifier|matter at hand}.',
     expects: { subject: 'properNoun', object: 'properNoun', qualifier: 'nounPhrase' },
   },
   historicalBridge: {
@@ -33,7 +33,7 @@ export const contradictsTemplates: EdgeTemplateFamily = {
   },
   hook: [
     {
-      text: 'Whose version of {qualifier|the record} would survive a third-party audit?',
+      text: 'Whose version of the {qualifier|record} would survive a third-party audit?',
       expects: { qualifier: 'nounPhrase' },
     },
     {
@@ -43,6 +43,14 @@ export const contradictsTemplates: EdgeTemplateFamily = {
     {
       text: "What changes if {subject}'s version turns out to be the true one?",
       expects: { subject: 'properNoun' },
+    },
+    {
+      text: 'What does {object} stand to lose if {subject} is believed?',
+      expects: { subject: 'properNoun', object: 'properNoun' },
+    },
+    {
+      text: "What evidence about the {qualifier|record} could {subject} surface that {object} can't refute?",
+      expects: { subject: 'properNoun', object: 'properNoun', qualifier: 'nounPhrase' },
     },
   ],
 }
