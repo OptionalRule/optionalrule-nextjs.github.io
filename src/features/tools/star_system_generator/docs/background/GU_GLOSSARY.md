@@ -59,3 +59,23 @@ The Sol-system ASI that achieved full GU mastery and walked away from humanity. 
 
 ### Sol Silence
 The standing condition of the Sol system. No traffic in, no traffic out, occasional broadcasts. Pilots use the term casually until somebody breaks it and proves why nobody else does. The Gardener is the silence's enforcer, and merchants quote "Silence Day" in days since the last broadcast the way old farmers quoted days since rain.
+
+## People and machines
+
+### Narrow AI
+A purpose-limited intelligence that can manipulate one small piece of the observerse without destabilizing reality — runs ship drives, weapons, life support, and trade prediction. Looks like a black box with a personality, and crews talk to it the way old sailors talked to a ship. Reliable until it isn't, and "isn't" has a short window.
+
+*Appears as:* **perception errors** (the most dangerous failure mode in the setting, ordinary instrument data with one wrong assumption baked in — nobody on the bridge notices until the asteroid arrives), **fragmentation** (a stressed AI splits into incoherent partials, a confused friend, then a stranger, then nothing — a regulatory event, a religious event, and a contract dispute, in roughly that order), **stabilizer substrate** (tiered crystal feedstock that keeps narrow AIs from drifting; without a steady supply, every ship's AI starts hallucinating inside a year, and with it, eighteen months at most), **witness cores** (sealed memory units of decommissioned AIs, evidence in salvage courts, relic to Gardener-fear cults, career-ending to crack open without authorization), and **rogue ASI fragments** (pieces of a larger ASI that broke off and survived in remote habitats or derelicts; survives until the Gardener notices).
+
+### First-wave
+Anything from the original human expansion before the Silence. Looks like a blockier, sturdier version of current construction with worse plumbing and better records than anything built since. Most sites are abandoned, and many are still legally claimed by descendants who've never seen them.
+
+*Appears as:* **colonies** (settlements from the original wave, sturdier and quieter than the systems that grew up around them), **ruins** (the wreckage of those colonies — the richest source of usable salvage and the slowest way to die in legal proceedings, fought over for generations by salvage courts and family syndicates), and **heirs** (descendants or claimants of an original colony charter, carrying paperwork older than most current governments and harder to dismiss than anyone wants — the single most disruptive figure who can walk into a port council meeting).
+
+## A note on rolling these at the table
+
+The generator will combine these terms in ways the primer doesn't predict. That's the point. A Pinchdrive calibration scar in a flare-amplified bleed season near a Gardener warning beacon is not on any chart, but it's a system worth running a session in. Treat the glossary as the grammar, not the script.
+
+If a term appears in a roll and isn't in this file, treat the parent — the hero it most plausibly hangs off — as the entry that covers it. Bleed means money and danger. Iggygate means somebody is in charge. The Gardener means the answer to "how bad could it get" is open-ended.
+
+**End of Glossary**
