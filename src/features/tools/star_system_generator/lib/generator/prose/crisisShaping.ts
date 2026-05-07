@@ -52,8 +52,25 @@ export function crisisPressureSentence(value: string, consequence: string): stri
   const smoothedLower = smoothTechnicalPhrase(sentenceFragment(value))
   const wasNotRewritten = crisis === smoothedLower
   const hasCapitalSubject = /^[A-Z][a-zA-Z]+(?:[\s/-][A-Za-z]+)?\s/.test(value)
-  const hasVerbShape = /\s\w+(?:s|es|ed)\b/.test(crisis)
-  if (wasNotRewritten && hasCapitalSubject && hasVerbShape) {
+  // Verb-shape detection. Bare regex alternations (lone -s) false-positive on
+  // any plural noun ("crews", "ships", "numbers"); strict es/ed/ing misses
+  // legitimate finite verbs ("turns", "spills", "walks", "begin", "prove",
+  // "sold"). So: combine a strict regex + an explicit set of clause-shaped
+  // crises whose verbs the regex would otherwise miss. Future crisis data
+  // can extend the set.
+  const FORCE_CLAUSE_SHAPED = new Set([
+    'Life-support repair crews walk out',
+    'Terraforming mirrors begin an unsafe correction burn',
+    'Maintenance logs prove the disaster was forecast',
+    'Safe transit window sold to too many ships',
+    'Treatment lottery turns violent',
+    'Exposure clinic overflow spills into public corridors',
+    'Interdiction warning contradicts the published route plan',
+  ])
+  const finiteVerbEndingPattern = /\b\w{3,}(?:es|ed|ing)\b/
+  const isClauseShaped =
+    FORCE_CLAUSE_SHAPED.has(value) || finiteVerbEndingPattern.test(crisis)
+  if (wasNotRewritten && hasCapitalSubject && isClauseShaped) {
     return `When ${lowerFirst(crisis)}, the situation ${consequence}.`
   }
   return `The crisis around ${crisis} ${consequence}.`

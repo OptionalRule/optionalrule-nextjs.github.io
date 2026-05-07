@@ -20,7 +20,7 @@ describe('settlementHookSynthesis', () => {
     expect(sentences.length).toBeGreaterThanOrEqual(3)
     expect(sentences.length).toBeLessThanOrEqual(4)
     expect(result).toMatch(
-      /(Control of the Iggygate control station decides who has leverage|Whoever runs the Iggygate control station sets the terms here|Every faction here measures itself against the Iggygate control station|The fight for the Iggygate control station is the only one that lasts)\.$/
+      /(Control of the Iggygate control station decides who has leverage|Whoever runs the Iggygate control station sets the terms here|Every dispute here ends at the Iggygate control station|Whatever the system fights over next, the Iggygate control station is where it lands)\.$/
     )
     expect(result).toMatch(/Privately, the route weather board sells safe windows twice\./)
   })

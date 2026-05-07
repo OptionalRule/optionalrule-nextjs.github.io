@@ -80,8 +80,8 @@ export function settlementHookSynthesis(
     const choice = rng.int(1, 4)
     if (choice === 1) return `Control of ${functionPressure} decides who has leverage.`
     if (choice === 2) return `Whoever runs ${functionPressure} sets the terms here.`
-    if (choice === 3) return `Every faction here measures itself against ${functionPressure}.`
-    return `The fight for ${functionPressure} is the only one that lasts.`
+    if (choice === 3) return `Every dispute here ends at ${functionPressure}.`
+    return `Whatever the system fights over next, ${functionPressure} is where it lands.`
   })()
 
   return `${sentenceStart(base)} ${pressure} Privately, ${secret}. ${closing}`
