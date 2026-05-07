@@ -1,0 +1,891 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Star System Generator — Body Category Icon Mockups</title>
+<style>
+  :root {
+    --bg: #ffffff;
+    --bg-2: #f5f5f4;
+    --text: #1c1917;
+    --text-2: #57534e;
+    --border: #e7e5e4;
+    --accent-mystical: #7c3aed;
+    --rocky: #57534e;
+    --super-earth: #047857;
+    --sub-neptune: #0369a1;
+    --gas-giant: #b45309;
+    --ice-giant: #0e7490;
+    --belt: #64748b;
+    --dwarf: #78716c;
+    --rogue: #4338ca;
+  }
+  body.dark {
+    --bg: #0c0a09;
+    --bg-2: #1c1917;
+    --text: #fafaf9;
+    --text-2: #a8a29e;
+    --border: #292524;
+    --rocky: #d6d3d1;
+    --super-earth: #6ee7b7;
+    --sub-neptune: #7dd3fc;
+    --gas-giant: #fcd34d;
+    --ice-giant: #67e8f9;
+    --belt: #94a3b8;
+    --dwarf: #a8a29e;
+    --rogue: #a5b4fc;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    padding: 32px;
+    background: var(--bg);
+    color: var(--text);
+    font: 14px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+    transition: background 0.15s, color 0.15s;
+  }
+  h1 { margin: 0 0 4px; font-size: 22px; }
+  h2 { margin: 32px 0 12px; font-size: 16px; font-weight: 600; }
+  p { margin: 0 0 24px; color: var(--text-2); }
+  .toolbar {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 24px;
+    align-items: center;
+  }
+  button {
+    padding: 6px 12px;
+    border: 1px solid var(--border);
+    background: var(--bg-2);
+    color: var(--text);
+    border-radius: 6px;
+    cursor: pointer;
+    font: inherit;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    background: var(--bg-2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+  }
+  th, td {
+    padding: 14px 12px;
+    text-align: left;
+    border-bottom: 1px solid var(--border);
+    vertical-align: middle;
+  }
+  tr:last-child td { border-bottom: 0; }
+  th {
+    background: var(--bg);
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--text-2);
+    font-weight: 600;
+  }
+  td.cat { font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 12px; }
+  .icon-row { display: flex; gap: 16px; align-items: center; }
+  .icon-row svg { display: block; }
+  .size-label { font-size: 10px; color: var(--text-2); margin-top: 2px; text-align: center; }
+  .swatch {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+  }
+  .note { font-size: 12px; color: var(--text-2); }
+  .pill {
+    display: inline-block;
+    padding: 1px 6px;
+    border-radius: 4px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    font-size: 10px;
+    color: var(--text-2);
+  }
+  .pill.new { background: rgba(124, 58, 237, 0.1); border-color: var(--accent-mystical); color: var(--accent-mystical); }
+  .pill.keep { background: rgba(16, 185, 129, 0.1); border-color: #10b981; color: #047857; }
+  body.dark .pill.keep { color: #6ee7b7; }
+</style>
+</head>
+<body>
+  <h1>Body Category Icon Mockups</h1>
+  <p>Comparison of current Lucide icons vs. proposed custom SVGs for the Star System Generator. All icons render with <code>currentColor</code> and Lucide-style strokes (width 2, round caps).</p>
+
+  <div class="toolbar">
+    <button onclick="document.body.classList.toggle('dark')">Toggle dark mode</button>
+    <span class="note">Custom SVGs are inline; Lucide icons recreated faithfully from the lucide-react source.</span>
+  </div>
+
+  <table>
+    <thead>
+      <tr>
+        <th style="width: 18%">Category</th>
+        <th style="width: 30%">Current (Lucide)</th>
+        <th style="width: 30%">Proposed</th>
+        <th>Notes</th>
+      </tr>
+    </thead>
+    <tbody>
+
+      <!-- ROCKY PLANET -->
+      <tr>
+        <td class="cat">rocky-planet</td>
+        <td>
+          <div class="icon-row">
+            <div class="swatch">
+              <!-- Lucide Mountain -->
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--rocky)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="m8 3 4 8 5-5 5 15H2L8 3z"/>
+              </svg>
+              <span class="size-label">Mountain 24</span>
+            </div>
+            <div class="swatch">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--rocky)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="m8 3 4 8 5-5 5 15H2L8 3z"/>
+              </svg>
+              <span class="size-label">16</span>
+            </div>
+          </div>
+        </td>
+        <td>
+          <div class="icon-row">
+            <div class="swatch">
+              <!-- Custom RockyPlanet: cratered disc -->
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--rocky)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="8.5"/>
+                <circle cx="9" cy="10" r="1.4"/>
+                <circle cx="15" cy="14" r="1.1"/>
+                <circle cx="10.5" cy="16" r="0.6"/>
+              </svg>
+              <span class="size-label">RockyPlanet 24</span>
+            </div>
+            <div class="swatch">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--rocky)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="8.5"/>
+                <circle cx="9" cy="10" r="1.4"/>
+                <circle cx="15" cy="14" r="1.1"/>
+                <circle cx="10.5" cy="16" r="0.6"/>
+              </svg>
+              <span class="size-label">16</span>
+            </div>
+          </div>
+        </td>
+        <td><span class="pill new">new</span> Cratered disc — reads as a body, not a landscape.</td>
+      </tr>
+
+      <!-- SUPER EARTH -->
+      <tr>
+        <td class="cat">super-earth</td>
+        <td>
+          <div class="icon-row">
+            <div class="swatch">
+              <!-- Lucide Globe2 -->
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--super-earth)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21.54 15H17a2 2 0 0 0-2 2v4.54"/>
+                <path d="M7 3.34V5a3 3 0 0 0 3 3v0a2 2 0 0 1 2 2v0c0 1.1.9 2 2 2v0a2 2 0 0 0 2-2v0c0-1.1.9-2 2-2h3.17"/>
+                <path d="M11 21.95V18a2 2 0 0 0-2-2v0a2 2 0 0 1-2-2v-1a2 2 0 0 0-2-2H2.05"/>
+                <circle cx="12" cy="12" r="10"/>
+              </svg>
+              <span class="size-label">Globe2 24</span>
+            </div>
+            <div class="swatch">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--super-earth)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21.54 15H17a2 2 0 0 0-2 2v4.54"/>
+                <path d="M7 3.34V5a3 3 0 0 0 3 3v0a2 2 0 0 1 2 2v0c0 1.1.9 2 2 2v0a2 2 0 0 0 2-2v0c0-1.1.9-2 2-2h3.17"/>
+                <path d="M11 21.95V18a2 2 0 0 0-2-2v0a2 2 0 0 1-2-2v-1a2 2 0 0 0-2-2H2.05"/>
+                <circle cx="12" cy="12" r="10"/>
+              </svg>
+              <span class="size-label">16</span>
+            </div>
+          </div>
+        </td>
+        <td>
+          <div class="icon-row">
+            <div class="swatch">
+              <!-- Custom SuperEarth: continent contours -->
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--super-earth)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="9.5"/>
+                <path d="M4 11 q3 -2.5 6 -0.5 q2.5 2 6 0"/>
+                <path d="M7 16 q3 -1.5 5.5 0"/>
+              </svg>
+              <span class="size-label">SuperEarth 24</span>
+            </div>
+            <div class="swatch">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--super-earth)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="9.5"/>
+                <path d="M4 11 q3 -2.5 6 -0.5 q2.5 2 6 0"/>
+                <path d="M7 16 q3 -1.5 5.5 0"/>
+              </svg>
+              <span class="size-label">16</span>
+            </div>
+          </div>
+        </td>
+        <td><span class="pill new">new</span> Larger disc, continent contours. Frees Globe2 from collision with rogue-captured.</td>
+      </tr>
+
+      <!-- SUB NEPTUNE -->
+      <tr>
+        <td class="cat">sub-neptune</td>
+        <td>
+          <div class="icon-row">
+            <div class="swatch">
+              <!-- Lucide Circle -->
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--sub-neptune)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"/>
+              </svg>
+              <span class="size-label">Circle 24</span>
+            </div>
+            <div class="swatch">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--sub-neptune)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"/>
+              </svg>
+              <span class="size-label">16</span>
+            </div>
+          </div>
+        </td>
+        <td>
+          <div class="icon-row">
+            <div class="swatch">
+              <!-- Custom SubNeptune: small disc + dashed haze -->
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--sub-neptune)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="6"/>
+                <circle cx="12" cy="12" r="10" stroke-dasharray="1.5 2.5"/>
+              </svg>
+              <span class="size-label">SubNeptune 24</span>
+            </div>
+            <div class="swatch">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--sub-neptune)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="6"/>
+                <circle cx="12" cy="12" r="10" stroke-dasharray="1.5 2.5"/>
+              </svg>
+              <span class="size-label">16</span>
+            </div>
+          </div>
+        </td>
+        <td><span class="pill new">new</span> Small core + dashed atmospheric halo. Resolves collision with dwarf-body.</td>
+      </tr>
+
+      <!-- GAS GIANT -->
+      <tr>
+        <td class="cat">gas-giant</td>
+        <td>
+          <div class="icon-row">
+            <div class="swatch">
+              <!-- Lucide CircleDot -->
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--gas-giant)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"/>
+                <circle cx="12" cy="12" r="1" fill="currentColor"/>
+              </svg>
+              <span class="size-label">CircleDot 24</span>
+            </div>
+            <div class="swatch">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--gas-giant)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"/>
+                <circle cx="12" cy="12" r="1" fill="currentColor"/>
+              </svg>
+              <span class="size-label">16</span>
+            </div>
+          </div>
+        </td>
+        <td>
+          <div class="icon-row">
+            <div class="swatch">
+              <!-- Custom GasGiant: large disc + cloud bands -->
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--gas-giant)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <defs>
+                  <clipPath id="gas-clip-24"><circle cx="12" cy="12" r="9.5"/></clipPath>
+                </defs>
+                <circle cx="12" cy="12" r="9.5"/>
+                <g clip-path="url(#gas-clip-24)">
+                  <line x1="2" y1="9" x2="22" y2="9"/>
+                  <line x1="2" y1="13" x2="22" y2="13"/>
+                  <line x1="2" y1="16" x2="22" y2="16"/>
+                </g>
+              </svg>
+              <span class="size-label">GasGiant 24</span>
+            </div>
+            <div class="swatch">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--gas-giant)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <defs>
+                  <clipPath id="gas-clip-16"><circle cx="12" cy="12" r="9.5"/></clipPath>
+                </defs>
+                <circle cx="12" cy="12" r="9.5"/>
+                <g clip-path="url(#gas-clip-16)">
+                  <line x1="2" y1="9" x2="22" y2="9"/>
+                  <line x1="2" y1="13" x2="22" y2="13"/>
+                  <line x1="2" y1="16" x2="22" y2="16"/>
+                </g>
+              </svg>
+              <span class="size-label">16</span>
+            </div>
+          </div>
+        </td>
+        <td><span class="pill new">new</span> Banded cloud disc. Reads as Jupiter at a glance.</td>
+      </tr>
+
+      <!-- ICE GIANT -->
+      <tr>
+        <td class="cat">ice-giant</td>
+        <td>
+          <div class="icon-row">
+            <div class="swatch">
+              <!-- Lucide Snowflake -->
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--ice-giant)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="2" y1="12" x2="22" y2="12"/>
+                <line x1="12" y1="2" x2="12" y2="22"/>
+                <path d="m20 16-4-4 4-4"/>
+                <path d="m4 8 4 4-4 4"/>
+                <path d="m16 4-4 4-4-4"/>
+                <path d="m8 20 4-4 4 4"/>
+              </svg>
+              <span class="size-label">Snowflake 24</span>
+            </div>
+            <div class="swatch">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--ice-giant)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="2" y1="12" x2="22" y2="12"/>
+                <line x1="12" y1="2" x2="12" y2="22"/>
+                <path d="m20 16-4-4 4-4"/>
+                <path d="m4 8 4 4-4 4"/>
+                <path d="m16 4-4 4-4-4"/>
+                <path d="m8 20 4-4 4 4"/>
+              </svg>
+              <span class="size-label">16</span>
+            </div>
+          </div>
+        </td>
+        <td>
+          <div class="icon-row">
+            <div class="swatch">
+              <!-- Custom IceGiant: tilted ring (Uranus-style) -->
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--ice-giant)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="6"/>
+                <ellipse cx="12" cy="12" rx="10" ry="3" transform="rotate(-72 12 12)"/>
+              </svg>
+              <span class="size-label">IceGiant 24</span>
+            </div>
+            <div class="swatch">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--ice-giant)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="6"/>
+                <ellipse cx="12" cy="12" rx="10" ry="3" transform="rotate(-72 12 12)"/>
+              </svg>
+              <span class="size-label">16</span>
+            </div>
+          </div>
+        </td>
+        <td><span class="pill new">new</span> Disc with steeply tilted ring (nods to Uranus's 98° axis tilt).</td>
+      </tr>
+
+      <!-- BELT -->
+      <tr>
+        <td class="cat">belt</td>
+        <td>
+          <div class="icon-row">
+            <div class="swatch">
+              <!-- Lucide CircleDashed -->
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--belt)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M10.1 2.182a10 10 0 0 1 3.8 0"/>
+                <path d="M13.9 21.818a10 10 0 0 1-3.8 0"/>
+                <path d="M17.609 3.721a10 10 0 0 1 2.69 2.7"/>
+                <path d="M2.182 13.9a10 10 0 0 1 0-3.8"/>
+                <path d="M20.279 17.609a10 10 0 0 1-2.7 2.69"/>
+                <path d="M21.818 10.1a10 10 0 0 1 0 3.8"/>
+                <path d="M3.721 6.391a10 10 0 0 1 2.7-2.69"/>
+                <path d="M6.391 20.279a10 10 0 0 1-2.69-2.7"/>
+              </svg>
+              <span class="size-label">CircleDashed 24</span>
+            </div>
+            <div class="swatch">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--belt)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M10.1 2.182a10 10 0 0 1 3.8 0"/>
+                <path d="M13.9 21.818a10 10 0 0 1-3.8 0"/>
+                <path d="M17.609 3.721a10 10 0 0 1 2.69 2.7"/>
+                <path d="M2.182 13.9a10 10 0 0 1 0-3.8"/>
+                <path d="M20.279 17.609a10 10 0 0 1-2.7 2.69"/>
+                <path d="M21.818 10.1a10 10 0 0 1 0 3.8"/>
+                <path d="M3.721 6.391a10 10 0 0 1 2.7-2.69"/>
+                <path d="M6.391 20.279a10 10 0 0 1-2.69-2.7"/>
+              </svg>
+              <span class="size-label">16</span>
+            </div>
+          </div>
+        </td>
+        <td>
+          <div class="icon-row">
+            <div class="swatch">
+              <!-- Same: CircleDashed -->
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--belt)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M10.1 2.182a10 10 0 0 1 3.8 0"/>
+                <path d="M13.9 21.818a10 10 0 0 1-3.8 0"/>
+                <path d="M17.609 3.721a10 10 0 0 1 2.69 2.7"/>
+                <path d="M2.182 13.9a10 10 0 0 1 0-3.8"/>
+                <path d="M20.279 17.609a10 10 0 0 1-2.7 2.69"/>
+                <path d="M21.818 10.1a10 10 0 0 1 0 3.8"/>
+                <path d="M3.721 6.391a10 10 0 0 1 2.7-2.69"/>
+                <path d="M6.391 20.279a10 10 0 0 1-2.69-2.7"/>
+              </svg>
+              <span class="size-label">CircleDashed 24</span>
+            </div>
+            <div class="swatch">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--belt)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M10.1 2.182a10 10 0 0 1 3.8 0"/>
+                <path d="M13.9 21.818a10 10 0 0 1-3.8 0"/>
+                <path d="M17.609 3.721a10 10 0 0 1 2.69 2.7"/>
+                <path d="M2.182 13.9a10 10 0 0 1 0-3.8"/>
+                <path d="M20.279 17.609a10 10 0 0 1-2.7 2.69"/>
+                <path d="M21.818 10.1a10 10 0 0 1 0 3.8"/>
+                <path d="M3.721 6.391a10 10 0 0 1 2.7-2.69"/>
+                <path d="M6.391 20.279a10 10 0 0 1-2.69-2.7"/>
+              </svg>
+              <span class="size-label">16</span>
+            </div>
+          </div>
+        </td>
+        <td><span class="pill keep">keep</span> Already reads as a sparse orbital arc.</td>
+      </tr>
+
+      <!-- DWARF BODY -->
+      <tr>
+        <td class="cat">dwarf-body</td>
+        <td>
+          <div class="icon-row">
+            <div class="swatch">
+              <!-- Lucide Circle (collides w/ sub-neptune) -->
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--dwarf)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"/>
+              </svg>
+              <span class="size-label">Circle 24</span>
+            </div>
+            <div class="swatch">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--dwarf)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"/>
+              </svg>
+              <span class="size-label">16</span>
+            </div>
+          </div>
+        </td>
+        <td>
+          <div class="icon-row">
+            <div class="swatch">
+              <!-- Lucide CircleSmall (small disc) -->
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--dwarf)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="5"/>
+              </svg>
+              <span class="size-label">CircleSmall 24</span>
+            </div>
+            <div class="swatch">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--dwarf)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="5"/>
+              </svg>
+              <span class="size-label">16</span>
+            </div>
+          </div>
+        </td>
+        <td><span class="pill keep">keep (Lucide CircleSmall)</span> Tiny disc visually says "small body". No custom SVG needed.</td>
+      </tr>
+
+      <!-- ROGUE / CAPTURED -->
+      <tr>
+        <td class="cat">rogue-captured</td>
+        <td>
+          <div class="icon-row">
+            <div class="swatch">
+              <!-- Lucide Globe2 (collides w/ super-earth) -->
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--rogue)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21.54 15H17a2 2 0 0 0-2 2v4.54"/>
+                <path d="M7 3.34V5a3 3 0 0 0 3 3v0a2 2 0 0 1 2 2v0c0 1.1.9 2 2 2v0a2 2 0 0 0 2-2v0c0-1.1.9-2 2-2h3.17"/>
+                <path d="M11 21.95V18a2 2 0 0 0-2-2v0a2 2 0 0 1-2-2v-1a2 2 0 0 0-2-2H2.05"/>
+                <circle cx="12" cy="12" r="10"/>
+              </svg>
+              <span class="size-label">Globe2 24</span>
+            </div>
+            <div class="swatch">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--rogue)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21.54 15H17a2 2 0 0 0-2 2v4.54"/>
+                <path d="M7 3.34V5a3 3 0 0 0 3 3v0a2 2 0 0 1 2 2v0c0 1.1.9 2 2 2v0a2 2 0 0 0 2-2v0c0-1.1.9-2 2-2h3.17"/>
+                <path d="M11 21.95V18a2 2 0 0 0-2-2v0a2 2 0 0 1-2-2v-1a2 2 0 0 0-2-2H2.05"/>
+                <circle cx="12" cy="12" r="10"/>
+              </svg>
+              <span class="size-label">16</span>
+            </div>
+          </div>
+        </td>
+        <td>
+          <div class="icon-row">
+            <div class="swatch">
+              <!-- Custom RogueCaptured: offset disc + eccentric trajectory -->
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--rogue)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="15" cy="13" r="4.5"/>
+                <path d="M2 20 q3 -12 14 -14"/>
+              </svg>
+              <span class="size-label">RogueCaptured 24</span>
+            </div>
+            <div class="swatch">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--rogue)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="15" cy="13" r="4.5"/>
+                <path d="M2 20 q3 -12 14 -14"/>
+              </svg>
+              <span class="size-label">16</span>
+            </div>
+          </div>
+        </td>
+        <td><span class="pill new">new</span> Off-center disc + eccentric trajectory arc. Communicates capture.</td>
+      </tr>
+
+      <!-- ANOMALY -->
+      <tr>
+        <td class="cat">anomaly</td>
+        <td>
+          <div class="icon-row">
+            <div class="swatch">
+              <!-- Lucide Sparkles -->
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--accent-mystical)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"/>
+                <path d="M20 3v4"/>
+                <path d="M22 5h-4"/>
+                <path d="M4 17v2"/>
+                <path d="M5 18H3"/>
+              </svg>
+              <span class="size-label">Sparkles 24</span>
+            </div>
+            <div class="swatch">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--accent-mystical)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"/>
+                <path d="M20 3v4"/>
+                <path d="M22 5h-4"/>
+                <path d="M4 17v2"/>
+                <path d="M5 18H3"/>
+              </svg>
+              <span class="size-label">16</span>
+            </div>
+          </div>
+        </td>
+        <td>
+          <div class="icon-row">
+            <div class="swatch">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--accent-mystical)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"/>
+                <path d="M20 3v4"/>
+                <path d="M22 5h-4"/>
+                <path d="M4 17v2"/>
+                <path d="M5 18H3"/>
+              </svg>
+              <span class="size-label">Sparkles 24</span>
+            </div>
+            <div class="swatch">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--accent-mystical)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"/>
+                <path d="M20 3v4"/>
+                <path d="M22 5h-4"/>
+                <path d="M4 17v2"/>
+                <path d="M5 18H3"/>
+              </svg>
+              <span class="size-label">16</span>
+            </div>
+          </div>
+        </td>
+        <td><span class="pill keep">keep</span> Already reads as exotic / GU-touched.</td>
+      </tr>
+
+    </tbody>
+  </table>
+
+  <h2>Side-by-side at common usage sizes (proposed only)</h2>
+  <p>This is how the new icon set looks together at table-row size (16) and section-header size (20).</p>
+  <div style="display: flex; gap: 32px; flex-wrap: wrap; padding: 16px; background: var(--bg-2); border: 1px solid var(--border); border-radius: 8px;">
+    <!-- Compact strip showing all 9 icons together -->
+    <div style="display: grid; grid-template-columns: repeat(9, 1fr); gap: 16px; align-items: end;">
+      <!-- 16px row -->
+      <div class="swatch"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--rocky)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"/><circle cx="9" cy="10" r="1.4"/><circle cx="15" cy="14" r="1.1"/><circle cx="10.5" cy="16" r="0.6"/></svg><span class="size-label">rocky</span></div>
+      <div class="swatch"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--super-earth)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9.5"/><path d="M4 11 q3 -2.5 6 -0.5 q2.5 2 6 0"/><path d="M7 16 q3 -1.5 5.5 0"/></svg><span class="size-label">super</span></div>
+      <div class="swatch"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--sub-neptune)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="10" stroke-dasharray="1.5 2.5"/></svg><span class="size-label">sub-N</span></div>
+      <div class="swatch"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--gas-giant)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><defs><clipPath id="g-strip-16"><circle cx="12" cy="12" r="9.5"/></clipPath></defs><circle cx="12" cy="12" r="9.5"/><g clip-path="url(#g-strip-16)"><line x1="2" y1="9" x2="22" y2="9"/><line x1="2" y1="13" x2="22" y2="13"/><line x1="2" y1="16" x2="22" y2="16"/></g></svg><span class="size-label">gas</span></div>
+      <div class="swatch"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--ice-giant)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="6"/><ellipse cx="12" cy="12" rx="10" ry="3" transform="rotate(-72 12 12)"/></svg><span class="size-label">ice</span></div>
+      <div class="swatch"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--belt)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.1 2.182a10 10 0 0 1 3.8 0"/><path d="M13.9 21.818a10 10 0 0 1-3.8 0"/><path d="M17.609 3.721a10 10 0 0 1 2.69 2.7"/><path d="M2.182 13.9a10 10 0 0 1 0-3.8"/><path d="M20.279 17.609a10 10 0 0 1-2.7 2.69"/><path d="M21.818 10.1a10 10 0 0 1 0 3.8"/><path d="M3.721 6.391a10 10 0 0 1 2.7-2.69"/><path d="M6.391 20.279a10 10 0 0 1-2.69-2.7"/></svg><span class="size-label">belt</span></div>
+      <div class="swatch"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--dwarf)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/></svg><span class="size-label">dwarf</span></div>
+      <div class="swatch"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--rogue)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="15" cy="13" r="4.5"/><path d="M2 20 q3 -12 14 -14"/></svg><span class="size-label">rogue</span></div>
+      <div class="swatch"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--accent-mystical)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"/><path d="M20 3v4"/><path d="M22 5h-4"/><path d="M4 17v2"/><path d="M5 18H3"/></svg><span class="size-label">anom</span></div>
+      <!-- 24px row -->
+      <div class="swatch"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--rocky)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"/><circle cx="9" cy="10" r="1.4"/><circle cx="15" cy="14" r="1.1"/><circle cx="10.5" cy="16" r="0.6"/></svg></div>
+      <div class="swatch"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--super-earth)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9.5"/><path d="M4 11 q3 -2.5 6 -0.5 q2.5 2 6 0"/><path d="M7 16 q3 -1.5 5.5 0"/></svg></div>
+      <div class="swatch"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--sub-neptune)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="10" stroke-dasharray="1.5 2.5"/></svg></div>
+      <div class="swatch"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--gas-giant)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><defs><clipPath id="g-strip-24"><circle cx="12" cy="12" r="9.5"/></clipPath></defs><circle cx="12" cy="12" r="9.5"/><g clip-path="url(#g-strip-24)"><line x1="2" y1="9" x2="22" y2="9"/><line x1="2" y1="13" x2="22" y2="13"/><line x1="2" y1="16" x2="22" y2="16"/></g></svg></div>
+      <div class="swatch"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--ice-giant)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="6"/><ellipse cx="12" cy="12" rx="10" ry="3" transform="rotate(-72 12 12)"/></svg></div>
+      <div class="swatch"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--belt)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.1 2.182a10 10 0 0 1 3.8 0"/><path d="M13.9 21.818a10 10 0 0 1-3.8 0"/><path d="M17.609 3.721a10 10 0 0 1 2.69 2.7"/><path d="M2.182 13.9a10 10 0 0 1 0-3.8"/><path d="M20.279 17.609a10 10 0 0 1-2.7 2.69"/><path d="M21.818 10.1a10 10 0 0 1 0 3.8"/><path d="M3.721 6.391a10 10 0 0 1 2.7-2.69"/><path d="M6.391 20.279a10 10 0 0 1-2.69-2.7"/></svg></div>
+      <div class="swatch"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--dwarf)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/></svg></div>
+      <div class="swatch"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--rogue)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="15" cy="13" r="4.5"/><path d="M2 20 q3 -12 14 -14"/></svg></div>
+      <div class="swatch"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--accent-mystical)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"/><path d="M20 3v4"/><path d="M22 5h-4"/><path d="M4 17v2"/><path d="M5 18H3"/></svg></div>
+    </div>
+  </div>
+
+  <h2>Rogue / Captured — alternatives</h2>
+  <p>Three variants, all built around a proper planet-sized disc (~r=7) so it reads as a planet first.</p>
+
+  <table>
+    <thead>
+      <tr>
+        <th style="width: 18%">Variant</th>
+        <th style="width: 25%">24 px</th>
+        <th style="width: 25%">16 px</th>
+        <th>Concept</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="cat">A — trajectory</td>
+        <td>
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--rogue)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 20 L7.5 16" stroke-dasharray="2 2"/>
+            <path d="M16.5 8 L21 4" stroke-dasharray="2 2"/>
+            <circle cx="12" cy="12" r="7"/>
+            <circle cx="9.5" cy="10" r="1"/>
+            <circle cx="14" cy="13.5" r="0.8"/>
+          </svg>
+        </td>
+        <td>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--rogue)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 20 L7.5 16" stroke-dasharray="2 2"/>
+            <path d="M16.5 8 L21 4" stroke-dasharray="2 2"/>
+            <circle cx="12" cy="12" r="7"/>
+            <circle cx="9.5" cy="10" r="1"/>
+            <circle cx="14" cy="13.5" r="0.8"/>
+          </svg>
+        </td>
+        <td>Full cratered planet on a dashed trajectory line that resumes on the other side. "Captured into a passing path."</td>
+      </tr>
+      <tr>
+        <td class="cat">B — motion trail</td>
+        <td>
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--rogue)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="14" cy="12" r="7"/>
+            <circle cx="12" cy="10" r="0.9"/>
+            <circle cx="16" cy="14" r="0.7"/>
+            <path d="M2 18 L5 16"/>
+            <path d="M3.5 14 L6 12.5"/>
+          </svg>
+        </td>
+        <td>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--rogue)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="14" cy="12" r="7"/>
+            <circle cx="12" cy="10" r="0.9"/>
+            <circle cx="16" cy="14" r="0.7"/>
+            <path d="M2 18 L5 16"/>
+            <path d="M3.5 14 L6 12.5"/>
+          </svg>
+        </td>
+        <td>Planet shifted right with two short motion strokes trailing behind. Suggests an interstellar interloper still in transit.</td>
+      </tr>
+      <tr>
+        <td class="cat">C — eccentric orbit</td>
+        <td>
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--rogue)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <ellipse cx="12" cy="12" rx="10" ry="4" stroke-dasharray="2 2" transform="rotate(35 12 12)"/>
+            <circle cx="12" cy="12" r="6.5"/>
+            <circle cx="9.5" cy="10" r="0.9"/>
+            <circle cx="14.5" cy="13.5" r="0.7"/>
+          </svg>
+        </td>
+        <td>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--rogue)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <ellipse cx="12" cy="12" rx="10" ry="4" stroke-dasharray="2 2" transform="rotate(35 12 12)"/>
+            <circle cx="12" cy="12" r="6.5"/>
+            <circle cx="9.5" cy="10" r="0.9"/>
+            <circle cx="14.5" cy="13.5" r="0.7"/>
+          </svg>
+        </td>
+        <td>Planet wrapped by a dashed, tilted elliptical orbit. "Captured into a non-standard orbit." Slight risk of confusion with ice-giant — different tilt direction (35° vs -72°) and dashed vs solid help distinguish.</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h2>Available Lucide planet/globe-adjacent icons</h2>
+  <p>Every relevant icon shipped in <code>lucide-react@^1.7.0</code>. Note: <code>Globe2</code> is a re-export of <code>Earth</code> (same icon). <code>Stars</code> is a re-export of <code>Sparkles</code>.</p>
+
+  <table>
+    <thead>
+      <tr>
+        <th style="width: 18%">Name</th>
+        <th style="width: 12%">24 px</th>
+        <th style="width: 12%">16 px</th>
+        <th>What it is / fit for terrestrial worlds</th>
+      </tr>
+    </thead>
+    <tbody>
+
+      <tr>
+        <td class="cat">Globe</td>
+        <td>
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--super-earth)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"/>
+            <path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/>
+            <path d="M2 12h20"/>
+          </svg>
+        </td>
+        <td>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--super-earth)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"/>
+            <path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/>
+            <path d="M2 12h20"/>
+          </svg>
+        </td>
+        <td>Circle + meridian curve + equator line. Reads as an abstract globe — no continents. Could fit super-earth as a more "schematic" planet.</td>
+      </tr>
+
+      <tr>
+        <td class="cat">Globe2 (= Earth)</td>
+        <td>
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--super-earth)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21.54 15H17a2 2 0 0 0-2 2v4.54"/>
+            <path d="M7 3.34V5a3 3 0 0 0 3 3a2 2 0 0 1 2 2c0 1.1.9 2 2 2a2 2 0 0 0 2-2c0-1.1.9-2 2-2h3.17"/>
+            <path d="M11 21.95V18a2 2 0 0 0-2-2a2 2 0 0 1-2-2v-1a2 2 0 0 0-2-2H2.05"/>
+            <circle cx="12" cy="12" r="10"/>
+          </svg>
+        </td>
+        <td>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--super-earth)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21.54 15H17a2 2 0 0 0-2 2v4.54"/>
+            <path d="M7 3.34V5a3 3 0 0 0 3 3a2 2 0 0 1 2 2c0 1.1.9 2 2 2a2 2 0 0 0 2-2c0-1.1.9-2 2-2h3.17"/>
+            <path d="M11 21.95V18a2 2 0 0 0-2-2a2 2 0 0 1-2-2v-1a2 2 0 0 0-2-2H2.05"/>
+            <circle cx="12" cy="12" r="10"/>
+          </svg>
+        </td>
+        <td><strong>Currently used.</strong> Disc with continent contours. Strong "Earth-like" read.</td>
+      </tr>
+
+      <tr>
+        <td class="cat">EarthLock</td>
+        <td>
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--super-earth)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M7 3.34V5a3 3 0 0 0 3 3"/>
+            <path d="M11 21.95V18a2 2 0 0 0-2-2a2 2 0 0 1-2-2v-1a2 2 0 0 0-2-2H2.05"/>
+            <path d="M21.54 15H17a2 2 0 0 0-2 2v4.54"/>
+            <path d="M12 2a10 10 0 0 1 7.38 16.75"/>
+            <path d="M16 18h6"/>
+            <path d="M19 15v6"/>
+          </svg>
+        </td>
+        <td>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--super-earth)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M7 3.34V5a3 3 0 0 0 3 3"/>
+            <path d="M11 21.95V18a2 2 0 0 0-2-2a2 2 0 0 1-2-2v-1a2 2 0 0 0-2-2H2.05"/>
+            <path d="M21.54 15H17a2 2 0 0 0-2 2v4.54"/>
+            <path d="M12 2a10 10 0 0 1 7.38 16.75"/>
+            <path d="M16 18h6"/>
+            <path d="M19 15v6"/>
+          </svg>
+        </td>
+        <td>Earth + a "+" symbol. Not a great fit — semantic clash with "lock/secured".</td>
+      </tr>
+
+      <tr>
+        <td class="cat">Atom</td>
+        <td>
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--sub-neptune)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="1"/>
+            <path d="M20.2 20.2c2.04-2.03.02-7.36-4.5-11.9-4.54-4.52-9.87-6.54-11.9-4.5-2.04 2.03-.02 7.36 4.5 11.9 4.54 4.52 9.87 6.54 11.9 4.5Z"/>
+            <path d="M15.7 15.7c4.52-4.54 6.54-9.87 4.5-11.9-2.03-2.04-7.36-.02-11.9 4.5-4.52 4.54-6.54 9.87-4.5 11.9 2.03 2.04 7.36.02 11.9-4.5Z"/>
+          </svg>
+        </td>
+        <td>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--sub-neptune)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="1"/>
+            <path d="M20.2 20.2c2.04-2.03.02-7.36-4.5-11.9-4.54-4.52-9.87-6.54-11.9-4.5-2.04 2.03-.02 7.36 4.5 11.9 4.54 4.52 9.87 6.54 11.9 4.5Z"/>
+            <path d="M15.7 15.7c4.52-4.54 6.54-9.87 4.5-11.9-2.03-2.04-7.36-.02-11.9 4.5-4.52 4.54-6.54 9.87-4.5 11.9 2.03 2.04 7.36.02 11.9-4.5Z"/>
+          </svg>
+        </td>
+        <td>Center dot + two crossed elliptical orbits. Reads as "atom," not planet. Skip.</td>
+      </tr>
+
+      <tr>
+        <td class="cat">Orbit</td>
+        <td>
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--rogue)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M20.341 6.484A10 10 0 0 1 10.266 21.85"/>
+            <path d="M3.659 17.516A10 10 0 0 1 13.74 2.152"/>
+            <circle cx="12" cy="12" r="3"/>
+            <circle cx="19" cy="5" r="2"/>
+            <circle cx="5" cy="19" r="2"/>
+          </svg>
+        </td>
+        <td>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--rogue)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M20.341 6.484A10 10 0 0 1 10.266 21.85"/>
+            <path d="M3.659 17.516A10 10 0 0 1 13.74 2.152"/>
+            <circle cx="12" cy="12" r="3"/>
+            <circle cx="19" cy="5" r="2"/>
+            <circle cx="5" cy="19" r="2"/>
+          </svg>
+        </td>
+        <td>Already used in <code>OrbitalTable</code>. Central body + two orbiting smaller bodies + arcs. Reads as "system," not "planet."</td>
+      </tr>
+
+      <tr>
+        <td class="cat">Moon</td>
+        <td>
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--dwarf)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M20.985 12.486a9 9 0 1 1-9.473-9.472c.405-.022.617.46.402.803a6 6 0 0 0 8.268 8.268c.344-.215.825-.004.803.401"/>
+          </svg>
+        </td>
+        <td>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--dwarf)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M20.985 12.486a9 9 0 1 1-9.473-9.472c.405-.022.617.46.402.803a6 6 0 0 0 8.268 8.268c.344-.215.825-.004.803.401"/>
+          </svg>
+        </td>
+        <td>Crescent moon. Already used in <code>BodyDetailPanel</code> for moons specifically.</td>
+      </tr>
+
+      <tr>
+        <td class="cat">Satellite</td>
+        <td>
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--rogue)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="m13.5 6.5-3.148-3.148a1.205 1.205 0 0 0-1.704 0L6.352 5.648a1.205 1.205 0 0 0 0 1.704L9.5 10.5"/>
+            <path d="M16.5 7.5 19 5"/>
+            <path d="m17.5 10.5 3.148 3.148a1.205 1.205 0 0 1 0 1.704l-2.296 2.296a1.205 1.205 0 0 1-1.704 0L13.5 14.5"/>
+            <path d="m9 13-1.5 1.5a1.205 1.205 0 0 0 0 1.704l2.296 2.296a1.205 1.205 0 0 0 1.704 0L13 17"/>
+            <path d="m12 15 1.5 1.5"/>
+            <path d="m15 5 4 4"/>
+          </svg>
+        </td>
+        <td>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--rogue)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="m13.5 6.5-3.148-3.148a1.205 1.205 0 0 0-1.704 0L6.352 5.648a1.205 1.205 0 0 0 0 1.704L9.5 10.5"/>
+            <path d="M16.5 7.5 19 5"/>
+            <path d="m17.5 10.5 3.148 3.148a1.205 1.205 0 0 1 0 1.704l-2.296 2.296a1.205 1.205 0 0 1-1.704 0L13.5 14.5"/>
+            <path d="m9 13-1.5 1.5a1.205 1.205 0 0 0 0 1.704l2.296 2.296a1.205 1.205 0 0 0 1.704 0L13 17"/>
+            <path d="m12 15 1.5 1.5"/>
+            <path d="m15 5 4 4"/>
+          </svg>
+        </td>
+        <td>Spacecraft satellite. Reads as artificial, not a body. Skip.</td>
+      </tr>
+
+      <tr>
+        <td class="cat">Star</td>
+        <td>
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--gas-giant)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z"/>
+          </svg>
+        </td>
+        <td>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--gas-giant)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z"/>
+          </svg>
+        </td>
+        <td>5-pointed star. Reads as "star/favorite," not planet. Skip.</td>
+      </tr>
+
+    </tbody>
+  </table>
+
+  <p class="note"><strong>Conclusion:</strong> Globe2 (Earth) and the original Globe are the only true planet-readable Lucide icons. Globe2 stays for super-earth as you preferred. The remaining custom-SVG candidates are still rocky-planet, sub-neptune, gas-giant, ice-giant, and rogue-captured (variant A).</p>
+
+  <h2>Summary</h2>
+  <ul>
+    <li><span class="pill new">new</span> 5 custom SVGs: rocky-planet, sub-neptune, gas-giant, ice-giant, rogue-captured (variant A)</li>
+    <li><span class="pill keep">keep</span> 4 Lucide icons: Globe2 (super-earth), CircleDashed (belt), CircleSmall (dwarf-body), Sparkles (anomaly)</li>
+    <li>All collisions resolved. Each category has a unique silhouette readable at 16px.</li>
+  </ul>
+</body>
+</html>

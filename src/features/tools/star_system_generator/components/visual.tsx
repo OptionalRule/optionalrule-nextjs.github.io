@@ -2,16 +2,22 @@ import type { ComponentType, ReactNode, SVGProps } from 'react'
 import {
   Circle,
   CircleDashed,
-  CircleDot,
+  CircleSmall,
   Flame,
   Globe2,
   Leaf,
-  Mountain,
   Snowflake,
   Sparkles,
   Sun,
   Thermometer,
 } from 'lucide-react'
+import {
+  GasGiantIcon,
+  IceGiantIcon,
+  RockyPlanetIcon,
+  RogueCapturedIcon,
+  SubNeptuneIcon,
+} from './categoryIcons'
 
 export type Layer = 'physical' | 'gu' | 'human' | 'neutral'
 
@@ -151,14 +157,14 @@ export function ThermalZoneTag({ zone }: { zone: string }) {
 }
 
 const categoryIcons: Record<string, IconType> = {
-  'rocky-planet': Mountain,
+  'rocky-planet': RockyPlanetIcon,
   'super-earth': Globe2,
-  'sub-neptune': Circle,
-  'gas-giant': CircleDot,
-  'ice-giant': Snowflake,
+  'sub-neptune': SubNeptuneIcon,
+  'gas-giant': GasGiantIcon,
+  'ice-giant': IceGiantIcon,
   belt: CircleDashed,
-  'dwarf-body': Circle,
-  'rogue-captured': Globe2,
+  'dwarf-body': CircleSmall,
+  'rogue-captured': RogueCapturedIcon,
   anomaly: Sparkles,
 }
 
