@@ -34,6 +34,15 @@ export function definiteNounPhrase(value: string): string {
   return `the ${phrase}`
 }
 
+const SITE_HOOK_CONNECTORS = /\s+(?:where|whose|with|running|still|sealed|listed|stocked|rebuilt|pumping|stalled|breached|stretching|redrawn|backed|patrolled|accepting|working|logged|kept|drifting|repeated|drawing|that|run\s+by|on\s+a\b|under\s+a\b|one\s+combination|two\s+names|the\s+pumps)\b/i
+
+export function siteLeadNoun(site: string): string {
+  if (!site) return site
+  const match = site.match(SITE_HOOK_CONNECTORS)
+  if (!match || match.index === undefined) return site
+  return site.slice(0, match.index).trim()
+}
+
 export function normalizeNarrativeText(value: string): string {
   const normalized = value
     .replace(/\s+/g, ' ')

@@ -68,7 +68,7 @@ describe('world class metadata', () => {
   })
 
   it('classifies anomalies and facilities separately for later policy use', () => {
-    expect(deriveWorldClassMetadata({ className: 'Deep observiverse fracture', category: 'anomaly', massClass: 'Metric anomaly' })).toMatchObject({
+    expect(deriveWorldClassMetadata({ className: 'Deep observerse fracture', category: 'anomaly', massClass: 'Metric anomaly' })).toMatchObject({
       environmentProfileHint: 'anomaly',
       specialHandling: expect.arrayContaining(['no-moons', 'no-rings', 'metric-phenomenon']),
     })

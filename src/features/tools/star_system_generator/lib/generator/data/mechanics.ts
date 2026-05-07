@@ -31,8 +31,19 @@ interface MechanicsData {
   biospheres: readonly string[]
   moonTypes: readonly string[]
   moonScales: readonly string[]
-  siteOptions: readonly string[]
+  bodySites: BodySitePools
 }
+
+export interface BodySitePools {
+  any: readonly string[]
+  terrestrial: readonly string[]
+  envelope: readonly string[]
+  minor: readonly string[]
+  anomaly: readonly string[]
+  rogueCaptured: readonly string[]
+}
+
+export type BodySiteGroup = keyof BodySitePools
 
 const typedMechanicsData = mechanicsData as unknown as MechanicsData
 
@@ -58,4 +69,5 @@ export const envelopeClimateTags = typedMechanicsData.envelopeClimateTags
 export const biospheres = typedMechanicsData.biospheres
 export const moonTypes = typedMechanicsData.moonTypes
 export const moonScales = typedMechanicsData.moonScales
-export const siteOptions = typedMechanicsData.siteOptions
+export const bodySites = typedMechanicsData.bodySites
+export const allBodySites: readonly string[] = Object.values(bodySites).flatMap((entries) => entries)

@@ -106,7 +106,7 @@ export function deriveWorldClassMetadata(option: WorldClassOption): WorldClassMe
     specialHandling.add('managed-habitat')
   }
 
-  if (includesAny(className, [/\bgu\b/, /\bchiral\b/, /\bbleed\b/, /\bobserviverse\b/, /\bmetric\b/, /\banomaly\b/, /\bfracture\b/, /\bgardener-shadowed\b/, /\bdark-sector\b/])) {
+  if (includesAny(className, [/\bgu\b/, /\bchiral\b/, /\bbleed\b/, /\bobserverse\b/, /\bmetric\b/, /\banomaly\b/, /\bfracture\b/, /\bgardener-shadowed\b/, /\bdark-sector\b/])) {
     physicalTags.add('gu-anomaly')
   }
 

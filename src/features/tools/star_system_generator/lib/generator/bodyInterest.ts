@@ -123,7 +123,7 @@ export function generateBodyProfile(bodyClass: WorldClassOption, detail: Planeta
 
   if (bodyClass.category === 'anomaly') {
     const profile =
-      bodyClass.className.includes('GU') || bodyClass.className.includes('observiverse') || bodyClass.className.includes('bleed')
+      bodyClass.className.includes('GU') || bodyClass.className.includes('observerse') || bodyClass.className.includes('bleed')
         ? 'GU-active body where metric behavior matters as much as normal geology.'
         : bodyClass.className.includes('facility') || bodyClass.className.includes('platform')
           ? 'Human-altered facility world where infrastructure is the main point of interest.'
@@ -359,7 +359,7 @@ function isGuTouched(bodyClass: WorldClassOption, moons: Moon[], filterNotes: Ar
     ...moons.map((moon) => `${moon.moonType.value} ${moon.resource.value} ${moon.hazard.value}`),
     ...filterNotes.map((note) => note.value),
   ].join(' ')
-  return /GU|chiral|bleed|metric|observiverse|dark-sector|programmable/i.test(text)
+  return /GU|chiral|bleed|metric|observerse|dark-sector|programmable/i.test(text)
 }
 
 function isHumanAltered(bodyClass: WorldClassOption, bodyProfile?: Fact<string>): boolean {
@@ -408,7 +408,7 @@ function assembleBodyInterestCandidates(
 
 function bodyInterestConfidence(selected: readonly string[], bodyClass: WorldClassOption): Fact<string>['confidence'] {
   if (bodyClass.category === 'anomaly') return 'gu-layer'
-  return selected.some((reason) => /\b(?:GU|chiral|bleed|metric|observiverse|dark-sector|programmable)\b/i.test(reason))
+  return selected.some((reason) => /\b(?:GU|chiral|bleed|metric|observerse|dark-sector|programmable)\b/i.test(reason))
     ? 'gu-layer'
     : 'inferred'
 }

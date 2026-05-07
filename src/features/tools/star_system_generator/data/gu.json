@@ -15,7 +15,7 @@
     { "max": 6, "value": "Low bleed" },
     { "max": 8, "value": "Useful bleed" },
     { "max": 10, "value": "Rich bleed" },
-    { "max": 12, "value": "Major observiverse shear zone" },
+    { "max": 12, "value": "Major observerse shear zone" },
     { "max": null, "value": "Dangerous fracture system" }
   ],
   "bleedLocations": [
@@ -51,7 +51,7 @@
     "Appears only during eclipses",
     "Follows cometary bodies",
     "Reacts to Pinchdrives",
-    "Reacts to narrow observiverse AIs",
+    "Reacts to narrow observerse AIs",
     "Apparently anticipatory, but not intelligent"
   ],
   "resources": [
@@ -64,7 +64,7 @@
     "Gravity-skewed heavy isotopes",
     "Programmable-matter microseeds",
     "Self-ordering regolith",
-    "Observiverse-reactive crystal foam",
+    "Observerse-reactive crystal foam",
     "Flare-imprinted chiral aerosols",
     "Ring-arc phase dust",
     "Snow-line organochemical feedstock",
@@ -132,7 +132,7 @@
       "Appears only during eclipses": ["science", "religion", "trade"],
       "Follows cometary bodies": ["exploration", "science", "crime"],
       "Reacts to Pinchdrives": ["route-weather", "trade", "disaster"],
-      "Reacts to narrow observiverse AIs": ["ai", "science", "disaster"],
+      "Reacts to narrow observerse AIs": ["ai", "science", "disaster"],
       "Apparently anticipatory, but not intelligent": ["religion", "science", "public-life"]
     },
     "resources": {
@@ -145,7 +145,7 @@
       "Gravity-skewed heavy isotopes": ["trade", "war", "science"],
       "Programmable-matter microseeds": ["science", "ecology", "disaster"],
       "Self-ordering regolith": ["science", "labor", "disaster"],
-      "Observiverse-reactive crystal foam": ["science", "trade", "ai"],
+      "Observerse-reactive crystal foam": ["science", "trade", "ai"],
       "Flare-imprinted chiral aerosols": ["stellar-events", "ecology", "medicine"],
       "Ring-arc phase dust": ["trade", "science", "crime"],
       "Snow-line organochemical feedstock": ["trade", "ecology", "labor"],

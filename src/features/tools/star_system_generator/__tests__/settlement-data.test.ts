@@ -101,5 +101,17 @@ describe('star system settlement data', () => {
         expect(encounterSites).toContain(site)
       }
     }
+
+    for (const pool of encounterSitesByFunctionKeyword) {
+      for (const site of pool.sites) {
+        expect(encounterSites, `keyword pool ${pool.keywords.join('|')}`).toContain(site)
+      }
+    }
+
+    for (const sites of Object.values(encounterSitesByHabitationPattern)) {
+      for (const site of sites) {
+        expect(encounterSites).toContain(site)
+      }
+    }
   })
 })

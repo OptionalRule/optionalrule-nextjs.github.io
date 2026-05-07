@@ -1,6 +1,6 @@
 import type { SeededRng } from '../rng'
 import type { SettlementHabitationPattern } from '../../../types'
-import { sentenceStart, sentenceFragment, definiteNounPhrase } from './helpers'
+import { sentenceStart, sentenceFragment, definiteNounPhrase, siteLeadNoun } from './helpers'
 import { crisisPressureSentence } from './crisisShaping'
 import { settlementTagPairHooks, settlementTagPressures } from '../data/settlements'
 
@@ -35,7 +35,7 @@ export function settlementHookSynthesis(
 ): string {
   const base = settlementTagHook(rng, obviousTag, deeperTag)
   const pressure = (() => {
-    const site = context.encounterSites[0].toLowerCase()
+    const site = siteLeadNoun(context.encounterSites[0]).toLowerCase()
     switch (context.habitationPattern) {
       case 'Automated':
         return `Automation failure turns ${site} into the key scene.`

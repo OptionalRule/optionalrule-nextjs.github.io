@@ -71,7 +71,8 @@ import {
   moonTypes,
   radiationTable,
   ringTypeTable,
-  siteOptions,
+  bodySites,
+  type BodySiteGroup,
   temperateClimateTags,
 } from './data/mechanics'
 import { humanRemnants, phenomena, remnantHooks } from './data/narrative'
@@ -265,7 +266,7 @@ export const worldClassesByThermalZone: Record<string, readonly WorldClassOption
     { className: 'Exile habitat', category: 'dwarf-body', massClass: 'Hidden habitat body' },
     { className: 'Black-lab platform', category: 'anomaly', massClass: 'Hidden facility platform' },
     { className: 'Gardener-shadowed forbidden zone', category: 'anomaly', massClass: 'Interdicted zone' },
-    { className: 'Deep observiverse fracture', category: 'anomaly', massClass: 'Metric anomaly' },
+    { className: 'Deep observerse fracture', category: 'anomaly', massClass: 'Metric anomaly' },
   ],
   Dark: [
     { className: 'Dwarf planet', category: 'dwarf-body', massClass: 'Dwarf planet' },
@@ -286,7 +287,7 @@ export const worldClassesByThermalZone: Record<string, readonly WorldClassOption
     { className: 'Exile habitat', category: 'dwarf-body', massClass: 'Hidden habitat body' },
     { className: 'Black-lab platform', category: 'anomaly', massClass: 'Hidden facility platform' },
     { className: 'Gardener-shadowed forbidden zone', category: 'anomaly', massClass: 'Interdicted zone' },
-    { className: 'Deep observiverse fracture', category: 'anomaly', massClass: 'Metric anomaly' },
+    { className: 'Deep observerse fracture', category: 'anomaly', massClass: 'Metric anomaly' },
   ],
 }
 
@@ -339,6 +340,24 @@ const traitOptions = [
   'unstable crossing orbit',
   'old first-wave traffic',
 ] as const
+
+const bodySiteGroupByCategory: Record<BodyCategory, BodySiteGroup> = {
+  'rocky-planet': 'terrestrial',
+  'super-earth': 'terrestrial',
+  'sub-neptune': 'envelope',
+  'gas-giant': 'envelope',
+  'ice-giant': 'envelope',
+  belt: 'minor',
+  'dwarf-body': 'minor',
+  'rogue-captured': 'rogueCaptured',
+  anomaly: 'anomaly',
+}
+
+function pickBodySite(rng: SeededRng, category: BodyCategory): string {
+  const group = bodySiteGroupByCategory[category]
+  const pool = [...bodySites.any, ...bodySites[group]]
+  return pickOne(rng, pool)
+}
 
 export function fact<T>(value: T, confidence: Fact<T>['confidence'], source?: string): Fact<T> {
   return { value, confidence, source }
@@ -1521,7 +1540,7 @@ function moonProfile(moonType: string): Pick<Moon, 'resource' | 'hazard' | 'use'
     'Dark-sector density moon': {
       resource: 'dark-sector doped ore and anomalous gravity gradients',
       hazard: 'navigation errors and instrumentation drift',
-      use: 'black-budget extraction, observiverse labs, and interdicted mines',
+      use: 'black-budget extraction, observerse labs, and interdicted mines',
     },
     'Programmable regolith moon': {
       resource: 'programmable-matter regolith deposits',
@@ -1546,7 +1565,7 @@ function moonProfile(moonType: string): Pick<Moon, 'resource' | 'hazard' | 'use'
     'Moving bleed node moon': {
       resource: 'mobile GU extraction and route prediction value',
       hazard: 'metric storms and unstable navigation baselines',
-      use: 'bleed-chaser fleets, observiverse AIs, and high-risk harvest crews',
+      use: 'bleed-chaser fleets, observerse AIs, and high-risk harvest crews',
     },
   }
   const profile = profiles[moonType] ?? {
@@ -1841,7 +1860,7 @@ function generatedBody(
       giantEconomy,
       filterNotes: [...filtered.filterNotes, ...habitabilityNotes],
       traits: [fact(pickOne(rng, traitOptions), 'inferred', 'Generated world trait')],
-      sites: Array.from({ length: siteCount }, () => fact(pickOne(rng, siteOptions), 'human-layer', 'Generated site')),
+      sites: Array.from({ length: siteCount }, () => fact(pickBodySite(rng, filtered.bodyClass.category), 'human-layer', 'Generated site by body category')),
     },
     filtered,
   }

@@ -21,7 +21,8 @@ import {
   moonTypes,
   radiationTable,
   ringTypeTable,
-  siteOptions,
+  bodySites,
+  allBodySites,
 } from '../src/features/tools/star_system_generator/lib/generator/data/mechanics'
 import {
   ageStates,
@@ -453,7 +454,12 @@ function validateMechanicalTables(): void {
   assertNonEmpty('mechanics.biospheres', biospheres)
   assertNonEmpty('mechanics.moonTypes', moonTypes)
   assertNonEmpty('mechanics.moonScales', moonScales)
-  assertNonEmpty('mechanics.siteOptions', siteOptions)
+  assertNonEmpty('mechanics.bodySites.any', bodySites.any)
+  assertNonEmpty('mechanics.bodySites.terrestrial', bodySites.terrestrial)
+  assertNonEmpty('mechanics.bodySites.envelope', bodySites.envelope)
+  assertNonEmpty('mechanics.bodySites.minor', bodySites.minor)
+  assertNonEmpty('mechanics.bodySites.anomaly', bodySites.anomaly)
+  assertNonEmpty('mechanics.bodySites.rogueCaptured', bodySites.rogueCaptured)
 
   validateTableCoverage('stellar.realisticStarTypes', realisticStarTypes, 1, 100)
   validateTableCoverage('stellar.frontierStarTypes', frontierStarTypes, 1, 100)
@@ -475,8 +481,14 @@ function validateMechanicalTables(): void {
   assertNoDuplicates('mechanics.biospheres', biospheres)
   assertNoDuplicates('mechanics.moonTypes', moonTypes)
   assertNoDuplicates('mechanics.moonScales', moonScales)
-  assertNoDuplicates('mechanics.siteOptions', siteOptions)
-  warnIfThin('mechanics.siteOptions', siteOptions.length, 60)
+  assertNoDuplicates('mechanics.bodySites (all)', allBodySites)
+  warnIfThin('mechanics.bodySites (all)', allBodySites.length, 80)
+  warnIfThin('mechanics.bodySites.any', bodySites.any.length, 15)
+  warnIfThin('mechanics.bodySites.terrestrial', bodySites.terrestrial.length, 12)
+  warnIfThin('mechanics.bodySites.envelope', bodySites.envelope.length, 8)
+  warnIfThin('mechanics.bodySites.minor', bodySites.minor.length, 10)
+  warnIfThin('mechanics.bodySites.anomaly', bodySites.anomaly.length, 6)
+  warnIfThin('mechanics.bodySites.rogueCaptured', bodySites.rogueCaptured.length, 6)
 }
 
 function printReport(): void {
@@ -572,7 +584,7 @@ function printReport(): void {
     ['biospheres', biospheres.length],
     ['moonTypes', moonTypes.length],
     ['moonScales', moonScales.length],
-    ['siteOptions', siteOptions.length],
+    ['bodySites.total', allBodySites.length],
   ])
 
   console.log(`Structural errors: ${errors.length}`)

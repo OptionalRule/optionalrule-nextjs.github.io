@@ -10,7 +10,8 @@ import {
   moonTypes,
   radiationTable,
   ringTypeTable,
-  siteOptions,
+  bodySites,
+  allBodySites,
 } from '../lib/generator/data/mechanics'
 import {
   ageStates,
@@ -56,7 +57,13 @@ describe('star system mechanical data', () => {
     expect(biospheres.length).toBeGreaterThan(0)
     expect(moonTypes.length).toBeGreaterThan(0)
     expect(moonScales.length).toBeGreaterThan(0)
-    expect(siteOptions.length).toBeGreaterThanOrEqual(60)
-    expect(new Set(siteOptions).size).toBe(siteOptions.length)
+    expect(allBodySites.length).toBeGreaterThanOrEqual(80)
+    expect(new Set(allBodySites).size).toBe(allBodySites.length)
+    expect(bodySites.any.length).toBeGreaterThanOrEqual(15)
+    expect(bodySites.terrestrial.length).toBeGreaterThanOrEqual(12)
+    expect(bodySites.envelope.length).toBeGreaterThanOrEqual(8)
+    expect(bodySites.minor.length).toBeGreaterThanOrEqual(10)
+    expect(bodySites.anomaly.length).toBeGreaterThanOrEqual(6)
+    expect(bodySites.rogueCaptured.length).toBeGreaterThanOrEqual(6)
   })
 })

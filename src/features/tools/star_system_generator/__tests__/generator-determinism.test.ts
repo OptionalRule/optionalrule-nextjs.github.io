@@ -655,10 +655,10 @@ describe('generateSystem', () => {
     }
   })
 
-  it('uses observiverse terminology consistently in generated output', () => {
+  it('uses observerse terminology consistently in generated output', () => {
     for (let index = 0; index < 80; index++) {
       const system = generateSystem({ ...options, gu: 'fracture', seed: `cb3f9c2e41b8${index.toString(16).padStart(4, '0')}` })
-      expect(JSON.stringify(system).toLowerCase()).not.toContain('observerse')
+      expect(JSON.stringify(system).toLowerCase()).not.toContain('observiverse')
     }
   })
 
