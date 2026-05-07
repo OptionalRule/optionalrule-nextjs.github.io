@@ -6,7 +6,7 @@
 
 ## Goal
 
-Cut the GU Glossary from ~75 entries (~6,500 words) to **13 hero entries** (~2,000 words target) that a casual reader can hold in their head, while preserving every underlying GU concept currently in the file.
+Cut the GU Glossary from ~75 entries (~3,800 words) to **13 hero entries** (~2,000 words target) that a casual reader can hold in their head, while preserving every underlying GU concept currently in the file.
 
 ## Audience
 
@@ -136,7 +136,7 @@ The simplified `GU_GLOSSARY.md` is acceptable when:
 2. **Every concept** in the current glossary that the user wants preserved appears either as a hero or inside an "Appears as:" line — except for the deliberately cut items listed above.
 3. **No `observiverse` spelling** remains in the file.
 4. **Voice is preserved** — at least one fatalistic punchline per long entry, present-tense framing, sailor-vs-weather analogies kept where they appear today.
-5. **Word count ~1,900–2,300** (down from ~6,500). Hard limits aren't necessary — the test is "a reader can finish the file in 5 minutes."
+5. **Word count ~1,900–2,300** (down from ~3,800). Hard limits aren't necessary — the test is "a reader can finish the file in 5 minutes."
 6. The closing **"rolling these at the table"** paragraph is preserved (verbatim or with light edits).
 7. **No code or test changes** in this deliverable. The generator data files continue to function unchanged because the simplified glossary is a documentation file the code does not import.
 
