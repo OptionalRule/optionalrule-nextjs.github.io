@@ -1,6 +1,6 @@
 'use client'
 
-import { useMemo } from 'react'
+import { useEffect, useMemo } from 'react'
 import type { GeneratedSystem } from '../types'
 import { buildSceneGraph } from './lib/sceneGraph'
 import { ViewerContextProvider } from './chrome/ViewerContext'
@@ -33,6 +33,11 @@ function makeScaleNote(system: GeneratedSystem): string {
 
 export default function SystemViewer3DModal({ system, onClose }: SystemViewer3DModalProps) {
   const graph = useMemo(() => buildSceneGraph(system), [system])
+  useEffect(() => {
+    function handler() { onClose() }
+    window.addEventListener('viewer3d:close', handler)
+    return () => window.removeEventListener('viewer3d:close', handler)
+  }, [onClose])
   const title = `${system.name.value} · ${formatStellarClass(system.primary.spectralType.value)} · ${system.bodies.length} bodies`
 
   return (

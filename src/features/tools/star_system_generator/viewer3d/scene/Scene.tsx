@@ -1,6 +1,8 @@
 'use client'
 
+import { useEffect, useState } from 'react'
 import { Canvas } from '@react-three/fiber'
+import { Html } from '@react-three/drei'
 import type { GeneratedSystem } from '../../types'
 import type { SystemSceneGraph } from '../types'
 import { CameraRig } from './CameraRig'
@@ -15,6 +17,16 @@ import { RuinPin } from './RuinPin'
 import { PhenomenonGlyph } from './PhenomenonGlyph'
 import { HoverTooltip } from './HoverTooltip'
 import { useViewerContext } from '../chrome/ViewerContext'
+import { WebGLFallback } from '../chrome/WebGLFallback'
+
+function detectWebGL(): boolean {
+  try {
+    const canvas = document.createElement('canvas')
+    return !!(canvas.getContext('webgl2') || canvas.getContext('webgl'))
+  } catch {
+    return false
+  }
+}
 
 export interface SceneProps {
   graph: SystemSceneGraph
@@ -23,6 +35,14 @@ export interface SceneProps {
 
 export function Scene({ graph, system }: SceneProps) {
   const { select, hover } = useViewerContext()
+  const [supported, setSupported] = useState<boolean | null>(null)
+  useEffect(() => { setSupported(detectWebGL()) }, [])
+  if (supported === false) {
+    return <WebGLFallback onClose={() => window.dispatchEvent(new CustomEvent('viewer3d:close'))} />
+  }
+  if (supported === null) return null
+
+  const hasBodies = graph.bodies.length > 0 || graph.belts.length > 0
   return (
     <Canvas
       dpr={[1, 2]}
@@ -33,6 +53,13 @@ export function Scene({ graph, system }: SceneProps) {
       <ambientLight intensity={0.05} />
       <pointLight position={[0, 0, 0]} intensity={2.5} distance={graph.sceneRadius * 4} decay={0.6} />
       <CameraRig sceneRadius={graph.sceneRadius} />
+      {!hasBodies ? (
+        <Html center>
+          <div className="rounded-md border border-[var(--border)] bg-[#0f141c]/90 px-3 py-1.5 text-xs text-[var(--text-tertiary)]">
+            No major bodies in this system.
+          </div>
+        </Html>
+      ) : null}
       <Star star={graph.star} />
       <mesh
         position={graph.star.position}
