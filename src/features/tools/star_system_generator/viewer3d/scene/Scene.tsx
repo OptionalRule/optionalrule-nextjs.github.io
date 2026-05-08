@@ -34,7 +34,7 @@ export interface SceneProps {
 }
 
 export function Scene({ graph, system }: SceneProps) {
-  const { select, hover } = useViewerContext()
+  const { select, hover, prefersReducedMotion } = useViewerContext()
   const [supported, setSupported] = useState<boolean | null>(null)
   useEffect(() => { setSupported(detectWebGL()) }, [])
   if (supported === false) {
@@ -46,6 +46,7 @@ export function Scene({ graph, system }: SceneProps) {
   return (
     <Canvas
       dpr={[1, 2]}
+      frameloop={prefersReducedMotion ? 'demand' : 'always'}
       camera={{ fov: 45, near: 0.1, far: graph.sceneRadius * 6, position: [0, graph.sceneRadius * 0.35, graph.sceneRadius * 0.95] }}
       gl={{ antialias: true, alpha: false }}
       style={{ background: 'radial-gradient(ellipse at center, #0a1424 0%, #02040a 75%)' }}
