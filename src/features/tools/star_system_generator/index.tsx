@@ -10,6 +10,7 @@ import { SeedControl } from './components/SeedControl'
 import { SettlementCard } from './components/SettlementCard'
 import { StoriesAtPortPanel } from './components/StoriesAtPortPanel'
 import { SystemOverview } from './components/SystemOverview'
+import { SystemViewer3DButton } from './components/SystemViewer3DButton'
 import { SectionHeader, SpectralChip, sectionShellClasses } from './components/visual'
 import { useGeneratedSystem } from './hooks/useGeneratedSystem'
 import { useGeneratorQueryState } from './hooks/useGeneratorQueryState'
@@ -62,6 +63,10 @@ export default function StarSystemGenerator({ className }: StarSystemGeneratorPr
             <GeneratorControls options={options} onChange={setOptions} />
           </div>
         </section>
+
+        <div className="flex justify-end">
+          <SystemViewer3DButton system={system} />
+        </div>
 
         <SystemSummaryStrip system={system} />
 
