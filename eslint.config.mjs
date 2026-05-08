@@ -32,6 +32,26 @@ const eslintConfig = [
       "react-hooks/immutability": "off",
     },
   },
+  {
+    files: ["src/**/*.{ts,tsx}"],
+    ignores: ["src/features/tools/star_system_generator/viewer3d/**"],
+    rules: {
+      "no-restricted-imports": [
+        "error",
+        {
+          paths: [
+            { name: "three", message: "Import three only inside viewer3d/." },
+            { name: "@react-three/fiber", message: "Import @react-three/fiber only inside viewer3d/." },
+            { name: "@react-three/drei", message: "Import @react-three/drei only inside viewer3d/." },
+          ],
+          patterns: [
+            { group: ["three/*"], message: "Import three only inside viewer3d/." },
+            { group: ["@react-three/*"], message: "Import @react-three/* only inside viewer3d/." },
+          ],
+        },
+      ],
+    },
+  },
 ];
 
 export default eslintConfig;
