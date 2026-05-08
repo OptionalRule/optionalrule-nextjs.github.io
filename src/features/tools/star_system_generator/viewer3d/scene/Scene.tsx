@@ -3,6 +3,7 @@
 import { Canvas } from '@react-three/fiber'
 import type { SystemSceneGraph } from '../types'
 import { CameraRig } from './CameraRig'
+import { Star } from './Star'
 
 export interface SceneProps {
   graph: SystemSceneGraph
@@ -19,6 +20,10 @@ export function Scene({ graph }: SceneProps) {
       <ambientLight intensity={0.05} />
       <pointLight position={[0, 0, 0]} intensity={2.5} distance={graph.sceneRadius * 4} decay={0.6} />
       <CameraRig sceneRadius={graph.sceneRadius} />
+      <Star star={graph.star} />
+      {graph.companions.map((c) => (
+        <Star key={c.id} star={c} />
+      ))}
     </Canvas>
   )
 }
