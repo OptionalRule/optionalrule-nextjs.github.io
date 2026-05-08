@@ -1,6 +1,7 @@
 'use client'
 
 import { Canvas } from '@react-three/fiber'
+import type { GeneratedSystem } from '../../types'
 import type { SystemSceneGraph } from '../types'
 import { CameraRig } from './CameraRig'
 import { Star } from './Star'
@@ -12,12 +13,14 @@ import { HazardVolume } from './HazardVolume'
 import { GuBleedVolume } from './GuBleedVolume'
 import { RuinPin } from './RuinPin'
 import { PhenomenonGlyph } from './PhenomenonGlyph'
+import { HoverTooltip } from './HoverTooltip'
 
 export interface SceneProps {
   graph: SystemSceneGraph
+  system: GeneratedSystem
 }
 
-export function Scene({ graph }: SceneProps) {
+export function Scene({ graph, system }: SceneProps) {
   return (
     <Canvas
       dpr={[1, 2]}
@@ -58,6 +61,7 @@ export function Scene({ graph }: SceneProps) {
       {graph.phenomena.map((p) => (
         <PhenomenonGlyph key={`phen-${p.id}`} phenomenon={p} />
       ))}
+      <HoverTooltip graph={graph} system={system} />
     </Canvas>
   )
 }

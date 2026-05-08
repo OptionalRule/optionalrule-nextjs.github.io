@@ -43,7 +43,7 @@ export default function SystemViewer3DModal({ system, onClose }: SystemViewer3DM
       >
         <BodyLookupProvider system={system}>
           <div className="relative flex-1">
-            <Scene graph={graph} />
+            <Scene graph={graph} system={system} />
           </div>
           <DetailSidebar>
             <SidebarContent system={system} graph={graph} />
