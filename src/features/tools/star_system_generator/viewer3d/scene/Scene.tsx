@@ -8,6 +8,8 @@ import { Orbit } from './Orbit'
 import { Zones } from './Zones'
 import { Body } from './Body'
 import { Belt } from './Belt'
+import { HazardVolume } from './HazardVolume'
+import { GuBleedVolume } from './GuBleedVolume'
 
 export interface SceneProps {
   graph: SystemSceneGraph
@@ -41,6 +43,12 @@ export function Scene({ graph }: SceneProps) {
       ))}
       {graph.belts.map((b) => (
         <Belt key={`belt-${b.id}`} belt={b} />
+      ))}
+      {graph.hazards.map((h) => (
+        <HazardVolume key={`hz-${h.id}`} hazard={h} />
+      ))}
+      {graph.guBleeds.map((g) => (
+        <GuBleedVolume key={`gu-${g.id}`} bleed={g} />
       ))}
     </Canvas>
   )
