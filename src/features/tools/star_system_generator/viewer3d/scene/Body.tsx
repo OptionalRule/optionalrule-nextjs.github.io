@@ -5,6 +5,9 @@ import { useMemo, useRef } from 'react'
 import { useFrame } from '@react-three/fiber'
 import type { BodyVisual } from '../types'
 import { useViewerContext } from '../chrome/ViewerContext'
+import { makeBodyMaterial } from './bodyShader'
+import { shaderUniforms } from '../lib/bodyShading'
+import { useGeneratedBodyLookup } from './bodyLookup'
 
 export interface BodyProps {
   body: BodyVisual
@@ -14,9 +17,20 @@ export function Body({ body }: BodyProps) {
   const groupRef = useRef<THREE.Group | null>(null)
   const meshRef = useRef<THREE.Mesh | null>(null)
   const { prefersReducedMotion } = useViewerContext()
-  const placeholderColor = useMemo(() => {
-    return new THREE.Color(['gas-giant', 'ice-giant'].includes(body.shading) ? '#b08a52' : '#7e8a96')
-  }, [body.shading])
+  const lookup = useGeneratedBodyLookup()
+  const orbitingBody = lookup(body.id)
+  const material = useMemo(() => {
+    const mat = makeBodyMaterial(body)
+    if (orbitingBody) {
+      const u = shaderUniforms(orbitingBody)
+      mat.uniforms.uBaseColor.value.set(u.baseColor)
+      mat.uniforms.uNoiseScale.value = u.noiseScale
+      mat.uniforms.uAtmosphere.value = u.atmosphereStrength
+      mat.uniforms.uHeatTint.value = u.heatTint
+      mat.uniforms.uBandStrength.value = u.bandStrength
+    }
+    return mat
+  }, [body, orbitingBody])
 
   useFrame((_state, delta) => {
     if (!groupRef.current) return
@@ -29,7 +43,7 @@ export function Body({ body }: BodyProps) {
     <group ref={groupRef} rotation={[body.orbitTiltY, body.phase0, 0]}>
       <mesh ref={meshRef} position={[body.orbitRadius, 0, 0]}>
         <sphereGeometry args={[body.visualSize, 32, 32]} />
-        <meshStandardMaterial color={placeholderColor} roughness={0.85} metalness={0.05} />
+        <primitive object={material} attach="material" />
       </mesh>
     </group>
   )

@@ -9,6 +9,7 @@ import { LayerToggles } from './chrome/LayerToggles'
 import { DetailSidebar } from './chrome/DetailSidebar'
 import { ViewerLegend } from './chrome/ViewerLegend'
 import { Scene } from './scene/Scene'
+import { BodyLookupProvider } from './scene/bodyLookup'
 import { formatStellarClass } from '../lib/stellarLabels'
 
 export interface SystemViewer3DModalProps {
@@ -40,12 +41,14 @@ export default function SystemViewer3DModal({ system, onClose }: SystemViewer3DM
           />
         }
       >
-        <div className="relative flex-1">
-          <Scene graph={graph} />
-        </div>
-        <DetailSidebar>
-          <SidebarContent system={system} graph={graph} />
-        </DetailSidebar>
+        <BodyLookupProvider system={system}>
+          <div className="relative flex-1">
+            <Scene graph={graph} />
+          </div>
+          <DetailSidebar>
+            <SidebarContent system={system} graph={graph} />
+          </DetailSidebar>
+        </BodyLookupProvider>
       </ViewerModal>
     </ViewerContextProvider>
   )
