@@ -1,4 +1,4 @@
-import type { GeneratedSystem, OrbitingBody, Settlement } from '../../types'
+import type { GeneratedSystem, OrbitingBody, Settlement, SystemHook, SystemHooks } from '../../types'
 import { formatStellarClass } from '../stellarLabels'
 
 export function exportSystemMarkdown(system: GeneratedSystem): string {
@@ -58,7 +58,42 @@ export function exportSystemMarkdown(system: GeneratedSystem): string {
     }
   }
 
+  if (system.hooks && hasAnyHooks(system.hooks)) {
+    lines.push('', '## Stories at Port', '')
+    lines.push(...formatSystemHooks(system.hooks))
+  }
+
   return `${lines.join('\n').replace(/\n{3,}/g, '\n\n').trim()}\n`
+}
+
+function hasAnyHooks(hooks: SystemHooks): boolean {
+  return (
+    hooks.rumors.length +
+      hooks.contracts.length +
+      hooks.encounters.length +
+      hooks.npcs.length +
+      hooks.twists.length >
+    0
+  )
+}
+
+function formatSystemHooks(hooks: SystemHooks): string[] {
+  const lines: string[] = []
+  const renderGroup = (title: string, group: readonly SystemHook[]): void => {
+    if (group.length === 0) return
+    lines.push(`### ${title}`, '')
+    for (const hook of group) {
+      const tagSuffix = hook.tags.length ? ` _[${hook.tags.join(', ')}]_` : ''
+      lines.push(`- ${hook.text.value}${tagSuffix}`)
+    }
+    lines.push('')
+  }
+  renderGroup('Rumors', hooks.rumors)
+  renderGroup('Contracts on Offer', hooks.contracts)
+  renderGroup('People You Meet', hooks.npcs)
+  renderGroup('Encounter en Route', hooks.encounters)
+  renderGroup('Mid-Session Twist', hooks.twists)
+  return lines
 }
 
 function formatPrimary(system: GeneratedSystem): string {

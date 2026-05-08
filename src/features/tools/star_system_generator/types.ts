@@ -292,6 +292,22 @@ export interface NoAlienCheck {
   note: string
 }
 
+export type HookCategory = 'rumor' | 'contract' | 'encounter' | 'npc' | 'twist'
+
+export interface SystemHook {
+  text: Fact<string>
+  category: HookCategory
+  tags: readonly string[]
+}
+
+export interface SystemHooks {
+  rumors: SystemHook[]
+  contracts: SystemHook[]
+  encounters: SystemHook[]
+  npcs: SystemHook[]
+  twists: SystemHook[]
+}
+
 export interface GeneratedSystem {
   id: string
   seed: string
@@ -311,6 +327,7 @@ export interface GeneratedSystem {
   narrativeFacts: NarrativeFact[]
   relationshipGraph: SystemRelationshipGraph
   systemStory: SystemStoryOutput
+  hooks: SystemHooks
   majorHazards: Array<Fact<string>>
   noAlienCheck: NoAlienCheck
 }

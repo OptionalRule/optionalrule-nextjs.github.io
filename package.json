@@ -36,6 +36,7 @@
     "audit:star-system-generator": "node --import tsx/esm scripts/audit-star-system-generator.ts",
     "audit:star-system-generator:quick": "STAR_SYSTEM_AUDIT_PROFILE=quick node --import tsx/esm scripts/audit-star-system-generator.ts",
     "audit:star-system-generator:deep": "STAR_SYSTEM_AUDIT_PROFILE=deep node --import tsx/esm scripts/audit-star-system-generator.ts",
+    "generate-star-system-hooks": "node --import tsx/esm scripts/generate-hooks-json.ts",
     "validate-config": "node --import tsx/esm scripts/validate-config.ts"
   },
   "dependencies": {

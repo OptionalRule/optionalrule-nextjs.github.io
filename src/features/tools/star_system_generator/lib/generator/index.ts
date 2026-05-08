@@ -133,6 +133,7 @@ import { settlementHookSynthesis } from './prose/settlementProse'
 import { phenomenonNote } from './prose/phenomenonProse'
 import { buildRelationshipGraph, renderSystemStory } from './graph'
 import { graphAwareReshape } from './prose'
+import { selectSystemHooks } from './hooks'
 import { createSeededRng, type SeededRng } from './rng'
 
 export { architectureBodyPlanRules } from './architecture'
@@ -3422,6 +3423,17 @@ export function generateSystem(options: GenerationOptions, knownSystem?: Partial
       settlements: options.settlements,
     },
   )
+  const hooks = selectSystemHooks({
+    rng: rootRng.fork('hooks'),
+    context: {
+      guOverlay,
+      settlements: reshapedSettlements,
+      ruins,
+      phenomena: reshapedPhenomena,
+      architecture: architectureResult.architecture,
+      reachability,
+    },
+  })
 
   return runNoAlienGuard({
     id: knownSystem?.id ?? `system-${options.seed}`,
@@ -3450,6 +3462,7 @@ export function generateSystem(options: GenerationOptions, knownSystem?: Partial
     narrativeFacts,
     relationshipGraph,
     systemStory,
+    hooks,
     majorHazards: [guOverlay.hazard, fact(primary.activity.value, 'inferred', 'Stellar activity hazard')],
   })
 }

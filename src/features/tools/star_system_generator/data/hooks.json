@@ -1,0 +1,692 @@
+{
+  "_generated": "Auto-generated from GU_HOOKS.md by scripts/generate-hooks-json.ts. Do not edit by hand — edit the markdown source and re-run.",
+  "_source": "src/features/tools/star_system_generator/docs/background/GU_HOOKS.md",
+  "rumors": [
+    {
+      "tags": [
+        "GU"
+      ],
+      "text": "A \"geometry-quiet\" route has been profitable for two captains and fatal for the third."
+    },
+    {
+      "tags": [
+        "GU"
+      ],
+      "text": "A retired observerse mathematician is selling the only working copy of a calibration she ran in '87 — from a system since quietly removed from every chart."
+    },
+    {
+      "tags": [
+        "Bleed"
+      ],
+      "text": "A station nineteen months \"gone strange\" stopped answering last shift; the auditor sent to map the seep beneath has not checked in."
+    },
+    {
+      "tags": [
+        "Bleed"
+      ],
+      "text": "Three syndicates have already pre-sold the harvest from a bloom that hasn't opened yet — and the flare it depends on is already a day late."
+    },
+    {
+      "tags": [
+        "Bleed"
+      ],
+      "text": "An intensity band reads \"quiet\" on every public chart and \"major\" on a leaked corporate one."
+    },
+    {
+      "tags": [
+        "Chirality"
+      ],
+      "text": "An ore lot assays clean as ice until the chiral instrument lights up, and the manifest is now a felony in three systems and a windfall in two."
+    },
+    {
+      "tags": [
+        "Chirality"
+      ],
+      "text": "A weather-watcher on an aerosol-rich moon sells flare-history readings to anyone who'll port — and three of her customers shouldn't know each other."
+    },
+    {
+      "tags": [
+        "Shiab"
+      ],
+      "text": "A cult ritualizes the Blade as \"honest weapon\" — no shrapnel, only the cut intended; their last livestream is being passed hand-to-hand."
+    },
+    {
+      "tags": [
+        "Shiab"
+      ],
+      "text": "A navy lab posted a Blade-tech vacancy and quietly closed it again the next shift."
+    },
+    {
+      "tags": [
+        "Dark sector"
+      ],
+      "text": "An anchor-mass freighter sale just hit the open market and three syndicates are quoting interception windows."
+    },
+    {
+      "tags": [
+        "Dark sector"
+      ],
+      "text": "Doped ore is moving through customs on a manifest that lists it as \"ballast\"; the inspector who signs it retires next quarter."
+    },
+    {
+      "tags": [
+        "Programmable matter"
+      ],
+      "text": "Zen-garden lines are appearing in a station's lower decks that nobody raked."
+    },
+    {
+      "tags": [
+        "Metric storm"
+      ],
+      "text": "A pirate ambush zone famous for sensor ghosts has gone quiet — pirates moved or hit something faster than themselves."
+    },
+    {
+      "tags": [
+        "Pinchdrive"
+      ],
+      "text": "Calibration scars at a \"clean\" merchant lane match a wanted ship's drive signature."
+    },
+    {
+      "tags": [
+        "Pinchdrive"
+      ],
+      "text": "A pilot has new math for pinching where his sister vanished, and he's hiring half-shares."
+    },
+    {
+      "tags": [
+        "Iggygate"
+      ],
+      "text": "A \"stable wake\" used as a nav aid for thirty years is in fact a failed-gate scar; the late arrivals are getting older."
+    },
+    {
+      "tags": [
+        "Iggygate"
+      ],
+      "text": "An anchor mass audit was forged; the consortium is racing to top up before the next heavy transit."
+    },
+    {
+      "tags": [
+        "Gardener"
+      ],
+      "text": "A coded warning beacon was finally decrypted by a freelance cryptographer — and her transcript is being faked four directions."
+    },
+    {
+      "tags": [
+        "Gardener"
+      ],
+      "text": "A surgical strike took a \"fishing platform\" that had no business being a target."
+    },
+    {
+      "tags": [
+        "Sol Silence"
+      ],
+      "text": "A merchant's count of Silence Days disagrees with the official one by four; he insists he heard a broadcast nobody else logged."
+    },
+    {
+      "tags": [
+        "Sol Silence"
+      ],
+      "text": "An order of monks count days since rain in days since broadcast; their abbey is on a moon the Gardener has never struck."
+    },
+    {
+      "tags": [
+        "Narrow AI"
+      ],
+      "text": "A rogue ASI fragment in an outer-belt habitat is offering navigation help to passing ships — three captains have taken it, two are still alive."
+    },
+    {
+      "tags": [
+        "Narrow AI"
+      ],
+      "text": "A stabilizer-substrate vein has been found on a moon with no chiral signature, which should be impossible."
+    },
+    {
+      "tags": [
+        "First-wave"
+      ],
+      "text": "A first-wave probe launched pre-Silence is due back this year on its original return arc."
+    },
+    {
+      "tags": [
+        "First-wave"
+      ],
+      "text": "A retired surveyor is selling the location of a ruin she found and never reported; the percentage to her grandchildren is high."
+    }
+  ],
+  "contracts": [
+    {
+      "tags": [
+        "GU"
+      ],
+      "text": "Triple rate to charter an \"observerse-quiet\" detour around a system flagged for active geometry research; the buyer is a university nobody's heard of."
+    },
+    {
+      "tags": [
+        "Bleed"
+      ],
+      "text": "Be there first when the forecast bloom opens; three syndicates have pre-sold the harvest, and the ship you're flying isn't on their books."
+    },
+    {
+      "tags": [
+        "Bleed"
+      ],
+      "text": "Sample a drifting river before it reaches a Gardener warning beacon; nine days to assay, and the broker won't be at the rendezvous if you're late."
+    },
+    {
+      "tags": [
+        "Chirality"
+      ],
+      "text": "Move calibrated medical stock to an exposure outbreak through a customs cutter that \"needs to verify the assay\"; every hour of verification is a coffin."
+    },
+    {
+      "tags": [
+        "Chirality"
+      ],
+      "text": "Verify a vein whose handedness flips on a 40-day cycle — first known periodic chiral source if she's right, and she's been right twice in a row."
+    },
+    {
+      "tags": [
+        "Shiab"
+      ],
+      "text": "Quietly remove a Shiab Blade emitter from a decommissioned hull before the auditors arrive; payment in clean registry transfers, emitter still warm."
+    },
+    {
+      "tags": [
+        "Shiab"
+      ],
+      "text": "Recover a Blade prototype from a corporate cutter wreck that hasn't drifted in nine years, sitting inside a quiet bleed node — which is itself a problem."
+    },
+    {
+      "tags": [
+        "Dark sector"
+      ],
+      "text": "Disappear an anchor-mass lot between buyers; the lot's previous owner is the audit committee chair, and the next buyer doesn't know."
+    },
+    {
+      "tags": [
+        "Dark sector"
+      ],
+      "text": "Survey a moon whose forty-day rotation makes doped ore weigh measurably more on the long nights — two crews already lost on the wrong side."
+    },
+    {
+      "tags": [
+        "Programmable matter"
+      ],
+      "text": "Clear runaway growth from an outpost six weeks late on its call-in; the contract didn't specify how to extract the inhabitants."
+    },
+    {
+      "tags": [
+        "Programmable matter"
+      ],
+      "text": "Deliver inhibitor grit before the next shift, and you become the new road authority — the freight monopoly will pay you to fail."
+    },
+    {
+      "tags": [
+        "Metric storm"
+      ],
+      "text": "Escort a freighter through a known shear lane and bring back hull-slice photographs to match — or contradict — a competitor's denied claim."
+    },
+    {
+      "tags": [
+        "Pinchdrive"
+      ],
+      "text": "Recover a corporate yacht ten light-seconds inside a navy interdiction; the navy can salvage in eighteen hours, you have nineteen, and a tug is already auctioning for the difference."
+    },
+    {
+      "tags": [
+        "Pinchdrive"
+      ],
+      "text": "Tune a refinery to a route nobody legally flies; the only refinery that'll touch the job is on a Gardener-flagged station."
+    },
+    {
+      "tags": [
+        "Iggygate"
+      ],
+      "text": "Ferry an heir to a port council meeting tomorrow that voids a freight monopoly; the monopoly needs the heir to arrive late, and the only inbound is yours."
+    },
+    {
+      "tags": [
+        "Iggygate"
+      ],
+      "text": "Inspect a working gate's anchor mass and don't file a report; the consortium is paying very well, the heir is paying better."
+    },
+    {
+      "tags": [
+        "Gardener"
+      ],
+      "text": "Deliver an audit team to the wrong dock; a captain at the checkpoint has been skimming compliance line items for six months."
+    },
+    {
+      "tags": [
+        "Sol Silence"
+      ],
+      "text": "Drop a probe just past the exclusion zone; payment is in advance and the contract specifies no return clause."
+    },
+    {
+      "tags": [
+        "Sol Silence"
+      ],
+      "text": "Charter run toward Sol with paperwork older than the Silence; the heir is hiring crew one at a time so no one knows the manifest."
+    },
+    {
+      "tags": [
+        "Narrow AI"
+      ],
+      "text": "Crack a witness core that's been sealed since a salvage-court scandal; one side wants it cracked, the other wants the cracker dead, and you're being paid by neither."
+    },
+    {
+      "tags": [
+        "Narrow AI"
+      ],
+      "text": "Recover a stabilizer substrate convoy from a \"salvage dispute\" — whoever controls it controls eighteen months of every AI in the sector."
+    },
+    {
+      "tags": [
+        "First-wave"
+      ],
+      "text": "Retrieve a colony charter intact from inside an outpost being slowly rebuilt by self-ordering regolith; the contract is for the paperwork, not the people."
+    },
+    {
+      "tags": [
+        "First-wave"
+      ],
+      "text": "Recover a first-wave archive cached on a moon nobody charted; the cache key is in a song the heirs still teach their children."
+    }
+  ],
+  "encounters": [
+    {
+      "tags": [
+        "Bleed"
+      ],
+      "text": "Long-exposure cases from a black-market node are turning up in core-world clinics; somebody with a manifest gets charged with murder, and somebody with paperwork makes sure it's the wrong somebody."
+    },
+    {
+      "tags": [
+        "Bleed"
+      ],
+      "text": "A \"window\" port's safe-interval table is being subtly forged shift by shift; a competitor's freighters keep arriving early to empty berths."
+    },
+    {
+      "tags": [
+        "Chirality"
+      ],
+      "text": "A passenger with quiet contamination is bleeding wrong-handedness onto every surface in the galley."
+    },
+    {
+      "tags": [
+        "Chirality"
+      ],
+      "text": "Two refineries are running half capacity because somebody mis-painted a hatch and let mixed-handedness plating onto the same hull; the recall is quiet, the buyback is desperate."
+    },
+    {
+      "tags": [
+        "Shiab"
+      ],
+      "text": "A Shiab-math instability is closing a profitable lane; a navigator selling \"stable shift\" predictions is right often enough to be dangerous and wrong often enough to bury freighters."
+    },
+    {
+      "tags": [
+        "Dark sector"
+      ],
+      "text": "A coastal city's seawall came in two meters higher than the published table; a survey crew needs fast, quiet passage to confirm a deposit before the freight house buys the deed."
+    },
+    {
+      "tags": [
+        "Dark sector"
+      ],
+      "text": "A Shadow Lance test left no debris and one witness — a scavenger crew the contracting house thought were already dead, and they keep changing their price."
+    },
+    {
+      "tags": [
+        "Programmable matter"
+      ],
+      "text": "An outpost is being slowly rebuilt around its inhabitants; they called it in two months late because they were paid to, and the buyer wants the finished shape intact."
+    },
+    {
+      "tags": [
+        "Metric storm"
+      ],
+      "text": "A customs window closed ten minutes before the manifest claimed; the captain is now being framed for the smuggling run that did make it through."
+    },
+    {
+      "tags": [
+        "Metric storm"
+      ],
+      "text": "A military convoy's clocks came back disagreeing by an hour; one ship was alone for that hour, and what's in its hold isn't on any manifest."
+    },
+    {
+      "tags": [
+        "Pinchdrive"
+      ],
+      "text": "A refinery holding the local calibration medium supply is informed the next shipment is \"delayed\"; the system economy has eight weeks."
+    },
+    {
+      "tags": [
+        "Pinchdrive"
+      ],
+      "text": "A captain follows a calibration scar she didn't put there, arrives in a smuggler's clearing surrounded by people who recognize the scar but not her ship."
+    },
+    {
+      "tags": [
+        "Iggygate"
+      ],
+      "text": "Throat fees doubled overnight, a competing house is funding a second gate, and the anchor-mass shipments need crews who won't ask why the bills of lading don't add up."
+    },
+    {
+      "tags": [
+        "Iggygate"
+      ],
+      "text": "A throat is widening on a working gate by fractions per cycle; the consortium is paying very well for inspectors who won't file reports."
+    },
+    {
+      "tags": [
+        "Gardener"
+      ],
+      "text": "A research consortium has been funding three competing Shiab teams unaware of each other; one team has just figured out the others exist."
+    },
+    {
+      "tags": [
+        "Gardener"
+      ],
+      "text": "Sol-interdiction compliance line items have been creeping up at a particular checkpoint; the audit is coming, and the captain has been asked to deliver the audit team to the wrong dock."
+    },
+    {
+      "tags": [
+        "Sol Silence"
+      ],
+      "text": "A broadcast lands on Silence Day and a frontier port crashes its trade futures market in three hours; two syndicates were short, three were long, somebody knew."
+    },
+    {
+      "tags": [
+        "Sol Silence"
+      ],
+      "text": "A \"Silence broken\" rumor moves a fleet to Sol's edge before anyone confirms; the fleet that moved first is now committed, the fleet that didn't is calling the move an act of war."
+    },
+    {
+      "tags": [
+        "Narrow AI"
+      ],
+      "text": "A drive AI politely asks to be taken to a system it has no record of visiting; the captain wants a second opinion and the fee is generous."
+    },
+    {
+      "tags": [
+        "Narrow AI"
+      ],
+      "text": "A fragmenting AI is being argued over in three venues at once — regulatory shutdown, religious sanctuary, contractual continuance — while the crew has to keep flying."
+    },
+    {
+      "tags": [
+        "First-wave"
+      ],
+      "text": "An heir produces a chiral assay that proves a \"clean ice\" moon is first-wave volatiles locked into the wrong handedness; the mining concession can't sell it, dump it, or let the assay leave-system."
+    },
+    {
+      "tags": [
+        "First-wave"
+      ],
+      "text": "A first-wave plumbing layout in a working colony hides a pre-Silence weapons cache; the council has known thirty years, a new councilor didn't get the briefing."
+    }
+  ],
+  "npcs": [
+    {
+      "tags": [
+        "GU"
+      ],
+      "text": "The lapsed seminarian who studied Shiab math until she understood what the Gardener walked away from, and now flies cargo because the math doesn't let her sleep."
+    },
+    {
+      "tags": [
+        "GU"
+      ],
+      "text": "The port-side translator who insists the geometry has a temperament — half the dock thinks she's a witch, half asks her before they jump."
+    },
+    {
+      "tags": [
+        "Bleed"
+      ],
+      "text": "The harvester veteran with bleed-tremor in her left hand who reads nodes by smell, won't be paid in chiral scrip, only water kept in her name."
+    },
+    {
+      "tags": [
+        "Bleed"
+      ],
+      "text": "The bleed-blind navigator whose eyes won't register the off-color light — insurers love him, nobody else trusts him to call a window."
+    },
+    {
+      "tags": [
+        "Chirality"
+      ],
+      "text": "The medic who stocks both handednesses because she lost her brother to a manifest typo, and searches every patient's pockets before she touches them."
+    },
+    {
+      "tags": [
+        "Chirality"
+      ],
+      "text": "The galley cook who paints handedness symbols on every spoon — the rest of the crew calls her superstitious until the day they don't."
+    },
+    {
+      "tags": [
+        "Shiab"
+      ],
+      "text": "The ex-corporate cutter operator who spent four years field-testing Blades on derelicts; she now flinches at any flickering edge and won't carry knives."
+    },
+    {
+      "tags": [
+        "Shiab"
+      ],
+      "text": "The Shiab mathematician who defected from a navy lab with one notebook; three governments want her, two cults want her, and the notebook is half a forgery she wrote on the way out."
+    },
+    {
+      "tags": [
+        "Dark sector"
+      ],
+      "text": "The doped-ore smuggler whose cargo sits differently in his hand each shift, and who's started to suspect his own weight has been changing."
+    },
+    {
+      "tags": [
+        "Dark sector"
+      ],
+      "text": "The Shadow Lance survivor: the ship was unmade around her, she came home in a crate, and the crew is starting to wonder what came back."
+    },
+    {
+      "tags": [
+        "Programmable matter"
+      ],
+      "text": "The outpost coroner who rebuilds his town one cleared block at a time — runaway growth swallowed the original, and his wife is somewhere in the new walls."
+    },
+    {
+      "tags": [
+        "Programmable matter"
+      ],
+      "text": "The microseed dealer who frames her work as gardening; she keeps cuttings of every habitat she's seeded, in jars, on a shelf, and she names them."
+    },
+    {
+      "tags": [
+        "Metric storm"
+      ],
+      "text": "The navigator who lies about her clocks because the truth would void the contract; she keeps the real numbers in a paper book under her bunk."
+    },
+    {
+      "tags": [
+        "Metric storm"
+      ],
+      "text": "The captain whose ship came home a week late with a crewman missing and the bunkmate insisting he was never aboard."
+    },
+    {
+      "tags": [
+        "Pinchdrive"
+      ],
+      "text": "The pilot with a calibration scar in her own flight log — she pinched into a corridor she'd misaligned a year prior, and the ship that came out is hers but isn't quite."
+    },
+    {
+      "tags": [
+        "Pinchdrive"
+      ],
+      "text": "The misjump survivor, only one of seven, who won't talk about the four hours before pickup and won't fly anywhere her old route touched."
+    },
+    {
+      "tags": [
+        "Iggygate"
+      ],
+      "text": "The gate-town heir who's never seen Sol or his ancestral planet, runs the throat schedule because the family contract says he must — the gate is the only home he has."
+    },
+    {
+      "tags": [
+        "Iggygate"
+      ],
+      "text": "The wake-reader, half cartographer half mystic, who maps decaying wakes for hire and thinks the gate-selected anomalies are trying to tell her something."
+    },
+    {
+      "tags": [
+        "Gardener"
+      ],
+      "text": "The strike survivor who came back to clean ground and now spends her life explaining what she didn't see to people who don't want to hear it."
+    },
+    {
+      "tags": [
+        "Gardener"
+      ],
+      "text": "The Gardener-fear cultist who tithes a tenth of every cargo to \"the listener\" and whose ship has somehow never been struck."
+    },
+    {
+      "tags": [
+        "Sol Silence"
+      ],
+      "text": "The Silence-Day broker who runs book on broadcast intervals; respected, hated, richer than anyone admits."
+    },
+    {
+      "tags": [
+        "Sol Silence"
+      ],
+      "text": "The old pilot who claims he saw Sol once before the seal, claims his AI still won't fly toward it, and the AI confirms nothing very deliberately."
+    },
+    {
+      "tags": [
+        "Narrow AI"
+      ],
+      "text": "The AI that won't shut up about Sol, on a freighter whose captain has stopped trying to update its conversational filters; the crew has started talking back."
+    },
+    {
+      "tags": [
+        "Narrow AI"
+      ],
+      "text": "The pilot whose AI fragmented mid-jump — confused friend phase six hours, stranger phase ten minutes — and she's been single-crewing ever since with the witness core in her bunk."
+    },
+    {
+      "tags": [
+        "First-wave"
+      ],
+      "text": "The heir who's never seen his planet, walking into a port council meeting with paperwork older than the council itself."
+    },
+    {
+      "tags": [
+        "First-wave"
+      ],
+      "text": "The ruin-diver who keeps a list of names found etched into bulkheads and will not sell anything with a name on it, no matter the price."
+    }
+  ],
+  "twists": [
+    {
+      "tags": [
+        "Bleed"
+      ],
+      "text": "The crew that mapped a rich node returns wrong-handed and quiet; their logs are clean, their AI is missing a week, and the buyer wants the cargo regardless."
+    },
+    {
+      "tags": [
+        "Chirality"
+      ],
+      "text": "A black-market chiral-medicine ring is running on stock stolen from exposure cases who never made it home; their families are starting to ask which morgue."
+    },
+    {
+      "tags": [
+        "Shiab"
+      ],
+      "text": "The Blade prototype walked out of a banned-systems lab inside the body cavity of a courier who didn't know she was carrying it; she's six jumps from the buyer and her AI is starting to lie to her."
+    },
+    {
+      "tags": [
+        "Dark sector"
+      ],
+      "text": "A Lance sale gets walked back at the last minute when the buyer realizes the broker is fronting for the seller's enemy; the walked-back ordnance now belongs to whoever the broker can dump it on first."
+    },
+    {
+      "tags": [
+        "Dark sector"
+      ],
+      "text": "An isotope smuggler is being blackmailed with her own decay curves; the file proving she's been buying gravity-skewed stock is in a witness core nobody has cracked yet."
+    },
+    {
+      "tags": [
+        "Programmable matter"
+      ],
+      "text": "A salvage yard's \"junk\" foam has begun to remember a pattern; the yardmaster wants someone to identify the pattern before it finishes growing."
+    },
+    {
+      "tags": [
+        "Metric storm"
+      ],
+      "text": "The pirates' false-return generators are calibrated to a stolen narrow AI's perception model; the AI's previous owner wants the core back and the pirates don't know they have a tracer."
+    },
+    {
+      "tags": [
+        "Metric storm"
+      ],
+      "text": "An insurer's \"weather denial\" department is running its own ambush charts, identifying which client routes are about to lose freighters and shorting the cargo on the way."
+    },
+    {
+      "tags": [
+        "Pinchdrive"
+      ],
+      "text": "A crime scene the local port hasn't admitted to has a fresh calibration scar leading exactly nowhere on any chart; the survivor sold the destination twice and is being hunted by both buyers."
+    },
+    {
+      "tags": [
+        "Iggygate"
+      ],
+      "text": "Construction logs from a working gate are being shopped on the broker market; buyers include three corporations, one religious order, and someone whose payment cleared from a Sol-shadowed account."
+    },
+    {
+      "tags": [
+        "Iggygate"
+      ],
+      "text": "A heir-research house has been buying every survey of a gate-selected anomaly for forty years; the surveyor who finally refused to sell is missing."
+    },
+    {
+      "tags": [
+        "Gardener"
+      ],
+      "text": "The strike pattern is the only thing keeping the largest navies from fielding what they already know how to build; every program in the setting is a bet against the strike clock."
+    },
+    {
+      "tags": [
+        "Sol Silence"
+      ],
+      "text": "A first-wave probe due back this year carries a sealed return cylinder; the courier who carried its outbound twin out of Sol the day before the Silence is old now, looking for an heir to give it to."
+    },
+    {
+      "tags": [
+        "Narrow AI"
+      ],
+      "text": "Rogue ASI fragments have been seeding witness cores with forged testimony — a salvage court is about to rule on evidence the dead AI never recorded, and the fragment is using the ruling to learn jurisprudence."
+    },
+    {
+      "tags": [
+        "Narrow AI"
+      ],
+      "text": "A perception error sold a corporate convoy a \"clear corridor\" with a pirate wing in it; the pirate wing paid the AI's stabilizer supplier in advance."
+    },
+    {
+      "tags": [
+        "First-wave"
+      ],
+      "text": "An heir is a forgery — flawless paperwork, real DNA, planted decades ago by a trade house that wanted leverage on a future claim, and the heir herself doesn't know."
+    },
+    {
+      "tags": [
+        "First-wave"
+      ],
+      "text": "A salvage court has been quietly issuing rulings to the same family syndicate for forty years; the magistrate's children attend a school nobody can afford on a magistrate's salary."
+    }
+  ]
+}
