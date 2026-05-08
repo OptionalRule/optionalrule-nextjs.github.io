@@ -3,11 +3,22 @@
 import * as THREE from 'three'
 import { useViewerContext } from '../chrome/ViewerContext'
 
-export function SettlementPin({ size }: { size: number }) {
-  const { layers } = useViewerContext()
+export interface SettlementPinProps {
+  size: number
+  settlementIds: string[]
+}
+
+export function SettlementPin({ size, settlementIds }: SettlementPinProps) {
+  const { layers, hover, select } = useViewerContext()
   if (!layers.human) return null
+  const primary = settlementIds[0]
   return (
-    <group position={[0, size * 1.6, 0]}>
+    <group
+      position={[0, size * 1.6, 0]}
+      onPointerOver={(e) => { e.stopPropagation(); if (primary) hover({ kind: 'settlement', id: primary }); document.body.style.cursor = 'pointer' }}
+      onPointerOut={(e) => { e.stopPropagation(); hover(null); document.body.style.cursor = '' }}
+      onClick={(e) => { e.stopPropagation(); if (primary) select({ kind: 'settlement', id: primary }) }}
+    >
       <mesh>
         <sphereGeometry args={[size * 0.18, 8, 8]} />
         <meshBasicMaterial color={new THREE.Color('#ff9d4a')} toneMapped={false} />

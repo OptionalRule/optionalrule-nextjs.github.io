@@ -24,7 +24,7 @@ void main() {
 `
 
 export function HazardVolume({ hazard }: { hazard: HazardVisual }) {
-  const { layers } = useViewerContext()
+  const { layers, hover, select } = useViewerContext()
   const material = useMemo(() => new THREE.ShaderMaterial({
     vertexShader: VERTEX,
     fragmentShader: FRAGMENT,
@@ -39,7 +39,13 @@ export function HazardVolume({ hazard }: { hazard: HazardVisual }) {
   if (hazard.unclassified || !layers.physical) return null
 
   return (
-    <mesh position={hazard.center} scale={hazard.radius}>
+    <mesh
+      position={hazard.center}
+      scale={hazard.radius}
+      onPointerOver={(e) => { e.stopPropagation(); hover({ kind: 'hazard', id: hazard.id }); document.body.style.cursor = 'pointer' }}
+      onPointerOut={(e) => { e.stopPropagation(); hover(null); document.body.style.cursor = '' }}
+      onClick={(e) => { e.stopPropagation(); select({ kind: 'hazard', id: hazard.id }) }}
+    >
       <sphereGeometry args={[1, 24, 24]} />
       <primitive object={material} attach="material" />
     </mesh>

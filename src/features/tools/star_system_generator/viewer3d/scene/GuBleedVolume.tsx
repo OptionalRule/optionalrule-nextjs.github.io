@@ -27,7 +27,7 @@ void main() {
 `
 
 export function GuBleedVolume({ bleed }: { bleed: GuBleedVisual }) {
-  const { layers, prefersReducedMotion } = useViewerContext()
+  const { layers, prefersReducedMotion, hover, select } = useViewerContext()
   const matRef = useRef<THREE.ShaderMaterial | null>(null)
   const material = useMemo(() => new THREE.ShaderMaterial({
     vertexShader: VERTEX,
@@ -55,7 +55,13 @@ export function GuBleedVolume({ bleed }: { bleed: GuBleedVisual }) {
   if (bleed.unclassified || !layers.gu) return null
 
   return (
-    <mesh position={bleed.center} scale={bleed.radius}>
+    <mesh
+      position={bleed.center}
+      scale={bleed.radius}
+      onPointerOver={(e) => { e.stopPropagation(); hover({ kind: 'gu-bleed', id: bleed.id }); document.body.style.cursor = 'pointer' }}
+      onPointerOut={(e) => { e.stopPropagation(); hover(null); document.body.style.cursor = '' }}
+      onClick={(e) => { e.stopPropagation(); select({ kind: 'gu-bleed', id: bleed.id }) }}
+    >
       <sphereGeometry args={[1, 32, 32]} />
       <primitive object={material} attach="material" />
     </mesh>
