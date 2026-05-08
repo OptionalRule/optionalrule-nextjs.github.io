@@ -5,6 +5,7 @@ import { useThree } from '@react-three/fiber'
 import { OrbitControls } from '@react-three/drei'
 import type { OrbitControls as OrbitControlsImpl } from 'three-stdlib'
 import * as THREE from 'three'
+import { useViewerContext } from '../chrome/ViewerContext'
 
 export interface CameraRigProps {
   sceneRadius: number
@@ -40,6 +41,29 @@ export function CameraRig({ sceneRadius }: CameraRigProps) {
     window.addEventListener('viewer3d:frame-system', handle)
     return () => window.removeEventListener('viewer3d:frame-system', handle)
   }, [camera, sceneRadius])
+
+  const { selection } = useViewerContext()
+
+  useEffect(() => {
+    if (!selection || selection.kind !== 'body') return
+    const target = (window as Window & { __viewer3dBodyPositions?: Record<string, [number, number, number]> }).__viewer3dBodyPositions?.[selection.id]
+    if (!target) return
+    const targetPos = target
+    const start = camera.position.clone()
+    const desired = new THREE.Vector3(targetPos[0] * 1.6, sceneRadius * 0.18, targetPos[2] * 1.6)
+    const startTime = performance.now()
+    const duration = 800
+
+    function step(t: number) {
+      const k = Math.min(1, (t - startTime) / duration)
+      const eased = 1 - Math.pow(1 - k, 3)
+      camera.position.lerpVectors(start, desired, eased)
+      camera.lookAt(targetPos[0], 0, targetPos[2])
+      controlsRef.current?.update()
+      if (k < 1) requestAnimationFrame(step)
+    }
+    requestAnimationFrame(step)
+  }, [selection, camera, sceneRadius])
 
   return (
     <OrbitControls

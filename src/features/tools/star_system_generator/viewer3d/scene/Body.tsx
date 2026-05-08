@@ -35,11 +35,19 @@ export function Body({ body }: BodyProps) {
     return mat
   }, [body, orbitingBody])
 
+  const worldPos = useMemo(() => new THREE.Vector3(), [])
+
   useFrame((_state, delta) => {
     if (!groupRef.current) return
     const speed = prefersReducedMotion ? 0 : body.angularSpeed
     groupRef.current.rotation.y -= speed * delta
-    if (meshRef.current) meshRef.current.rotation.y += delta * 0.3
+    if (meshRef.current) {
+      meshRef.current.rotation.y += delta * 0.3
+      meshRef.current.getWorldPosition(worldPos)
+      const dict = window as Window & { __viewer3dBodyPositions?: Record<string, [number, number, number]> }
+      if (!dict.__viewer3dBodyPositions) dict.__viewer3dBodyPositions = {}
+      dict.__viewer3dBodyPositions[body.id] = [worldPos.x, worldPos.y, worldPos.z]
+    }
   })
 
   return (
