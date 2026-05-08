@@ -4,6 +4,8 @@ import { Canvas } from '@react-three/fiber'
 import type { SystemSceneGraph } from '../types'
 import { CameraRig } from './CameraRig'
 import { Star } from './Star'
+import { Orbit } from './Orbit'
+import { Zones } from './Zones'
 
 export interface SceneProps {
   graph: SystemSceneGraph
@@ -23,6 +25,14 @@ export function Scene({ graph }: SceneProps) {
       <Star star={graph.star} />
       {graph.companions.map((c) => (
         <Star key={c.id} star={c} />
+      ))}
+      <Zones
+        habitableInner={graph.zones.habitableInner}
+        habitableOuter={graph.zones.habitable * 1.4}
+        snowLine={graph.zones.snowLine}
+      />
+      {graph.bodies.map((body) => (
+        <Orbit key={`orbit-${body.id}`} radius={body.orbitRadius} tiltY={body.orbitTiltY} color="#5fb6e8" />
       ))}
     </Canvas>
   )
