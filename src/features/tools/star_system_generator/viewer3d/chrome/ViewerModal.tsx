@@ -33,6 +33,21 @@ export function ViewerModal({ title, onClose, header, footer, children }: Viewer
         onClose()
         return
       }
+      if (e.key === '1') {
+        e.preventDefault()
+        window.dispatchEvent(new CustomEvent('viewer3d:toggle-layer', { detail: { layer: 'physical' } }))
+        return
+      }
+      if (e.key === '2') {
+        e.preventDefault()
+        window.dispatchEvent(new CustomEvent('viewer3d:toggle-layer', { detail: { layer: 'gu' } }))
+        return
+      }
+      if (e.key === '3') {
+        e.preventDefault()
+        window.dispatchEvent(new CustomEvent('viewer3d:toggle-layer', { detail: { layer: 'human' } }))
+        return
+      }
       if (e.key !== 'Tab' || !containerRef.current) return
       const focusables = containerRef.current.querySelectorAll<HTMLElement>(FOCUSABLE)
       if (focusables.length === 0) return

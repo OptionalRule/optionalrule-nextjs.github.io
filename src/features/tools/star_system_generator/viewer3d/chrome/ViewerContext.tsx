@@ -37,6 +37,15 @@ export function ViewerContextProvider({ children }: { children: ReactNode }) {
     return () => mq.removeEventListener('change', handler)
   }, [])
 
+  useEffect(() => {
+    function handler(e: Event) {
+      const layer = (e as CustomEvent<{ layer: keyof LayerVisibility }>).detail.layer
+      setLayers((prev) => ({ ...prev, [layer]: !prev[layer] }))
+    }
+    window.addEventListener('viewer3d:toggle-layer', handler)
+    return () => window.removeEventListener('viewer3d:toggle-layer', handler)
+  }, [])
+
   const value = useMemo<ViewerContextValue>(
     () => ({
       layers,
