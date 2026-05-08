@@ -8,6 +8,8 @@ import { useViewerContext } from '../chrome/ViewerContext'
 import { makeBodyMaterial } from './bodyShader'
 import { shaderUniforms } from '../lib/bodyShading'
 import { useGeneratedBodyLookup } from './bodyLookup'
+import { Ring } from './Ring'
+import { Moon } from './Moon'
 
 export interface BodyProps {
   body: BodyVisual
@@ -44,6 +46,10 @@ export function Body({ body }: BodyProps) {
       <mesh ref={meshRef} position={[body.orbitRadius, 0, 0]}>
         <sphereGeometry args={[body.visualSize, 32, 32]} />
         <primitive object={material} attach="material" />
+        {body.rings ? <Ring ring={body.rings} /> : null}
+        {body.moons.map((moon) => (
+          <Moon key={moon.id} moon={moon} />
+        ))}
       </mesh>
     </group>
   )
