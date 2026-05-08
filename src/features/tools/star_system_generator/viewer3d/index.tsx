@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useMemo } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import type { GeneratedSystem } from '../types'
 import { buildSceneGraph } from './lib/sceneGraph'
 import { ViewerContextProvider } from './chrome/ViewerContext'
@@ -33,6 +33,16 @@ function makeScaleNote(system: GeneratedSystem): string {
 
 export default function SystemViewer3DModal({ system, onClose }: SystemViewer3DModalProps) {
   const graph = useMemo(() => buildSceneGraph(system), [system])
+  const [mounted, setMounted] = useState(false)
+  useEffect(() => {
+    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    if (reduced) {
+      setMounted(true)
+      return
+    }
+    const t = window.setTimeout(() => setMounted(true), 16)
+    return () => window.clearTimeout(t)
+  }, [])
   useEffect(() => {
     function handler() { onClose() }
     window.addEventListener('viewer3d:close', handler)
@@ -54,7 +64,7 @@ export default function SystemViewer3DModal({ system, onClose }: SystemViewer3DM
         }
       >
         <BodyLookupProvider system={system}>
-          <div className="relative flex-1">
+          <div className={`relative flex-1 transition-opacity duration-200 ${mounted ? 'opacity-100' : 'opacity-0'}`}>
             <Scene graph={graph} system={system} />
           </div>
           <DetailSidebar>
