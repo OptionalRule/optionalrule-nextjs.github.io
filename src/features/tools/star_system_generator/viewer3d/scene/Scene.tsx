@@ -6,6 +6,7 @@ import { CameraRig } from './CameraRig'
 import { Star } from './Star'
 import { Orbit } from './Orbit'
 import { Zones } from './Zones'
+import { Body } from './Body'
 
 export interface SceneProps {
   graph: SystemSceneGraph
@@ -33,6 +34,9 @@ export function Scene({ graph }: SceneProps) {
       />
       {graph.bodies.map((body) => (
         <Orbit key={`orbit-${body.id}`} radius={body.orbitRadius} tiltY={body.orbitTiltY} color="#5fb6e8" />
+      ))}
+      {graph.bodies.map((body) => (
+        <Body key={`body-${body.id}`} body={body} />
       ))}
     </Canvas>
   )
