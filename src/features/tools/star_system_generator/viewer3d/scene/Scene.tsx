@@ -7,6 +7,7 @@ import { Star } from './Star'
 import { Orbit } from './Orbit'
 import { Zones } from './Zones'
 import { Body } from './Body'
+import { Belt } from './Belt'
 
 export interface SceneProps {
   graph: SystemSceneGraph
@@ -37,6 +38,9 @@ export function Scene({ graph }: SceneProps) {
       ))}
       {graph.bodies.map((body) => (
         <Body key={`body-${body.id}`} body={body} />
+      ))}
+      {graph.belts.map((b) => (
+        <Belt key={`belt-${b.id}`} belt={b} />
       ))}
     </Canvas>
   )
