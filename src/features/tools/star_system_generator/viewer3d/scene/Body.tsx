@@ -10,6 +10,7 @@ import { shaderUniforms } from '../lib/bodyShading'
 import { useGeneratedBodyLookup } from './bodyLookup'
 import { Ring } from './Ring'
 import { Moon } from './Moon'
+import { SettlementPin } from './SettlementPin'
 
 export interface BodyProps {
   body: BodyVisual
@@ -50,6 +51,7 @@ export function Body({ body }: BodyProps) {
         {body.moons.map((moon) => (
           <Moon key={moon.id} moon={moon} />
         ))}
+        {body.hasSettlements ? <SettlementPin size={body.visualSize} /> : null}
       </mesh>
     </group>
   )
