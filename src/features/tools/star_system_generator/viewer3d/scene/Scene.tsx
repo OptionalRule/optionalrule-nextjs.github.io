@@ -14,6 +14,7 @@ import { GuBleedVolume } from './GuBleedVolume'
 import { RuinPin } from './RuinPin'
 import { PhenomenonGlyph } from './PhenomenonGlyph'
 import { HoverTooltip } from './HoverTooltip'
+import { useViewerContext } from '../chrome/ViewerContext'
 
 export interface SceneProps {
   graph: SystemSceneGraph
@@ -21,6 +22,7 @@ export interface SceneProps {
 }
 
 export function Scene({ graph, system }: SceneProps) {
+  const { select, hover } = useViewerContext()
   return (
     <Canvas
       dpr={[1, 2]}
@@ -32,6 +34,15 @@ export function Scene({ graph, system }: SceneProps) {
       <pointLight position={[0, 0, 0]} intensity={2.5} distance={graph.sceneRadius * 4} decay={0.6} />
       <CameraRig sceneRadius={graph.sceneRadius} />
       <Star star={graph.star} />
+      <mesh
+        position={graph.star.position}
+        onPointerOver={(e) => { e.stopPropagation(); hover({ kind: 'star', id: graph.star.id }); document.body.style.cursor = 'pointer' }}
+        onPointerOut={(e) => { e.stopPropagation(); hover(null); document.body.style.cursor = '' }}
+        onClick={(e) => { e.stopPropagation(); select({ kind: 'star', id: graph.star.id }) }}
+      >
+        <sphereGeometry args={[graph.star.coronaRadius * 0.6, 16, 16]} />
+        <meshBasicMaterial visible={false} />
+      </mesh>
       {graph.companions.map((c) => (
         <Star key={c.id} star={c} />
       ))}

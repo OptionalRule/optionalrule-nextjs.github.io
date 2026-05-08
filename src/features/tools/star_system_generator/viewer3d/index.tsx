@@ -11,6 +11,13 @@ import { ViewerLegend } from './chrome/ViewerLegend'
 import { Scene } from './scene/Scene'
 import { BodyLookupProvider } from './scene/bodyLookup'
 import { formatStellarClass } from '../lib/stellarLabels'
+import { BodyDetailContent } from '../components/BodyDetailPanel'
+import { SettlementCard } from '../components/SettlementCard'
+import { GuOverlayPanel } from '../components/GuOverlayPanel'
+import { StarDetailCard } from './chrome/StarDetailCard'
+import { HazardCard } from './chrome/HazardCard'
+import { PhenomenonCard } from './chrome/PhenomenonCard'
+import { useViewerContext } from './chrome/ViewerContext'
 
 export interface SystemViewer3DModalProps {
   system: GeneratedSystem
@@ -54,10 +61,40 @@ export default function SystemViewer3DModal({ system, onClose }: SystemViewer3DM
   )
 }
 
-function SidebarContent({ system: _system, graph: _graph }: { system: GeneratedSystem; graph: ReturnType<typeof buildSceneGraph> }) {
-  return (
-    <p className="text-xs text-[var(--text-tertiary)]">
-      Click a body, settlement, or hazard to see details. (Wiring lands in Task 30.)
-    </p>
-  )
+function SidebarContent({ system, graph }: { system: GeneratedSystem; graph: ReturnType<typeof buildSceneGraph> }) {
+  const { selection } = useViewerContext()
+  if (!selection) {
+    return <p className="text-xs text-[var(--text-tertiary)]">Click a body, settlement, or hazard to see details.</p>
+  }
+  switch (selection.kind) {
+    case 'body': {
+      const body = system.bodies.find((b) => b.id === selection.id)
+      if (!body) return null
+      return <BodyDetailContent body={body} system={system} compact />
+    }
+    case 'moon': {
+      const parent = system.bodies.find((b) => b.moons.some((m) => m.id === selection.id))
+      if (!parent) return null
+      return <BodyDetailContent body={parent} system={system} compact />
+    }
+    case 'settlement': {
+      const s = system.settlements.find((x) => x.id === selection.id)
+      return s ? <SettlementCard settlement={s} /> : null
+    }
+    case 'star': {
+      return <StarDetailCard system={system} />
+    }
+    case 'hazard': {
+      const h = graph.hazards.find((x) => x.id === selection.id)
+      return h ? <HazardCard hazard={h} /> : null
+    }
+    case 'gu-bleed': {
+      return <GuOverlayPanel system={system} compact />
+    }
+    case 'phenomenon': {
+      return <PhenomenonCard phenomenonId={selection.id} system={system} />
+    }
+    default:
+      return null
+  }
 }
