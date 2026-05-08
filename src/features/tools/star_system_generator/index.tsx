@@ -8,6 +8,7 @@ import { OrbitalTable } from './components/OrbitalTable'
 import { HumanRemnantsPanel, SystemPhenomenaPanel } from './components/PlayableLayerPanel'
 import { SeedControl } from './components/SeedControl'
 import { SettlementCard } from './components/SettlementCard'
+import { StoriesAtPortPanel } from './components/StoriesAtPortPanel'
 import { SystemOverview } from './components/SystemOverview'
 import { SectionHeader, SpectralChip, sectionShellClasses } from './components/visual'
 import { useGeneratedSystem } from './hooks/useGeneratedSystem'
@@ -102,6 +103,8 @@ export default function StarSystemGenerator({ className }: StarSystemGeneratorPr
             <SystemPhenomenaPanel system={system} />
           </div>
         </div>
+
+        <StoriesAtPortPanel system={system} />
 
         <ExportPanel system={system} />
       </main>
