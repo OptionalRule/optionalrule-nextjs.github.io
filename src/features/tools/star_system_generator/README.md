@@ -45,6 +45,21 @@ The current look is a compact operational TTRPG tool, not a marketing page. Futu
 - Controls should remain utilitarian and scan-friendly: compact selects/inputs, consistent focus rings, predictable grids, and no landing-page hero treatment.
 - Avoid new standalone palettes, decorative cards, oversized typography, gradient-orb decoration, or UI styles that break from the layer model above.
 
+## 3D Viewer (`viewer3d/`)
+
+The `viewer3d/` directory contains the lazy-loaded 3D modal. It depends on `three`, `@react-three/fiber`, and `@react-three/drei`. ESLint forbids importing those packages outside this directory.
+
+Architecture:
+- `lib/sceneGraph.ts` — pure projection from `GeneratedSystem` to `SystemSceneGraph` (testable, deterministic).
+- `lib/scale.ts`, `lib/motion.ts`, `lib/stellarColor.ts`, `lib/bodyShading.ts` — supporting pure modules.
+- `lib/hazardClassifier.ts`, `lib/guBleedClassifier.ts` — keyword-based placement of free-form `Fact<string>` hazard / bleed text.
+- `chrome/` — DOM (modal, layer toggles, sidebar, legend, detail cards).
+- `scene/` — react-three-fiber primitives (one component per scene element: Star, Body, Orbit, Belt, Ring, Moon, HazardVolume, GuBleedVolume, SettlementPin, RuinPin, PhenomenonGlyph).
+
+The viewer is opened from `<SystemViewer3DButton/>` (in the main bundle) which dynamic-imports `viewer3d/index.tsx`.
+
+Run viewer3d-specific tests: `npm run test -- --run src/features/tools/star_system_generator/viewer3d`.
+
 ## Procedural Contract
 
 The source writeup is the setting and table inspiration. The implementation is compatibility-first: when a source-table roll conflicts with an explicit generator contract, the contract wins for generated facts.
