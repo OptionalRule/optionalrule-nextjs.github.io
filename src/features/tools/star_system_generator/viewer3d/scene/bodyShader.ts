@@ -30,6 +30,9 @@ uniform float uVolcanicStrength;
 uniform float uStormStrength;
 uniform float uGuAccent;
 uniform float uSurfaceSeed;
+uniform float uReliefStrength;
+uniform float uNightLightStrength;
+uniform vec3 uCityLightColor;
 
 varying vec3 vNormal;
 varying vec3 vPos;
@@ -112,8 +115,15 @@ void main() {
 
   base = mix(base, vec3(1.0, 0.55, 0.3), uHeatTint * 0.4);
 
-  float light = clamp(dot(vNormal, normalize(vec3(0.6, 0.4, 0.5))), 0.0, 1.0);
+  vec3 lightDir = normalize(vec3(0.6, 0.4, 0.5));
+  float relief = (detail - 0.5) * uReliefStrength;
+  float light = clamp(dot(normalize(vNormal + unitPos * relief), lightDir), 0.0, 1.0);
   vec3 lit = base * (0.25 + 0.85 * light);
+
+  float night = smoothstep(0.48, 0.08, light);
+  float cityNoise = fbm(p * 7.5 + vec3(19.0, 5.0, 13.0));
+  float cityMask = smoothstep(0.74, 0.93, cityNoise + detail * 0.12) * night * uNightLightStrength;
+  lit += uCityLightColor * cityMask;
 
   float fresnel = pow(1.0 - clamp(dot(vNormal, vec3(0.0, 0.0, 1.0)), 0.0, 1.0), 2.0);
   vec3 atmo = mix(vec3(0.6, 0.8, 1.0), vec3(0.6, 0.4, 1.0), uGuAccent);
@@ -132,6 +142,7 @@ void main() {
 `
 
 export function makeBodyMaterial(body: BodyVisual): THREE.ShaderMaterial {
+  const surface = body.surface
   return new THREE.ShaderMaterial({
     vertexShader: bodyVertex,
     fragmentShader: bodyFragment,
@@ -153,6 +164,9 @@ export function makeBodyMaterial(body: BodyVisual): THREE.ShaderMaterial {
       uGuAccent: { value: body.guAccent ? 1 : 0 },
       uSurfaceSeed: { value: 0 },
       uVisualSize: { value: body.visualSize },
+      uReliefStrength: { value: surface?.reliefStrength ?? 0.15 },
+      uNightLightStrength: { value: surface?.nightLightStrength ?? 0 },
+      uCityLightColor: { value: new THREE.Color(surface?.cityLightColor ?? '#ffb15c') },
     },
   })
 }

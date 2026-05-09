@@ -43,7 +43,10 @@ export function Body({ body }: BodyProps) {
       mat.uniforms.uCraterStrength.value = u.craterStrength
       mat.uniforms.uVolcanicStrength.value = u.volcanicStrength
       mat.uniforms.uStormStrength.value = u.stormStrength
-      mat.uniforms.uSurfaceSeed.value = u.surfaceSeed
+      mat.uniforms.uSurfaceSeed.value = body.surface?.surfaceSeed || u.surfaceSeed
+      mat.uniforms.uReliefStrength.value = body.surface?.reliefStrength ?? 0.15
+      mat.uniforms.uNightLightStrength.value = body.surface?.nightLightStrength ?? 0
+      mat.uniforms.uCityLightColor.value.set(body.surface?.cityLightColor ?? '#ffb15c')
     }
     return mat
   }, [body, orbitingBody])
