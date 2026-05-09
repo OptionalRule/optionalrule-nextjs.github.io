@@ -4,7 +4,7 @@ import * as THREE from 'three'
 import { useEffect, useMemo, useRef } from 'react'
 import { useFrame } from '@react-three/fiber'
 import type { BodyVisual } from '../types'
-import { usePrefersReducedMotion, useSelectionActions } from '../chrome/ViewerContext'
+import { useLayers, usePrefersReducedMotion, useSelectionActions } from '../chrome/ViewerContext'
 import { makeBodyMaterial } from './bodyShader'
 import { shaderUniforms } from '../lib/bodyShading'
 import { useGeneratedBodyLookup } from './bodyLookup'
@@ -19,6 +19,7 @@ export interface BodyProps {
 export function Body({ body }: BodyProps) {
   const groupRef = useRef<THREE.Group | null>(null)
   const meshRef = useRef<THREE.Mesh | null>(null)
+  const { layers } = useLayers()
   const prefersReducedMotion = usePrefersReducedMotion()
   const { hover, select } = useSelectionActions()
   const lookup = useGeneratedBodyLookup()
@@ -46,6 +47,8 @@ export function Body({ body }: BodyProps) {
     return () => { delete dict.__viewer3dBodyPositions?.[body.id] }
   }, [body.id])
 
+  useEffect(() => () => material.dispose(), [material])
+
   useFrame((_state, delta) => {
     if (!groupRef.current) return
     const speed = prefersReducedMotion ? 0 : body.angularSpeed
@@ -62,20 +65,24 @@ export function Body({ body }: BodyProps) {
   return (
     <group ref={groupRef} rotation={[body.orbitTiltY, body.phase0, 0]}>
       <group position={[body.orbitRadius, 0, 0]}>
-        <mesh
-          ref={meshRef}
-          onPointerOver={(e) => { e.stopPropagation(); hover({ kind: 'body', id: body.id }); document.body.style.cursor = 'pointer' }}
-          onPointerOut={(e) => { e.stopPropagation(); hover(null); document.body.style.cursor = '' }}
-          onClick={(e) => { e.stopPropagation(); select({ kind: 'body', id: body.id }) }}
-        >
-          <sphereGeometry args={[body.visualSize, 32, 32]} />
-          <primitive object={material} attach="material" />
-          {body.rings ? <Ring ring={body.rings} /> : null}
-          {body.hasSettlements ? <SettlementPin size={body.visualSize} settlementIds={body.settlementIds} /> : null}
-        </mesh>
-        {body.moons.map((moon) => (
-          <Moon key={moon.id} moon={moon} />
-        ))}
+        {layers.physical ? (
+          <>
+            <mesh
+              ref={meshRef}
+              onPointerOver={(e) => { e.stopPropagation(); hover({ kind: 'body', id: body.id }); document.body.style.cursor = 'pointer' }}
+              onPointerOut={(e) => { e.stopPropagation(); hover(null); document.body.style.cursor = '' }}
+              onClick={(e) => { e.stopPropagation(); select({ kind: 'body', id: body.id }) }}
+            >
+              <sphereGeometry args={[body.visualSize, 32, 32]} />
+              <primitive object={material} attach="material" />
+              {body.rings ? <Ring ring={body.rings} /> : null}
+            </mesh>
+            {body.moons.map((moon) => (
+              <Moon key={moon.id} moon={moon} />
+            ))}
+          </>
+        ) : null}
+        {body.hasSettlements ? <SettlementPin size={body.visualSize} settlementIds={body.settlementIds} /> : null}
       </group>
     </group>
   )

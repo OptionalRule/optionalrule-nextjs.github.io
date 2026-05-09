@@ -31,6 +31,11 @@ describe('star system exports', () => {
     expect(markdown).toContain('  - Question:')
     expect(markdown).toContain('  - Hook:')
     expect(markdown).toContain('  - Image:')
+    expect(markdown).toContain('## System Story')
+    expect(markdown).toContain(`**Spine:** ${system.systemStory.spineSummary}`)
+    expect(markdown).toContain(system.systemStory.body[0])
+    expect(markdown).toContain(`- ${system.systemStory.hooks[0]}`)
+    expect(markdown.indexOf('## System Story')).toBeLessThan(markdown.indexOf('## Stories at Port'))
     expect(markdown.endsWith('\n')).toBe(true)
   })
 

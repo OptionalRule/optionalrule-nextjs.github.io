@@ -19,6 +19,10 @@ export function GuBleedVolume({ bleed }: { bleed: GuBleedVisual }) {
 
   useEffect(() => {
     matRef.current = material
+    return () => {
+      matRef.current = null
+      material.dispose()
+    }
   }, [material])
 
   useFrame((state) => {

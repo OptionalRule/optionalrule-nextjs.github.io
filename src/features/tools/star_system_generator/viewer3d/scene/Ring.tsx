@@ -1,7 +1,7 @@
 'use client'
 
 import * as THREE from 'three'
-import { useMemo } from 'react'
+import { useEffect, useMemo } from 'react'
 import type { RingVisual } from '../types'
 
 export function Ring({ ring }: { ring: RingVisual }) {
@@ -29,6 +29,15 @@ export function Ring({ ring }: { ring: RingVisual }) {
     m.rotation.x = Math.PI / 2 + ring.tilt
     return m
   }, [ring])
+
+  useEffect(() => () => {
+    mesh.geometry.dispose()
+    if (Array.isArray(mesh.material)) {
+      mesh.material.forEach((material) => material.dispose())
+    } else {
+      mesh.material.dispose()
+    }
+  }, [mesh])
 
   return <primitive object={mesh} />
 }

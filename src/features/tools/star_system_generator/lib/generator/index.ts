@@ -3354,6 +3354,14 @@ function runNoAlienGuard(system: Omit<GeneratedSystem, 'noAlienCheck'>): Generat
   }
 }
 
+function stellarActivityHazards(primary: Star): Array<Fact<string>> {
+  const activity = primary.activity.value
+  if (activity === 'Flare-prone' || activity === 'Violent flare cycle' || activity === 'Extreme activity / metric-amplified events') {
+    return [fact(activity, 'inferred', 'Stellar activity hazard')]
+  }
+  return []
+}
+
 export function generateSystem(options: GenerationOptions, knownSystem?: PartialKnownSystem): GeneratedSystem {
   const rootRng = createSeededRng(options.seed)
   const name = mergeLockedFact(fact(generateSystemName(rootRng.fork('name')), 'human-layer', 'Generated system name'), knownSystem?.name)
@@ -3463,6 +3471,6 @@ export function generateSystem(options: GenerationOptions, knownSystem?: Partial
     relationshipGraph,
     systemStory,
     hooks,
-    majorHazards: [guOverlay.hazard, fact(primary.activity.value, 'inferred', 'Stellar activity hazard')],
+    majorHazards: [guOverlay.hazard, ...stellarActivityHazards(primary)],
   })
 }

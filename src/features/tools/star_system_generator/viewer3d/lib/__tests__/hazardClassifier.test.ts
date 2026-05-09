@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest'
 import type { Fact, GeneratedSystem } from '../../../types'
+import { guHazardTable } from '../../../lib/generator/data/gu'
 import { classifyHazard } from '../hazardClassifier'
 
 function fact<T>(value: T): Fact<T> { return { value, confidence: 'derived' } }
@@ -13,6 +14,7 @@ const minimalSystem = {
     { id: 'b-rocky',   orbitAu: fact(1.0),  category: fact('rocky-planet'), name: fact('Marrow') },
     { id: 'b-outer',   orbitAu: fact(28),   category: fact('ice-giant'),    name: fact('Ostara') },
   ],
+  settlements: [{ id: 's-1', bodyId: 'b-rocky', location: fact('Orbital station') }],
 } as unknown as GeneratedSystem
 
 describe('classifyHazard', () => {
@@ -48,5 +50,11 @@ describe('classifyHazard', () => {
     const a = classifyHazard(fact('Severe magnetospheric radiation belt'), minimalSystem)
     const b = classifyHazard(fact('Severe magnetospheric radiation belt'), minimalSystem)
     expect(a.id).toBe(b.id)
+  })
+
+  it.each(guHazardTable)('classifies GU hazard vocabulary: %s', (hazard) => {
+    const v = classifyHazard(fact(hazard), minimalSystem)
+    expect(v.unclassified).toBe(false)
+    expect(v.anchorDescription).not.toBe('')
   })
 })

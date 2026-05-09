@@ -1,8 +1,26 @@
 import { describe, it, expect } from 'vitest'
+import type { Fact, Moon } from '../../../types'
 import { generateSystem } from '../../../lib/generator'
 import { buildSceneGraph } from '../sceneGraph'
+import { auToScene } from '../scale'
 
 const seed = 'plan-test-001'
+
+function fact<T>(value: T, confidence: Fact<T>['confidence'] = 'derived'): Fact<T> {
+  return { value, confidence }
+}
+
+function testMoon(index: number): Moon {
+  return {
+    id: `test-moon-${index}`,
+    name: fact(`Test Moon ${index}`),
+    moonType: fact('Captured asteroid'),
+    scale: fact('minor captured moonlet'),
+    resource: fact('survey value'),
+    hazard: fact('none'),
+    use: fact('navigation marker'),
+  }
+}
 
 describe('buildSceneGraph', () => {
   const system = generateSystem({ seed, distribution: 'realistic', tone: 'balanced', gu: 'normal', settlements: 'normal' })
@@ -31,6 +49,11 @@ describe('buildSceneGraph', () => {
     }
   })
 
+  it('projects the actual habitable-zone outer edge', () => {
+    const hzCenterAu = system.zones.habitableCenterAu.value > 0 ? system.zones.habitableCenterAu.value : 1
+    expect(graph.zones.habitableOuter).toBeCloseTo(auToScene(system.zones.habitableOuterAu.value, hzCenterAu), 5)
+  })
+
   it('is deterministic for the same seed', () => {
     const a = buildSceneGraph(system)
     const b = buildSceneGraph(system)
@@ -55,5 +78,38 @@ describe('buildSceneGraph', () => {
   it('sceneRadius is at least the outermost orbit radius', () => {
     const maxOrbit = Math.max(...graph.bodies.map((b) => b.orbitRadius), 0)
     expect(graph.sceneRadius).toBeGreaterThanOrEqual(maxOrbit)
+  })
+
+  it('represents every generated moon for a body', () => {
+    const targetBody = system.bodies.find((b) => b.category.value !== 'belt')
+    expect(targetBody).toBeTruthy()
+
+    const moons = Array.from({ length: 7 }, (_, index) => testMoon(index + 1))
+    const patchedSystem = {
+      ...system,
+      bodies: system.bodies.map((body) => body.id === targetBody?.id ? { ...body, moons } : body),
+    }
+    const patchedGraph = buildSceneGraph(patchedSystem)
+    const visual = patchedGraph.bodies.find((body) => body.id === targetBody?.id)
+
+    expect(visual?.moons.map((moon) => moon.id)).toEqual(moons.map((moon) => moon.id))
+  })
+
+  it('attaches generated remnants whose location is a body name', () => {
+    const targetBody = system.bodies.find((b) => b.category.value !== 'belt')
+    expect(targetBody).toBeTruthy()
+
+    const ruin = {
+      id: 'name-located-remnant',
+      location: fact(targetBody?.name.value ?? '', 'human-layer'),
+      remnantType: fact('First-wave archive', 'human-layer'),
+      hook: fact('Unresolved salvage title', 'human-layer'),
+    }
+    const patchedSystem = { ...system, ruins: [ruin] }
+    const patchedGraph = buildSceneGraph(patchedSystem)
+    const visual = patchedGraph.bodies.find((body) => body.id === targetBody?.id)
+
+    expect(patchedGraph.ruins[0].attachedBodyId).toBe(targetBody?.id)
+    expect(visual?.ruinIds).toContain(ruin.id)
   })
 })

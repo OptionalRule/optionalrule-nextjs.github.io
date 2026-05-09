@@ -74,9 +74,11 @@ function ringFor(body: OrbitingBody, parentSize: number): RingVisual | undefined
 }
 
 function moonsFor(body: OrbitingBody, _seed: string, parentSize: number): MoonVisual[] {
-  const cap = 4
-  return body.moons.slice(0, cap).map((moon: Moon, idx: number) => {
-    const orbit = parentSize * (1.8 + idx * 0.7)
+  const count = body.moons.length
+  const orbitStep = count > 4 ? Math.max(0.35, 2.8 / Math.max(count - 1, 1)) : 0.7
+  const sizeScale = count > 4 ? Math.max(0.08, 0.18 * Math.sqrt(4 / count)) : 0.18
+  return body.moons.map((moon: Moon, idx: number) => {
+    const orbit = parentSize * (1.8 + idx * orbitStep)
     const periodSec = 4 + idx * 2 + hashToUnit(`moon-period#${moon.id}`) * 2
     const tilt = (hashToUnit(`moon-tilt#${moon.id}`) - 0.5) * 0.6
     return {
@@ -86,10 +88,31 @@ function moonsFor(body: OrbitingBody, _seed: string, parentSize: number): MoonVi
       phase0: phase0ForBody(moon.id, _seed),
       angularSpeed: (Math.PI * 2) / periodSec,
       orbitTilt: tilt,
-      visualSize: parentSize * 0.18,
+      visualSize: parentSize * sizeScale,
       shading: 'dwarf',
     }
   })
+}
+
+function normalizedEntityText(value: string): string {
+  return value.toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim()
+}
+
+function locationMatchesEntity(location: string, entityValue: string): boolean {
+  const locationText = normalizedEntityText(location)
+  const entityText = normalizedEntityText(entityValue)
+  if (!entityText) return false
+  return (
+    locationText === entityText ||
+    locationText.startsWith(`${entityText} `) ||
+    locationText.endsWith(` ${entityText}`) ||
+    locationText.includes(` ${entityText} `)
+  )
+}
+
+function ruinMatchesBody(ruin: GeneratedSystem['ruins'][number], body: OrbitingBody): boolean {
+  const location = ruin.location.value
+  return locationMatchesEntity(location, body.id) || locationMatchesEntity(location, body.name.value)
 }
 
 function bodyHasGuFracture(body: OrbitingBody): boolean {
@@ -106,7 +129,7 @@ function buildBody(body: OrbitingBody, system: GeneratedSystem, hzCenterAu: numb
     .filter((s) => s.bodyId === body.id || body.moons.some((m) => m.id === s.moonId))
     .map((s) => s.id)
   const ruinIds = system.ruins
-    .filter((r) => r.location.value.toLowerCase().includes(body.name.value.toLowerCase()))
+    .filter((r) => ruinMatchesBody(r, body))
     .map((r) => r.id)
   return {
     id: body.id,
@@ -150,13 +173,21 @@ function buildPhenomenon(phen: GeneratedSystem['phenomena'][number], system: Gen
 }
 
 function buildRuin(ruin: GeneratedSystem['ruins'][number], system: GeneratedSystem, bodies: BodyVisual[], hzCenterAu: number): RuinMarker {
-  const locationLower = ruin.location.value.toLowerCase()
-  const matched = bodies.find((b) => locationLower.includes(b.id.toLowerCase()))
+  const sourceBody = system.bodies.find((body) => ruinMatchesBody(ruin, body))
+  const matched = sourceBody ? bodies.find((b) => b.id === sourceBody.id) : undefined
   if (matched) {
     return {
       id: ruin.id,
       attachedBodyId: matched.id,
       position: [0, 0, 0],
+    }
+  }
+  if (sourceBody) {
+    const r = auToScene(sourceBody.orbitAu.value, hzCenterAu)
+    const angle = hashToUnit(`ruin-body#${sourceBody.id}#${ruin.id}`) * Math.PI * 2
+    return {
+      id: ruin.id,
+      position: [Math.cos(angle) * r, 0, Math.sin(angle) * r],
     }
   }
   const outer = bodies.reduce<BodyVisual | undefined>(
@@ -194,6 +225,7 @@ export function buildSceneGraph(system: GeneratedSystem): SystemSceneGraph {
   const zones = {
     habitableInner: auToScene(system.zones.habitableInnerAu.value, hzCenterAu),
     habitable: auToScene(system.zones.habitableCenterAu.value, hzCenterAu),
+    habitableOuter: auToScene(system.zones.habitableOuterAu.value, hzCenterAu),
     snowLine: auToScene(system.zones.snowLineAu.value, hzCenterAu),
   }
 

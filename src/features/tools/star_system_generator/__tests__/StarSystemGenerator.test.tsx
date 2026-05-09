@@ -2,10 +2,18 @@ import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { describe, expect, it, vi } from 'vitest'
 import StarSystemGenerator from '..'
+import { generateSystem } from '../lib/generator'
 
 describe('StarSystemGenerator', () => {
   it('renders a seeded system profile', async () => {
     window.history.replaceState(null, '', '/tools/star_system_generator/?seed=7f3a9c2e41b8d09a')
+    const system = generateSystem({
+      seed: '7f3a9c2e41b8d09a',
+      distribution: 'frontier',
+      tone: 'balanced',
+      gu: 'normal',
+      settlements: 'normal',
+    })
 
     render(<StarSystemGenerator />)
 
@@ -19,6 +27,10 @@ describe('StarSystemGenerator', () => {
     expect(screen.getByText('Geometric Unity Overlay')).toBeInTheDocument()
     expect(screen.getByText('Sites & Settlements')).toBeInTheDocument()
     expect(screen.getByText('Human Remnants')).toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: 'System Story' })).toBeInTheDocument()
+    expect(screen.getByText(system.systemStory.spineSummary)).toBeInTheDocument()
+    expect(screen.getByText(system.systemStory.body[0])).toBeInTheDocument()
+    expect(screen.getByText(system.systemStory.hooks[0])).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'Expand all' })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'Collapse all' })).toBeDisabled()
     expect(screen.queryByText('Orbital Companions')).not.toBeInTheDocument()

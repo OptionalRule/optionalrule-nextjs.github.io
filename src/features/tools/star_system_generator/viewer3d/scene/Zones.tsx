@@ -1,7 +1,7 @@
 'use client'
 
 import * as THREE from 'three'
-import { useMemo } from 'react'
+import { useEffect, useMemo } from 'react'
 
 export interface ZonesProps {
   habitableInner: number
@@ -44,6 +44,24 @@ export function Zones({ habitableInner, habitableOuter, snowLine }: ZonesProps) 
     line.computeLineDistances()
     return line
   }, [snowLine])
+
+  useEffect(() => () => {
+    habitableMesh.geometry.dispose()
+    if (Array.isArray(habitableMesh.material)) {
+      habitableMesh.material.forEach((material) => material.dispose())
+    } else {
+      habitableMesh.material.dispose()
+    }
+  }, [habitableMesh])
+
+  useEffect(() => () => {
+    snowLineRing.geometry.dispose()
+    if (Array.isArray(snowLineRing.material)) {
+      snowLineRing.material.forEach((material) => material.dispose())
+    } else {
+      snowLineRing.material.dispose()
+    }
+  }, [snowLineRing])
 
   return (
     <>

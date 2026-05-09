@@ -1,7 +1,7 @@
 'use client'
 
 import * as THREE from 'three'
-import { useMemo, useRef } from 'react'
+import { useEffect, useMemo, useRef } from 'react'
 import { useFrame } from '@react-three/fiber'
 import type { BeltVisual } from '../types'
 import { hashToUnit } from '../lib/motion'
@@ -39,6 +39,15 @@ export function Belt({ belt }: BeltProps) {
     mesh.instanceMatrix.needsUpdate = true
     return mesh
   }, [belt])
+
+  useEffect(() => () => {
+    instancedMesh.geometry.dispose()
+    if (Array.isArray(instancedMesh.material)) {
+      instancedMesh.material.forEach((material) => material.dispose())
+    } else {
+      instancedMesh.material.dispose()
+    }
+  }, [instancedMesh])
 
   useFrame((_state, delta) => {
     if (!groupRef.current) return

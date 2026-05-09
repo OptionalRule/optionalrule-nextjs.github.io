@@ -104,7 +104,7 @@ export interface RuinMarker {
 export interface SystemSceneGraph {
   star: StarVisual
   companions: StarVisual[]
-  zones: { habitableInner: number; habitable: number; snowLine: number }
+  zones: { habitableInner: number; habitable: number; habitableOuter: number; snowLine: number }
   bodies: BodyVisual[]
   belts: BeltVisual[]
   hazards: HazardVisual[]

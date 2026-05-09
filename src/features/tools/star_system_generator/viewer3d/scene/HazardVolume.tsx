@@ -1,6 +1,6 @@
 'use client'
 
-import { useMemo } from 'react'
+import { useEffect, useMemo } from 'react'
 import type { HazardVisual } from '../types'
 import { useLayers, useSelectionActions } from '../chrome/ViewerContext'
 import { makeVolumetricMaterial } from './volumetricShader'
@@ -12,6 +12,8 @@ export function HazardVolume({ hazard }: { hazard: HazardVisual }) {
     () => makeVolumetricMaterial({ color: '#ff5773', intensity: hazard.intensity }),
     [hazard.intensity],
   )
+
+  useEffect(() => () => material.dispose(), [material])
 
   if (hazard.unclassified || !layers.physical) return null
 

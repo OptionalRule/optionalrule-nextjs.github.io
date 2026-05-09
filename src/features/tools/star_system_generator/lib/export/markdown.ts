@@ -58,6 +58,11 @@ export function exportSystemMarkdown(system: GeneratedSystem): string {
     }
   }
 
+  const systemStory = formatSystemStory(system)
+  if (systemStory.length) {
+    lines.push('', '## System Story', '', ...systemStory)
+  }
+
   if (system.hooks && hasAnyHooks(system.hooks)) {
     lines.push('', '## Stories at Port', '')
     lines.push(...formatSystemHooks(system.hooks))
@@ -75,6 +80,31 @@ function hasAnyHooks(hooks: SystemHooks): boolean {
       hooks.twists.length >
     0
   )
+}
+
+function formatSystemStory(system: GeneratedSystem): string[] {
+  const story = system.systemStory
+  const lines: string[] = []
+  const body = story.body.filter((paragraph) => paragraph.trim())
+  const hooks = story.hooks.filter((hook) => hook.trim())
+
+  if (story.spineSummary) {
+    lines.push(`**Spine:** ${story.spineSummary}`, '')
+  }
+
+  for (const paragraph of body) {
+    lines.push(paragraph, '')
+  }
+
+  if (hooks.length) {
+    lines.push('### Hooks', '')
+    for (const hook of hooks) {
+      lines.push(`- ${hook}`)
+    }
+    lines.push('')
+  }
+
+  return lines
 }
 
 function formatSystemHooks(hooks: SystemHooks): string[] {

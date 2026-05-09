@@ -10,6 +10,7 @@ import { SeedControl } from './components/SeedControl'
 import { SettlementCard } from './components/SettlementCard'
 import { StoriesAtPortPanel } from './components/StoriesAtPortPanel'
 import { SystemOverview } from './components/SystemOverview'
+import { SystemStoryPanel } from './components/SystemStoryPanel'
 import { SystemViewer3DButton } from './components/SystemViewer3DButton'
 import { SectionHeader, SpectralChip, sectionShellClasses } from './components/visual'
 import { useGeneratedSystem } from './hooks/useGeneratedSystem'
@@ -73,6 +74,7 @@ export default function StarSystemGenerator({ className }: StarSystemGeneratorPr
         <div id="overview">
           <SystemOverview system={system} />
         </div>
+        <SystemStoryPanel system={system} />
         <div id="orbit">
           <OrbitalTable system={system} />
         </div>

@@ -16,7 +16,7 @@ import { GuBleedVolume } from './GuBleedVolume'
 import { RuinPin } from './RuinPin'
 import { PhenomenonGlyph } from './PhenomenonGlyph'
 import { HoverTooltip } from './HoverTooltip'
-import { usePrefersReducedMotion, useSelectionActions } from '../chrome/ViewerContext'
+import { useLayers, usePrefersReducedMotion, useSelectionActions } from '../chrome/ViewerContext'
 import { WebGLFallback } from '../chrome/WebGLFallback'
 
 function detectWebGL(): boolean {
@@ -34,6 +34,7 @@ export interface SceneProps {
 }
 
 export function Scene({ graph, system }: SceneProps) {
+  const { layers } = useLayers()
   const { select, hover } = useSelectionActions()
   const prefersReducedMotion = usePrefersReducedMotion()
   const [supported] = useState<boolean>(() => typeof document === 'undefined' ? true : detectWebGL())
@@ -69,36 +70,40 @@ export function Scene({ graph, system }: SceneProps) {
           </div>
         </Html>
       ) : null}
-      <Star star={graph.star} />
-      <mesh
-        position={graph.star.position}
-        onPointerOver={(e) => { e.stopPropagation(); hover({ kind: 'star', id: graph.star.id }); document.body.style.cursor = 'pointer' }}
-        onPointerOut={(e) => { e.stopPropagation(); hover(null); document.body.style.cursor = '' }}
-        onClick={(e) => { e.stopPropagation(); select({ kind: 'star', id: graph.star.id }) }}
-      >
-        <sphereGeometry args={[graph.star.coronaRadius * 0.6, 16, 16]} />
-        <meshBasicMaterial visible={false} />
-      </mesh>
-      {graph.companions.map((c) => (
-        <Star key={c.id} star={c} />
-      ))}
-      <Zones
-        habitableInner={graph.zones.habitableInner}
-        habitableOuter={graph.zones.habitable * 1.4}
-        snowLine={graph.zones.snowLine}
-      />
-      {graph.bodies.map((body) => (
-        <Orbit key={`orbit-${body.id}`} radius={body.orbitRadius} tiltY={body.orbitTiltY} color="#5fb6e8" />
-      ))}
+      {layers.physical ? (
+        <>
+          <Star star={graph.star} />
+          <mesh
+            position={graph.star.position}
+            onPointerOver={(e) => { e.stopPropagation(); hover({ kind: 'star', id: graph.star.id }); document.body.style.cursor = 'pointer' }}
+            onPointerOut={(e) => { e.stopPropagation(); hover(null); document.body.style.cursor = '' }}
+            onClick={(e) => { e.stopPropagation(); select({ kind: 'star', id: graph.star.id }) }}
+          >
+            <sphereGeometry args={[graph.star.coronaRadius * 0.6, 16, 16]} />
+            <meshBasicMaterial visible={false} />
+          </mesh>
+          {graph.companions.map((c) => (
+            <Star key={c.id} star={c} />
+          ))}
+          <Zones
+            habitableInner={graph.zones.habitableInner}
+            habitableOuter={graph.zones.habitableOuter}
+            snowLine={graph.zones.snowLine}
+          />
+          {graph.bodies.map((body) => (
+            <Orbit key={`orbit-${body.id}`} radius={body.orbitRadius} tiltY={body.orbitTiltY} color="#5fb6e8" />
+          ))}
+        </>
+      ) : null}
       {graph.bodies.map((body) => (
         <Body key={`body-${body.id}`} body={body} />
       ))}
-      {graph.belts.map((b) => (
+      {layers.physical ? graph.belts.map((b) => (
         <Belt key={`belt-${b.id}`} belt={b} />
-      ))}
-      {graph.hazards.map((h) => (
+      )) : null}
+      {layers.physical ? graph.hazards.map((h) => (
         <HazardVolume key={`hz-${h.id}`} hazard={h} />
-      ))}
+      )) : null}
       {graph.guBleeds.map((g) => (
         <GuBleedVolume key={`gu-${g.id}`} bleed={g} />
       ))}

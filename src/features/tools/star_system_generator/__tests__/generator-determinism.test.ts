@@ -349,6 +349,17 @@ describe('generateSystem', () => {
     }
   })
 
+  it('does not promote benign stellar activity labels into major hazards', () => {
+    const benignActivity = new Set(['Dormant / unusually quiet', 'Quiet', 'Normal', 'Active'])
+
+    for (let index = 0; index < 80; index++) {
+      const system = generateSystem({ ...options, seed: `hazard-activity-${index}` })
+      for (const hazard of system.majorHazards) {
+        expect(benignActivity.has(hazard.value)).toBe(false)
+      }
+    }
+  })
+
   it('constrains furnace and inferno world environments', () => {
     const forbiddenExtremeHotVolatiles = new Set([
       'Local seas',
