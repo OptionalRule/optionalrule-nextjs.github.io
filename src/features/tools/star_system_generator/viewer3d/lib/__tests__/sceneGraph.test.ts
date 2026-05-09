@@ -11,12 +11,12 @@ function fact<T>(value: T, confidence: Fact<T>['confidence'] = 'derived'): Fact<
   return { value, confidence }
 }
 
-function testMoon(index: number): Moon {
+function testMoon(index: number, scale = 'minor captured moonlet'): Moon {
   return {
     id: `test-moon-${index}`,
     name: fact(`Test Moon ${index}`),
     moonType: fact('Captured asteroid'),
-    scale: fact('minor captured moonlet'),
+    scale: fact(scale),
     resource: fact('survey value'),
     hazard: fact('none'),
     use: fact('navigation marker'),
@@ -122,6 +122,41 @@ describe('buildSceneGraph', () => {
     const visual = patchedGraph.bodies.find((body) => body.id === targetBody?.id)
 
     expect(visual?.moons.map((moon) => moon.id)).toEqual(moons.map((moon) => moon.id))
+  })
+
+  it('derives moon visual size and period from moon scale and orbit shell', () => {
+    const targetBody = system.bodies.find((b) => b.category.value !== 'belt')
+    expect(targetBody).toBeTruthy()
+
+    const moons = [
+      testMoon(1, 'minor captured moonlet'),
+      testMoon(2, 'small major moon'),
+      testMoon(3, 'large differentiated moon'),
+    ]
+    const patchedSystem = {
+      ...system,
+      bodies: system.bodies.map((body) => body.id === targetBody?.id
+        ? {
+            ...body,
+            physical: {
+              ...body.physical,
+              massEarth: fact(1),
+            },
+            moons,
+          }
+        : body),
+    }
+    const patchedGraph = buildSceneGraph(patchedSystem)
+    const visual = patchedGraph.bodies.find((body) => body.id === targetBody?.id)
+
+    expect(visual?.moons.map((moon) => moon.visualSize)).toEqual([
+      expect.any(Number),
+      expect.any(Number),
+      expect.any(Number),
+    ])
+    expect(visual?.moons[2].visualSize).toBeGreaterThan(visual?.moons[0].visualSize ?? 0)
+    expect((2 * Math.PI) / (visual?.moons[0].angularSpeed ?? Number.POSITIVE_INFINITY)).toBeGreaterThanOrEqual(24)
+    expect(visual?.moons[0].angularSpeed).toBeGreaterThan(visual?.moons[2].angularSpeed ?? Number.POSITIVE_INFINITY)
   })
 
   it('attaches generated remnants whose location is a body name', () => {

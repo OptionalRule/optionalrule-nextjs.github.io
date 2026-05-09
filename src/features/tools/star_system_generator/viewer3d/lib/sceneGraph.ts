@@ -19,6 +19,7 @@ import { classifyHazard } from './hazardClassifier'
 import { classifyGuBleed } from './guBleedClassifier'
 
 const BODY_ORBIT_CLEARANCE = 2.5
+const MIN_MOON_PERIOD_SEC = 24
 const COMPANION_KEYS = ['close', 'near', 'moderate', 'wide', 'distant'] as const
 const COMPANION_AU: Record<typeof COMPANION_KEYS[number], number> = {
   close: 0.5,
@@ -76,13 +77,55 @@ function ringFor(body: OrbitingBody, parentSize: number): RingVisual | undefined
   }
 }
 
+function moonScaleFactor(scale: string): number {
+  const lower = scale.toLowerCase()
+  if (lower.includes('planet-scale')) return 0.32
+  if (lower.includes('large differentiated')) return 0.24
+  if (lower.includes('mid-sized')) return 0.17
+  if (lower.includes('small major')) return 0.12
+  return 0.075
+}
+
+function moonOrbitShell(scale: string): number {
+  const lower = scale.toLowerCase()
+  if (lower.includes('planet-scale')) return 5.5
+  if (lower.includes('large differentiated')) return 4.5
+  if (lower.includes('mid-sized')) return 3.7
+  if (lower.includes('small major')) return 3.0
+  return 2.35
+}
+
+function fallbackParentMass(body: OrbitingBody): number {
+  switch (body.category.value) {
+    case 'gas-giant': return 95
+    case 'ice-giant': return 17
+    case 'sub-neptune': return 8
+    case 'super-earth': return 5
+    case 'dwarf-body': return 0.05
+    case 'rogue-captured': return 2
+    default: return 1
+  }
+}
+
+function moonPeriodSeconds(body: OrbitingBody, parentSize: number, orbit: number, index: number, seed: string): number {
+  const massEarth = typeof body.physical.massEarth.value === 'number' && body.physical.massEarth.value > 0
+    ? body.physical.massEarth.value
+    : fallbackParentMass(body)
+  const massFactor = Math.max(0.45, Math.min(4, Math.cbrt(massEarth)))
+  const orbitRatio = Math.max(1, orbit / Math.max(parentSize, 0.1))
+  const jitter = 0.92 + hashToUnit(`moon-period#${body.id}#${index}#${seed}`) * 0.16
+  const period = ((22 + orbitRatio ** 1.5 * 8) / massFactor + index * 2.5) * jitter
+  return Math.max(MIN_MOON_PERIOD_SEC, period)
+}
+
 function moonsFor(body: OrbitingBody, _seed: string, parentSize: number): MoonVisual[] {
   const count = body.moons.length
-  const orbitStep = count > 4 ? Math.max(0.35, 2.8 / Math.max(count - 1, 1)) : 0.7
-  const sizeScale = count > 4 ? Math.max(0.08, 0.18 * Math.sqrt(4 / count)) : 0.18
+  const orbitStep = parentSize * (count > 6 ? 0.5 : 0.72)
+  const crowdScale = count > 6 ? Math.max(0.55, Math.sqrt(6 / count)) : 1
   return body.moons.map((moon: Moon, idx: number) => {
-    const orbit = parentSize * (1.8 + idx * orbitStep)
-    const periodSec = 4 + idx * 2 + hashToUnit(`moon-period#${moon.id}`) * 2
+    const scaleFactor = moonScaleFactor(moon.scale.value) * crowdScale
+    const orbit = parentSize * moonOrbitShell(moon.scale.value) + idx * orbitStep
+    const periodSec = moonPeriodSeconds(body, parentSize, orbit, idx, _seed)
     const tilt = (hashToUnit(`moon-tilt#${moon.id}`) - 0.5) * 0.6
     return {
       id: moon.id,
@@ -91,7 +134,7 @@ function moonsFor(body: OrbitingBody, _seed: string, parentSize: number): MoonVi
       phase0: phase0ForBody(moon.id, _seed, idx),
       angularSpeed: (Math.PI * 2) / periodSec,
       orbitTilt: tilt,
-      visualSize: parentSize * sizeScale,
+      visualSize: parentSize * scaleFactor,
       shading: 'dwarf',
     }
   })
