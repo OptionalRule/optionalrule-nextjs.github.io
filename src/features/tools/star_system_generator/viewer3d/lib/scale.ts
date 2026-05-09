@@ -10,15 +10,15 @@ export function auToScene(au: number, hzCenterAu = 1): number {
 }
 
 const VISUAL_SIZE_BY_CATEGORY: Record<BodyCategory, number> = {
-  'gas-giant': 1.4,
-  'ice-giant': 1.2,
-  'sub-neptune': 0.8,
-  'super-earth': 0.65,
-  'rocky-planet': 0.5,
-  'dwarf-body': 0.3,
-  'rogue-captured': 0.4,
-  belt: 0.35,
-  anomaly: 0.55,
+  'gas-giant': 2.4,
+  'ice-giant': 2.0,
+  'sub-neptune': 1.4,
+  'super-earth': 1.1,
+  'rocky-planet': 0.85,
+  'dwarf-body': 0.6,
+  'rogue-captured': 0.75,
+  belt: 0.55,
+  anomaly: 0.95,
 }
 
 export function bodyVisualSize(category: BodyCategory): number {
