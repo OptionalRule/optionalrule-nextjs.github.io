@@ -132,6 +132,7 @@ export interface SystemSceneGraph {
 }
 
 export type LayerKey = 'physical' | 'gu' | 'human'
+export type OrbitScaleMode = 'readable-log' | 'relative-au' | 'schematic'
 
 export interface LayerVisibility {
   physical: boolean

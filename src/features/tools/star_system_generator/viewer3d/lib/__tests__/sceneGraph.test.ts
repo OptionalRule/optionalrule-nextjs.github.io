@@ -109,6 +109,17 @@ describe('buildSceneGraph', () => {
     expect(graph.sceneRadius).toBeGreaterThanOrEqual(maxOrbit)
   })
 
+  it('supports alternate orbit scale modes without changing generated body count', () => {
+    const readable = buildSceneGraph(system, { scaleMode: 'readable-log' })
+    const relative = buildSceneGraph(system, { scaleMode: 'relative-au' })
+    const schematic = buildSceneGraph(system, { scaleMode: 'schematic' })
+
+    expect(relative.bodies.length).toBe(readable.bodies.length)
+    expect(schematic.bodies.length).toBe(readable.bodies.length)
+    expect(relative.sceneRadius).toBeGreaterThan(readable.sceneRadius)
+    expect(schematic.bodies[1].orbitRadius - schematic.bodies[0].orbitRadius).toBeGreaterThanOrEqual(2.5)
+  })
+
   it('represents every generated moon for a body', () => {
     const targetBody = system.bodies.find((b) => b.category.value !== 'belt')
     expect(targetBody).toBeTruthy()

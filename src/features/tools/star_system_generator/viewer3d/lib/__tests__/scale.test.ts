@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { auToScene, bodyVisualSize, SCENE_UNIT, ORBIT_MIN_OFFSET } from '../scale'
+import { auToScene, bodyVisualSize, SCENE_UNIT, ORBIT_MIN_OFFSET, schematicOrbitRadius } from '../scale'
 
 describe('auToScene', () => {
   it('places 0 AU at the origin', () => {
@@ -17,6 +17,14 @@ describe('auToScene', () => {
     const inner = auToScene(1) - auToScene(0.4)
     const outer = auToScene(40) - auToScene(30)
     expect(inner).toBeGreaterThan(outer)
+  })
+
+  it('offers a less-compressed relative AU projection', () => {
+    expect(auToScene(20, 1, 'relative-au')).toBeGreaterThan(auToScene(20, 1, 'readable-log'))
+  })
+
+  it('offers evenly spaced schematic orbit lanes', () => {
+    expect(schematicOrbitRadius(1) - schematicOrbitRadius(0)).toBe(schematicOrbitRadius(2) - schematicOrbitRadius(1))
   })
 
   it('uses SCENE_UNIT as its multiplier with ORBIT_MIN_OFFSET applied', () => {

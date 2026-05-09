@@ -1,7 +1,7 @@
 'use client'
 
 import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from 'react'
-import type { LayerVisibility } from '../types'
+import type { LayerVisibility, OrbitScaleMode } from '../types'
 import { ALL_LAYERS_ON } from '../types'
 
 export type SelectionKind = 'body' | 'moon' | 'settlement' | 'star' | 'hazard' | 'gu-bleed' | 'phenomenon' | null
@@ -26,13 +26,20 @@ interface SelectionActionsContextValue {
   hover: (target: SelectionTarget | null) => void
 }
 
+interface ScaleModeContextValue {
+  scaleMode: OrbitScaleMode
+  setScaleMode: (mode: OrbitScaleMode) => void
+}
+
 const LayersContext = createContext<LayersContextValue | null>(null)
 const SelectionStateContext = createContext<SelectionStateContextValue | null>(null)
 const SelectionActionsContext = createContext<SelectionActionsContextValue | null>(null)
 const MotionContext = createContext<boolean | null>(null)
+const ScaleModeContext = createContext<ScaleModeContextValue | null>(null)
 
 export function ViewerContextProvider({ children }: { children: ReactNode }) {
   const [layers, setLayers] = useState<LayerVisibility>(ALL_LAYERS_ON)
+  const [scaleMode, setScaleMode] = useState<OrbitScaleMode>('readable-log')
   const [selection, setSelection] = useState<SelectionTarget | null>(null)
   const [hovered, setHovered] = useState<SelectionTarget | null>(null)
   const [prefersReducedMotion, setPrefersReducedMotion] = useState(false)
@@ -57,15 +64,21 @@ export function ViewerContextProvider({ children }: { children: ReactNode }) {
     () => ({ select: setSelection, hover: setHovered }),
     [],
   )
+  const scaleModeValue = useMemo<ScaleModeContextValue>(
+    () => ({ scaleMode, setScaleMode }),
+    [scaleMode],
+  )
 
   return (
     <LayersContext.Provider value={layersValue}>
       <MotionContext.Provider value={prefersReducedMotion}>
-        <SelectionStateContext.Provider value={selectionStateValue}>
-          <SelectionActionsContext.Provider value={selectionActionsValue}>
-            {children}
-          </SelectionActionsContext.Provider>
-        </SelectionStateContext.Provider>
+        <ScaleModeContext.Provider value={scaleModeValue}>
+          <SelectionStateContext.Provider value={selectionStateValue}>
+            <SelectionActionsContext.Provider value={selectionActionsValue}>
+              {children}
+            </SelectionActionsContext.Provider>
+          </SelectionStateContext.Provider>
+        </ScaleModeContext.Provider>
       </MotionContext.Provider>
     </LayersContext.Provider>
   )
@@ -92,5 +105,11 @@ export function useSelectionActions(): SelectionActionsContextValue {
 export function usePrefersReducedMotion(): boolean {
   const ctx = useContext(MotionContext)
   if (ctx === null) throw new Error('usePrefersReducedMotion used outside ViewerContextProvider')
+  return ctx
+}
+
+export function useScaleMode(): ScaleModeContextValue {
+  const ctx = useContext(ScaleModeContext)
+  if (!ctx) throw new Error('useScaleMode used outside ViewerContextProvider')
   return ctx
 }

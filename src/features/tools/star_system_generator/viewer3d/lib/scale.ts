@@ -1,12 +1,21 @@
 import type { BodyCategory } from '../../types'
+import type { OrbitScaleMode } from '../types'
 
 export const SCENE_UNIT = 60
 export const ORBIT_MIN_OFFSET = 8
+export const DEFAULT_ORBIT_SCALE_MODE: OrbitScaleMode = 'readable-log'
 
-export function auToScene(au: number, hzCenterAu = 1): number {
+export function auToScene(au: number, hzCenterAu = 1, mode: OrbitScaleMode = DEFAULT_ORBIT_SCALE_MODE): number {
   if (au <= 0) return 0
   const ref = hzCenterAu > 0 ? hzCenterAu : 1
+  if (mode === 'relative-au') {
+    return ORBIT_MIN_OFFSET + Math.sqrt(au / ref) * SCENE_UNIT * 0.85
+  }
   return ORBIT_MIN_OFFSET + Math.log10(1 + au / ref) * SCENE_UNIT
+}
+
+export function schematicOrbitRadius(index: number): number {
+  return ORBIT_MIN_OFFSET + (index + 1) * 8
 }
 
 const VISUAL_SIZE_BY_CATEGORY: Record<BodyCategory, number> = {

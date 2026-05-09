@@ -1,5 +1,7 @@
 'use client'
 
+import { ScaleModeControl } from './ScaleModeControl'
+
 interface LegendChipSpec {
   color: string
   label: string
@@ -29,6 +31,7 @@ export function ViewerLegend({ scaleNote, onFrame }: ViewerLegendProps) {
         ))}
       </ul>
       <span className="font-mono text-[10px] uppercase tracking-[0.1em] text-[var(--text-tertiary)]">{scaleNote}</span>
+      <ScaleModeControl />
       <button
         type="button"
         onClick={onFrame}

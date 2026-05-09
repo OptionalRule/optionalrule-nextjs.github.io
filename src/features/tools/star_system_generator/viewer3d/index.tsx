@@ -17,22 +17,39 @@ import { GuOverlayPanel } from '../components/GuOverlayPanel'
 import { StarDetailCard } from './chrome/StarDetailCard'
 import { HazardCard } from './chrome/HazardCard'
 import { PhenomenonCard } from './chrome/PhenomenonCard'
-import { useSelectionState } from './chrome/ViewerContext'
+import { useScaleMode, useSelectionState } from './chrome/ViewerContext'
+import type { OrbitScaleMode } from './types'
 
 export interface SystemViewer3DModalProps {
   system: GeneratedSystem
   onClose: () => void
 }
 
-function makeScaleNote(system: GeneratedSystem): string {
+function makeScaleNote(system: GeneratedSystem, scaleMode: OrbitScaleMode): string {
   const orbits = system.bodies.map((b) => b.orbitAu.value)
   const inner = orbits.length ? Math.min(...orbits).toFixed(1) : '0'
   const outer = orbits.length ? Math.max(...orbits).toFixed(1) : '0'
-  return `log scale · ${inner} — ${outer} AU`
+  const modeLabel: Record<OrbitScaleMode, string> = {
+    'readable-log': 'readable log scale',
+    'relative-au': 'relative AU scale',
+    schematic: 'schematic lanes',
+  }
+  return `${modeLabel[scaleMode]} · ${inner} — ${outer} AU`
 }
 
 export default function SystemViewer3DModal({ system, onClose }: SystemViewer3DModalProps) {
-  const graph = useMemo(() => buildSceneGraph(system), [system])
+  const title = `${system.name.value} · ${formatStellarClass(system.primary.spectralType.value)} · ${system.bodies.length} bodies`
+
+  return (
+    <ViewerContextProvider>
+      <SystemViewer3DModalContent system={system} onClose={onClose} title={title} />
+    </ViewerContextProvider>
+  )
+}
+
+function SystemViewer3DModalContent({ system, onClose, title }: SystemViewer3DModalProps & { title: string }) {
+  const { scaleMode } = useScaleMode()
+  const graph = useMemo(() => buildSceneGraph(system, { scaleMode }), [scaleMode, system])
   const [mounted, setMounted] = useState(false)
   useEffect(() => {
     const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches
@@ -56,31 +73,27 @@ export default function SystemViewer3DModal({ system, onClose }: SystemViewer3DM
     }
     return () => { console.warn = original }
   }, [])
-  const title = `${system.name.value} · ${formatStellarClass(system.primary.spectralType.value)} · ${system.bodies.length} bodies`
-
   return (
-    <ViewerContextProvider>
-      <ViewerModal
-        title={title}
-        onClose={onClose}
-        header={<LayerToggles />}
-        footer={
-          <ViewerLegend
-            scaleNote={makeScaleNote(system)}
-            onFrame={() => window.dispatchEvent(new CustomEvent('viewer3d:frame-system'))}
-          />
-        }
-      >
-        <BodyLookupProvider system={system}>
-          <div className={`relative flex-1 transition-opacity duration-200 ${mounted ? 'opacity-100' : 'opacity-0'}`}>
-            <Scene graph={graph} system={system} />
-          </div>
-          <DetailSidebar>
-            <SidebarContent system={system} graph={graph} />
-          </DetailSidebar>
-        </BodyLookupProvider>
-      </ViewerModal>
-    </ViewerContextProvider>
+    <ViewerModal
+      title={title}
+      onClose={onClose}
+      header={<LayerToggles />}
+      footer={
+        <ViewerLegend
+          scaleNote={makeScaleNote(system, scaleMode)}
+          onFrame={() => window.dispatchEvent(new CustomEvent('viewer3d:frame-system'))}
+        />
+      }
+    >
+      <BodyLookupProvider system={system}>
+        <div className={`relative flex-1 transition-opacity duration-200 ${mounted ? 'opacity-100' : 'opacity-0'}`}>
+          <Scene graph={graph} system={system} />
+        </div>
+        <DetailSidebar>
+          <SidebarContent system={system} graph={graph} />
+        </DetailSidebar>
+      </BodyLookupProvider>
+    </ViewerModal>
   )
 }
 
