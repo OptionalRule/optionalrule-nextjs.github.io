@@ -90,10 +90,12 @@ export function ViewerModal({ title, onClose, header, footer, children }: Viewer
           <button
             type="button"
             onClick={onClose}
-            className="inline-flex h-8 w-8 items-center justify-center rounded-md text-[var(--text-secondary)] transition-colors hover:bg-[var(--card-elevated)] hover:text-[var(--text-primary)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]"
+            className="inline-flex items-center gap-1.5 rounded-md border border-[var(--border)] bg-[var(--card-elevated)] px-3 py-1.5 text-xs font-semibold uppercase tracking-[0.08em] text-[var(--text-primary)] transition-colors hover:border-[var(--accent)] hover:bg-[var(--accent-light)] hover:text-[var(--accent)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]"
             aria-label="Close 3D viewer"
           >
-            <X className="h-4 w-4" aria-hidden="true" />
+            <X className="h-3.5 w-3.5" aria-hidden="true" />
+            <span>Close</span>
+            <span aria-hidden="true" className="ml-1 hidden rounded border border-[var(--border)] px-1 py-px font-mono text-[10px] tracking-normal text-[var(--text-tertiary)] sm:inline">esc</span>
           </button>
         </div>
       </header>
