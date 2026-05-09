@@ -30,10 +30,20 @@ export function Body({ body }: BodyProps) {
     if (orbitingBody) {
       const u = shaderUniforms(orbitingBody)
       mat.uniforms.uBaseColor.value.set(u.baseColor)
+      mat.uniforms.uSecondaryColor.value.set(u.secondaryColor)
+      mat.uniforms.uAccentColor.value.set(u.accentColor)
       mat.uniforms.uNoiseScale.value = u.noiseScale
       mat.uniforms.uAtmosphere.value = u.atmosphereStrength
       mat.uniforms.uHeatTint.value = u.heatTint
       mat.uniforms.uBandStrength.value = u.bandStrength
+      mat.uniforms.uBandFrequency.value = u.bandFrequency
+      mat.uniforms.uWaterCoverage.value = u.waterCoverage
+      mat.uniforms.uIceCoverage.value = u.iceCoverage
+      mat.uniforms.uCloudStrength.value = u.cloudStrength
+      mat.uniforms.uCraterStrength.value = u.craterStrength
+      mat.uniforms.uVolcanicStrength.value = u.volcanicStrength
+      mat.uniforms.uStormStrength.value = u.stormStrength
+      mat.uniforms.uSurfaceSeed.value = u.surfaceSeed
     }
     return mat
   }, [body, orbitingBody])

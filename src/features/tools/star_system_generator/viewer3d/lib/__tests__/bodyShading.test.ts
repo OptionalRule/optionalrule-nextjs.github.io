@@ -106,4 +106,76 @@ describe('shaderUniforms', () => {
     )
     expect(hot.heatTint).toBeGreaterThan(cool.heatTint)
   })
+
+  it('turns ocean hydrosphere into visible water coverage', () => {
+    const dry = shaderUniforms(fakeBody('rocky-planet'))
+    const ocean = shaderUniforms(
+      fakeBody('rocky-planet', {
+        detail: {
+          ...fakeBody('rocky-planet').detail,
+          hydrosphere: { value: 'Global ocean', confidence: 'derived' },
+        },
+      }),
+    )
+
+    expect(ocean.waterCoverage).toBeGreaterThan(dry.waterCoverage)
+    expect(ocean.accentColor).toMatch(/^#/)
+  })
+
+  it('uses cold and frozen physical details for ice coverage', () => {
+    const warm = shaderUniforms(fakeBody('rocky-planet'))
+    const frozen = shaderUniforms(
+      fakeBody('rocky-planet', {
+        thermalZone: { value: 'Cryogenic', confidence: 'derived' },
+        detail: {
+          ...fakeBody('rocky-planet').detail,
+          hydrosphere: { value: 'Frozen ice mantle', confidence: 'derived' },
+        },
+      }),
+    )
+
+    expect(frozen.iceCoverage).toBeGreaterThan(warm.iceCoverage)
+  })
+
+  it('maps airless rubble worlds toward cratering instead of clouds', () => {
+    const airless = shaderUniforms(
+      fakeBody('dwarf-body', {
+        bodyClass: { value: 'Airless rubble remnant', confidence: 'derived' },
+        detail: {
+          ...fakeBody('dwarf-body').detail,
+          atmosphere: { value: 'Hard vacuum', confidence: 'derived' },
+          geology: { value: 'Minor-body rubble and collision families', confidence: 'derived' },
+        },
+      }),
+    )
+
+    expect(airless.craterStrength).toBeGreaterThan(0.5)
+    expect(airless.cloudStrength).toBe(0)
+  })
+
+  it('maps active geology and storm climates into visible procedural layers', () => {
+    const active = shaderUniforms(
+      fakeBody('rocky-planet', {
+        detail: {
+          ...fakeBody('rocky-planet').detail,
+          atmosphere: { value: 'Thick toxic atmosphere', confidence: 'derived' },
+          geology: { value: 'Global resurfacing and active volcanism', confidence: 'derived' },
+          climate: [{ value: 'Permanent storm tracks', confidence: 'derived' }],
+        },
+      }),
+    )
+
+    expect(active.volcanicStrength).toBeGreaterThan(0)
+    expect(active.cloudStrength).toBeGreaterThan(0.3)
+    expect(active.stormStrength).toBeGreaterThan(0.2)
+  })
+
+  it('keeps surface variation deterministic per body', () => {
+    const first = shaderUniforms(fakeBody('rocky-planet', { id: 'deterministic-body' }))
+    const second = shaderUniforms(fakeBody('rocky-planet', { id: 'deterministic-body' }))
+    const other = shaderUniforms(fakeBody('rocky-planet', { id: 'other-body' }))
+
+    expect(first.surfaceSeed).toBe(second.surfaceSeed)
+    expect(first.surfaceSeed).not.toBe(other.surfaceSeed)
+  })
 })
