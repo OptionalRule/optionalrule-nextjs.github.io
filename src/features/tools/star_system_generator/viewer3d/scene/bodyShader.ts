@@ -19,7 +19,6 @@ uniform float uAtmosphere;
 uniform float uHeatTint;
 uniform float uBandStrength;
 uniform float uGuAccent;
-uniform float uTime;
 
 varying vec3 vNormal;
 varying vec3 vPos;
@@ -100,7 +99,6 @@ export function makeBodyMaterial(body: BodyVisual): THREE.ShaderMaterial {
       uHeatTint: { value: 0 },
       uBandStrength: { value: 0 },
       uGuAccent: { value: body.guAccent ? 1 : 0 },
-      uTime: { value: 0 },
     },
   })
 }

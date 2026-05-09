@@ -1,7 +1,7 @@
 'use client'
 
 import * as THREE from 'three'
-import { useMemo, useRef } from 'react'
+import { useEffect, useMemo, useRef } from 'react'
 import { useFrame } from '@react-three/fiber'
 import type { BodyVisual } from '../types'
 import { useViewerContext } from '../chrome/ViewerContext'
@@ -36,6 +36,14 @@ export function Body({ body }: BodyProps) {
   }, [body, orbitingBody])
 
   const worldPos = useMemo(() => new THREE.Vector3(), [])
+  const posTuple = useRef<[number, number, number]>([0, 0, 0])
+
+  useEffect(() => {
+    const dict = window as Window & { __viewer3dBodyPositions?: Record<string, [number, number, number]> }
+    if (!dict.__viewer3dBodyPositions) dict.__viewer3dBodyPositions = {}
+    dict.__viewer3dBodyPositions[body.id] = posTuple.current
+    return () => { delete dict.__viewer3dBodyPositions?.[body.id] }
+  }, [body.id])
 
   useFrame((_state, delta) => {
     if (!groupRef.current) return
@@ -44,9 +52,9 @@ export function Body({ body }: BodyProps) {
     if (meshRef.current) {
       meshRef.current.rotation.y += delta * 0.3
       meshRef.current.getWorldPosition(worldPos)
-      const dict = window as Window & { __viewer3dBodyPositions?: Record<string, [number, number, number]> }
-      if (!dict.__viewer3dBodyPositions) dict.__viewer3dBodyPositions = {}
-      dict.__viewer3dBodyPositions[body.id] = [worldPos.x, worldPos.y, worldPos.z]
+      posTuple.current[0] = worldPos.x
+      posTuple.current[1] = worldPos.y
+      posTuple.current[2] = worldPos.z
     }
   })
 

@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { Canvas } from '@react-three/fiber'
 import { Html } from '@react-three/drei'
 import type { GeneratedSystem } from '../../types'
@@ -35,12 +35,10 @@ export interface SceneProps {
 
 export function Scene({ graph, system }: SceneProps) {
   const { select, hover, prefersReducedMotion } = useViewerContext()
-  const [supported, setSupported] = useState<boolean | null>(null)
-  useEffect(() => { setSupported(detectWebGL()) }, [])
-  if (supported === false) {
+  const [supported] = useState<boolean>(() => typeof document === 'undefined' ? true : detectWebGL())
+  if (!supported) {
     return <WebGLFallback onClose={() => window.dispatchEvent(new CustomEvent('viewer3d:close'))} />
   }
-  if (supported === null) return null
 
   const hasBodies = graph.bodies.length > 0 || graph.belts.length > 0
   return (
