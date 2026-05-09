@@ -87,7 +87,7 @@ function moonsFor(body: OrbitingBody, _seed: string, parentSize: number): MoonVi
       id: moon.id,
       parentBodyId: body.id,
       parentRelativeOrbit: orbit,
-      phase0: phase0ForBody(moon.id, _seed),
+      phase0: phase0ForBody(moon.id, _seed, idx),
       angularSpeed: (Math.PI * 2) / periodSec,
       orbitTilt: tilt,
       visualSize: parentSize * sizeScale,
@@ -147,7 +147,7 @@ function archetypeForShading(shading: BodyShadingKey): RenderArchetype {
   }
 }
 
-function buildBody(body: OrbitingBody, system: GeneratedSystem, hzCenterAu: number): BodyVisual {
+function buildBody(body: OrbitingBody, system: GeneratedSystem, hzCenterAu: number, orbitIndex: number): BodyVisual {
   const size = bodyVisualSize(body.category.value)
   const shading = chooseShading(body)
   const settlementIds = system.settlements
@@ -160,7 +160,7 @@ function buildBody(body: OrbitingBody, system: GeneratedSystem, hzCenterAu: numb
     id: body.id,
     orbitRadius: auToScene(body.orbitAu.value, hzCenterAu),
     orbitTiltY: (hashToUnit(`tilt#${body.id}`) - 0.5) * 0.4,
-    phase0: phase0ForBody(body.id, system.seed),
+    phase0: phase0ForBody(body.id, system.seed, orbitIndex),
     angularSpeed: angularSpeedFromPeriod(body.physical.periodDays.value),
     visualSize: size,
     shading,
@@ -241,7 +241,7 @@ export function buildSceneGraph(system: GeneratedSystem): SystemSceneGraph {
   const nonBelt = system.bodies.filter((b) => b.category.value !== 'belt')
   const beltBodies = system.bodies.filter((b) => b.category.value === 'belt')
 
-  const bodies = nonBelt.map((b) => buildBody(b, system, hzCenterAu))
+  const bodies = nonBelt.map((b, index) => buildBody(b, system, hzCenterAu, index))
   const belts = beltBodies.map((b) => buildBelt(b, hzCenterAu))
 
   const hazards = system.majorHazards.map((h) => classifyHazard(h, system, hzCenterAu))

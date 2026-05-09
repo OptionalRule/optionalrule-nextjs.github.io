@@ -33,6 +33,13 @@ describe('phase0ForBody', () => {
   it('differs when seed changes', () => {
     expect(phase0ForBody('body-3', 'seedA')).not.toBe(phase0ForBody('body-3', 'seedB'))
   })
+
+  it('uses orbital index spacing to avoid clustered sequential body ids', () => {
+    const phases = Array.from({ length: 9 }, (_, index) => phase0ForBody(`body-${index + 1}`, '7f3a9c2e41b8d09a', index))
+    const span = Math.max(...phases) - Math.min(...phases)
+
+    expect(span).toBeGreaterThan(Math.PI)
+  })
 })
 
 describe('angularSpeedFromPeriod', () => {
@@ -45,8 +52,12 @@ describe('angularSpeedFromPeriod', () => {
     expect(angularSpeedFromPeriod(365)).toBeGreaterThan(angularSpeedFromPeriod(4332))
   })
 
-  it('caps speed so very-close-in bodies do not strobe', () => {
-    expect(angularSpeedFromPeriod(0.5)).toBeLessThanOrEqual(angularSpeedFromPeriod(2))
+  it('uses real-time orbit pacing for an Earth-year baseline', () => {
+    expect(angularSpeedFromPeriod(365)).toBeCloseTo((2 * Math.PI) / 31_557_600, 8)
+  })
+
+  it('only caps impossible sub-minute display periods', () => {
+    expect(angularSpeedFromPeriod(0.0001)).toBeLessThanOrEqual((2 * Math.PI) / 20)
   })
 
   it('falls back to a sane speed for null/zero periodDays', () => {
