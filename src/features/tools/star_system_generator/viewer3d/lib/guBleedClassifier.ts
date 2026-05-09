@@ -2,6 +2,7 @@ import type { GeneratedSystem, GuOverlay, OrbitingBody } from '../../types'
 import type { GuBleedVisual, SceneVec3 } from '../types'
 import { auToScene } from './scale'
 import { hashToUnit } from './motion'
+import { guVolumeProfile } from './visualProfiles'
 
 interface AnchorMatch {
   center: SceneVec3
@@ -229,6 +230,7 @@ export function classifyGuBleed(overlay: GuOverlay, system: GeneratedSystem, hzC
   const sized = intensityFromOverlay(overlay)
   const anchor = resolveAnchor(overlay, system, hzCenterAu)
   const pulsePeriodSec = sized.intensity >= 0.95 ? 4 : 6
+  const profile = guVolumeProfile(system, id)
 
   if (!anchor) {
     return {
@@ -239,6 +241,7 @@ export function classifyGuBleed(overlay: GuOverlay, system: GeneratedSystem, hzC
       pulsePeriodSec,
       intensity: sized.intensity,
       unclassified: true,
+      ...profile,
     }
   }
 
@@ -250,5 +253,6 @@ export function classifyGuBleed(overlay: GuOverlay, system: GeneratedSystem, hzC
     pulsePeriodSec,
     intensity: sized.intensity,
     unclassified: false,
+    ...profile,
   }
 }

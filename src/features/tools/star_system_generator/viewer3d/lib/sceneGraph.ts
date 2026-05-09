@@ -18,6 +18,15 @@ import { spectralVisuals } from './stellarColor'
 import { chooseShading } from './bodyShading'
 import { classifyHazard } from './hazardClassifier'
 import { classifyGuBleed } from './guBleedClassifier'
+import {
+  buildBeltProfile,
+  buildBodySurfaceProfile,
+  buildMoonSurfaceProfile,
+  buildRingProfile,
+  companionStarVisuals,
+  phenomenonVisualProfile,
+  primaryStarVisualExtras,
+} from './visualProfiles'
 
 const BODY_ORBIT_CLEARANCE = 2.5
 const MIN_MOON_PERIOD_SEC = 24
@@ -44,6 +53,7 @@ function companionOffset(separation: string, hzCenterAu: number, scaleMode: Orbi
 
 function buildStar(system: GeneratedSystem): StarVisual {
   const visuals = spectralVisuals(system.primary.spectralType.value, system.primary.activityRoll.value)
+  const extras = primaryStarVisualExtras(system)
   return {
     id: system.primary.id,
     coreColor: visuals.coreColor,
@@ -51,35 +61,33 @@ function buildStar(system: GeneratedSystem): StarVisual {
     coronaRadius: visuals.coronaRadius,
     rayCount: visuals.rayCount,
     bloomStrength: visuals.bloomStrength,
+    flareStrength: extras.flareStrength,
+    pulseSpeed: extras.pulseSpeed,
+    rayColor: extras.rayColor,
     position: [0, 0, 0],
   }
 }
 
 function buildCompanion(companion: StellarCompanion, _primary: StarVisual, hzCenterAu: number, scaleMode: OrbitScaleMode): StarVisual {
-  const visuals = spectralVisuals('G2V', 50)
+  const visuals = companionStarVisuals(companion)
   const offset = companionOffset(companion.separation.value, hzCenterAu, scaleMode)
   const angle = hashToUnit(`companion#${companion.id}`) * Math.PI * 2
   return {
     id: companion.id,
     coreColor: visuals.coreColor,
     coronaColor: visuals.coronaColor,
-    coronaRadius: visuals.coronaRadius * 0.7,
+    coronaRadius: visuals.coronaRadius,
     rayCount: visuals.rayCount,
-    bloomStrength: visuals.bloomStrength * 0.7,
+    bloomStrength: visuals.bloomStrength,
+    flareStrength: visuals.flareStrength,
+    pulseSpeed: visuals.pulseSpeed,
+    rayColor: visuals.rayColor,
     position: [Math.cos(angle) * offset, 0, Math.sin(angle) * offset],
   }
 }
 
 function ringFor(body: OrbitingBody, parentSize: number): RingVisual | undefined {
-  if (!body.rings) return undefined
-  const tilt = (hashToUnit(`ring#${body.id}`) - 0.5) * 0.6
-  return {
-    innerRadius: parentSize * 1.4,
-    outerRadius: parentSize * 2.1,
-    tilt,
-    bandCount: 3,
-    color: '#d6a96b',
-  }
+  return buildRingProfile(body, parentSize)
 }
 
 function moonScaleFactor(scale: string): number {
@@ -141,6 +149,7 @@ function moonsFor(body: OrbitingBody, _seed: string, parentSize: number): MoonVi
       orbitTilt: tilt,
       visualSize: parentSize * scaleFactor,
       shading: 'dwarf',
+      surface: buildMoonSurfaceProfile(moon, _seed),
     }
   })
 }
@@ -221,6 +230,7 @@ function buildBody(body: OrbitingBody, system: GeneratedSystem, hzCenterAu: numb
     shading,
     renderArchetype: archetypeForShading(shading),
     category: body.category.value,
+    surface: buildBodySurfaceProfile(body, system.seed, settlementIds.length),
     rings: ringFor(body, size),
     moons: moonsFor(body, system.seed, size),
     guAccent: bodyHasGuFracture(body),
@@ -248,7 +258,7 @@ function applyBodyOrbitClearance(bodies: BodyVisual[]): BodyVisual[] {
 
 function buildBelt(body: OrbitingBody, hzCenterAu: number, scaleMode: OrbitScaleMode, orbitIndex: number): BeltVisual {
   const r = orbitRadiusForBody(body, hzCenterAu, scaleMode, orbitIndex)
-  return {
+  return buildBeltProfile(body, {
     id: body.id,
     innerRadius: r * 0.92,
     outerRadius: r * 1.08,
@@ -256,7 +266,7 @@ function buildBelt(body: OrbitingBody, hzCenterAu: number, scaleMode: OrbitScale
     jitter: r * 0.04,
     color: '#1d1d1b',
     renderArchetype: 'belt',
-  }
+  })
 }
 
 function buildPhenomenon(phen: GeneratedSystem['phenomena'][number], system: GeneratedSystem, hzCenterAu: number, scaleMode: OrbitScaleMode): PhenomenonMarker {
@@ -267,6 +277,7 @@ function buildPhenomenon(phen: GeneratedSystem['phenomena'][number], system: Gen
     id: phen.id,
     position: [Math.cos(angle) * r * 1.3, 0, Math.sin(angle) * r * 1.3],
     kind: phen.phenomenon.value,
+    ...phenomenonVisualProfile(phen.phenomenon.value, phen.id),
     renderArchetype: 'phenomenon-marker',
   }
 }

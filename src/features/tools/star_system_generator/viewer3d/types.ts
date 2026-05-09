@@ -26,6 +26,52 @@ export type RenderArchetype =
   | 'ruin-marker'
   | 'phenomenon-marker'
 
+export type SurfaceFamily =
+  | 'airless'
+  | 'anomaly'
+  | 'carbon'
+  | 'desert'
+  | 'gas-banded'
+  | 'ice'
+  | 'iron'
+  | 'magma'
+  | 'ocean'
+  | 'rocky'
+  | 'settled'
+  | 'volatile'
+
+export type VolumeShape = 'sphere' | 'ellipsoid' | 'shell' | 'torus' | 'ribbon'
+
+export interface BodySurfaceVisual {
+  profileVersion: 1
+  family: SurfaceFamily
+  atmosphereColor: string
+  atmosphereStrength: number
+  atmosphereThickness: number
+  cloudColor: string
+  cloudStrength: number
+  cloudRotationSpeed: number
+  normalStrength: number
+  reliefStrength: number
+  nightLightStrength: number
+  cityLightColor: string
+  surfaceSeed: number
+  cloudSeed: number
+}
+
+export interface MoonSurfaceVisual {
+  profileVersion: 1
+  family: SurfaceFamily
+  baseColor: string
+  secondaryColor: string
+  accentColor: string
+  atmosphereStrength: number
+  craterStrength: number
+  iceCoverage: number
+  volcanicStrength: number
+  surfaceSeed: number
+}
+
 export interface StarVisual {
   id: string
   coreColor: string
@@ -33,6 +79,9 @@ export interface StarVisual {
   coronaRadius: number
   rayCount: number
   bloomStrength: number
+  flareStrength: number
+  pulseSpeed: number
+  rayColor: string
   position: SceneVec3
 }
 
@@ -42,6 +91,11 @@ export interface RingVisual {
   tilt: number
   bandCount: number
   color: string
+  secondaryColor: string
+  opacity: number
+  gapCount: number
+  gapSeed: number
+  arcStrength: number
 }
 
 export interface MoonVisual {
@@ -53,6 +107,7 @@ export interface MoonVisual {
   orbitTilt: number
   visualSize: number
   shading: BodyShadingKey
+  surface: MoonSurfaceVisual
 }
 
 export interface BodyVisual {
@@ -65,6 +120,7 @@ export interface BodyVisual {
   shading: BodyShadingKey
   renderArchetype: RenderArchetype
   category: BodyCategory
+  surface: BodySurfaceVisual
   rings?: RingVisual
   moons: MoonVisual[]
   guAccent: boolean
@@ -80,6 +136,11 @@ export interface BeltVisual {
   particleCount: number
   jitter: number
   color: string
+  colors: string[]
+  gapCount: number
+  clumpiness: number
+  inclination: number
+  particleSizeScale: number
   renderArchetype: 'belt'
 }
 
@@ -91,6 +152,10 @@ export interface HazardVisual {
   sourceText: string
   anchorDescription: string
   unclassified: boolean
+  shape: VolumeShape
+  color: string
+  tilt: number
+  stretch: SceneVec3
 }
 
 export interface GuBleedVisual {
@@ -101,12 +166,19 @@ export interface GuBleedVisual {
   pulsePeriodSec: number
   intensity: number
   unclassified: boolean
+  shape: VolumeShape
+  color: string
+  distortion: number
+  tilt: number
+  stretch: SceneVec3
 }
 
 export interface PhenomenonMarker {
   id: string
   position: SceneVec3
   kind: string
+  color: string
+  scale: number
   renderArchetype: 'phenomenon-marker'
 }
 

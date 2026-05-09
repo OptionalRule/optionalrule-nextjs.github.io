@@ -2,6 +2,7 @@ import type { Fact, GeneratedSystem, OrbitingBody } from '../../types'
 import type { HazardVisual, SceneVec3 } from '../types'
 import { auToScene } from './scale'
 import { hashToUnit } from './motion'
+import { hazardVolumeProfile } from './visualProfiles'
 
 interface AnchorRule {
   keywords: string[]
@@ -153,6 +154,7 @@ export function classifyHazard(hazard: Fact<string>, system: GeneratedSystem, hz
   const text = hazard.value
   const lower = text.toLowerCase()
   const id = `hz-${hashToUnit(`${system.id}#${text}`).toString(36).slice(2, 10)}`
+  const profile = hazardVolumeProfile(text, id)
 
   for (const rule of RULES) {
     if (rule.keywords.some((k) => lower.includes(k))) {
@@ -166,6 +168,7 @@ export function classifyHazard(hazard: Fact<string>, system: GeneratedSystem, hz
           sourceText: text,
           anchorDescription: placement.anchorDescription,
           unclassified: false,
+          ...profile,
         }
       }
     }
@@ -179,5 +182,6 @@ export function classifyHazard(hazard: Fact<string>, system: GeneratedSystem, hz
     sourceText: text,
     anchorDescription: '',
     unclassified: true,
+    ...profile,
   }
 }
