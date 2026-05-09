@@ -8,6 +8,8 @@ import type {
   RuinMarker,
   StarVisual,
   SystemSceneGraph,
+  BodyShadingKey,
+  RenderArchetype,
 } from '../types'
 import { auToScene, bodyVisualSize } from './scale'
 import { angularSpeedFromPeriod, hashToUnit, phase0ForBody } from './motion'
@@ -123,8 +125,31 @@ function bodyHasGuFracture(body: OrbitingBody): boolean {
   return filterText.includes('gu') && filterText.includes('fracture')
 }
 
+function archetypeForShading(shading: BodyShadingKey): RenderArchetype {
+  switch (shading) {
+    case 'rocky-warm':
+    case 'rocky-cool':
+      return 'rocky'
+    case 'earthlike':
+      return 'earthlike'
+    case 'desert':
+      return 'desert'
+    case 'sub-neptune':
+      return 'sub-neptune'
+    case 'gas-giant':
+      return 'gas-giant'
+    case 'ice-giant':
+      return 'ice-giant'
+    case 'dwarf':
+      return 'dwarf'
+    case 'anomaly':
+      return 'anomaly'
+  }
+}
+
 function buildBody(body: OrbitingBody, system: GeneratedSystem, hzCenterAu: number): BodyVisual {
   const size = bodyVisualSize(body.category.value)
+  const shading = chooseShading(body)
   const settlementIds = system.settlements
     .filter((s) => s.bodyId === body.id || body.moons.some((m) => m.id === s.moonId))
     .map((s) => s.id)
@@ -138,7 +163,8 @@ function buildBody(body: OrbitingBody, system: GeneratedSystem, hzCenterAu: numb
     phase0: phase0ForBody(body.id, system.seed),
     angularSpeed: angularSpeedFromPeriod(body.physical.periodDays.value),
     visualSize: size,
-    shading: chooseShading(body),
+    shading,
+    renderArchetype: archetypeForShading(shading),
     category: body.category.value,
     rings: ringFor(body, size),
     moons: moonsFor(body, system.seed, size),
@@ -158,6 +184,7 @@ function buildBelt(body: OrbitingBody, hzCenterAu: number): BeltVisual {
     particleCount: 1500,
     jitter: r * 0.04,
     color: '#1d1d1b',
+    renderArchetype: 'belt',
   }
 }
 
@@ -169,6 +196,7 @@ function buildPhenomenon(phen: GeneratedSystem['phenomena'][number], system: Gen
     id: phen.id,
     position: [Math.cos(angle) * r * 1.3, 0, Math.sin(angle) * r * 1.3],
     kind: phen.phenomenon.value,
+    renderArchetype: 'phenomenon-marker',
   }
 }
 
@@ -180,6 +208,7 @@ function buildRuin(ruin: GeneratedSystem['ruins'][number], system: GeneratedSyst
       id: ruin.id,
       attachedBodyId: matched.id,
       position: [0, 0, 0],
+      renderArchetype: 'ruin-marker',
     }
   }
   if (sourceBody) {
@@ -188,6 +217,7 @@ function buildRuin(ruin: GeneratedSystem['ruins'][number], system: GeneratedSyst
     return {
       id: ruin.id,
       position: [Math.cos(angle) * r, 0, Math.sin(angle) * r],
+      renderArchetype: 'ruin-marker',
     }
   }
   const outer = bodies.reduce<BodyVisual | undefined>(
@@ -199,6 +229,7 @@ function buildRuin(ruin: GeneratedSystem['ruins'][number], system: GeneratedSyst
   return {
     id: ruin.id,
     position: [Math.cos(angle) * baseR, 0, Math.sin(angle) * baseR],
+    renderArchetype: 'ruin-marker',
   }
 }
 

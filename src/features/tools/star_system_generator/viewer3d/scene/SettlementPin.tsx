@@ -1,6 +1,7 @@
 'use client'
 
 import { useLayers, useSelectionActions } from '../chrome/ViewerContext'
+import { settlementPinHeadGeometry, settlementPinMaterial, settlementPinStemGeometry } from './renderAssets'
 
 export interface SettlementPinProps {
   size: number
@@ -19,14 +20,19 @@ export function SettlementPin({ size, settlementIds }: SettlementPinProps) {
       onPointerOut={(e) => { e.stopPropagation(); hover(null); document.body.style.cursor = '' }}
       onClick={(e) => { e.stopPropagation(); if (primary) select({ kind: 'settlement', id: primary }) }}
     >
-      <mesh>
-        <sphereGeometry args={[size * 0.18, 8, 8]} />
-        <meshBasicMaterial color="#ff9d4a" toneMapped={false} />
-      </mesh>
-      <mesh position={[0, -size * 0.4, 0]}>
-        <cylinderGeometry args={[size * 0.03, size * 0.03, size * 0.8, 6]} />
-        <meshBasicMaterial color="#ff9d4a" toneMapped={false} />
-      </mesh>
+      <mesh
+        geometry={settlementPinHeadGeometry}
+        material={settlementPinMaterial}
+        scale={size * 0.18}
+        dispose={null}
+      />
+      <mesh
+        geometry={settlementPinStemGeometry}
+        material={settlementPinMaterial}
+        position={[0, -size * 0.4, 0]}
+        scale={[size * 0.03, size * 0.8, size * 0.03]}
+        dispose={null}
+      />
     </group>
   )
 }

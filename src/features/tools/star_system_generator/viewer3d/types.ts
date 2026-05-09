@@ -13,6 +13,19 @@ export type BodyShadingKey =
   | 'dwarf'
   | 'anomaly'
 
+export type RenderArchetype =
+  | 'rocky'
+  | 'earthlike'
+  | 'desert'
+  | 'sub-neptune'
+  | 'gas-giant'
+  | 'ice-giant'
+  | 'dwarf'
+  | 'anomaly'
+  | 'belt'
+  | 'ruin-marker'
+  | 'phenomenon-marker'
+
 export interface StarVisual {
   id: string
   coreColor: string
@@ -50,6 +63,7 @@ export interface BodyVisual {
   angularSpeed: number
   visualSize: number
   shading: BodyShadingKey
+  renderArchetype: RenderArchetype
   category: BodyCategory
   rings?: RingVisual
   moons: MoonVisual[]
@@ -66,6 +80,7 @@ export interface BeltVisual {
   particleCount: number
   jitter: number
   color: string
+  renderArchetype: 'belt'
 }
 
 export interface HazardVisual {
@@ -92,6 +107,7 @@ export interface PhenomenonMarker {
   id: string
   position: SceneVec3
   kind: string
+  renderArchetype: 'phenomenon-marker'
 }
 
 export interface RuinMarker {
@@ -99,6 +115,7 @@ export interface RuinMarker {
   attachedBodyId?: string
   attachedMoonId?: string
   position: SceneVec3
+  renderArchetype: 'ruin-marker'
 }
 
 export interface SystemSceneGraph {

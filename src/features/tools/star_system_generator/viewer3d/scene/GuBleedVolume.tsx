@@ -6,6 +6,7 @@ import { useFrame } from '@react-three/fiber'
 import type { GuBleedVisual } from '../types'
 import { useLayers, usePrefersReducedMotion, useSelectionActions } from '../chrome/ViewerContext'
 import { makeVolumetricMaterial } from './volumetricShader'
+import { guBleedSphereGeometry } from './renderAssets'
 
 export function GuBleedVolume({ bleed }: { bleed: GuBleedVisual }) {
   const { layers } = useLayers()
@@ -36,13 +37,14 @@ export function GuBleedVolume({ bleed }: { bleed: GuBleedVisual }) {
 
   return (
     <mesh
+      geometry={guBleedSphereGeometry}
       position={bleed.center}
       scale={bleed.radius}
+      dispose={null}
       onPointerOver={(e) => { e.stopPropagation(); hover({ kind: 'gu-bleed', id: bleed.id }); document.body.style.cursor = 'pointer' }}
       onPointerOut={(e) => { e.stopPropagation(); hover(null); document.body.style.cursor = '' }}
       onClick={(e) => { e.stopPropagation(); select({ kind: 'gu-bleed', id: bleed.id }) }}
     >
-      <sphereGeometry args={[1, 32, 32]} />
       <primitive object={material} attach="material" />
     </mesh>
   )

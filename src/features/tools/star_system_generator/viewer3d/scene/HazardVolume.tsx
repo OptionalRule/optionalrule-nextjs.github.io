@@ -4,6 +4,7 @@ import { useEffect, useMemo } from 'react'
 import type { HazardVisual } from '../types'
 import { useLayers, useSelectionActions } from '../chrome/ViewerContext'
 import { makeVolumetricMaterial } from './volumetricShader'
+import { hazardSphereGeometry } from './renderAssets'
 
 export function HazardVolume({ hazard }: { hazard: HazardVisual }) {
   const { layers } = useLayers()
@@ -19,13 +20,14 @@ export function HazardVolume({ hazard }: { hazard: HazardVisual }) {
 
   return (
     <mesh
+      geometry={hazardSphereGeometry}
       position={hazard.center}
       scale={hazard.radius}
+      dispose={null}
       onPointerOver={(e) => { e.stopPropagation(); hover({ kind: 'hazard', id: hazard.id }); document.body.style.cursor = 'pointer' }}
       onPointerOut={(e) => { e.stopPropagation(); hover(null); document.body.style.cursor = '' }}
       onClick={(e) => { e.stopPropagation(); select({ kind: 'hazard', id: hazard.id }) }}
     >
-      <sphereGeometry args={[1, 24, 24]} />
       <primitive object={material} attach="material" />
     </mesh>
   )

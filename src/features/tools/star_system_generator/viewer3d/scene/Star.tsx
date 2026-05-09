@@ -1,6 +1,9 @@
 'use client'
 
+import * as THREE from 'three'
+import { useEffect, useMemo } from 'react'
 import type { StarVisual } from '../types'
+import { starSphereGeometry } from './renderAssets'
 
 export interface StarProps {
   star: StarVisual
@@ -8,23 +11,30 @@ export interface StarProps {
 
 export function Star({ star }: StarProps) {
   const coreSize = star.coronaRadius * 0.5
+  const coreMaterial = useMemo(
+    () => new THREE.MeshBasicMaterial({ color: star.coreColor, toneMapped: false }),
+    [star.coreColor],
+  )
+  const coronaMaterial = useMemo(
+    () => new THREE.MeshBasicMaterial({
+      color: star.coronaColor,
+      transparent: true,
+      opacity: 0.18 * star.bloomStrength,
+      depthWrite: false,
+      toneMapped: false,
+    }),
+    [star.bloomStrength, star.coronaColor],
+  )
+
+  useEffect(() => () => {
+    coreMaterial.dispose()
+    coronaMaterial.dispose()
+  }, [coreMaterial, coronaMaterial])
 
   return (
     <group position={star.position}>
-      <mesh>
-        <sphereGeometry args={[coreSize, 24, 24]} />
-        <meshBasicMaterial color={star.coreColor} toneMapped={false} />
-      </mesh>
-      <mesh>
-        <sphereGeometry args={[star.coronaRadius, 24, 24]} />
-        <meshBasicMaterial
-          color={star.coronaColor}
-          transparent
-          opacity={0.18 * star.bloomStrength}
-          depthWrite={false}
-          toneMapped={false}
-        />
-      </mesh>
+      <mesh geometry={starSphereGeometry} material={coreMaterial} scale={coreSize} dispose={null} />
+      <mesh geometry={starSphereGeometry} material={coronaMaterial} scale={star.coronaRadius} dispose={null} />
     </group>
   )
 }

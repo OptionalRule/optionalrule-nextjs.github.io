@@ -5,6 +5,7 @@ import { useRef } from 'react'
 import { useFrame } from '@react-three/fiber'
 import type { MoonVisual } from '../types'
 import { usePrefersReducedMotion } from '../chrome/ViewerContext'
+import { moonMaterial, moonSphereGeometry } from './renderAssets'
 
 export function Moon({ moon }: { moon: MoonVisual }) {
   const groupRef = useRef<THREE.Group | null>(null)
@@ -19,10 +20,13 @@ export function Moon({ moon }: { moon: MoonVisual }) {
 
   return (
     <group ref={groupRef} rotation={[moon.orbitTilt, moon.phase0, 0]}>
-      <mesh position={[moon.parentRelativeOrbit, 0, 0]}>
-        <sphereGeometry args={[moon.visualSize, 16, 16]} />
-        <meshStandardMaterial color="#8a8a82" roughness={1} metalness={0} />
-      </mesh>
+      <mesh
+        geometry={moonSphereGeometry}
+        material={moonMaterial}
+        position={[moon.parentRelativeOrbit, 0, 0]}
+        scale={moon.visualSize}
+        dispose={null}
+      />
     </group>
   )
 }

@@ -2,12 +2,13 @@ import * as THREE from 'three'
 import type { BodyVisual } from '../types'
 
 export const bodyVertex = /* glsl */ `
+uniform float uVisualSize;
 varying vec3 vNormal;
 varying vec3 vPos;
 void main() {
   vNormal = normalize(normalMatrix * normal);
   vec4 mv = modelViewMatrix * vec4(position, 1.0);
-  vPos = position;
+  vPos = position * uVisualSize;
   gl_Position = projectionMatrix * mv;
 }
 `
@@ -99,6 +100,7 @@ export function makeBodyMaterial(body: BodyVisual): THREE.ShaderMaterial {
       uHeatTint: { value: 0 },
       uBandStrength: { value: 0 },
       uGuAccent: { value: body.guAccent ? 1 : 0 },
+      uVisualSize: { value: body.visualSize },
     },
   })
 }

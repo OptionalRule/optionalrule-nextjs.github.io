@@ -33,6 +33,7 @@ const body: BodyVisual = {
   angularSpeed: 0.1,
   visualSize: 1.2,
   shading: 'rocky-warm',
+  renderArchetype: 'rocky',
   category: 'rocky-planet',
   rings: {
     innerRadius: 1.6,

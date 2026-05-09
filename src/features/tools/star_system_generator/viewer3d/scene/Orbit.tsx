@@ -1,7 +1,7 @@
 'use client'
 
 import * as THREE from 'three'
-import { useMemo } from 'react'
+import { useEffect, useMemo } from 'react'
 
 export interface OrbitProps {
   radius: number
@@ -30,11 +30,20 @@ export function Orbit({ radius, tiltY = 0, color, opacity = 0.55, dashed = false
     return mat
   }, [color, opacity, dashed])
 
+  const line = useMemo(() => {
+    const object = new THREE.Line(geometry, material)
+    if (dashed) object.computeLineDistances()
+    return object
+  }, [geometry, material, dashed])
+
+  useEffect(() => () => {
+    geometry.dispose()
+    material.dispose()
+  }, [geometry, material])
+
   return (
     <group rotation={[tiltY, 0, 0]}>
-      <primitive object={new THREE.Line(geometry, material)} onUpdate={(obj: THREE.Object3D) => {
-        if (dashed) (obj as THREE.Line).computeLineDistances()
-      }} />
+      <primitive object={line} />
     </group>
   )
 }

@@ -11,6 +11,7 @@ import { useGeneratedBodyLookup } from './bodyLookup'
 import { Ring } from './Ring'
 import { Moon } from './Moon'
 import { SettlementPin } from './SettlementPin'
+import { bodySphereGeometry } from './renderAssets'
 
 export interface BodyProps {
   body: BodyVisual
@@ -69,14 +70,16 @@ export function Body({ body }: BodyProps) {
           <>
             <mesh
               ref={meshRef}
+              geometry={bodySphereGeometry}
+              scale={body.visualSize}
+              dispose={null}
               onPointerOver={(e) => { e.stopPropagation(); hover({ kind: 'body', id: body.id }); document.body.style.cursor = 'pointer' }}
               onPointerOut={(e) => { e.stopPropagation(); hover(null); document.body.style.cursor = '' }}
               onClick={(e) => { e.stopPropagation(); select({ kind: 'body', id: body.id }) }}
             >
-              <sphereGeometry args={[body.visualSize, 32, 32]} />
               <primitive object={material} attach="material" />
-              {body.rings ? <Ring ring={body.rings} /> : null}
             </mesh>
+            {body.rings ? <Ring ring={body.rings} /> : null}
             {body.moons.map((moon) => (
               <Moon key={moon.id} moon={moon} />
             ))}

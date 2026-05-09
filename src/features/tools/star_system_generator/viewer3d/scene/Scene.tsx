@@ -18,6 +18,7 @@ import { PhenomenonGlyph } from './PhenomenonGlyph'
 import { HoverTooltip } from './HoverTooltip'
 import { useLayers, usePrefersReducedMotion, useSelectionActions } from '../chrome/ViewerContext'
 import { WebGLFallback } from '../chrome/WebGLFallback'
+import { invisibleHitMaterial, starSphereGeometry } from './renderAssets'
 
 function detectWebGL(): boolean {
   try {
@@ -74,14 +75,15 @@ export function Scene({ graph, system }: SceneProps) {
         <>
           <Star star={graph.star} />
           <mesh
+            geometry={starSphereGeometry}
+            material={invisibleHitMaterial}
             position={graph.star.position}
+            scale={graph.star.coronaRadius * 0.6}
+            dispose={null}
             onPointerOver={(e) => { e.stopPropagation(); hover({ kind: 'star', id: graph.star.id }); document.body.style.cursor = 'pointer' }}
             onPointerOut={(e) => { e.stopPropagation(); hover(null); document.body.style.cursor = '' }}
             onClick={(e) => { e.stopPropagation(); select({ kind: 'star', id: graph.star.id }) }}
-          >
-            <sphereGeometry args={[graph.star.coronaRadius * 0.6, 16, 16]} />
-            <meshBasicMaterial visible={false} />
-          </mesh>
+          />
           {graph.companions.map((c) => (
             <Star key={c.id} star={c} />
           ))}

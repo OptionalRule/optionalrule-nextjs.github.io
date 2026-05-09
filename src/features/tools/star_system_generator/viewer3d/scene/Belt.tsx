@@ -6,6 +6,7 @@ import { useFrame } from '@react-three/fiber'
 import type { BeltVisual } from '../types'
 import { hashToUnit } from '../lib/motion'
 import { usePrefersReducedMotion } from '../chrome/ViewerContext'
+import { beltParticleGeometry } from './renderAssets'
 
 export interface BeltProps {
   belt: BeltVisual
@@ -18,9 +19,8 @@ export function Belt({ belt }: BeltProps) {
   const instancedMesh = useMemo(() => {
     const dpr = typeof window !== 'undefined' ? window.devicePixelRatio : 1
     const count = Math.round(belt.particleCount * (dpr < 1.5 ? 0.5 : 1))
-    const geo = new THREE.IcosahedronGeometry(0.13, 0)
     const mat = new THREE.MeshBasicMaterial({ color: new THREE.Color(belt.color) })
-    const mesh = new THREE.InstancedMesh(geo, mat, count)
+    const mesh = new THREE.InstancedMesh(beltParticleGeometry, mat, count)
     const dummy = new THREE.Object3D()
     for (let i = 0; i < count; i++) {
       const a = (i / count + hashToUnit(`${belt.id}#${i}`) * 0.5) * Math.PI * 2
@@ -41,7 +41,6 @@ export function Belt({ belt }: BeltProps) {
   }, [belt])
 
   useEffect(() => () => {
-    instancedMesh.geometry.dispose()
     if (Array.isArray(instancedMesh.material)) {
       instancedMesh.material.forEach((material) => material.dispose())
     } else {
@@ -58,7 +57,7 @@ export function Belt({ belt }: BeltProps) {
 
   return (
     <group ref={groupRef}>
-      <primitive object={instancedMesh} />
+      <primitive object={instancedMesh} dispose={null} />
     </group>
   )
 }
