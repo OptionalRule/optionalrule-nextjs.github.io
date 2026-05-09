@@ -1,9 +1,12 @@
 'use client'
 
 import type { GeneratedSystem } from '../../types'
+import { SpectralChip } from '../../components/visual'
+import { formatStellarClass } from '../../lib/stellarLabels'
 
 export function StarDetailCard({ system }: { system: GeneratedSystem }) {
   const star = system.primary
+  const spectralValue = star.spectralType.value
   return (
     <article className="space-y-2 text-sm">
       <header>
@@ -11,7 +14,8 @@ export function StarDetailCard({ system }: { system: GeneratedSystem }) {
         <p className="text-xs text-[var(--text-tertiary)]">Primary star</p>
       </header>
       <dl className="grid grid-cols-[max-content_1fr] gap-x-3 gap-y-1 text-xs">
-        <dt className="text-[var(--text-tertiary)]">Spectral</dt><dd>{star.spectralType.value}</dd>
+        <dt className="text-[var(--text-tertiary)]">Spectral</dt>
+        <dd><SpectralChip spectralType={spectralValue} label={formatStellarClass(spectralValue)} /></dd>
         <dt className="text-[var(--text-tertiary)]">Mass</dt><dd>{star.massSolar.value} M☉</dd>
         <dt className="text-[var(--text-tertiary)]">Luminosity</dt><dd>{star.luminositySolar.value} L☉</dd>
         <dt className="text-[var(--text-tertiary)]">Age</dt><dd>{star.ageState.value}</dd>

@@ -3,6 +3,7 @@
 import { useEffect, useId, useRef, type ReactNode } from 'react'
 import { createPortal } from 'react-dom'
 import { X } from 'lucide-react'
+import { useViewerContext } from './ViewerContext'
 
 export interface ViewerModalProps {
   title: string
@@ -17,6 +18,7 @@ const FOCUSABLE = 'a[href], button:not([disabled]), input:not([disabled]), selec
 export function ViewerModal({ title, onClose, header, footer, children }: ViewerModalProps) {
   const titleId = useId()
   const containerRef = useRef<HTMLDivElement | null>(null)
+  const { toggleLayer } = useViewerContext()
 
   useEffect(() => {
     const previous = document.body.style.overflow
@@ -35,17 +37,17 @@ export function ViewerModal({ title, onClose, header, footer, children }: Viewer
       }
       if (e.key === '1') {
         e.preventDefault()
-        window.dispatchEvent(new CustomEvent('viewer3d:toggle-layer', { detail: { layer: 'physical' } }))
+        toggleLayer('physical')
         return
       }
       if (e.key === '2') {
         e.preventDefault()
-        window.dispatchEvent(new CustomEvent('viewer3d:toggle-layer', { detail: { layer: 'gu' } }))
+        toggleLayer('gu')
         return
       }
       if (e.key === '3') {
         e.preventDefault()
-        window.dispatchEvent(new CustomEvent('viewer3d:toggle-layer', { detail: { layer: 'human' } }))
+        toggleLayer('human')
         return
       }
       if (e.key !== 'Tab' || !containerRef.current) return
@@ -64,7 +66,7 @@ export function ViewerModal({ title, onClose, header, footer, children }: Viewer
     }
     window.addEventListener('keydown', handleKeydown)
     return () => window.removeEventListener('keydown', handleKeydown)
-  }, [onClose])
+  }, [onClose, toggleLayer])
 
   useEffect(() => {
     const focusables = containerRef.current?.querySelectorAll<HTMLElement>(FOCUSABLE)
