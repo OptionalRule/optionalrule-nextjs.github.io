@@ -134,7 +134,7 @@ function buildBelt(body: OrbitingBody, hzCenterAu: number): BeltVisual {
     outerRadius: r * 1.08,
     particleCount: 1500,
     jitter: r * 0.04,
-    color: '#3a3a36',
+    color: '#1d1d1b',
   }
 }
 
