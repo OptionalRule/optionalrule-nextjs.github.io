@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { hashToUnit, phase0ForBody, angularSpeedFromAu, AMBIENT_YEAR_SECONDS } from '../motion'
+import { hashToUnit, phase0ForBody, angularSpeedFromPeriod, VIEWER_SECONDS_PER_EARTH_YEAR } from '../motion'
 
 describe('hashToUnit', () => {
   it('returns a value in [0, 1)', () => {
@@ -35,17 +35,22 @@ describe('phase0ForBody', () => {
   })
 })
 
-describe('angularSpeedFromAu', () => {
-  it('uses AMBIENT_YEAR_SECONDS for 1 AU baseline', () => {
-    expect(angularSpeedFromAu(1)).toBeCloseTo((2 * Math.PI) / AMBIENT_YEAR_SECONDS, 5)
+describe('angularSpeedFromPeriod', () => {
+  it('uses VIEWER_SECONDS_PER_EARTH_YEAR as the 365-day baseline', () => {
+    expect(angularSpeedFromPeriod(365)).toBeCloseTo((2 * Math.PI) / VIEWER_SECONDS_PER_EARTH_YEAR, 5)
   })
 
-  it('inner orbits move faster than outer', () => {
-    expect(angularSpeedFromAu(0.4)).toBeGreaterThan(angularSpeedFromAu(5))
-    expect(angularSpeedFromAu(5)).toBeGreaterThan(angularSpeedFromAu(30))
+  it('shorter periods produce higher angular speeds', () => {
+    expect(angularSpeedFromPeriod(88)).toBeGreaterThan(angularSpeedFromPeriod(365))
+    expect(angularSpeedFromPeriod(365)).toBeGreaterThan(angularSpeedFromPeriod(4332))
   })
 
-  it('caps inner-orbit speed so close-in bodies do not strobe', () => {
-    expect(angularSpeedFromAu(0.01)).toBeLessThan(angularSpeedFromAu(0.001) * 10)
+  it('caps speed so very-close-in bodies do not strobe', () => {
+    expect(angularSpeedFromPeriod(0.5)).toBeLessThanOrEqual(angularSpeedFromPeriod(2))
+  })
+
+  it('falls back to a sane speed for null/zero periodDays', () => {
+    expect(angularSpeedFromPeriod(null)).toBeGreaterThan(0)
+    expect(angularSpeedFromPeriod(0)).toBeGreaterThan(0)
   })
 })

@@ -10,7 +10,7 @@ import type {
   SystemSceneGraph,
 } from '../types'
 import { auToScene, bodyVisualSize } from './scale'
-import { angularSpeedFromAu, hashToUnit, phase0ForBody } from './motion'
+import { angularSpeedFromPeriod, hashToUnit, phase0ForBody } from './motion'
 import { spectralVisuals } from './stellarColor'
 import { chooseShading } from './bodyShading'
 import { classifyHazard } from './hazardClassifier'
@@ -113,7 +113,7 @@ function buildBody(body: OrbitingBody, system: GeneratedSystem, hzCenterAu: numb
     orbitRadius: auToScene(body.orbitAu.value, hzCenterAu),
     orbitTiltY: (hashToUnit(`tilt#${body.id}`) - 0.5) * 0.4,
     phase0: phase0ForBody(body.id, system.seed),
-    angularSpeed: angularSpeedFromAu(body.orbitAu.value, hzCenterAu),
+    angularSpeed: angularSpeedFromPeriod(body.physical.periodDays.value),
     visualSize: size,
     shading: chooseShading(body),
     category: body.category.value,
@@ -134,7 +134,7 @@ function buildBelt(body: OrbitingBody, hzCenterAu: number): BeltVisual {
     outerRadius: r * 1.08,
     particleCount: 1500,
     jitter: r * 0.04,
-    color: '#9a9784',
+    color: '#3a3a36',
   }
 }
 

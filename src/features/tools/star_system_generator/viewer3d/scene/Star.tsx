@@ -1,6 +1,5 @@
 'use client'
 
-import { useMemo } from 'react'
 import type { StarVisual } from '../types'
 
 export interface StarProps {
@@ -9,15 +8,6 @@ export interface StarProps {
 
 export function Star({ star }: StarProps) {
   const coreSize = star.coronaRadius * 0.5
-  const raySize = Math.max(0.4, star.coronaRadius * 0.08)
-  const rays = useMemo(() => {
-    const out: Array<[number, number]> = []
-    for (let i = 0; i < star.rayCount; i++) {
-      const angle = (i / star.rayCount) * Math.PI * 2
-      out.push([Math.cos(angle), Math.sin(angle)])
-    }
-    return out
-  }, [star.rayCount])
 
   return (
     <group position={star.position}>
@@ -35,12 +25,6 @@ export function Star({ star }: StarProps) {
           toneMapped={false}
         />
       </mesh>
-      {rays.map(([x, y], idx) => (
-        <mesh key={idx} position={[x * star.coronaRadius * 1.05, 0, y * star.coronaRadius * 1.05]}>
-          <sphereGeometry args={[raySize, 8, 8]} />
-          <meshBasicMaterial color={star.coronaColor} transparent opacity={0.45} toneMapped={false} />
-        </mesh>
-      ))}
     </group>
   )
 }
