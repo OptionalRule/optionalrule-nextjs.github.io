@@ -2,14 +2,15 @@
 
 import { X } from 'lucide-react'
 import type { ReactNode } from 'react'
-import { useViewerContext } from './ViewerContext'
+import { useSelectionActions, useSelectionState } from './ViewerContext'
 
 export interface DetailSidebarProps {
   children: ReactNode
 }
 
 export function DetailSidebar({ children }: DetailSidebarProps) {
-  const { selection, select } = useViewerContext()
+  const { selection } = useSelectionState()
+  const { select } = useSelectionActions()
   const open = selection !== null
 
   return (

@@ -2,10 +2,10 @@ import { describe, it, expect } from 'vitest'
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { LayerToggles } from '../LayerToggles'
-import { ViewerContextProvider, useViewerContext } from '../ViewerContext'
+import { ViewerContextProvider, useLayers } from '../ViewerContext'
 
 function ProbeLayers() {
-  const { layers } = useViewerContext()
+  const { layers } = useLayers()
   return <div data-testid="probe">{`${layers.physical}|${layers.gu}|${layers.human}`}</div>
 }
 

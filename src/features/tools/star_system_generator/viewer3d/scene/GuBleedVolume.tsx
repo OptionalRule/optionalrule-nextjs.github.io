@@ -4,11 +4,13 @@ import * as THREE from 'three'
 import { useEffect, useMemo, useRef } from 'react'
 import { useFrame } from '@react-three/fiber'
 import type { GuBleedVisual } from '../types'
-import { useViewerContext } from '../chrome/ViewerContext'
+import { useLayers, usePrefersReducedMotion, useSelectionActions } from '../chrome/ViewerContext'
 import { makeVolumetricMaterial } from './volumetricShader'
 
 export function GuBleedVolume({ bleed }: { bleed: GuBleedVisual }) {
-  const { layers, prefersReducedMotion, hover, select } = useViewerContext()
+  const { layers } = useLayers()
+  const prefersReducedMotion = usePrefersReducedMotion()
+  const { hover, select } = useSelectionActions()
   const matRef = useRef<THREE.ShaderMaterial | null>(null)
   const material = useMemo(
     () => makeVolumetricMaterial({ color: '#a880ff', intensity: bleed.intensity, pulsing: true }),

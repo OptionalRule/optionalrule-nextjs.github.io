@@ -16,7 +16,7 @@ import { GuBleedVolume } from './GuBleedVolume'
 import { RuinPin } from './RuinPin'
 import { PhenomenonGlyph } from './PhenomenonGlyph'
 import { HoverTooltip } from './HoverTooltip'
-import { useViewerContext } from '../chrome/ViewerContext'
+import { usePrefersReducedMotion, useSelectionActions } from '../chrome/ViewerContext'
 import { WebGLFallback } from '../chrome/WebGLFallback'
 
 function detectWebGL(): boolean {
@@ -34,7 +34,8 @@ export interface SceneProps {
 }
 
 export function Scene({ graph, system }: SceneProps) {
-  const { select, hover, prefersReducedMotion } = useViewerContext()
+  const { select, hover } = useSelectionActions()
+  const prefersReducedMotion = usePrefersReducedMotion()
   const [supported] = useState<boolean>(() => typeof document === 'undefined' ? true : detectWebGL())
   if (!supported) {
     return <WebGLFallback onClose={() => window.dispatchEvent(new CustomEvent('viewer3d:close'))} />

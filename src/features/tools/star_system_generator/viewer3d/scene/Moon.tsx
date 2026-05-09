@@ -4,11 +4,11 @@ import * as THREE from 'three'
 import { useRef } from 'react'
 import { useFrame } from '@react-three/fiber'
 import type { MoonVisual } from '../types'
-import { useViewerContext } from '../chrome/ViewerContext'
+import { usePrefersReducedMotion } from '../chrome/ViewerContext'
 
 export function Moon({ moon }: { moon: MoonVisual }) {
   const groupRef = useRef<THREE.Group | null>(null)
-  const { prefersReducedMotion } = useViewerContext()
+  const prefersReducedMotion = usePrefersReducedMotion()
 
   useFrame((_state, delta) => {
     if (!groupRef.current) return

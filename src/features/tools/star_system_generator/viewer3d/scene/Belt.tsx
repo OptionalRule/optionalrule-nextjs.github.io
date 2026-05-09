@@ -5,7 +5,7 @@ import { useMemo, useRef } from 'react'
 import { useFrame } from '@react-three/fiber'
 import type { BeltVisual } from '../types'
 import { hashToUnit } from '../lib/motion'
-import { useViewerContext } from '../chrome/ViewerContext'
+import { usePrefersReducedMotion } from '../chrome/ViewerContext'
 
 export interface BeltProps {
   belt: BeltVisual
@@ -13,7 +13,7 @@ export interface BeltProps {
 
 export function Belt({ belt }: BeltProps) {
   const groupRef = useRef<THREE.Group | null>(null)
-  const { prefersReducedMotion } = useViewerContext()
+  const prefersReducedMotion = usePrefersReducedMotion()
 
   const instancedMesh = useMemo(() => {
     const dpr = typeof window !== 'undefined' ? window.devicePixelRatio : 1

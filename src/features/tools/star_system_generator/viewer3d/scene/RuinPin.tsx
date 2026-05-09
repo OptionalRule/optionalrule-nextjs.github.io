@@ -1,10 +1,10 @@
 'use client'
 
 import type { RuinMarker } from '../types'
-import { useViewerContext } from '../chrome/ViewerContext'
+import { useLayers } from '../chrome/ViewerContext'
 
 export function RuinPin({ ruin }: { ruin: RuinMarker }) {
-  const { layers } = useViewerContext()
+  const { layers } = useLayers()
   if (!layers.human) return null
   return (
     <mesh position={ruin.position}>

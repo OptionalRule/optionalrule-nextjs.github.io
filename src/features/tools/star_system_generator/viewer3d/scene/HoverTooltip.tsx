@@ -3,7 +3,7 @@
 import { Html } from '@react-three/drei'
 import type { GeneratedSystem } from '../../types'
 import type { SystemSceneGraph } from '../types'
-import { useViewerContext } from '../chrome/ViewerContext'
+import { useSelectionState, type SelectionTarget } from '../chrome/ViewerContext'
 
 interface TooltipPosition {
   position: [number, number, number]
@@ -12,7 +12,7 @@ interface TooltipPosition {
 }
 
 function resolveTooltip(
-  hovered: ReturnType<typeof useViewerContext>['hovered'],
+  hovered: SelectionTarget | null,
   graph: SystemSceneGraph,
   system: GeneratedSystem,
 ): TooltipPosition | null {
@@ -68,7 +68,7 @@ function resolveTooltip(
 }
 
 export function HoverTooltip({ graph, system }: { graph: SystemSceneGraph; system: GeneratedSystem }) {
-  const { hovered } = useViewerContext()
+  const { hovered } = useSelectionState()
   const tip = resolveTooltip(hovered, graph, system)
   if (!tip) return null
   return (

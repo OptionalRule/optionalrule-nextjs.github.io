@@ -2,11 +2,12 @@
 
 import { useMemo } from 'react'
 import type { HazardVisual } from '../types'
-import { useViewerContext } from '../chrome/ViewerContext'
+import { useLayers, useSelectionActions } from '../chrome/ViewerContext'
 import { makeVolumetricMaterial } from './volumetricShader'
 
 export function HazardVolume({ hazard }: { hazard: HazardVisual }) {
-  const { layers, hover, select } = useViewerContext()
+  const { layers } = useLayers()
+  const { hover, select } = useSelectionActions()
   const material = useMemo(
     () => makeVolumetricMaterial({ color: '#ff5773', intensity: hazard.intensity }),
     [hazard.intensity],

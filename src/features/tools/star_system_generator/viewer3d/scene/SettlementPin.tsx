@@ -1,6 +1,6 @@
 'use client'
 
-import { useViewerContext } from '../chrome/ViewerContext'
+import { useLayers, useSelectionActions } from '../chrome/ViewerContext'
 
 export interface SettlementPinProps {
   size: number
@@ -8,7 +8,8 @@ export interface SettlementPinProps {
 }
 
 export function SettlementPin({ size, settlementIds }: SettlementPinProps) {
-  const { layers, hover, select } = useViewerContext()
+  const { layers } = useLayers()
+  const { hover, select } = useSelectionActions()
   if (!layers.human) return null
   const primary = settlementIds[0]
   return (

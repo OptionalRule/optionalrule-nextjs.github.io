@@ -4,7 +4,7 @@ import * as THREE from 'three'
 import { useEffect, useMemo, useRef } from 'react'
 import { useFrame } from '@react-three/fiber'
 import type { BodyVisual } from '../types'
-import { useViewerContext } from '../chrome/ViewerContext'
+import { usePrefersReducedMotion, useSelectionActions } from '../chrome/ViewerContext'
 import { makeBodyMaterial } from './bodyShader'
 import { shaderUniforms } from '../lib/bodyShading'
 import { useGeneratedBodyLookup } from './bodyLookup'
@@ -19,7 +19,8 @@ export interface BodyProps {
 export function Body({ body }: BodyProps) {
   const groupRef = useRef<THREE.Group | null>(null)
   const meshRef = useRef<THREE.Mesh | null>(null)
-  const { prefersReducedMotion, hover, select } = useViewerContext()
+  const prefersReducedMotion = usePrefersReducedMotion()
+  const { hover, select } = useSelectionActions()
   const lookup = useGeneratedBodyLookup()
   const orbitingBody = lookup(body.id)
   const material = useMemo(() => {

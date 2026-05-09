@@ -1,10 +1,11 @@
 'use client'
 
 import type { PhenomenonMarker } from '../types'
-import { useViewerContext } from '../chrome/ViewerContext'
+import { useLayers, useSelectionActions } from '../chrome/ViewerContext'
 
 export function PhenomenonGlyph({ phenomenon }: { phenomenon: PhenomenonMarker }) {
-  const { layers, hover, select } = useViewerContext()
+  const { layers } = useLayers()
+  const { hover, select } = useSelectionActions()
   if (!layers.gu) return null
   return (
     <mesh

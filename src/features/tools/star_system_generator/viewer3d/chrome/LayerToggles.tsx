@@ -1,7 +1,7 @@
 'use client'
 
 import type { LayerKey } from '../types'
-import { useViewerContext } from './ViewerContext'
+import { useLayers } from './ViewerContext'
 
 interface PillSpec {
   key: LayerKey
@@ -17,7 +17,7 @@ const PILLS: PillSpec[] = [
 ]
 
 export function LayerToggles() {
-  const { layers, toggleLayer } = useViewerContext()
+  const { layers, toggleLayer } = useLayers()
   return (
     <div className="flex items-center gap-2" role="group" aria-label="Layer visibility">
       {PILLS.map((p) => {

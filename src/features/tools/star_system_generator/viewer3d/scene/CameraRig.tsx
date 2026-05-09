@@ -5,7 +5,7 @@ import { useThree } from '@react-three/fiber'
 import { OrbitControls } from '@react-three/drei'
 import type { OrbitControls as OrbitControlsImpl } from 'three-stdlib'
 import * as THREE from 'three'
-import { useViewerContext } from '../chrome/ViewerContext'
+import { useSelectionState } from '../chrome/ViewerContext'
 
 export interface CameraRigProps {
   sceneRadius: number
@@ -42,7 +42,7 @@ export function CameraRig({ sceneRadius }: CameraRigProps) {
     return () => window.removeEventListener('viewer3d:frame-system', handle)
   }, [camera, sceneRadius])
 
-  const { selection } = useViewerContext()
+  const { selection } = useSelectionState()
 
   useEffect(() => {
     if (!selection || selection.kind !== 'body') return

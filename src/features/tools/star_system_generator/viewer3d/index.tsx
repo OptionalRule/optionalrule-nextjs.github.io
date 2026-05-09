@@ -17,7 +17,7 @@ import { GuOverlayPanel } from '../components/GuOverlayPanel'
 import { StarDetailCard } from './chrome/StarDetailCard'
 import { HazardCard } from './chrome/HazardCard'
 import { PhenomenonCard } from './chrome/PhenomenonCard'
-import { useViewerContext } from './chrome/ViewerContext'
+import { useSelectionState } from './chrome/ViewerContext'
 
 export interface SystemViewer3DModalProps {
   system: GeneratedSystem
@@ -77,7 +77,7 @@ export default function SystemViewer3DModal({ system, onClose }: SystemViewer3DM
 }
 
 function SidebarContent({ system, graph }: { system: GeneratedSystem; graph: ReturnType<typeof buildSceneGraph> }) {
-  const { selection } = useViewerContext()
+  const { selection } = useSelectionState()
   if (!selection) {
     return <p className="text-xs text-[var(--text-tertiary)]">Click a body, settlement, or hazard to see details.</p>
   }

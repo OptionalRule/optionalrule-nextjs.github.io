@@ -3,7 +3,7 @@
 import { useEffect, useId, useRef, type ReactNode } from 'react'
 import { createPortal } from 'react-dom'
 import { X } from 'lucide-react'
-import { useViewerContext } from './ViewerContext'
+import { useLayers } from './ViewerContext'
 
 export interface ViewerModalProps {
   title: string
@@ -18,7 +18,7 @@ const FOCUSABLE = 'a[href], button:not([disabled]), input:not([disabled]), selec
 export function ViewerModal({ title, onClose, header, footer, children }: ViewerModalProps) {
   const titleId = useId()
   const containerRef = useRef<HTMLDivElement | null>(null)
-  const { toggleLayer } = useViewerContext()
+  const { toggleLayer } = useLayers()
 
   useEffect(() => {
     const previous = document.body.style.overflow
