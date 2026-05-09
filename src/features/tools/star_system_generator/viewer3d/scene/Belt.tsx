@@ -18,8 +18,8 @@ export function Belt({ belt }: BeltProps) {
   const instancedMesh = useMemo(() => {
     const dpr = typeof window !== 'undefined' ? window.devicePixelRatio : 1
     const count = Math.round(belt.particleCount * (dpr < 1.5 ? 0.5 : 1))
-    const geo = new THREE.TetrahedronGeometry(0.45, 0)
-    const mat = new THREE.MeshStandardMaterial({ color: new THREE.Color(belt.color), roughness: 1, metalness: 0 })
+    const geo = new THREE.TetrahedronGeometry(0.28, 0)
+    const mat = new THREE.MeshBasicMaterial({ color: new THREE.Color(belt.color) })
     const mesh = new THREE.InstancedMesh(geo, mat, count)
     const dummy = new THREE.Object3D()
     for (let i = 0; i < count; i++) {

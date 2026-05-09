@@ -111,9 +111,9 @@ function buildBody(body: OrbitingBody, system: GeneratedSystem, hzCenterAu: numb
   return {
     id: body.id,
     orbitRadius: auToScene(body.orbitAu.value, hzCenterAu),
-    orbitTiltY: (hashToUnit(`tilt#${body.id}`) - 0.5) * 0.12,
+    orbitTiltY: (hashToUnit(`tilt#${body.id}`) - 0.5) * 0.4,
     phase0: phase0ForBody(body.id, system.seed),
-    angularSpeed: angularSpeedFromAu(body.orbitAu.value),
+    angularSpeed: angularSpeedFromAu(body.orbitAu.value, hzCenterAu),
     visualSize: size,
     shading: chooseShading(body),
     category: body.category.value,
@@ -134,7 +134,7 @@ function buildBelt(body: OrbitingBody, hzCenterAu: number): BeltVisual {
     outerRadius: r * 1.08,
     particleCount: 1500,
     jitter: r * 0.04,
-    color: '#a4a48f',
+    color: '#9a9784',
   }
 }
 
