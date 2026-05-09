@@ -25,12 +25,19 @@ describe('ViewerModal', () => {
     expect(onClose).toHaveBeenCalled()
   })
 
-  it('calls onClose when the close button is clicked', async () => {
+  it('calls onClose when a close button is clicked', async () => {
     const user = userEvent.setup()
     const onClose = vi.fn()
     renderModal(<ViewerModal title="X" onClose={onClose}><p>body</p></ViewerModal>)
-    await user.click(screen.getByRole('button', { name: /close/i }))
+    const closeButtons = screen.getAllByRole('button', { name: /close/i })
+    expect(closeButtons.length).toBeGreaterThan(0)
+    await user.click(closeButtons[0])
     expect(onClose).toHaveBeenCalled()
+  })
+
+  it('exposes a redundant floating close button', () => {
+    renderModal(<ViewerModal title="X" onClose={() => undefined}><p>body</p></ViewerModal>)
+    expect(screen.getAllByRole('button', { name: /close/i }).length).toBeGreaterThanOrEqual(2)
   })
 
   it('locks page scroll while open and restores on unmount', () => {
