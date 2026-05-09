@@ -12,6 +12,7 @@ import { Ring } from './Ring'
 import { Moon } from './Moon'
 import { SettlementPin } from './SettlementPin'
 import { bodySphereGeometry } from './renderAssets'
+import { AtmosphereShell, CloudShell } from './BodyShells'
 
 export interface BodyProps {
   body: BodyVisual
@@ -92,6 +93,12 @@ export function Body({ body }: BodyProps) {
             >
               <primitive object={material} attach="material" />
             </mesh>
+            {body.surface ? (
+              <>
+                <AtmosphereShell body={body} />
+                <CloudShell body={body} />
+              </>
+            ) : null}
             {body.rings ? <Ring ring={body.rings} /> : null}
             {body.moons.map((moon) => (
               <Moon key={moon.id} moon={moon} />

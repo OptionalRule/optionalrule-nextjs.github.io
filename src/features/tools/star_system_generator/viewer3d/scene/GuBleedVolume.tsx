@@ -6,7 +6,13 @@ import { useFrame } from '@react-three/fiber'
 import type { GuBleedVisual } from '../types'
 import { useLayers, usePrefersReducedMotion, useSelectionActions } from '../chrome/ViewerContext'
 import { makeVolumetricMaterial } from './volumetricShader'
-import { guBleedSphereGeometry } from './renderAssets'
+import { guBleedSphereGeometry, volumeRibbonGeometry, volumeTorusGeometry } from './renderAssets'
+
+function geometryForBleed(bleed: GuBleedVisual) {
+  if (bleed.shape === 'torus') return volumeTorusGeometry
+  if (bleed.shape === 'ribbon') return volumeRibbonGeometry
+  return guBleedSphereGeometry
+}
 
 export function GuBleedVolume({ bleed }: { bleed: GuBleedVisual }) {
   const { layers } = useLayers()
@@ -14,8 +20,8 @@ export function GuBleedVolume({ bleed }: { bleed: GuBleedVisual }) {
   const { hover, select } = useSelectionActions()
   const matRef = useRef<THREE.ShaderMaterial | null>(null)
   const material = useMemo(
-    () => makeVolumetricMaterial({ color: '#a880ff', intensity: bleed.intensity, pulsing: true }),
-    [bleed.intensity],
+    () => makeVolumetricMaterial({ color: bleed.color, intensity: bleed.intensity + bleed.distortion * 0.15, pulsing: true }),
+    [bleed.color, bleed.distortion, bleed.intensity],
   )
 
   useEffect(() => {
@@ -37,9 +43,10 @@ export function GuBleedVolume({ bleed }: { bleed: GuBleedVisual }) {
 
   return (
     <mesh
-      geometry={guBleedSphereGeometry}
+      geometry={geometryForBleed(bleed)}
       position={bleed.center}
-      scale={bleed.radius}
+      rotation={[bleed.tilt, 0, bleed.shape === 'ribbon' ? bleed.tilt * 0.5 : 0]}
+      scale={[bleed.radius * bleed.stretch[0], bleed.radius * bleed.stretch[1], bleed.radius * bleed.stretch[2]]}
       dispose={null}
       onPointerOver={(e) => { e.stopPropagation(); hover({ kind: 'gu-bleed', id: bleed.id }); document.body.style.cursor = 'pointer' }}
       onPointerOut={(e) => { e.stopPropagation(); hover(null); document.body.style.cursor = '' }}
