@@ -48,6 +48,14 @@ export default function SystemViewer3DModal({ system, onClose }: SystemViewer3DM
     window.addEventListener('viewer3d:close', handler)
     return () => window.removeEventListener('viewer3d:close', handler)
   }, [onClose])
+  useEffect(() => {
+    const original = console.warn
+    console.warn = (...args: unknown[]) => {
+      if (typeof args[0] === 'string' && args[0].startsWith('THREE.Clock')) return
+      original.apply(console, args)
+    }
+    return () => { console.warn = original }
+  }, [])
   const title = `${system.name.value} · ${formatStellarClass(system.primary.spectralType.value)} · ${system.bodies.length} bodies`
 
   return (
