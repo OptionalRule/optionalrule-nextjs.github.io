@@ -2,9 +2,10 @@ import type { BodyCategory } from '../../types'
 
 export const SCENE_UNIT = 60
 
-export function auToScene(au: number): number {
+export function auToScene(au: number, hzCenterAu = 1): number {
   if (au <= 0) return 0
-  return Math.log10(1 + au) * SCENE_UNIT
+  const ref = hzCenterAu > 0 ? hzCenterAu : 1
+  return Math.log10(1 + au / ref) * SCENE_UNIT
 }
 
 const VISUAL_SIZE_BY_CATEGORY: Record<BodyCategory, number> = {

@@ -5,15 +5,15 @@ import { hashToUnit } from './motion'
 
 interface AnchorRule {
   keywords: string[]
-  resolve: (system: GeneratedSystem) => { center: SceneVec3; radius: number; anchorDescription: string } | null
+  resolve: (system: GeneratedSystem, hzCenterAu: number) => { center: SceneVec3; radius: number; anchorDescription: string } | null
 }
 
 function findFirstBody(system: GeneratedSystem, predicate: (b: OrbitingBody) => boolean): OrbitingBody | undefined {
   return system.bodies.find(predicate)
 }
 
-function bodyAnchor(body: OrbitingBody, radius: number, label: string): { center: SceneVec3; radius: number; anchorDescription: string } {
-  const r = auToScene(body.orbitAu.value)
+function bodyAnchor(body: OrbitingBody, radius: number, label: string, hzCenterAu: number): { center: SceneVec3; radius: number; anchorDescription: string } {
+  const r = auToScene(body.orbitAu.value, hzCenterAu)
   const angle = hashToUnit(body.id) * Math.PI * 2
   return {
     center: [Math.cos(angle) * r, 0, Math.sin(angle) * r],
@@ -25,20 +25,20 @@ function bodyAnchor(body: OrbitingBody, radius: number, label: string): { center
 const RULES: AnchorRule[] = [
   {
     keywords: ['radiation belt', 'magnetosphere', 'magnetospheric'],
-    resolve: (system) => {
+    resolve: (system, hz) => {
       const giant = findFirstBody(system, (b) => b.category.value === 'gas-giant' || b.category.value === 'ice-giant')
-      return giant ? bodyAnchor(giant, 18, 'near') : null
+      return giant ? bodyAnchor(giant, 18, 'near', hz) : null
     },
   },
   {
     keywords: ['pinch', 'route', 'choke', 'transit corridor'],
-    resolve: (system) => {
+    resolve: (system, hz) => {
       const outermost = system.bodies.reduce<OrbitingBody | undefined>(
         (acc, b) => (acc && acc.orbitAu.value > b.orbitAu.value ? acc : b),
         undefined,
       )
       if (!outermost) return null
-      const r = auToScene(outermost.orbitAu.value) * 1.15
+      const r = auToScene(outermost.orbitAu.value, hz) * 1.15
       return {
         center: [r, 0, 0],
         radius: 22,
@@ -52,9 +52,9 @@ const RULES: AnchorRule[] = [
   },
   {
     keywords: ['debris', 'wreckage', 'asteroid swarm'],
-    resolve: (system) => {
+    resolve: (system, hz) => {
       const inner = findFirstBody(system, (b) => b.category.value === 'belt')
-      return inner ? bodyAnchor(inner, 20, 'within') : null
+      return inner ? bodyAnchor(inner, 20, 'within', hz) : null
     },
   },
 ]
@@ -68,14 +68,14 @@ function intensityFromText(text: string): number {
   return 0.6
 }
 
-export function classifyHazard(hazard: Fact<string>, system: GeneratedSystem): HazardVisual {
+export function classifyHazard(hazard: Fact<string>, system: GeneratedSystem, hzCenterAu = 1): HazardVisual {
   const text = hazard.value
   const lower = text.toLowerCase()
   const id = `hz-${hashToUnit(`${system.id}#${text}`).toString(36).slice(2, 10)}`
 
   for (const rule of RULES) {
     if (rule.keywords.some((k) => lower.includes(k))) {
-      const placement = rule.resolve(system)
+      const placement = rule.resolve(system, hzCenterAu)
       if (placement) {
         return {
           id,

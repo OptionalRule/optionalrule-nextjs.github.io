@@ -25,8 +25,8 @@ function intensityFromOverlay(overlay: GuOverlay): { intensity: number; radius: 
   return INTENSITY_LEVELS.normal
 }
 
-function bodyAnchor(body: OrbitingBody): AnchorMatch {
-  const r = auToScene(body.orbitAu.value)
+function bodyAnchor(body: OrbitingBody, hzCenterAu: number): AnchorMatch {
+  const r = auToScene(body.orbitAu.value, hzCenterAu)
   const angle = hashToUnit(`gu#${body.id}`) * Math.PI * 2
   return {
     center: [Math.cos(angle) * r, 0, Math.sin(angle) * r],
@@ -34,7 +34,7 @@ function bodyAnchor(body: OrbitingBody): AnchorMatch {
   }
 }
 
-function resolveAnchor(overlay: GuOverlay, system: GeneratedSystem): AnchorMatch | null {
+function resolveAnchor(overlay: GuOverlay, system: GeneratedSystem, hzCenterAu: number): AnchorMatch | null {
   const text = overlay.bleedLocation.value.toLowerCase()
   if (!text) return null
 
@@ -44,7 +44,7 @@ function resolveAnchor(overlay: GuOverlay, system: GeneratedSystem): AnchorMatch
       undefined,
     )
     if (!outermost) return null
-    return bodyAnchor(outermost)
+    return bodyAnchor(outermost, hzCenterAu)
   }
 
   if (text.includes('inner') || text.includes('close')) {
@@ -53,30 +53,30 @@ function resolveAnchor(overlay: GuOverlay, system: GeneratedSystem): AnchorMatch
       undefined,
     )
     if (!inner) return null
-    return bodyAnchor(inner)
+    return bodyAnchor(inner, hzCenterAu)
   }
 
   if (text.includes('habitable') || text.includes('temperate')) {
-    const r = auToScene(system.zones.habitableCenterAu.value)
+    const r = auToScene(system.zones.habitableCenterAu.value, hzCenterAu)
     return { center: [r, 0, 0], radius: 0 }
   }
 
   if (text.includes('belt') || text.includes('asteroid')) {
     const belt = system.bodies.find((b) => b.category.value === 'belt')
-    return belt ? bodyAnchor(belt) : null
+    return belt ? bodyAnchor(belt, hzCenterAu) : null
   }
 
   for (const body of system.bodies) {
-    if (text.includes(body.name.value.toLowerCase())) return bodyAnchor(body)
+    if (text.includes(body.name.value.toLowerCase())) return bodyAnchor(body, hzCenterAu)
   }
 
   return null
 }
 
-export function classifyGuBleed(overlay: GuOverlay, system: GeneratedSystem): GuBleedVisual {
+export function classifyGuBleed(overlay: GuOverlay, system: GeneratedSystem, hzCenterAu = 1): GuBleedVisual {
   const id = `gu-${hashToUnit(`${system.id}#${overlay.bleedLocation.value}#${overlay.intensity.value}`).toString(36).slice(2, 10)}`
   const sized = intensityFromOverlay(overlay)
-  const anchor = resolveAnchor(overlay, system)
+  const anchor = resolveAnchor(overlay, system, hzCenterAu)
   const pulsePeriodSec = sized.intensity >= 0.95 ? 4 : 6
 
   if (!anchor) {

@@ -16,20 +16,21 @@ import { chooseShading } from './bodyShading'
 import { classifyHazard } from './hazardClassifier'
 import { classifyGuBleed } from './guBleedClassifier'
 
-const COMPANION_OFFSETS: Record<string, number> = {
-  close:    auToScene(0.5),
-  near:     auToScene(2),
-  moderate: auToScene(8),
-  wide:     auToScene(40),
-  distant:  auToScene(80),
+const COMPANION_KEYS = ['close', 'near', 'moderate', 'wide', 'distant'] as const
+const COMPANION_AU: Record<typeof COMPANION_KEYS[number], number> = {
+  close: 0.5,
+  near: 2,
+  moderate: 8,
+  wide: 40,
+  distant: 80,
 }
 
-function companionOffset(separation: string): number {
+function companionOffset(separation: string, hzCenterAu: number): number {
   const lower = separation.toLowerCase()
-  for (const [keyword, offset] of Object.entries(COMPANION_OFFSETS)) {
-    if (lower.includes(keyword)) return offset
+  for (const key of COMPANION_KEYS) {
+    if (lower.includes(key)) return auToScene(COMPANION_AU[key], hzCenterAu)
   }
-  return COMPANION_OFFSETS.moderate
+  return auToScene(COMPANION_AU.moderate, hzCenterAu)
 }
 
 function buildStar(system: GeneratedSystem): StarVisual {
@@ -45,9 +46,9 @@ function buildStar(system: GeneratedSystem): StarVisual {
   }
 }
 
-function buildCompanion(companion: StellarCompanion, _primary: StarVisual): StarVisual {
+function buildCompanion(companion: StellarCompanion, _primary: StarVisual, hzCenterAu: number): StarVisual {
   const visuals = spectralVisuals('G2V', 50)
-  const offset = companionOffset(companion.separation.value)
+  const offset = companionOffset(companion.separation.value, hzCenterAu)
   const angle = hashToUnit(`companion#${companion.id}`) * Math.PI * 2
   return {
     id: companion.id,
@@ -99,7 +100,7 @@ function bodyHasGuFracture(body: OrbitingBody): boolean {
   return filterText.includes('gu') && filterText.includes('fracture')
 }
 
-function buildBody(body: OrbitingBody, system: GeneratedSystem): BodyVisual {
+function buildBody(body: OrbitingBody, system: GeneratedSystem, hzCenterAu: number): BodyVisual {
   const size = bodyVisualSize(body.category.value)
   const settlementIds = system.settlements
     .filter((s) => s.bodyId === body.id || body.moons.some((m) => m.id === s.moonId))
@@ -109,7 +110,7 @@ function buildBody(body: OrbitingBody, system: GeneratedSystem): BodyVisual {
     .map((r) => r.id)
   return {
     id: body.id,
-    orbitRadius: auToScene(body.orbitAu.value),
+    orbitRadius: auToScene(body.orbitAu.value, hzCenterAu),
     orbitTiltY: (hashToUnit(`tilt#${body.id}`) - 0.5) * 0.12,
     phase0: phase0ForBody(body.id, system.seed),
     angularSpeed: angularSpeedFromAu(body.orbitAu.value),
@@ -125,8 +126,8 @@ function buildBody(body: OrbitingBody, system: GeneratedSystem): BodyVisual {
   }
 }
 
-function buildBelt(body: OrbitingBody): BeltVisual {
-  const r = auToScene(body.orbitAu.value)
+function buildBelt(body: OrbitingBody, hzCenterAu: number): BeltVisual {
+  const r = auToScene(body.orbitAu.value, hzCenterAu)
   return {
     id: body.id,
     innerRadius: r * 0.92,
@@ -137,10 +138,10 @@ function buildBelt(body: OrbitingBody): BeltVisual {
   }
 }
 
-function buildPhenomenon(phen: GeneratedSystem['phenomena'][number], system: GeneratedSystem): PhenomenonMarker {
+function buildPhenomenon(phen: GeneratedSystem['phenomena'][number], system: GeneratedSystem, hzCenterAu: number): PhenomenonMarker {
   const angle = hashToUnit(`phen#${phen.id}`) * Math.PI * 2
   const rAu = (system.zones.habitableCenterAu.value + system.zones.snowLineAu.value) / 2
-  const r = auToScene(rAu)
+  const r = auToScene(rAu, hzCenterAu)
   return {
     id: phen.id,
     position: [Math.cos(angle) * r * 1.3, 0, Math.sin(angle) * r * 1.3],
@@ -148,7 +149,7 @@ function buildPhenomenon(phen: GeneratedSystem['phenomena'][number], system: Gen
   }
 }
 
-function buildRuin(ruin: GeneratedSystem['ruins'][number], system: GeneratedSystem, bodies: BodyVisual[]): RuinMarker {
+function buildRuin(ruin: GeneratedSystem['ruins'][number], system: GeneratedSystem, bodies: BodyVisual[], hzCenterAu: number): RuinMarker {
   const locationLower = ruin.location.value.toLowerCase()
   const matched = bodies.find((b) => locationLower.includes(b.id.toLowerCase()))
   if (matched) {
@@ -162,7 +163,7 @@ function buildRuin(ruin: GeneratedSystem['ruins'][number], system: GeneratedSyst
     (acc, b) => (acc && acc.orbitRadius > b.orbitRadius ? acc : b),
     undefined,
   )
-  const baseR = (outer ? outer.orbitRadius : auToScene(system.zones.snowLineAu.value)) * 1.2
+  const baseR = (outer ? outer.orbitRadius : auToScene(system.zones.snowLineAu.value, hzCenterAu)) * 1.2
   const angle = hashToUnit(`ruin#${ruin.id}`) * Math.PI * 2
   return {
     id: ruin.id,
@@ -171,28 +172,29 @@ function buildRuin(ruin: GeneratedSystem['ruins'][number], system: GeneratedSyst
 }
 
 export function buildSceneGraph(system: GeneratedSystem): SystemSceneGraph {
+  const hzCenterAu = system.zones.habitableCenterAu.value > 0 ? system.zones.habitableCenterAu.value : 1
   const star = buildStar(system)
-  const companions = system.companions.map((c) => buildCompanion(c, star))
+  const companions = system.companions.map((c) => buildCompanion(c, star, hzCenterAu))
 
   const nonBelt = system.bodies.filter((b) => b.category.value !== 'belt')
   const beltBodies = system.bodies.filter((b) => b.category.value === 'belt')
 
-  const bodies = nonBelt.map((b) => buildBody(b, system))
-  const belts = beltBodies.map(buildBelt)
+  const bodies = nonBelt.map((b) => buildBody(b, system, hzCenterAu))
+  const belts = beltBodies.map((b) => buildBelt(b, hzCenterAu))
 
-  const hazards = system.majorHazards.map((h) => classifyHazard(h, system))
-  const guBleeds = [classifyGuBleed(system.guOverlay, system)]
-  const phenomena = system.phenomena.map((p) => buildPhenomenon(p, system))
-  const ruins = system.ruins.map((r) => buildRuin(r, system, bodies))
+  const hazards = system.majorHazards.map((h) => classifyHazard(h, system, hzCenterAu))
+  const guBleeds = [classifyGuBleed(system.guOverlay, system, hzCenterAu)]
+  const phenomena = system.phenomena.map((p) => buildPhenomenon(p, system, hzCenterAu))
+  const ruins = system.ruins.map((r) => buildRuin(r, system, bodies, hzCenterAu))
 
   const maxBodyOrbit = Math.max(...bodies.map((b) => b.orbitRadius), 0)
   const maxBeltOrbit = Math.max(...belts.map((b) => b.outerRadius), 0)
-  const sceneRadius = Math.max(maxBodyOrbit, maxBeltOrbit, auToScene(system.zones.snowLineAu.value)) * 1.15
+  const sceneRadius = Math.max(maxBodyOrbit, maxBeltOrbit, auToScene(system.zones.snowLineAu.value, hzCenterAu)) * 1.15
 
   const zones = {
-    habitableInner: auToScene(system.zones.habitableInnerAu.value),
-    habitable: auToScene(system.zones.habitableCenterAu.value),
-    snowLine: auToScene(system.zones.snowLineAu.value),
+    habitableInner: auToScene(system.zones.habitableInnerAu.value, hzCenterAu),
+    habitable: auToScene(system.zones.habitableCenterAu.value, hzCenterAu),
+    snowLine: auToScene(system.zones.snowLineAu.value, hzCenterAu),
   }
 
   return {
