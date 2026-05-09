@@ -1,6 +1,5 @@
 'use client'
 
-import * as THREE from 'three'
 import type { PhenomenonMarker } from '../types'
 import { useViewerContext } from '../chrome/ViewerContext'
 
@@ -15,7 +14,7 @@ export function PhenomenonGlyph({ phenomenon }: { phenomenon: PhenomenonMarker }
       onClick={(e) => { e.stopPropagation(); select({ kind: 'phenomenon', id: phenomenon.id }) }}
     >
       <icosahedronGeometry args={[1.6, 0]} />
-      <meshBasicMaterial color={new THREE.Color('#a880ff')} transparent opacity={0.8} toneMapped={false} />
+      <meshBasicMaterial color="#a880ff" transparent opacity={0.8} toneMapped={false} />
     </mesh>
   )
 }

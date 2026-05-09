@@ -21,7 +21,7 @@ export function Moon({ moon }: { moon: MoonVisual }) {
     <group ref={groupRef} rotation={[0, moon.phase0, 0]}>
       <mesh position={[moon.parentRelativeOrbit, 0, 0]}>
         <sphereGeometry args={[moon.visualSize, 16, 16]} />
-        <meshStandardMaterial color={new THREE.Color('#8a8a82')} roughness={1} metalness={0} />
+        <meshStandardMaterial color="#8a8a82" roughness={1} metalness={0} />
       </mesh>
     </group>
   )

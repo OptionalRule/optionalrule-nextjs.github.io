@@ -5,41 +5,15 @@ import { useEffect, useMemo, useRef } from 'react'
 import { useFrame } from '@react-three/fiber'
 import type { GuBleedVisual } from '../types'
 import { useViewerContext } from '../chrome/ViewerContext'
-
-const FRAGMENT = /* glsl */ `
-uniform vec3 uColor;
-uniform float uIntensity;
-uniform float uPulse;
-varying float vDist;
-void main() {
-  float falloff = pow(clamp(1.0 - vDist, 0.0, 1.0), 2.0);
-  float pulse = 0.85 + 0.15 * uPulse;
-  gl_FragColor = vec4(uColor, falloff * 0.5 * uIntensity * pulse);
-}
-`
-
-const VERTEX = /* glsl */ `
-varying float vDist;
-void main() {
-  vDist = length(position);
-  gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
-}
-`
+import { makeVolumetricMaterial } from './volumetricShader'
 
 export function GuBleedVolume({ bleed }: { bleed: GuBleedVisual }) {
   const { layers, prefersReducedMotion, hover, select } = useViewerContext()
   const matRef = useRef<THREE.ShaderMaterial | null>(null)
-  const material = useMemo(() => new THREE.ShaderMaterial({
-    vertexShader: VERTEX,
-    fragmentShader: FRAGMENT,
-    uniforms: {
-      uColor: { value: new THREE.Color('#a880ff') },
-      uIntensity: { value: bleed.intensity },
-      uPulse: { value: 1 },
-    },
-    transparent: true,
-    depthWrite: false,
-  }), [bleed.intensity])
+  const material = useMemo(
+    () => makeVolumetricMaterial({ color: '#a880ff', intensity: bleed.intensity, pulsing: true }),
+    [bleed.intensity],
+  )
 
   useEffect(() => {
     matRef.current = material
