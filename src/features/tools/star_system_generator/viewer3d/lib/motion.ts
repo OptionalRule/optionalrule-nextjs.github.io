@@ -1,5 +1,5 @@
-export const VIEWER_SECONDS_PER_EARTH_YEAR = 240
-const MIN_ORBIT_PERIOD_SEC = 12
+export const VIEWER_SECONDS_PER_EARTH_YEAR = 365
+const MIN_ORBIT_PERIOD_SEC = 6
 const FALLBACK_HZ_PERIOD_SEC = VIEWER_SECONDS_PER_EARTH_YEAR
 
 export function hashToUnit(input: string): number {
