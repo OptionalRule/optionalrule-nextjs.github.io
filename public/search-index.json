@@ -1,19 +1,5 @@
 [
   {
-    "slug": "star-system-generator-v2",
-    "title": "Star System Generator v2: scale, habitation, and a Why Here that finally reads",
-    "excerpt": "The Star System Generator just shipped its biggest reshape since launch. Population and habitation are now separate fields, twelve new exotic habitation forms cover the Expanse and Culture-series vocabulary, and the Why Here paragraph is finally graph-aware.",
-    "tags": [
-      "Star System Generator",
-      "Tools",
-      "Game Development",
-      "TTRPG"
-    ],
-    "content": "",
-    "date": "2026-05-04",
-    "readingTime": 5
-  },
-  {
     "slug": "ibo-design-diary-the-progressive-resolution-system",
     "title": "IBO Design Diary - The Progressive Resolution System",
     "excerpt": "How IBO's Progressive Resolution System turns every skill check into a multi-stage risk decision, from sword fights to lockpicking to crafting legendary gear.",

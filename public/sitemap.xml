@@ -20,12 +20,6 @@
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://www.optionalrule.com/2026/05/04/star-system-generator-v2/</loc>
-    <lastmod>2026-05-04</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.9</priority>
-  </url>
-  <url>
     <loc>https://www.optionalrule.com/2026/03/23/ibo-design-diary-the-progressive-resolution-system/</loc>
     <lastmod>2026-03-23</lastmod>
     <changefreq>weekly</changefreq>
@@ -656,31 +650,13 @@
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://www.optionalrule.com/tag/star system generator/</loc>
-    
-    <changefreq>weekly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://www.optionalrule.com/tag/tools/</loc>
+    <loc>https://www.optionalrule.com/tag/ibo/</loc>
     
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://www.optionalrule.com/tag/game development/</loc>
-    
-    <changefreq>weekly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://www.optionalrule.com/tag/ttrpg/</loc>
-    
-    <changefreq>weekly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://www.optionalrule.com/tag/ibo/</loc>
     
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
