@@ -81,7 +81,7 @@ export function ViewerModal({ title, onClose, header, footer, children }: Viewer
       role="dialog"
       aria-modal="true"
       aria-labelledby={titleId}
-      className="fixed inset-0 z-50 flex flex-col bg-[#02040a]/95"
+      className="fixed inset-0 z-[200] flex flex-col bg-[#02040a]/95"
     >
       <header className="flex items-center justify-between gap-3 border-b border-[var(--border)] bg-[var(--card)] px-4 py-2">
         <h2 id={titleId} className="min-w-0 flex-1 truncate text-sm font-semibold text-[var(--text-primary)]">{title}</h2>

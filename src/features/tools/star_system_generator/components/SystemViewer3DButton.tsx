@@ -11,7 +11,7 @@ const SystemViewer3DModal = dynamic(() => import('../viewer3d'), {
     <div
       role="dialog"
       aria-label="3D system viewer loading"
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 text-[var(--text-secondary)]"
+      className="fixed inset-0 z-[200] flex items-center justify-center bg-black/60 text-[var(--text-secondary)]"
     >
       <div className="rounded-lg border border-[var(--border)] bg-[var(--card)] px-6 py-4 text-sm">
         Loading 3D viewer…
