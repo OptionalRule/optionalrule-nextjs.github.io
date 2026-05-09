@@ -695,7 +695,7 @@ function sampleOrbitInBand(rng: SeededRng, luminositySolar: number, band: OrbitB
 }
 
 function orbitSeparation(orbitAu: number): number {
-  return Math.max(0.015, orbitAu * 0.035)
+  return Math.max(0.06, orbitAu * 0.07)
 }
 
 function estimatedPlanMassEarth(planKind: BodyPlanKind, known?: PartialKnownBody, slot?: ArchitectureSlot): number {

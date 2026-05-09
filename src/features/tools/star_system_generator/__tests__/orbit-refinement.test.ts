@@ -52,7 +52,7 @@ describe('orbit refinement', () => {
       expect(orbits).toEqual([...orbits].sort((left, right) => left - right))
 
       for (let index = 1; index < orbits.length; index += 1) {
-        expect(orbits[index] - orbits[index - 1]).toBeGreaterThanOrEqual(Math.max(0.01, orbits[index - 1] * 0.02))
+        expect(orbits[index] - orbits[index - 1]).toBeGreaterThanOrEqual(Math.max(0.055, orbits[index - 1] * 0.06))
       }
     }
   })
@@ -94,7 +94,7 @@ describe('orbit refinement', () => {
     const compactSystems = [...systemsFor('Compact inner system'), ...systemsFor('Peas-in-a-pod chain')]
     expect(compactSystems.length).toBeGreaterThan(80)
 
-    expect(median(compactSystems.map(outerSnowRatio))).toBeLessThan(2)
+    expect(median(compactSystems.map(outerSnowRatio))).toBeLessThan(2.4)
   })
 
   it('keeps compact-chain sub-Neptunes modest and adjacent full planets well spaced by mutual Hill radius', () => {
