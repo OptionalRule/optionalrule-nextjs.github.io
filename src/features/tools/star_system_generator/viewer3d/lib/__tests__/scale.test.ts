@@ -39,4 +39,15 @@ describe('bodyVisualSize', () => {
     expect(bodyVisualSize('belt')).toBeGreaterThan(0)
     expect(bodyVisualSize('anomaly')).toBeGreaterThan(0)
   })
+
+  it('uses physical radius to distinguish small and large rocky planets', () => {
+    expect(bodyVisualSize('rocky-planet', 0.45)).toBeLessThan(bodyVisualSize('rocky-planet', 1))
+    expect(bodyVisualSize('rocky-planet', 1.35)).toBeGreaterThan(bodyVisualSize('rocky-planet', 1))
+  })
+
+  it('keeps physically scaled body sizes within readable category bounds', () => {
+    expect(bodyVisualSize('rocky-planet', 0.1)).toBeGreaterThanOrEqual(0.38)
+    expect(bodyVisualSize('rocky-planet', 3)).toBeLessThanOrEqual(0.98)
+    expect(bodyVisualSize('gas-giant', 13)).toBeLessThanOrEqual(3)
+  })
 })

@@ -69,6 +69,15 @@ describe('buildSceneGraph', () => {
     }
   })
 
+  it('keeps adjacent rendered bodies visually separated', () => {
+    const sorted = [...graph.bodies].sort((a, b) => a.orbitRadius - b.orbitRadius)
+    for (let i = 1; i < sorted.length; i++) {
+      const leftExtent = sorted[i - 1].rings?.outerRadius ?? sorted[i - 1].visualSize
+      const rightExtent = sorted[i].rings?.outerRadius ?? sorted[i].visualSize
+      expect(sorted[i].orbitRadius - sorted[i - 1].orbitRadius).toBeGreaterThanOrEqual(leftExtent + rightExtent + 2.5)
+    }
+  })
+
   it('projects the actual habitable-zone outer edge', () => {
     const hzCenterAu = system.zones.habitableCenterAu.value > 0 ? system.zones.habitableCenterAu.value : 1
     expect(graph.zones.habitableOuter).toBeCloseTo(auToScene(system.zones.habitableOuterAu.value, hzCenterAu), 5)

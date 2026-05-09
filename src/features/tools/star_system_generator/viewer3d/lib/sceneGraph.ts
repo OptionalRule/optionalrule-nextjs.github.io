@@ -18,6 +18,7 @@ import { chooseShading } from './bodyShading'
 import { classifyHazard } from './hazardClassifier'
 import { classifyGuBleed } from './guBleedClassifier'
 
+const BODY_ORBIT_CLEARANCE = 2.5
 const COMPANION_KEYS = ['close', 'near', 'moderate', 'wide', 'distant'] as const
 const COMPANION_AU: Record<typeof COMPANION_KEYS[number], number> = {
   close: 0.5,
@@ -148,7 +149,7 @@ function archetypeForShading(shading: BodyShadingKey): RenderArchetype {
 }
 
 function buildBody(body: OrbitingBody, system: GeneratedSystem, hzCenterAu: number, orbitIndex: number): BodyVisual {
-  const size = bodyVisualSize(body.category.value)
+  const size = bodyVisualSize(body.category.value, body.physical.radiusEarth.value)
   const shading = chooseShading(body)
   const settlementIds = system.settlements
     .filter((s) => s.bodyId === body.id || body.moons.some((m) => m.id === s.moonId))
@@ -173,6 +174,22 @@ function buildBody(body: OrbitingBody, system: GeneratedSystem, hzCenterAu: numb
     settlementIds,
     ruinIds,
   }
+}
+
+function bodyVisualExtent(body: BodyVisual): number {
+  return body.rings ? Math.max(body.visualSize, body.rings.outerRadius) : body.visualSize
+}
+
+function applyBodyOrbitClearance(bodies: BodyVisual[]): BodyVisual[] {
+  return bodies.reduce<BodyVisual[]>((out, body) => {
+    const previous = out.at(-1)
+    if (!previous) return [body]
+
+    const minimumGap = bodyVisualExtent(previous) + bodyVisualExtent(body) + BODY_ORBIT_CLEARANCE
+    const orbitRadius = Math.max(body.orbitRadius, previous.orbitRadius + minimumGap)
+    out.push(orbitRadius === body.orbitRadius ? body : { ...body, orbitRadius })
+    return out
+  }, [])
 }
 
 function buildBelt(body: OrbitingBody, hzCenterAu: number): BeltVisual {
@@ -241,7 +258,7 @@ export function buildSceneGraph(system: GeneratedSystem): SystemSceneGraph {
   const nonBelt = system.bodies.filter((b) => b.category.value !== 'belt')
   const beltBodies = system.bodies.filter((b) => b.category.value === 'belt')
 
-  const bodies = nonBelt.map((b, index) => buildBody(b, system, hzCenterAu, index))
+  const bodies = applyBodyOrbitClearance(nonBelt.map((b, index) => buildBody(b, system, hzCenterAu, index)))
   const belts = beltBodies.map((b) => buildBelt(b, hzCenterAu))
 
   const hazards = system.majorHazards.map((h) => classifyHazard(h, system, hzCenterAu))
