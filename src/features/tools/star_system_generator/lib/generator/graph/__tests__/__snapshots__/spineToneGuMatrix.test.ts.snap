@@ -11,16 +11,16 @@ exports[`spine tone × gu matrix (structural fields only) > tone=astronomy gu=fr
 exports[`spine tone × gu matrix (structural fields only) > tone=astronomy gu=high produces stable spine structural fields 1`] = `
 {
   "spineEdgeType": "DESTABILIZES",
-  "spineObjectKind": "settlement",
-  "spineSubjectKind": "guHazard",
+  "spineObjectKind": "body",
+  "spineSubjectKind": "phenomenon",
 }
 `;
 
 exports[`spine tone × gu matrix (structural fields only) > tone=astronomy gu=low produces stable spine structural fields 1`] = `
 {
   "spineEdgeType": "DESTABILIZES",
-  "spineObjectKind": "settlement",
-  "spineSubjectKind": "guHazard",
+  "spineObjectKind": "namedFaction",
+  "spineSubjectKind": "phenomenon",
 }
 `;
 

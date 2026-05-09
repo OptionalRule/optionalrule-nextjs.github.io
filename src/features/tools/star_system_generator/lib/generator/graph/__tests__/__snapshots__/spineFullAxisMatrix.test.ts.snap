@@ -2,11 +2,11 @@
 
 exports[`spine full axis matrix (16 representative cells) > baseline-frontier-astronomy: stable spine + body[0] structural fields 1`] = `
 {
-  "body0": "Atlas-Bridge V records a phase shift each time the failed terraforming biosphere passes through. The industrial mirror swarm failure drifts the baselines Atlas-Bridge V relies on. The industrial mirror swarm failure introduces a measurable perturbation in Atlas-Bridge VII. Atlas-Bridge VII carries Atlas-Bridge VII Station 88 on its surface.",
+  "body0": "Atlas-Bridge II records a phase shift each time the failed terraforming biosphere passes through. The industrial mirror swarm failure drifts the baselines Atlas-Bridge III relies on. The industrial mirror swarm failure introduces a measurable perturbation in Atlas-Bridge II.",
   "spineEdgeType": "DESTABILIZES",
   "spineObjectKind": "body",
   "spineSubjectKind": "phenomenon",
-  "spineSummary": "Failed terraforming biosphere took shape before the photometric reset, the failed terraforming biosphere is drifting the baselines on which Atlas-Bridge V was sited.",
+  "spineSummary": "Failed terraforming biosphere took shape in the third pulse cycle, the failed terraforming biosphere is drifting the baselines on which Atlas-Bridge II was sited.",
   "spineVisibility": "public",
 }
 `;
@@ -46,7 +46,7 @@ exports[`spine full axis matrix (16 representative cells) > baseline-realistic-a
 
 exports[`spine full axis matrix (16 representative cells) > baseline-realistic-balanced: stable spine + body[0] structural fields 1`] = `
 {
-  "body0": "The narrow-AI perception fog keeps shifting under Wouri Survey-176 III. Each pass of the narrow-AI perception fog costs Wouri Survey-176 IV a margin it doesn't have. Wouri Survey-176 V can't plan around the narrow-AI perception fog anymore. Wouri Survey-176 III Bastion 18 sits on Wouri Survey-176 III. Wouri Survey-176 V hosts Wouri Survey-176 V Charter.",
+  "body0": "The narrow-AI perception fog keeps shifting under Wouri Survey-176 III. Each pass of the narrow-AI perception fog costs Wouri Survey-176 IV a margin it doesn't have. Wouri Survey-176 II can't plan around the moving bleed-node river anymore. Wouri Survey-176 III Laboratory 18 sits on Wouri Survey-176 III. Wouri Survey-176 II hosts Wouri Survey-176 Station.",
   "spineEdgeType": "DESTABILIZES",
   "spineObjectKind": "body",
   "spineSubjectKind": "phenomenon",
@@ -57,11 +57,11 @@ exports[`spine full axis matrix (16 representative cells) > baseline-realistic-b
 
 exports[`spine full axis matrix (16 representative cells) > baseline-realistic-cinematic: stable spine + body[0] structural fields 1`] = `
 {
-  "body0": "Tarandus Route-211 Belt V has been watching the long-period comet storm eat its margins for a generation. So of course, Salt Wound Cabal swore the pact would hold; Salt Wound Order swore otherwise. And then, Something is wrong under Tarandus Route-211 IV, and flare-amplified bleed season is the name people whisper for it. Tarandus Route-211 Belt V hosts Tarandus Route-211 Belt V Hold.",
+  "body0": "Tarandus Route-211 VII has been watching the long-period comet storm eat its margins for a generation. So of course, Salt Wound Cabal swore the pact would hold; Salt Wound Order swore otherwise. And then, Something is wrong under Tarandus Route-211 Belt IV, and flare-amplified bleed season is the name people whisper for it. Tarandus Route-211 Belt IV hosts Tarandus Route-211 Belt IV Hold.",
   "spineEdgeType": "DESTABILIZES",
   "spineObjectKind": "body",
   "spineSubjectKind": "phenomenon",
-  "spineSummary": "Everything Tarandus Route-211 Belt V was built to outlast is being unmade by the long-period comet storm.",
+  "spineSummary": "Everything Tarandus Route-211 VII was built to outlast is being unmade by the long-period comet storm.",
   "spineVisibility": "public",
 }
 `;
@@ -90,18 +90,18 @@ exports[`spine full axis matrix (16 representative cells) > corner-realistic-ast
 
 exports[`spine full axis matrix (16 representative cells) > density-crowded: stable spine + body[0] structural fields 1`] = `
 {
-  "body0": "The debt-fleet anchor graveyard drifts the baselines Yuyu's Field Anomaly II relies on. The debt-fleet anchor graveyard drifts the baselines Yuyu's Field VIII relies on. Yuyu's Field Anomaly II records a phase shift each time the Gardener warning beacon passes through. Yuyu's Field VIII carries Yuyu's Field Node on its surface.",
+  "body0": "The debt-fleet anchor graveyard drifts the baselines Yuyu's Field II relies on. The debt-fleet anchor graveyard drifts the baselines Yuyu's Field VIII relies on. Yuyu's Field Dwarf X records a phase shift each time the election-day metric storm cycle passes through. Yuyu's Field II carries Yuyu's Field II Laboratory on its surface.",
   "spineEdgeType": "DESTABILIZES",
   "spineObjectKind": "body",
   "spineSubjectKind": "phenomenon",
-  "spineSummary": "The debt-fleet anchor graveyard is drifting the baselines on which Yuyu's Field Anomaly II was sited.",
+  "spineSummary": "The debt-fleet anchor graveyard is drifting the baselines on which Yuyu's Field II was sited.",
   "spineVisibility": "public",
 }
 `;
 
 exports[`spine full axis matrix (16 representative cells) > density-hub: stable spine + body[0] structural fields 1`] = `
 {
-  "body0": "Intan's Crown Belt IX records a phase shift each time the moving bleed-node river passes through. Intan's Crown V records a phase shift each time the refugee ark parking orbit passes through. The moving bleed-node river introduces a measurable perturbation in Intan's Crown II. Intan's Crown Belt IX Cordon is the only major foothold on Intan's Crown Belt IX.",
+  "body0": "Intan's Crown Belt IX records a phase shift each time the moving bleed-node river passes through. Intan's Crown IV records a phase shift each time the moving bleed-node river passes through. The moving bleed-node river introduces a measurable perturbation in Intan's Crown II. Intan's Crown IV Station is the only major foothold on Intan's Crown IV.",
   "spineEdgeType": "DESTABILIZES",
   "spineObjectKind": "body",
   "spineSubjectKind": "phenomenon",
@@ -123,11 +123,11 @@ exports[`spine full axis matrix (16 representative cells) > density-normal: stab
 
 exports[`spine full axis matrix (16 representative cells) > density-sparse: stable spine + body[0] structural fields 1`] = `
 {
-  "body0": "The chiral contamination bloom drifts the baselines Arneb Trace-209 III relies on. Arneb Trace-209 III records a phase shift each time the debt-fleet anchor graveyard passes through. The debt-fleet anchor graveyard drifts the baselines Long Baseline Authority relies on. Arneb Trace-209 III hosts Arneb Trace-209 III Station 85.",
+  "body0": "The chiral contamination bloom drifts the baselines Arneb Trace-209 IV relies on. Arneb Trace-209 IV records a phase shift each time the debt-fleet anchor graveyard passes through. The debt-fleet anchor graveyard drifts the baselines Long Baseline Authority relies on. Arneb Trace-209 IV hosts Arneb Trace-209 IV Station 85.",
   "spineEdgeType": "DESTABILIZES",
   "spineObjectKind": "body",
   "spineSubjectKind": "phenomenon",
-  "spineSummary": "Chiral contamination bloom took shape before the catalog was sealed, the chiral contamination bloom is shifting the operating envelope Arneb Trace-209 III was calibrated against.",
+  "spineSummary": "The chiral contamination bloom is shifting the operating envelope Arneb Trace-209 IV was calibrated against.",
   "spineVisibility": "public",
 }
 `;

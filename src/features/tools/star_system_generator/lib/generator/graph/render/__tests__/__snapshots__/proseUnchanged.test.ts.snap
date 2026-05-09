@@ -12,7 +12,7 @@ exports[`Phase 3 existing prose remains byte-identical > seed phase3-prose-1 pro
   ],
   "settlementWhyHere": [
     "Irena-61 III route geometry is built into this orbital and works the surface from there. Irena-61 III route geometry stays because the yield outweighs everything that wants it gone.",
-    "Irena-61 V minor-body complex maintains its footprint on the body it occupies. The reading here is high enough that Irena-61 V minor-body complex accepts the risk and the silence.",
+    "Irena-61 Belt V maintains its footprint on the body it occupies. The reading here is high enough that Irena-61 Belt V accepts the risk and the silence.",
   ],
   "systemName": "Irena-61",
 }
@@ -25,13 +25,13 @@ exports[`Phase 3 existing prose remains byte-identical > seed phase3-prose-2 pro
     "Transit: Radiation belts force looping transfers, hardened shelters, and costly orbital delays. Question: Which supposedly safe corridor shifted, and who knew before the convoy entered? Hook: Port authorities, insurers, and smugglers fight over legal and lethal corridor maps. Image: A navigation vault shows a convoy bending toward an uncharted hot belt.",
   ],
   "settlementTagHooks": [
-    "Outsiders call it Broken Terraformer, but the local pressure is sharper: survival protocols double as social control. A corporate security crackdown makes the GU work impossible to treat as routine. Privately, the settlement has an evacuation ark nobody knows about. Whoever runs the Pinchdrive tuning station sets the terms here.",
+    "Outsiders call it Deep Ice, but the local pressure is sharper: travel, debt, and risk all orbit the next moving bleed opportunity. A corporate security crackdown makes the GU work impossible to treat as routine. Privately, the settlement has an evacuation ark nobody knows about. Whoever runs the quarantine station sets the terms here.",
     "The public tag is Life-Support Union; the private trouble is Penal Extraction, because punishment and resource production are the same system. The crisis around mass shelter lottery riot makes the GU work impossible to treat as routine. Privately, the quarantine is political. Whoever runs the corporate customs post sets the terms here.",
     "Outsiders call it Shelter Lottery, but the local pressure is sharper: belief and GU observation are tangled in local politics. Coordination drift across the swarm makes town hall annex the choke point everyone fights over. Privately, the official quarantine boundary protects an illegal facility. Whatever the system fights over next, the interdiction compliance office is where it lands.",
   ],
   "settlementWhyHere": [
-    "There is something rare in this volume, and Meissa's Forge V orbital space is the answer to it.",
-    "There is something rare in this volume, and Meissa's Forge transit geometry is the answer to it.",
+    "There is something rare in this volume, and Meissa's Forge Belt VI is the answer to it.",
+    "Meissa's Forge transit geometry is built into this orbital and works the surface from there. Meissa's Forge transit geometry stays because the yield outweighs everything that wants it gone.",
     "Meissa's Forge transit geometry is built into this orbital and works the surface from there. Meissa's Forge transit geometry stays because the yield outweighs everything that wants it gone.",
   ],
   "systemName": "Meissa's Forge",
@@ -46,10 +46,10 @@ exports[`Phase 3 existing prose remains byte-identical > seed phase3-prose-3 pro
     "Transit: Radiation belts force looping transfers, hardened shelters, and costly orbital delays. Question: Which supposedly safe corridor shifted, and who knew before the convoy entered? Hook: Port authorities, insurers, and smugglers fight over legal and lethal corridor maps. Image: A navigation vault shows a convoy bending toward an uncharted hot belt.",
   ],
   "settlementTagHooks": [
-    "The public tag is Anti-Corporate Commune; the private trouble is Moving Node Rush, because short-lived opportunity is pushing people into unsafe choices. Coordination drift across the swarm makes transit lock overflow the choke point everyone fights over. Privately, the terraforming directorate falsified the climate model. Whoever runs the volatile mine sets the terms here.",
+    "The public tag is Flare Refuge; the private trouble is Moving Node Rush, because short-lived opportunity is pushing people into unsafe choices. Coordination drift across the swarm makes single-room briefing cell the choke point everyone fights over. Privately, the settlement has an evacuation ark nobody knows about. Whoever runs the civilian colony sets the terms here.",
   ],
   "settlementWhyHere": [
-    "Shengong-Prism Belt III occupies Shengong-Prism Belt III and is held in place by Medical chirality stock. Shengong-Prism Belt III stays because the yield outweighs everything that wants it gone.",
+    "Shengong-Prism III - Moon I occupies Shengong-Prism III and is held in place by Medical chirality stock. Shengong-Prism III - Moon I stays because the yield outweighs everything that wants it gone.",
   ],
   "systemName": "Shengong-Prism",
 }
