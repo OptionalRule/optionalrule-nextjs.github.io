@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { auToScene, bodyVisualSize, SCENE_UNIT } from '../scale'
+import { auToScene, bodyVisualSize, SCENE_UNIT, ORBIT_MIN_OFFSET } from '../scale'
 
 describe('auToScene', () => {
   it('places 0 AU at the origin', () => {
@@ -19,8 +19,12 @@ describe('auToScene', () => {
     expect(inner).toBeGreaterThan(outer)
   })
 
-  it('uses SCENE_UNIT as its multiplier', () => {
-    expect(auToScene(1)).toBeCloseTo(Math.log10(2) * SCENE_UNIT, 5)
+  it('uses SCENE_UNIT as its multiplier with ORBIT_MIN_OFFSET applied', () => {
+    expect(auToScene(1)).toBeCloseTo(ORBIT_MIN_OFFSET + Math.log10(2) * SCENE_UNIT, 5)
+  })
+
+  it('keeps any non-zero orbit outside the star margin', () => {
+    expect(auToScene(0.001)).toBeGreaterThanOrEqual(ORBIT_MIN_OFFSET)
   })
 })
 
