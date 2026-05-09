@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { Canvas } from '@react-three/fiber'
-import { Html } from '@react-three/drei'
+import { Html, Stars } from '@react-three/drei'
 import type { GeneratedSystem } from '../../types'
 import type { SystemSceneGraph } from '../types'
 import { CameraRig } from './CameraRig'
@@ -52,6 +52,15 @@ export function Scene({ graph, system }: SceneProps) {
     >
       <ambientLight intensity={0.05} />
       <pointLight position={[0, 0, 0]} intensity={2.5} distance={graph.sceneRadius * 4} decay={0.6} />
+      <Stars
+        radius={graph.sceneRadius * 2.2}
+        depth={graph.sceneRadius * 0.8}
+        count={3500}
+        factor={graph.sceneRadius * 0.16}
+        saturation={0}
+        fade
+        speed={prefersReducedMotion ? 0 : 0.2}
+      />
       <CameraRig sceneRadius={graph.sceneRadius} />
       {!hasBodies ? (
         <Html center>
