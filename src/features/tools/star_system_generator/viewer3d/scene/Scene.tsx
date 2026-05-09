@@ -13,8 +13,7 @@ import { Body } from './Body'
 import { Belt } from './Belt'
 import { HazardVolume } from './HazardVolume'
 import { GuBleedVolume } from './GuBleedVolume'
-import { RuinPin } from './RuinPin'
-import { PhenomenonGlyph } from './PhenomenonGlyph'
+import { PhenomenonGlyphs, RuinPins } from './MarkerInstances'
 import { HoverTooltip } from './HoverTooltip'
 import { useLayers, usePrefersReducedMotion, useSelectionActions } from '../chrome/ViewerContext'
 import { WebGLFallback } from '../chrome/WebGLFallback'
@@ -109,12 +108,8 @@ export function Scene({ graph, system }: SceneProps) {
       {graph.guBleeds.map((g) => (
         <GuBleedVolume key={`gu-${g.id}`} bleed={g} />
       ))}
-      {graph.ruins.filter((r) => !r.attachedBodyId).map((r) => (
-        <RuinPin key={`ruin-${r.id}`} ruin={r} />
-      ))}
-      {graph.phenomena.map((p) => (
-        <PhenomenonGlyph key={`phen-${p.id}`} phenomenon={p} />
-      ))}
+      <RuinPins ruins={graph.ruins.filter((r) => !r.attachedBodyId)} />
+      <PhenomenonGlyphs phenomena={graph.phenomena} />
       <HoverTooltip graph={graph} system={system} />
     </Canvas>
   )

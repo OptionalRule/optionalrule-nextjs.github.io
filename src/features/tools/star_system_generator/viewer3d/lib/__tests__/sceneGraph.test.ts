@@ -3,6 +3,7 @@ import type { Fact, Moon } from '../../../types'
 import { generateSystem } from '../../../lib/generator'
 import { buildSceneGraph } from '../sceneGraph'
 import { auToScene } from '../scale'
+import type { BodyShadingKey, RenderArchetype } from '../../types'
 
 const seed = 'plan-test-001'
 
@@ -20,6 +21,18 @@ function testMoon(index: number): Moon {
     hazard: fact('none'),
     use: fact('navigation marker'),
   }
+}
+
+const expectedArchetypeByShading: Record<BodyShadingKey, RenderArchetype> = {
+  'rocky-warm': 'rocky',
+  'rocky-cool': 'rocky',
+  earthlike: 'earthlike',
+  desert: 'desert',
+  'sub-neptune': 'sub-neptune',
+  'gas-giant': 'gas-giant',
+  'ice-giant': 'ice-giant',
+  dwarf: 'dwarf',
+  anomaly: 'anomaly',
 }
 
 describe('buildSceneGraph', () => {
@@ -40,6 +53,13 @@ describe('buildSceneGraph', () => {
   it('renders one BeltVisual per belt OrbitingBody', () => {
     const expected = system.bodies.filter((b) => b.category.value === 'belt').length
     expect(graph.belts.length).toBe(expected)
+  })
+
+  it('assigns stable render archetypes to bodies and belts', () => {
+    for (const body of graph.bodies) {
+      expect(body.renderArchetype).toBe(expectedArchetypeByShading[body.shading])
+    }
+    expect(graph.belts.every((belt) => belt.renderArchetype === 'belt')).toBe(true)
   })
 
   it('orbit radii are monotonic when bodies are sorted by AU', () => {
@@ -111,5 +131,22 @@ describe('buildSceneGraph', () => {
 
     expect(patchedGraph.ruins[0].attachedBodyId).toBe(targetBody?.id)
     expect(visual?.ruinIds).toContain(ruin.id)
+    expect(patchedGraph.ruins[0].renderArchetype).toBe('ruin-marker')
+  })
+
+  it('assigns marker archetypes to GU phenomena', () => {
+    const phenomenon = {
+      id: 'test-phenomenon',
+      phenomenon: fact('Fold static', 'gu-layer'),
+      note: fact('Sensors stutter across the band.', 'gu-layer'),
+      travelEffect: fact('Minor translation lag.', 'gu-layer'),
+      surveyQuestion: fact('What repeats inside the signal?', 'gu-layer'),
+      conflictHook: fact('Survey crews dispute ownership of the readings.', 'gu-layer'),
+      sceneAnchor: fact('A violet shimmer hangs off the snow line.', 'gu-layer'),
+    }
+    const patchedGraph = buildSceneGraph({ ...system, phenomena: [phenomenon] })
+
+    expect(patchedGraph.phenomena).toHaveLength(1)
+    expect(patchedGraph.phenomena[0].renderArchetype).toBe('phenomenon-marker')
   })
 })

@@ -54,7 +54,7 @@ Architecture:
 - `lib/scale.ts`, `lib/motion.ts`, `lib/stellarColor.ts`, `lib/bodyShading.ts` — supporting pure modules.
 - `lib/hazardClassifier.ts`, `lib/guBleedClassifier.ts` — keyword-based placement of free-form `Fact<string>` hazard / bleed text.
 - `chrome/` — DOM (modal, layer toggles, sidebar, legend, detail cards).
-- `scene/` — react-three-fiber primitives (one component per scene element: Star, Body, Orbit, Belt, Ring, Moon, HazardVolume, GuBleedVolume, SettlementPin, RuinPin, PhenomenonGlyph).
+- `scene/` — react-three-fiber primitives and instanced marker batches (Star, Body, Orbit, Belt, Ring, Moon, HazardVolume, GuBleedVolume, SettlementPin, MarkerInstances).
 
 The viewer is opened from `<SystemViewer3DButton/>` (in the main bundle) which dynamic-imports `viewer3d/index.tsx`.
 
