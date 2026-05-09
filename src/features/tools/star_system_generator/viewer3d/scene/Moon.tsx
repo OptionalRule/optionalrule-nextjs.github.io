@@ -18,7 +18,7 @@ export function Moon({ moon }: { moon: MoonVisual }) {
   })
 
   return (
-    <group ref={groupRef} rotation={[0, moon.phase0, 0]}>
+    <group ref={groupRef} rotation={[moon.orbitTilt, moon.phase0, 0]}>
       <mesh position={[moon.parentRelativeOrbit, 0, 0]}>
         <sphereGeometry args={[moon.visualSize, 16, 16]} />
         <meshStandardMaterial color="#8a8a82" roughness={1} metalness={0} />

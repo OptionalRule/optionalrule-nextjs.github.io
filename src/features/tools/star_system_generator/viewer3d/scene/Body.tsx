@@ -61,21 +61,22 @@ export function Body({ body }: BodyProps) {
 
   return (
     <group ref={groupRef} rotation={[body.orbitTiltY, body.phase0, 0]}>
-      <mesh
-        ref={meshRef}
-        position={[body.orbitRadius, 0, 0]}
-        onPointerOver={(e) => { e.stopPropagation(); hover({ kind: 'body', id: body.id }); document.body.style.cursor = 'pointer' }}
-        onPointerOut={(e) => { e.stopPropagation(); hover(null); document.body.style.cursor = '' }}
-        onClick={(e) => { e.stopPropagation(); select({ kind: 'body', id: body.id }) }}
-      >
-        <sphereGeometry args={[body.visualSize, 32, 32]} />
-        <primitive object={material} attach="material" />
-        {body.rings ? <Ring ring={body.rings} /> : null}
+      <group position={[body.orbitRadius, 0, 0]}>
+        <mesh
+          ref={meshRef}
+          onPointerOver={(e) => { e.stopPropagation(); hover({ kind: 'body', id: body.id }); document.body.style.cursor = 'pointer' }}
+          onPointerOut={(e) => { e.stopPropagation(); hover(null); document.body.style.cursor = '' }}
+          onClick={(e) => { e.stopPropagation(); select({ kind: 'body', id: body.id }) }}
+        >
+          <sphereGeometry args={[body.visualSize, 32, 32]} />
+          <primitive object={material} attach="material" />
+          {body.rings ? <Ring ring={body.rings} /> : null}
+          {body.hasSettlements ? <SettlementPin size={body.visualSize} settlementIds={body.settlementIds} /> : null}
+        </mesh>
         {body.moons.map((moon) => (
           <Moon key={moon.id} moon={moon} />
         ))}
-        {body.hasSettlements ? <SettlementPin size={body.visualSize} settlementIds={body.settlementIds} /> : null}
-      </mesh>
+      </group>
     </group>
   )
 }

@@ -76,12 +76,15 @@ function moonsFor(body: OrbitingBody, _seed: string, parentSize: number): MoonVi
   const cap = 4
   return body.moons.slice(0, cap).map((moon: Moon, idx: number) => {
     const orbit = parentSize * (1.8 + idx * 0.7)
+    const periodSec = 4 + idx * 2 + hashToUnit(`moon-period#${moon.id}`) * 2
+    const tilt = (hashToUnit(`moon-tilt#${moon.id}`) - 0.5) * 0.6
     return {
       id: moon.id,
       parentBodyId: body.id,
       parentRelativeOrbit: orbit,
       phase0: phase0ForBody(moon.id, _seed),
-      angularSpeed: (Math.PI * 2) / 6,
+      angularSpeed: (Math.PI * 2) / periodSec,
+      orbitTilt: tilt,
       visualSize: parentSize * 0.18,
       shading: 'dwarf',
     }

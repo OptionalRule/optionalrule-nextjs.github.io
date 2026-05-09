@@ -37,6 +37,7 @@ export interface MoonVisual {
   parentRelativeOrbit: number
   phase0: number
   angularSpeed: number
+  orbitTilt: number
   visualSize: number
   shading: BodyShadingKey
 }
