@@ -17,11 +17,11 @@ const LETTER_RAMP: Record<string, { core: string; corona: string }> = {
 }
 
 const CLASS_RADIUS: Record<string, number> = {
-  V: 38,
-  IV: 44,
-  III: 56,
-  II: 70,
-  I: 88,
+  V: 6,
+  IV: 8,
+  III: 11,
+  II: 14,
+  I: 18,
 }
 
 const CLASS_PATTERN = /(Ia|Ib|II|III|IV|V)/

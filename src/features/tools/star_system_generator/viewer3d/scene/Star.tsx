@@ -8,7 +8,8 @@ export interface StarProps {
 }
 
 export function Star({ star }: StarProps) {
-  const coreSize = Math.max(8, star.coronaRadius * 0.35)
+  const coreSize = star.coronaRadius * 0.5
+  const raySize = Math.max(0.4, star.coronaRadius * 0.08)
   const rays = useMemo(() => {
     const out: Array<[number, number]> = []
     for (let i = 0; i < star.rayCount; i++) {
@@ -36,7 +37,7 @@ export function Star({ star }: StarProps) {
       </mesh>
       {rays.map(([x, y], idx) => (
         <mesh key={idx} position={[x * star.coronaRadius * 1.05, 0, y * star.coronaRadius * 1.05]}>
-          <sphereGeometry args={[1.5, 8, 8]} />
+          <sphereGeometry args={[raySize, 8, 8]} />
           <meshBasicMaterial color={star.coronaColor} transparent opacity={0.45} toneMapped={false} />
         </mesh>
       ))}
