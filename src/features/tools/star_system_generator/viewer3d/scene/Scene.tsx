@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { Canvas } from '@react-three/fiber'
-import { Html, Stars } from '@react-three/drei'
+import { AdaptiveDpr, AdaptiveEvents, Html, PerformanceMonitor, Stars } from '@react-three/drei'
 import type { GeneratedSystem } from '../../types'
 import type { SystemSceneGraph } from '../types'
 import { CameraRig } from './CameraRig'
@@ -38,6 +38,7 @@ export function Scene({ graph, system }: SceneProps) {
   const { select, hover } = useSelectionActions()
   const prefersReducedMotion = usePrefersReducedMotion()
   const [supported] = useState<boolean>(() => typeof document === 'undefined' ? true : detectWebGL())
+  const [qualityScale, setQualityScale] = useState(1)
   if (!supported) {
     return <WebGLFallback onClose={() => window.dispatchEvent(new CustomEvent('viewer3d:close'))} />
   }
@@ -47,17 +48,25 @@ export function Scene({ graph, system }: SceneProps) {
     <Canvas
       dpr={[1, 2]}
       frameloop={prefersReducedMotion ? 'demand' : 'always'}
+      performance={{ min: 0.5, max: 1, debounce: 300 }}
       camera={{ fov: 45, near: 0.1, far: graph.sceneRadius * 6, position: [0, graph.sceneRadius * 0.35, graph.sceneRadius * 0.95] }}
       gl={{ antialias: true, alpha: false }}
       style={{ background: 'radial-gradient(ellipse at center, #0a1424 0%, #02040a 75%)' }}
     >
+      <PerformanceMonitor
+        onDecline={() => setQualityScale(0.68)}
+        onIncline={() => setQualityScale(1)}
+        onFallback={() => setQualityScale(0.5)}
+      />
+      <AdaptiveDpr />
+      <AdaptiveEvents />
       <ambientLight intensity={0.05} />
       <pointLight position={[0, 0, 0]} intensity={2.5} distance={graph.sceneRadius * 4} decay={0.6} />
       <Stars
         radius={graph.sceneRadius * 2.2}
         depth={graph.sceneRadius * 0.8}
-        count={3500}
-        factor={graph.sceneRadius * 0.16}
+        count={Math.round(3500 * qualityScale)}
+        factor={graph.sceneRadius * 0.16 * qualityScale}
         saturation={0}
         fade
         speed={prefersReducedMotion ? 0 : 0.2}

@@ -4,7 +4,7 @@ import * as THREE from 'three'
 import { useEffect, useMemo, useRef } from 'react'
 import { useFrame } from '@react-three/fiber'
 import type { BodyVisual } from '../types'
-import { useLayers, usePrefersReducedMotion, useSelectionActions } from '../chrome/ViewerContext'
+import { useLayers, usePrefersReducedMotion, useSelectionActions, useSelectionState } from '../chrome/ViewerContext'
 import { makeBodyMaterial } from './bodyShader'
 import { shaderUniforms } from '../lib/bodyShading'
 import { useGeneratedBodyLookup } from './bodyLookup'
@@ -13,6 +13,7 @@ import { Moon } from './Moon'
 import { SettlementPin } from './SettlementPin'
 import { bodySphereGeometry } from './renderAssets'
 import { AtmosphereShell, CloudShell } from './BodyShells'
+import { MoonOrbit } from './MoonOrbit'
 
 export interface BodyProps {
   body: BodyVisual
@@ -24,6 +25,7 @@ export function Body({ body }: BodyProps) {
   const { layers } = useLayers()
   const prefersReducedMotion = usePrefersReducedMotion()
   const { hover, select } = useSelectionActions()
+  const { selection, hovered } = useSelectionState()
   const lookup = useGeneratedBodyLookup()
   const orbitingBody = lookup(body.id)
   const material = useMemo(() => {
@@ -54,6 +56,9 @@ export function Body({ body }: BodyProps) {
 
   const worldPos = useMemo(() => new THREE.Vector3(), [])
   const posTuple = useRef<[number, number, number]>([0, 0, 0])
+  const isInspected = selection?.kind === 'body' && selection.id === body.id
+  const isHovered = hovered?.kind === 'body' && hovered.id === body.id
+  const showMoonOrbits = isInspected || isHovered
 
   useEffect(() => {
     const dict = window as Window & { __viewer3dBodyPositions?: Record<string, [number, number, number]> }
@@ -100,6 +105,9 @@ export function Body({ body }: BodyProps) {
               </>
             ) : null}
             {body.rings ? <Ring ring={body.rings} /> : null}
+            {showMoonOrbits ? body.moons.map((moon) => (
+              <MoonOrbit key={`moon-orbit-${moon.id}`} moon={moon} parentSize={body.visualSize} />
+            )) : null}
             {body.moons.map((moon) => (
               <Moon key={moon.id} moon={moon} />
             ))}
