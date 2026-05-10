@@ -1153,6 +1153,59 @@ describe('generateSystem', () => {
     }
   })
 
+  it('blocks cryovolcanism geology on Hot/Furnace/Inferno bodies', () => {
+    let auditedHot = 0
+    for (let index = 0; index < 200; index++) {
+      const system = generateSystem({
+        ...options,
+        seed: `hot-geo-${index.toString(16).padStart(4, '0')}`,
+      })
+      for (const body of system.bodies) {
+        if (body.thermalZone.value !== 'Hot' && body.thermalZone.value !== 'Furnace' && body.thermalZone.value !== 'Inferno') continue
+        if (body.category.value === 'belt') continue
+        if (body.category.value === 'sub-neptune' || body.category.value === 'gas-giant' || body.category.value === 'ice-giant') continue
+        auditedHot++
+        expect(body.detail.geology.value, `${body.bodyClass.value} (${body.thermalZone.value})`).not.toBe('Cryovolcanism')
+      }
+    }
+    expect(auditedHot).toBeGreaterThan(50)
+  })
+
+  it('blocks hot-style silicate volcanism on Dark-zone non-tidal classes', () => {
+    const hotOnly = new Set(['Active volcanism', 'Extreme plume provinces', 'Global resurfacing', 'Plate tectonic analogue', 'Supercontinent cycle'])
+    for (let index = 0; index < 240; index++) {
+      const system = generateSystem({
+        ...options,
+        seed: `dark-geo-${index.toString(16).padStart(4, '0')}`,
+      })
+      for (const body of system.bodies) {
+        if (body.thermalZone.value !== 'Dark') continue
+        if (body.category.value === 'belt') continue
+        if (body.category.value === 'sub-neptune' || body.category.value === 'gas-giant' || body.category.value === 'ice-giant') continue
+        if (/tidally|cryovolcanic|volcanic/i.test(body.bodyClass.value) && !/tidally locked/i.test(body.bodyClass.value)) continue
+        expect(hotOnly.has(body.detail.geology.value), `${body.bodyClass.value} (Dark) got ${body.detail.geology.value}`).toBe(false)
+      }
+    }
+  })
+
+  it('pins magma-ocean class geology to silicate-volcanic states', () => {
+    const moltenGeos = new Set(['Active volcanism', 'Extreme plume provinces', 'Global resurfacing', 'Tidal heating'])
+    const triggers = /^(?:lava planet|magma ocean world|carbon-rich furnace world|tidally stretched volcanic world)$/i
+    let sawTrigger = false
+    for (let index = 0; index < 200; index++) {
+      const system = generateSystem({
+        ...options,
+        seed: `magma-geo-${index.toString(16).padStart(4, '0')}`,
+      })
+      for (const body of system.bodies) {
+        if (!triggers.test(body.bodyClass.value)) continue
+        sawTrigger = true
+        expect(moltenGeos.has(body.detail.geology.value), `${body.bodyClass.value} got geology=${body.detail.geology.value}`).toBe(true)
+      }
+    }
+    expect(sawTrigger).toBe(true)
+  })
+
   it('exports a Gates section in markdown when gates are present', async () => {
     const { exportSystemMarkdown } = await import('../lib/export/markdown')
     let withGate: ReturnType<typeof generateSystem> | undefined

@@ -3,20 +3,26 @@ import { extremeHotThermalZones, type WorldClassEnvironmentProfile, type WorldCl
 import {
   airlessAllowedAtmospheres,
   airlessAllowedHydrospheres,
+  anomalyAllowedGeologies,
   beltAllowedAtmospheres,
   beltAllowedHydrospheres,
+  coldIcyGeologies,
   coldTerrestrialAtmospheres,
   coldTerrestrialHydrospheres,
   desertAllowedHydrospheres,
   envelopeAllowedAtmospheres,
+  envelopeAllowedGeologies,
   envelopeAllowedHydrospheres,
   greenhouseAtmospheres,
   greenhouseHydrospheres,
+  hotSilicateGeologies,
   hotTerrestrialHydrospheres,
   hyceanHydrospheres,
+  magmaOceanGeologies,
   magmaOceanHydrospheres,
   solidSurfaceAtmospheres,
   steamHydrospheres,
+  tidalColdGeologies,
   waterOceanHydrospheres,
 } from './environmentCompatibility'
 import { deriveWorldClassMetadata } from './worldClassMetadata'
@@ -120,19 +126,25 @@ export function deriveEnvironmentPolicy(
       facets: baseFacets({ substrate: 'metric-phenomenon', atmosphereRegime: 'exotic', volatileState: 'exotic', surfaceAccess: 'no-surface', management: 'gu-distorted', biosphereEligibility: 'none' }),
       atmosphere: { allowed: new Set(['Controlled habitat envelopes', 'No ordinary atmosphere']), fallback: 'No ordinary atmosphere' },
       hydrosphere: { allowed: new Set(['Imported or recycled volatiles', 'Not applicable: metric or route phenomenon']), fallback: 'Not applicable: metric or route phenomenon' },
+      geology: { allowed: anomalyAllowedGeologies, fallback: 'Metric shear geometry' },
       biosphere: { allowed: false, forced: 'Sterile' },
       notes: ['Anomaly profile prevents ordinary planetary environment details.'],
     }
   }
 
   if (metadata.environmentProfileHint === 'airless' || metadata.physicalTags.includes('airless')) {
+    const isColdAirless = thermalZone === 'Cold' || thermalZone === 'Cryogenic' || thermalZone === 'Dark'
     return {
       profile: 'airless',
-      facets: baseFacets({ atmosphereRegime: 'airless', volatileState: thermalZone === 'Cold' || thermalZone === 'Cryogenic' || thermalZone === 'Dark' ? 'ice' : 'dry', surfaceAccess: 'hostile-surface', biosphereEligibility: 'none' }),
+      facets: baseFacets({ atmosphereRegime: 'airless', volatileState: isColdAirless ? 'ice' : 'dry', surfaceAccess: 'hostile-surface', biosphereEligibility: 'none' }),
       atmosphere: { allowed: airlessAllowedAtmospheres, fallback: 'None / hard vacuum' },
-      hydrosphere: { allowed: airlessAllowedHydrospheres, fallback: thermalZone === 'Cold' || thermalZone === 'Cryogenic' || thermalZone === 'Dark' ? 'Subsurface ice' : 'Hydrated minerals only' },
+      hydrosphere: { allowed: airlessAllowedHydrospheres, fallback: isColdAirless ? 'Subsurface ice' : 'Hydrated minerals only' },
+      geology: {
+        allowed: isColdAirless ? coldIcyGeologies : hotSilicateGeologies,
+        fallback: isColdAirless ? 'Ancient cratered crust' : 'Dead interior',
+      },
       biosphere: { allowed: false, forced: 'Sterile' },
-      notes: ['Airless class constrains atmosphere and surface volatiles.'],
+      notes: ['Airless class constrains atmosphere, surface volatiles, and geology by thermal zone.'],
     }
   }
 
@@ -149,8 +161,12 @@ export function deriveEnvironmentPolicy(
       facets: baseFacets({ volatileState: 'dry', surfaceAccess: 'hostile-surface', biosphereEligibility: 'prebiotic' }),
       atmosphere: { allowed: desertAtmospheres, fallback: isColdZone ? 'Thin CO2/N2' : 'Dense CO2/N2' },
       hydrosphere: { allowed: desertAllowedHydrospheres, fallback: extremeHotThermalZones.has(thermalZone) ? 'Bone dry' : isColdZone ? 'Subsurface ice' : 'Briny aquifers' },
+      geology: {
+        allowed: isColdZone ? coldIcyGeologies : hotSilicateGeologies,
+        fallback: isColdZone ? 'Ancient cratered crust' : 'Low volcanism',
+      },
       biosphere: { allowed: true },
-      notes: ['Desert class constrains hydrosphere to dry, buried, or briny states; cold variants block heat-requiring atmospheres.'],
+      notes: ['Desert class constrains hydrosphere and geology to zone-appropriate states.'],
     }
   }
 
@@ -171,6 +187,7 @@ export function deriveEnvironmentPolicy(
       facets: baseFacets({ substrate: 'envelope', atmosphereRegime: 'envelope', volatileState: 'deep-envelope', surfaceAccess: 'cloud-tops', biosphereEligibility: 'none' }),
       atmosphere: { allowed: envelopeAllowedAtmospheres, fallback: 'Hydrogen/helium envelope' },
       hydrosphere: { allowed: envelopeAllowedHydrospheres, fallback: 'Deep atmospheric volatile layers' },
+      geology: { allowed: envelopeAllowedGeologies, fallback: 'Deep atmospheric circulation' },
       biosphere: { allowed: false, forced: 'Sterile' },
       notes: ['Envelope profile keeps volatiles in atmosphere/deep-pressure states; atmosphere pinned to hydrogen-helium (optionally GU-distorted).'],
     }
@@ -182,8 +199,9 @@ export function deriveEnvironmentPolicy(
       facets: baseFacets({ atmosphereRegime: 'exotic', volatileState: 'exotic', surfaceAccess: 'hostile-surface', biosphereEligibility: 'none', specialTags: ['magma-ocean'] }),
       atmosphere: { allowed: new Set(['Rock-vapor atmosphere', 'Metal vapor atmosphere', 'Chiral-active atmosphere', 'Trace exosphere']), fallback: 'Rock-vapor atmosphere' },
       hydrosphere: { allowed: magmaOceanHydrospheres, fallback: 'Magma seas / lava lakes' },
+      geology: { allowed: magmaOceanGeologies, fallback: 'Active volcanism' },
       biosphere: { allowed: false, forced: 'Sterile' },
-      notes: ['Magma-ocean profile pins surface volatiles to molten silicate or vaporized rock states.'],
+      notes: ['Magma-ocean profile pins surface volatiles to molten silicate or vaporized rock states; geology forced to active silicate volcanism.'],
     }
   }
 
@@ -199,8 +217,9 @@ export function deriveEnvironmentPolicy(
       facets: baseFacets({ atmosphereRegime: 'dense', volatileState: metadata.physicalTags.includes('steam') ? 'ocean' : 'local-liquid', surfaceAccess: 'hostile-surface', biosphereEligibility: 'prebiotic', specialTags: ['greenhouse'] }),
       atmosphere: { allowed: greenhouseAtmospheres, fallback },
       hydrosphere: { allowed: hydrosphereAllowed, fallback: 'Vaporized volatile traces' },
+      geology: { allowed: hotSilicateGeologies, fallback: 'Active volcanism' },
       biosphere: { allowed: true },
-      notes: ['Greenhouse profile blocks deep-ocean rolls; steam variant keeps source-table wet states, dry-greenhouse variants stay vapor/briny.'],
+      notes: ['Greenhouse profile blocks deep-ocean rolls; steam variant keeps source-table wet states; geology pinned to hot-silicate set.'],
     }
   }
 
@@ -217,14 +236,19 @@ export function deriveEnvironmentPolicy(
       facets: baseFacets({ volatileState: 'ocean', biosphereEligibility: 'open' }),
       atmosphere: { allowed: oceanAtmospheres, fallback: isColdZone ? 'Thin CO2/N2' : 'Moderate inert atmosphere' },
       hydrosphere: { allowed: waterOceanHydrospheres, fallback },
+      geology: {
+        allowed: isColdZone ? coldIcyGeologies : hotSilicateGeologies,
+        fallback: isColdZone ? 'Cryovolcanism' : 'Plate tectonic analogue',
+      },
       biosphere: { allowed: true },
-      notes: ['Ocean profile preserves source-table ocean and water-rich rolls; cold variants block heat-requiring atmospheres.'],
+      notes: ['Ocean profile preserves source-table ocean and water-rich rolls; geology constrained by zone.'],
     }
   }
 
   const isCold = thermalZone === 'Cold' || thermalZone === 'Cryogenic' || thermalZone === 'Dark'
   const isHot = thermalZone === 'Hot'
   const hasHydrogenAtmosphere = metadata.physicalTags.includes('hydrogen-atmosphere')
+  const isTidalClass = /tidally|cryovolcanic|volcanic/i.test(bodyClass.className) && !/tidally locked/i.test(bodyClass.className)
 
   const terrestrialAtmosphereAllowed: ReadonlySet<string> = hasHydrogenAtmosphere
     ? new Set<string>()
@@ -244,18 +268,27 @@ export function deriveEnvironmentPolicy(
       ? 'Subsurface ice'
       : ''
 
+  const terrestrialGeologyAllowed: ReadonlySet<string> = isCold
+    ? (isTidalClass ? tidalColdGeologies : coldIcyGeologies)
+    : hotSilicateGeologies
+
+  const terrestrialGeologyFallback = isCold
+    ? (isTidalClass ? 'Tidal heating' : 'Cryovolcanism')
+    : 'Plate tectonic analogue'
+
   return {
     profile: 'terrestrial',
     facets: baseFacets(),
     atmosphere: { allowed: terrestrialAtmosphereAllowed, fallback: isCold ? 'Thin CO2/N2' : 'Dense CO2/N2' },
     hydrosphere: { allowed: terrestrialHydrosphereAllowed, fallback: terrestrialHydrosphereFallback },
+    geology: { allowed: terrestrialGeologyAllowed, fallback: terrestrialGeologyFallback },
     biosphere: { allowed: true },
     notes: [
       isHot
-        ? 'Default terrestrial profile (Hot zone): blocks open-ocean / hydrocarbon / ice-shell rolls; allows dry, briny, magma, and edge-case ice states.'
+        ? 'Default terrestrial profile (Hot zone): blocks open-ocean rolls + cryovolcanism; allows dry, briny, magma, and silicate volcanism.'
         : isCold
-          ? 'Default terrestrial profile (Cold/Cryogenic zone): blocks heat-requiring atmospheres (Steam, Sulfur haze, Dense greenhouse) and hot-zone seas; allows ice, cryogenic reservoirs, and cryovolcanic states.'
-          : 'Default terrestrial profile (Temperate band): preserves compatible source-table rolls.',
+          ? 'Default terrestrial profile (Cold/Cryogenic zone): blocks heat-requiring atmospheres + silicate volcanism; allows ice, cryogenic, cryovolcanic. Tidal-flagged classes get Io-style silicate volcanism back.'
+          : 'Default terrestrial profile (Temperate band): preserves compatible source-table rolls; geology pinned to silicate set.',
     ],
   }
 }
@@ -280,9 +313,15 @@ export function normalizeDetailForEnvironment(
   detail: DetailWithoutBiosphere,
   policy: EnvironmentPolicy
 ): DetailWithoutBiosphere {
+  const geologyAllowed = policy.geology?.allowed
+  const geologyFallback = policy.geology?.fallback
+  const geology = geologyAllowed && geologyFallback
+    ? normalizeFact(detail.geology, geologyAllowed, geologyFallback, policy, 'geology')
+    : detail.geology
   return {
     ...detail,
     atmosphere: normalizeFact(detail.atmosphere, policy.atmosphere.allowed, policy.atmosphere.fallback, policy, 'atmosphere'),
     hydrosphere: normalizeFact(detail.hydrosphere, policy.hydrosphere.allowed, policy.hydrosphere.fallback, policy, 'hydrosphere'),
+    geology,
   }
 }

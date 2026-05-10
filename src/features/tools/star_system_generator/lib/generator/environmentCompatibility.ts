@@ -210,6 +210,47 @@ export const anomalyAllowedGeologies = new Set([
   'Metric shear geometry',
 ])
 
+// Geology classes that work on any rocky world regardless of thermal zone.
+const universalGeologies = [
+  'Dead interior',
+  'Ancient cratered crust',
+  'Low volcanism',
+  'Static lid',
+  'Programmable-matter geological behavior',
+]
+
+// Hot / temperate silicate-surface geologies. No cryovolcanism — needs cold to be water/ammonia ice.
+export const hotSilicateGeologies = new Set([
+  ...universalGeologies,
+  'Active volcanism',
+  'Plate tectonic analogue',
+  'Supercontinent cycle',
+  'Tidal heating',
+  'Extreme plume provinces',
+  'Global resurfacing',
+])
+
+// Cold/icy-body geologies. Silicate volcanism only via tidal heating on a special class.
+export const coldIcyGeologies = new Set([
+  ...universalGeologies,
+  'Cryovolcanism',
+  'Tidal heating',
+])
+
+// Tidally-heated cold bodies (Io-analogues, near gas giants) can still drive silicate volcanism.
+export const tidalColdGeologies = new Set([
+  ...coldIcyGeologies,
+  'Active volcanism',
+  'Extreme plume provinces',
+])
+
+export const magmaOceanGeologies = new Set([
+  'Active volcanism',
+  'Extreme plume provinces',
+  'Global resurfacing',
+  'Tidal heating',
+])
+
 export function isEnvelopeCategory(category: BodyCategory): boolean {
   return envelopeCategories.has(category)
 }
