@@ -288,13 +288,16 @@ export function guVolumeProfile(system: GeneratedSystem, id: string): { shape: V
   }
 }
 
-export function phenomenonVisualProfile(kind: string, id: string): Pick<PhenomenonMarker, 'color' | 'scale'> {
+export function phenomenonVisualProfile(kind: string, id: string): Pick<PhenomenonMarker, 'color' | 'glowColor' | 'scale'> {
   const text = kind.toLowerCase()
+  const color = hasAny(text, ['fold', 'metric', 'static']) ? '#c18cff'
+    : hasAny(text, ['signal', 'sensor', 'echo', 'beacon']) ? '#67d4ff'
+      : hasAny(text, ['flare', 'radiation', 'storm']) ? '#ffb15c'
+        : hasAny(text, ['chiral', 'bloom', 'fog']) ? '#9be7d8'
+          : '#d7b8ff'
   return {
-    color: hasAny(text, ['fold', 'metric', 'static']) ? '#a880ff'
-      : hasAny(text, ['signal', 'sensor', 'echo']) ? '#67d4ff'
-        : hasAny(text, ['flare', 'radiation']) ? '#ffb15c'
-          : '#c3a7ff',
+    color,
+    glowColor: color,
     scale: 1.25 + hashToUnit(`phen-scale#${id}`) * 0.75,
   }
 }

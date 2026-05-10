@@ -178,6 +178,7 @@ export interface PhenomenonMarker {
   position: SceneVec3
   kind: string
   color: string
+  glowColor: string
   scale: number
   renderArchetype: 'phenomenon-marker'
 }

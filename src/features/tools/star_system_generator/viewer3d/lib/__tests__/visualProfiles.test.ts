@@ -112,5 +112,7 @@ describe('visualProfiles', () => {
     expect(hazardVolumeProfile('radiation belt near gas giant', 'h1').shape).toBe('torus')
     expect(hazardVolumeProfile('route corridor shear', 'h2').shape).toBe('ribbon')
     expect(phenomenonVisualProfile('metric fold static', 'p1')).toEqual(phenomenonVisualProfile('metric fold static', 'p1'))
+    expect(phenomenonVisualProfile('metric fold static', 'p1').color).not.toBe('#000000')
+    expect(phenomenonVisualProfile('metric fold static', 'p1').glowColor).toMatch(/^#/)
   })
 })

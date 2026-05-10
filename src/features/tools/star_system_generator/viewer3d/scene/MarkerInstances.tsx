@@ -32,38 +32,54 @@ function markerIdFromEvent<T extends { id: string }, E extends Event>(
 
 export function PhenomenonGlyphs({ phenomena }: { phenomena: PhenomenonMarker[] }) {
   const { layers } = useLayers()
-  const { hover, select } = useSelectionActions()
-  const meshRef = useRef<THREE.InstancedMesh | null>(null)
-  const dummy = useMemo(() => new THREE.Object3D(), [])
-  const material = useMemo(() => new THREE.MeshBasicMaterial({
-    color: '#ffffff',
-    transparent: true,
-    opacity: 0.82,
-    vertexColors: true,
-    toneMapped: false,
-  }), [])
-
-  useLayoutEffect(() => {
-    if (!meshRef.current) return
-    const color = new THREE.Color()
-    setMarkerMatrices(meshRef.current, phenomena, (index) => phenomena[index]?.scale ?? 1.6, dummy)
-    phenomena.forEach((marker, index) => meshRef.current?.setColorAt(index, color.set(marker.color)))
-    if (meshRef.current.instanceColor) meshRef.current.instanceColor.needsUpdate = true
-  }, [dummy, phenomena])
-
-  useEffect(() => () => material.dispose(), [material])
-
   if (!layers.gu || phenomena.length === 0) return null
 
   return (
-    <instancedMesh
-      ref={meshRef}
-      args={[phenomenonGeometry, material, phenomena.length]}
-      dispose={null}
+    <group>
+      {phenomena.map((phenomenon) => (
+        <PhenomenonGlyph key={phenomenon.id} phenomenon={phenomenon} />
+      ))}
+    </group>
+  )
+}
+
+function PhenomenonGlyph({ phenomenon }: { phenomenon: PhenomenonMarker }) {
+  const { hover, select } = useSelectionActions()
+  const coreMaterial = useMemo(() => new THREE.MeshBasicMaterial({
+    color: phenomenon.color,
+    transparent: true,
+    opacity: 0.96,
+    toneMapped: false,
+  }), [phenomenon.color])
+  const glowMaterial = useMemo(() => new THREE.MeshBasicMaterial({
+    color: phenomenon.glowColor,
+    transparent: true,
+    opacity: 0.18,
+    blending: THREE.AdditiveBlending,
+    depthWrite: false,
+    toneMapped: false,
+  }), [phenomenon.glowColor])
+  const haloMaterial = useMemo(() => new THREE.MeshBasicMaterial({
+    color: phenomenon.glowColor,
+    transparent: true,
+    opacity: 0.055,
+    blending: THREE.AdditiveBlending,
+    depthWrite: false,
+    toneMapped: false,
+  }), [phenomenon.glowColor])
+
+  useEffect(() => () => {
+    coreMaterial.dispose()
+    glowMaterial.dispose()
+    haloMaterial.dispose()
+  }, [coreMaterial, glowMaterial, haloMaterial])
+
+  return (
+    <group
+      position={phenomenon.position}
       onPointerOver={(e) => {
         e.stopPropagation()
-        const id = markerIdFromEvent(e, phenomena)
-        if (id) hover({ kind: 'phenomenon', id })
+        hover({ kind: 'phenomenon', id: phenomenon.id })
         document.body.style.cursor = 'pointer'
       }}
       onPointerOut={(e) => {
@@ -73,10 +89,31 @@ export function PhenomenonGlyphs({ phenomena }: { phenomena: PhenomenonMarker[] 
       }}
       onClick={(e) => {
         e.stopPropagation()
-        const id = markerIdFromEvent(e, phenomena)
-        if (id) select({ kind: 'phenomenon', id })
+        select({ kind: 'phenomenon', id: phenomenon.id })
       }}
-    />
+    >
+      <mesh
+        geometry={phenomenonGeometry}
+        material={haloMaterial}
+        scale={phenomenon.scale * 3.2}
+        renderOrder={1}
+        dispose={null}
+      />
+      <mesh
+        geometry={phenomenonGeometry}
+        material={glowMaterial}
+        scale={phenomenon.scale * 1.9}
+        renderOrder={2}
+        dispose={null}
+      />
+      <mesh
+        geometry={phenomenonGeometry}
+        material={coreMaterial}
+        scale={phenomenon.scale}
+        renderOrder={3}
+        dispose={null}
+      />
+    </group>
   )
 }
 

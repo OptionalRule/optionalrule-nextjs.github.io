@@ -226,4 +226,21 @@ describe('buildSceneGraph', () => {
     expect(patchedGraph.phenomena).toHaveLength(1)
     expect(patchedGraph.phenomena[0].renderArchetype).toBe('phenomenon-marker')
   })
+
+  it('anchors belt-like phenomena inside a rendered belt', () => {
+    const phenomenon = {
+      id: 'belt-phenomenon',
+      phenomenon: fact('Snow-line chiral belt', 'gu-layer'),
+      note: fact('Every ice tank flags the same handedness.', 'gu-layer'),
+      travelEffect: fact('Ships detour through clean transfer windows.', 'gu-layer'),
+      surveyQuestion: fact('Which fragments flipped first?', 'gu-layer'),
+      conflictHook: fact('Claims crews fight over quarantine math.', 'gu-layer'),
+      sceneAnchor: fact('Clean ice turns quarantine amber along the snow line.', 'gu-layer'),
+    }
+    const patchedGraph = buildSceneGraph({ ...system, phenomena: [phenomenon] })
+    const marker = patchedGraph.phenomena[0]
+    const radius = Math.hypot(marker.position[0], marker.position[2])
+
+    expect(patchedGraph.belts.some((belt) => radius >= belt.innerRadius && radius <= belt.outerRadius)).toBe(true)
+  })
 })
