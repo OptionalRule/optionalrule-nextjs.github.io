@@ -11,12 +11,21 @@ import { useGeneratedBodyLookup } from './bodyLookup'
 import { Ring } from './Ring'
 import { Moon } from './Moon'
 import { SettlementPin } from './SettlementPin'
-import { bodySphereGeometry } from './renderAssets'
+import { bodySphereGeometry, invisibleHitMaterial } from './renderAssets'
 import { AtmosphereShell, CloudShell } from './BodyShells'
 import { MoonOrbit } from './MoonOrbit'
 
 export interface BodyProps {
   body: BodyVisual
+}
+
+function hashToUnit(value: string): number {
+  let hash = 2166136261
+  for (let i = 0; i < value.length; i++) {
+    hash ^= value.charCodeAt(i)
+    hash = Math.imul(hash, 16777619)
+  }
+  return ((hash >>> 0) % 10000) / 10000
 }
 
 export function Body({ body }: BodyProps) {
@@ -59,6 +68,20 @@ export function Body({ body }: BodyProps) {
   const isInspected = selection?.kind === 'body' && selection.id === body.id
   const isHovered = hovered?.kind === 'body' && hovered.id === body.id
   const showMoonOrbits = isInspected || isHovered
+  const spinRate = useMemo(() => {
+    const jitter = hashToUnit(`${body.id}#spin-rate`)
+    const direction = hashToUnit(`${body.id}#spin-direction`) > 0.18 ? 1 : -1
+    return (0.055 + jitter * 0.11) * direction
+  }, [body.id])
+  const hitScale = Math.max(body.visualSize * 1.38, Math.min(1.1, body.visualSize + 0.55))
+  const highlightMaterial = useMemo(() => new THREE.MeshBasicMaterial({
+    color: '#8fd6ff',
+    transparent: true,
+    opacity: isInspected ? 0.3 : isHovered ? 0.24 : 0,
+    wireframe: true,
+    depthWrite: false,
+    toneMapped: false,
+  }), [isHovered, isInspected])
 
   useEffect(() => {
     const dict = window as Window & { __viewer3dBodyPositions?: Record<string, [number, number, number]> }
@@ -68,13 +91,14 @@ export function Body({ body }: BodyProps) {
   }, [body.id])
 
   useEffect(() => () => material.dispose(), [material])
+  useEffect(() => () => highlightMaterial.dispose(), [highlightMaterial])
 
   useFrame((_state, delta) => {
     if (!groupRef.current) return
     const speed = prefersReducedMotion ? 0 : body.angularSpeed
     groupRef.current.rotation.y -= speed * delta
     if (meshRef.current) {
-      meshRef.current.rotation.y += delta * 0.3
+      if (!prefersReducedMotion) meshRef.current.rotation.y += delta * spinRate
       meshRef.current.getWorldPosition(worldPos)
       posTuple.current[0] = worldPos.x
       posTuple.current[1] = worldPos.y
@@ -98,6 +122,24 @@ export function Body({ body }: BodyProps) {
             >
               <primitive object={material} attach="material" />
             </mesh>
+            <mesh
+              geometry={bodySphereGeometry}
+              material={invisibleHitMaterial}
+              scale={hitScale}
+              dispose={null}
+              onPointerOver={(e) => { e.stopPropagation(); hover({ kind: 'body', id: body.id }); document.body.style.cursor = 'pointer' }}
+              onPointerOut={(e) => { e.stopPropagation(); hover(null); document.body.style.cursor = '' }}
+              onClick={(e) => { e.stopPropagation(); select({ kind: 'body', id: body.id }) }}
+            />
+            {(isHovered || isInspected) ? (
+              <mesh
+                geometry={bodySphereGeometry}
+                material={highlightMaterial}
+                scale={body.visualSize * 1.18}
+                renderOrder={2}
+                dispose={null}
+              />
+            ) : null}
             {body.surface ? (
               <>
                 <AtmosphereShell body={body} />

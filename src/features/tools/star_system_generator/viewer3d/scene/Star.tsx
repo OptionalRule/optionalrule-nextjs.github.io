@@ -124,8 +124,10 @@ const glowFragmentShader = `
   uniform vec3 uCoreColor;
   uniform vec3 uCoronaColor;
   uniform float uFalloff;
+  uniform float uFlickerPhase;
   uniform float uOpacity;
   uniform float uStreak;
+  uniform float uTime;
   varying vec2 vUv;
 
   void main() {
@@ -136,7 +138,8 @@ const glowFragmentShader = `
     float horizontal = pow(max(0.0, 1.0 - abs(centered.y) * 2.0), 22.0) * pow(max(0.0, 1.0 - abs(centered.x) * 2.0), 0.72);
     float vertical = pow(max(0.0, 1.0 - abs(centered.x) * 2.0), 30.0) * pow(max(0.0, 1.0 - abs(centered.y) * 2.0), 1.1) * 0.18;
     float streak = (horizontal + vertical) * uStreak * softEdge;
-    float alpha = min(1.0, radial * uOpacity + streak);
+    float flicker = 1.0 + sin(uTime * 1.7 + uFlickerPhase) * 0.018 + sin(uTime * 3.1 + uFlickerPhase * 0.73) * 0.009;
+    float alpha = min(1.0, radial * uOpacity + streak) * flicker;
     vec3 color = mix(uCoronaColor, uCoreColor, smoothstep(0.62, 1.0, radial));
     gl_FragColor = vec4(color, alpha);
   }
@@ -146,10 +149,20 @@ function clamp(value: number, min: number, max: number): number {
   return Math.min(max, Math.max(min, value))
 }
 
+function hashToUnit(value: string): number {
+  let hash = 2166136261
+  for (let i = 0; i < value.length; i++) {
+    hash ^= value.charCodeAt(i)
+    hash = Math.imul(hash, 16777619)
+  }
+  return ((hash >>> 0) % 10000) / 10000
+}
+
 export function Star({ star }: StarProps) {
   const billboardRef = useRef<THREE.Group | null>(null)
   const coreSize = star.coronaRadius * 0.48
   const activity = clamp(star.bloomStrength / 1.2, 0.12, 1.35)
+  const flickerPhase = useMemo(() => hashToUnit(`${star.id}#glow-flicker`) * Math.PI * 2, [star.id])
   const surfaceMaterial = useMemo(
     () => new THREE.ShaderMaterial({
       uniforms: {
@@ -192,8 +205,10 @@ export function Star({ star }: StarProps) {
         uCoreColor: { value: new THREE.Color(star.coreColor) },
         uCoronaColor: { value: new THREE.Color(star.coronaColor) },
         uFalloff: { value: 1.8 },
+        uFlickerPhase: { value: flickerPhase },
         uOpacity: { value: 0.35 + star.bloomStrength * 0.18 },
         uStreak: { value: 0.12 + star.flareStrength * 0.28 },
+        uTime: { value: 0 },
       },
       vertexShader: glowVertexShader,
       fragmentShader: glowFragmentShader,
@@ -204,7 +219,7 @@ export function Star({ star }: StarProps) {
       side: THREE.DoubleSide,
       toneMapped: false,
     }),
-    [star.bloomStrength, star.coreColor, star.coronaColor, star.flareStrength],
+    [flickerPhase, star.bloomStrength, star.coreColor, star.coronaColor, star.flareStrength],
   )
   const outerGlowMaterial = useMemo(
     () => new THREE.ShaderMaterial({
@@ -212,8 +227,10 @@ export function Star({ star }: StarProps) {
         uCoreColor: { value: new THREE.Color(star.coreColor) },
         uCoronaColor: { value: new THREE.Color(star.coronaColor) },
         uFalloff: { value: 2.9 },
+        uFlickerPhase: { value: flickerPhase + 1.7 },
         uOpacity: { value: 0.16 + star.bloomStrength * 0.1 },
         uStreak: { value: 0.035 + star.flareStrength * 0.06 },
+        uTime: { value: 0 },
       },
       vertexShader: glowVertexShader,
       fragmentShader: glowFragmentShader,
@@ -224,7 +241,7 @@ export function Star({ star }: StarProps) {
       side: THREE.DoubleSide,
       toneMapped: false,
     }),
-    [star.bloomStrength, star.coreColor, star.coronaColor, star.flareStrength],
+    [flickerPhase, star.bloomStrength, star.coreColor, star.coronaColor, star.flareStrength],
   )
   const prominenceMaterial = useMemo(
     () => new THREE.LineBasicMaterial({
@@ -271,6 +288,8 @@ export function Star({ star }: StarProps) {
   useFrame((state) => {
     surfaceMaterial.uniforms.uTime.value = state.clock.elapsedTime
     coronaMaterial.uniforms.uTime.value = state.clock.elapsedTime
+    innerGlowMaterial.uniforms.uTime.value = state.clock.elapsedTime
+    outerGlowMaterial.uniforms.uTime.value = state.clock.elapsedTime
     const pulse = 1 + Math.sin(state.clock.elapsedTime * star.pulseSpeed) * 0.04 * star.flareStrength
     if (!billboardRef.current) return
     billboardRef.current.scale.setScalar(pulse)

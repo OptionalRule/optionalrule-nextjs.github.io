@@ -8,6 +8,8 @@ import { hashToUnit } from '../lib/motion'
 import { usePrefersReducedMotion } from '../chrome/ViewerContext'
 import { beltParticleGeometry } from './renderAssets'
 
+const BELT_ROTATION_SPEED = 0.0067
+
 export interface BeltProps {
   belt: BeltVisual
 }
@@ -19,7 +21,7 @@ export function Belt({ belt }: BeltProps) {
   const instancedMesh = useMemo(() => {
     const dpr = typeof window !== 'undefined' ? window.devicePixelRatio : 1
     const count = Math.round(belt.particleCount * (dpr < 1.5 ? 0.5 : 1))
-    const mat = new THREE.MeshBasicMaterial({ color: new THREE.Color(belt.color), vertexColors: true })
+    const mat = new THREE.MeshBasicMaterial({ color: new THREE.Color(belt.color), vertexColors: true, toneMapped: false })
     const mesh = new THREE.InstancedMesh(beltParticleGeometry, mat, count)
     const dummy = new THREE.Object3D()
     const color = new THREE.Color()
@@ -65,7 +67,7 @@ export function Belt({ belt }: BeltProps) {
   useFrame((_state, delta) => {
     if (!groupRef.current) return
     if (!prefersReducedMotion) {
-      groupRef.current.rotation.y -= delta * 0.02
+      groupRef.current.rotation.y -= delta * BELT_ROTATION_SPEED
     }
   })
 

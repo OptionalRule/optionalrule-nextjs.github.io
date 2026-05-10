@@ -1,6 +1,8 @@
 'use client'
 
 import { Html } from '@react-three/drei'
+import { useFrame } from '@react-three/fiber'
+import { useRef, useState } from 'react'
 import type { GeneratedSystem } from '../../types'
 import type { SystemSceneGraph } from '../types'
 import { useSelectionState, type SelectionTarget } from '../chrome/ViewerContext'
@@ -15,6 +17,7 @@ function resolveTooltip(
   hovered: SelectionTarget | null,
   graph: SystemSceneGraph,
   system: GeneratedSystem,
+  liveBodyPosition: [number, number, number] | null,
 ): TooltipPosition | null {
   if (!hovered) return null
   switch (hovered.kind) {
@@ -22,8 +25,9 @@ function resolveTooltip(
       const body = graph.bodies.find((b) => b.id === hovered.id)
       const source = system.bodies.find((b) => b.id === hovered.id)
       if (!body || !source) return null
+      const position = liveBodyPosition ?? [body.orbitRadius * Math.cos(body.phase0), 0, body.orbitRadius * Math.sin(body.phase0)]
       return {
-        position: [body.orbitRadius * Math.cos(body.phase0), body.visualSize * 1.8, body.orbitRadius * Math.sin(body.phase0)],
+        position: [position[0], position[1] + body.visualSize * 2.1, position[2]],
         title: source.name.value,
         subtitle: `${source.category.value} · ${source.thermalZone.value}`,
       }
@@ -69,11 +73,37 @@ function resolveTooltip(
 
 export function HoverTooltip({ graph, system }: { graph: SystemSceneGraph; system: GeneratedSystem }) {
   const { hovered } = useSelectionState()
-  const tip = resolveTooltip(hovered, graph, system)
+  const [liveBodyPosition, setLiveBodyPosition] = useState<[number, number, number] | null>(null)
+  const lastUpdateRef = useRef(0)
+
+  useFrame((state) => {
+    if (hovered?.kind !== 'body') {
+      if (liveBodyPosition) setLiveBodyPosition(null)
+      return
+    }
+    if (state.clock.elapsedTime - lastUpdateRef.current < 0.08) return
+    lastUpdateRef.current = state.clock.elapsedTime
+    const dict = (window as Window & { __viewer3dBodyPositions?: Record<string, [number, number, number]> }).__viewer3dBodyPositions
+    const position = dict?.[hovered.id]
+    if (!position) return
+    setLiveBodyPosition((prev) => {
+      if (
+        prev &&
+        Math.abs(prev[0] - position[0]) < 0.02 &&
+        Math.abs(prev[1] - position[1]) < 0.02 &&
+        Math.abs(prev[2] - position[2]) < 0.02
+      ) {
+        return prev
+      }
+      return [position[0], position[1], position[2]]
+    })
+  })
+
+  const tip = resolveTooltip(hovered, graph, system, liveBodyPosition)
   if (!tip) return null
   return (
     <Html position={tip.position} center distanceFactor={120} pointerEvents="none">
-      <div className="pointer-events-none whitespace-nowrap rounded-md border border-[var(--accent)]/30 bg-[#0f141c]/95 px-2 py-1 text-[11px] text-[var(--text-primary)] shadow-lg">
+      <div className="pointer-events-none whitespace-nowrap rounded-md border border-[var(--accent)]/50 bg-[#0f141c]/95 px-2 py-1 text-[11px] text-[var(--text-primary)] shadow-lg shadow-black/40">
         <div className="font-semibold">{tip.title}</div>
         <div className="text-[10px] text-[var(--text-tertiary)]">{tip.subtitle}</div>
       </div>

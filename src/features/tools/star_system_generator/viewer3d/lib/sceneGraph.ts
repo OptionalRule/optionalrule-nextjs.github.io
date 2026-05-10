@@ -262,9 +262,9 @@ function buildBelt(body: OrbitingBody, hzCenterAu: number, scaleMode: OrbitScale
     id: body.id,
     innerRadius: r * 0.92,
     outerRadius: r * 1.08,
-    particleCount: 1500,
+    particleCount: 750,
     jitter: r * 0.04,
-    color: '#1d1d1b',
+    color: '#9a9186',
     renderArchetype: 'belt',
   })
 }

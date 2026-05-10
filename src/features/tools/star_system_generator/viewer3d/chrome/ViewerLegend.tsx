@@ -8,7 +8,9 @@ interface LegendChipSpec {
 }
 
 const CHIPS: LegendChipSpec[] = [
-  { color: 'bg-[var(--accent)]',          label: 'orbit / habitable / snow line' },
+  { color: 'bg-[var(--accent)]',          label: 'solid rings: body orbits' },
+  { color: 'bg-sky-300/60',               label: 'blue band: habitable zone' },
+  { color: 'bg-sky-100',                  label: 'dotted ring: snow line' },
   { color: 'bg-[var(--accent-mystical)]', label: 'GU bleed' },
   { color: 'bg-[#ff5773]',                label: 'hazard zone' },
   { color: 'bg-[var(--accent-warm)]',     label: 'settlement' },

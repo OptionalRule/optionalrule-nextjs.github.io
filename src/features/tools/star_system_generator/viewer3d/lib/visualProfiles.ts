@@ -198,14 +198,14 @@ export function buildRingProfile(body: OrbitingBody, parentSize: number): RingVi
 export function buildBeltProfile(body: OrbitingBody, base: Omit<BeltVisual, 'colors' | 'gapCount' | 'clumpiness' | 'inclination' | 'particleSizeScale'>): BeltVisual {
   const text = bodyVisualText(body)
   const colors = hasAny(text, ['ice', 'volatile', 'snow'])
-    ? ['#d4e5ea', '#8ea7b1', '#f0f6f8']
+    ? ['#dceaf0', '#9fb8c1', '#f3f8fa']
     : hasAny(text, ['metal', 'iron'])
-      ? ['#8d8276', '#4f4d4b', '#c0a37e']
+      ? ['#b3aa9e', '#74716d', '#d2b68c']
       : hasAny(text, ['carbon', 'dark'])
-        ? ['#3f4142', '#1d1f21', '#6b7376']
+        ? ['#686e70', '#3d4143', '#8a9599']
         : hasAny(text, ['gu', 'chiral', 'programm'])
           ? ['#a880ff', '#3e245f', '#67d4ff']
-          : ['#6b6258', '#312d28', '#a89783']
+          : ['#9c9185', '#5f5850', '#c1ad93']
   return {
     ...base,
     colors,
