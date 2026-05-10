@@ -61,9 +61,15 @@ const hydEnv = bodies.filter((b) => b.atm === 'Hydrogen/helium envelope' && !['s
 console.log(`\n[ATM-3] Hydrogen/helium envelope on non-envelope body: ${hydEnv.length}`)
 hydEnv.slice(0, 5).forEach((h) => console.log(`  ${h.zone} | ${h.cat} ${h.cls} → atm=${h.atm}`))
 
-// Vacuum-equivalent atmospheres on classes that should have something
+// Vacuum-equivalent atmospheres on classes that should have something.
+// Exclusions: Ultra-dense super-Mercury in Furnace/Inferno (stripped envelope near star is physically plausible);
+// any *stripped* / *remnant* / *airless* class (already known to be near-vacuum).
 const vacuumLike = new Set(['None / hard vacuum', 'Trace exosphere'])
-const denseClasses = bodies.filter((b) => /dense|greenhouse|hub|hycean|sub-neptune|gas giant|ice giant/i.test(b.cls) && vacuumLike.has(b.atm) && !/airless|stripped|remnant/i.test(b.cls))
+const denseClasses = bodies.filter((b) =>
+  /dense-atmosphere|greenhouse|hub|hycean|sub-neptune|gas giant|ice giant/i.test(b.cls) &&
+  vacuumLike.has(b.atm) &&
+  !/airless|stripped|remnant|super-mercury/i.test(b.cls),
+)
 console.log(`\n[ATM-4] Vacuum-like atmosphere on a dense/greenhouse/giant-named class: ${denseClasses.length}`)
 denseClasses.slice(0, 8).forEach((h) => console.log(`  ${h.zone} | ${h.cls} → atm=${h.atm}`))
 
@@ -84,7 +90,17 @@ oceanVacuum.slice(0, 8).forEach((h) => console.log(`  ${h.zone} | ${h.cls} | atm
 // 3) HYDRO × THERMAL ZONE residual holes (sanity recheck)
 // =========================================================
 const hotForbidden = new Set(['Ocean-continent balance', 'Global ocean', 'High-pressure deep ocean', 'Ice-shell subsurface ocean', 'Hydrocarbon lakes/seas'])
-const hotHydroHits = bodies.filter((b) => b.zone === 'Hot' && b.cat !== 'belt' && !['sub-neptune', 'gas-giant', 'ice-giant'].includes(b.cat) && hotForbidden.has(b.hydro))
+// Exclusions: classes that are exotic-by-design and explicitly carry an ocean concept.
+// "Hot ocean remnant" describes a residual ocean in the hot zone (deliberate flavor).
+// "Steam greenhouse" is Venus-pre-runaway with a global ocean beneath the steam — defensible.
+const hotHydroExcluded = /hot ocean remnant|steam greenhouse/i
+const hotHydroHits = bodies.filter((b) =>
+  b.zone === 'Hot' &&
+  b.cat !== 'belt' &&
+  !['sub-neptune', 'gas-giant', 'ice-giant'].includes(b.cat) &&
+  hotForbidden.has(b.hydro) &&
+  !hotHydroExcluded.test(b.cls),
+)
 console.log(`\n[HYD-1] Hot zone with forbidden ocean/hydrocarbon hydrosphere (should be 0 after recent fix unless ocean-class): ${hotHydroHits.length}`)
 const hotHydroBreakdown = new Map<string, number>()
 for (const h of hotHydroHits) {

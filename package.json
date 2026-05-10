@@ -34,6 +34,7 @@
     "sort:star-system-names": "node --import tsx/esm scripts/sort-star-system-names.ts",
     "audit:star-system-data": "node --import tsx/esm scripts/audit-star-system-data.ts",
     "audit:star-system-generator": "node --import tsx/esm scripts/audit-star-system-generator.ts",
+    "audit:env": "node --import tsx/esm scripts/audit-env.ts",
     "audit:star-system-generator:quick": "STAR_SYSTEM_AUDIT_PROFILE=quick node --import tsx/esm scripts/audit-star-system-generator.ts",
     "audit:star-system-generator:deep": "STAR_SYSTEM_AUDIT_PROFILE=deep node --import tsx/esm scripts/audit-star-system-generator.ts",
     "generate-star-system-hooks": "node --import tsx/esm scripts/generate-hooks-json.ts",
