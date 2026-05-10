@@ -61,7 +61,13 @@ export function Scene({ graph, system }: SceneProps) {
       <AdaptiveDpr />
       <AdaptiveEvents />
       <ambientLight intensity={0.05} />
-      <pointLight position={[0, 0, 0]} intensity={2.5} distance={graph.sceneRadius * 4} decay={0.6} />
+      <pointLight
+        position={[0, 0, 0]}
+        color={graph.star.coreColor}
+        intensity={2.25 + graph.star.bloomStrength * 0.75}
+        distance={graph.sceneRadius * 4}
+        decay={0.6}
+      />
       <Stars
         radius={graph.sceneRadius * 2.2}
         depth={graph.sceneRadius * 0.8}

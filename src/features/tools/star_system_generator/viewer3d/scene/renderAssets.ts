@@ -2,6 +2,7 @@ import * as THREE from 'three'
 
 export const bodySphereGeometry = new THREE.SphereGeometry(1, 32, 32)
 export const starSphereGeometry = new THREE.SphereGeometry(1, 24, 24)
+export const starGlowPlaneGeometry = new THREE.PlaneGeometry(1, 1)
 export const moonSphereGeometry = new THREE.SphereGeometry(1, 16, 16)
 export const hazardSphereGeometry = new THREE.SphereGeometry(1, 24, 24)
 export const guBleedSphereGeometry = new THREE.SphereGeometry(1, 32, 32)
