@@ -37,16 +37,16 @@ void main() {
   float starFacing = max(dot(normal, lightDirection), 0.0);
   float rim = pow(1.0 - max(dot(normal, viewDirection), 0.0), 3.1);
   float facet = pow(starFacing, 1.65);
-  vec3 litColor = vColor * (0.12 + facet * 0.3);
-  vec3 rimColor = mix(vColor, vec3(0.74, 0.68, 0.58), 0.16) * rim * 0.1;
+  vec3 litColor = vColor * (0.09 + facet * 0.22);
+  vec3 rimColor = mix(vColor, vec3(0.62, 0.58, 0.5), 0.12) * rim * 0.055;
   gl_FragColor = vec4(litColor + rimColor, 1.0);
 }
 `
 
 const BELT_SHAPES: ReadonlyArray<{ geometry: THREE.BufferGeometry; share: number; salt: string }> = [
-  { geometry: beltParticleGeometry, share: 0.46, salt: 'pitted' },
-  { geometry: beltShardGeometry, share: 0.34, salt: 'shard' },
-  { geometry: beltChunkGeometry, share: 0.2, salt: 'chunk' },
+  { geometry: beltParticleGeometry, share: 0.42, salt: 'pitted' },
+  { geometry: beltShardGeometry, share: 0.36, salt: 'shard' },
+  { geometry: beltChunkGeometry, share: 0.22, salt: 'chunk' },
 ]
 
 export interface BeltProps {
@@ -97,18 +97,24 @@ export function Belt({ belt }: BeltProps) {
           hashToUnit(`rz#${shape.salt}#${belt.id}#${i}`) * Math.PI,
         )
         const sizeRoll = hashToUnit(`s#${belt.id}#${i}`)
-        const baseScale = (0.32 + sizeRoll ** 2.4 * 1.35) * belt.particleSizeScale
-        const anchorScale = hashToUnit(`anchor#${belt.id}#${i}`) < 0.015
-          ? 1.9 + hashToUnit(`anchor-size#${belt.id}#${i}`) * 1.2
+        const baseScale = (0.18 + sizeRoll ** 2.8 * 0.76) * belt.particleSizeScale
+        const anchorScale = hashToUnit(`anchor#${belt.id}#${i}`) < 0.006
+          ? 1.45 + hashToUnit(`anchor-size#${belt.id}#${i}`) * 0.55
           : 1
-        const stretchX = 0.42 + hashToUnit(`sx#${shape.salt}#${belt.id}#${i}`) * 1.45
-        const stretchY = 0.34 + hashToUnit(`sy#${shape.salt}#${belt.id}#${i}`) * 1.25
-        const stretchZ = 0.4 + hashToUnit(`sz#${shape.salt}#${belt.id}#${i}`) * 1.6
+        const stretchX = 0.56 + hashToUnit(`sx#${shape.salt}#${belt.id}#${i}`) * 0.95
+        const stretchY = 0.48 + hashToUnit(`sy#${shape.salt}#${belt.id}#${i}`) * 0.82
+        const stretchZ = 0.52 + hashToUnit(`sz#${shape.salt}#${belt.id}#${i}`) * 1.05
         dummy.scale.set(baseScale * anchorScale * stretchX, baseScale * anchorScale * stretchY, baseScale * anchorScale * stretchZ)
         dummy.updateMatrix()
         mesh.setMatrixAt(localIndex, dummy.matrix)
         const palette = belt.colors.length > 0 ? belt.colors : [belt.color]
-        mesh.setColorAt(localIndex, color.set(palette[Math.floor(hashToUnit(`c#${belt.id}#${i}`) * palette.length) % palette.length]))
+        const brightness = 0.42 + hashToUnit(`brightness#${shape.salt}#${belt.id}#${i}`) * 0.46
+        mesh.setColorAt(
+          localIndex,
+          color
+            .set(palette[Math.floor(hashToUnit(`c#${belt.id}#${i}`) * palette.length) % palette.length])
+            .multiplyScalar(brightness),
+        )
       }
       mesh.instanceMatrix.needsUpdate = true
       if (mesh.instanceColor) mesh.instanceColor.needsUpdate = true
