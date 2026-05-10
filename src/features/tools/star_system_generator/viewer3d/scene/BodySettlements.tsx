@@ -39,8 +39,8 @@ export function BodySettlements({ bodyId, bodySize }: BodySettlementsProps) {
   ]
   if (markers.length === 0) return null
 
-  const yBase = bodySize * 1.6
-  const stepX = bodySize * 0.55
+  const yBase = bodySize * 1.0
+  const stepX = bodySize * 0.45
   const startX = -((markers.length - 1) * stepX) / 2
 
   return (
@@ -54,7 +54,6 @@ export function BodySettlements({ bodyId, bodySize }: BodySettlementsProps) {
           id={m.id}
           label={m.label}
           status={m.status}
-          size={32}
         />
       ))}
     </>

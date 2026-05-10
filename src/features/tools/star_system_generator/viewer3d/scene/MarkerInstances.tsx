@@ -19,7 +19,6 @@ export function PhenomenonGlyphs({ phenomena }: { phenomena: PhenomenonMarker[] 
           kind="phenomenon"
           id={p.id}
           label={lookup(p.id)?.phenomenon.value}
-          size={28}
         />
       ))}
     </>
@@ -40,7 +39,7 @@ export function RuinPins({ ruins }: { ruins: RuinMarker[] }) {
           kind="ruin"
           id={r.id}
           label={lookup(r.id)?.remnantType.value}
-          size={r.attachedBeltId ? 22 : 26}
+          size={r.attachedBeltId ? 20 : 24}
         />
       ))}
     </>

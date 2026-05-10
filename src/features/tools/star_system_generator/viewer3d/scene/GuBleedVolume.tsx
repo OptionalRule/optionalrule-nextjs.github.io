@@ -59,7 +59,6 @@ export function GuBleedVolume({ bleed }: { bleed: GuBleedVisual }) {
         kind="gu-bleed"
         id={bleed.id}
         label="GU bleed"
-        size={24}
       />
     </>
   )

@@ -42,7 +42,6 @@ export function HazardVolume({ hazard }: { hazard: HazardVisual }) {
         kind="hazard"
         id={hazard.id}
         label="Hazard"
-        size={24}
       />
     </>
   )
