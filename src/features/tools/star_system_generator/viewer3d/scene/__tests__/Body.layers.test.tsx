@@ -60,10 +60,11 @@ const body: BodyVisual = {
   hasSettlements: true,
   settlementIds: ['settlement-1'],
   ruinIds: [],
+  gateIds: [],
 }
 
 function renderBody(ui: ReactNode) {
-  const system = { bodies: [], settlements: [], ruins: [], phenomena: [] } as unknown as GeneratedSystem
+  const system = { bodies: [], settlements: [], gates: [], ruins: [], phenomena: [] } as unknown as GeneratedSystem
   return render(
     <ViewerContextProvider>
       <LayerToggles />

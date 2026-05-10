@@ -225,6 +225,9 @@ function buildBody(body: OrbitingBody, system: GeneratedSystem, hzCenterAu: numb
   const ruinIds = system.ruins
     .filter((r) => ruinMatchesBody(r, body))
     .map((r) => r.id)
+  const gateIds = system.gates
+    .filter((g) => g.bodyId === body.id || body.moons.some((m) => m.id === g.moonId))
+    .map((g) => g.id)
   return {
     id: body.id,
     orbitRadius: orbitRadiusForBody(body, hzCenterAu, scaleMode, orbitIndex),
@@ -242,6 +245,7 @@ function buildBody(body: OrbitingBody, system: GeneratedSystem, hzCenterAu: numb
     hasSettlements: settlementIds.length > 0,
     settlementIds,
     ruinIds,
+    gateIds,
   }
 }
 

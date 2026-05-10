@@ -127,6 +127,7 @@ export interface BodyVisual {
   hasSettlements: boolean
   settlementIds: string[]
   ruinIds: string[]
+  gateIds: string[]
 }
 
 export interface BeltVisual {

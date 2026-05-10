@@ -4,7 +4,7 @@ import { createContext, useContext, useEffect, useMemo, useState, type ReactNode
 import type { LayerVisibility, OrbitScaleMode } from '../types'
 import { ALL_LAYERS_ON } from '../types'
 
-export type SelectionKind = 'body' | 'moon' | 'settlement' | 'star' | 'hazard' | 'gu-bleed' | 'phenomenon' | 'ruin' | null
+export type SelectionKind = 'body' | 'moon' | 'settlement' | 'gate' | 'star' | 'hazard' | 'gu-bleed' | 'phenomenon' | 'ruin' | null
 
 export interface SelectionTarget {
   kind: NonNullable<SelectionKind>

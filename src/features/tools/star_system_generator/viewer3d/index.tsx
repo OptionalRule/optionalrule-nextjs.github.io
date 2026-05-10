@@ -117,6 +117,10 @@ function SidebarContent({ system, graph }: { system: GeneratedSystem; graph: Ret
       const s = system.settlements.find((x) => x.id === selection.id)
       return s ? <SettlementCard settlement={s} /> : null
     }
+    case 'gate': {
+      const gate = system.gates.find((g) => g.id === selection.id)
+      return gate ? <GateDetailCard gate={gate} /> : null
+    }
     case 'star': {
       return <StarDetailCard system={system} />
     }
@@ -147,6 +151,44 @@ function RemnantDetailCard({ ruin }: { ruin: GeneratedSystem['ruins'][number] })
       </h3>
       <p className="mt-1 text-xs uppercase tracking-wide text-[var(--text-tertiary)]">{ruin.location.value}</p>
       <p className="mt-3 leading-relaxed text-[var(--text-secondary)]">{ruin.hook.value}</p>
+    </article>
+  )
+}
+
+function GateDetailCard({ gate }: { gate: GeneratedSystem['gates'][number] }) {
+  return (
+    <article className="rounded-md border border-[var(--border-light)] bg-[var(--card-elevated)] p-3 text-sm">
+      <h3 className="text-base font-semibold tracking-tight text-[var(--text-primary)]">{gate.name.value}</h3>
+      <p className="mt-1 text-xs uppercase tracking-wide text-[var(--text-tertiary)]">
+        Gate · {gate.anchorName.value}
+      </p>
+      <dl className="mt-3 space-y-1.5 text-xs leading-relaxed text-[var(--text-secondary)]">
+        <div>
+          <dt className="inline font-semibold text-[var(--text-primary)]">Route Note: </dt>
+          <dd className="inline">{gate.routeNote.value}</dd>
+        </div>
+        <div>
+          <dt className="inline font-semibold text-[var(--text-primary)]">Authority: </dt>
+          <dd className="inline">{gate.authority.value}</dd>
+        </div>
+        <div>
+          <dt className="inline font-semibold text-[var(--text-primary)]">Built Form: </dt>
+          <dd className="inline">{gate.builtForm.value}</dd>
+        </div>
+        <div>
+          <dt className="inline font-semibold text-[var(--text-primary)]">Condition: </dt>
+          <dd className="inline">{gate.condition.value}</dd>
+        </div>
+        {gate.pinchDifficulty ? (
+          <div>
+            <dt className="inline font-semibold text-[var(--text-primary)]">Pinch Difficulty: </dt>
+            <dd className="inline">{gate.pinchDifficulty.value}</dd>
+          </div>
+        ) : null}
+      </dl>
+      {gate.tagHook.value ? (
+        <p className="mt-3 leading-relaxed text-[var(--text-secondary)]">{gate.tagHook.value}</p>
+      ) : null}
     </article>
   )
 }

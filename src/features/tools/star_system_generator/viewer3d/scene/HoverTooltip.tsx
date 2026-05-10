@@ -54,6 +54,26 @@ function resolveTooltip(
         subtitle: settlement.siteCategory.value,
       }
     }
+    case 'gate': {
+      const gate = system.gates.find((g) => g.id === hovered.id)
+      if (!gate) return null
+      const parentBody = gate.bodyId
+        ? graph.bodies.find((b) => b.id === gate.bodyId)
+        : undefined
+      const live = gate.bodyId
+        ? (window as Window & { __viewer3dBodyPositions?: Record<string, [number, number, number]> })
+            .__viewer3dBodyPositions?.[gate.bodyId]
+        : undefined
+      const base = live ?? (parentBody
+        ? [parentBody.orbitRadius * Math.cos(parentBody.phase0), 0, parentBody.orbitRadius * Math.sin(parentBody.phase0)] as [number, number, number]
+        : [0, 0, 0] as [number, number, number])
+      const liftSize = parentBody ? parentBody.visualSize * 2.6 : 5
+      return {
+        position: [base[0], base[1] + liftSize, base[2]],
+        title: gate.name.value,
+        subtitle: gate.routeNote.value,
+      }
+    }
     case 'hazard': {
       const hazard = graph.hazards.find((h) => h.id === hovered.id)
       if (!hazard) return null

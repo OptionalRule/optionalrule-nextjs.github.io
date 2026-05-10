@@ -155,7 +155,7 @@ export function Body({ body }: BodyProps) {
             ))}
           </>
         ) : null}
-        {body.hasSettlements ? <BodySettlements bodyId={body.id} bodySize={body.visualSize} /> : null}
+        {body.hasSettlements || body.gateIds.length > 0 ? <BodySettlements bodyId={body.id} bodySize={body.visualSize} /> : null}
       </group>
     </group>
   )
