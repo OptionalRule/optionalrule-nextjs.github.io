@@ -14,6 +14,7 @@ const CHIPS: LegendChipSpec[] = [
   { color: 'bg-[var(--accent-mystical)]', label: 'GU bleed' },
   { color: 'bg-[#ff5773]',                label: 'hazard zone' },
   { color: 'bg-[var(--accent-warm)]',     label: 'settlement' },
+  { color: 'bg-slate-400',                label: 'human remnant' },
 ]
 
 export interface ViewerLegendProps {

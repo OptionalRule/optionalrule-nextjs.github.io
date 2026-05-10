@@ -189,6 +189,28 @@ describe('buildSceneGraph', () => {
     expect(patchedGraph.ruins[0].renderArchetype).toBe('ruin-marker')
   })
 
+  it('attaches belt-located remnants to the matching rendered belt', () => {
+    const targetBelt = system.bodies.find((b) => b.category.value === 'belt')
+    expect(targetBelt).toBeTruthy()
+
+    const ruin = {
+      id: 'belt-remnant',
+      location: fact(targetBelt?.name.value ?? '', 'human-layer'),
+      remnantType: fact('Broken salvage flotilla', 'human-layer'),
+      hook: fact('Its beacon still sells a false docking solution.', 'human-layer'),
+    }
+    const patchedGraph = buildSceneGraph({ ...system, ruins: [ruin] })
+    const marker = patchedGraph.ruins[0]
+    const belt = patchedGraph.belts.find((b) => b.id === targetBelt?.id)
+    expect(belt).toBeTruthy()
+
+    const radius = Math.hypot(marker.position[0], marker.position[2])
+    expect(marker.attachedBeltId).toBe(targetBelt?.id)
+    expect(marker.attachedBodyId).toBeUndefined()
+    expect(radius).toBeGreaterThanOrEqual(belt?.innerRadius ?? 0)
+    expect(radius).toBeLessThanOrEqual(belt?.outerRadius ?? 0)
+  })
+
   it('assigns marker archetypes to GU phenomena', () => {
     const phenomenon = {
       id: 'test-phenomenon',

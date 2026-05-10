@@ -66,6 +66,16 @@ function resolveTooltip(
       if (!marker) return null
       return { position: marker.position, title: phen.phenomenon.value, subtitle: 'system phenomenon' }
     }
+    case 'ruin': {
+      const ruin = system.ruins.find((r) => r.id === hovered.id)
+      const marker = graph.ruins.find((r) => r.id === hovered.id)
+      if (!ruin || !marker) return null
+      return {
+        position: [marker.position[0], marker.position[1] + 1.4, marker.position[2]],
+        title: ruin.remnantType.value,
+        subtitle: ruin.location.value,
+      }
+    }
     default:
       return null
   }

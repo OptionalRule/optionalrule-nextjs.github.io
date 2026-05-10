@@ -82,12 +82,13 @@ export function PhenomenonGlyphs({ phenomena }: { phenomena: PhenomenonMarker[] 
 
 export function RuinPins({ ruins }: { ruins: RuinMarker[] }) {
   const { layers } = useLayers()
+  const { hover, select } = useSelectionActions()
   const meshRef = useRef<THREE.InstancedMesh | null>(null)
   const dummy = useMemo(() => new THREE.Object3D(), [])
 
   useLayoutEffect(() => {
     if (!meshRef.current) return
-    setMarkerMatrices(meshRef.current, ruins, 1.4, dummy)
+    setMarkerMatrices(meshRef.current, ruins, (index) => ruins[index]?.attachedBeltId ? 0.72 : 0.95, dummy)
   }, [dummy, ruins])
 
   if (!layers.human || ruins.length === 0) return null
@@ -97,6 +98,22 @@ export function RuinPins({ ruins }: { ruins: RuinMarker[] }) {
       ref={meshRef}
       args={[ruinGeometry, ruinMaterial, ruins.length]}
       dispose={null}
+      onPointerOver={(e) => {
+        e.stopPropagation()
+        const id = markerIdFromEvent(e, ruins)
+        if (id) hover({ kind: 'ruin', id })
+        document.body.style.cursor = 'pointer'
+      }}
+      onPointerOut={(e) => {
+        e.stopPropagation()
+        hover(null)
+        document.body.style.cursor = ''
+      }}
+      onClick={(e) => {
+        e.stopPropagation()
+        const id = markerIdFromEvent(e, ruins)
+        if (id) select({ kind: 'ruin', id })
+      }}
     />
   )
 }

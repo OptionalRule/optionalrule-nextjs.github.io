@@ -282,7 +282,14 @@ function buildPhenomenon(phen: GeneratedSystem['phenomena'][number], system: Gen
   }
 }
 
-function buildRuin(ruin: GeneratedSystem['ruins'][number], system: GeneratedSystem, bodies: BodyVisual[], hzCenterAu: number, scaleMode: OrbitScaleMode): RuinMarker {
+function buildRuin(
+  ruin: GeneratedSystem['ruins'][number],
+  system: GeneratedSystem,
+  bodies: BodyVisual[],
+  belts: BeltVisual[],
+  hzCenterAu: number,
+  scaleMode: OrbitScaleMode,
+): RuinMarker {
   const sourceBody = system.bodies.find((body) => ruinMatchesBody(ruin, body))
   const matched = sourceBody ? bodies.find((b) => b.id === sourceBody.id) : undefined
   if (matched) {
@@ -291,6 +298,21 @@ function buildRuin(ruin: GeneratedSystem['ruins'][number], system: GeneratedSyst
       attachedBodyId: matched.id,
       position: [0, 0, 0],
       renderArchetype: 'ruin-marker',
+    }
+  }
+  if (sourceBody?.category.value === 'belt') {
+    const belt = belts.find((b) => b.id === sourceBody.id)
+    if (belt) {
+      const angle = hashToUnit(`ruin-belt-angle#${sourceBody.id}#${ruin.id}`) * Math.PI * 2
+      const radiusT = 0.35 + hashToUnit(`ruin-belt-radius#${sourceBody.id}#${ruin.id}`) * 0.3
+      const radius = belt.innerRadius + (belt.outerRadius - belt.innerRadius) * radiusT
+      const y = (hashToUnit(`ruin-belt-y#${sourceBody.id}#${ruin.id}`) - 0.5) * belt.jitter * 1.8
+      return {
+        id: ruin.id,
+        attachedBeltId: belt.id,
+        position: [Math.cos(angle) * radius, y, Math.sin(angle) * radius],
+        renderArchetype: 'ruin-marker',
+      }
     }
   }
   if (sourceBody) {
@@ -333,7 +355,7 @@ export function buildSceneGraph(system: GeneratedSystem, options: BuildSceneGrap
   const hazards = system.majorHazards.map((h) => classifyHazard(h, system, hzCenterAu))
   const guBleeds = [classifyGuBleed(system.guOverlay, system, hzCenterAu)]
   const phenomena = system.phenomena.map((p) => buildPhenomenon(p, system, hzCenterAu, scaleMode))
-  const ruins = system.ruins.map((r) => buildRuin(r, system, bodies, hzCenterAu, scaleMode))
+  const ruins = system.ruins.map((r) => buildRuin(r, system, bodies, belts, hzCenterAu, scaleMode))
 
   const maxBodyOrbit = Math.max(...bodies.map((b) => b.orbitRadius), 0)
   const maxBeltOrbit = Math.max(...belts.map((b) => b.outerRadius), 0)

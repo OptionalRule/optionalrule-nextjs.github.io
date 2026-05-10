@@ -185,6 +185,7 @@ export interface PhenomenonMarker {
 export interface RuinMarker {
   id: string
   attachedBodyId?: string
+  attachedBeltId?: string
   attachedMoonId?: string
   position: SceneVec3
   renderArchetype: 'ruin-marker'

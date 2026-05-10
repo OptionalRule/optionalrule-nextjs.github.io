@@ -130,7 +130,23 @@ function SidebarContent({ system, graph }: { system: GeneratedSystem; graph: Ret
     case 'phenomenon': {
       return <PhenomenonCard phenomenonId={selection.id} system={system} />
     }
+    case 'ruin': {
+      const ruin = system.ruins.find((x) => x.id === selection.id)
+      return ruin ? <RemnantDetailCard ruin={ruin} /> : null
+    }
     default:
       return null
   }
+}
+
+function RemnantDetailCard({ ruin }: { ruin: GeneratedSystem['ruins'][number] }) {
+  return (
+    <article className="rounded-md border border-[var(--border-light)] bg-[var(--card-elevated)] p-3 text-sm">
+      <h3 className="text-base font-semibold tracking-tight text-[var(--text-primary)]">
+        {ruin.remnantType.value}
+      </h3>
+      <p className="mt-1 text-xs uppercase tracking-wide text-[var(--text-tertiary)]">{ruin.location.value}</p>
+      <p className="mt-3 leading-relaxed text-[var(--text-secondary)]">{ruin.hook.value}</p>
+    </article>
+  )
 }
