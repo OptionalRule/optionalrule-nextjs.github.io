@@ -63,6 +63,7 @@ export function Belt({ belt }: BeltProps) {
     const group = new THREE.Group()
     const dummy = new THREE.Object3D()
     const color = new THREE.Color()
+    const clusterCount = 4 + Math.floor(hashToUnit(`cluster-count#${belt.id}`) * 4)
     let globalIndex = 0
 
     BELT_SHAPES.forEach((shape, shapeIndex) => {
@@ -77,14 +78,18 @@ export function Belt({ belt }: BeltProps) {
       const mesh = new THREE.InstancedMesh(shape.geometry, material, Math.max(0, count))
       for (let localIndex = 0; localIndex < count; localIndex++) {
         const i = globalIndex + localIndex
-        const clusterCount = 5 + Math.floor(hashToUnit(`cluster-count#${belt.id}`) * 5)
         const clusterRoll = hashToUnit(`cluster-roll#${shape.salt}#${belt.id}#${i}`)
         const clusterIndex = Math.floor(hashToUnit(`cluster-index#${shape.salt}#${belt.id}#${i}`) * clusterCount)
         const clusterCenter = hashToUnit(`cluster-center#${belt.id}#${clusterIndex}`)
-        const clusterWidth = 0.018 + hashToUnit(`cluster-width#${belt.id}#${clusterIndex}`) * 0.052
+        const clusterWidth = 0.012 + hashToUnit(`cluster-width#${belt.id}#${clusterIndex}`) * 0.038
+        const inCluster = clusterRoll < 0.78
         const randomTurn = hashToUnit(`turn#${shape.salt}#${belt.id}#${i}`)
-        let turn = clusterRoll < 0.68
-          ? clusterCenter + (hashToUnit(`cluster-offset#${shape.salt}#${belt.id}#${i}`) - 0.5) * clusterWidth
+        const centeredOffset = (
+          hashToUnit(`cluster-offset-a#${shape.salt}#${belt.id}#${i}`) -
+          hashToUnit(`cluster-offset-b#${shape.salt}#${belt.id}#${i}`)
+        ) * clusterWidth
+        let turn = inCluster
+          ? clusterCenter + centeredOffset
           : randomTurn
         turn = ((turn % 1) + 1) % 1
         if (belt.gapCount > 0) {
@@ -99,8 +104,8 @@ export function Belt({ belt }: BeltProps) {
         const a = (turn + clump * 0.024 + (hashToUnit(`angle-noise#${shape.salt}#${belt.id}#${i}`) - 0.5) * 0.008) * Math.PI * 2
         const radialSpan = belt.outerRadius - belt.innerRadius
         const preferredR = belt.innerRadius + radialSpan * hashToUnit(`r#${belt.id}#${i}`)
-        const radialOffset = clusterRoll < 0.68
-          ? (hashToUnit(`cluster-radial#${shape.salt}#${belt.id}#${i}`) - 0.5) * radialSpan * 0.34
+        const radialOffset = inCluster
+          ? (hashToUnit(`cluster-radial#${shape.salt}#${belt.id}#${i}`) - 0.5) * radialSpan * 0.46
           : (hashToUnit(`loose-radial#${shape.salt}#${belt.id}#${i}`) - 0.5) * radialSpan * 0.12
         const r = Math.min(belt.outerRadius, Math.max(belt.innerRadius, preferredR + radialOffset))
         const jitterY = (hashToUnit(`y#${belt.id}#${i}`) - 0.5) * belt.jitter * (1.25 + hashToUnit(`y-spread#${shape.salt}#${belt.id}#${i}`) * 1.15)
@@ -111,7 +116,8 @@ export function Belt({ belt }: BeltProps) {
           hashToUnit(`rz#${shape.salt}#${belt.id}#${i}`) * Math.PI,
         )
         const sizeRoll = hashToUnit(`s#${belt.id}#${i}`)
-        const baseScale = (0.18 + sizeRoll ** 2.8 * 0.76) * belt.particleSizeScale
+        const clusterScale = inCluster ? 1.08 + hashToUnit(`cluster-scale#${shape.salt}#${belt.id}#${i}`) * 0.16 : 1
+        const baseScale = (0.18 + sizeRoll ** 2.8 * 0.76) * belt.particleSizeScale * clusterScale
         const anchorScale = hashToUnit(`anchor#${belt.id}#${i}`) < 0.006
           ? 1.45 + hashToUnit(`anchor-size#${belt.id}#${i}`) * 0.55
           : 1
@@ -122,7 +128,7 @@ export function Belt({ belt }: BeltProps) {
         dummy.updateMatrix()
         mesh.setMatrixAt(localIndex, dummy.matrix)
         const palette = belt.colors.length > 0 ? belt.colors : [belt.color]
-        const brightness = 0.5 + hashToUnit(`brightness#${shape.salt}#${belt.id}#${i}`) * 0.48
+        const brightness = (0.5 + hashToUnit(`brightness#${shape.salt}#${belt.id}#${i}`) * 0.48) * (inCluster ? 1.08 : 1)
         mesh.setColorAt(
           localIndex,
           color
