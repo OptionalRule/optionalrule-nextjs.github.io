@@ -1282,12 +1282,23 @@ function rollAtmosphere(
   return pickTable(rng, clampTableRoll(roll, 12), atmosphereTable)
 }
 
+function classHydrosphereFlavor(className: string): string | undefined {
+  if (/cryovolcanic/i.test(className)) return 'Cryovolcanic vents'
+  if (/nitrogen\s+glacier/i.test(className)) return 'Cryogenic nitrogen reservoirs'
+  if (/perchlorate/i.test(className)) return 'Salt / perchlorate flats'
+  if (/tidally stretched volcanic|carbon-rich furnace/i.test(className)) return 'Magma seas / lava lakes'
+  return undefined
+}
+
 function rollHydrosphere(rng: SeededRng, category: BodyCategory, thermalZone: string, bodyClass: WorldClassOption): string {
   if (category === 'belt') return pickOne(rng, ['Subsurface ice', 'Cometary volatiles', 'Hydrated minerals only'])
   if (category === 'sub-neptune' || category === 'gas-giant' || category === 'ice-giant') {
     return pickOne(rng, ['Deep atmospheric volatile layers', 'High-pressure condensate decks', 'No accessible surface volatiles'])
   }
   if (extremeHotThermalZones.has(thermalZone)) return pickOne(rng, extremeHotVolatiles)
+
+  const flavored = classHydrosphereFlavor(bodyClass.className)
+  if (flavored) return flavored
 
   let roll = d12(rng)
   if (thermalZone === 'Hot') roll -= 2

@@ -120,7 +120,7 @@
     { "min": 12, "max": 12, "value": "GU-reactive ring lattice" }
   ],
   "extremeHotAtmospheres": ["None / hard vacuum", "Trace exosphere", "Rock-vapor atmosphere", "Metal vapor atmosphere", "Chiral-active atmosphere"],
-  "extremeHotVolatiles": ["Bone dry", "Hydrated minerals only", "Vaporized volatile traces", "Nightside mineral frost"],
+  "extremeHotVolatiles": ["Bone dry", "Hydrated minerals only", "Vaporized volatile traces", "Nightside mineral frost", "Magma seas / lava lakes"],
   "envelopeGeologies": ["Deep atmospheric circulation", "Metallic hydrogen interior", "Layered volatile mantle", "Magnetosphere-driven weather"],
   "extremeHotClimateTags": ["Runaway greenhouse", "Hot desert", "Dayside glass fields", "Nightside mineral frost", "Hypercanes", "Chiral cloud chemistry"],
   "hotClimateTags": ["Runaway greenhouse", "Moist greenhouse edge", "Hot desert", "Permanent storm tracks", "Hypercanes", "Aerosol winter"],

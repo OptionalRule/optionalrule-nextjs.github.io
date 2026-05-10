@@ -5,9 +5,11 @@ import {
   airlessAllowedHydrospheres,
   beltAllowedAtmospheres,
   beltAllowedHydrospheres,
+  coldTerrestrialHydrospheres,
   desertAllowedHydrospheres,
   envelopeAllowedHydrospheres,
   greenhouseAtmospheres,
+  hotTerrestrialHydrospheres,
   hyceanHydrospheres,
   magmaOceanHydrospheres,
   solidSurfaceAtmospheres,
@@ -171,9 +173,9 @@ export function deriveEnvironmentPolicy(
       profile: 'terrestrial',
       facets: baseFacets({ atmosphereRegime: 'exotic', volatileState: 'exotic', surfaceAccess: 'hostile-surface', biosphereEligibility: 'none', specialTags: ['magma-ocean'] }),
       atmosphere: { allowed: new Set(['Rock-vapor atmosphere', 'Metal vapor atmosphere', 'Chiral-active atmosphere', 'Trace exosphere']), fallback: 'Rock-vapor atmosphere' },
-      hydrosphere: { allowed: magmaOceanHydrospheres, fallback: 'Vaporized volatile traces' },
+      hydrosphere: { allowed: magmaOceanHydrospheres, fallback: 'Magma seas / lava lakes' },
       biosphere: { allowed: false, forced: 'Sterile' },
-      notes: ['Magma-ocean profile keeps furnace worlds in vaporized or nightside-frost volatile states.'],
+      notes: ['Magma-ocean profile pins surface volatiles to molten silicate or vaporized rock states.'],
     }
   }
 
@@ -208,14 +210,34 @@ export function deriveEnvironmentPolicy(
   }
 
   const solidAtmospheres = metadata.physicalTags.includes('hydrogen-atmosphere') ? new Set<string>() : solidSurfaceAtmospheres
+  const isCold = thermalZone === 'Cold' || thermalZone === 'Cryogenic' || thermalZone === 'Dark'
+  const isHot = thermalZone === 'Hot'
+
+  const terrestrialHydrosphereAllowed: ReadonlySet<string> = isHot
+    ? hotTerrestrialHydrospheres
+    : isCold
+      ? coldTerrestrialHydrospheres
+      : new Set<string>()
+
+  const terrestrialHydrosphereFallback = isHot
+    ? 'Hydrated minerals only'
+    : isCold
+      ? 'Subsurface ice'
+      : ''
 
   return {
     profile: 'terrestrial',
     facets: baseFacets(),
-    atmosphere: { allowed: solidAtmospheres, fallback: thermalZone === 'Cold' || thermalZone === 'Cryogenic' || thermalZone === 'Dark' ? 'Thin CO2/N2' : 'Dense CO2/N2' },
-    hydrosphere: { allowed: new Set(), fallback: '' },
+    atmosphere: { allowed: solidAtmospheres, fallback: isCold ? 'Thin CO2/N2' : 'Dense CO2/N2' },
+    hydrosphere: { allowed: terrestrialHydrosphereAllowed, fallback: terrestrialHydrosphereFallback },
     biosphere: { allowed: true },
-    notes: ['Default terrestrial profile preserves compatible source-table rolls.'],
+    notes: [
+      isHot
+        ? 'Default terrestrial profile (Hot zone): blocks open-ocean / hydrocarbon / ice-shell rolls; allows dry, briny, magma, and edge-case ice states.'
+        : isCold
+          ? 'Default terrestrial profile (Cold/Cryogenic zone): blocks hot-zone surface seas; allows ice, cryogenic reservoirs, and cryovolcanic states.'
+          : 'Default terrestrial profile (Temperate band): preserves compatible source-table rolls.',
+    ],
   }
 }
 

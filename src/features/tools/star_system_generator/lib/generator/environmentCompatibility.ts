@@ -14,6 +14,8 @@ export const airlessAllowedHydrospheres = new Set([
   'Hydrated minerals only',
   'Subsurface ice',
   'Polar caps / buried glaciers',
+  'Cryogenic nitrogen reservoirs',
+  'Cryovolcanic vents',
   'No accessible surface volatiles',
   'Not applicable: metric or route phenomenon',
 ])
@@ -24,6 +26,7 @@ export const desertAllowedHydrospheres = new Set([
   'Subsurface ice',
   'Polar caps / buried glaciers',
   'Briny aquifers',
+  'Salt / perchlorate flats',
   'Vaporized volatile traces',
   'Nightside mineral frost',
 ])
@@ -78,8 +81,36 @@ export const steamHydrospheres = new Set([
 ])
 
 export const magmaOceanHydrospheres = new Set([
+  'Magma seas / lava lakes',
   'Vaporized volatile traces',
   'Nightside mineral frost',
+])
+
+export const hotTerrestrialHydrospheres = new Set([
+  'Bone dry',
+  'Hydrated minerals only',
+  'Vaporized volatile traces',
+  'Nightside mineral frost',
+  'Subsurface ice',
+  'Polar caps / buried glaciers',
+  'Briny aquifers',
+  'Salt / perchlorate flats',
+  'Local seas',
+  'Magma seas / lava lakes',
+])
+
+export const coldTerrestrialHydrospheres = new Set([
+  'Bone dry',
+  'Hydrated minerals only',
+  'Subsurface ice',
+  'Polar caps / buried glaciers',
+  'Briny aquifers',
+  'Local seas',
+  'Ice-shell subsurface ocean',
+  'Hydrocarbon lakes/seas',
+  'Cryogenic nitrogen reservoirs',
+  'Cryovolcanic vents',
+  'Exotic solvent or GU-stabilized fluid chemistry',
 ])
 
 export const waterOceanHydrospheres = new Set([
@@ -122,6 +153,7 @@ export const extremeHotAllowedHydrospheres = new Set([
   'Hydrated minerals only',
   'Vaporized volatile traces',
   'Nightside mineral frost',
+  'Magma seas / lava lakes',
 ])
 
 export const coldAllowedClimateTags = new Set([

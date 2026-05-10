@@ -981,6 +981,100 @@ describe('generateSystem', () => {
     }
   })
 
+  it('blocks open-water hydrospheres on Hot-zone terrestrial-fallthrough worlds', () => {
+    // Classes that previously fell through to the unconstrained terrestrial profile in Hot.
+    const fallthroughClasses = new Set([
+      'Resonant inner-chain world',
+      'Super-Earth with high gravity',
+      'Dense-atmosphere pressure world',
+      'Basaltic super-Earth',
+    ])
+    const forbiddenInHot = new Set([
+      'Ocean-continent balance',
+      'Global ocean',
+      'High-pressure deep ocean',
+      'Ice-shell subsurface ocean',
+      'Hydrocarbon lakes/seas',
+      'Cryogenic nitrogen reservoirs',
+      'Cryovolcanic vents',
+    ])
+    let auditedHotPlanets = 0
+    for (let index = 0; index < 240; index++) {
+      const system = generateSystem({
+        ...options,
+        seed: `hot-hydro-${index.toString(16).padStart(4, '0')}`,
+      })
+      for (const body of system.bodies) {
+        if (body.thermalZone.value !== 'Hot') continue
+        if (!fallthroughClasses.has(body.bodyClass.value)) continue
+        auditedHotPlanets++
+        expect(forbiddenInHot.has(body.detail.hydrosphere.value)).toBe(false)
+      }
+    }
+    expect(auditedHotPlanets, 'expected to audit at least 20 Hot-zone terrestrial-fallthrough planets').toBeGreaterThan(20)
+  })
+
+  it('routes magma-ocean / lava / tidal-volcanic worlds to molten surface states', () => {
+    const moltenStates = new Set(['Magma seas / lava lakes', 'Vaporized volatile traces', 'Nightside mineral frost'])
+    // Match silicate-surface molten worlds; exclude facility/anomaly classes that share a word like "furnace".
+    const triggers = /^(?:lava planet|magma ocean world|carbon-rich furnace world|tidally stretched volcanic world)$/i
+    let sawTrigger = false
+    let sawMagmaSeas = false
+    for (let index = 0; index < 200; index++) {
+      const system = generateSystem({
+        ...options,
+        seed: `magma-${index.toString(16).padStart(4, '0')}`,
+      })
+      for (const body of system.bodies) {
+        if (!triggers.test(body.bodyClass.value)) continue
+        sawTrigger = true
+        const hydro = body.detail.hydrosphere.value
+        expect(moltenStates.has(hydro)).toBe(true)
+        if (hydro === 'Magma seas / lava lakes') sawMagmaSeas = true
+      }
+    }
+    expect(sawTrigger).toBe(true)
+    expect(sawMagmaSeas).toBe(true)
+  })
+
+  it('routes cryovolcanic class names to their flavor hydrosphere', () => {
+    let sawCryovolcanic = false
+    for (let index = 0; index < 240 && !sawCryovolcanic; index++) {
+      const system = generateSystem({
+        ...options,
+        seed: `cryo-${index.toString(16).padStart(4, '0')}`,
+      })
+      for (const body of system.bodies) {
+        if (/cryovolcanic/i.test(body.bodyClass.value)) {
+          expect(body.detail.hydrosphere.value).toBe('Cryovolcanic vents')
+          sawCryovolcanic = true
+        }
+        // Nitrogen glacier worlds are rare in real generation; assert only when present.
+        if (/nitrogen glacier/i.test(body.bodyClass.value)) {
+          expect(body.detail.hydrosphere.value).toBe('Cryogenic nitrogen reservoirs')
+        }
+      }
+    }
+    expect(sawCryovolcanic, 'expected to encounter a cryovolcanic world within 240 seeded systems').toBe(true)
+  })
+
+  it('routes perchlorate desert worlds to salt flats', () => {
+    let sawPerchlorate = false
+    for (let index = 0; index < 240 && !sawPerchlorate; index++) {
+      const system = generateSystem({
+        ...options,
+        seed: `salt-${index.toString(16).padStart(4, '0')}`,
+      })
+      for (const body of system.bodies) {
+        if (/perchlorate/i.test(body.bodyClass.value)) {
+          expect(body.detail.hydrosphere.value).toBe('Salt / perchlorate flats')
+          sawPerchlorate = true
+        }
+      }
+    }
+    expect(sawPerchlorate, 'expected to encounter a perchlorate desert world within 240 seeded systems').toBe(true)
+  })
+
   it('exports a Gates section in markdown when gates are present', async () => {
     const { exportSystemMarkdown } = await import('../lib/export/markdown')
     let withGate: ReturnType<typeof generateSystem> | undefined

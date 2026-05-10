@@ -2,7 +2,7 @@
 
 exports[`spine full axis matrix (16 representative cells) > baseline-frontier-astronomy: stable spine + body[0] structural fields 1`] = `
 {
-  "body0": "Atlas-Bridge II records a phase shift each time the failed terraforming biosphere passes through. The industrial mirror swarm failure drifts the baselines Atlas-Bridge II relies on. The industrial mirror swarm failure introduces a measurable perturbation in Atlas-Bridge VII.",
+  "body0": "Atlas-Bridge II records a phase shift each time the failed terraforming biosphere passes through. The industrial mirror swarm failure drifts the baselines Atlas-Bridge III relies on. The industrial mirror swarm failure introduces a measurable perturbation in Atlas-Bridge II.",
   "spineEdgeType": "DESTABILIZES",
   "spineObjectKind": "body",
   "spineSubjectKind": "phenomenon",
@@ -90,11 +90,11 @@ exports[`spine full axis matrix (16 representative cells) > corner-realistic-ast
 
 exports[`spine full axis matrix (16 representative cells) > density-crowded: stable spine + body[0] structural fields 1`] = `
 {
-  "body0": "The debt-fleet anchor graveyard drifts the baselines Yuyu's Field II relies on. The debt-fleet anchor graveyard drifts the baselines Yuyu's Field VIII relies on. Yuyu's Field Dwarf X records a phase shift each time the election-day metric storm cycle passes through. Yuyu's Field II carries Yuyu's Field II Laboratory on its surface.",
+  "body0": "The pirate ambush zone drifts the baselines Yuyu's Field VIII - Moon IX Base relies on. The debt-fleet anchor graveyard drifts the baselines Yuyu's Field II relies on. Yuyu's Field VIII records a phase shift each time the debt-fleet anchor graveyard passes through. Yuyu's Field II carries Yuyu's Field II Platform on its surface.",
   "spineEdgeType": "DESTABILIZES",
-  "spineObjectKind": "body",
-  "spineSubjectKind": "phenomenon",
-  "spineSummary": "The debt-fleet anchor graveyard is drifting the baselines on which Yuyu's Field II was sited.",
+  "spineObjectKind": "settlement",
+  "spineSubjectKind": "guHazard",
+  "spineSummary": "Pirate ambush zone took shape in the Bonn-Tycho census, the pirate ambush zone is drifting the baselines on which Yuyu's Field VIII - Moon IX Base was sited.",
   "spineVisibility": "public",
 }
 `;

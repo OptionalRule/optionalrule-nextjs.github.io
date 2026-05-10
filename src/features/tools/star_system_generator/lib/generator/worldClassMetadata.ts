@@ -88,7 +88,7 @@ export function deriveWorldClassMetadata(option: WorldClassOption): WorldClassMe
     physicalTags.add('ocean')
   }
 
-  if (includesAny(className, [/\bmagma ocean\b/, /\blava\b/])) {
+  if (includesAny(className, [/\bmagma ocean\b/, /\blava\b/, /tidally stretched volcanic/, /\bfurnace\b/])) {
     physicalTags.add('magma-ocean')
   }
 
