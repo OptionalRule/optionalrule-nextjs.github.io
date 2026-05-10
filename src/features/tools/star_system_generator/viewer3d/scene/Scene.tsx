@@ -104,7 +104,6 @@ export function Scene({ graph, system }: SceneProps) {
           <Zones
             habitableInner={graph.zones.habitableInner}
             habitableOuter={graph.zones.habitableOuter}
-            snowLine={graph.zones.snowLine}
           />
           {graph.bodies.map((body) => (
             <Orbit key={`orbit-${body.id}`} radius={body.orbitRadius} tiltY={body.orbitTiltY} color="#5fb6e8" />
