@@ -49,7 +49,7 @@ export function Scene({ graph, system }: SceneProps) {
       dpr={[1, 2]}
       frameloop={prefersReducedMotion ? 'demand' : 'always'}
       performance={{ min: 0.5, max: 1, debounce: 300 }}
-      camera={{ fov: 45, near: 0.1, far: graph.sceneRadius * 6, position: [0, graph.sceneRadius * 0.35, graph.sceneRadius * 0.95] }}
+      camera={{ fov: 45, near: 0.1, far: graph.sceneRadius * 12, position: [0, graph.sceneRadius * 0.35, graph.sceneRadius * 0.95] }}
       gl={{ antialias: true, alpha: false }}
       style={{
         background:
@@ -74,10 +74,10 @@ export function Scene({ graph, system }: SceneProps) {
         decay={0.6}
       />
       <Stars
-        radius={graph.sceneRadius * 2.2}
-        depth={graph.sceneRadius * 0.8}
-        count={Math.round(5500 * qualityScale)}
-        factor={graph.sceneRadius * 0.18 * qualityScale}
+        radius={graph.sceneRadius * 5}
+        depth={graph.sceneRadius * 1.5}
+        count={Math.round(8500 * qualityScale)}
+        factor={graph.sceneRadius * 0.42 * qualityScale}
         saturation={0}
         fade
         speed={prefersReducedMotion ? 0 : 0.2}
