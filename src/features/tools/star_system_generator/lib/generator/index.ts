@@ -59,7 +59,7 @@ import {
   biospheres,
   climateSourceTable,
   coldClimateTags,
-  envelopeClimateTags,
+  coldEnvelopeClimateTags,
   envelopeGeologies,
   extremeHotAtmospheres,
   extremeHotClimateTags,
@@ -67,6 +67,7 @@ import {
   extremeHotVolatiles,
   geologyTable,
   hotClimateTags,
+  hotEnvelopeClimateTags,
   hydrosphereTable,
   moonScales,
   moonTypes,
@@ -75,6 +76,7 @@ import {
   bodySites,
   type BodySiteGroup,
   temperateClimateTags,
+  temperateEnvelopeClimateTags,
 } from './data/mechanics'
 import { humanRemnants, phenomena, remnantHooks } from './data/narrative'
 import { generateFactions } from './factions'
@@ -1311,13 +1313,18 @@ function rollHydrosphere(rng: SeededRng, category: BodyCategory, thermalZone: st
 }
 
 function generateClimate(rng: SeededRng, category: BodyCategory, thermalZone: string, count: number) {
-  const climateOptions =
+  const isEnvelope = category === 'gas-giant' || category === 'ice-giant' || category === 'sub-neptune'
+  const climateOptions: readonly string[] =
     thermalZone === 'Furnace' || thermalZone === 'Inferno'
-      ? category === 'gas-giant' || category === 'ice-giant' || category === 'sub-neptune'
+      ? isEnvelope
         ? extremeHotEnvelopeClimateTags
         : extremeHotClimateTags
-      : category === 'gas-giant' || category === 'ice-giant' || category === 'sub-neptune'
-        ? envelopeClimateTags
+      : isEnvelope
+        ? thermalZone === 'Hot'
+          ? hotEnvelopeClimateTags
+          : thermalZone === 'Temperate band'
+            ? temperateEnvelopeClimateTags
+            : coldEnvelopeClimateTags
         : thermalZone === 'Hot'
           ? hotClimateTags
           : thermalZone === 'Temperate band'

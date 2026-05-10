@@ -1075,6 +1075,84 @@ describe('generateSystem', () => {
     expect(sawPerchlorate, 'expected to encounter a perchlorate desert world within 240 seeded systems').toBe(true)
   })
 
+  it('blocks heat-requiring atmospheres on Cold/Cryogenic/Dark bodies', () => {
+    const heatRequired = new Set(['Steam atmosphere', 'Sulfur/chlorine/ammonia haze', 'Dense greenhouse'])
+    let coldAudits = 0
+    for (let index = 0; index < 240; index++) {
+      const system = generateSystem({
+        ...options,
+        seed: `cold-atm-${index.toString(16).padStart(4, '0')}`,
+      })
+      for (const body of system.bodies) {
+        if (body.thermalZone.value !== 'Cold' && body.thermalZone.value !== 'Cryogenic' && body.thermalZone.value !== 'Dark') continue
+        if (body.category.value === 'belt') continue
+        coldAudits++
+        expect(heatRequired.has(body.detail.atmosphere.value), `${body.bodyClass.value} (${body.thermalZone.value}) should not have ${body.detail.atmosphere.value}`).toBe(false)
+      }
+    }
+    expect(coldAudits).toBeGreaterThan(100)
+  })
+
+  it('blocks deep-ocean rolls on non-steam greenhouse classes', () => {
+    const deepOcean = new Set(['Global ocean', 'High-pressure deep ocean', 'Ice-shell subsurface ocean', 'Hydrocarbon lakes/seas'])
+    for (let index = 0; index < 240; index++) {
+      const system = generateSystem({
+        ...options,
+        seed: `gh-hydro-${index.toString(16).padStart(4, '0')}`,
+      })
+      for (const body of system.bodies) {
+        const cls = body.bodyClass.value
+        // Non-steam greenhouse: Venus-like, Sulfur-cloud, Cloudy greenhouse edge
+        const isNonSteamGreenhouse = /venus-like greenhouse|sulfur-cloud world|cloudy greenhouse edge world/i.test(cls)
+        if (!isNonSteamGreenhouse) continue
+        expect(deepOcean.has(body.detail.hydrosphere.value), `${cls} should not have ${body.detail.hydrosphere.value}`).toBe(false)
+      }
+    }
+  })
+
+  it('pins envelope-category atmospheres to hydrogen or chiral states', () => {
+    const allowedEnvelopeAtms = new Set(['Hydrogen/helium envelope', 'Chiral-active or GU-distorted atmosphere'])
+    // Some envelope-category classes carry a desert / stripped tag that overrides envelope profile
+    // (e.g. "Hot Neptune desert survivor", "Stripped mini-Neptune core"). Skip those.
+    const overrideClasses = /desert|stripped|hycean|ocean/i
+    let envelopeAudits = 0
+    for (let index = 0; index < 200; index++) {
+      const system = generateSystem({
+        ...options,
+        seed: `env-atm-${index.toString(16).padStart(4, '0')}`,
+      })
+      for (const body of system.bodies) {
+        if (body.category.value !== 'sub-neptune' && body.category.value !== 'gas-giant' && body.category.value !== 'ice-giant') continue
+        if (overrideClasses.test(body.bodyClass.value)) continue
+        envelopeAudits++
+        expect(allowedEnvelopeAtms.has(body.detail.atmosphere.value), `${body.bodyClass.value} got ${body.detail.atmosphere.value}`).toBe(true)
+      }
+    }
+    expect(envelopeAudits).toBeGreaterThan(50)
+  })
+
+  it('drops hot-only climate tags from cold envelope bodies and cold-only from hot envelopes', () => {
+    const hotOnlyClimates = new Set(['Runaway greenhouse', 'Moist greenhouse edge', 'Hot desert', 'Dayside glass fields'])
+    const coldOnlyClimates = new Set(['Snowball', 'Methane cycle', 'CO2 glacier cycle'])
+    for (let index = 0; index < 200; index++) {
+      const system = generateSystem({
+        ...options,
+        seed: `env-clim-${index.toString(16).padStart(4, '0')}`,
+      })
+      for (const body of system.bodies) {
+        const isEnvelope = body.category.value === 'sub-neptune' || body.category.value === 'gas-giant' || body.category.value === 'ice-giant'
+        if (!isEnvelope) continue
+        const climates = body.detail.climate.map((c) => c.value)
+        if (body.thermalZone.value === 'Cold' || body.thermalZone.value === 'Cryogenic' || body.thermalZone.value === 'Dark') {
+          for (const c of climates) expect(hotOnlyClimates.has(c), `${body.bodyClass.value} (${body.thermalZone.value}) climate=${c}`).toBe(false)
+        }
+        if (body.thermalZone.value === 'Hot') {
+          for (const c of climates) expect(coldOnlyClimates.has(c), `${body.bodyClass.value} (Hot) climate=${c}`).toBe(false)
+        }
+      }
+    }
+  })
+
   it('exports a Gates section in markdown when gates are present', async () => {
     const { exportSystemMarkdown } = await import('../lib/export/markdown')
     let withGate: ReturnType<typeof generateSystem> | undefined

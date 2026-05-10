@@ -37,6 +37,13 @@ export const envelopeAllowedHydrospheres = new Set([
   'No accessible surface volatiles',
 ])
 
+// Envelope bodies (sub-Neptune, gas giant, ice giant) always have hydrogen-helium upper atmospheres,
+// optionally GU-distorted. Block silicate-surface atmosphere rolls that shouldn't apply.
+export const envelopeAllowedAtmospheres = new Set([
+  'Hydrogen/helium envelope',
+  'Chiral-active or GU-distorted atmosphere',
+])
+
 export const beltAllowedAtmospheres = new Set(['None / dispersed volatiles'])
 export const beltAllowedHydrospheres = new Set(['Subsurface ice', 'Cometary volatiles', 'Hydrated minerals only'])
 
@@ -55,6 +62,21 @@ export const solidSurfaceAtmospheres = new Set([
   'Rock-vapor atmosphere',
   'Metal vapor atmosphere',
   'Chiral-active atmosphere',
+  'Controlled habitat envelopes',
+  'No ordinary atmosphere',
+])
+
+// Atmospheres that need heat (steam vapor pressure, chemistry mobilization).
+// Excluded from Cold/Cryogenic/Dark terrestrial fallthrough.
+export const coldTerrestrialAtmospheres = new Set([
+  'None / hard vacuum',
+  'Trace exosphere',
+  'Thin CO2/N2',
+  'Thin but usable with pressure gear',
+  'Moderate inert atmosphere',
+  'Moderate toxic atmosphere',
+  'Dense CO2/N2',
+  'Chiral-active or GU-distorted atmosphere',
   'Controlled habitat envelopes',
   'No ordinary atmosphere',
 ])
@@ -78,6 +100,17 @@ export const steamHydrospheres = new Set([
   'Hydrocarbon lakes/seas',
   'Exotic solvent or GU-stabilized fluid chemistry',
   'Vaporized volatile traces',
+])
+
+// Hydrospheres compatible with non-steam greenhouse worlds (Venus-like, Sulfur-cloud, Cloudy greenhouse).
+// Blocks deep ocean / ice-shell rolls that the empty fallthrough used to allow.
+export const greenhouseHydrospheres = new Set([
+  'Vaporized volatile traces',
+  'Briny aquifers',
+  'Local seas',
+  'Salt / perchlorate flats',
+  'Bone dry',
+  'Hydrated minerals only',
 ])
 
 export const magmaOceanHydrospheres = new Set([

@@ -5,10 +5,13 @@ import {
   airlessAllowedHydrospheres,
   beltAllowedAtmospheres,
   beltAllowedHydrospheres,
+  coldTerrestrialAtmospheres,
   coldTerrestrialHydrospheres,
   desertAllowedHydrospheres,
+  envelopeAllowedAtmospheres,
   envelopeAllowedHydrospheres,
   greenhouseAtmospheres,
+  greenhouseHydrospheres,
   hotTerrestrialHydrospheres,
   hyceanHydrospheres,
   magmaOceanHydrospheres,
@@ -134,15 +137,20 @@ export function deriveEnvironmentPolicy(
   }
 
   if (metadata.environmentProfileHint === 'desert' || metadata.physicalTags.includes('desert')) {
-    const desertAtmospheres = metadata.physicalTags.includes('hydrogen-atmosphere') ? new Set<string>() : solidSurfaceAtmospheres
+    const isColdZone = thermalZone === 'Cold' || thermalZone === 'Cryogenic' || thermalZone === 'Dark'
+    const desertAtmospheres = metadata.physicalTags.includes('hydrogen-atmosphere')
+      ? new Set<string>()
+      : isColdZone
+        ? coldTerrestrialAtmospheres
+        : solidSurfaceAtmospheres
 
     return {
       profile: 'desert',
       facets: baseFacets({ volatileState: 'dry', surfaceAccess: 'hostile-surface', biosphereEligibility: 'prebiotic' }),
-      atmosphere: { allowed: desertAtmospheres, fallback: thermalZone === 'Cold' || thermalZone === 'Cryogenic' || thermalZone === 'Dark' ? 'Thin CO2/N2' : 'Dense CO2/N2' },
-      hydrosphere: { allowed: desertAllowedHydrospheres, fallback: extremeHotThermalZones.has(thermalZone) ? 'Bone dry' : thermalZone === 'Cold' || thermalZone === 'Cryogenic' || thermalZone === 'Dark' ? 'Subsurface ice' : 'Briny aquifers' },
+      atmosphere: { allowed: desertAtmospheres, fallback: isColdZone ? 'Thin CO2/N2' : 'Dense CO2/N2' },
+      hydrosphere: { allowed: desertAllowedHydrospheres, fallback: extremeHotThermalZones.has(thermalZone) ? 'Bone dry' : isColdZone ? 'Subsurface ice' : 'Briny aquifers' },
       biosphere: { allowed: true },
-      notes: ['Desert class constrains hydrosphere to dry, buried, or briny states.'],
+      notes: ['Desert class constrains hydrosphere to dry, buried, or briny states; cold variants block heat-requiring atmospheres.'],
     }
   }
 
@@ -150,10 +158,10 @@ export function deriveEnvironmentPolicy(
     return {
       profile: 'ocean',
       facets: baseFacets({ substrate: 'envelope', atmosphereRegime: 'envelope', volatileState: 'deep-envelope', surfaceAccess: 'cloud-tops', biosphereEligibility: 'microbial', specialTags: ['hycean'] }),
-      atmosphere: { allowed: new Set(), fallback: '' },
+      atmosphere: { allowed: envelopeAllowedAtmospheres, fallback: 'Hydrogen/helium envelope' },
       hydrosphere: { allowed: hyceanHydrospheres, fallback: 'High-pressure deep ocean' },
       biosphere: { allowed: true },
-      notes: ['Hycean profile preserves deep volatile/ocean states before generic envelope policy applies.'],
+      notes: ['Hycean profile preserves deep volatile/ocean states and a hydrogen-envelope atmosphere.'],
     }
   }
 
@@ -161,10 +169,10 @@ export function deriveEnvironmentPolicy(
     return {
       profile: 'envelope',
       facets: baseFacets({ substrate: 'envelope', atmosphereRegime: 'envelope', volatileState: 'deep-envelope', surfaceAccess: 'cloud-tops', biosphereEligibility: 'none' }),
-      atmosphere: { allowed: new Set(), fallback: '' },
+      atmosphere: { allowed: envelopeAllowedAtmospheres, fallback: 'Hydrogen/helium envelope' },
       hydrosphere: { allowed: envelopeAllowedHydrospheres, fallback: 'Deep atmospheric volatile layers' },
       biosphere: { allowed: false, forced: 'Sterile' },
-      notes: ['Envelope profile keeps volatiles in atmosphere/deep-pressure states.'],
+      notes: ['Envelope profile keeps volatiles in atmosphere/deep-pressure states; atmosphere pinned to hydrogen-helium (optionally GU-distorted).'],
     }
   }
 
@@ -184,7 +192,7 @@ export function deriveEnvironmentPolicy(
       metadata.physicalTags.includes('steam') ? 'Steam atmosphere' :
       metadata.physicalTags.includes('cloud') ? 'Sulfur/chlorine/ammonia haze' :
       'Dense greenhouse'
-    const hydrosphereAllowed = metadata.physicalTags.includes('steam') ? steamHydrospheres : new Set<string>()
+    const hydrosphereAllowed = metadata.physicalTags.includes('steam') ? steamHydrospheres : greenhouseHydrospheres
 
     return {
       profile: 'terrestrial',
@@ -192,26 +200,37 @@ export function deriveEnvironmentPolicy(
       atmosphere: { allowed: greenhouseAtmospheres, fallback },
       hydrosphere: { allowed: hydrosphereAllowed, fallback: 'Vaporized volatile traces' },
       biosphere: { allowed: true },
-      notes: ['Greenhouse profile prevents atmosphere-bearing class labels from becoming airless.'],
+      notes: ['Greenhouse profile blocks deep-ocean rolls; steam variant keeps source-table wet states, dry-greenhouse variants stay vapor/briny.'],
     }
   }
 
   if (metadata.environmentProfileHint === 'ocean' || metadata.physicalTags.includes('water-ocean')) {
-    const fallback = thermalZone === 'Cold' || thermalZone === 'Cryogenic' || thermalZone === 'Dark' ? 'Ice-shell subsurface ocean' : extremeHotThermalZones.has(thermalZone) ? 'Vaporized volatile traces' : 'Global ocean'
-    const oceanAtmospheres = metadata.physicalTags.includes('hydrogen-atmosphere') ? new Set<string>() : solidSurfaceAtmospheres
+    const isColdZone = thermalZone === 'Cold' || thermalZone === 'Cryogenic' || thermalZone === 'Dark'
+    const fallback = isColdZone ? 'Ice-shell subsurface ocean' : extremeHotThermalZones.has(thermalZone) ? 'Vaporized volatile traces' : 'Global ocean'
+    const oceanAtmospheres = metadata.physicalTags.includes('hydrogen-atmosphere')
+      ? new Set<string>()
+      : isColdZone
+        ? coldTerrestrialAtmospheres
+        : solidSurfaceAtmospheres
     return {
       profile: 'ocean',
       facets: baseFacets({ volatileState: 'ocean', biosphereEligibility: 'open' }),
-      atmosphere: { allowed: oceanAtmospheres, fallback: thermalZone === 'Cold' || thermalZone === 'Cryogenic' || thermalZone === 'Dark' ? 'Thin CO2/N2' : 'Moderate inert atmosphere' },
+      atmosphere: { allowed: oceanAtmospheres, fallback: isColdZone ? 'Thin CO2/N2' : 'Moderate inert atmosphere' },
       hydrosphere: { allowed: waterOceanHydrospheres, fallback },
       biosphere: { allowed: true },
-      notes: ['Ocean profile preserves source-table ocean and water-rich rolls.'],
+      notes: ['Ocean profile preserves source-table ocean and water-rich rolls; cold variants block heat-requiring atmospheres.'],
     }
   }
 
-  const solidAtmospheres = metadata.physicalTags.includes('hydrogen-atmosphere') ? new Set<string>() : solidSurfaceAtmospheres
   const isCold = thermalZone === 'Cold' || thermalZone === 'Cryogenic' || thermalZone === 'Dark'
   const isHot = thermalZone === 'Hot'
+  const hasHydrogenAtmosphere = metadata.physicalTags.includes('hydrogen-atmosphere')
+
+  const terrestrialAtmosphereAllowed: ReadonlySet<string> = hasHydrogenAtmosphere
+    ? new Set<string>()
+    : isCold
+      ? coldTerrestrialAtmospheres
+      : solidSurfaceAtmospheres
 
   const terrestrialHydrosphereAllowed: ReadonlySet<string> = isHot
     ? hotTerrestrialHydrospheres
@@ -228,14 +247,14 @@ export function deriveEnvironmentPolicy(
   return {
     profile: 'terrestrial',
     facets: baseFacets(),
-    atmosphere: { allowed: solidAtmospheres, fallback: isCold ? 'Thin CO2/N2' : 'Dense CO2/N2' },
+    atmosphere: { allowed: terrestrialAtmosphereAllowed, fallback: isCold ? 'Thin CO2/N2' : 'Dense CO2/N2' },
     hydrosphere: { allowed: terrestrialHydrosphereAllowed, fallback: terrestrialHydrosphereFallback },
     biosphere: { allowed: true },
     notes: [
       isHot
         ? 'Default terrestrial profile (Hot zone): blocks open-ocean / hydrocarbon / ice-shell rolls; allows dry, briny, magma, and edge-case ice states.'
         : isCold
-          ? 'Default terrestrial profile (Cold/Cryogenic zone): blocks hot-zone surface seas; allows ice, cryogenic reservoirs, and cryovolcanic states.'
+          ? 'Default terrestrial profile (Cold/Cryogenic zone): blocks heat-requiring atmospheres (Steam, Sulfur haze, Dense greenhouse) and hot-zone seas; allows ice, cryogenic reservoirs, and cryovolcanic states.'
           : 'Default terrestrial profile (Temperate band): preserves compatible source-table rolls.',
     ],
   }

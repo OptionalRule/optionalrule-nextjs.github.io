@@ -27,6 +27,9 @@ interface MechanicsData {
   temperateClimateTags: readonly string[]
   coldClimateTags: readonly string[]
   extremeHotEnvelopeClimateTags: readonly string[]
+  hotEnvelopeClimateTags: readonly string[]
+  temperateEnvelopeClimateTags: readonly string[]
+  coldEnvelopeClimateTags: readonly string[]
   envelopeClimateTags: readonly string[]
   biospheres: readonly string[]
   moonTypes: readonly string[]
@@ -65,6 +68,9 @@ export const hotClimateTags = typedMechanicsData.hotClimateTags
 export const temperateClimateTags = typedMechanicsData.temperateClimateTags
 export const coldClimateTags = typedMechanicsData.coldClimateTags
 export const extremeHotEnvelopeClimateTags = typedMechanicsData.extremeHotEnvelopeClimateTags
+export const hotEnvelopeClimateTags = typedMechanicsData.hotEnvelopeClimateTags
+export const temperateEnvelopeClimateTags = typedMechanicsData.temperateEnvelopeClimateTags
+export const coldEnvelopeClimateTags = typedMechanicsData.coldEnvelopeClimateTags
 export const envelopeClimateTags = typedMechanicsData.envelopeClimateTags
 export const biospheres = typedMechanicsData.biospheres
 export const moonTypes = typedMechanicsData.moonTypes
