@@ -252,6 +252,24 @@ export interface HumanRemnant {
   hook: Fact<string>
 }
 
+export interface Gate {
+  id: string
+  name: Fact<string>
+  bodyId?: string
+  moonId?: string
+  anchorKind: Fact<string>
+  anchorName: Fact<string>
+  anchorDetail: Fact<string>
+  location: Fact<string>
+  builtForm: Fact<string>
+  routeNote: Fact<string>
+  authority: Fact<string>
+  condition: Fact<string>
+  tagHook: Fact<string>
+  whyHere: Fact<string>
+  pinchDifficulty?: Fact<string>
+}
+
 export interface SystemPhenomenon {
   id: string
   phenomenon: Fact<string>
@@ -322,6 +340,7 @@ export interface GeneratedSystem {
   bodies: OrbitingBody[]
   guOverlay: GuOverlay
   settlements: Settlement[]
+  gates: Gate[]
   ruins: HumanRemnant[]
   phenomena: SystemPhenomenon[]
   narrativeFacts: NarrativeFact[]

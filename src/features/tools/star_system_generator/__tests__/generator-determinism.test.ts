@@ -887,13 +887,14 @@ describe('generateSystem', () => {
     const averages = new Map<string, number>()
 
     for (const [density, [min, max]] of Object.entries(densityBounds)) {
-      const counts = Array.from({ length: 100 }, (_, index) =>
-        generateSystem({
+      const counts = Array.from({ length: 100 }, (_, index) => {
+        const system = generateSystem({
           ...options,
           settlements: density as GenerationOptions['settlements'],
           seed: `5e771e5${index.toString(16).padStart(8, '0')}`,
-        }).settlements.length
-      )
+        })
+        return system.settlements.length + system.gates.length
+      })
 
       expect(Math.min(...counts)).toBeGreaterThanOrEqual(density === 'sparse' ? min : 1)
       expect(Math.max(...counts)).toBeLessThanOrEqual(max)
@@ -951,6 +952,54 @@ describe('generateSystem', () => {
 
     expect(sawAutomated).toBe(true)
     expect(sawAbandoned).toBe(true)
+  })
+
+  it('emits gates as a first-class type instead of gate-categorized settlements', () => {
+    const systems = Array.from({ length: 80 }, (_, index) =>
+      generateSystem({
+        ...options,
+        settlements: 'crowded',
+        seed: `gate-promo-${index.toString(16).padStart(4, '0')}`,
+      })
+    )
+
+    const allGates = systems.flatMap((system) => system.gates)
+    expect(allGates.length).toBeGreaterThan(0)
+
+    for (const system of systems) {
+      for (const settlement of system.settlements) {
+        expect(settlement.siteCategory.value).not.toBe('Gate or route node')
+        expect(settlement.habitationPattern.value).not.toBe('Gate or route node')
+      }
+      system.gates.forEach((gate, index) => {
+        expect(gate.id).toBe(`gate-${index + 1}`)
+        expect(gate.name.value).toBeTruthy()
+        expect(gate.routeNote.value).toBeTruthy()
+        expect(gate.anchorName.value).toBeTruthy()
+        expect(gate.condition.value).toBeTruthy()
+      })
+    }
+  })
+
+  it('exports a Gates section in markdown when gates are present', async () => {
+    const { exportSystemMarkdown } = await import('../lib/export/markdown')
+    let withGate: ReturnType<typeof generateSystem> | undefined
+    for (let index = 0; index < 80; index++) {
+      const system = generateSystem({
+        ...options,
+        settlements: 'crowded',
+        seed: `gate-md-${index.toString(16).padStart(4, '0')}`,
+      })
+      if (system.gates.length > 0) {
+        withGate = system
+        break
+      }
+    }
+    expect(withGate, 'expected a seeded system with at least one gate within 80 attempts').toBeDefined()
+    const markdown = exportSystemMarkdown(withGate!)
+    expect(markdown).toContain('## Gates')
+    expect(markdown).toContain(`### ${withGate!.gates[0].name.value}`)
+    expect(markdown).toContain('**Route Note:**')
   })
 
   it('weights settlement tags toward civic at urban scale and remote at outpost scale', () => {

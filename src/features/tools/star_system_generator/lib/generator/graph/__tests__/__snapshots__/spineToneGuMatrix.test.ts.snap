@@ -58,9 +58,9 @@ exports[`spine tone × gu matrix (structural fields only) > tone=balanced gu=low
 
 exports[`spine tone × gu matrix (structural fields only) > tone=balanced gu=normal produces stable spine structural fields 1`] = `
 {
-  "spineEdgeType": "CONTESTS",
+  "spineEdgeType": "DESTABILIZES",
   "spineObjectKind": "namedFaction",
-  "spineSubjectKind": "namedFaction",
+  "spineSubjectKind": "phenomenon",
 }
 `;
 

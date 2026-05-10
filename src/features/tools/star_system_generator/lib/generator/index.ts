@@ -2,6 +2,7 @@ import type {
   BodyCategory,
   BodyPhysicalHints,
   Fact,
+  Gate,
   GeneratedSystem,
   GenerationOptions,
   GeneratorTone,
@@ -2813,6 +2814,38 @@ function generateSettlements(
   })
 }
 
+function settlementToGate(settlement: Settlement, ordinal: number): Gate {
+  return {
+    id: `gate-${ordinal}`,
+    name: settlement.name,
+    bodyId: settlement.bodyId,
+    moonId: settlement.moonId,
+    anchorKind: settlement.anchorKind,
+    anchorName: settlement.anchorName,
+    anchorDetail: settlement.anchorDetail,
+    location: settlement.location,
+    builtForm: settlement.builtForm,
+    routeNote: settlement.function,
+    authority: settlement.authority,
+    condition: settlement.condition,
+    tagHook: settlement.tagHook,
+    whyHere: settlement.whyHere,
+  }
+}
+
+function partitionGates(allSettlements: Settlement[]): { settlements: Settlement[]; gates: Gate[] } {
+  const settlements: Settlement[] = []
+  const gates: Gate[] = []
+  for (const s of allSettlements) {
+    if (s.siteCategory.value === 'Gate or route node') {
+      gates.push(settlementToGate(s, gates.length + 1))
+    } else {
+      settlements.push(s)
+    }
+  }
+  return { settlements, gates }
+}
+
 function generateHumanRemnants(rng: SeededRng, bodies: OrbitingBody[], guOverlay: GuOverlay): HumanRemnant[] {
   const count = guOverlay.intensity.value.includes('fracture') || guOverlay.intensity.value.includes('shear') ? 3 : 2
   return Array.from({ length: count }, (_, index) => {
@@ -3374,7 +3407,8 @@ export function generateSystem(options: GenerationOptions, knownSystem?: Partial
   const snowLine = calculateSnowLine(primary.luminositySolar.value)
   const bodies = generateBodies(rootRng.fork('bodies'), primary, architectureResult.architecture.name.value, name.value, knownSystem?.bodies)
   const guOverlay = generateGuOverlay(rootRng.fork('gu'), options.gu, primary, companions, bodies, architectureResult.architecture.name.value)
-  const settlements = generateSettlements(rootRng.fork('settlements'), options, name.value, bodies, guOverlay, reachability, architectureResult.architecture.name.value)
+  const allSettlements = generateSettlements(rootRng.fork('settlements'), options, name.value, bodies, guOverlay, reachability, architectureResult.architecture.name.value)
+  const { settlements, gates } = partitionGates(allSettlements)
   const ruins = generateHumanRemnants(rootRng.fork('ruins'), bodies, guOverlay)
   const phenomena = generatePhenomena(rootRng.fork('phenomena'), architectureResult.architecture.name.value, guOverlay)
   const narrativeFacts = buildNarrativeFacts({
@@ -3465,6 +3499,7 @@ export function generateSystem(options: GenerationOptions, knownSystem?: Partial
     bodies,
     guOverlay,
     settlements: reshapedSettlements,
+    gates,
     ruins,
     phenomena: reshapedPhenomena,
     narrativeFacts,

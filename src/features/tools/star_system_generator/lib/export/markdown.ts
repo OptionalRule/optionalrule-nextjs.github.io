@@ -1,4 +1,4 @@
-import type { GeneratedSystem, OrbitingBody, Settlement, SystemHook, SystemHooks } from '../../types'
+import type { GeneratedSystem, Gate, OrbitingBody, Settlement, SystemHook, SystemHooks } from '../../types'
 import { formatStellarClass } from '../stellarLabels'
 
 export function exportSystemMarkdown(system: GeneratedSystem): string {
@@ -29,6 +29,13 @@ export function exportSystemMarkdown(system: GeneratedSystem): string {
     lines.push('', '## Settlement Profiles', '')
     for (const settlement of system.settlements) {
       lines.push(...formatSettlement(settlement), '')
+    }
+  }
+
+  if (system.gates.length) {
+    lines.push('', '## Gates', '')
+    for (const gate of system.gates) {
+      lines.push(...formatGate(gate), '')
     }
   }
 
@@ -216,6 +223,21 @@ function formatSettlement(settlement: Settlement): string[] {
     `**Hidden Truth:** ${settlement.hiddenTruth.value}.`,
     ...(settlement.whyHere.value ? [`**Why Here:** ${settlement.whyHere.value}.`] : []),
     `**Local Sites:** ${settlement.encounterSites.map((site) => site.value).join(', ')}.`,
+  ]
+}
+
+function formatGate(gate: Gate): string[] {
+  return [
+    `### ${gate.name.value}`,
+    '',
+    `**Location:** ${gate.location.value}; ${gate.anchorName.value} (${gate.anchorKind.value}).`,
+    `**Authority:** ${gate.authority.value}.`,
+    `**Route Note:** ${gate.routeNote.value}.`,
+    `**Built Form:** ${gate.builtForm.value}.`,
+    `**Condition:** ${gate.condition.value}.`,
+    ...(gate.pinchDifficulty ? [`**Pinch Difficulty:** ${gate.pinchDifficulty.value}.`] : []),
+    ...(gate.whyHere.value ? [`**Why Here:** ${gate.whyHere.value}.`] : []),
+    `**Hook:** ${gate.tagHook.value}.`,
   ]
 }
 

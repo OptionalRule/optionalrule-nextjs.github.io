@@ -26,13 +26,9 @@ exports[`Phase 3 existing prose remains byte-identical > seed phase3-prose-2 pro
   ],
   "settlementTagHooks": [
     "Outsiders call it Deep Ice, but the local pressure is sharper: travel, debt, and risk all orbit the next moving bleed opportunity. A corporate security crackdown makes the GU work impossible to treat as routine. Privately, the settlement has an evacuation ark nobody knows about. Whoever runs the quarantine station sets the terms here.",
-    "The public tag is Life-Support Union; the private trouble is Penal Extraction, because punishment and resource production are the same system. The crisis around mass shelter lottery riot makes the GU work impossible to treat as routine. Privately, the quarantine is political. Whoever runs the corporate customs post sets the terms here.",
-    "Outsiders call it Shelter Lottery, but the local pressure is sharper: belief and GU observation are tangled in local politics. Coordination drift across the swarm makes town hall annex the choke point everyone fights over. Privately, the official quarantine boundary protects an illegal facility. Whatever the system fights over next, the interdiction compliance office is where it lands.",
   ],
   "settlementWhyHere": [
-    "There is something rare in this volume, and Meissa's Forge Belt VI is the answer to it.",
-    "Meissa's Forge transit geometry is built into this orbital and works the surface from there. Meissa's Forge transit geometry stays because the yield outweighs everything that wants it gone.",
-    "Meissa's Forge transit geometry is built into this orbital and works the surface from there. Meissa's Forge transit geometry stays because the yield outweighs everything that wants it gone.",
+    "Meissa's Forge Belt VI is built into this orbital and works the surface from there. The reading here is high enough that Meissa's Forge Belt VI accepts the risk and the silence.",
   ],
   "systemName": "Meissa's Forge",
 }
