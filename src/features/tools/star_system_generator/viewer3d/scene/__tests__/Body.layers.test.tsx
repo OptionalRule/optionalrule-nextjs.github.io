@@ -25,8 +25,8 @@ vi.mock('../MoonOrbit', () => ({
   MoonOrbit: () => <div data-testid="moon-orbit" />,
 }))
 
-vi.mock('../SettlementPin', () => ({
-  SettlementPin: () => <div data-testid="settlement-pin" />,
+vi.mock('../BodySettlements', () => ({
+  BodySettlements: () => <div data-testid="settlement-pin" />,
 }))
 
 const body: BodyVisual = {
@@ -63,7 +63,7 @@ const body: BodyVisual = {
 }
 
 function renderBody(ui: ReactNode) {
-  const system = { bodies: [] } as unknown as GeneratedSystem
+  const system = { bodies: [], settlements: [], ruins: [], phenomena: [] } as unknown as GeneratedSystem
   return render(
     <ViewerContextProvider>
       <LayerToggles />

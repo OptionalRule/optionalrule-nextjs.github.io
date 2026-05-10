@@ -37,8 +37,19 @@ function resolveTooltip(
     case 'settlement': {
       const settlement = system.settlements.find((s) => s.id === hovered.id)
       if (!settlement) return null
+      const parentBody = settlement.bodyId
+        ? graph.bodies.find((b) => b.id === settlement.bodyId)
+        : undefined
+      const live = settlement.bodyId
+        ? (window as Window & { __viewer3dBodyPositions?: Record<string, [number, number, number]> })
+            .__viewer3dBodyPositions?.[settlement.bodyId]
+        : undefined
+      const base = live ?? (parentBody
+        ? [parentBody.orbitRadius * Math.cos(parentBody.phase0), 0, parentBody.orbitRadius * Math.sin(parentBody.phase0)] as [number, number, number]
+        : [0, 0, 0] as [number, number, number])
+      const liftSize = parentBody ? parentBody.visualSize * 2.6 : 5
       return {
-        position: [0, 5, 0],
+        position: [base[0], base[1] + liftSize, base[2]],
         title: settlement.name.value,
         subtitle: settlement.siteCategory.value,
       }

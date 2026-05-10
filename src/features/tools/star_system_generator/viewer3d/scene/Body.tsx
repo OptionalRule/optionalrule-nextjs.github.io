@@ -10,7 +10,7 @@ import { shaderUniforms } from '../lib/bodyShading'
 import { useGeneratedBodyLookup } from './bodyLookup'
 import { Ring } from './Ring'
 import { Moon } from './Moon'
-import { SettlementPin } from './SettlementPin'
+import { BodySettlements } from './BodySettlements'
 import { bodySphereGeometry, invisibleHitMaterial } from './renderAssets'
 import { AtmosphereShell, CloudShell } from './BodyShells'
 import { MoonOrbit } from './MoonOrbit'
@@ -155,7 +155,7 @@ export function Body({ body }: BodyProps) {
             ))}
           </>
         ) : null}
-        {body.hasSettlements ? <SettlementPin size={body.visualSize} settlementIds={body.settlementIds} /> : null}
+        {body.hasSettlements ? <BodySettlements bodyId={body.id} bodySize={body.visualSize} /> : null}
       </group>
     </group>
   )

@@ -7,6 +7,7 @@ import type { GuBleedVisual } from '../types'
 import { useLayers, usePrefersReducedMotion } from '../chrome/ViewerContext'
 import { makeVolumetricMaterial } from './volumetricShader'
 import { guBleedSphereGeometry, volumeRibbonGeometry, volumeTorusGeometry } from './renderAssets'
+import { OverlayMarker } from './overlay/OverlayMarker'
 
 function geometryForBleed(bleed: GuBleedVisual) {
   if (bleed.shape === 'torus') return volumeTorusGeometry
@@ -41,15 +42,25 @@ export function GuBleedVolume({ bleed }: { bleed: GuBleedVisual }) {
   if (bleed.unclassified || !layers.gu) return null
 
   return (
-    <mesh
-      geometry={geometryForBleed(bleed)}
-      position={bleed.center}
-      rotation={[bleed.tilt, 0, bleed.shape === 'ribbon' ? bleed.tilt * 0.5 : 0]}
-      scale={[bleed.radius * bleed.stretch[0], bleed.radius * bleed.stretch[1], bleed.radius * bleed.stretch[2]]}
-      dispose={null}
-      raycast={() => undefined}
-    >
-      <primitive object={material} attach="material" />
-    </mesh>
+    <>
+      <mesh
+        geometry={geometryForBleed(bleed)}
+        position={bleed.center}
+        rotation={[bleed.tilt, 0, bleed.shape === 'ribbon' ? bleed.tilt * 0.5 : 0]}
+        scale={[bleed.radius * bleed.stretch[0], bleed.radius * bleed.stretch[1], bleed.radius * bleed.stretch[2]]}
+        dispose={null}
+        raycast={() => undefined}
+      >
+        <primitive object={material} attach="material" />
+      </mesh>
+      <OverlayMarker
+        position={bleed.center}
+        glyphId="GU"
+        kind="gu-bleed"
+        id={bleed.id}
+        label="GU bleed"
+        size={24}
+      />
+    </>
   )
 }
