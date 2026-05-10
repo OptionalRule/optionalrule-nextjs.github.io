@@ -20,9 +20,12 @@ import {
   hyceanHydrospheres,
   magmaOceanGeologies,
   magmaOceanHydrospheres,
+  noWaterSourceHydrospheres,
+  openLiquidHydrospheres,
   solidSurfaceAtmospheres,
   steamHydrospheres,
   tidalColdGeologies,
+  vacuumLikeAtmospheres,
   waterOceanHydrospheres,
 } from './environmentCompatibility'
 import { deriveWorldClassMetadata } from './worldClassMetadata'
@@ -309,6 +312,31 @@ function normalizeFact<T extends string>(
   }
 }
 
+function applyCrossFieldConsistency(detail: DetailWithoutBiosphere): DetailWithoutBiosphere {
+  let atmosphere = detail.atmosphere
+  let hydrosphere = detail.hydrosphere
+
+  // Rule 1: open surface liquids require retentive atmosphere (water sublimes in vacuum).
+  if (openLiquidHydrospheres.has(hydrosphere.value) && vacuumLikeAtmospheres.has(atmosphere.value)) {
+    atmosphere = {
+      ...atmosphere,
+      value: 'Thin CO2/N2',
+      source: `${atmosphere.source ?? 'Generated detail'}; upgraded by cross-field consistency: open-liquid hydrosphere requires retentive atmosphere`,
+    }
+  }
+
+  // Rule 2: Steam atmosphere implies a vaporizing water source.
+  if (atmosphere.value === 'Steam atmosphere' && noWaterSourceHydrospheres.has(hydrosphere.value)) {
+    hydrosphere = {
+      ...hydrosphere,
+      value: 'Vaporized volatile traces',
+      source: `${hydrosphere.source ?? 'Generated detail'}; upgraded by cross-field consistency: steam atmosphere implies vaporizing surface volatiles`,
+    }
+  }
+
+  return { ...detail, atmosphere, hydrosphere }
+}
+
 export function normalizeDetailForEnvironment(
   detail: DetailWithoutBiosphere,
   policy: EnvironmentPolicy
@@ -318,10 +346,11 @@ export function normalizeDetailForEnvironment(
   const geology = geologyAllowed && geologyFallback
     ? normalizeFact(detail.geology, geologyAllowed, geologyFallback, policy, 'geology')
     : detail.geology
-  return {
+  const fieldNormalized: DetailWithoutBiosphere = {
     ...detail,
     atmosphere: normalizeFact(detail.atmosphere, policy.atmosphere.allowed, policy.atmosphere.fallback, policy, 'atmosphere'),
     hydrosphere: normalizeFact(detail.hydrosphere, policy.hydrosphere.allowed, policy.hydrosphere.fallback, policy, 'hydrosphere'),
     geology,
   }
+  return applyCrossFieldConsistency(fieldNormalized)
 }

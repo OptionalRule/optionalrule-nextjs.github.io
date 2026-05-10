@@ -70,8 +70,8 @@ denseClasses.slice(0, 8).forEach((h) => console.log(`  ${h.zone} | ${h.cls} → 
 // =========================================================
 // 2) ATM × HYDRO coherency
 // =========================================================
-// Steam atmosphere needs water
-const steamNoWater = bodies.filter((b) => b.atm === 'Steam atmosphere' && (b.hydro === 'Bone dry' || b.hydro === 'Hydrated minerals only' || b.hydro === 'Vaporized volatile traces' || b.hydro === 'Magma seas / lava lakes' || b.hydro === 'Salt / perchlorate flats'))
+// Steam atmosphere needs a water source. Vaporized volatile traces COUNTS as water (it's the vapor).
+const steamNoWater = bodies.filter((b) => b.atm === 'Steam atmosphere' && (b.hydro === 'Bone dry' || b.hydro === 'Hydrated minerals only' || b.hydro === 'Magma seas / lava lakes' || b.hydro === 'Salt / perchlorate flats' || b.hydro === 'No accessible surface volatiles'))
 console.log(`\n[ATMHYD-1] Steam atmosphere on a body without surface water: ${steamNoWater.length}`)
 steamNoWater.slice(0, 8).forEach((h) => console.log(`  ${h.zone} | ${h.cls} | atm=${h.atm} | hydro=${h.hydro}`))
 

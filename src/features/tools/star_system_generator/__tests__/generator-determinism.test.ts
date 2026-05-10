@@ -1206,6 +1206,54 @@ describe('generateSystem', () => {
     expect(sawTrigger).toBe(true)
   })
 
+  it('cross-field consistency: no body has an open-liquid hydrosphere paired with a vacuum-like atmosphere', () => {
+    const openLiquid = new Set(['Global ocean', 'Ocean-continent balance', 'Local seas', 'High-pressure deep ocean', 'Hydrocarbon lakes/seas'])
+    const vacuumLike = new Set(['None / hard vacuum', 'Trace exosphere'])
+    for (let index = 0; index < 240; index++) {
+      const system = generateSystem({
+        ...options,
+        seed: `xfield-${index.toString(16).padStart(4, '0')}`,
+      })
+      for (const body of system.bodies) {
+        if (openLiquid.has(body.detail.hydrosphere.value)) {
+          expect(vacuumLike.has(body.detail.atmosphere.value), `${body.bodyClass.value} | hydro=${body.detail.hydrosphere.value} | atm=${body.detail.atmosphere.value}`).toBe(false)
+        }
+      }
+    }
+  })
+
+  it('cross-field consistency: no body has Steam atmosphere over a dry surface', () => {
+    const noWater = new Set(['Bone dry', 'Hydrated minerals only', 'Magma seas / lava lakes', 'Salt / perchlorate flats', 'No accessible surface volatiles'])
+    for (let index = 0; index < 240; index++) {
+      const system = generateSystem({
+        ...options,
+        seed: `xfield-steam-${index.toString(16).padStart(4, '0')}`,
+      })
+      for (const body of system.bodies) {
+        if (body.detail.atmosphere.value === 'Steam atmosphere') {
+          expect(noWater.has(body.detail.hydrosphere.value), `${body.bodyClass.value} | atm=Steam | hydro=${body.detail.hydrosphere.value}`).toBe(false)
+        }
+      }
+    }
+  })
+
+  it('cross-field consistency records normalization in fact source', () => {
+    let sawCrossFieldUpgrade = false
+    for (let index = 0; index < 240 && !sawCrossFieldUpgrade; index++) {
+      const system = generateSystem({
+        ...options,
+        seed: `xfield-source-${index.toString(16).padStart(4, '0')}`,
+      })
+      for (const body of system.bodies) {
+        if (/cross-field consistency/i.test(body.detail.atmosphere.source ?? '') || /cross-field consistency/i.test(body.detail.hydrosphere.source ?? '')) {
+          sawCrossFieldUpgrade = true
+          break
+        }
+      }
+    }
+    expect(sawCrossFieldUpgrade, 'expected to see at least one fact stamped with cross-field consistency normalization').toBe(true)
+  })
+
   it('exports a Gates section in markdown when gates are present', async () => {
     const { exportSystemMarkdown } = await import('../lib/export/markdown')
     let withGate: ReturnType<typeof generateSystem> | undefined

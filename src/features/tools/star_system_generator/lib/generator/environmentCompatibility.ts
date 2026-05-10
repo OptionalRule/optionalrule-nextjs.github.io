@@ -251,6 +251,31 @@ export const magmaOceanGeologies = new Set([
   'Tidal heating',
 ])
 
+// Hydrospheres that require retentive atmospheric pressure (otherwise water sublimes).
+export const openLiquidHydrospheres = new Set([
+  'Global ocean',
+  'Ocean-continent balance',
+  'Local seas',
+  'High-pressure deep ocean',
+  'Hydrocarbon lakes/seas',
+])
+
+// Atmospheres without enough pressure to keep surface liquids stable.
+export const vacuumLikeAtmospheres = new Set([
+  'None / hard vacuum',
+  'Trace exosphere',
+])
+
+// Hydrospheres with no surface water source — incompatible with Steam atmosphere.
+export const noWaterSourceHydrospheres = new Set([
+  'Bone dry',
+  'Hydrated minerals only',
+  'Magma seas / lava lakes',
+  'Salt / perchlorate flats',
+  'Nightside mineral frost',
+  'No accessible surface volatiles',
+])
+
 export function isEnvelopeCategory(category: BodyCategory): boolean {
   return envelopeCategories.has(category)
 }
