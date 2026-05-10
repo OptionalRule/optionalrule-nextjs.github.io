@@ -151,7 +151,7 @@ export function deriveEnvironmentPolicy(
     }
   }
 
-  if (metadata.environmentProfileHint === 'desert' || metadata.physicalTags.includes('desert')) {
+  if (metadata.environmentProfileHint === 'desert' || metadata.physicalTags.includes('desert') || metadata.physicalTags.includes('stripped-core')) {
     const isColdZone = thermalZone === 'Cold' || thermalZone === 'Cryogenic' || thermalZone === 'Dark'
     const desertAtmospheres = metadata.physicalTags.includes('hydrogen-atmosphere')
       ? new Set<string>()

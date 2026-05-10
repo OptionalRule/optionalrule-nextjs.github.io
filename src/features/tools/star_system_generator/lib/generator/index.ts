@@ -1253,8 +1253,15 @@ function rollGeology(rng: SeededRng, category: BodyCategory, thermalZone: string
   if (thermalZone === 'Cold' || thermalZone === 'Cryogenic' || thermalZone === 'Dark') roll += 1
   if (bodyClass.className.includes('Tidal') || bodyClass.className.includes('Volcanic') || bodyClass.className.includes('Cryovolcanic')) roll += 2
   if (bodyClass.className.includes('Programmable') || bodyClass.className.includes('GU')) roll += 2
+  // Super-Earth mass retains internal heat, biasing away from Dead interior / Ancient cratered crust.
+  if (category === 'super-earth' || /high-gravity|super-earth|super-terrestrial/i.test(bodyClass.className)) roll += 2
 
   return pickTable(rng, clampTableRoll(roll, 12), geologyTable)
+}
+
+function classAtmosphereFlavor(className: string): string | undefined {
+  if (/dense-atmosphere pressure world/i.test(className)) return 'Dense CO2/N2'
+  return undefined
 }
 
 function rollAtmosphere(
@@ -1271,6 +1278,8 @@ function rollAtmosphere(
     return pickTable(rng, clampTableRoll(d12(rng) + 3, 12), atmosphereTable)
   }
   if (extremeHotThermalZones.has(thermalZone)) return pickOne(rng, extremeHotAtmospheres)
+  const flavored = classAtmosphereFlavor(bodyClass.className)
+  if (flavored) return flavored
 
   let roll = d12(rng)
   if (category === 'super-earth') roll += 1
@@ -1454,13 +1463,18 @@ function generateDetail(
     ),
   }, environmentPolicy)
 
+  const biosphereValue = environmentPolicy.biosphere.forced ?? generateBiosphere(rng, category, thermalZone, detailWithoutBiosphere, primary)
+  const livingBiospheres = new Set(['Microbial life', 'Extremophile microbial ecology', 'Simple macroscopic non-sapient life'])
+  const surfaceDryButLiving = livingBiospheres.has(biosphereValue) && detailWithoutBiosphere.hydrosphere.value === 'Bone dry'
+  const biosphereSource = environmentPolicy.biosphere.forced
+    ? `Forced by ${environmentPolicy.profile} environment policy`
+    : surfaceDryButLiving
+      ? 'MASS-GU biosphere score; surface reads Bone dry — biosphere implied as subsurface brine pockets or relict biofilm refugia'
+      : 'MASS-GU biosphere score'
+
   return {
     ...detailWithoutBiosphere,
-    biosphere: fact(
-      environmentPolicy.biosphere.forced ?? generateBiosphere(rng, category, thermalZone, detailWithoutBiosphere, primary),
-      'inferred',
-      environmentPolicy.biosphere.forced ? `Forced by ${environmentPolicy.profile} environment policy` : 'MASS-GU biosphere score'
-    ),
+    biosphere: fact(biosphereValue, 'inferred', biosphereSource),
   }
 }
 

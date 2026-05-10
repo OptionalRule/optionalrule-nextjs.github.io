@@ -1254,6 +1254,57 @@ describe('generateSystem', () => {
     expect(sawCrossFieldUpgrade, 'expected to see at least one fact stamped with cross-field consistency normalization').toBe(true)
   })
 
+  it('routes stripped-core classes to desert profile (no exotic solvents)', () => {
+    let sawStrippedCore = false
+    for (let index = 0; index < 240; index++) {
+      const system = generateSystem({
+        ...options,
+        seed: `stripped-${index.toString(16).padStart(4, '0')}`,
+      })
+      for (const body of system.bodies) {
+        if (!/stripped/i.test(body.bodyClass.value)) continue
+        sawStrippedCore = true
+        expect(body.detail.hydrosphere.value, body.bodyClass.value).not.toBe('Exotic solvent or GU-stabilized fluid chemistry')
+      }
+    }
+    expect(sawStrippedCore, 'expected to encounter a stripped-core class within 240 seeded systems').toBe(true)
+  })
+
+  it('Dense-atmosphere pressure world always has a dense atmosphere', () => {
+    const denseAtms = new Set(['Dense CO2/N2', 'Dense greenhouse', 'Sulfur/chlorine/ammonia haze', 'Steam atmosphere', 'Moderate toxic atmosphere'])
+    let saw = false
+    for (let index = 0; index < 240 && !saw; index++) {
+      const system = generateSystem({
+        ...options,
+        seed: `dense-pressure-${index.toString(16).padStart(4, '0')}`,
+      })
+      for (const body of system.bodies) {
+        if (body.bodyClass.value !== 'Dense-atmosphere pressure world') continue
+        saw = true
+        expect(denseAtms.has(body.detail.atmosphere.value), `got ${body.detail.atmosphere.value}`).toBe(true)
+      }
+    }
+    expect(saw, 'expected to encounter a Dense-atmosphere pressure world within 240 seeded systems').toBe(true)
+  })
+
+  it('annotates microbial biospheres on Bone dry worlds with a subsurface-refuge note', () => {
+    let sawAnnotation = false
+    for (let index = 0; index < 240 && !sawAnnotation; index++) {
+      const system = generateSystem({
+        ...options,
+        seed: `bone-bio-${index.toString(16).padStart(4, '0')}`,
+      })
+      for (const body of system.bodies) {
+        if (body.detail.hydrosphere.value !== 'Bone dry') continue
+        const livingBiospheres = ['Microbial life', 'Extremophile microbial ecology', 'Simple macroscopic non-sapient life']
+        if (!livingBiospheres.includes(body.detail.biosphere.value)) continue
+        expect(body.detail.biosphere.source ?? '').toMatch(/subsurface brine|relict biofilm/i)
+        sawAnnotation = true
+      }
+    }
+    expect(sawAnnotation, 'expected to encounter a Bone-dry living biosphere within 240 seeded systems').toBe(true)
+  })
+
   it('exports a Gates section in markdown when gates are present', async () => {
     const { exportSystemMarkdown } = await import('../lib/export/markdown')
     let withGate: ReturnType<typeof generateSystem> | undefined
