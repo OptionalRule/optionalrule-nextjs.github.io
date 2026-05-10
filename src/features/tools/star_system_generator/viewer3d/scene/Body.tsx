@@ -67,7 +67,7 @@ export function Body({ body }: BodyProps) {
   const posTuple = useRef<[number, number, number]>([0, 0, 0])
   const isInspected = selection?.kind === 'body' && selection.id === body.id
   const isHovered = hovered?.kind === 'body' && hovered.id === body.id
-  const showMoonOrbits = isInspected || isHovered
+  const showMoonOrbits = layers.moonOrbits || isInspected || isHovered
   const spinRate = useMemo(() => {
     const jitter = hashToUnit(`${body.id}#spin-rate`)
     const direction = hashToUnit(`${body.id}#spin-direction`) > 0.18 ? 1 : -1

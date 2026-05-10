@@ -11,9 +11,10 @@ interface PillSpec {
 }
 
 const PILLS: PillSpec[] = [
-  { key: 'physical', label: 'Physical', dotClass: 'bg-[var(--accent)]',          pressedClass: 'border-[var(--accent)] bg-[var(--accent-light)] text-[var(--accent)]' },
-  { key: 'gu',       label: 'GU',       dotClass: 'bg-[var(--accent-mystical)]', pressedClass: 'border-[var(--accent-mystical)] bg-[var(--accent-mystical-light)] text-[var(--accent-mystical)]' },
-  { key: 'human',    label: 'Human',    dotClass: 'bg-[var(--accent-warm)]',     pressedClass: 'border-[var(--accent-warm)] bg-[var(--accent-warm-light)] text-[var(--accent-warm)]' },
+  { key: 'physical',   label: 'Physical',    dotClass: 'bg-[var(--accent)]',          pressedClass: 'border-[var(--accent)] bg-[var(--accent-light)] text-[var(--accent)]' },
+  { key: 'gu',         label: 'GU',          dotClass: 'bg-[var(--accent-mystical)]', pressedClass: 'border-[var(--accent-mystical)] bg-[var(--accent-mystical-light)] text-[var(--accent-mystical)]' },
+  { key: 'human',      label: 'Human',       dotClass: 'bg-[var(--accent-warm)]',     pressedClass: 'border-[var(--accent-warm)] bg-[var(--accent-warm-light)] text-[var(--accent-warm)]' },
+  { key: 'moonOrbits', label: 'Moon Orbits', dotClass: 'bg-cyan-200/80',              pressedClass: 'border-cyan-300/70 bg-cyan-300/10 text-cyan-200' },
 ]
 
 export function LayerToggles() {

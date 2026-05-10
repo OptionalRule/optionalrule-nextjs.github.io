@@ -204,13 +204,14 @@ export interface SystemSceneGraph {
   sceneRadius: number
 }
 
-export type LayerKey = 'physical' | 'gu' | 'human'
+export type LayerKey = 'physical' | 'gu' | 'human' | 'moonOrbits'
 export type OrbitScaleMode = 'readable-log' | 'relative-au' | 'schematic'
 
 export interface LayerVisibility {
   physical: boolean
   gu: boolean
   human: boolean
+  moonOrbits: boolean
 }
 
-export const ALL_LAYERS_ON: LayerVisibility = { physical: true, gu: true, human: true }
+export const ALL_LAYERS_ON: LayerVisibility = { physical: true, gu: true, human: true, moonOrbits: false }

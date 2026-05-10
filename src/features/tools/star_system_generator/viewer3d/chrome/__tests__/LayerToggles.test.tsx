@@ -6,7 +6,7 @@ import { ViewerContextProvider, useLayers } from '../ViewerContext'
 
 function ProbeLayers() {
   const { layers } = useLayers()
-  return <div data-testid="probe">{`${layers.physical}|${layers.gu}|${layers.human}`}</div>
+  return <div data-testid="probe">{`${layers.physical}|${layers.gu}|${layers.human}|${layers.moonOrbits}`}</div>
 }
 
 function renderWithProvider() {
@@ -19,11 +19,12 @@ function renderWithProvider() {
 }
 
 describe('LayerToggles', () => {
-  it('renders three pills, all pressed by default', () => {
+  it('renders layer pills with moon orbits off by default', () => {
     renderWithProvider()
     expect(screen.getByRole('button', { name: /physical/i })).toHaveAttribute('aria-pressed', 'true')
     expect(screen.getByRole('button', { name: /gu/i })).toHaveAttribute('aria-pressed', 'true')
     expect(screen.getByRole('button', { name: /human/i })).toHaveAttribute('aria-pressed', 'true')
+    expect(screen.getByRole('button', { name: /moon orbits/i })).toHaveAttribute('aria-pressed', 'false')
   })
 
   it('toggles a layer off when clicked', async () => {
@@ -31,14 +32,15 @@ describe('LayerToggles', () => {
     renderWithProvider()
     await user.click(screen.getByRole('button', { name: /physical/i }))
     expect(screen.getByRole('button', { name: /physical/i })).toHaveAttribute('aria-pressed', 'false')
-    expect(screen.getByTestId('probe').textContent).toBe('false|true|true')
+    expect(screen.getByTestId('probe').textContent).toBe('false|true|true|false')
   })
 
-  it('toggles all three independently', async () => {
+  it('toggles all layers independently', async () => {
     const user = userEvent.setup()
     renderWithProvider()
     await user.click(screen.getByRole('button', { name: /gu/i }))
     await user.click(screen.getByRole('button', { name: /human/i }))
-    expect(screen.getByTestId('probe').textContent).toBe('true|false|false')
+    await user.click(screen.getByRole('button', { name: /moon orbits/i }))
+    expect(screen.getByTestId('probe').textContent).toBe('true|false|false|true')
   })
 })

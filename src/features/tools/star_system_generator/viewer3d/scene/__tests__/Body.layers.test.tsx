@@ -21,6 +21,10 @@ vi.mock('../Moon', () => ({
   Moon: () => <div data-testid="moon" />,
 }))
 
+vi.mock('../MoonOrbit', () => ({
+  MoonOrbit: () => <div data-testid="moon-orbit" />,
+}))
+
 vi.mock('../SettlementPin', () => ({
   SettlementPin: () => <div data-testid="settlement-pin" />,
 }))
@@ -84,5 +88,16 @@ describe('Body layer rendering', () => {
     expect(screen.queryByTestId('ring')).not.toBeInTheDocument()
     expect(screen.queryByTestId('moon')).not.toBeInTheDocument()
     expect(screen.getByTestId('settlement-pin')).toBeInTheDocument()
+  })
+
+  it('shows all moon orbit rings when the moon orbit layer is enabled', async () => {
+    const user = userEvent.setup()
+    renderBody(<Body body={body} />)
+
+    expect(screen.queryByTestId('moon-orbit')).not.toBeInTheDocument()
+
+    await user.click(screen.getByRole('button', { name: /moon orbits/i }))
+
+    expect(screen.getByTestId('moon-orbit')).toBeInTheDocument()
   })
 })

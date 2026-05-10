@@ -50,6 +50,11 @@ export function ViewerModal({ title, onClose, header, footer, children }: Viewer
         toggleLayer('human')
         return
       }
+      if (e.key === '4') {
+        e.preventDefault()
+        toggleLayer('moonOrbits')
+        return
+      }
       if (e.key !== 'Tab' || !containerRef.current) return
       const focusables = containerRef.current.querySelectorAll<HTMLElement>(FOCUSABLE)
       if (focusables.length === 0) return
