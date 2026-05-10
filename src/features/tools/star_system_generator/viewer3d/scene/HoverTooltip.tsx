@@ -11,6 +11,7 @@ interface TooltipPosition {
   position: [number, number, number]
   title: string
   subtitle: string
+  withLeader?: boolean
 }
 
 function resolveTooltip(
@@ -27,9 +28,10 @@ function resolveTooltip(
       if (!body || !source) return null
       const position = liveBodyPosition ?? [body.orbitRadius * Math.cos(body.phase0), 0, body.orbitRadius * Math.sin(body.phase0)]
       return {
-        position: [position[0], position[1] + body.visualSize * 2.1, position[2]],
+        position: [position[0], position[1] + body.visualSize * 1.05, position[2]],
         title: source.name.value,
         subtitle: `${source.category.value} · ${source.thermalZone.value}`,
+        withLeader: true,
       }
     }
     case 'settlement': {
@@ -111,6 +113,37 @@ export function HoverTooltip({ graph, system }: { graph: SystemSceneGraph; syste
 
   const tip = resolveTooltip(hovered, graph, system, liveBodyPosition)
   if (!tip) return null
+  if (tip.withLeader) {
+    const leaderDx = 28
+    const leaderDy = 28
+    return (
+      <Html position={tip.position} distanceFactor={120} pointerEvents="none" zIndexRange={[100, 0]}>
+        <div className="pointer-events-none" style={{ position: 'relative', width: 0, height: 0 }}>
+          <svg
+            width={leaderDx}
+            height={leaderDy}
+            style={{ position: 'absolute', left: 0, top: -leaderDy, overflow: 'visible' }}
+          >
+            <line
+              x1={0}
+              y1={leaderDy}
+              x2={leaderDx}
+              y2={0}
+              stroke="rgba(160, 200, 240, 0.55)"
+              strokeWidth={1}
+            />
+          </svg>
+          <div
+            className="whitespace-nowrap rounded-md border border-[var(--accent)]/50 bg-[#0f141c]/95 px-2 py-1 text-[11px] text-[var(--text-primary)] shadow-lg shadow-black/40"
+            style={{ position: 'absolute', left: leaderDx, top: -leaderDy, transform: 'translateY(-100%)' }}
+          >
+            <div className="font-semibold">{tip.title}</div>
+            <div className="text-[10px] text-[var(--text-tertiary)]">{tip.subtitle}</div>
+          </div>
+        </div>
+      </Html>
+    )
+  }
   return (
     <Html position={tip.position} center distanceFactor={120} pointerEvents="none">
       <div className="pointer-events-none whitespace-nowrap rounded-md border border-[var(--accent)]/50 bg-[#0f141c]/95 px-2 py-1 text-[11px] text-[var(--text-primary)] shadow-lg shadow-black/40">

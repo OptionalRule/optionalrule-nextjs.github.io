@@ -63,7 +63,12 @@ export function Belt({ belt }: BeltProps) {
     const group = new THREE.Group()
     const dummy = new THREE.Object3D()
     const color = new THREE.Color()
-    const clusterCount = 4 + Math.floor(hashToUnit(`cluster-count#${belt.id}`) * 4)
+    const clusterCount = 9 + Math.floor(hashToUnit(`cluster-count#${belt.id}`) * 5)
+    const clusterCenters = Array.from({ length: clusterCount }, (_, idx) => {
+      const slot = idx / clusterCount
+      const jitter = (hashToUnit(`cluster-slot-jitter#${belt.id}#${idx}`) - 0.5) * (0.7 / clusterCount)
+      return ((slot + jitter) % 1 + 1) % 1
+    })
     let globalIndex = 0
 
     BELT_SHAPES.forEach((shape, shapeIndex) => {
@@ -80,9 +85,9 @@ export function Belt({ belt }: BeltProps) {
         const i = globalIndex + localIndex
         const clusterRoll = hashToUnit(`cluster-roll#${shape.salt}#${belt.id}#${i}`)
         const clusterIndex = Math.floor(hashToUnit(`cluster-index#${shape.salt}#${belt.id}#${i}`) * clusterCount)
-        const clusterCenter = hashToUnit(`cluster-center#${belt.id}#${clusterIndex}`)
-        const clusterWidth = 0.012 + hashToUnit(`cluster-width#${belt.id}#${clusterIndex}`) * 0.038
-        const inCluster = clusterRoll < 0.78
+        const clusterCenter = clusterCenters[clusterIndex]
+        const clusterWidth = 0.024 + hashToUnit(`cluster-width#${belt.id}#${clusterIndex}`) * 0.05
+        const inCluster = clusterRoll < 0.62
         const randomTurn = hashToUnit(`turn#${shape.salt}#${belt.id}#${i}`)
         const centeredOffset = (
           hashToUnit(`cluster-offset-a#${shape.salt}#${belt.id}#${i}`) -

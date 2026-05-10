@@ -51,7 +51,12 @@ export function Scene({ graph, system }: SceneProps) {
       performance={{ min: 0.5, max: 1, debounce: 300 }}
       camera={{ fov: 45, near: 0.1, far: graph.sceneRadius * 6, position: [0, graph.sceneRadius * 0.35, graph.sceneRadius * 0.95] }}
       gl={{ antialias: true, alpha: false }}
-      style={{ background: 'radial-gradient(ellipse at center, #0a1424 0%, #02040a 75%)' }}
+      style={{
+        background:
+          'radial-gradient(ellipse at 30% 20%, rgba(60, 40, 90, 0.18) 0%, transparent 55%),' +
+          'radial-gradient(ellipse at 70% 80%, rgba(20, 60, 110, 0.16) 0%, transparent 60%),' +
+          'radial-gradient(ellipse at center, #142036 0%, #0a1426 45%, #060a18 100%)',
+      }}
     >
       <PerformanceMonitor
         onDecline={() => setQualityScale(0.68)}
@@ -71,8 +76,8 @@ export function Scene({ graph, system }: SceneProps) {
       <Stars
         radius={graph.sceneRadius * 2.2}
         depth={graph.sceneRadius * 0.8}
-        count={Math.round(3500 * qualityScale)}
-        factor={graph.sceneRadius * 0.16 * qualityScale}
+        count={Math.round(5500 * qualityScale)}
+        factor={graph.sceneRadius * 0.18 * qualityScale}
         saturation={0}
         fade
         speed={prefersReducedMotion ? 0 : 0.2}
