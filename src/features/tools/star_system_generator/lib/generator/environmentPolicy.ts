@@ -312,9 +312,36 @@ function normalizeFact<T extends string>(
   }
 }
 
-function applyCrossFieldConsistency(detail: DetailWithoutBiosphere): DetailWithoutBiosphere {
+const climateDryHydros = new Set(['Bone dry', 'Hydrated minerals only', 'Vaporized volatile traces', 'Magma seas / lava lakes', 'Salt / perchlorate flats', 'Nightside mineral frost', 'No accessible surface volatiles'])
+const climateOpenOcean = new Set(['Global ocean', 'Ocean-continent balance', 'Local seas', 'High-pressure deep ocean', 'Hydrocarbon lakes/seas'])
+const climateVacuumAtms = new Set(['None / hard vacuum', 'Trace exosphere', 'None / dispersed volatiles', 'No ordinary atmosphere'])
+const climateGreenhouseAtms = new Set(['Steam atmosphere', 'Dense greenhouse', 'Dense CO2/N2', 'Sulfur/chlorine/ammonia haze', 'Moderate toxic atmosphere', 'Chiral-active or GU-distorted atmosphere'])
+
+function climateCompatible(climate: string, hydro: string, atm: string): boolean {
+  if (climate === 'Snowball' && climateDryHydros.has(hydro)) return false
+  if ((climate === 'Hot desert' || climate === 'Cold desert') && climateOpenOcean.has(hydro)) return false
+  if ((climate === 'Runaway greenhouse' || climate === 'Moist greenhouse edge') && !climateGreenhouseAtms.has(atm)) return false
+  if ((climate === 'Hypercanes' || climate === 'Permanent storm tracks' || climate === 'Global monsoon') && climateVacuumAtms.has(atm)) return false
+  if ((climate === 'Twilight ocean' || climate === 'Dense lowland pressure seas') && !climateOpenOcean.has(hydro)) return false
+  return true
+}
+
+function pickReplacementClimate(hydro: string, atm: string, thermalZone: string): string {
+  const isExtremeHot = thermalZone === 'Furnace' || thermalZone === 'Inferno'
+  const isHot = thermalZone === 'Hot' || isExtremeHot
+  const isCold = thermalZone === 'Cold' || thermalZone === 'Cryogenic' || thermalZone === 'Dark'
+  if (climateOpenOcean.has(hydro)) return isCold ? 'Twilight ocean' : 'Global monsoon'
+  if (isExtremeHot) return 'Hot desert'
+  if (climateVacuumAtms.has(atm)) return isHot ? 'Hot desert' : isCold ? 'Cold desert' : 'Cold desert'
+  if (climateDryHydros.has(hydro)) return isHot ? 'Hot desert' : isCold ? 'Cold desert' : 'Cold desert'
+  if (climateGreenhouseAtms.has(atm)) return 'Permanent storm tracks'
+  return isCold ? 'Cold desert' : 'Permanent storm tracks'
+}
+
+function applyCrossFieldConsistency(detail: DetailWithoutBiosphere, thermalZone: string): DetailWithoutBiosphere {
   let atmosphere = detail.atmosphere
   let hydrosphere = detail.hydrosphere
+  let geology = detail.geology
 
   // Rule 1: open surface liquids require retentive atmosphere (water sublimes in vacuum).
   if (openLiquidHydrospheres.has(hydrosphere.value) && vacuumLikeAtmospheres.has(atmosphere.value)) {
@@ -334,12 +361,42 @@ function applyCrossFieldConsistency(detail: DetailWithoutBiosphere): DetailWitho
     }
   }
 
-  return { ...detail, atmosphere, hydrosphere }
+  // Rule 3: Magma seas hydrosphere requires geologically active surface.
+  if (hydrosphere.value === 'Magma seas / lava lakes' && ['Dead interior', 'Static lid', 'Ancient cratered crust', 'Low volcanism'].includes(geology.value)) {
+    geology = {
+      ...geology,
+      value: 'Active volcanism',
+      source: `${geology.source ?? 'Generated detail'}; upgraded by cross-field consistency: magma seas hydrosphere implies active silicate volcanism`,
+    }
+  }
+
+  // Rule 4: Cryovolcanism geology requires cold-volatile hydrosphere.
+  if (geology.value === 'Cryovolcanism' && !['Subsurface ice', 'Polar caps / buried glaciers', 'Ice-shell subsurface ocean', 'Cryogenic nitrogen reservoirs', 'Cryovolcanic vents', 'Hydrocarbon lakes/seas', 'Global ocean', 'Ocean-continent balance'].includes(hydrosphere.value)) {
+    hydrosphere = {
+      ...hydrosphere,
+      value: 'Subsurface ice',
+      source: `${hydrosphere.source ?? 'Generated detail'}; upgraded by cross-field consistency: cryovolcanism geology implies cold-volatile hydrosphere`,
+    }
+  }
+
+  // Rule 5: climate tags must be consistent with the final atm/hydro state.
+  const climates = detail.climate.map((c) => {
+    if (climateCompatible(c.value, hydrosphere.value, atmosphere.value)) return c
+    const replacement = pickReplacementClimate(hydrosphere.value, atmosphere.value, thermalZone)
+    return {
+      ...c,
+      value: replacement,
+      source: `${c.source ?? 'Generated detail'}; replaced by cross-field consistency: ${c.value} incompatible with current atm/hydro`,
+    }
+  })
+
+  return { ...detail, atmosphere, hydrosphere, geology, climate: climates }
 }
 
 export function normalizeDetailForEnvironment(
   detail: DetailWithoutBiosphere,
-  policy: EnvironmentPolicy
+  policy: EnvironmentPolicy,
+  thermalZone: string = ''
 ): DetailWithoutBiosphere {
   const geologyAllowed = policy.geology?.allowed
   const geologyFallback = policy.geology?.fallback
@@ -352,5 +409,5 @@ export function normalizeDetailForEnvironment(
     hydrosphere: normalizeFact(detail.hydrosphere, policy.hydrosphere.allowed, policy.hydrosphere.fallback, policy, 'hydrosphere'),
     geology,
   }
-  return applyCrossFieldConsistency(fieldNormalized)
+  return applyCrossFieldConsistency(fieldNormalized, thermalZone)
 }

@@ -46,7 +46,7 @@ exports[`spine full axis matrix (16 representative cells) > baseline-realistic-a
 
 exports[`spine full axis matrix (16 representative cells) > baseline-realistic-balanced: stable spine + body[0] structural fields 1`] = `
 {
-  "body0": "The narrow-AI perception fog keeps shifting under Wouri Survey-176 III. Each pass of the narrow-AI perception fog costs Wouri Survey-176 IV a margin it doesn't have. Wouri Survey-176 IV can't plan around the moving bleed-node river anymore. Wouri Survey-176 III Laboratory 18 sits on Wouri Survey-176 III. Wouri Survey-176 IV hosts Wouri Survey-176 IV Command.",
+  "body0": "The narrow-AI perception fog keeps shifting under Wouri Survey-176 III. Each pass of the narrow-AI perception fog costs Wouri Survey-176 IV a margin it doesn't have. Wouri Survey-176 IV can't plan around the moving bleed-node river anymore. Wouri Survey-176 III Laboratory 18 sits on Wouri Survey-176 III. Wouri Survey-176 IV hosts Wouri Survey-176 IV Charter.",
   "spineEdgeType": "DESTABILIZES",
   "spineObjectKind": "body",
   "spineSubjectKind": "phenomenon",
@@ -57,12 +57,12 @@ exports[`spine full axis matrix (16 representative cells) > baseline-realistic-b
 
 exports[`spine full axis matrix (16 representative cells) > baseline-realistic-cinematic: stable spine + body[0] structural fields 1`] = `
 {
-  "body0": "Tarandus Route-211 VII has been watching the long-period comet storm eat its margins for a generation. So of course, Salt Wound Cabal swore the pact would hold; Salt Wound Order swore otherwise. And then, Something is wrong under Tarandus Route-211 Belt IV, and flare-amplified bleed season is the name people whisper for it. Tarandus Route-211 Belt IV hosts Tarandus Route-211 Belt IV Hold.",
-  "spineEdgeType": "DESTABILIZES",
-  "spineObjectKind": "body",
-  "spineSubjectKind": "phenomenon",
-  "spineSummary": "Everything Tarandus Route-211 VII was built to outlast is being unmade by the long-period comet storm.",
-  "spineVisibility": "public",
+  "body0": "Carrion Synod keeps the receipts. Last Ledger Brotherhood keeps the witnesses. And then, the metric shear damages hulls is hollowing Tarandus Route-211 Belt IV Freeport 56 from underneath. Something is wrong under Tarandus Route-211 Belt IV, and flare-amplified bleed season is the name people whisper for it. Tarandus Route-211 Belt IV hosts Tarandus Route-211 Belt IV Freeport 56. There, Tarandus Route-211 Belt IV Freeport 56 draws everything it consumes from Narrow-AI stabilizer substrate.",
+  "spineEdgeType": "CONTESTS",
+  "spineObjectKind": "namedFaction",
+  "spineSubjectKind": "namedFaction",
+  "spineSummary": "The compact between Carrion Synod and Last Ledger Brotherhood broke after the keep was sealed, Between Carrion Synod and Last Ledger Brotherhood the war is already lost; only the funerals remain.",
+  "spineVisibility": "contested",
 }
 `;
 
@@ -112,7 +112,7 @@ exports[`spine full axis matrix (16 representative cells) > density-hub: stable 
 
 exports[`spine full axis matrix (16 representative cells) > density-normal: stable spine + body[0] structural fields 1`] = `
 {
-  "body0": "The long-period comet storm drifts the baselines Coronagraph Bureau relies on. The amplitude of the long-period comet storm exceeds the operating envelope of Vey Picket-265 II. The chiral contamination bloom introduces a measurable perturbation in Vey Picket-265 II.",
+  "body0": "The long-period comet storm drifts the baselines Coronagraph Bureau relies on. The amplitude of the long-period comet storm exceeds the operating envelope of Vey Picket-265 II. The chiral contamination bloom introduces a measurable perturbation in Vey Picket-265 II. Vey Picket-265 II Redoubt sits on Vey Picket-265 II.",
   "spineEdgeType": "DESTABILIZES",
   "spineObjectKind": "namedFaction",
   "spineSubjectKind": "phenomenon",
@@ -123,7 +123,7 @@ exports[`spine full axis matrix (16 representative cells) > density-normal: stab
 
 exports[`spine full axis matrix (16 representative cells) > density-sparse: stable spine + body[0] structural fields 1`] = `
 {
-  "body0": "The chiral contamination bloom drifts the baselines Arneb Trace-209 IV relies on. Arneb Trace-209 IV records a phase shift each time the debt-fleet anchor graveyard passes through. The debt-fleet anchor graveyard drifts the baselines Long Baseline Authority relies on. Arneb Trace-209 IV hosts Arneb Trace-209 IV Station 85.",
+  "body0": "The chiral contamination bloom drifts the baselines Arneb Trace-209 IV relies on. Arneb Trace-209 IV records a phase shift each time the debt-fleet anchor graveyard passes through. The human vestibular/neurological effects drifts the baselines Arneb Trace-209 IV Station 85 relies on. Arneb Trace-209 IV hosts Arneb Trace-209 IV Station 85.",
   "spineEdgeType": "DESTABILIZES",
   "spineObjectKind": "body",
   "spineSubjectKind": "phenomenon",

@@ -10,6 +10,7 @@ interface Body {
   climates: string[]
   bio: string
   rad: string
+  stellarActivity: string
 }
 
 const bodies: Body[] = []
@@ -33,6 +34,7 @@ for (let i = 0; i < N; i++) {
       climates: b.detail.climate.map((c) => c.value),
       bio: b.detail.biosphere.value,
       rad: b.detail.radiation.value,
+      stellarActivity: sys.primary.activity.value,
     })
   }
 }
@@ -167,6 +169,96 @@ lifeOnDry.slice(0, 5).forEach((h) => console.log(`  ${h.zone} | ${h.cls} | hydro
 const strippedExotic = bodies.filter((b) => /stripped/i.test(b.cls) && b.hydro === 'Exotic solvent or GU-stabilized fluid chemistry')
 console.log(`\n[CLS-1] Stripped-core class with Exotic solvent hydrosphere: ${strippedExotic.length}`)
 strippedExotic.slice(0, 5).forEach((h) => console.log(`  ${h.zone} | ${h.cls} | hydro=${h.hydro}`))
+
+// =========================================================
+// 9) CLIMATE × HYDROSPHERE / × ATMOSPHERE coherency
+// =========================================================
+// Snowball climate requires a freezable volatile somewhere; only fails if the surface is genuinely arid.
+const snowballDryHydros = new Set(['Bone dry', 'Vaporized volatile traces', 'Magma seas / lava lakes', 'Salt / perchlorate flats', 'Nightside mineral frost', 'No accessible surface volatiles'])
+const snowballNoIce = bodies.filter((b) =>
+  b.climates.includes('Snowball') &&
+  snowballDryHydros.has(b.hydro) &&
+  !['gas-giant', 'ice-giant', 'sub-neptune', 'belt'].includes(b.cat),
+)
+console.log(`\n[CLI-3] Snowball climate on a genuinely dry body: ${snowballNoIce.length}`)
+snowballNoIce.slice(0, 5).forEach((h) => console.log(`  ${h.zone} | ${h.cls} | climate=${h.climates} | hydro=${h.hydro}`))
+
+// Runaway greenhouse climate but no greenhouse atmosphere
+const runawayNoGreenhouse = bodies.filter((b) =>
+  b.climates.includes('Runaway greenhouse') &&
+  !['Steam atmosphere', 'Dense greenhouse', 'Dense CO2/N2', 'Sulfur/chlorine/ammonia haze', 'Chiral-active or GU-distorted atmosphere', 'Moderate toxic atmosphere', 'Rock-vapor atmosphere', 'Metal vapor atmosphere', 'Chiral-active atmosphere', 'Hydrogen/helium envelope'].includes(b.atm),
+)
+console.log(`\n[CLI-4] Runaway greenhouse climate without greenhouse atmosphere: ${runawayNoGreenhouse.length}`)
+runawayNoGreenhouse.slice(0, 5).forEach((h) => console.log(`  ${h.zone} | ${h.cls} | climate=${h.climates} | atm=${h.atm}`))
+
+// Hot desert climate with open ocean — these are mutually exclusive surface conditions
+const hotDesertOcean = bodies.filter((b) =>
+  b.climates.includes('Hot desert') &&
+  ['Global ocean', 'Ocean-continent balance', 'High-pressure deep ocean'].includes(b.hydro),
+)
+console.log(`\n[CLI-5] Hot desert climate with open ocean: ${hotDesertOcean.length}`)
+hotDesertOcean.slice(0, 5).forEach((h) => console.log(`  ${h.zone} | ${h.cls} | climate=${h.climates} | hydro=${h.hydro}`))
+
+// Hypercanes (super storms) require dense atmosphere
+const hypercanesNoAtm = bodies.filter((b) =>
+  b.climates.includes('Hypercanes') &&
+  ['None / hard vacuum', 'Trace exosphere', 'None / dispersed volatiles', 'No ordinary atmosphere'].includes(b.atm),
+)
+console.log(`\n[CLI-6] Hypercanes climate without dense atmosphere: ${hypercanesNoAtm.length}`)
+hypercanesNoAtm.slice(0, 5).forEach((h) => console.log(`  ${h.zone} | ${h.cls} | climate=${h.climates} | atm=${h.atm}`))
+
+// =========================================================
+// 10) GEOLOGY × HYDROSPHERE
+// =========================================================
+const cryovolcanismDry = bodies.filter((b) =>
+  b.geo === 'Cryovolcanism' &&
+  ['Bone dry', 'Hydrated minerals only', 'Vaporized volatile traces', 'Magma seas / lava lakes', 'Salt / perchlorate flats'].includes(b.hydro),
+)
+console.log(`\n[GEO-4] Cryovolcanism on a body with no cold volatiles: ${cryovolcanismDry.length}`)
+cryovolcanismDry.slice(0, 5).forEach((h) => console.log(`  ${h.zone} | ${h.cls} | geo=${h.geo} | hydro=${h.hydro}`))
+
+const magmaCold = bodies.filter((b) =>
+  b.hydro === 'Magma seas / lava lakes' &&
+  ['Dead interior', 'Static lid', 'Ancient cratered crust', 'Low volcanism'].includes(b.geo),
+)
+console.log(`\n[GEO-5] Magma seas hydrosphere on geologically dead body: ${magmaCold.length}`)
+magmaCold.slice(0, 5).forEach((h) => console.log(`  ${h.zone} | ${h.cls} | geo=${h.geo} | hydro=${h.hydro}`))
+
+// =========================================================
+// 11) RADIATION × STELLAR ACTIVITY
+// =========================================================
+// Flare-lethal surface should only happen near genuinely flaring stars.
+const highActivityStars = new Set(['Active', 'Flare-prone', 'Violent flare cycle', 'Extreme activity / metric-amplified events'])
+// Exclude GU-flavored anomalies and black-lab facilities — those classes earn lethal radiation
+// from metric/engineered sources, not stellar flares.
+const lethalFlareLowActivity = bodies.filter((b) =>
+  (b.rad === 'Flare-lethal surface' || b.rad === 'Only deep shielded habitats survive') &&
+  !highActivityStars.has(b.stellarActivity) &&
+  !/gu|chiral|observerse|bleed|black-lab|anomaly|facility|gardener|brown[- ]dwarf|industry|platform|terraforming|settlement zone|exile|smuggler/i.test(b.cls),
+)
+console.log(`\n[RAD-1] Lethal-flare/deep-shielded radiation under non-flaring star: ${lethalFlareLowActivity.length}`)
+lethalFlareLowActivity.slice(0, 5).forEach((h) => console.log(`  ${h.zone} | ${h.cls} | rad=${h.rad} | star=${h.stellarActivity}`))
+
+// Benign radiation on a body close to an active star with no atmosphere
+const benignNakedActive = bodies.filter((b) =>
+  b.rad === 'Benign' &&
+  /active|extreme/i.test(b.stellarActivity) &&
+  ['None / hard vacuum', 'Trace exosphere'].includes(b.atm) &&
+  (b.zone === 'Hot' || b.zone === 'Furnace' || b.zone === 'Inferno'),
+)
+console.log(`\n[RAD-2] Benign radiation on naked, hot, active-star body: ${benignNakedActive.length}`)
+benignNakedActive.slice(0, 5).forEach((h) => console.log(`  ${h.zone} | ${h.cls} | rad=${h.rad} | star=${h.stellarActivity} | atm=${h.atm}`))
+
+// =========================================================
+// 12) BIOSPHERE × RADIATION × ATMOSPHERE
+// =========================================================
+const lifeUnderLethalFlare = bodies.filter((b) =>
+  ['Microbial life', 'Extremophile microbial ecology', 'Simple macroscopic non-sapient life'].includes(b.bio) &&
+  (b.rad === 'Flare-lethal surface' || b.rad === 'Only deep shielded habitats survive') &&
+  ['None / hard vacuum', 'Trace exosphere'].includes(b.atm),
+)
+console.log(`\n[BIO-4] Surface life under flare-lethal radiation with no atmosphere shielding: ${lifeUnderLethalFlare.length}`)
+lifeUnderLethalFlare.slice(0, 5).forEach((h) => console.log(`  ${h.zone} | ${h.cls} | bio=${h.bio} | rad=${h.rad} | atm=${h.atm}`))
 
 // =========================================================
 // 8) FREQUENCY DISTRIBUTIONS (sanity)

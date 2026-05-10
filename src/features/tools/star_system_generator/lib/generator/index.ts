@@ -1349,13 +1349,19 @@ function generateClimate(rng: SeededRng, category: BodyCategory, thermalZone: st
 
 function generateRadiation(rng: SeededRng, category: BodyCategory, thermalZone: string, primary: Star): string {
   const isEnvelopeWorld = category === 'sub-neptune' || category === 'gas-giant' || category === 'ice-giant'
+  const isFlaring = isHighActivityStar(primary)
+  const isActiveOrFlaring = isFlaring || primary.activity.value === 'Active'
   let roll = d8(rng)
   if (isEnvelopeWorld) roll += 2
-  if (isHighActivityStar(primary)) roll += primary.activity.value === 'Extreme activity / metric-amplified events' ? 3 : 2
+  if (isFlaring) roll += primary.activity.value === 'Extreme activity / metric-amplified events' ? 3 : 2
   if (thermalZone === 'Furnace' || thermalZone === 'Inferno') roll += 2
   if (thermalZone === 'Hot') roll += 1
 
-  return pickTable(rng, clampTableRoll(roll, 8), radiationTable)
+  // Cap by stellar activity: only flaring stars produce flare-lethal radiation;
+  // only active-or-flaring stars produce electronics-disruptive metric mixes.
+  const ceiling = isFlaring ? 8 : isActiveOrFlaring ? 7 : 5
+
+  return pickTable(rng, clampTableRoll(roll, ceiling), radiationTable)
 }
 
 function generateBiosphere(rng: SeededRng, category: BodyCategory, thermalZone: string, detail: Omit<PlanetaryDetail, 'biosphere'>, primary: Star): string {
@@ -1461,7 +1467,7 @@ function generateDetail(
       'inferred',
       'MASS-GU 14 radiation d8 table with source modifiers'
     ),
-  }, environmentPolicy)
+  }, environmentPolicy, thermalZone)
 
   const biosphereValue = environmentPolicy.biosphere.forced ?? generateBiosphere(rng, category, thermalZone, detailWithoutBiosphere, primary)
   const livingBiospheres = new Set(['Microbial life', 'Extremophile microbial ecology', 'Simple macroscopic non-sapient life'])

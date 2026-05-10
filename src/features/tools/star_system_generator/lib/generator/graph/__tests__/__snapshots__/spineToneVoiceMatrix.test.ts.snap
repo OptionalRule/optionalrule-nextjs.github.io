@@ -2,7 +2,7 @@
 
 exports[`spine tone × edge type voice matrix > tone=astronomy: spine prose reads in tone voice 1`] = `
 {
-  "body0": "The amplitude of the captured rogue world exceeds the operating envelope of Tau Reticuli Cohort. The amplitude of the refugee ark parking orbit exceeds the operating envelope of Custos Echo-58 Belt VI. The captured rogue world introduces a measurable perturbation in Custos Echo-58 Belt IV. Custos Echo-58 Belt VI Charter is the only major foothold on Custos Echo-58 Belt VI.",
+  "body0": "The amplitude of the captured rogue world exceeds the operating envelope of Tau Reticuli Cohort. The amplitude of the refugee ark parking orbit exceeds the operating envelope of Custos Echo-58 Belt VI. The captured rogue world introduces a measurable perturbation in Custos Echo-58 Belt IV. Custos Echo-58 Belt IV Charter is the only major foothold on Custos Echo-58 Belt IV.",
   "spineEdgeType": "DESTABILIZES",
   "spineSummary": "Captured rogue world took shape in the third pulse cycle, the perturbation from the captured rogue world now exceeds Tau Reticuli Cohort's tolerance margin.",
 }

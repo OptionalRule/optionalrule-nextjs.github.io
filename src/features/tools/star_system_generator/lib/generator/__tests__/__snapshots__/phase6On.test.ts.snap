@@ -24,12 +24,14 @@ exports[`Phase 6 graph-aware prose surfaces (all flags on) > seed phase6-on-2 pr
     "Vent geysers force ships into a shifting safe-corridor that closes without warning. No one has settled which plume holds clean volatiles, hidden organics, or mislabeled contamination. A GU survey hold stalls extraction while rival crews falsify plume data. A drill crew in tethered suits watches a plume curl over their station floodlights.",
   ],
   "settlementTagHooks": [
-    "Plague/Biosafety Fear is what visitors notice first; missing records and altered recollections decide the dispute. A detected Sol or Gardener warning sign keeps orbital station politics under stress. Privately, the flare forecast was softened to keep traffic moving. Control of the weapons test range decides who has leverage.",
-    "The public tag is Gate Shadow; the private trouble is Ghost City, Human, because the haunting is human history, not the supernatural. Coordination drift across the swarm makes single-room briefing cell the choke point everyone fights over. Privately, the medical stockpile was traded for route access. Whoever runs the exposure clinic sets the terms here.",
+    "Migrant Swarm is what visitors notice first; whoever controls the records controls legal truth, casualty counts, and property claims. Coordination drift across the swarm makes single-bay clinic the choke point everyone fights over. Privately, the founders committed a crime. Control of the exposure clinic decides who has leverage.",
+    "Hydrocarbon Frontier is what visitors notice first; safe windows are forecasts, markets, and political weapons at the same time. Coordination drift across the swarm makes bleed-harvest control room the choke point everyone fights over. Privately, the site is a weapons lab. Everything here turns on access to Phase-stable superconductive lattice.",
+    "The public tag is Gate Shadow; the private trouble is Ghost City, Human, because the haunting is human history, not the supernatural. A staged crisis keeps deep-space platform politics under stress. Privately, the medical stockpile was traded for route access. Whoever runs the exposure clinic sets the terms here.",
   ],
   "settlementWhyHere": [
-    "There is enough material here that Noquisi Transit-948 Belt IV orbital space pays for itself before midyear.",
-    "Noquisi Transit-948 traffic pattern is built into this orbital and works the surface from there. There is enough of value under Noquisi Transit-948 traffic pattern to justify both the danger and the secrecy.",
+    "Noquisi Transit-948 traffic pattern took root on Noquisi Transit-948 VII and has not moved since. Noquisi Transit-948 traffic pattern stays because the yield outweighs everything that wants it gone.",
+    "Noquisi Transit-948 Belt IV is anchored to Noquisi Transit-948 Belt IV, with Phase-stable superconductive lattice keeping it viable. There is enough of value under Noquisi Transit-948 Belt IV to justify both the danger and the secrecy.",
+    "Noquisi Transit-948 V route geometry grew here because the body underneath asks less of its people than most.",
   ],
 }
 `;

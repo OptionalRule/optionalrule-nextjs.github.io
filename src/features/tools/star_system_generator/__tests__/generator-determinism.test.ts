@@ -1305,6 +1305,68 @@ describe('generateSystem', () => {
     expect(sawAnnotation, 'expected to encounter a Bone-dry living biosphere within 240 seeded systems').toBe(true)
   })
 
+  it('caps radiation by stellar activity', () => {
+    const lethal = new Set(['Flare-lethal surface', 'Only deep shielded habitats survive'])
+    const flaringActivities = new Set(['Active', 'Flare-prone', 'Violent flare cycle', 'Extreme activity / metric-amplified events'])
+    let audited = 0
+    for (let index = 0; index < 200; index++) {
+      const system = generateSystem({
+        ...options,
+        seed: `rad-cap-${index.toString(16).padStart(4, '0')}`,
+      })
+      const activity = system.primary.activity.value
+      if (flaringActivities.has(activity)) continue
+      for (const body of system.bodies) {
+        if (/gu|chiral|observerse|bleed|black-lab|anomaly|facility|gardener|brown[- ]dwarf|industry|platform|terraforming|settlement zone|exile|smuggler/i.test(body.bodyClass.value)) continue
+        audited++
+        expect(lethal.has(body.detail.radiation.value), `${body.bodyClass.value} under ${activity} star got ${body.detail.radiation.value}`).toBe(false)
+      }
+    }
+    expect(audited).toBeGreaterThan(50)
+  })
+
+  it('keeps climate tags coherent with atmosphere and hydrosphere', () => {
+    const dryHydros = new Set(['Bone dry', 'Vaporized volatile traces', 'Magma seas / lava lakes', 'Salt / perchlorate flats', 'Nightside mineral frost', 'No accessible surface volatiles'])
+    const openOcean = new Set(['Global ocean', 'Ocean-continent balance', 'Local seas', 'High-pressure deep ocean', 'Hydrocarbon lakes/seas'])
+    const vacuumAtms = new Set(['None / hard vacuum', 'Trace exosphere', 'None / dispersed volatiles', 'No ordinary atmosphere'])
+    const greenhouseAtms = new Set(['Steam atmosphere', 'Dense greenhouse', 'Dense CO2/N2', 'Sulfur/chlorine/ammonia haze', 'Moderate toxic atmosphere', 'Chiral-active or GU-distorted atmosphere'])
+    for (let index = 0; index < 200; index++) {
+      const system = generateSystem({
+        ...options,
+        seed: `clim-coh-${index.toString(16).padStart(4, '0')}`,
+      })
+      for (const body of system.bodies) {
+        for (const climate of body.detail.climate) {
+          const c = climate.value
+          if (c === 'Snowball') expect(dryHydros.has(body.detail.hydrosphere.value), `${body.bodyClass.value} Snowball + ${body.detail.hydrosphere.value}`).toBe(false)
+          if (c === 'Hot desert' || c === 'Cold desert') expect(openOcean.has(body.detail.hydrosphere.value), `${body.bodyClass.value} ${c} + ${body.detail.hydrosphere.value}`).toBe(false)
+          if (c === 'Runaway greenhouse' || c === 'Moist greenhouse edge') expect(greenhouseAtms.has(body.detail.atmosphere.value), `${body.bodyClass.value} ${c} atm=${body.detail.atmosphere.value}`).toBe(true)
+          if (c === 'Hypercanes' || c === 'Permanent storm tracks' || c === 'Global monsoon') expect(vacuumAtms.has(body.detail.atmosphere.value), `${body.bodyClass.value} ${c} atm=${body.detail.atmosphere.value}`).toBe(false)
+          if (c === 'Twilight ocean' || c === 'Dense lowland pressure seas') expect(openOcean.has(body.detail.hydrosphere.value), `${body.bodyClass.value} ${c} hydro=${body.detail.hydrosphere.value}`).toBe(true)
+        }
+      }
+    }
+  })
+
+  it('keeps geology coherent with magma seas and cryovolcanism', () => {
+    const deadGeologies = new Set(['Dead interior', 'Static lid', 'Ancient cratered crust', 'Low volcanism'])
+    const cryoCompatibleHydros = new Set(['Subsurface ice', 'Polar caps / buried glaciers', 'Ice-shell subsurface ocean', 'Cryogenic nitrogen reservoirs', 'Cryovolcanic vents', 'Hydrocarbon lakes/seas', 'Global ocean', 'Ocean-continent balance'])
+    for (let index = 0; index < 200; index++) {
+      const system = generateSystem({
+        ...options,
+        seed: `geo-coh-${index.toString(16).padStart(4, '0')}`,
+      })
+      for (const body of system.bodies) {
+        if (body.detail.hydrosphere.value === 'Magma seas / lava lakes') {
+          expect(deadGeologies.has(body.detail.geology.value), `${body.bodyClass.value} magma+${body.detail.geology.value}`).toBe(false)
+        }
+        if (body.detail.geology.value === 'Cryovolcanism') {
+          expect(cryoCompatibleHydros.has(body.detail.hydrosphere.value), `${body.bodyClass.value} cryo+${body.detail.hydrosphere.value}`).toBe(true)
+        }
+      }
+    }
+  })
+
   it('exports a Gates section in markdown when gates are present', async () => {
     const { exportSystemMarkdown } = await import('../lib/export/markdown')
     let withGate: ReturnType<typeof generateSystem> | undefined
