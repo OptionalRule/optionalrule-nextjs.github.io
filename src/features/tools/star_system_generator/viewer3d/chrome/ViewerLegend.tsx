@@ -1,6 +1,7 @@
 'use client'
 
 import { ScaleModeControl } from './ScaleModeControl'
+import { REGISTER_COLORS, STATUS_HUMAN } from '../scene/overlay/statusPalette'
 
 interface LegendChipSpec {
   color: string
@@ -8,12 +9,14 @@ interface LegendChipSpec {
 }
 
 const CHIPS: LegendChipSpec[] = [
-  { color: 'bg-[var(--accent)]',          label: 'solid rings: body orbits' },
-  { color: 'bg-sky-300/60',               label: 'blue band: habitable zone' },
-  { color: 'bg-[var(--accent-mystical)]', label: 'GU bleed' },
-  { color: 'bg-[#ff5773]',                label: 'hazard zone' },
-  { color: 'bg-[var(--accent-warm)]',     label: 'settlement' },
-  { color: 'bg-slate-400',                label: 'human remnant' },
+  { color: 'var(--accent)',           label: 'solid rings: body orbits' },
+  { color: 'rgb(125 211 252 / 0.6)',  label: 'blue band: habitable zone' },
+  { color: STATUS_HUMAN.active.color, label: 'settlement' },
+  { color: REGISTER_COLORS.gate,      label: 'gate' },
+  { color: REGISTER_COLORS.ruin,      label: 'ruin' },
+  { color: REGISTER_COLORS.phenomenon, label: 'phenomenon' },
+  { color: REGISTER_COLORS.hazard,    label: 'hazard' },
+  { color: REGISTER_COLORS.gu,        label: 'GU bleed' },
 ]
 
 export interface ViewerLegendProps {
@@ -27,7 +30,11 @@ export function ViewerLegend({ scaleNote, onFrame }: ViewerLegendProps) {
       <ul className="flex flex-wrap items-center gap-3" aria-label="Legend">
         {CHIPS.map((chip) => (
           <li key={chip.label} className="inline-flex items-center gap-1.5">
-            <span className={`inline-block h-1.5 w-1.5 rounded-full ${chip.color}`} aria-hidden="true" />
+            <span
+              className="inline-block h-1.5 w-1.5 rounded-full"
+              style={{ background: chip.color }}
+              aria-hidden="true"
+            />
             <span>{chip.label}</span>
           </li>
         ))}
