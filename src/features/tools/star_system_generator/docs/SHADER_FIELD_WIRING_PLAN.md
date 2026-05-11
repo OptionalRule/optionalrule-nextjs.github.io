@@ -1,6 +1,6 @@
 # Shader Field Wiring Plan
 
-**Status:** Phase 1 in progress (open questions resolved 2026-05-11)
+**Status:** All 5 phases complete (2026-05-11)
 **Scope:** Surface this session's 24-field `PlanetaryDetail` data into the 3D viewer's shader pipeline. Currently the body shader only consumes the original 6 fields (atmosphere/hydrosphere/geology/climate/radiation/biosphere) plus body class names. The 18 new fields are invisible to the renderer.
 
 ---

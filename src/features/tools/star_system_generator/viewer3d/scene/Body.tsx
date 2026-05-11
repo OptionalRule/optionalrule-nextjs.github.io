@@ -73,6 +73,7 @@ export function Body({ body }: BodyProps) {
       mat.uniforms.uVegetationColor.value.set(u.vegetationColor)
       mat.uniforms.uVegetationLatitudeBias.value = u.vegetationLatitudeBias
       mat.uniforms.uIceCapAsymmetry.value = u.iceCapAsymmetry
+      mat.uniforms.uDarkSectorStrength.value = body.surface?.darkSectorStrength ?? 0
     }
     return mat
   }, [body, orbitingBody])

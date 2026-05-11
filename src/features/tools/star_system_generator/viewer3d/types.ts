@@ -67,6 +67,8 @@ export interface BodySurfaceVisual {
   auroraMode: number
   auroraPulse: number
   auroraAxisOffset: number
+  darkSectorStrength: number
+  refractionHaloBoost: number
 }
 
 export interface MoonSurfaceVisual {

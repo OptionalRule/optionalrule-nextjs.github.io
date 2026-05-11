@@ -80,17 +80,18 @@ void main() {
 `
 
 export function AtmosphereShell({ body }: { body: BodyVisual }) {
+  const haloBoost = body.surface.refractionHaloBoost
   const effectiveStrength = body.surface.atmospherePressureMultiplier >= 0
     ? Math.max(body.surface.atmosphereStrength, body.surface.atmospherePressureMultiplier)
     : body.surface.atmosphereStrength
   const material = useMemo(() => new THREE.MeshBasicMaterial({
     color: body.surface.atmosphereColor,
     transparent: true,
-    opacity: Math.min(0.4, effectiveStrength * 0.32),
+    opacity: Math.min(0.55, effectiveStrength * 0.32 * haloBoost),
     depthWrite: false,
     side: THREE.BackSide,
     toneMapped: false,
-  }), [body.surface.atmosphereColor, effectiveStrength])
+  }), [body.surface.atmosphereColor, effectiveStrength, haloBoost])
 
   useEffect(() => () => material.dispose(), [material])
 
@@ -100,7 +101,7 @@ export function AtmosphereShell({ body }: { body: BodyVisual }) {
     <mesh
       geometry={bodySphereGeometry}
       material={material}
-      scale={body.visualSize * body.surface.atmosphereThickness}
+      scale={body.visualSize * body.surface.atmosphereThickness * (haloBoost > 1.0 ? 1.05 : 1.0)}
       dispose={null}
     />
   )

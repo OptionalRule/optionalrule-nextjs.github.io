@@ -46,6 +46,7 @@ uniform float uVegetationMask;
 uniform vec3 uVegetationColor;
 uniform float uVegetationLatitudeBias;
 uniform float uIceCapAsymmetry;
+uniform float uDarkSectorStrength;
 
 varying vec3 vNormal;
 varying vec3 vPos;
@@ -168,6 +169,12 @@ void main() {
   vec3 hazardTinted = base * uHazardTint;
   base = mix(base, hazardTinted, uHazardBlend);
 
+  if (uDarkSectorStrength > 0.001) {
+    float darkNoise = fbm(p * 2.3 + vec3(13.0, 4.0, 21.0));
+    float darkMask = smoothstep(0.55, 0.85, darkNoise) * uDarkSectorStrength;
+    base = mix(base, base * 0.25, darkMask);
+  }
+
   base = mix(base, vec3(1.0, 0.55, 0.3), uHeatTint * 0.4);
 
   vec3 lightDir = normalize(vec3(0.6, 0.4, 0.5));
@@ -237,6 +244,7 @@ export function makeBodyMaterial(body: BodyVisual): THREE.ShaderMaterial {
       uVegetationColor: { value: new THREE.Color('#4f7b44') },
       uVegetationLatitudeBias: { value: 0 },
       uIceCapAsymmetry: { value: 0 },
+      uDarkSectorStrength: { value: 0 },
     },
   })
 }

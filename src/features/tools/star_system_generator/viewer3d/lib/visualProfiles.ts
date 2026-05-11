@@ -117,6 +117,7 @@ export function buildBodySurfaceProfile(
   const cloudRotationMult = cloudRotationMultiplierFor(body)
   const pressureMult = atmospherePressureMultiplierFor(body)
   const aurora = auroraFor(body, seed)
+  const skyEffects = skyPhenomenaEffects(body, aurora.intensity)
   return {
     profileVersion: 1,
     family,
@@ -137,11 +138,13 @@ export function buildBodySurfaceProfile(
     cloudBandStrength: cloudBand,
     cloudRotationMultiplier: cloudRotationMult,
     atmospherePressureMultiplier: pressureMult,
-    auroraIntensity: aurora.intensity,
+    auroraIntensity: skyEffects.auroraIntensity,
     auroraColor: aurora.color,
     auroraMode: aurora.mode,
     auroraPulse: aurora.pulse,
     auroraAxisOffset: aurora.axisOffset,
+    darkSectorStrength: skyEffects.darkSectorStrength,
+    refractionHaloBoost: skyEffects.refractionHaloBoost,
   }
 }
 
@@ -250,6 +253,34 @@ function auroraFor(body: OrbitingBody, seed: string): AuroraProfile {
   const base = AURORA_MAP[body.detail.magneticField.value] ?? { intensity: 0, color: '#ffffff', mode: 0, pulse: 0 }
   const axisOffset = (hashToUnit(`${seed}#${body.id}#aurora-tilt`) - 0.5) * 0.6
   return { ...base, axisOffset }
+}
+
+interface SkyEffects {
+  darkSectorStrength: number
+  refractionHaloBoost: number
+  auroraIntensity: number
+}
+
+function skyPhenomenaEffects(body: OrbitingBody, baseAuroraIntensity: number): SkyEffects {
+  const value = body.detail.skyPhenomena.value
+  let darkSectorStrength = 0
+  let refractionHaloBoost = 1.0
+  let auroraIntensity = baseAuroraIntensity
+  switch (value) {
+    case 'Dark-sector visible nullzones':
+      darkSectorStrength = 0.55
+      break
+    case 'Atmospheric refraction halos':
+      refractionHaloBoost = 1.6
+      break
+    case 'Aurora ribbons':
+      auroraIntensity = Math.max(baseAuroraIntensity, 0.25)
+      break
+    case 'Charged-particle sky glow':
+      auroraIntensity = Math.max(baseAuroraIntensity, 0.30)
+      break
+  }
+  return { darkSectorStrength, refractionHaloBoost, auroraIntensity }
 }
 
 function moonFamily(moon: Moon): SurfaceFamily {
