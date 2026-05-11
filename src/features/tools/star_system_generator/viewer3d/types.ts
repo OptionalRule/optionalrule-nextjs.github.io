@@ -62,6 +62,11 @@ export interface BodySurfaceVisual {
   cloudBandStrength: number
   cloudRotationMultiplier: number
   atmospherePressureMultiplier: number
+  auroraIntensity: number
+  auroraColor: string
+  auroraMode: number
+  auroraPulse: number
+  auroraAxisOffset: number
 }
 
 export interface MoonSurfaceVisual {

@@ -13,6 +13,7 @@ import { Moon } from './Moon'
 import { BodySettlements } from './BodySettlements'
 import { bodySphereGeometry, invisibleHitMaterial } from './renderAssets'
 import { AtmosphereShell, CloudShell } from './BodyShells'
+import { AuroraShell } from './AuroraShell'
 import { MoonOrbit } from './MoonOrbit'
 
 export interface BodyProps {
@@ -157,6 +158,7 @@ export function Body({ body }: BodyProps) {
               <>
                 <AtmosphereShell body={body} />
                 <CloudShell body={body} />
+                <AuroraShell body={body} />
               </>
             ) : null}
             {body.rings ? <Ring ring={body.rings} /> : null}

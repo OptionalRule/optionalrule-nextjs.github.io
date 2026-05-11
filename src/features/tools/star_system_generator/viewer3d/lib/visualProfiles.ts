@@ -116,6 +116,7 @@ export function buildBodySurfaceProfile(
   const cloudBand = cloudBandMultiplierFor(body)
   const cloudRotationMult = cloudRotationMultiplierFor(body)
   const pressureMult = atmospherePressureMultiplierFor(body)
+  const aurora = auroraFor(body, seed)
   return {
     profileVersion: 1,
     family,
@@ -136,6 +137,11 @@ export function buildBodySurfaceProfile(
     cloudBandStrength: cloudBand,
     cloudRotationMultiplier: cloudRotationMult,
     atmospherePressureMultiplier: pressureMult,
+    auroraIntensity: aurora.intensity,
+    auroraColor: aurora.color,
+    auroraMode: aurora.mode,
+    auroraPulse: aurora.pulse,
+    auroraAxisOffset: aurora.axisOffset,
   }
 }
 
@@ -217,6 +223,33 @@ function atmospherePressureMultiplierFor(body: OrbitingBody): number {
   const value = body.detail.atmosphericPressure.value
   if (!value || !(value in PRESSURE_MAP)) return -1
   return PRESSURE_MAP[value]
+}
+
+interface AuroraProfile {
+  intensity: number
+  color: string
+  mode: number
+  pulse: number
+  axisOffset: number
+}
+
+const AURORA_MAP: Record<string, Omit<AuroraProfile, 'axisOffset'>> = {
+  'No field (naked)': { intensity: 0, color: '#ffffff', mode: 0, pulse: 0 },
+  'Weak crustal remnant': { intensity: 0, color: '#ffffff', mode: 0, pulse: 0 },
+  'Earth-like dipole': { intensity: 0.15, color: '#9bcb6f', mode: 0, pulse: 0 },
+  'Strong dipole shield': { intensity: 0.35, color: '#6ad17a', mode: 0, pulse: 0 },
+  'Pulsing / flickering': { intensity: 0.30, color: '#8cd4a8', mode: 0, pulse: 1 },
+  'Multipolar chaos': { intensity: 0.30, color: '#b8c8e0', mode: 1, pulse: 0 },
+  'Twin-pole shifting': { intensity: 0.30, color: '#7ee0a6', mode: 4, pulse: 0 },
+  'Crustal magnetic stripes': { intensity: 0.20, color: '#9cb8d4', mode: 2, pulse: 0 },
+  'Aurora-belt dominated': { intensity: 0.50, color: '#5ce39a', mode: 0, pulse: 0 },
+  'GU monopole anomaly': { intensity: 0.60, color: '#b18cff', mode: 3, pulse: 0 },
+}
+
+function auroraFor(body: OrbitingBody, seed: string): AuroraProfile {
+  const base = AURORA_MAP[body.detail.magneticField.value] ?? { intensity: 0, color: '#ffffff', mode: 0, pulse: 0 }
+  const axisOffset = (hashToUnit(`${seed}#${body.id}#aurora-tilt`) - 0.5) * 0.6
+  return { ...base, axisOffset }
 }
 
 function moonFamily(moon: Moon): SurfaceFamily {
