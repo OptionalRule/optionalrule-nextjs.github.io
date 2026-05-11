@@ -142,6 +142,8 @@ export interface PlanetaryDetail {
   surfaceHazards: Fact<string>
   dayLength: Fact<string>
   surfaceLight: Fact<string>
+  axialTilt: Fact<string>
+  skyPhenomena: Fact<string>
 }
 
 export interface Moon {

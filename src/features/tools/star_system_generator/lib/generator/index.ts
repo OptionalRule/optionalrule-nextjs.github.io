@@ -57,6 +57,7 @@ import {
   activityLabels,
   atmosphereTable,
   atmosphericTracesTable,
+  axialTiltTable,
   biospheres,
   climateSourceTable,
   coldClimateTags,
@@ -76,6 +77,7 @@ import {
   mineralCompositionTable,
   rotationProfileTable,
   seismicActivityTable,
+  skyPhenomenaTable,
   surfaceHazardsTable,
   surfaceLightTable,
   topographyTable,
@@ -1462,6 +1464,46 @@ function generateBiosphere(rng: SeededRng, category: BodyCategory, thermalZone: 
   return pickOne(rng, biospheres.filter((value) => value !== 'Sterile' && value !== 'Prebiotic chemistry'))
 }
 
+function generateAxialTilt(rng: SeededRng, category: BodyCategory, bodyClass: WorldClassOption, rotationProfile: string): string {
+  if (category === 'belt') return 'Precessing axis (long-cycle wobble)'
+  // Tidally locked bodies have effectively no axial tilt (one face fixed)
+  if (rotationProfile === 'Tidally locked (one face)') return 'Vertical / locked tilt (no seasons)'
+  // Chaotic / wobbling rotation implies precessing
+  if (rotationProfile === 'Wobbling rotation' || rotationProfile === 'Chaotic rotation') return 'Precessing axis (long-cycle wobble)'
+  if (rotationProfile === 'Retrograde rotation') return 'Retrograde tilt'
+
+  let roll = rng.int(1, 7)
+  // Bias terrestrial bodies toward Earth-like mild tilt
+  if (category === 'sub-neptune' || category === 'gas-giant' || category === 'ice-giant') {
+    if (rng.chance(0.4)) roll = pickOne(rng, [3, 4, 5])  // gas giants commonly have varied tilt (e.g. Uranus)
+  } else if (rng.chance(0.45)) {
+    roll = 3  // mild Earth-like
+  }
+  return pickTable(rng, clampTableRoll(roll, 7), axialTiltTable)
+}
+
+function generateSkyPhenomena(rng: SeededRng, category: BodyCategory, bodyClass: WorldClassOption, magneticField: string, primary: Star): string {
+  // Aurora-belt magnetic field → Aurora ribbons sky
+  if (magneticField === 'Aurora-belt dominated') return 'Aurora ribbons'
+  if (magneticField === 'GU monopole anomaly') return 'Charged-particle sky glow'
+
+  // Dark-sector classes show null zones
+  if (/dark-sector|gardener-shadowed/i.test(bodyClass.className)) return 'Dark-sector visible nullzones'
+
+  // Furnace/Inferno near star → corona view
+  if (primary.activity.value === 'Extreme activity / metric-amplified events' && rng.chance(0.3)) return 'Persistent stellar plume / corona view'
+
+  // Belts have belt arcs
+  if (category === 'belt') return 'Belt-glittering arc'
+
+  let roll = rng.int(1, 14)
+  // Bias terrestrial/super-earth toward modest sky variations
+  if (category === 'rocky-planet' || category === 'super-earth') {
+    if (rng.chance(0.35)) roll = pickOne(rng, [1, 2, 4, 6, 7])  // clear / moons / aurora / meteor / refraction
+  }
+  return pickTable(rng, clampTableRoll(roll, 14), skyPhenomenaTable)
+}
+
 function generateDayLength(rng: SeededRng, category: BodyCategory, thermalZone: string, bodyClass: WorldClassOption, rotationProfile: string): string {
   // Drive from rotation profile (already computed)
   if (rotationProfile === 'Tidally locked (one face)') return 'No day-night cycle (tidally locked)'
@@ -1819,6 +1861,16 @@ function generateDetail(
         'gu-layer',
         'MASS-GU anomaly surface-light constraint'
       ),
+      axialTilt: fact(
+        isFacilityLike ? 'Vertical / locked tilt (no seasons)' : 'Precessing axis (long-cycle wobble)',
+        'gu-layer',
+        'MASS-GU anomaly axial-tilt constraint'
+      ),
+      skyPhenomena: fact(
+        isFacilityLike ? 'Clear stellar sky' : 'Dark-sector visible nullzones',
+        'gu-layer',
+        'MASS-GU anomaly sky-phenomena constraint'
+      ),
     }
 
     return {
@@ -1857,16 +1909,13 @@ function generateDetail(
       'inferred',
       'MASS-GU 14 radiation d8 table with source modifiers'
     ),
-    ...((): Pick<PlanetaryDetail, 'mineralComposition' | 'magneticField' | 'atmosphericTraces' | 'hydrology' | 'topography' | 'rotationProfile' | 'seismicActivity' | 'surfaceHazards' | 'dayLength' | 'surfaceLight'> => {
+    ...((): Pick<PlanetaryDetail, 'mineralComposition' | 'magneticField' | 'atmosphericTraces' | 'hydrology' | 'topography' | 'rotationProfile' | 'seismicActivity' | 'surfaceHazards' | 'dayLength' | 'surfaceLight' | 'axialTilt' | 'skyPhenomena'> => {
       const mineralValue = generateMineralComposition(rng.fork('mineral-composition'), category, thermalZone, bodyClass, geology)
       const rotationValue = generateRotationProfile(rng.fork('rotation'), category, thermalZone, bodyClass)
+      const magneticValue = generateMagneticField(rng.fork('magnetic-field'), category, thermalZone, bodyClass, geology, physical)
       return {
         mineralComposition: fact(mineralValue, 'inferred', 'Generated lithology — biased by thermal zone, geology, and class chemistry'),
-        magneticField: fact(
-          generateMagneticField(rng.fork('magnetic-field'), category, thermalZone, bodyClass, geology, physical),
-          'inferred',
-          'Generated magnetic field profile — biased by mass, geology, and category',
-        ),
+        magneticField: fact(magneticValue, 'inferred', 'Generated magnetic field profile — biased by mass, geology, and category'),
         atmosphericTraces: fact(
           generateAtmosphericTraces(rng.fork('atmospheric-traces'), category, atmosphere, bodyClass),
           'inferred',
@@ -1902,6 +1951,16 @@ function generateDetail(
           generateSurfaceLight(rng.fork('surface-light'), category, thermalZone, bodyClass, atmosphere, rotationValue),
           'inferred',
           'Generated surface light level — biased by thermal zone, atmosphere opacity, and rotation',
+        ),
+        axialTilt: fact(
+          generateAxialTilt(rng.fork('axial-tilt'), category, bodyClass, rotationValue),
+          'inferred',
+          'Generated axial tilt regime — derived from rotation profile and category',
+        ),
+        skyPhenomena: fact(
+          generateSkyPhenomena(rng.fork('sky-phenomena'), category, bodyClass, magneticValue, primary),
+          'inferred',
+          'Generated visible sky phenomena — biased by magnetic field, class flavor, and stellar activity',
         ),
       }
     })(),
@@ -1940,6 +1999,8 @@ function mergeKnownDetail(generated: PlanetaryDetail, known?: PartialKnownBody['
     surfaceHazards: mergeLockedFact(generated.surfaceHazards, known?.surfaceHazards),
     dayLength: mergeLockedFact(generated.dayLength, known?.dayLength),
     surfaceLight: mergeLockedFact(generated.surfaceLight, known?.surfaceLight),
+    axialTilt: mergeLockedFact(generated.axialTilt, known?.axialTilt),
+    skyPhenomena: mergeLockedFact(generated.skyPhenomena, known?.skyPhenomena),
   }
 }
 
