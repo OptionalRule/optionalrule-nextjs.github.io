@@ -317,12 +317,21 @@ const climateOpenOcean = new Set(['Global ocean', 'Ocean-continent balance', 'Lo
 const climateVacuumAtms = new Set(['None / hard vacuum', 'Trace exosphere', 'None / dispersed volatiles', 'No ordinary atmosphere'])
 const climateGreenhouseAtms = new Set(['Steam atmosphere', 'Dense greenhouse', 'Dense CO2/N2', 'Sulfur/chlorine/ammonia haze', 'Moderate toxic atmosphere', 'Chiral-active or GU-distorted atmosphere'])
 
+const sulfurChlorineAtms = new Set([
+  'Sulfur/chlorine/ammonia haze',
+  'Dense greenhouse',
+  'Steam atmosphere',
+  'Chiral-active or GU-distorted atmosphere',
+])
+
 function climateCompatible(climate: string, hydro: string, atm: string): boolean {
   if (climate === 'Snowball' && climateDryHydros.has(hydro)) return false
   if ((climate === 'Hot desert' || climate === 'Cold desert') && climateOpenOcean.has(hydro)) return false
   if ((climate === 'Runaway greenhouse' || climate === 'Moist greenhouse edge') && !climateGreenhouseAtms.has(atm)) return false
   if ((climate === 'Hypercanes' || climate === 'Permanent storm tracks' || climate === 'Global monsoon') && climateVacuumAtms.has(atm)) return false
   if ((climate === 'Twilight ocean' || climate === 'Dense lowland pressure seas') && !climateOpenOcean.has(hydro)) return false
+  // Acidic precipitation needs sulfur/chlorine compounds in the atmosphere to fall as acid rain.
+  if (climate === 'Acidic precipitation' && !sulfurChlorineAtms.has(atm)) return false
   return true
 }
 

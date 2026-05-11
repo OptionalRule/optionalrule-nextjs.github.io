@@ -46,7 +46,9 @@
     { "min": 9, "max": 9, "value": "Steam atmosphere" },
     { "min": 10, "max": 10, "value": "Sulfur/chlorine/ammonia haze" },
     { "min": 11, "max": 11, "value": "Hydrogen/helium envelope" },
-    { "min": 12, "max": 12, "value": "Chiral-active or GU-distorted atmosphere" }
+    { "min": 12, "max": 12, "value": "Chiral-active or GU-distorted atmosphere" },
+    { "min": 13, "max": 13, "value": "Oxygen-rich pre-industrial atmosphere" },
+    { "min": 14, "max": 14, "value": "Aerosol veil" }
   ],
   "hydrosphereTable": [
     { "min": 1, "max": 1, "value": "Bone dry" },
@@ -60,7 +62,9 @@
     { "min": 9, "max": 9, "value": "High-pressure deep ocean" },
     { "min": 10, "max": 10, "value": "Ice-shell subsurface ocean" },
     { "min": 11, "max": 11, "value": "Hydrocarbon lakes/seas" },
-    { "min": 12, "max": 12, "value": "Exotic solvent or GU-stabilized fluid chemistry" }
+    { "min": 12, "max": 12, "value": "Exotic solvent or GU-stabilized fluid chemistry" },
+    { "min": 13, "max": 13, "value": "Ammonia-water antifreeze ocean" },
+    { "min": 14, "max": 14, "value": "Cryo-geyser fields" }
   ],
   "geologyTable": [
     { "min": 1, "max": 1, "value": "Dead interior" },
@@ -74,7 +78,9 @@
     { "min": 9, "max": 9, "value": "Tidal heating" },
     { "min": 10, "max": 10, "value": "Extreme plume provinces" },
     { "min": 11, "max": 11, "value": "Global resurfacing" },
-    { "min": 12, "max": 12, "value": "Programmable-matter geological behavior" }
+    { "min": 12, "max": 12, "value": "Programmable-matter geological behavior" },
+    { "min": 13, "max": 13, "value": "Karst / dissolution terrain" },
+    { "min": 14, "max": 14, "value": "Magnetic dynamo flicker" }
   ],
   "climateSourceTable": [
     { "min": 1, "max": 1, "value": "Runaway greenhouse" },
@@ -96,7 +102,8 @@
     { "min": 17, "max": 17, "value": "Chiral cloud chemistry" },
     { "min": 18, "max": 18, "value": "Dark-sector gravity tides" },
     { "min": 19, "max": 19, "value": "Artificial climate lattice" },
-    { "min": 20, "max": 20, "value": "Recently failed terraforming climate" }
+    { "min": 20, "max": 20, "value": "Recently failed terraforming climate" },
+    { "min": 21, "max": 21, "value": "Acidic precipitation" }
   ],
   "radiationTable": [
     { "min": 1, "max": 1, "value": "Benign" },
@@ -106,7 +113,8 @@
     { "min": 5, "max": 5, "value": "Severe radiation belts" },
     { "min": 6, "max": 6, "value": "Flare-lethal surface" },
     { "min": 7, "max": 7, "value": "Electronics-disruptive metric/radiation mix" },
-    { "min": 8, "max": 8, "value": "Only deep shielded habitats survive" }
+    { "min": 8, "max": 8, "value": "Only deep shielded habitats survive" },
+    { "min": 9, "max": 9, "value": "Cyclical / seasonal radiation" }
   ],
   "ringTypeTable": [
     { "min": 1, "max": 4, "value": "None or faint" },
@@ -122,8 +130,8 @@
   "extremeHotAtmospheres": ["None / hard vacuum", "Trace exosphere", "Rock-vapor atmosphere", "Metal vapor atmosphere", "Chiral-active atmosphere"],
   "extremeHotVolatiles": ["Bone dry", "Hydrated minerals only", "Vaporized volatile traces", "Nightside mineral frost", "Magma seas / lava lakes"],
   "envelopeGeologies": ["Deep atmospheric circulation", "Metallic hydrogen interior", "Layered volatile mantle", "Magnetosphere-driven weather"],
-  "extremeHotClimateTags": ["Runaway greenhouse", "Hot desert", "Dayside glass fields", "Nightside mineral frost", "Hypercanes", "Chiral cloud chemistry"],
-  "hotClimateTags": ["Runaway greenhouse", "Moist greenhouse edge", "Hot desert", "Permanent storm tracks", "Hypercanes", "Aerosol winter"],
+  "extremeHotClimateTags": ["Runaway greenhouse", "Hot desert", "Dayside glass fields", "Nightside mineral frost", "Hypercanes", "Chiral cloud chemistry", "Acidic precipitation"],
+  "hotClimateTags": ["Runaway greenhouse", "Moist greenhouse edge", "Hot desert", "Permanent storm tracks", "Hypercanes", "Aerosol winter", "Acidic precipitation"],
   "temperateClimateTags": ["Cold desert", "Hot desert", "Eyeball world", "Terminator belt", "Permanent storm tracks", "Global monsoon", "Twilight ocean", "Recently failed terraforming climate"],
   "coldClimateTags": ["Snowball", "Cold desert", "Aerosol winter", "Methane cycle", "CO2 glacier cycle", "Dark-sector gravity tides"],
   "extremeHotEnvelopeClimateTags": ["Permanent storm tracks", "Hypercanes", "Chiral cloud chemistry", "Dark-sector gravity tides"],
@@ -131,7 +139,7 @@
   "temperateEnvelopeClimateTags": ["Permanent storm tracks", "Methane cycle", "Chiral cloud chemistry", "Dark-sector gravity tides"],
   "coldEnvelopeClimateTags": ["Permanent storm tracks", "Methane cycle", "Chiral cloud chemistry", "Dark-sector gravity tides"],
   "envelopeClimateTags": ["Permanent storm tracks", "Methane cycle", "Chiral cloud chemistry", "Dark-sector gravity tides"],
-  "biospheres": ["Sterile", "Prebiotic chemistry", "Ambiguous biosignatures", "Microbial life", "Extremophile microbial ecology", "Simple macroscopic non-sapient life"],
+  "biospheres": ["Sterile", "Prebiotic chemistry", "Ambiguous biosignatures", "Microbial life", "Extremophile microbial ecology", "Simple macroscopic non-sapient life", "Engineered remnant biosphere", "Photosynthetic microbial mats"],
   "moonTypes": ["Airless rock", "Cratered ice-rock", "Captured asteroid", "Captured dwarf", "Subsurface ocean moon", "Thick ice-shell moon", "Cryovolcanic moon", "Volcanic tidal moon", "Dense-atmosphere moon", "Hydrocarbon moon", "Habitable-zone moon", "Radiation-scorched inner moon", "Ring-shepherd moon", "Chiral ice moon", "Dark-sector density moon", "Programmable regolith moon", "Former settlement moon", "Active mining moon", "Quarantine moon", "Moving bleed node moon"],
   "moonScales": ["minor captured moonlet", "small major moon", "mid-sized icy moon", "large differentiated moon", "planet-scale major moon"],
   "bodySites": {

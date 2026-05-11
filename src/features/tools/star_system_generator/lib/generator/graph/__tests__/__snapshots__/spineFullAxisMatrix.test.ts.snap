@@ -90,18 +90,18 @@ exports[`spine full axis matrix (16 representative cells) > corner-realistic-ast
 
 exports[`spine full axis matrix (16 representative cells) > density-crowded: stable spine + body[0] structural fields 1`] = `
 {
-  "body0": "The pirate ambush zone drifts the baselines Yuyu's Field VIII - Moon IX Base relies on. The debt-fleet anchor graveyard drifts the baselines Yuyu's Field II relies on. Yuyu's Field VIII records a phase shift each time the debt-fleet anchor graveyard passes through. Yuyu's Field II carries Yuyu's Field II Platform on its surface.",
+  "body0": "The debt-fleet anchor graveyard drifts the baselines Yuyu's Field II relies on. The debt-fleet anchor graveyard drifts the baselines Yuyu's Field VIII relies on. Yuyu's Field II records a phase shift each time the Gardener warning beacon passes through.",
   "spineEdgeType": "DESTABILIZES",
-  "spineObjectKind": "settlement",
-  "spineSubjectKind": "guHazard",
-  "spineSummary": "Pirate ambush zone took shape in the Bonn-Tycho census, the pirate ambush zone is drifting the baselines on which Yuyu's Field VIII - Moon IX Base was sited.",
+  "spineObjectKind": "body",
+  "spineSubjectKind": "phenomenon",
+  "spineSummary": "The debt-fleet anchor graveyard is drifting the baselines on which Yuyu's Field II was sited.",
   "spineVisibility": "public",
 }
 `;
 
 exports[`spine full axis matrix (16 representative cells) > density-hub: stable spine + body[0] structural fields 1`] = `
 {
-  "body0": "Intan's Crown Belt IX records a phase shift each time the moving bleed-node river passes through. Intan's Crown IV records a phase shift each time the moving bleed-node river passes through. The moving bleed-node river introduces a measurable perturbation in Intan's Crown II. Intan's Crown IV Station is the only major foothold on Intan's Crown IV.",
+  "body0": "Intan's Crown Belt IX records a phase shift each time the moving bleed-node river passes through. Intan's Crown V records a phase shift each time the refugee ark parking orbit passes through. The moving bleed-node river introduces a measurable perturbation in Intan's Crown II. Intan's Crown Belt IX Station is the only major foothold on Intan's Crown Belt IX.",
   "spineEdgeType": "DESTABILIZES",
   "spineObjectKind": "body",
   "spineSubjectKind": "phenomenon",

@@ -1255,8 +1255,10 @@ function rollGeology(rng: SeededRng, category: BodyCategory, thermalZone: string
   if (bodyClass.className.includes('Programmable') || bodyClass.className.includes('GU')) roll += 2
   // Super-Earth mass retains internal heat, biasing away from Dead interior / Ancient cratered crust.
   if (category === 'super-earth' || /high-gravity|super-earth|super-terrestrial/i.test(bodyClass.className)) roll += 2
+  // Water-rich and karst-eligible classes get an occasional +1 to reach Karst / Magnetic dynamo flicker (13-14).
+  if (/karst|aquifer|carbonate|ocean|biosphere/i.test(bodyClass.className)) roll += 1
 
-  return pickTable(rng, clampTableRoll(roll, 12), geologyTable)
+  return pickTable(rng, clampTableRoll(roll, 14), geologyTable)
 }
 
 function classAtmosphereFlavor(className: string): string | undefined {
@@ -1275,7 +1277,7 @@ function rollAtmosphere(
 ): string {
   if (category === 'belt') return 'None / dispersed volatiles'
   if (category === 'sub-neptune' || category === 'gas-giant' || category === 'ice-giant') {
-    return pickTable(rng, clampTableRoll(d12(rng) + 3, 12), atmosphereTable)
+    return pickTable(rng, clampTableRoll(d12(rng) + 3, 14), atmosphereTable)
   }
   if (extremeHotThermalZones.has(thermalZone)) return pickOne(rng, extremeHotAtmospheres)
   const flavored = classAtmosphereFlavor(bodyClass.className)
@@ -1289,8 +1291,12 @@ function rollAtmosphere(
   if (isHighActivityStar(primary)) roll -= primary.activity.value === 'Extreme activity / metric-amplified events' ? 3 : 2
   if (geology === 'Active volcanism' || geology === 'Extreme plume provinces' || geology === 'Global resurfacing') roll += 1
   if (isArtificialOrTerraformed(bodyClass)) roll += 1
+  // Native biosphere / terraforming / Earth-like classes can roll Oxygen-rich pre-industrial (13).
+  if (/biosphere|terraforming|earth-like|earth-sized terrestrial/i.test(bodyClass.className)) roll += 2
+  // Cold cryo-haze classes can roll Aerosol veil (14).
+  if ((thermalZone === 'Cold' || thermalZone === 'Cryogenic' || thermalZone === 'Dark') && /methane|nitrogen|titan|cryo|frost|haze/i.test(bodyClass.className)) roll += 3
 
-  return pickTable(rng, clampTableRoll(roll, 12), atmosphereTable)
+  return pickTable(rng, clampTableRoll(roll, 14), atmosphereTable)
 }
 
 function classHydrosphereFlavor(className: string): string | undefined {
@@ -1317,8 +1323,10 @@ function rollHydrosphere(rng: SeededRng, category: BodyCategory, thermalZone: st
   if (bodyClass.className.includes('Ocean') || bodyClass.className.includes('Waterworld') || bodyClass.className.includes('Hycean')) roll += 3
   if (bodyClass.className.includes('Dry') || bodyClass.className.includes('desert') || bodyClass.className.includes('Airless')) roll -= 3
   if (bodyClass.className.includes('Hydrogen') || bodyClass.className.includes('Exotic')) roll += 1
+  // Cold ammonia / cryo-active classes can reach Ammonia-water antifreeze ocean (13) and Cryo-geyser fields (14).
+  if ((thermalZone === 'Cold' || thermalZone === 'Cryogenic' || thermalZone === 'Dark') && /ammonia|cryo|buried-ocean|ice-shell/i.test(bodyClass.className)) roll += 3
 
-  return pickTable(rng, clampTableRoll(roll, 12), hydrosphereTable)
+  return pickTable(rng, clampTableRoll(roll, 14), hydrosphereTable)
 }
 
 function generateClimate(rng: SeededRng, category: BodyCategory, thermalZone: string, count: number) {
@@ -1351,6 +1359,11 @@ function generateRadiation(rng: SeededRng, category: BodyCategory, thermalZone: 
   const isEnvelopeWorld = category === 'sub-neptune' || category === 'gas-giant' || category === 'ice-giant'
   const isFlaring = isHighActivityStar(primary)
   const isActiveOrFlaring = isFlaring || primary.activity.value === 'Active'
+  // M-dwarf systems and other variable stars commonly produce cyclical radiation patterns —
+  // periodic flare/quiescence cycles rather than continuous danger.
+  const isMDwarfFlaring = primary.spectralType.value.includes('M dwarf') && isFlaring
+  if (isMDwarfFlaring && rng.chance(0.35)) return 'Cyclical / seasonal radiation'
+
   let roll = d8(rng)
   if (isEnvelopeWorld) roll += 2
   if (isFlaring) roll += primary.activity.value === 'Extreme activity / metric-amplified events' ? 3 : 2
@@ -1364,7 +1377,7 @@ function generateRadiation(rng: SeededRng, category: BodyCategory, thermalZone: 
   return pickTable(rng, clampTableRoll(roll, ceiling), radiationTable)
 }
 
-function generateBiosphere(rng: SeededRng, category: BodyCategory, thermalZone: string, detail: Omit<PlanetaryDetail, 'biosphere'>, primary: Star): string {
+function generateBiosphere(rng: SeededRng, category: BodyCategory, thermalZone: string, detail: Omit<PlanetaryDetail, 'biosphere'>, primary: Star, bodyClass?: WorldClassOption): string {
   if (!supportsComplexSurfaceEnvironment(category)) return 'Sterile'
   if (thermalZone === 'Furnace' || thermalZone === 'Inferno') return 'Sterile'
   if (detail.atmosphere.value === 'None / hard vacuum' || detail.atmosphere.value === 'Trace exosphere') return 'Sterile'
@@ -1382,12 +1395,20 @@ function generateBiosphere(rng: SeededRng, category: BodyCategory, thermalZone: 
   if (thermalZone === 'Cryogenic' || thermalZone === 'Dark') score -= 2
   if (detail.climate.some((tag) => tag.value === 'Recently failed terraforming climate')) score -= 2
 
+  // Engineered remnant biosphere: terraforming-derived microbial life on failed/in-progress terraform sites.
+  const isTerraformClass = bodyClass ? /terraforming|failed-terraform|relict garden/i.test(bodyClass.className) : false
+  if (isTerraformClass && score >= 6 && score <= 9) return 'Engineered remnant biosphere'
+
+  // Free-oxygen atmosphere strongly suggests photosynthetic life: upgrade microbial-tier hits to mats.
+  const hasOxygenAtm = detail.atmosphere.value === 'Oxygen-rich pre-industrial atmosphere'
+  if (hasOxygenAtm && score >= 7) return 'Photosynthetic microbial mats'
+
   if (score <= 5) return 'Sterile'
   if (score === 6) return 'Prebiotic chemistry'
   if (score === 7) return 'Ambiguous biosignatures'
   if (score === 8) return 'Microbial life'
   if (score === 9) return 'Extremophile microbial ecology'
-  if (score === 10) return 'Mats or planktonic biosphere'
+  if (score === 10) return 'Photosynthetic microbial mats'
   return pickOne(rng, biospheres.filter((value) => value !== 'Sterile' && value !== 'Prebiotic chemistry'))
 }
 
@@ -1469,7 +1490,7 @@ function generateDetail(
     ),
   }, environmentPolicy, thermalZone)
 
-  const biosphereValue = environmentPolicy.biosphere.forced ?? generateBiosphere(rng, category, thermalZone, detailWithoutBiosphere, primary)
+  const biosphereValue = environmentPolicy.biosphere.forced ?? generateBiosphere(rng, category, thermalZone, detailWithoutBiosphere, primary, bodyClass)
   const livingBiospheres = new Set(['Microbial life', 'Extremophile microbial ecology', 'Simple macroscopic non-sapient life'])
   const surfaceDryButLiving = livingBiospheres.has(biosphereValue) && detailWithoutBiosphere.hydrosphere.value === 'Bone dry'
   const biosphereSource = environmentPolicy.biosphere.forced
@@ -1871,7 +1892,7 @@ function generatedBody(
     ? {
         ...mergedDetail,
         biosphere: fact(
-          generateBiosphere(rng.fork(`locked-detail-biosphere-${index + 1}`), filtered.bodyClass.category, thermalZone, mergedDetail, primary),
+          generateBiosphere(rng.fork(`locked-detail-biosphere-${index + 1}`), filtered.bodyClass.category, thermalZone, mergedDetail, primary, filtered.bodyClass),
           'inferred',
           'MASS-GU biosphere score recomputed after locked environmental facts'
         ),

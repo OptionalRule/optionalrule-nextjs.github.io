@@ -16,6 +16,7 @@ export const airlessAllowedHydrospheres = new Set([
   'Polar caps / buried glaciers',
   'Cryogenic nitrogen reservoirs',
   'Cryovolcanic vents',
+  'Cryo-geyser fields',
   'No accessible surface volatiles',
   'Not applicable: metric or route phenomenon',
 ])
@@ -64,6 +65,8 @@ export const solidSurfaceAtmospheres = new Set([
   'Chiral-active atmosphere',
   'Controlled habitat envelopes',
   'No ordinary atmosphere',
+  'Oxygen-rich pre-industrial atmosphere',
+  'Aerosol veil',
 ])
 
 // Atmospheres that need heat (steam vapor pressure, chemistry mobilization).
@@ -79,6 +82,7 @@ export const coldTerrestrialAtmospheres = new Set([
   'Chiral-active or GU-distorted atmosphere',
   'Controlled habitat envelopes',
   'No ordinary atmosphere',
+  'Aerosol veil',
 ])
 
 export const greenhouseAtmospheres = new Set([
@@ -143,6 +147,8 @@ export const coldTerrestrialHydrospheres = new Set([
   'Hydrocarbon lakes/seas',
   'Cryogenic nitrogen reservoirs',
   'Cryovolcanic vents',
+  'Ammonia-water antifreeze ocean',
+  'Cryo-geyser fields',
   'Exotic solvent or GU-stabilized fluid chemistry',
 ])
 
@@ -155,6 +161,8 @@ export const waterOceanHydrospheres = new Set([
   'Ice-shell subsurface ocean',
   'Subsurface ice',
   'Polar caps / buried glaciers',
+  'Ammonia-water antifreeze ocean',
+  'Cryo-geyser fields',
   'Exotic solvent or GU-stabilized fluid chemistry',
   'Vaporized volatile traces',
 ])
@@ -228,6 +236,8 @@ export const hotSilicateGeologies = new Set([
   'Tidal heating',
   'Extreme plume provinces',
   'Global resurfacing',
+  'Karst / dissolution terrain',
+  'Magnetic dynamo flicker',
 ])
 
 // Cold/icy-body geologies. Silicate volcanism only via tidal heating on a special class.
@@ -235,6 +245,8 @@ export const coldIcyGeologies = new Set([
   ...universalGeologies,
   'Cryovolcanism',
   'Tidal heating',
+  'Karst / dissolution terrain',
+  'Magnetic dynamo flicker',
 ])
 
 // Tidally-heated cold bodies (Io-analogues, near gas giants) can still drive silicate volcanism.
