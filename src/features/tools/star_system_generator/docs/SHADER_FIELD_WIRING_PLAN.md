@@ -1,7 +1,20 @@
 # Shader Field Wiring Plan
 
 **Status:** All 5 phases complete (2026-05-11)
-**Scope:** Surface this session's 24-field `PlanetaryDetail` data into the 3D viewer's shader pipeline. Currently the body shader only consumes the original 6 fields (atmosphere/hydrosphere/geology/climate/radiation/biosphere) plus body class names. The 18 new fields are invisible to the renderer.
+**Scope (at kickoff):** Surface the 24-field `PlanetaryDetail` data into the 3D viewer's shader pipeline. At kickoff the body shader only consumed the original 6 fields (atmosphere/hydrosphere/geology/climate/radiation/biosphere) plus body class names; the 18 deeper-layer fields were invisible to the renderer.
+
+## Outcomes
+
+| Phase | Commit | Fields wired | Pattern |
+|---|---|---|---|
+| 1 | `10aa89c` | mineralComposition, topography, surfaceHazards | A — 8 body uniforms + chiral fresnel shimmer |
+| 2 | `652543b` | atmosphericTraces, windRegime, atmosphericPressure, rotationProfile, dayLength | A — CloudShell tint/band, AtmosphereShell opacity |
+| 3 | `d2917d5` | surfaceLight, biosphereDistribution, axialTilt | A — 5 body uniforms (ambient, vegetation, ice asymmetry) |
+| 4 | `626e014` | magneticField | B — new `AuroraShell.tsx` mesh, 5 mode variants, fresnel × night |
+| 5 | `c01bfb0` | skyPhenomena | A+C — dark-sector body uniform, atmosphere halo boost, aurora floor |
+| Follow-up | `a8ee4aa` | All 18 fields surfaced in sidebar + camera dolly | "Deeper Survey" SubBlock in `BodyDetailPanel.tsx`, real close-up camera |
+
+**12 of 18 fields** wired to visible shader effects. **6 stay text-only** in the sidebar (acousticEnvironment, resourceAccess, seismicActivity, hydrology, tidalRegime, spectroscopic atmosphericTraces subset) — as planned in the Skip section below.
 
 ---
 
@@ -111,7 +124,7 @@ Most fields fit Pattern A (more uniforms). Magnetic field and sky phenomena warr
 
 ## Phased implementation
 
-### Phase 1 — Surface palette + features
+### Phase 1 — Surface palette + features ✓ shipped (`10aa89c`)
 **Fields:** mineralComposition, topography, surfaceHazards
 **Pattern:** A — ~10 new uniforms on body shader
 
@@ -151,7 +164,7 @@ Most fields fit Pattern A (more uniforms). Magnetic field and sky phenomena warr
 
 ---
 
-### Phase 2 — Atmosphere/cloud chemistry
+### Phase 2 — Atmosphere/cloud chemistry ✓ shipped (`652543b`)
 **Fields:** atmosphericTraces, windRegime, atmosphericPressure, rotationProfile + dayLength
 **Pattern:** A — CloudShell + AtmosphereShell uniforms
 
@@ -186,7 +199,7 @@ Most fields fit Pattern A (more uniforms). Magnetic field and sky phenomena warr
 
 ---
 
-### Phase 3 — Lighting + biosphere + axial tilt
+### Phase 3 — Lighting + biosphere + axial tilt ✓ shipped (`d2917d5`)
 **Fields:** surfaceLight, biosphereDistribution, axialTilt
 **Pattern:** A — body shader
 
@@ -223,7 +236,7 @@ Most fields fit Pattern A (more uniforms). Magnetic field and sky phenomena warr
 
 ---
 
-### Phase 4 — Aurora shell
+### Phase 4 — Aurora shell ✓ shipped (`626e014`)
 **Field:** magneticField
 **Pattern:** B — new mesh layer
 
@@ -264,7 +277,7 @@ All intensities are pre-modulation. Final shader: `intensity * fresnel * (0.4 + 
 
 ---
 
-### Phase 5 — Scene-level sky phenomena
+### Phase 5 — Scene-level sky phenomena ✓ shipped (`c01bfb0`)
 **Field:** skyPhenomena
 **Pattern:** C — Scene.tsx and accessory meshes
 
