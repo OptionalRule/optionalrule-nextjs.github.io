@@ -14,7 +14,7 @@ uniform float uIntensity;
 varying float vDist;
 void main() {
   float falloff = pow(clamp(1.0 - vDist, 0.0, 1.0), 2.0);
-  gl_FragColor = vec4(uColor, falloff * 0.32 * uIntensity);
+  gl_FragColor = vec4(uColor, falloff * 0.45 * uIntensity);
 }
 `
 
@@ -26,7 +26,7 @@ varying float vDist;
 void main() {
   float falloff = pow(clamp(1.0 - vDist, 0.0, 1.0), 2.0);
   float pulse = 0.85 + 0.15 * uPulse;
-  gl_FragColor = vec4(uColor, falloff * 0.30 * uIntensity * pulse);
+  gl_FragColor = vec4(uColor, falloff * 0.42 * uIntensity * pulse);
 }
 `
 
