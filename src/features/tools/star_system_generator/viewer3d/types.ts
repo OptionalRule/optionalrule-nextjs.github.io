@@ -57,6 +57,11 @@ export interface BodySurfaceVisual {
   cityLightColor: string
   surfaceSeed: number
   cloudSeed: number
+  cloudTraceTint: string
+  cloudTraceBlend: number
+  cloudBandStrength: number
+  cloudRotationMultiplier: number
+  atmospherePressureMultiplier: number
 }
 
 export interface MoonSurfaceVisual {

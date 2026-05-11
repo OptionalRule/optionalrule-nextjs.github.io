@@ -112,6 +112,10 @@ export function buildBodySurfaceProfile(
   const atmo = atmosphereStrength(text, body.physical.volatileEnvelope.value)
   const clouds = cloudStrength(text, family, body.physical.volatileEnvelope.value)
   const surfaceSeed = hashToUnit(`${seed}#${body.id}#surface-profile/v1`) * 31.7
+  const cloudTrace = cloudTraceFor(body)
+  const cloudBand = cloudBandMultiplierFor(body)
+  const cloudRotationMult = cloudRotationMultiplierFor(body)
+  const pressureMult = atmospherePressureMultiplierFor(body)
   return {
     profileVersion: 1,
     family,
@@ -127,7 +131,92 @@ export function buildBodySurfaceProfile(
     cityLightColor: family === 'anomaly' ? '#b891ff' : '#ffb15c',
     surfaceSeed,
     cloudSeed: hashToUnit(`${seed}#${body.id}#cloud-profile/v1`) * 29.3,
+    cloudTraceTint: cloudTrace.tint,
+    cloudTraceBlend: cloudTrace.blend,
+    cloudBandStrength: cloudBand,
+    cloudRotationMultiplier: cloudRotationMult,
+    atmospherePressureMultiplier: pressureMult,
   }
+}
+
+const CLOUD_TRACE_MAP: Record<string, { tint: string; blend: number }> = {
+  'Pure (primary mix only)': { tint: '#ffffff', blend: 0 },
+  'Helium-3 enriched': { tint: '#ffffff', blend: 0 },
+  'Ozone layer present': { tint: '#7ac7e0', blend: 0.15 },
+  'Methane biosignature trace': { tint: '#ffffff', blend: 0 },
+  'Tholin photochemistry': { tint: '#d49a52', blend: 0.45 },
+  'Volcanic SO2 plumes': { tint: '#e2cf68', blend: 0.40 },
+  'Lightning-driven NOx': { tint: '#c2a878', blend: 0.25 },
+  'Cyanide / cyanogen trace': { tint: '#ffffff', blend: 0 },
+  'Halogen mix': { tint: '#a8c879', blend: 0.30 },
+  'Industrial pollutant signatures': { tint: '#7c5a45', blend: 0.40 },
+  'Noble gas excess': { tint: '#ffffff', blend: 0 },
+  'Carbon isotope biosignature': { tint: '#ffffff', blend: 0 },
+}
+
+function cloudTraceFor(body: OrbitingBody): { tint: string; blend: number } {
+  return CLOUD_TRACE_MAP[body.detail.atmosphericTraces.value] ?? { tint: '#ffffff', blend: 0 }
+}
+
+const WIND_BAND_MAP: Record<string, number> = {
+  'Still / calm': 0.6,
+  'Light breeze': 0.8,
+  'Earth-typical winds': 1.0,
+  'Persistent strong winds': 1.2,
+  'Storm-prone with high gusts': 1.4,
+  'Hurricane-class continuous winds': 1.6,
+  'Hypercane / supersonic jet streams': 1.8,
+  'Periodic dust storm season': 1.3,
+  'Stratified zonal jets (banded)': 1.5,
+  'Chiral wind chemistry': 1.3,
+}
+
+function cloudBandMultiplierFor(body: OrbitingBody): number {
+  return WIND_BAND_MAP[body.detail.windRegime.value] ?? 1.0
+}
+
+const DAY_LENGTH_SPEED: Record<string, number> = {
+  'Very short day (under 6 Earth hours)': 3.0,
+  'Short day (6-18 hours)': 1.5,
+  'Earth-like day (~24 hours)': 1.0,
+  'Long day (1-3 Earth days)': 0.3,
+  'Multi-day cycle (3-30 days)': 0.1,
+  'Mercury-style year-length day': 0.02,
+  'No day-night cycle (tidally locked)': 0.0,
+}
+
+const ROTATION_DIRECTION: Record<string, number> = {
+  'Slow rotation (Mercury-style)': 0.2,
+  'Resonant rotation (3:2)': 0.5,
+  'Earth-like 24h cycle': 1.0,
+  'Fast rotation': 1.0,
+  'Retrograde rotation': -1.0,
+  'Precessing axis': 1.0,
+  'Wobbling rotation': 0.9,
+  'Chaotic rotation': 0.6,
+}
+
+function cloudRotationMultiplierFor(body: OrbitingBody): number {
+  const day = DAY_LENGTH_SPEED[body.detail.dayLength.value] ?? 1.0
+  const dir = ROTATION_DIRECTION[body.detail.rotationProfile.value] ?? 1.0
+  return day * dir
+}
+
+const PRESSURE_MAP: Record<string, number> = {
+  'Hard vacuum (<0.001 atm)': 0,
+  'Near-vacuum (~0.01 atm)': 0.05,
+  'Thin (~0.3 atm, pressure-gear required)': 0.18,
+  'Standard (~1 atm)': 0.28,
+  'Dense (~3 atm)': 0.36,
+  'High-pressure (~10 atm)': 0.42,
+  'Crushing (~50 atm)': 0.45,
+  'Supercritical (Venus-extreme, ~90+ atm)': 0.50,
+}
+
+function atmospherePressureMultiplierFor(body: OrbitingBody): number {
+  const value = body.detail.atmosphericPressure.value
+  if (!value || !(value in PRESSURE_MAP)) return -1
+  return PRESSURE_MAP[value]
 }
 
 function moonFamily(moon: Moon): SurfaceFamily {

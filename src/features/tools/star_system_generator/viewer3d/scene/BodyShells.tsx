@@ -22,6 +22,9 @@ uniform vec3 uColor;
 uniform float uStrength;
 uniform float uSeed;
 uniform float uTime;
+uniform vec3 uTraceTint;
+uniform float uTraceBlend;
+uniform float uBandStrength;
 varying vec3 vPos;
 varying vec3 vNormal;
 
@@ -68,25 +71,30 @@ void main() {
   vec3 p = unitPos * 4.2 + vec3(uSeed + uTime * 0.015, uSeed * 0.37, uSeed * 0.61);
   float n = fbm(p);
   float bands = smoothstep(0.2, 0.8, sin(unitPos.y * 14.0 + n * 3.0) * 0.5 + 0.5);
-  float alpha = smoothstep(0.48, 0.78, n + bands * 0.14) * uStrength;
+  float bandContribution = bands * 0.14 * uBandStrength;
+  float alpha = smoothstep(0.48, 0.78, n + bandContribution) * uStrength;
   float rim = pow(1.0 - clamp(dot(vNormal, vec3(0.0, 0.0, 1.0)), 0.0, 1.0), 1.6);
-  gl_FragColor = vec4(uColor, alpha * (0.25 + rim * 0.55));
+  vec3 tinted = mix(uColor, uColor * uTraceTint, uTraceBlend);
+  gl_FragColor = vec4(tinted, alpha * (0.25 + rim * 0.55));
 }
 `
 
 export function AtmosphereShell({ body }: { body: BodyVisual }) {
+  const effectiveStrength = body.surface.atmospherePressureMultiplier >= 0
+    ? Math.max(body.surface.atmosphereStrength, body.surface.atmospherePressureMultiplier)
+    : body.surface.atmosphereStrength
   const material = useMemo(() => new THREE.MeshBasicMaterial({
     color: body.surface.atmosphereColor,
     transparent: true,
-    opacity: Math.min(0.32, body.surface.atmosphereStrength * 0.28),
+    opacity: Math.min(0.4, effectiveStrength * 0.32),
     depthWrite: false,
     side: THREE.BackSide,
     toneMapped: false,
-  }), [body.surface.atmosphereColor, body.surface.atmosphereStrength])
+  }), [body.surface.atmosphereColor, effectiveStrength])
 
   useEffect(() => () => material.dispose(), [material])
 
-  if (body.surface.atmosphereStrength <= 0.04) return null
+  if (effectiveStrength <= 0.04) return null
 
   return (
     <mesh
@@ -110,10 +118,13 @@ export function CloudShell({ body }: { body: BodyVisual }) {
       uStrength: { value: body.surface.cloudStrength },
       uSeed: { value: body.surface.cloudSeed },
       uTime: { value: 0 },
+      uTraceTint: { value: new THREE.Color(body.surface.cloudTraceTint) },
+      uTraceBlend: { value: body.surface.cloudTraceBlend },
+      uBandStrength: { value: body.surface.cloudBandStrength },
     },
     transparent: true,
     depthWrite: false,
-  }), [body.surface.cloudColor, body.surface.cloudSeed, body.surface.cloudStrength])
+  }), [body.surface.cloudColor, body.surface.cloudSeed, body.surface.cloudStrength, body.surface.cloudTraceTint, body.surface.cloudTraceBlend, body.surface.cloudBandStrength])
 
   useEffect(() => {
     matRef.current = material
@@ -126,7 +137,9 @@ export function CloudShell({ body }: { body: BodyVisual }) {
   useFrame((state, delta) => {
     if (!ref.current || !matRef.current) return
     matRef.current.uniforms.uTime.value = state.clock.elapsedTime
-    if (!prefersReducedMotion) ref.current.rotation.y += delta * body.surface.cloudRotationSpeed
+    if (!prefersReducedMotion) {
+      ref.current.rotation.y += delta * body.surface.cloudRotationSpeed * body.surface.cloudRotationMultiplier
+    }
   })
 
   if (body.surface.cloudStrength <= 0.04) return null
