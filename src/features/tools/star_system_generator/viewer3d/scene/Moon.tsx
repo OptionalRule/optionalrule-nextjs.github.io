@@ -7,6 +7,7 @@ import type { MoonVisual } from '../types'
 import { usePrefersReducedMotion } from '../chrome/ViewerContext'
 import { moonSphereGeometry } from './renderAssets'
 import { makeMoonMaterial } from './moonShader'
+import { MoonSettlements } from './MoonSettlements'
 
 export function Moon({ moon }: { moon: MoonVisual }) {
   const groupRef = useRef<THREE.Group | null>(null)
@@ -24,13 +25,15 @@ export function Moon({ moon }: { moon: MoonVisual }) {
 
   return (
     <group ref={groupRef} rotation={[moon.orbitTilt, moon.phase0, 0]}>
-      <mesh
-        geometry={moonSphereGeometry}
-        material={material}
-        position={[moon.parentRelativeOrbit, 0, 0]}
-        scale={moon.visualSize}
-        dispose={null}
-      />
+      <group position={[moon.parentRelativeOrbit, 0, 0]}>
+        <mesh
+          geometry={moonSphereGeometry}
+          material={material}
+          scale={moon.visualSize}
+          dispose={null}
+        />
+        <MoonSettlements moonId={moon.id} moonSize={moon.visualSize} />
+      </group>
     </group>
   )
 }
