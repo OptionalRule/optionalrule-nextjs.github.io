@@ -41,6 +41,11 @@ uniform float uTopographyMode;
 uniform float uTopographyStrength;
 uniform vec3 uShimmerColor;
 uniform float uShimmerStrength;
+uniform float uAmbientLevel;
+uniform float uVegetationMask;
+uniform vec3 uVegetationColor;
+uniform float uVegetationLatitudeBias;
+uniform float uIceCapAsymmetry;
 
 varying vec3 vNormal;
 varying vec3 vPos;
@@ -125,7 +130,23 @@ void main() {
   float waterMask = smoothstep(waterThreshold - 0.16, waterThreshold + 0.16, n + detail * 0.18);
   base = mix(base, uAccentColor, waterMask * uWaterCoverage);
 
-  float polar = pow(abs(unitPos.y), 1.8);
+  if (uVegetationMask > 0.001) {
+    float lat = abs(unitPos.y);
+    float latitudeFactor;
+    if (uVegetationLatitudeBias > 0.0) {
+      latitudeFactor = 1.0 - smoothstep(0.0, 0.85, lat);
+    } else if (uVegetationLatitudeBias < 0.0) {
+      latitudeFactor = smoothstep(0.35, 0.95, lat);
+    } else {
+      latitudeFactor = 1.0;
+    }
+    float vegFinal = max(0.15, latitudeFactor) * uVegetationMask;
+    vegFinal *= smoothstep(0.0, 0.4, 1.0 - waterMask * uWaterCoverage);
+    base = mix(base, uVegetationColor, vegFinal);
+  }
+
+  float hemiScale = unitPos.y > 0.0 ? (1.0 + uIceCapAsymmetry * 0.5) : (1.0 - uIceCapAsymmetry * 0.5);
+  float polar = pow(abs(unitPos.y), 1.8) * hemiScale;
   float iceMask = max(
     smoothstep(max(0.0, 0.98 - uIceCoverage), 1.0, polar + detail * 0.24),
     smoothstep(0.72, 0.94, detail) * uIceCoverage * 0.5
@@ -152,7 +173,7 @@ void main() {
   vec3 lightDir = normalize(vec3(0.6, 0.4, 0.5));
   float relief = (detail - 0.5) * uReliefStrength;
   float light = clamp(dot(normalize(vNormal + unitPos * relief), lightDir), 0.0, 1.0);
-  vec3 lit = base * (0.25 + 0.85 * light);
+  vec3 lit = base * (0.25 + 0.85 * light) * uAmbientLevel;
 
   float night = smoothstep(0.48, 0.08, light);
   float cityNoise = fbm(p * 7.5 + vec3(19.0, 5.0, 13.0));
@@ -211,6 +232,11 @@ export function makeBodyMaterial(body: BodyVisual): THREE.ShaderMaterial {
       uTopographyStrength: { value: 0 },
       uShimmerColor: { value: new THREE.Color('#ffffff') },
       uShimmerStrength: { value: 0 },
+      uAmbientLevel: { value: 1 },
+      uVegetationMask: { value: 0 },
+      uVegetationColor: { value: new THREE.Color('#4f7b44') },
+      uVegetationLatitudeBias: { value: 0 },
+      uIceCapAsymmetry: { value: 0 },
     },
   })
 }

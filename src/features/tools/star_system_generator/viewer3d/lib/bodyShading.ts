@@ -29,6 +29,11 @@ export interface ShaderUniformSet extends BaseShadingSet {
   hazardBlend: number
   shimmerColor: string
   shimmerStrength: number
+  ambientLevel: number
+  vegetationMask: number
+  vegetationColor: string
+  vegetationLatitudeBias: number
+  iceCapAsymmetry: number
 }
 
 const SHADING_BASE: Record<BodyShadingKey, BaseShadingSet> = {
@@ -85,6 +90,9 @@ export function shaderUniforms(body: OrbitingBody): ShaderUniformSet {
   const topography = topographyFor(body)
   const hazard = hazardFor(body)
   const shimmer = shimmerFor(mineral, hazard)
+  const ambient = ambientFor(body)
+  const vegetation = vegetationFor(body)
+  const iceAsym = iceAsymmetryFor(body)
   return {
     ...base,
     ...colorsFor(body, key),
@@ -107,6 +115,11 @@ export function shaderUniforms(body: OrbitingBody): ShaderUniformSet {
     hazardBlend: hazard.blend,
     shimmerColor: shimmer.color,
     shimmerStrength: shimmer.strength,
+    ambientLevel: ambient,
+    vegetationMask: vegetation.mask,
+    vegetationColor: vegetation.color,
+    vegetationLatitudeBias: vegetation.latitudeBias,
+    iceCapAsymmetry: iceAsym,
   }
 }
 
@@ -282,6 +295,59 @@ function shimmerFor(mineral: MineralResult, hazard: HazardResult): { color: stri
   if (mineral.shimmer) return { color: mineral.tint, strength: 0.25 }
   if (hazard.shimmer) return { color: hazard.tint, strength: 0.25 }
   return { color: '#ffffff', strength: 0 }
+}
+
+const SURFACE_LIGHT_MAP: Record<string, number> = {
+  'Glassy dayside glare': 1.2,
+  'Bright daylight (Earth-like)': 1.0,
+  'Dim daylight (cold sun)': 0.6,
+  'Twilight / terminator zone': 0.45,
+  'Polar night': 0.3,
+  'Ring-shadow penumbra': 0.7,
+  'Auroral glow dominant': 0.5,
+  'Dark sector / GU-shadowed': 0.25,
+}
+
+function ambientFor(body: OrbitingBody): number {
+  return SURFACE_LIGHT_MAP[body.detail.surfaceLight.value] ?? 1.0
+}
+
+interface VegetationResult { mask: number; latitudeBias: number; color: string }
+
+const VEGETATION_MAP: Record<string, { mask: number; latitudeBias: number }> = {
+  'Sterile / not applicable': { mask: 0, latitudeBias: 0 },
+  'Surface-wide coverage': { mask: 0.55, latitudeBias: 0 },
+  'Equatorial belt only': { mask: 0.65, latitudeBias: 0.85 },
+  'Polar refugia only': { mask: 0.40, latitudeBias: -0.85 },
+  'Subsurface only': { mask: 0, latitudeBias: 0 },
+  'Wetland-bound around standing water': { mask: 0.50, latitudeBias: 0 },
+  'Coastal margins': { mask: 0.40, latitudeBias: 0 },
+  'Cave / karst-bound': { mask: 0, latitudeBias: 0 },
+  'Sealed pocket biomes': { mask: 0.15, latitudeBias: 0 },
+  'Microclimate-fragmented patches': { mask: 0.45, latitudeBias: 0 },
+}
+
+function vegetationFor(body: OrbitingBody): VegetationResult {
+  const dist = VEGETATION_MAP[body.detail.biosphereDistribution.value] ?? { mask: 0, latitudeBias: 0 }
+  const biosphereText = body.detail.biosphere.value.toLowerCase()
+  let color = '#4f7b44'
+  if (biosphereText.includes('chiral') || biosphereText.includes('chimeric')) color = '#9d7be8'
+  else if (biosphereText.includes('purple') || biosphereText.includes('mat')) color = '#5a7a52'
+  return { ...dist, color }
+}
+
+const AXIAL_TILT_MAP: Record<string, number> = {
+  'Vertical / locked tilt (no seasons)': 0,
+  'Near-zero tilt (negligible seasons)': 0.05,
+  'Mild tilt (Earth-like seasons)': 0.15,
+  'Steep tilt (extreme seasons)': 0.50,
+  'Polar tipping (~90° obliquity)': 0.85,
+  'Retrograde tilt': 0.15,
+  'Precessing axis (long-cycle wobble)': 0.25,
+}
+
+function iceAsymmetryFor(body: OrbitingBody): number {
+  return AXIAL_TILT_MAP[body.detail.axialTilt.value] ?? 0
 }
 
 function baseColorVariant(body: OrbitingBody, key: BodyShadingKey, offset: number): string {

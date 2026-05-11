@@ -67,6 +67,11 @@ export function Body({ body }: BodyProps) {
       mat.uniforms.uTopographyStrength.value = u.topographyStrength
       mat.uniforms.uShimmerColor.value.set(u.shimmerColor)
       mat.uniforms.uShimmerStrength.value = u.shimmerStrength
+      mat.uniforms.uAmbientLevel.value = u.ambientLevel
+      mat.uniforms.uVegetationMask.value = u.vegetationMask
+      mat.uniforms.uVegetationColor.value.set(u.vegetationColor)
+      mat.uniforms.uVegetationLatitudeBias.value = u.vegetationLatitudeBias
+      mat.uniforms.uIceCapAsymmetry.value = u.iceCapAsymmetry
     }
     return mat
   }, [body, orbitingBody])
