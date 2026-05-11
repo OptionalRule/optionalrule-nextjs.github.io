@@ -257,6 +257,28 @@
     { "min": 9, "max": 9, "value": "Constant micro-seismic noise" },
     { "min": 10, "max": 10, "value": "Bleed-induced metric tremors" }
   ],
+  "atmosphericPressureTable": [
+    { "min": 1, "max": 1, "value": "Hard vacuum (<0.001 atm)" },
+    { "min": 2, "max": 2, "value": "Near-vacuum (~0.01 atm)" },
+    { "min": 3, "max": 3, "value": "Thin (~0.3 atm, pressure-gear required)" },
+    { "min": 4, "max": 4, "value": "Standard (~1 atm)" },
+    { "min": 5, "max": 5, "value": "Dense (~3 atm)" },
+    { "min": 6, "max": 6, "value": "High-pressure (~10 atm)" },
+    { "min": 7, "max": 7, "value": "Crushing (~50 atm)" },
+    { "min": 8, "max": 8, "value": "Supercritical (Venus-extreme, ~90+ atm)" }
+  ],
+  "windRegimeTable": [
+    { "min": 1, "max": 1, "value": "Still / calm" },
+    { "min": 2, "max": 2, "value": "Light breeze" },
+    { "min": 3, "max": 3, "value": "Earth-typical winds" },
+    { "min": 4, "max": 4, "value": "Persistent strong winds" },
+    { "min": 5, "max": 5, "value": "Storm-prone with high gusts" },
+    { "min": 6, "max": 6, "value": "Hurricane-class continuous winds" },
+    { "min": 7, "max": 7, "value": "Hypercane / supersonic jet streams" },
+    { "min": 8, "max": 8, "value": "Periodic dust storm season" },
+    { "min": 9, "max": 9, "value": "Stratified zonal jets (banded)" },
+    { "min": 10, "max": 10, "value": "Chiral wind chemistry" }
+  ],
   "axialTiltTable": [
     { "min": 1, "max": 1, "value": "Vertical / locked tilt (no seasons)" },
     { "min": 2, "max": 2, "value": "Near-zero tilt (negligible seasons)" },

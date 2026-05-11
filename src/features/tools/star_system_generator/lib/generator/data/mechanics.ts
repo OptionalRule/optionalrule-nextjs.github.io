@@ -44,6 +44,8 @@ interface MechanicsData {
   surfaceLightTable: Array<TableEntry<string>>
   axialTiltTable: Array<TableEntry<string>>
   skyPhenomenaTable: Array<TableEntry<string>>
+  atmosphericPressureTable: Array<TableEntry<string>>
+  windRegimeTable: Array<TableEntry<string>>
   moonTypes: readonly string[]
   moonScales: readonly string[]
   bodySites: BodySitePools
@@ -97,6 +99,8 @@ export const dayLengthTable = typedMechanicsData.dayLengthTable
 export const surfaceLightTable = typedMechanicsData.surfaceLightTable
 export const axialTiltTable = typedMechanicsData.axialTiltTable
 export const skyPhenomenaTable = typedMechanicsData.skyPhenomenaTable
+export const atmosphericPressureTable = typedMechanicsData.atmosphericPressureTable
+export const windRegimeTable = typedMechanicsData.windRegimeTable
 export const moonTypes = typedMechanicsData.moonTypes
 export const moonScales = typedMechanicsData.moonScales
 export const bodySites = typedMechanicsData.bodySites

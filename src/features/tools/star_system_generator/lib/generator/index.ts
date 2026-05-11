@@ -89,6 +89,7 @@ import {
   type BodySiteGroup,
   temperateClimateTags,
   temperateEnvelopeClimateTags,
+  windRegimeTable,
 } from './data/mechanics'
 import { humanRemnants, phenomena, remnantHooks } from './data/narrative'
 import { generateFactions } from './factions'
@@ -1464,6 +1465,73 @@ function generateBiosphere(rng: SeededRng, category: BodyCategory, thermalZone: 
   return pickOne(rng, biospheres.filter((value) => value !== 'Sterile' && value !== 'Prebiotic chemistry'))
 }
 
+function generateAtmosphericPressure(rng: SeededRng, category: BodyCategory, atm: string): string {
+  if (category === 'belt') return 'Hard vacuum (<0.001 atm)'
+  if (category === 'sub-neptune' || category === 'gas-giant' || category === 'ice-giant') return 'Crushing (~50 atm)'
+
+  // Forced by atmosphere class
+  switch (atm) {
+    case 'None / hard vacuum':
+    case 'None / dispersed volatiles':
+    case 'No ordinary atmosphere':
+      return 'Hard vacuum (<0.001 atm)'
+    case 'Trace exosphere':
+      return 'Near-vacuum (~0.01 atm)'
+    case 'Thin CO2/N2':
+    case 'Thin but usable with pressure gear':
+    case 'Aerosol veil':
+      return 'Thin (~0.3 atm, pressure-gear required)'
+    case 'Moderate inert atmosphere':
+    case 'Moderate toxic atmosphere':
+    case 'Oxygen-rich pre-industrial atmosphere':
+      return 'Standard (~1 atm)'
+    case 'Dense CO2/N2':
+      return 'Dense (~3 atm)'
+    case 'Dense greenhouse':
+    case 'Sulfur/chlorine/ammonia haze':
+    case 'Halocarbon greenhouse':
+    case 'Photochemical smog':
+    case 'Hydrogen sulfide rich':
+      return 'High-pressure (~10 atm)'
+    case 'Steam atmosphere':
+      return rng.chance(0.5) ? 'High-pressure (~10 atm)' : 'Crushing (~50 atm)'
+    case 'Rock-vapor atmosphere':
+    case 'Metal vapor atmosphere':
+    case 'Chiral-active atmosphere':
+      return 'Crushing (~50 atm)'
+    case 'Hydrogen/helium envelope':
+      return 'Supercritical (Venus-extreme, ~90+ atm)'
+    case 'Controlled habitat envelopes':
+      return 'Standard (~1 atm)'
+    default:
+      return 'Standard (~1 atm)'
+  }
+}
+
+function generateWindRegime(rng: SeededRng, category: BodyCategory, atm: string, climates: string[], bodyClass: WorldClassOption): string {
+  if (category === 'belt') return 'Still / calm'
+  if (category === 'sub-neptune' || category === 'gas-giant' || category === 'ice-giant') return 'Stratified zonal jets (banded)'
+
+  if (atm === 'None / hard vacuum' || atm === 'Trace exosphere' || atm === 'None / dispersed volatiles') return 'Still / calm'
+
+  // Climate-driven overrides
+  if (climates.includes('Hypercanes')) return 'Hypercane / supersonic jet streams'
+  if (climates.includes('Permanent storm tracks') || climates.includes('Global monsoon')) return 'Storm-prone with high gusts'
+  if (climates.includes('Runaway greenhouse') || climates.includes('Moist greenhouse edge')) return rng.chance(0.5) ? 'Hurricane-class continuous winds' : 'Stratified zonal jets (banded)'
+  if (climates.includes('Aerosol winter')) return 'Periodic dust storm season'
+  if (climates.includes('Hot desert') || climates.includes('Cold desert')) return rng.chance(0.4) ? 'Periodic dust storm season' : 'Persistent strong winds'
+  if (climates.includes('Chiral cloud chemistry')) return 'Chiral wind chemistry'
+
+  // Atmosphere thickness influences range
+  if (atm === 'Dense greenhouse' || atm === 'Steam atmosphere' || atm === 'Halocarbon greenhouse') return rng.chance(0.5) ? 'Hurricane-class continuous winds' : 'Persistent strong winds'
+  if (atm === 'Thin CO2/N2' || atm === 'Thin but usable with pressure gear') return rng.chance(0.5) ? 'Periodic dust storm season' : 'Light breeze'
+
+  // Class hints
+  if (/eyeball|terminator|tidally locked/i.test(bodyClass.className)) return 'Stratified zonal jets (banded)'
+
+  return pickTable(rng, rng.int(1, 10), windRegimeTable)
+}
+
 function generateAxialTilt(rng: SeededRng, category: BodyCategory, bodyClass: WorldClassOption, rotationProfile: string): string {
   if (category === 'belt') return 'Precessing axis (long-cycle wobble)'
   // Tidally locked bodies have effectively no axial tilt (one face fixed)
@@ -1871,6 +1939,16 @@ function generateDetail(
         'gu-layer',
         'MASS-GU anomaly sky-phenomena constraint'
       ),
+      atmosphericPressure: fact(
+        isFacilityLike ? 'Standard (~1 atm)' : 'Hard vacuum (<0.001 atm)',
+        'gu-layer',
+        'MASS-GU anomaly pressure constraint'
+      ),
+      windRegime: fact(
+        isFacilityLike ? 'Still / calm' : 'Chiral wind chemistry',
+        'gu-layer',
+        'MASS-GU anomaly wind constraint'
+      ),
     }
 
     return {
@@ -1886,6 +1964,7 @@ function generateDetail(
   const geology = rollGeology(rng, category, thermalZone, bodyClass)
   const atmosphere = rollAtmosphere(rng, category, thermalZone, primary, bodyClass, physical, geology)
   const hydrosphere = rollHydrosphere(rng, category, thermalZone, bodyClass)
+  const climateFacts = generateClimate(rng, category, thermalZone, climateCount)
 
   const detailWithoutBiosphere = normalizeDetailForEnvironment({
     atmosphere: fact(
@@ -1903,16 +1982,17 @@ function generateDetail(
       'inferred',
       isBelt || isEnvelopeWorld ? 'MASS-GU 14 geology table with category constraints' : 'MASS-GU 14 geology d12 table with source modifiers'
     ),
-    climate: generateClimate(rng, category, thermalZone, climateCount),
+    climate: climateFacts,
     radiation: fact(
       generateRadiation(rng, category, thermalZone, primary, bodyClass),
       'inferred',
       'MASS-GU 14 radiation d8 table with source modifiers'
     ),
-    ...((): Pick<PlanetaryDetail, 'mineralComposition' | 'magneticField' | 'atmosphericTraces' | 'hydrology' | 'topography' | 'rotationProfile' | 'seismicActivity' | 'surfaceHazards' | 'dayLength' | 'surfaceLight' | 'axialTilt' | 'skyPhenomena'> => {
+    ...((): Pick<PlanetaryDetail, 'mineralComposition' | 'magneticField' | 'atmosphericTraces' | 'hydrology' | 'topography' | 'rotationProfile' | 'seismicActivity' | 'surfaceHazards' | 'dayLength' | 'surfaceLight' | 'axialTilt' | 'skyPhenomena' | 'atmosphericPressure' | 'windRegime'> => {
       const mineralValue = generateMineralComposition(rng.fork('mineral-composition'), category, thermalZone, bodyClass, geology)
       const rotationValue = generateRotationProfile(rng.fork('rotation'), category, thermalZone, bodyClass)
       const magneticValue = generateMagneticField(rng.fork('magnetic-field'), category, thermalZone, bodyClass, geology, physical)
+      const climateValues = climateFacts.map((c) => c.value)
       return {
         mineralComposition: fact(mineralValue, 'inferred', 'Generated lithology — biased by thermal zone, geology, and class chemistry'),
         magneticField: fact(magneticValue, 'inferred', 'Generated magnetic field profile — biased by mass, geology, and category'),
@@ -1962,6 +2042,16 @@ function generateDetail(
           'inferred',
           'Generated visible sky phenomena — biased by magnetic field, class flavor, and stellar activity',
         ),
+        atmosphericPressure: fact(
+          generateAtmosphericPressure(rng.fork('atmospheric-pressure'), category, atmosphere),
+          'inferred',
+          'Generated atmospheric pressure — forced by atmosphere class',
+        ),
+        windRegime: fact(
+          generateWindRegime(rng.fork('wind-regime'), category, atmosphere, climateValues, bodyClass),
+          'inferred',
+          'Generated wind regime — biased by atmosphere, climate, and tidal locking',
+        ),
       }
     })(),
   }, environmentPolicy, thermalZone)
@@ -2001,6 +2091,8 @@ function mergeKnownDetail(generated: PlanetaryDetail, known?: PartialKnownBody['
     surfaceLight: mergeLockedFact(generated.surfaceLight, known?.surfaceLight),
     axialTilt: mergeLockedFact(generated.axialTilt, known?.axialTilt),
     skyPhenomena: mergeLockedFact(generated.skyPhenomena, known?.skyPhenomena),
+    atmosphericPressure: mergeLockedFact(generated.atmosphericPressure, known?.atmosphericPressure),
+    windRegime: mergeLockedFact(generated.windRegime, known?.windRegime),
   }
 }
 
