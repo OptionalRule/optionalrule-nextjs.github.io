@@ -220,13 +220,13 @@ function buildBody(body: OrbitingBody, system: GeneratedSystem, hzCenterAu: numb
   const size = bodyVisualSize(body.category.value, body.physical.radiusEarth.value)
   const shading = chooseShading(body)
   const settlementIds = system.settlements
-    .filter((s) => s.bodyId === body.id || body.moons.some((m) => m.id === s.moonId))
+    .filter((s) => s.bodyId === body.id && !s.moonId)
     .map((s) => s.id)
   const ruinIds = system.ruins
     .filter((r) => ruinMatchesBody(r, body))
     .map((r) => r.id)
   const gateIds = system.gates
-    .filter((g) => g.bodyId === body.id || body.moons.some((m) => m.id === g.moonId))
+    .filter((g) => g.bodyId === body.id && !g.moonId)
     .map((g) => g.id)
   return {
     id: body.id,
