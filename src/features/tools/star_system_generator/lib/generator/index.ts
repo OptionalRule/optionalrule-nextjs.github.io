@@ -54,6 +54,7 @@ import {
   guResourceTable,
 } from './data/gu'
 import {
+  acousticEnvironmentTable,
   activityLabels,
   atmosphereTable,
   atmosphericTracesTable,
@@ -89,6 +90,7 @@ import {
   type BodySiteGroup,
   temperateClimateTags,
   temperateEnvelopeClimateTags,
+  tidalRegimeTable,
   windRegimeTable,
 } from './data/mechanics'
 import { humanRemnants, phenomena, remnantHooks } from './data/narrative'
@@ -1465,6 +1467,59 @@ function generateBiosphere(rng: SeededRng, category: BodyCategory, thermalZone: 
   return pickOne(rng, biospheres.filter((value) => value !== 'Sterile' && value !== 'Prebiotic chemistry'))
 }
 
+function generateTidalRegime(rng: SeededRng, category: BodyCategory, bodyClass: WorldClassOption, rotationProfile: string, geology: string): string {
+  if (category === 'belt') return 'Negligible tides'
+
+  if (rotationProfile === 'Tidally locked (one face)' || rotationProfile === 'Resonant rotation (3:2)') return 'Locked tidal stress (tidally locked)'
+  if (/tidally locked|terminator|tidally stretched|tidal volcanic/i.test(bodyClass.className)) return 'Locked tidal stress (tidally locked)'
+
+  // Tidally heated geology implies strong tidal forces
+  if (geology === 'Tidal heating') return 'Extreme tides (close massive moon)'
+
+  // Class-name hint for many-moon resonant cases
+  if (/peas-in-a-pod|resonant/i.test(bodyClass.className)) return 'Resonant tidal pulses (multi-moon resonance)'
+
+  return pickTable(rng, rng.int(1, 6), tidalRegimeTable)
+}
+
+function generateAcousticEnvironment(rng: SeededRng, category: BodyCategory, atm: string, geology: string, hydro: string, bodyClass: WorldClassOption, magneticField: string): string {
+  // No atmosphere → no sound
+  if (atm === 'None / hard vacuum' || atm === 'None / dispersed volatiles' || atm === 'No ordinary atmosphere') return 'Silent vacuum (no sound transmission)'
+  if (atm === 'Trace exosphere') return 'Silent vacuum (no sound transmission)'
+
+  if (category === 'sub-neptune' || category === 'gas-giant' || category === 'ice-giant') return 'Constant storm-drone'
+
+  // Forced by features
+  if (geology === 'Active volcanism' || geology === 'Extreme plume provinces' || geology === 'Global resurfacing') return 'Volcanic rumble'
+  if (geology === 'Cryovolcanism' || geology === 'Subglacial volcanism') return 'Geyser screams (cryo or hot)'
+  if (hydro === 'Cryo-geyser fields') return 'Geyser screams (cryo or hot)'
+  if (hydro === 'Subsurface ice' || hydro === 'Polar caps / buried glaciers' || hydro === 'Ice-shell subsurface ocean') {
+    if (rng.chance(0.6)) return 'Ice-cracking groans'
+  }
+  if (hydro === 'Liquid sulfur seas' || atm === 'Hydrogen sulfide rich') return 'Sulfur-vent hiss'
+
+  // Wind-dominated for dense atm
+  if (atm === 'Dense greenhouse' || atm === 'Sulfur/chlorine/ammonia haze' || atm === 'Steam atmosphere' || atm === 'Halocarbon greenhouse') {
+    return rng.chance(0.5) ? 'Persistent wind howl' : 'Eerie muffled quiet (dense atm)'
+  }
+
+  // Magnetic field hum
+  if (magneticField === 'Strong dipole shield' || magneticField === 'Aurora-belt dominated') {
+    if (rng.chance(0.25)) return 'Resonant magnetic hum'
+  }
+
+  // GU bodies
+  if (/programmable|chiral|bleed|observerse/i.test(bodyClass.className)) {
+    return rng.chance(0.5) ? 'Programmable-matter clicking' : 'Bleed-resonance chime'
+  }
+
+  // Ocean coast worlds
+  const oceanHydros = new Set(['Global ocean', 'Ocean-continent balance', 'Local seas', 'High-pressure deep ocean', 'Hydrocarbon lakes/seas'])
+  if (oceanHydros.has(hydro) && rng.chance(0.5)) return 'Tidal surf along coastlines'
+
+  return pickTable(rng, rng.int(2, 12), acousticEnvironmentTable)
+}
+
 function generateAtmosphericPressure(rng: SeededRng, category: BodyCategory, atm: string): string {
   if (category === 'belt') return 'Hard vacuum (<0.001 atm)'
   if (category === 'sub-neptune' || category === 'gas-giant' || category === 'ice-giant') return 'Crushing (~50 atm)'
@@ -1949,6 +2004,16 @@ function generateDetail(
         'gu-layer',
         'MASS-GU anomaly wind constraint'
       ),
+      tidalRegime: fact(
+        isFacilityLike ? 'Negligible tides' : 'Resonant tidal pulses (multi-moon resonance)',
+        'gu-layer',
+        'MASS-GU anomaly tidal constraint'
+      ),
+      acousticEnvironment: fact(
+        isFacilityLike ? 'Eerie muffled quiet (dense atm)' : 'Bleed-resonance chime',
+        'gu-layer',
+        'MASS-GU anomaly acoustic constraint'
+      ),
     }
 
     return {
@@ -1988,7 +2053,7 @@ function generateDetail(
       'inferred',
       'MASS-GU 14 radiation d8 table with source modifiers'
     ),
-    ...((): Pick<PlanetaryDetail, 'mineralComposition' | 'magneticField' | 'atmosphericTraces' | 'hydrology' | 'topography' | 'rotationProfile' | 'seismicActivity' | 'surfaceHazards' | 'dayLength' | 'surfaceLight' | 'axialTilt' | 'skyPhenomena' | 'atmosphericPressure' | 'windRegime'> => {
+    ...((): Pick<PlanetaryDetail, 'mineralComposition' | 'magneticField' | 'atmosphericTraces' | 'hydrology' | 'topography' | 'rotationProfile' | 'seismicActivity' | 'surfaceHazards' | 'dayLength' | 'surfaceLight' | 'axialTilt' | 'skyPhenomena' | 'atmosphericPressure' | 'windRegime' | 'tidalRegime' | 'acousticEnvironment'> => {
       const mineralValue = generateMineralComposition(rng.fork('mineral-composition'), category, thermalZone, bodyClass, geology)
       const rotationValue = generateRotationProfile(rng.fork('rotation'), category, thermalZone, bodyClass)
       const magneticValue = generateMagneticField(rng.fork('magnetic-field'), category, thermalZone, bodyClass, geology, physical)
@@ -2052,6 +2117,16 @@ function generateDetail(
           'inferred',
           'Generated wind regime — biased by atmosphere, climate, and tidal locking',
         ),
+        tidalRegime: fact(
+          generateTidalRegime(rng.fork('tidal-regime'), category, bodyClass, rotationValue, geology),
+          'inferred',
+          'Generated tidal regime — biased by rotation profile, geology, and class tags',
+        ),
+        acousticEnvironment: fact(
+          generateAcousticEnvironment(rng.fork('acoustic-env'), category, atmosphere, geology, hydrosphere, bodyClass, magneticValue),
+          'inferred',
+          'Generated acoustic environment — biased by atmosphere transmission, geology, hydrosphere, and class',
+        ),
       }
     })(),
   }, environmentPolicy, thermalZone)
@@ -2093,6 +2168,8 @@ function mergeKnownDetail(generated: PlanetaryDetail, known?: PartialKnownBody['
     skyPhenomena: mergeLockedFact(generated.skyPhenomena, known?.skyPhenomena),
     atmosphericPressure: mergeLockedFact(generated.atmosphericPressure, known?.atmosphericPressure),
     windRegime: mergeLockedFact(generated.windRegime, known?.windRegime),
+    tidalRegime: mergeLockedFact(generated.tidalRegime, known?.tidalRegime),
+    acousticEnvironment: mergeLockedFact(generated.acousticEnvironment, known?.acousticEnvironment),
   }
 }
 

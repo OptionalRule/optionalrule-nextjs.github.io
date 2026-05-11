@@ -146,6 +146,8 @@ export interface PlanetaryDetail {
   skyPhenomena: Fact<string>
   atmosphericPressure: Fact<string>
   windRegime: Fact<string>
+  tidalRegime: Fact<string>
+  acousticEnvironment: Fact<string>
 }
 
 export interface Moon {

@@ -257,6 +257,28 @@
     { "min": 9, "max": 9, "value": "Constant micro-seismic noise" },
     { "min": 10, "max": 10, "value": "Bleed-induced metric tremors" }
   ],
+  "tidalRegimeTable": [
+    { "min": 1, "max": 1, "value": "Negligible tides" },
+    { "min": 2, "max": 2, "value": "Mild tides (Earth-like)" },
+    { "min": 3, "max": 3, "value": "Strong tides (large nearby moon)" },
+    { "min": 4, "max": 4, "value": "Extreme tides (close massive moon)" },
+    { "min": 5, "max": 5, "value": "Locked tidal stress (tidally locked)" },
+    { "min": 6, "max": 6, "value": "Resonant tidal pulses (multi-moon resonance)" }
+  ],
+  "acousticEnvironmentTable": [
+    { "min": 1, "max": 1, "value": "Silent vacuum (no sound transmission)" },
+    { "min": 2, "max": 2, "value": "Persistent wind howl" },
+    { "min": 3, "max": 3, "value": "Tidal surf along coastlines" },
+    { "min": 4, "max": 4, "value": "Volcanic rumble" },
+    { "min": 5, "max": 5, "value": "Geyser screams (cryo or hot)" },
+    { "min": 6, "max": 6, "value": "Ice-cracking groans" },
+    { "min": 7, "max": 7, "value": "Constant storm-drone" },
+    { "min": 8, "max": 8, "value": "Eerie muffled quiet (dense atm)" },
+    { "min": 9, "max": 9, "value": "Resonant magnetic hum" },
+    { "min": 10, "max": 10, "value": "Programmable-matter clicking" },
+    { "min": 11, "max": 11, "value": "Bleed-resonance chime" },
+    { "min": 12, "max": 12, "value": "Sulfur-vent hiss" }
+  ],
   "atmosphericPressureTable": [
     { "min": 1, "max": 1, "value": "Hard vacuum (<0.001 atm)" },
     { "min": 2, "max": 2, "value": "Near-vacuum (~0.01 atm)" },
