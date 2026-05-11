@@ -2,7 +2,7 @@ import type { OrbitingBody } from '../../types'
 import type { BodyShadingKey } from '../types'
 import { hashToUnit } from './motion'
 
-export interface ShaderUniformSet {
+interface BaseShadingSet {
   baseColor: string
   secondaryColor: string
   accentColor: string
@@ -20,7 +20,18 @@ export interface ShaderUniformSet {
   surfaceSeed: number
 }
 
-const SHADING_BASE: Record<BodyShadingKey, ShaderUniformSet> = {
+export interface ShaderUniformSet extends BaseShadingSet {
+  mineralTint: string
+  mineralBlend: number
+  topographyMode: number
+  topographyStrength: number
+  hazardTint: string
+  hazardBlend: number
+  shimmerColor: string
+  shimmerStrength: number
+}
+
+const SHADING_BASE: Record<BodyShadingKey, BaseShadingSet> = {
   'rocky-warm':  { baseColor: '#a87a5a', secondaryColor: '#6c5a45', accentColor: '#2d5367', noiseScale: 4.0, atmosphereStrength: 0.2, heatTint: 0.0, bandStrength: 0.0, bandFrequency: 4, waterCoverage: 0, iceCoverage: 0, cloudStrength: 0.08, craterStrength: 0.2, volcanicStrength: 0, stormStrength: 0, surfaceSeed: 0 },
   'rocky-cool':  { baseColor: '#7e8a96', secondaryColor: '#4f5a63', accentColor: '#b7d9e8', noiseScale: 4.0, atmosphereStrength: 0.15, heatTint: 0.0, bandStrength: 0.0, bandFrequency: 4, waterCoverage: 0, iceCoverage: 0.25, cloudStrength: 0.06, craterStrength: 0.25, volcanicStrength: 0, stormStrength: 0, surfaceSeed: 0 },
   earthlike:     { baseColor: '#496f42', secondaryColor: '#8b7651', accentColor: '#1f5f8f', noiseScale: 3.0, atmosphereStrength: 0.4, heatTint: 0.0, bandStrength: 0.0, bandFrequency: 4, waterCoverage: 0.55, iceCoverage: 0.12, cloudStrength: 0.28, craterStrength: 0.03, volcanicStrength: 0, stormStrength: 0.1, surfaceSeed: 0 },
@@ -70,6 +81,10 @@ export function shaderUniforms(body: OrbitingBody): ShaderUniformSet {
   const craterStrength = craterStrengthFor(text, key, atmosphereBoost, waterCoverage)
   const stormStrength = stormStrengthFor(text, key)
   const surfaceSeed = hashToUnit(`${body.id}#${body.name.value}#surface`) * 19.7
+  const mineral = mineralFor(body)
+  const topography = topographyFor(body)
+  const hazard = hazardFor(body)
+  const shimmer = shimmerFor(mineral, hazard)
   return {
     ...base,
     ...colorsFor(body, key),
@@ -84,6 +99,14 @@ export function shaderUniforms(body: OrbitingBody): ShaderUniformSet {
     volcanicStrength,
     stormStrength,
     surfaceSeed,
+    mineralTint: mineral.tint,
+    mineralBlend: mineral.blend,
+    topographyMode: topography.mode,
+    topographyStrength: topography.strength,
+    hazardTint: hazard.tint,
+    hazardBlend: hazard.blend,
+    shimmerColor: shimmer.color,
+    shimmerStrength: shimmer.strength,
   }
 }
 
@@ -174,16 +197,91 @@ function colorsFor(body: OrbitingBody, key: BodyShadingKey): Pick<ShaderUniformS
     return { baseColor: '#4f7b44', secondaryColor: '#9a855a', accentColor: '#1f5f8f' }
   }
   if (key === 'desert') {
-    if (hasAny(text, ['iron', 'rust', 'oxid'])) return { baseColor: '#b6603d', secondaryColor: '#733929', accentColor: '#e5a160' }
     return { baseColor: '#d6a96b', secondaryColor: '#8f583a', accentColor: '#f0c37c' }
   }
-  if (hasAny(text, ['carbon', 'chiral'])) return { baseColor: '#3f4142', secondaryColor: '#1d1f21', accentColor: '#7a8c91' }
-  if (hasAny(text, ['metal', 'iron'])) return { baseColor: '#8d8276', secondaryColor: '#4f4d4b', accentColor: '#c0a37e' }
   return {
     baseColor: baseColorVariant(body, key, 0),
     secondaryColor: baseColorVariant(body, key, 1),
     accentColor: SHADING_BASE[key].accentColor,
   }
+}
+
+interface MineralResult { tint: string; blend: number; shimmer: boolean }
+interface HazardResult { tint: string; blend: number; shimmer: boolean }
+
+const MINERAL_MAP: Record<string, MineralResult> = {
+  'Common silicate': { tint: '#ffffff', blend: 0, shimmer: false },
+  'Iron-rich (red oxide)': { tint: '#b6603d', blend: 0.55, shimmer: false },
+  'Carbon-rich (diamond precursor)': { tint: '#2a2528', blend: 0.55, shimmer: false },
+  'Sulfide ore-dominant': { tint: '#caa84a', blend: 0.45, shimmer: false },
+  'Heavy element enrichment': { tint: '#7a7280', blend: 0.40, shimmer: false },
+  'Phosphate-rich': { tint: '#c2a878', blend: 0.30, shimmer: false },
+  'Calcite / limestone bedrock': { tint: '#d8d2bc', blend: 0.40, shimmer: false },
+  'Olivine-pyroxene mantle exposure': { tint: '#6b7a5a', blend: 0.40, shimmer: false },
+  'Methane / hydrocarbon clathrates': { tint: '#7a6850', blend: 0.35, shimmer: false },
+  'Helium-3 sequestered regolith': { tint: '#9aa5b8', blend: 0.30, shimmer: false },
+  'Halogen-bearing crust': { tint: '#a8c879', blend: 0.35, shimmer: false },
+  'Chiral organics in soil': { tint: '#a880ff', blend: 0.40, shimmer: true },
+  'Programmable-matter substrate': { tint: '#5e6ad8', blend: 0.50, shimmer: true },
+  'Bleed-altered crust': { tint: '#c18cff', blend: 0.45, shimmer: true },
+  'Iron meteoritic enrichment': { tint: '#8d8276', blend: 0.40, shimmer: false },
+  'Vitrified surface glasses': { tint: '#9caec0', blend: 0.35, shimmer: false },
+  'Salt / evaporite-rich': { tint: '#e8e2c8', blend: 0.50, shimmer: false },
+  'Bedrock exposed (no regolith)': { tint: '#5e5752', blend: 0.45, shimmer: false },
+  'Frozen organics (tholin-rich)': { tint: '#d49a52', blend: 0.45, shimmer: false },
+  'Sulfate evaporite crust': { tint: '#e8d9a0', blend: 0.45, shimmer: false },
+}
+
+const TOPOGRAPHY_MAP: Record<string, { mode: number; strength: number }> = {
+  'Flat plains': { mode: 0, strength: 0 },
+  'Crater-saturated': { mode: 0, strength: 0 },
+  'Highland-continent dichotomy': { mode: 1, strength: 0.50 },
+  'Tibetan plateau / supercontinent': { mode: 1, strength: 0.40 },
+  'Deep canyons / Valles Marineris': { mode: 3, strength: 0.45 },
+  'Volcanic shield province': { mode: 0, strength: 0 },
+  'Sand seas / dune fields': { mode: 2, strength: 0.55 },
+  'Tectonic ridge system': { mode: 3, strength: 0.35 },
+  'Mascon basin (gravity well)': { mode: 0, strength: 0 },
+  'Hemispheric albedo dichotomy': { mode: 1, strength: 0.65 },
+  'Ring impact pattern': { mode: 0, strength: 0 },
+  'Ice-shell terrain': { mode: 4, strength: 0.45 },
+  'Glacial valley networks': { mode: 4, strength: 0.35 },
+  'Bright icy poles': { mode: 0, strength: 0 },
+}
+
+const HAZARD_MAP: Record<string, HazardResult> = {
+  'Clear surface — no contact hazards': { tint: '#ffffff', blend: 0, shimmer: false },
+  'Wind-driven abrasive dust': { tint: '#b09a82', blend: 0.20, shimmer: false },
+  'Perchlorate-laden soil': { tint: '#c9a35a', blend: 0.30, shimmer: false },
+  'Sulfuric acid pools': { tint: '#d9c450', blend: 0.32, shimmer: false },
+  'Cyanide-bearing salt crust': { tint: '#d8e2b8', blend: 0.28, shimmer: false },
+  'Mercury vapor pockets': { tint: '#c9c8b8', blend: 0.25, shimmer: false },
+  'Electrostatic dust clouds': { tint: '#a8a098', blend: 0.22, shimmer: false },
+  'Radioactive surface mineralization': { tint: '#c8ff90', blend: 0.30, shimmer: true },
+  'Cryogenic burn (LN2-cold contact)': { tint: '#bce0ee', blend: 0.25, shimmer: false },
+  'Carbon monoxide seeps': { tint: '#8a8580', blend: 0.18, shimmer: false },
+  'Hydrogen sulfide vent gas': { tint: '#aab06e', blend: 0.20, shimmer: false },
+  'Chiral-reactive contaminants': { tint: '#a880ff', blend: 0.30, shimmer: true },
+  'Programmable-matter contamination': { tint: '#5e6ad8', blend: 0.35, shimmer: true },
+  'Pyrophoric metallic dust': { tint: '#7a4a2c', blend: 0.25, shimmer: false },
+}
+
+function mineralFor(body: OrbitingBody): MineralResult {
+  return MINERAL_MAP[body.detail.mineralComposition.value] ?? { tint: '#ffffff', blend: 0, shimmer: false }
+}
+
+function topographyFor(body: OrbitingBody): { mode: number; strength: number } {
+  return TOPOGRAPHY_MAP[body.detail.topography.value] ?? { mode: 0, strength: 0 }
+}
+
+function hazardFor(body: OrbitingBody): HazardResult {
+  return HAZARD_MAP[body.detail.surfaceHazards.value] ?? { tint: '#ffffff', blend: 0, shimmer: false }
+}
+
+function shimmerFor(mineral: MineralResult, hazard: HazardResult): { color: string; strength: number } {
+  if (mineral.shimmer) return { color: mineral.tint, strength: 0.25 }
+  if (hazard.shimmer) return { color: hazard.tint, strength: 0.25 }
+  return { color: '#ffffff', strength: 0 }
 }
 
 function baseColorVariant(body: OrbitingBody, key: BodyShadingKey, offset: number): string {

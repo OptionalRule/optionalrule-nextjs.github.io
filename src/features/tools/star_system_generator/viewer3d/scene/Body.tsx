@@ -59,6 +59,14 @@ export function Body({ body }: BodyProps) {
       mat.uniforms.uReliefStrength.value = body.surface?.reliefStrength ?? 0.15
       mat.uniforms.uNightLightStrength.value = body.surface?.nightLightStrength ?? 0
       mat.uniforms.uCityLightColor.value.set(body.surface?.cityLightColor ?? '#ffb15c')
+      mat.uniforms.uMineralTint.value.set(u.mineralTint)
+      mat.uniforms.uMineralBlend.value = u.mineralBlend
+      mat.uniforms.uHazardTint.value.set(u.hazardTint)
+      mat.uniforms.uHazardBlend.value = u.hazardBlend
+      mat.uniforms.uTopographyMode.value = u.topographyMode
+      mat.uniforms.uTopographyStrength.value = u.topographyStrength
+      mat.uniforms.uShimmerColor.value.set(u.shimmerColor)
+      mat.uniforms.uShimmerStrength.value = u.shimmerStrength
     }
     return mat
   }, [body, orbitingBody])
