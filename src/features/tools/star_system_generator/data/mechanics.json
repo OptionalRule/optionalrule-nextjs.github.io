@@ -257,6 +257,28 @@
     { "min": 9, "max": 9, "value": "Constant micro-seismic noise" },
     { "min": 10, "max": 10, "value": "Bleed-induced metric tremors" }
   ],
+  "resourceAccessTable": [
+    { "min": 1, "max": 1, "value": "Surface-easy (open-pit accessible)" },
+    { "min": 2, "max": 2, "value": "Standard surface mining" },
+    { "min": 3, "max": 3, "value": "Subsurface (deep drill required)" },
+    { "min": 4, "max": 4, "value": "Orbital-only (atmosphere or moonlet skim)" },
+    { "min": 5, "max": 5, "value": "Deep-pressure inaccessible (core extraction)" },
+    { "min": 6, "max": 6, "value": "Hazard-restricted (legal or environmental lock)" },
+    { "min": 7, "max": 7, "value": "Stripped / exhausted economy" },
+    { "min": 8, "max": 8, "value": "Bleed-fluxed concentration zones" }
+  ],
+  "biosphereDistributionTable": [
+    { "min": 1, "max": 1, "value": "Sterile / not applicable" },
+    { "min": 2, "max": 2, "value": "Surface-wide coverage" },
+    { "min": 3, "max": 3, "value": "Equatorial belt only" },
+    { "min": 4, "max": 4, "value": "Polar refugia only" },
+    { "min": 5, "max": 5, "value": "Subsurface only" },
+    { "min": 6, "max": 6, "value": "Wetland-bound around standing water" },
+    { "min": 7, "max": 7, "value": "Coastal margins" },
+    { "min": 8, "max": 8, "value": "Cave / karst-bound" },
+    { "min": 9, "max": 9, "value": "Sealed pocket biomes" },
+    { "min": 10, "max": 10, "value": "Microclimate-fragmented patches" }
+  ],
   "tidalRegimeTable": [
     { "min": 1, "max": 1, "value": "Negligible tides" },
     { "min": 2, "max": 2, "value": "Mild tides (Earth-like)" },

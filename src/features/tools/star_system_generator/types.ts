@@ -148,6 +148,8 @@ export interface PlanetaryDetail {
   windRegime: Fact<string>
   tidalRegime: Fact<string>
   acousticEnvironment: Fact<string>
+  resourceAccess: Fact<string>
+  biosphereDistribution: Fact<string>
 }
 
 export interface Moon {

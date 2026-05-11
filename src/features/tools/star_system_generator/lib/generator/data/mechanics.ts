@@ -48,6 +48,8 @@ interface MechanicsData {
   windRegimeTable: Array<TableEntry<string>>
   tidalRegimeTable: Array<TableEntry<string>>
   acousticEnvironmentTable: Array<TableEntry<string>>
+  resourceAccessTable: Array<TableEntry<string>>
+  biosphereDistributionTable: Array<TableEntry<string>>
   moonTypes: readonly string[]
   moonScales: readonly string[]
   bodySites: BodySitePools
@@ -105,6 +107,8 @@ export const atmosphericPressureTable = typedMechanicsData.atmosphericPressureTa
 export const windRegimeTable = typedMechanicsData.windRegimeTable
 export const tidalRegimeTable = typedMechanicsData.tidalRegimeTable
 export const acousticEnvironmentTable = typedMechanicsData.acousticEnvironmentTable
+export const resourceAccessTable = typedMechanicsData.resourceAccessTable
+export const biosphereDistributionTable = typedMechanicsData.biosphereDistributionTable
 export const moonTypes = typedMechanicsData.moonTypes
 export const moonScales = typedMechanicsData.moonScales
 export const bodySites = typedMechanicsData.bodySites

@@ -67,7 +67,7 @@ export interface EnvironmentPolicy {
   notes: string[]
 }
 
-type DetailWithoutBiosphere = Omit<PlanetaryDetail, 'biosphere'>
+type DetailWithoutBiosphere = Omit<PlanetaryDetail, 'biosphere' | 'biosphereDistribution'>
 
 function envelopeCategory(category: BodyCategory): boolean {
   return category === 'sub-neptune' || category === 'gas-giant' || category === 'ice-giant'

@@ -60,6 +60,7 @@ import {
   atmosphericTracesTable,
   axialTiltTable,
   biospheres,
+  biosphereDistributionTable,
   climateSourceTable,
   coldClimateTags,
   coldEnvelopeClimateTags,
@@ -85,6 +86,7 @@ import {
   moonScales,
   moonTypes,
   radiationTable,
+  resourceAccessTable,
   ringTypeTable,
   bodySites,
   type BodySiteGroup,
@@ -1420,7 +1422,7 @@ function generateRadiation(rng: SeededRng, category: BodyCategory, thermalZone: 
   return pickTable(rng, clampTableRoll(roll, ceiling), radiationTable)
 }
 
-function generateBiosphere(rng: SeededRng, category: BodyCategory, thermalZone: string, detail: Omit<PlanetaryDetail, 'biosphere'>, primary: Star, bodyClass?: WorldClassOption): string {
+function generateBiosphere(rng: SeededRng, category: BodyCategory, thermalZone: string, detail: Omit<PlanetaryDetail, 'biosphere' | 'biosphereDistribution'>, primary: Star, bodyClass?: WorldClassOption): string {
   if (!supportsComplexSurfaceEnvironment(category)) return 'Sterile'
   if (thermalZone === 'Furnace' || thermalZone === 'Inferno') return 'Sterile'
   // Vacuum atmospheres usually mean sterile — but if subsurface volatiles exist, a cryptic biosphere
@@ -1465,6 +1467,56 @@ function generateBiosphere(rng: SeededRng, category: BodyCategory, thermalZone: 
   if (score === 9) return 'Extremophile microbial ecology'
   if (score === 10) return 'Photosynthetic microbial mats'
   return pickOne(rng, biospheres.filter((value) => value !== 'Sterile' && value !== 'Prebiotic chemistry'))
+}
+
+function generateResourceAccess(rng: SeededRng, category: BodyCategory, bodyClass: WorldClassOption, atm: string, mineralComposition: string): string {
+  if (category === 'belt') return 'Surface-easy (open-pit accessible)'
+  if (category === 'gas-giant' || category === 'ice-giant') return 'Orbital-only (atmosphere or moonlet skim)'
+  if (category === 'sub-neptune') return 'Deep-pressure inaccessible (core extraction)'
+
+  // GU classes get bleed-fluxed
+  if (/\bgu\b|chiral|observerse|bleed/i.test(bodyClass.className) && rng.chance(0.45)) return 'Bleed-fluxed concentration zones'
+
+  // Class hints
+  if (/stripped|exhausted|remnant/i.test(bodyClass.className)) return 'Stripped / exhausted economy'
+  if (/airless|stripped/i.test(bodyClass.className)) return rng.chance(0.5) ? 'Surface-easy (open-pit accessible)' : 'Subsurface (deep drill required)'
+  if (/failed terraform|abandoned|black-lab|exile|quarantine/i.test(bodyClass.className)) return 'Hazard-restricted (legal or environmental lock)'
+  if (/dense|crushing|supercritical/i.test(atm)) return 'Deep-pressure inaccessible (core extraction)'
+
+  // Mineral wealth hints
+  if (mineralComposition === 'Heavy element enrichment' || mineralComposition === 'Sulfide ore-dominant' || mineralComposition === 'Iron-rich (red oxide)' || mineralComposition === 'Carbon-rich (diamond precursor)') {
+    return rng.chance(0.6) ? 'Surface-easy (open-pit accessible)' : 'Standard surface mining'
+  }
+  if (mineralComposition === 'Helium-3 sequestered regolith' || mineralComposition === 'Methane / hydrocarbon clathrates') return 'Subsurface (deep drill required)'
+
+  return pickTable(rng, rng.int(1, 8), resourceAccessTable)
+}
+
+function generateBiosphereDistribution(rng: SeededRng, biosphereValue: string, category: BodyCategory, hydro: string, atm: string, bodyClass: WorldClassOption): string {
+  if (biosphereValue === 'Sterile') return 'Sterile / not applicable'
+
+  if (biosphereValue === 'Cryptic subsurface biosphere' || biosphereValue === 'Engineered remnant biosphere') return 'Subsurface only'
+
+  // Photosynthetic mats need surface water + light
+  if (biosphereValue === 'Photosynthetic microbial mats') return 'Wetland-bound around standing water'
+
+  // Tidally-locked / eyeball worlds → equatorial belt
+  if (/eyeball|terminator|tidally locked/i.test(bodyClass.className)) return 'Equatorial belt only'
+
+  // Cold zones with localized life → polar refugia or wetland
+  if (category === 'rocky-planet' || category === 'super-earth') {
+    if (atm === 'Aerosol veil' || atm === 'Tholin photochemistry') return 'Polar refugia only'
+
+    // Bone dry surface + microbial → subsurface or cave
+    const dryHydros = new Set(['Bone dry', 'Hydrated minerals only', 'Vaporized volatile traces'])
+    if (dryHydros.has(hydro)) return rng.chance(0.5) ? 'Cave / karst-bound' : 'Subsurface only'
+
+    // Open ocean → surface-wide or coastal
+    const oceanHydros = new Set(['Global ocean', 'Ocean-continent balance', 'Local seas', 'High-pressure deep ocean'])
+    if (oceanHydros.has(hydro)) return rng.chance(0.5) ? 'Surface-wide coverage' : 'Coastal margins'
+  }
+
+  return pickTable(rng, rng.int(1, 10), biosphereDistributionTable)
 }
 
 function generateTidalRegime(rng: SeededRng, category: BodyCategory, bodyClass: WorldClassOption, rotationProfile: string, geology: string): string {
@@ -2014,6 +2066,12 @@ function generateDetail(
         'gu-layer',
         'MASS-GU anomaly acoustic constraint'
       ),
+      resourceAccess: fact(
+        isFacilityLike ? 'Hazard-restricted (legal or environmental lock)' : 'Bleed-fluxed concentration zones',
+        'gu-layer',
+        'MASS-GU anomaly resource constraint'
+      ),
+      biosphereDistribution: fact('Sterile / not applicable', 'gu-layer', 'MASS-GU anomaly biosphere distribution constraint'),
     }
 
     return {
@@ -2053,7 +2111,7 @@ function generateDetail(
       'inferred',
       'MASS-GU 14 radiation d8 table with source modifiers'
     ),
-    ...((): Pick<PlanetaryDetail, 'mineralComposition' | 'magneticField' | 'atmosphericTraces' | 'hydrology' | 'topography' | 'rotationProfile' | 'seismicActivity' | 'surfaceHazards' | 'dayLength' | 'surfaceLight' | 'axialTilt' | 'skyPhenomena' | 'atmosphericPressure' | 'windRegime' | 'tidalRegime' | 'acousticEnvironment'> => {
+    ...((): Pick<PlanetaryDetail, 'mineralComposition' | 'magneticField' | 'atmosphericTraces' | 'hydrology' | 'topography' | 'rotationProfile' | 'seismicActivity' | 'surfaceHazards' | 'dayLength' | 'surfaceLight' | 'axialTilt' | 'skyPhenomena' | 'atmosphericPressure' | 'windRegime' | 'tidalRegime' | 'acousticEnvironment' | 'resourceAccess'> => {
       const mineralValue = generateMineralComposition(rng.fork('mineral-composition'), category, thermalZone, bodyClass, geology)
       const rotationValue = generateRotationProfile(rng.fork('rotation'), category, thermalZone, bodyClass)
       const magneticValue = generateMagneticField(rng.fork('magnetic-field'), category, thermalZone, bodyClass, geology, physical)
@@ -2127,6 +2185,11 @@ function generateDetail(
           'inferred',
           'Generated acoustic environment — biased by atmosphere transmission, geology, hydrosphere, and class',
         ),
+        resourceAccess: fact(
+          generateResourceAccess(rng.fork('resource-access'), category, bodyClass, atmosphere, mineralValue),
+          'inferred',
+          'Generated resource access mode — biased by category, class, atmosphere pressure, and mineral wealth',
+        ),
       }
     })(),
   }, environmentPolicy, thermalZone)
@@ -2140,9 +2203,19 @@ function generateDetail(
       ? 'MASS-GU biosphere score; surface reads Bone dry — biosphere implied as subsurface brine pockets or relict biofilm refugia'
       : 'MASS-GU biosphere score'
 
+  const distributionValue = generateBiosphereDistribution(
+    rng.fork('biosphere-distribution'),
+    biosphereValue,
+    category,
+    detailWithoutBiosphere.hydrosphere.value,
+    detailWithoutBiosphere.atmosphere.value,
+    bodyClass,
+  )
+
   return {
     ...detailWithoutBiosphere,
     biosphere: fact(biosphereValue, 'inferred', biosphereSource),
+    biosphereDistribution: fact(distributionValue, 'inferred', 'Generated biosphere distribution — biased by biosphere tier, hydrosphere, atmosphere, and class'),
   }
 }
 
@@ -2170,6 +2243,8 @@ function mergeKnownDetail(generated: PlanetaryDetail, known?: PartialKnownBody['
     windRegime: mergeLockedFact(generated.windRegime, known?.windRegime),
     tidalRegime: mergeLockedFact(generated.tidalRegime, known?.tidalRegime),
     acousticEnvironment: mergeLockedFact(generated.acousticEnvironment, known?.acousticEnvironment),
+    resourceAccess: mergeLockedFact(generated.resourceAccess, known?.resourceAccess),
+    biosphereDistribution: mergeLockedFact(generated.biosphereDistribution, known?.biosphereDistribution),
   }
 }
 
