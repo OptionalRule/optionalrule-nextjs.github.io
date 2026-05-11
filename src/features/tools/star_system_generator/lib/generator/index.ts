@@ -73,6 +73,8 @@ import {
   hydrosphereTable,
   magneticFieldTable,
   mineralCompositionTable,
+  rotationProfileTable,
+  topographyTable,
   moonScales,
   moonTypes,
   radiationTable,
@@ -1456,6 +1458,60 @@ function generateBiosphere(rng: SeededRng, category: BodyCategory, thermalZone: 
   return pickOne(rng, biospheres.filter((value) => value !== 'Sterile' && value !== 'Prebiotic chemistry'))
 }
 
+function generateTopography(rng: SeededRng, category: BodyCategory, thermalZone: string, bodyClass: WorldClassOption, geology: string, hydro: string): string {
+  if (category === 'belt') return 'Crater-saturated'
+  if (category === 'sub-neptune' || category === 'gas-giant' || category === 'ice-giant') return 'Hemispheric albedo dichotomy'
+
+  // Geology-driven overrides
+  if (geology === 'Active volcanism' || geology === 'Extreme plume provinces') return 'Volcanic shield province'
+  if (geology === 'Cryovolcanism' || geology === 'Subglacial volcanism') return rng.chance(0.5) ? 'Ice-shell terrain' : 'Glacial valley networks'
+  if (geology === 'Karst / dissolution terrain') return 'Sand seas / dune fields'
+  if (geology === 'Ancient cratered crust' || geology === 'Dead interior') return 'Crater-saturated'
+  if (geology === 'Plate tectonic analogue') return rng.chance(0.5) ? 'Tectonic ridge system' : 'Highland-continent dichotomy'
+  if (geology === 'Supercontinent cycle') return 'Tibetan plateau / supercontinent'
+  if (geology === 'Magnetic dynamo flicker') return 'Mascon basin (gravity well)'
+
+  // Hydrosphere hints
+  if (hydro === 'Subsurface ice' || hydro === 'Polar caps / buried glaciers') return rng.chance(0.6) ? 'Bright icy poles' : 'Glacial valley networks'
+  if (hydro === 'Ice-shell subsurface ocean' || hydro === 'Cryo-geyser fields') return 'Ice-shell terrain'
+
+  // Class-driven hints
+  if (/dust|airless|stripped/i.test(bodyClass.className)) return 'Crater-saturated'
+
+  let roll = rng.int(1, 14)
+  if (thermalZone === 'Cold' || thermalZone === 'Cryogenic' || thermalZone === 'Dark') {
+    if (rng.chance(0.4)) roll = pickOne(rng, [11, 12, 13, 14])  // cold-zone topographies
+  }
+  if (thermalZone === 'Hot' || thermalZone === 'Furnace' || thermalZone === 'Inferno') {
+    if (rng.chance(0.4)) roll = pickOne(rng, [6, 7, 9])  // volcanic / dune / mascon
+  }
+  return pickTable(rng, clampTableRoll(roll, 14), topographyTable)
+}
+
+function generateRotationProfile(rng: SeededRng, category: BodyCategory, thermalZone: string, bodyClass: WorldClassOption): string {
+  // Class-driven tidally locked
+  if (/tidally locked|terminator/i.test(bodyClass.className)) return 'Tidally locked (one face)'
+  if (/tidally stretched|tidal volcanic/i.test(bodyClass.className)) return rng.chance(0.6) ? 'Tidally locked (one face)' : 'Resonant rotation (3:2)'
+  // Hot close-in classes often tidally locked
+  if ((thermalZone === 'Furnace' || thermalZone === 'Inferno') && rng.chance(0.6)) return 'Tidally locked (one face)'
+  if (thermalZone === 'Hot' && rng.chance(0.3)) return 'Tidally locked (one face)'
+
+  // Envelopes rotate fast
+  if (category === 'sub-neptune' || category === 'gas-giant' || category === 'ice-giant') return 'Fast rotation'
+
+  // Belts and dwarfs more often chaotic / wobbling
+  if (category === 'belt') return 'Chaotic rotation'
+  if (category === 'dwarf-body') {
+    const r = rng.int(1, 4)
+    if (r === 1) return 'Wobbling rotation'
+    if (r === 2) return 'Chaotic rotation'
+    if (r === 3) return 'Retrograde rotation'
+    return 'Slow rotation (Mercury-style)'
+  }
+
+  return pickTable(rng, rng.int(1, 10), rotationProfileTable)
+}
+
 function generateAtmosphericTraces(rng: SeededRng, category: BodyCategory, atm: string, bodyClass: WorldClassOption): string {
   if (category === 'belt') return 'Noble gas excess'
   if (atm === 'None / hard vacuum' || atm === 'None / dispersed volatiles') return 'Noble gas excess'
@@ -1632,6 +1688,16 @@ function generateDetail(
         'MASS-GU anomaly trace-gas constraint'
       ),
       hydrology: fact('No active cycle', 'gu-layer', 'MASS-GU anomaly hydrology constraint'),
+      topography: fact(
+        isFacilityLike ? 'Tibetan plateau / supercontinent' : 'Ring impact pattern',
+        'gu-layer',
+        'MASS-GU anomaly topography constraint'
+      ),
+      rotationProfile: fact(
+        isFacilityLike ? 'Earth-like 24h cycle' : 'Chaotic rotation',
+        'gu-layer',
+        'MASS-GU anomaly rotation constraint'
+      ),
     }
 
     return {
@@ -1690,6 +1756,16 @@ function generateDetail(
       'inferred',
       'Generated water-cycle pattern — biased by hydrosphere reservoir, geology, and tidal status'
     ),
+    topography: fact(
+      generateTopography(rng.fork('topography'), category, thermalZone, bodyClass, geology, hydrosphere),
+      'inferred',
+      'Generated surface morphology — biased by geology, hydrosphere, and thermal zone'
+    ),
+    rotationProfile: fact(
+      generateRotationProfile(rng.fork('rotation'), category, thermalZone, bodyClass),
+      'inferred',
+      'Generated rotation profile — biased by class tags, thermal zone, and category'
+    ),
   }, environmentPolicy, thermalZone)
 
   const biosphereValue = environmentPolicy.biosphere.forced ?? generateBiosphere(rng, category, thermalZone, detailWithoutBiosphere, primary, bodyClass)
@@ -1719,6 +1795,8 @@ function mergeKnownDetail(generated: PlanetaryDetail, known?: PartialKnownBody['
     magneticField: mergeLockedFact(generated.magneticField, known?.magneticField),
     atmosphericTraces: mergeLockedFact(generated.atmosphericTraces, known?.atmosphericTraces),
     hydrology: mergeLockedFact(generated.hydrology, known?.hydrology),
+    topography: mergeLockedFact(generated.topography, known?.topography),
+    rotationProfile: mergeLockedFact(generated.rotationProfile, known?.rotationProfile),
   }
 }
 

@@ -136,6 +136,8 @@ export interface PlanetaryDetail {
   magneticField: Fact<string>
   atmosphericTraces: Fact<string>
   hydrology: Fact<string>
+  topography: Fact<string>
+  rotationProfile: Fact<string>
 }
 
 export interface Moon {

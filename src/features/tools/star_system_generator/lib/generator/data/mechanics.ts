@@ -36,6 +36,8 @@ interface MechanicsData {
   magneticFieldTable: Array<TableEntry<string>>
   atmosphericTracesTable: Array<TableEntry<string>>
   hydrologyTable: Array<TableEntry<string>>
+  topographyTable: Array<TableEntry<string>>
+  rotationProfileTable: Array<TableEntry<string>>
   moonTypes: readonly string[]
   moonScales: readonly string[]
   bodySites: BodySitePools
@@ -81,6 +83,8 @@ export const mineralCompositionTable = typedMechanicsData.mineralCompositionTabl
 export const magneticFieldTable = typedMechanicsData.magneticFieldTable
 export const atmosphericTracesTable = typedMechanicsData.atmosphericTracesTable
 export const hydrologyTable = typedMechanicsData.hydrologyTable
+export const topographyTable = typedMechanicsData.topographyTable
+export const rotationProfileTable = typedMechanicsData.rotationProfileTable
 export const moonTypes = typedMechanicsData.moonTypes
 export const moonScales = typedMechanicsData.moonScales
 export const bodySites = typedMechanicsData.bodySites

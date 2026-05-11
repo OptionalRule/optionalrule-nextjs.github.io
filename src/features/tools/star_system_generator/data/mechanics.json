@@ -217,6 +217,34 @@
     { "min": 13, "max": 13, "value": "Sulfur springs" },
     { "min": 14, "max": 14, "value": "Subglacial lake belt" }
   ],
+  "topographyTable": [
+    { "min": 1, "max": 1, "value": "Flat plains" },
+    { "min": 2, "max": 2, "value": "Crater-saturated" },
+    { "min": 3, "max": 3, "value": "Highland-continent dichotomy" },
+    { "min": 4, "max": 4, "value": "Tibetan plateau / supercontinent" },
+    { "min": 5, "max": 5, "value": "Deep canyons / Valles Marineris" },
+    { "min": 6, "max": 6, "value": "Volcanic shield province" },
+    { "min": 7, "max": 7, "value": "Sand seas / dune fields" },
+    { "min": 8, "max": 8, "value": "Tectonic ridge system" },
+    { "min": 9, "max": 9, "value": "Mascon basin (gravity well)" },
+    { "min": 10, "max": 10, "value": "Hemispheric albedo dichotomy" },
+    { "min": 11, "max": 11, "value": "Ring impact pattern" },
+    { "min": 12, "max": 12, "value": "Ice-shell terrain" },
+    { "min": 13, "max": 13, "value": "Glacial valley networks" },
+    { "min": 14, "max": 14, "value": "Bright icy poles" }
+  ],
+  "rotationProfileTable": [
+    { "min": 1, "max": 1, "value": "Slow rotation (Mercury-style)" },
+    { "min": 2, "max": 2, "value": "Resonant rotation (3:2)" },
+    { "min": 3, "max": 3, "value": "Earth-like 24h cycle" },
+    { "min": 4, "max": 4, "value": "Earth-like 24h cycle" },
+    { "min": 5, "max": 5, "value": "Earth-like 24h cycle" },
+    { "min": 6, "max": 6, "value": "Fast rotation" },
+    { "min": 7, "max": 7, "value": "Retrograde rotation" },
+    { "min": 8, "max": 8, "value": "Precessing axis" },
+    { "min": 9, "max": 9, "value": "Wobbling rotation" },
+    { "min": 10, "max": 10, "value": "Chaotic rotation" }
+  ],
   "moonTypes": ["Airless rock", "Cratered ice-rock", "Captured asteroid", "Captured dwarf", "Subsurface ocean moon", "Thick ice-shell moon", "Cryovolcanic moon", "Volcanic tidal moon", "Dense-atmosphere moon", "Hydrocarbon moon", "Habitable-zone moon", "Radiation-scorched inner moon", "Ring-shepherd moon", "Chiral ice moon", "Dark-sector density moon", "Programmable regolith moon", "Former settlement moon", "Active mining moon", "Quarantine moon", "Moving bleed node moon"],
   "moonScales": ["minor captured moonlet", "small major moon", "mid-sized icy moon", "large differentiated moon", "planet-scale major moon"],
   "bodySites": {
