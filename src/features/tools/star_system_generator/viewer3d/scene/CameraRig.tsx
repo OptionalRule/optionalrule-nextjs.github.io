@@ -23,6 +23,8 @@ export function CameraRig({ sceneRadius }: CameraRigProps) {
   useEffect(() => {
     function handle() {
       if (!controlsRef.current) return
+      controlsRef.current.minDistance = sceneRadius * 0.2
+      controlsRef.current.target.set(0, 0, 0)
       const start = camera.position.clone()
       const target = new THREE.Vector3(0, sceneRadius * 0.35, sceneRadius * 0.95)
       const startTime = performance.now()
@@ -46,24 +48,46 @@ export function CameraRig({ sceneRadius }: CameraRigProps) {
 
   useEffect(() => {
     if (!selection || selection.kind !== 'body') return
-    const target = (window as Window & { __viewer3dBodyPositions?: Record<string, [number, number, number]> }).__viewer3dBodyPositions?.[selection.id]
+    const w = window as Window & {
+      __viewer3dBodyPositions?: Record<string, [number, number, number]>
+      __viewer3dBodySizes?: Record<string, number>
+    }
+    const target = w.__viewer3dBodyPositions?.[selection.id]
     if (!target) return
-    const targetPos = target
+    const visualSize = w.__viewer3dBodySizes?.[selection.id] ?? 1
+    const targetVec = new THREE.Vector3(target[0], target[1], target[2])
+    const radialDir = new THREE.Vector3(targetVec.x, 0, targetVec.z).normalize()
+    if (radialDir.lengthSq() === 0) radialDir.set(0, 0, 1)
+    const focusDistance = Math.max(visualSize * 4.5, sceneRadius * 0.012)
+    const desired = targetVec.clone()
+      .add(radialDir.multiplyScalar(focusDistance))
+      .setY(targetVec.y + visualSize * 1.6)
     const start = camera.position.clone()
-    const desired = new THREE.Vector3(targetPos[0] * 1.6, sceneRadius * 0.18, targetPos[2] * 1.6)
     const startTime = performance.now()
     const duration = 800
+
+    if (controlsRef.current) controlsRef.current.minDistance = visualSize * 1.8
 
     function step(t: number) {
       const k = Math.min(1, (t - startTime) / duration)
       const eased = 1 - Math.pow(1 - k, 3)
       camera.position.lerpVectors(start, desired, eased)
-      camera.lookAt(targetPos[0], 0, targetPos[2])
-      controlsRef.current?.update()
+      camera.lookAt(targetVec)
+      if (controlsRef.current) {
+        controlsRef.current.target.copy(targetVec)
+        controlsRef.current.update()
+      }
       if (k < 1) requestAnimationFrame(step)
     }
     requestAnimationFrame(step)
   }, [selection, camera, sceneRadius])
+
+  useEffect(() => {
+    if (selection || !controlsRef.current) return
+    controlsRef.current.minDistance = sceneRadius * 0.2
+    controlsRef.current.target.set(0, 0, 0)
+    controlsRef.current.update()
+  }, [selection, sceneRadius])
 
   return (
     <OrbitControls

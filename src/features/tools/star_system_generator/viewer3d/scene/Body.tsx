@@ -99,11 +99,19 @@ export function Body({ body }: BodyProps) {
   }), [isHovered, isInspected])
 
   useEffect(() => {
-    const dict = window as Window & { __viewer3dBodyPositions?: Record<string, [number, number, number]> }
+    const dict = window as Window & {
+      __viewer3dBodyPositions?: Record<string, [number, number, number]>
+      __viewer3dBodySizes?: Record<string, number>
+    }
     if (!dict.__viewer3dBodyPositions) dict.__viewer3dBodyPositions = {}
+    if (!dict.__viewer3dBodySizes) dict.__viewer3dBodySizes = {}
     dict.__viewer3dBodyPositions[body.id] = posTuple.current
-    return () => { delete dict.__viewer3dBodyPositions?.[body.id] }
-  }, [body.id])
+    dict.__viewer3dBodySizes[body.id] = body.visualSize
+    return () => {
+      delete dict.__viewer3dBodyPositions?.[body.id]
+      delete dict.__viewer3dBodySizes?.[body.id]
+    }
+  }, [body.id, body.visualSize])
 
   useEffect(() => () => material.dispose(), [material])
   useEffect(() => () => highlightMaterial.dispose(), [highlightMaterial])
