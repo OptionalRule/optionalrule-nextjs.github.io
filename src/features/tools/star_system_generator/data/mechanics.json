@@ -257,6 +257,25 @@
     { "min": 9, "max": 9, "value": "Constant micro-seismic noise" },
     { "min": 10, "max": 10, "value": "Bleed-induced metric tremors" }
   ],
+  "dayLengthTable": [
+    { "min": 1, "max": 1, "value": "Very short day (under 6 Earth hours)" },
+    { "min": 2, "max": 2, "value": "Short day (6-18 hours)" },
+    { "min": 3, "max": 3, "value": "Earth-like day (~24 hours)" },
+    { "min": 4, "max": 4, "value": "Long day (1-3 Earth days)" },
+    { "min": 5, "max": 5, "value": "Multi-day cycle (3-30 days)" },
+    { "min": 6, "max": 6, "value": "Mercury-style year-length day" },
+    { "min": 7, "max": 7, "value": "No day-night cycle (tidally locked)" }
+  ],
+  "surfaceLightTable": [
+    { "min": 1, "max": 1, "value": "Glassy dayside glare" },
+    { "min": 2, "max": 2, "value": "Bright daylight (Earth-like)" },
+    { "min": 3, "max": 3, "value": "Dim daylight (cold sun)" },
+    { "min": 4, "max": 4, "value": "Twilight / terminator zone" },
+    { "min": 5, "max": 5, "value": "Polar night" },
+    { "min": 6, "max": 6, "value": "Ring-shadow penumbra" },
+    { "min": 7, "max": 7, "value": "Auroral glow dominant" },
+    { "min": 8, "max": 8, "value": "Dark sector / GU-shadowed" }
+  ],
   "surfaceHazardsTable": [
     { "min": 1, "max": 1, "value": "Clear surface — no contact hazards" },
     { "min": 2, "max": 2, "value": "Wind-driven abrasive dust" },

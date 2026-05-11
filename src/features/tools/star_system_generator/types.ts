@@ -140,6 +140,8 @@ export interface PlanetaryDetail {
   rotationProfile: Fact<string>
   seismicActivity: Fact<string>
   surfaceHazards: Fact<string>
+  dayLength: Fact<string>
+  surfaceLight: Fact<string>
 }
 
 export interface Moon {

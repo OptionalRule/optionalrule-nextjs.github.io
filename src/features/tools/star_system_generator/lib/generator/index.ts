@@ -61,6 +61,7 @@ import {
   climateSourceTable,
   coldClimateTags,
   coldEnvelopeClimateTags,
+  dayLengthTable,
   envelopeGeologies,
   extremeHotAtmospheres,
   extremeHotClimateTags,
@@ -76,6 +77,7 @@ import {
   rotationProfileTable,
   seismicActivityTable,
   surfaceHazardsTable,
+  surfaceLightTable,
   topographyTable,
   moonScales,
   moonTypes,
@@ -1460,6 +1462,52 @@ function generateBiosphere(rng: SeededRng, category: BodyCategory, thermalZone: 
   return pickOne(rng, biospheres.filter((value) => value !== 'Sterile' && value !== 'Prebiotic chemistry'))
 }
 
+function generateDayLength(rng: SeededRng, category: BodyCategory, thermalZone: string, bodyClass: WorldClassOption, rotationProfile: string): string {
+  // Drive from rotation profile (already computed)
+  if (rotationProfile === 'Tidally locked (one face)') return 'No day-night cycle (tidally locked)'
+  if (rotationProfile === 'Slow rotation (Mercury-style)') return 'Mercury-style year-length day'
+  if (rotationProfile === 'Resonant rotation (3:2)') return 'Multi-day cycle (3-30 days)'
+  if (rotationProfile === 'Fast rotation') return rng.chance(0.5) ? 'Very short day (under 6 Earth hours)' : 'Short day (6-18 hours)'
+  if (rotationProfile === 'Chaotic rotation' || rotationProfile === 'Wobbling rotation') return 'Multi-day cycle (3-30 days)'
+
+  // Class hints
+  if (/tidally locked|terminator/i.test(bodyClass.className)) return 'No day-night cycle (tidally locked)'
+
+  // Belt / envelope short
+  if (category === 'belt') return 'Multi-day cycle (3-30 days)'
+  if (category === 'sub-neptune' || category === 'gas-giant' || category === 'ice-giant') return 'Short day (6-18 hours)'
+
+  // Default — biased d7 toward Earth-like for terrestrial bodies (3-5 = Earth-like)
+  const r = rng.int(1, 7)
+  return pickTable(rng, r <= 1 ? 2 : r >= 6 ? 5 : 3, dayLengthTable)
+}
+
+function generateSurfaceLight(rng: SeededRng, category: BodyCategory, thermalZone: string, bodyClass: WorldClassOption, atm: string, rotationProfile: string): string {
+  // Special anomaly-like classes
+  if (/dark-sector|gardener-shadowed/i.test(bodyClass.className)) return 'Dark sector / GU-shadowed'
+  if (/glass world|dayside glass|carbon-rich furnace/i.test(bodyClass.className)) return 'Glassy dayside glare'
+
+  // Thermal zone extremes
+  if (thermalZone === 'Furnace' || thermalZone === 'Inferno') return rng.chance(0.7) ? 'Glassy dayside glare' : 'Bright daylight (Earth-like)'
+  if (thermalZone === 'Dark') return rng.chance(0.7) ? 'Polar night' : 'Dark sector / GU-shadowed'
+  if (thermalZone === 'Cryogenic') return rng.chance(0.5) ? 'Dim daylight (cold sun)' : 'Polar night'
+
+  // Rotation drives terminator visibility
+  if (rotationProfile === 'Tidally locked (one face)' || /terminator|tidally locked/i.test(bodyClass.className)) return 'Twilight / terminator zone'
+
+  // Atmosphere-thick worlds dim the surface even in warm zones
+  if (atm === 'Aerosol veil' || atm === 'Tholin photochemistry' || atm === 'Dense greenhouse' || atm === 'Sulfur/chlorine/ammonia haze') {
+    return rng.chance(0.5) ? 'Dim daylight (cold sun)' : 'Twilight / terminator zone'
+  }
+
+  // Ringed-giant moons can sit in ring shadows
+  if (category === 'dwarf-body' && rng.chance(0.12)) return 'Ring-shadow penumbra'
+  // Strong magnetic / aurora-driven worlds (less common)
+  if (rng.chance(0.06)) return 'Auroral glow dominant'
+
+  return pickTable(rng, rng.int(1, 4), surfaceLightTable)  // bright/dim/twilight default range
+}
+
 function generateSeismicActivity(rng: SeededRng, category: BodyCategory, bodyClass: WorldClassOption, geology: string): string {
   if (category === 'belt') return 'Seismically dead'
   if (category === 'sub-neptune' || category === 'gas-giant' || category === 'ice-giant') return 'Seismically dead'
@@ -1761,6 +1809,16 @@ function generateDetail(
         'gu-layer',
         'MASS-GU anomaly surface-hazard constraint'
       ),
+      dayLength: fact(
+        isFacilityLike ? 'Earth-like day (~24 hours)' : 'No day-night cycle (tidally locked)',
+        'gu-layer',
+        'MASS-GU anomaly day-length constraint'
+      ),
+      surfaceLight: fact(
+        isFacilityLike ? 'Bright daylight (Earth-like)' : 'Dark sector / GU-shadowed',
+        'gu-layer',
+        'MASS-GU anomaly surface-light constraint'
+      ),
     }
 
     return {
@@ -1799,8 +1857,9 @@ function generateDetail(
       'inferred',
       'MASS-GU 14 radiation d8 table with source modifiers'
     ),
-    ...((): Pick<PlanetaryDetail, 'mineralComposition' | 'magneticField' | 'atmosphericTraces' | 'hydrology' | 'topography' | 'rotationProfile' | 'seismicActivity' | 'surfaceHazards'> => {
+    ...((): Pick<PlanetaryDetail, 'mineralComposition' | 'magneticField' | 'atmosphericTraces' | 'hydrology' | 'topography' | 'rotationProfile' | 'seismicActivity' | 'surfaceHazards' | 'dayLength' | 'surfaceLight'> => {
       const mineralValue = generateMineralComposition(rng.fork('mineral-composition'), category, thermalZone, bodyClass, geology)
+      const rotationValue = generateRotationProfile(rng.fork('rotation'), category, thermalZone, bodyClass)
       return {
         mineralComposition: fact(mineralValue, 'inferred', 'Generated lithology — biased by thermal zone, geology, and class chemistry'),
         magneticField: fact(
@@ -1823,11 +1882,7 @@ function generateDetail(
           'inferred',
           'Generated surface morphology — biased by geology, hydrosphere, and thermal zone',
         ),
-        rotationProfile: fact(
-          generateRotationProfile(rng.fork('rotation'), category, thermalZone, bodyClass),
-          'inferred',
-          'Generated rotation profile — biased by class tags, thermal zone, and category',
-        ),
+        rotationProfile: fact(rotationValue, 'inferred', 'Generated rotation profile — biased by class tags, thermal zone, and category'),
         seismicActivity: fact(
           generateSeismicActivity(rng.fork('seismic'), category, bodyClass, geology),
           'inferred',
@@ -1837,6 +1892,16 @@ function generateDetail(
           generateSurfaceHazards(rng.fork('surface-hazards'), category, bodyClass, hydrosphere, atmosphere, mineralValue),
           'inferred',
           'Generated surface contact hazards — biased by mineral composition, hydrosphere, and atmosphere',
+        ),
+        dayLength: fact(
+          generateDayLength(rng.fork('day-length'), category, thermalZone, bodyClass, rotationValue),
+          'inferred',
+          'Generated day length — derived from rotation profile and class tags',
+        ),
+        surfaceLight: fact(
+          generateSurfaceLight(rng.fork('surface-light'), category, thermalZone, bodyClass, atmosphere, rotationValue),
+          'inferred',
+          'Generated surface light level — biased by thermal zone, atmosphere opacity, and rotation',
         ),
       }
     })(),
@@ -1873,6 +1938,8 @@ function mergeKnownDetail(generated: PlanetaryDetail, known?: PartialKnownBody['
     rotationProfile: mergeLockedFact(generated.rotationProfile, known?.rotationProfile),
     seismicActivity: mergeLockedFact(generated.seismicActivity, known?.seismicActivity),
     surfaceHazards: mergeLockedFact(generated.surfaceHazards, known?.surfaceHazards),
+    dayLength: mergeLockedFact(generated.dayLength, known?.dayLength),
+    surfaceLight: mergeLockedFact(generated.surfaceLight, known?.surfaceLight),
   }
 }
 
