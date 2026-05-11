@@ -138,6 +138,8 @@ export interface PlanetaryDetail {
   hydrology: Fact<string>
   topography: Fact<string>
   rotationProfile: Fact<string>
+  seismicActivity: Fact<string>
+  surfaceHazards: Fact<string>
 }
 
 export interface Moon {

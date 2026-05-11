@@ -245,6 +245,34 @@
     { "min": 9, "max": 9, "value": "Wobbling rotation" },
     { "min": 10, "max": 10, "value": "Chaotic rotation" }
   ],
+  "seismicActivityTable": [
+    { "min": 1, "max": 1, "value": "Seismically dead" },
+    { "min": 2, "max": 2, "value": "Rare deep tremors" },
+    { "min": 3, "max": 3, "value": "Stable continental crust" },
+    { "min": 4, "max": 4, "value": "Periodic plate quakes" },
+    { "min": 5, "max": 5, "value": "Active fault zones" },
+    { "min": 6, "max": 6, "value": "Frequent shaking" },
+    { "min": 7, "max": 7, "value": "Tidal flexing tremors" },
+    { "min": 8, "max": 8, "value": "Marsquake-scale crustal pops" },
+    { "min": 9, "max": 9, "value": "Constant micro-seismic noise" },
+    { "min": 10, "max": 10, "value": "Bleed-induced metric tremors" }
+  ],
+  "surfaceHazardsTable": [
+    { "min": 1, "max": 1, "value": "Clear surface — no contact hazards" },
+    { "min": 2, "max": 2, "value": "Wind-driven abrasive dust" },
+    { "min": 3, "max": 3, "value": "Perchlorate-laden soil" },
+    { "min": 4, "max": 4, "value": "Sulfuric acid pools" },
+    { "min": 5, "max": 5, "value": "Cyanide-bearing salt crust" },
+    { "min": 6, "max": 6, "value": "Mercury vapor pockets" },
+    { "min": 7, "max": 7, "value": "Electrostatic dust clouds" },
+    { "min": 8, "max": 8, "value": "Radioactive surface mineralization" },
+    { "min": 9, "max": 9, "value": "Cryogenic burn (LN2-cold contact)" },
+    { "min": 10, "max": 10, "value": "Carbon monoxide seeps" },
+    { "min": 11, "max": 11, "value": "Hydrogen sulfide vent gas" },
+    { "min": 12, "max": 12, "value": "Chiral-reactive contaminants" },
+    { "min": 13, "max": 13, "value": "Programmable-matter contamination" },
+    { "min": 14, "max": 14, "value": "Pyrophoric metallic dust" }
+  ],
   "moonTypes": ["Airless rock", "Cratered ice-rock", "Captured asteroid", "Captured dwarf", "Subsurface ocean moon", "Thick ice-shell moon", "Cryovolcanic moon", "Volcanic tidal moon", "Dense-atmosphere moon", "Hydrocarbon moon", "Habitable-zone moon", "Radiation-scorched inner moon", "Ring-shepherd moon", "Chiral ice moon", "Dark-sector density moon", "Programmable regolith moon", "Former settlement moon", "Active mining moon", "Quarantine moon", "Moving bleed node moon"],
   "moonScales": ["minor captured moonlet", "small major moon", "mid-sized icy moon", "large differentiated moon", "planet-scale major moon"],
   "bodySites": {

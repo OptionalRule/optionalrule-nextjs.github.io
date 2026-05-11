@@ -74,6 +74,8 @@ import {
   magneticFieldTable,
   mineralCompositionTable,
   rotationProfileTable,
+  seismicActivityTable,
+  surfaceHazardsTable,
   topographyTable,
   moonScales,
   moonTypes,
@@ -1458,6 +1460,57 @@ function generateBiosphere(rng: SeededRng, category: BodyCategory, thermalZone: 
   return pickOne(rng, biospheres.filter((value) => value !== 'Sterile' && value !== 'Prebiotic chemistry'))
 }
 
+function generateSeismicActivity(rng: SeededRng, category: BodyCategory, bodyClass: WorldClassOption, geology: string): string {
+  if (category === 'belt') return 'Seismically dead'
+  if (category === 'sub-neptune' || category === 'gas-giant' || category === 'ice-giant') return 'Seismically dead'
+
+  // GU / Bleed influence
+  if (/\bgu\b|chiral|observerse|bleed/i.test(bodyClass.className) && rng.chance(0.4)) return 'Bleed-induced metric tremors'
+
+  // Geology-driven overrides
+  if (geology === 'Tidal heating') return 'Tidal flexing tremors'
+  if (geology === 'Active volcanism' || geology === 'Extreme plume provinces' || geology === 'Global resurfacing') return 'Frequent shaking'
+  if (geology === 'Plate tectonic analogue') return 'Active fault zones'
+  if (geology === 'Supercontinent cycle') return 'Periodic plate quakes'
+  if (geology === 'Dead interior' || geology === 'Ancient cratered crust') return rng.chance(0.7) ? 'Seismically dead' : 'Rare deep tremors'
+  if (geology === 'Static lid') return 'Marsquake-scale crustal pops'
+  if (geology === 'Cryovolcanism' || geology === 'Subglacial volcanism') return 'Constant micro-seismic noise'
+  if (geology === 'Magnetic dynamo flicker') return 'Periodic plate quakes'
+
+  return pickTable(rng, rng.int(1, 10), seismicActivityTable)
+}
+
+function generateSurfaceHazards(rng: SeededRng, category: BodyCategory, bodyClass: WorldClassOption, hydro: string, atm: string, mineralComposition: string): string {
+  if (category === 'belt') return 'Wind-driven abrasive dust'
+  if (category === 'sub-neptune' || category === 'gas-giant' || category === 'ice-giant') return 'Clear surface — no contact hazards'
+
+  // Strong forcing by mineral composition (the most chemistry-direct field)
+  if (mineralComposition === 'Halogen-bearing crust') return rng.chance(0.5) ? 'Cyanide-bearing salt crust' : 'Hydrogen sulfide vent gas'
+  if (mineralComposition === 'Chiral organics in soil') return 'Chiral-reactive contaminants'
+  if (mineralComposition === 'Programmable-matter substrate' || mineralComposition === 'Bleed-altered crust') return 'Programmable-matter contamination'
+  if (mineralComposition === 'Iron-rich (red oxide)' || mineralComposition === 'Sulfate evaporite crust') return rng.chance(0.55) ? 'Perchlorate-laden soil' : 'Wind-driven abrasive dust'
+  if (mineralComposition === 'Salt / evaporite-rich') return 'Perchlorate-laden soil'
+  if (mineralComposition === 'Sulfide ore-dominant') return 'Hydrogen sulfide vent gas'
+  if (mineralComposition === 'Iron meteoritic enrichment') return 'Pyrophoric metallic dust'
+
+  // Hydrosphere forcing
+  if (hydro === 'Liquid sulfur seas' || atm === 'Sulfur/chlorine/ammonia haze') return 'Sulfuric acid pools'
+  if (hydro === 'Cryogenic nitrogen reservoirs' || hydro === 'Methane permafrost cycle') return 'Cryogenic burn (LN2-cold contact)'
+  if (hydro === 'Dust seas / fluidized regolith') return 'Electrostatic dust clouds'
+  if (atm === 'Hydrogen sulfide rich') return 'Hydrogen sulfide vent gas'
+  if (atm === 'Photochemical smog' || atm === 'Halocarbon greenhouse') return 'Carbon monoxide seeps'
+
+  // Class hints
+  if (/airless|stripped/i.test(bodyClass.className) && rng.chance(0.4)) return 'Electrostatic dust clouds'
+  if (/scorched|inferno|furnace/i.test(bodyClass.className) && rng.chance(0.4)) return 'Mercury vapor pockets'
+
+  let roll = rng.int(1, 14)
+  if (atm === 'None / hard vacuum' || atm === 'Trace exosphere') {
+    if (rng.chance(0.5)) roll = pickOne(rng, [2, 7, 8])  // dust / static / radioactive
+  }
+  return pickTable(rng, clampTableRoll(roll, 14), surfaceHazardsTable)
+}
+
 function generateTopography(rng: SeededRng, category: BodyCategory, thermalZone: string, bodyClass: WorldClassOption, geology: string, hydro: string): string {
   if (category === 'belt') return 'Crater-saturated'
   if (category === 'sub-neptune' || category === 'gas-giant' || category === 'ice-giant') return 'Hemispheric albedo dichotomy'
@@ -1698,6 +1751,16 @@ function generateDetail(
         'gu-layer',
         'MASS-GU anomaly rotation constraint'
       ),
+      seismicActivity: fact(
+        isFacilityLike ? 'Seismically dead' : 'Bleed-induced metric tremors',
+        'gu-layer',
+        'MASS-GU anomaly seismic constraint'
+      ),
+      surfaceHazards: fact(
+        isFacilityLike ? 'Programmable-matter contamination' : 'Chiral-reactive contaminants',
+        'gu-layer',
+        'MASS-GU anomaly surface-hazard constraint'
+      ),
     }
 
     return {
@@ -1736,36 +1799,47 @@ function generateDetail(
       'inferred',
       'MASS-GU 14 radiation d8 table with source modifiers'
     ),
-    mineralComposition: fact(
-      generateMineralComposition(rng.fork('mineral-composition'), category, thermalZone, bodyClass, geology),
-      'inferred',
-      'Generated lithology — biased by thermal zone, geology, and class chemistry'
-    ),
-    magneticField: fact(
-      generateMagneticField(rng.fork('magnetic-field'), category, thermalZone, bodyClass, geology, physical),
-      'inferred',
-      'Generated magnetic field profile — biased by mass, geology, and category'
-    ),
-    atmosphericTraces: fact(
-      generateAtmosphericTraces(rng.fork('atmospheric-traces'), category, atmosphere, bodyClass),
-      'inferred',
-      'Generated trace-gas signature — biased by atmosphere type and class chemistry'
-    ),
-    hydrology: fact(
-      generateHydrology(rng.fork('hydrology'), category, thermalZone, bodyClass, hydrosphere, geology),
-      'inferred',
-      'Generated water-cycle pattern — biased by hydrosphere reservoir, geology, and tidal status'
-    ),
-    topography: fact(
-      generateTopography(rng.fork('topography'), category, thermalZone, bodyClass, geology, hydrosphere),
-      'inferred',
-      'Generated surface morphology — biased by geology, hydrosphere, and thermal zone'
-    ),
-    rotationProfile: fact(
-      generateRotationProfile(rng.fork('rotation'), category, thermalZone, bodyClass),
-      'inferred',
-      'Generated rotation profile — biased by class tags, thermal zone, and category'
-    ),
+    ...((): Pick<PlanetaryDetail, 'mineralComposition' | 'magneticField' | 'atmosphericTraces' | 'hydrology' | 'topography' | 'rotationProfile' | 'seismicActivity' | 'surfaceHazards'> => {
+      const mineralValue = generateMineralComposition(rng.fork('mineral-composition'), category, thermalZone, bodyClass, geology)
+      return {
+        mineralComposition: fact(mineralValue, 'inferred', 'Generated lithology — biased by thermal zone, geology, and class chemistry'),
+        magneticField: fact(
+          generateMagneticField(rng.fork('magnetic-field'), category, thermalZone, bodyClass, geology, physical),
+          'inferred',
+          'Generated magnetic field profile — biased by mass, geology, and category',
+        ),
+        atmosphericTraces: fact(
+          generateAtmosphericTraces(rng.fork('atmospheric-traces'), category, atmosphere, bodyClass),
+          'inferred',
+          'Generated trace-gas signature — biased by atmosphere type and class chemistry',
+        ),
+        hydrology: fact(
+          generateHydrology(rng.fork('hydrology'), category, thermalZone, bodyClass, hydrosphere, geology),
+          'inferred',
+          'Generated water-cycle pattern — biased by hydrosphere reservoir, geology, and tidal status',
+        ),
+        topography: fact(
+          generateTopography(rng.fork('topography'), category, thermalZone, bodyClass, geology, hydrosphere),
+          'inferred',
+          'Generated surface morphology — biased by geology, hydrosphere, and thermal zone',
+        ),
+        rotationProfile: fact(
+          generateRotationProfile(rng.fork('rotation'), category, thermalZone, bodyClass),
+          'inferred',
+          'Generated rotation profile — biased by class tags, thermal zone, and category',
+        ),
+        seismicActivity: fact(
+          generateSeismicActivity(rng.fork('seismic'), category, bodyClass, geology),
+          'inferred',
+          'Generated seismic regime — biased by geology and class tags',
+        ),
+        surfaceHazards: fact(
+          generateSurfaceHazards(rng.fork('surface-hazards'), category, bodyClass, hydrosphere, atmosphere, mineralValue),
+          'inferred',
+          'Generated surface contact hazards — biased by mineral composition, hydrosphere, and atmosphere',
+        ),
+      }
+    })(),
   }, environmentPolicy, thermalZone)
 
   const biosphereValue = environmentPolicy.biosphere.forced ?? generateBiosphere(rng, category, thermalZone, detailWithoutBiosphere, primary, bodyClass)
@@ -1797,6 +1871,8 @@ function mergeKnownDetail(generated: PlanetaryDetail, known?: PartialKnownBody['
     hydrology: mergeLockedFact(generated.hydrology, known?.hydrology),
     topography: mergeLockedFact(generated.topography, known?.topography),
     rotationProfile: mergeLockedFact(generated.rotationProfile, known?.rotationProfile),
+    seismicActivity: mergeLockedFact(generated.seismicActivity, known?.seismicActivity),
+    surfaceHazards: mergeLockedFact(generated.surfaceHazards, known?.surfaceHazards),
   }
 }
 
