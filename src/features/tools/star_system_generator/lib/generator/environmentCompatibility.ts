@@ -71,6 +71,7 @@ export const solidSurfaceAtmospheres = new Set([
   'Aerosol veil',
   'Halocarbon greenhouse',
   'Photochemical smog',
+  'Hydrogen sulfide rich',
 ])
 
 // Atmospheres that need heat (steam vapor pressure, chemistry mobilization).
@@ -98,6 +99,7 @@ export const greenhouseAtmospheres = new Set([
   'Chiral-active or GU-distorted atmosphere',
   'Halocarbon greenhouse',
   'Photochemical smog',
+  'Hydrogen sulfide rich',
 ])
 
 export const steamHydrospheres = new Set([
@@ -161,6 +163,7 @@ export const coldTerrestrialHydrospheres = new Set([
   'Cryo-geyser fields',
   'Continental water tables',
   'Dust seas / fluidized regolith',
+  'Methane permafrost cycle',
   'Exotic solvent or GU-stabilized fluid chemistry',
 ])
 
@@ -251,6 +254,7 @@ export const hotSilicateGeologies = new Set([
   'Karst / dissolution terrain',
   'Magnetic dynamo flicker',
   'Glassy / vitrified surface',
+  'Recurrent flood plains',
 ])
 
 // Cold/icy-body geologies. Silicate volcanism only via tidal heating on a special class.

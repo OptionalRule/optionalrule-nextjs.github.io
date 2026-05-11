@@ -50,7 +50,8 @@
     { "min": 13, "max": 13, "value": "Oxygen-rich pre-industrial atmosphere" },
     { "min": 14, "max": 14, "value": "Aerosol veil" },
     { "min": 15, "max": 15, "value": "Halocarbon greenhouse" },
-    { "min": 16, "max": 16, "value": "Photochemical smog" }
+    { "min": 16, "max": 16, "value": "Photochemical smog" },
+    { "min": 17, "max": 17, "value": "Hydrogen sulfide rich" }
   ],
   "hydrosphereTable": [
     { "min": 1, "max": 1, "value": "Bone dry" },
@@ -69,7 +70,8 @@
     { "min": 14, "max": 14, "value": "Cryo-geyser fields" },
     { "min": 15, "max": 15, "value": "Liquid sulfur seas" },
     { "min": 16, "max": 16, "value": "Continental water tables" },
-    { "min": 17, "max": 17, "value": "Dust seas / fluidized regolith" }
+    { "min": 17, "max": 17, "value": "Dust seas / fluidized regolith" },
+    { "min": 18, "max": 18, "value": "Methane permafrost cycle" }
   ],
   "geologyTable": [
     { "min": 1, "max": 1, "value": "Dead interior" },
@@ -87,7 +89,8 @@
     { "min": 13, "max": 13, "value": "Karst / dissolution terrain" },
     { "min": 14, "max": 14, "value": "Magnetic dynamo flicker" },
     { "min": 15, "max": 15, "value": "Glassy / vitrified surface" },
-    { "min": 16, "max": 16, "value": "Subglacial volcanism" }
+    { "min": 16, "max": 16, "value": "Subglacial volcanism" },
+    { "min": 17, "max": 17, "value": "Recurrent flood plains" }
   ],
   "climateSourceTable": [
     { "min": 1, "max": 1, "value": "Runaway greenhouse" },
@@ -123,7 +126,8 @@
     { "min": 7, "max": 7, "value": "Electronics-disruptive metric/radiation mix" },
     { "min": 8, "max": 8, "value": "Only deep shielded habitats survive" },
     { "min": 9, "max": 9, "value": "Cyclical / seasonal radiation" },
-    { "min": 10, "max": 10, "value": "GU-quantum decoherence band" }
+    { "min": 10, "max": 10, "value": "GU-quantum decoherence band" },
+    { "min": 11, "max": 11, "value": "Pulsar/magnetar EM" }
   ],
   "ringTypeTable": [
     { "min": 1, "max": 4, "value": "None or faint" },
@@ -148,7 +152,7 @@
   "temperateEnvelopeClimateTags": ["Permanent storm tracks", "Methane cycle", "Chiral cloud chemistry", "Dark-sector gravity tides"],
   "coldEnvelopeClimateTags": ["Permanent storm tracks", "Methane cycle", "Chiral cloud chemistry", "Dark-sector gravity tides"],
   "envelopeClimateTags": ["Permanent storm tracks", "Methane cycle", "Chiral cloud chemistry", "Dark-sector gravity tides"],
-  "biospheres": ["Sterile", "Prebiotic chemistry", "Ambiguous biosignatures", "Microbial life", "Extremophile microbial ecology", "Simple macroscopic non-sapient life", "Engineered remnant biosphere", "Photosynthetic microbial mats", "Cryptic subsurface biosphere"],
+  "biospheres": ["Sterile", "Prebiotic chemistry", "Ambiguous biosignatures", "Microbial life", "Extremophile microbial ecology", "Simple macroscopic non-sapient life", "Engineered remnant biosphere", "Photosynthetic microbial mats", "Cryptic subsurface biosphere", "Chimeric chiral biosphere"],
   "moonTypes": ["Airless rock", "Cratered ice-rock", "Captured asteroid", "Captured dwarf", "Subsurface ocean moon", "Thick ice-shell moon", "Cryovolcanic moon", "Volcanic tidal moon", "Dense-atmosphere moon", "Hydrocarbon moon", "Habitable-zone moon", "Radiation-scorched inner moon", "Ring-shepherd moon", "Chiral ice moon", "Dark-sector density moon", "Programmable regolith moon", "Former settlement moon", "Active mining moon", "Quarantine moon", "Moving bleed node moon"],
   "moonScales": ["minor captured moonlet", "small major moon", "mid-sized icy moon", "large differentiated moon", "planet-scale major moon"],
   "bodySites": {

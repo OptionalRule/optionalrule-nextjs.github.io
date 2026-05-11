@@ -1261,8 +1261,10 @@ function rollGeology(rng: SeededRng, category: BodyCategory, thermalZone: string
   if (/dayside glass|glass world|ablating|carbon-rich furnace/i.test(bodyClass.className)) roll += 4
   // Subglacial volcanism (16): tidally heated ice-shell worlds
   if (/ice-shell|buried-ocean|tidally heated/i.test(bodyClass.className)) roll += 5
+  // Recurrent flood plains (17): volatile-rich rocky bodies with thermal cycling (Mars Tharsis-style)
+  if (/mars-like|tharsis|flood|outburst|catastrophic/i.test(bodyClass.className)) roll += 5
 
-  return pickTable(rng, clampTableRoll(roll, 16), geologyTable)
+  return pickTable(rng, clampTableRoll(roll, 17), geologyTable)
 }
 
 function classAtmosphereFlavor(className: string): string | undefined {
@@ -1301,8 +1303,10 @@ function rollAtmosphere(
   if ((thermalZone === 'Cold' || thermalZone === 'Cryogenic' || thermalZone === 'Dark') && /methane|nitrogen|titan|cryo|frost|haze/i.test(bodyClass.className)) roll += 3
   // Industrial/facility/abandoned classes can roll Halocarbon greenhouse (15) or Photochemical smog (16).
   if (/industry|industrial|black-lab|facility|failed terraform|abandoned/i.test(bodyClass.className)) roll += 4
+  // Tidally heated sulfur worlds reach Hydrogen sulfide rich (17).
+  if (/sulfur|volcanic|tidally stretched/i.test(bodyClass.className)) roll += 5
 
-  return pickTable(rng, clampTableRoll(roll, 16), atmosphereTable)
+  return pickTable(rng, clampTableRoll(roll, 17), atmosphereTable)
 }
 
 function classHydrosphereFlavor(className: string): string | undefined {
@@ -1310,6 +1314,7 @@ function classHydrosphereFlavor(className: string): string | undefined {
   if (/nitrogen\s+glacier/i.test(className)) return 'Cryogenic nitrogen reservoirs'
   if (/perchlorate/i.test(className)) return 'Salt / perchlorate flats'
   if (/tidally stretched volcanic|carbon-rich furnace/i.test(className)) return 'Magma seas / lava lakes'
+  if (/methane frost world/i.test(className)) return 'Methane permafrost cycle'
   return undefined
 }
 
@@ -1337,8 +1342,10 @@ function rollHydrosphere(rng: SeededRng, category: BodyCategory, thermalZone: st
   if (/mars-like|dry terrestrial|cold desert|frozen mars-like/i.test(bodyClass.className)) roll += 4
   // Airless dwarf-body classes can roll Dust seas / fluidized regolith (17).
   if (category === 'dwarf-body' && /airless|dust|regolith|charged/i.test(bodyClass.className)) roll += 5
+  // Cold methane-cycling classes can roll Methane permafrost cycle (18).
+  if ((thermalZone === 'Cold' || thermalZone === 'Cryogenic' || thermalZone === 'Dark') && /methane|hydrocarbon|titan|frost/i.test(bodyClass.className)) roll += 6
 
-  return pickTable(rng, clampTableRoll(roll, 17), hydrosphereTable)
+  return pickTable(rng, clampTableRoll(roll, 18), hydrosphereTable)
 }
 
 function generateClimate(rng: SeededRng, category: BodyCategory, thermalZone: string, count: number) {
@@ -1376,6 +1383,10 @@ function generateRadiation(rng: SeededRng, category: BodyCategory, thermalZone: 
   const className = bodyClass?.className ?? ''
   const isGuTagged = /\bgu\b|chiral|observerse|bleed|programmable|metric/i.test(className)
   if (isGuTagged && rng.chance(0.4)) return 'GU-quantum decoherence band'
+  // Extreme stellar activity around a compact-object companion (or magnetar-flavored anomaly) produces
+  // pulsed electromagnetic radiation distinct from flares.
+  if (primary.activity.value === 'Extreme activity / metric-amplified events' && rng.chance(0.18)) return 'Pulsar/magnetar EM'
+  if (/dark-sector|magnetar|pulsar|gardener-shadowed/i.test(className) && rng.chance(0.3)) return 'Pulsar/magnetar EM'
   // M-dwarf systems and other variable stars commonly produce cyclical radiation patterns —
   // periodic flare/quiescence cycles rather than continuous danger.
   const isMDwarfFlaring = primary.spectralType.value.includes('M dwarf') && isFlaring
@@ -1423,6 +1434,10 @@ function generateBiosphere(rng: SeededRng, category: BodyCategory, thermalZone: 
   // Engineered remnant biosphere: terraforming-derived microbial life on failed/in-progress terraform sites.
   const isTerraformClass = bodyClass ? /terraforming|failed-terraform|relict garden/i.test(bodyClass.className) : false
   if (isTerraformClass && score >= 6 && score <= 9) return 'Engineered remnant biosphere'
+
+  // Chimeric chiral biosphere: GU-tagged classes with high biosphere score get mixed-handed biochemistry.
+  const isGuClass = bodyClass ? /\bgu\b|chiral|observerse|bleed/i.test(bodyClass.className) : false
+  if (isGuClass && score >= 7 && rng.chance(0.55)) return 'Chimeric chiral biosphere'
 
   // Free-oxygen atmosphere strongly suggests photosynthetic life: upgrade microbial-tier hits to mats.
   const hasOxygenAtm = detail.atmosphere.value === 'Oxygen-rich pre-industrial atmosphere'
