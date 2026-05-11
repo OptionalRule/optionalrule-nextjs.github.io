@@ -132,6 +132,8 @@ export interface PlanetaryDetail {
   climate: Array<Fact<string>>
   radiation: Fact<string>
   biosphere: Fact<string>
+  mineralComposition: Fact<string>
+  magneticField: Fact<string>
 }
 
 export interface Moon {

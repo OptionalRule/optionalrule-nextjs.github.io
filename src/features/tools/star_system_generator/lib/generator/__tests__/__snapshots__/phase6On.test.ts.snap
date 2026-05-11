@@ -3,15 +3,15 @@
 exports[`Phase 6 graph-aware prose surfaces (all flags on) > seed phase6-on-1 produces stable graph-aware output 1`] = `
 {
   "phenomenonNotes": [
-    "Biosecurity rules slow landings, cargo transfers, and suit cycling near habitats. Unsettled: Are the microbes a medical resource, industrial hazard, or protected environmental evidence? GU quarantine orders collide with settlers dependent on local biomass chemistry. A decon tent steams beside stained sample tanks and disputed filters.",
-    "Old gate turbulence makes jumps arrive late, offset, or near exclusion buoys. Crews still argue: Is the wake decaying, stabilizing, or being refreshed by unauthorized traffic? The destabilization centers on Gomeisa Waypoint-895 VI: A stranded settlement claims GU approved evacuation after knowing the wake was unsafe. A dead gate frame broadcasts conflicting closure orders from warning drones.",
-    "Tight orbital timing creates narrow transfer corridors and expensive missed-burn delays. Crews still ask who mapped the stable windows, and what installations are protected by withheld ephemerides. The destabilization centers on Gomeisa Waypoint-895 VI: Route controllers, smugglers, and settlement clocks all depend on one resonance model. Three close worlds cross the display in metronome sequence.",
+    "Biosecurity rules slow landings, cargo transfers, and suit cycling near habitats. Unsettled: Are the microbes a medical resource, industrial hazard, or protected environmental evidence? The destabilization centers on Gomeisa Waypoint-895 VII: GU quarantine orders collide with settlers dependent on local biomass chemistry. A decon tent steams beside stained sample tanks and disputed filters.",
+    "Old gate turbulence makes jumps arrive late, offset, or near exclusion buoys. Crews still argue: Is the wake decaying, stabilizing, or being refreshed by unauthorized traffic? A stranded settlement claims GU approved evacuation after knowing the wake was unsafe. A dead gate frame broadcasts conflicting closure orders from warning drones.",
+    "Tight orbital timing creates narrow transfer corridors and expensive missed-burn delays. Crews still ask who mapped the stable windows, and what installations are protected by withheld ephemerides. The destabilization centers on Gomeisa Waypoint-895 VII: Route controllers, smugglers, and settlement clocks all depend on one resonance model. Three close worlds cross the display in metronome sequence.",
   ],
   "settlementTagHooks": [
-    "Outlaw Court is the surface story, but Medical Triage State shows who benefits from the tension: clinic decisions have become law because exposure and scarcity decide who gets treated. Coordination drift across the swarm makes exposure clinic the choke point everyone fights over. Privately, the site is a black prison. Control of the biosphere research station decides who has leverage.",
+    "Outlaw Court is the surface story, but Medical Triage State shows who benefits from the tension: clinic decisions have become law because exposure and scarcity decide who gets treated. Coordination drift across the swarm makes worker barracks the choke point everyone fights over. Privately, the site is a black prison. Control of the chiral harvesting site decides who has leverage.",
   ],
   "settlementWhyHere": [
-    "Gomeisa Waypoint-895 VI - Moon I maintains its footprint on the body it occupies. Gomeisa Waypoint-895 VI - Moon I stays because the yield outweighs everything that wants it gone.",
+    "Gomeisa Waypoint-895 VII - Moon I maintains its footprint on the body it occupies. Gomeisa Waypoint-895 VII - Moon I stays because the yield outweighs everything that wants it gone.",
   ],
 }
 `;
@@ -24,14 +24,14 @@ exports[`Phase 6 graph-aware prose surfaces (all flags on) > seed phase6-on-2 pr
     "Vent geysers force ships into a shifting safe-corridor that closes without warning. No one has settled which plume holds clean volatiles, hidden organics, or mislabeled contamination. A GU survey hold stalls extraction while rival crews falsify plume data. A drill crew in tethered suits watches a plume curl over their station floodlights.",
   ],
   "settlementTagHooks": [
-    "Migrant Swarm is what visitors notice first; whoever controls the records controls legal truth, casualty counts, and property claims. Coordination drift across the swarm makes single-bay clinic the choke point everyone fights over. Privately, the founders committed a crime. Control of the exposure clinic decides who has leverage.",
+    "Migrant Swarm is what visitors notice first; whoever controls the records controls legal truth, casualty counts, and property claims. When safe transit window sold to too many ships, the situation keeps orbital station politics under stress. Privately, the founders committed a crime. Control of the exposure clinic decides who has leverage.",
     "Hydrocarbon Frontier is what visitors notice first; safe windows are forecasts, markets, and political weapons at the same time. Coordination drift across the swarm makes bleed-harvest control room the choke point everyone fights over. Privately, the site is a weapons lab. Everything here turns on access to Phase-stable superconductive lattice.",
-    "The public tag is Gate Shadow; the private trouble is Ghost City, Human, because the haunting is human history, not the supernatural. A staged crisis keeps deep-space platform politics under stress. Privately, the medical stockpile was traded for route access. Whoever runs the exposure clinic sets the terms here.",
+    "The public tag is Gate Shadow; the private trouble is Ghost City, Human, because the haunting is human history, not the supernatural. A staged crisis keeps moon base politics under stress. Privately, the medical stockpile was traded for route access. Whoever runs the quarantine station sets the terms here.",
   ],
   "settlementWhyHere": [
-    "Noquisi Transit-948 traffic pattern took root on Noquisi Transit-948 VII and has not moved since. Noquisi Transit-948 traffic pattern stays because the yield outweighs everything that wants it gone.",
-    "Noquisi Transit-948 Belt IV is anchored to Noquisi Transit-948 Belt IV, with Phase-stable superconductive lattice keeping it viable. There is enough of value under Noquisi Transit-948 Belt IV to justify both the danger and the secrecy.",
-    "Noquisi Transit-948 V route geometry grew here because the body underneath asks less of its people than most.",
+    "There is enough breathable margin around Noquisi Transit-948 V orbital space to keep crews settled long-term.",
+    "Noquisi Transit-948 Belt IV is wholly tied to Phase-stable superconductive lattice for its continued operation. There is enough of value under Noquisi Transit-948 Belt IV to justify both the danger and the secrecy.",
+    "Noquisi Transit-948 VII - Moon I maintains its footprint on the body it occupies. There is enough of value under Noquisi Transit-948 VII - Moon I to justify both the danger and the secrecy.",
   ],
 }
 `;
@@ -39,16 +39,16 @@ exports[`Phase 6 graph-aware prose surfaces (all flags on) > seed phase6-on-2 pr
 exports[`Phase 6 graph-aware prose surfaces (all flags on) > seed phase6-on-3 produces stable graph-aware output 1`] = `
 {
   "phenomenonNotes": [
-    "Movement around the cache requires a docket number, and the docket number changes weekly. What stays contested is what part of the chain-of-custody got rewritten between the seizure and the seal. The destabilization centers on Nosaxa-Array Belt V: Judges, insurers, and crews need the evidence preserved, altered, or lost. A locked evidence container transmits chain-of-custody pings to every claimant.",
+    "Movement around the cache requires a docket number, and the docket number changes weekly. What stays contested is what part of the chain-of-custody got rewritten between the seizure and the seal. Judges, insurers, and crews need the evidence preserved, altered, or lost. A locked evidence container transmits chain-of-custody pings to every claimant.",
     "Snow-line crossings require screening ice intake and reactor feedstock for asymmetric organics. Open question: Are the chiral signatures local chemistry, imported contamination, or terraforming residue? The destabilization centers on Nosaxa-Array IV: Biotech firms and GU biosafety officers contest every water-dependent ice claim. Clean ice turns quarantine amber as every tank flags the same handedness.",
   ],
   "settlementTagHooks": [
     "Debt Labor binds the workforce to fees; Chiral Monopoly controls the medicine and materials that keep those debts growing. Coordination drift across the swarm makes debt court queue the choke point everyone fights over. Privately, the Iggygate is misaligned on purpose. Whoever runs the smuggler port sets the terms here.",
-    "High-G Research is what visitors notice first; military presence is deeper than the public registry admits. The single backup generator failed in private keeps asteroid or belt base politics under stress. Privately, the site is a smuggling hub. Whoever runs the refinery sets the terms here.",
+    "Storm Shelter Politics is what visitors notice first; a failed environmental project is still shaping the crisis. When transit grid failure during storm, the situation keeps surface settlement politics under stress. Privately, the settlement cannot survive evacuation. The standoff with Kestrel Free Compact is the political reality of this site.",
   ],
   "settlementWhyHere": [
-    "Nosaxa-Array traffic pattern is built into this orbital and works the surface from there.",
-    "The yields under Nosaxa-Array Belt V are concrete enough to keep crews on station year over year.",
+    "Nosaxa-Array traffic pattern stays because leaving has always cost more than staying has.",
+    "The local conditions are forgiving enough that Nosaxa-Array III has never needed heavy shielding.",
   ],
 }
 `;

@@ -69,6 +69,8 @@ import {
   hotClimateTags,
   hotEnvelopeClimateTags,
   hydrosphereTable,
+  magneticFieldTable,
+  mineralCompositionTable,
   moonScales,
   moonTypes,
   radiationTable,
@@ -1452,6 +1454,64 @@ function generateBiosphere(rng: SeededRng, category: BodyCategory, thermalZone: 
   return pickOne(rng, biospheres.filter((value) => value !== 'Sterile' && value !== 'Prebiotic chemistry'))
 }
 
+function generateMineralComposition(rng: SeededRng, category: BodyCategory, thermalZone: string, bodyClass: WorldClassOption, geology: string): string {
+  if (category === 'belt') return 'Sulfide ore-dominant'
+  if (category === 'sub-neptune' || category === 'gas-giant' || category === 'ice-giant') return 'Olivine-pyroxene mantle exposure'
+
+  let roll = rng.int(1, 20)
+  // Thermal zone biases
+  if (thermalZone === 'Furnace' || thermalZone === 'Inferno') {
+    if (rng.chance(0.5)) roll = pickOne(rng, [3, 15, 16, 8])  // carbon-rich / iron meteoritic / vitrified / mantle
+  }
+  if (thermalZone === 'Cold' || thermalZone === 'Cryogenic' || thermalZone === 'Dark') {
+    if (rng.chance(0.45)) roll = pickOne(rng, [9, 10, 19])  // clathrates / He-3 regolith / frozen organics
+  }
+  // Geology cross-link
+  if (geology === 'Karst / dissolution terrain') roll = 7  // calcite/limestone
+  if (geology === 'Glassy / vitrified surface') roll = 16
+  // Class-specific routing
+  if (/\bgu\b|chiral|observerse|bleed/i.test(bodyClass.className)) {
+    if (rng.chance(0.6)) roll = pickOne(rng, [12, 13, 14])  // chiral / programmable / bleed-altered
+  }
+  if (/stripped|airless|remnant/i.test(bodyClass.className)) roll = pickOne(rng, [8, 15, 18])  // mantle / iron / bedrock
+  if (/sulfur|volcanic/i.test(bodyClass.className) && (thermalZone === 'Hot' || thermalZone === 'Furnace' || thermalZone === 'Inferno')) roll = 4
+  if (/salt|perchlorate|evaporite/i.test(bodyClass.className)) roll = pickOne(rng, [17, 20])
+  if (/dense|super-mercury|heavy-gravity/i.test(bodyClass.className)) roll = pickOne(rng, [5, 4, 15])  // heavy elements / sulfide / iron
+
+  return pickTable(rng, clampTableRoll(roll, 20), mineralCompositionTable)
+}
+
+function generateMagneticField(rng: SeededRng, category: BodyCategory, thermalZone: string, bodyClass: WorldClassOption, geology: string, physical: BodyPhysicalHints): string {
+  // Belt and dwarf bodies generally no field
+  if (category === 'belt') return 'No field (naked)'
+  if (category === 'dwarf-body' && rng.chance(0.85)) return rng.chance(0.5) ? 'No field (naked)' : 'Weak crustal remnant'
+
+  // Geology cross-link: Magnetic dynamo flicker geology forces Pulsing/flickering
+  if (geology === 'Magnetic dynamo flicker') return 'Pulsing / flickering'
+
+  // Envelope bodies (gas/ice giants) typically have strong fields
+  if (category === 'sub-neptune' || category === 'gas-giant' || category === 'ice-giant') {
+    return rng.chance(0.85) ? 'Strong dipole shield' : 'Aurora-belt dominated'
+  }
+
+  // GU classes have a chance for the GU monopole anomaly
+  if (/\bgu\b|chiral|observerse|bleed|programmable|metric/i.test(bodyClass.className) && rng.chance(0.35)) {
+    return 'GU monopole anomaly'
+  }
+
+  let roll = rng.int(1, 10)
+  // Super-Earth and high-gravity bodies bias toward stronger fields
+  if (category === 'super-earth' || /high-gravity|super-earth|super-terrestrial/i.test(bodyClass.className)) roll += 1
+  // Small bodies bias toward weaker
+  if (physical.radiusEarth.value < 0.7) roll -= 2
+  // Hot bodies with active geology bias toward functioning dynamos
+  if ((thermalZone === 'Hot' || thermalZone === 'Furnace' || thermalZone === 'Inferno') && ['Active volcanism', 'Plate tectonic analogue', 'Tidal heating', 'Extreme plume provinces', 'Global resurfacing'].includes(geology)) roll += 1
+  // Cold/Cryogenic dead bodies bias toward no field
+  if ((thermalZone === 'Cryogenic' || thermalZone === 'Dark') && ['Dead interior', 'Ancient cratered crust'].includes(geology)) roll -= 2
+
+  return pickTable(rng, clampTableRoll(roll, 9), magneticFieldTable)
+}
+
 function generateDetail(
   rng: SeededRng,
   bodyClass: WorldClassOption,
@@ -1489,6 +1549,16 @@ function generateDetail(
         pickOne(rng, ['Electronics-disruptive metric/radiation mix', 'Only deep shielded habitats survive', 'Storm-dependent hazard']),
         'gu-layer',
         'MASS-GU anomaly radiation constraint'
+      ),
+      mineralComposition: fact(
+        isFacilityLike ? 'Bedrock exposed (no regolith)' : 'Programmable-matter substrate',
+        'gu-layer',
+        'MASS-GU anomaly mineral constraint'
+      ),
+      magneticField: fact(
+        isFacilityLike ? 'No field (naked)' : 'GU monopole anomaly',
+        'gu-layer',
+        'MASS-GU anomaly magnetic constraint'
       ),
     }
 
@@ -1528,6 +1598,16 @@ function generateDetail(
       'inferred',
       'MASS-GU 14 radiation d8 table with source modifiers'
     ),
+    mineralComposition: fact(
+      generateMineralComposition(rng, category, thermalZone, bodyClass, geology),
+      'inferred',
+      'Generated lithology — biased by thermal zone, geology, and class chemistry'
+    ),
+    magneticField: fact(
+      generateMagneticField(rng, category, thermalZone, bodyClass, geology, physical),
+      'inferred',
+      'Generated magnetic field profile — biased by mass, geology, and category'
+    ),
   }, environmentPolicy, thermalZone)
 
   const biosphereValue = environmentPolicy.biosphere.forced ?? generateBiosphere(rng, category, thermalZone, detailWithoutBiosphere, primary, bodyClass)
@@ -1553,6 +1633,8 @@ function mergeKnownDetail(generated: PlanetaryDetail, known?: PartialKnownBody['
     climate: known?.climate?.some((entry) => entry.locked) ? known.climate as Array<Fact<string>> : generated.climate,
     radiation: mergeLockedFact(generated.radiation, known?.radiation),
     biosphere: mergeLockedFact(generated.biosphere, known?.biosphere),
+    mineralComposition: mergeLockedFact(generated.mineralComposition, known?.mineralComposition),
+    magneticField: mergeLockedFact(generated.magneticField, known?.magneticField),
   }
 }
 

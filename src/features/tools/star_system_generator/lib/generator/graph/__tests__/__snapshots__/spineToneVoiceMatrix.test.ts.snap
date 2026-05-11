@@ -2,9 +2,9 @@
 
 exports[`spine tone × edge type voice matrix > tone=astronomy: spine prose reads in tone voice 1`] = `
 {
-  "body0": "The amplitude of the captured rogue world exceeds the operating envelope of Tau Reticuli Cohort. The amplitude of the refugee ark parking orbit exceeds the operating envelope of Custos Echo-58 Belt VI. The captured rogue world introduces a measurable perturbation in Custos Echo-58 Belt IV. Custos Echo-58 Belt IV Charter is the only major foothold on Custos Echo-58 Belt IV.",
+  "body0": "The amplitude of the captured rogue world exceeds the operating envelope of Tau Reticuli Cohort. The amplitude of the refugee ark parking orbit exceeds the operating envelope of Custos Echo-58 Belt VI. The captured rogue world introduces a measurable perturbation in Custos Echo-58 Dwarf II. Quarantine-era cemetery cylinder is the only major foothold on Custos Echo-58 Dwarf II. Custos Echo-58 Belt VI hosts Custos Echo-58 Belt VI Charter.",
   "spineEdgeType": "DESTABILIZES",
-  "spineSummary": "Captured rogue world took shape in the third pulse cycle, the perturbation from the captured rogue world now exceeds Tau Reticuli Cohort's tolerance margin.",
+  "spineSummary": "Captured rogue world took shape after Cycle 7, the perturbation from the captured rogue world now exceeds Tau Reticuli Cohort's tolerance margin.",
 }
 `;
 
@@ -18,8 +18,8 @@ exports[`spine tone × edge type voice matrix > tone=balanced: spine prose reads
 
 exports[`spine tone × edge type voice matrix > tone=cinematic: spine prose reads in tone voice 1`] = `
 {
-  "body0": "Between Pale Saint Wake and Salt Wound Wake the knife is already drawn. Carrion Synod keeps the receipts. Crown of Dust Pact keeps the witnesses. Bone Lantern Order swore the pact would hold; Pale Saint Wake swore otherwise.",
+  "body0": "Between Carrion Synod and Crown of Dust Pact the knife is already drawn. And then, Calvera-10 IV has been watching the metric mirage zone eat its margins for a generation. The election-day metric storm cycle is hollowing Calvera-10 VIII from underneath. Calvera-10 IV carries Calvera-10 Swarm on its surface. Calvera-10 VIII hosts Calvera-10 VIII Platform.",
   "spineEdgeType": "CONTESTS",
-  "spineSummary": "The compact between Pale Saint Wake and Salt Wound Wake broke in the silent decade, Pale Saint Wake and Salt Wound Wake are bleeding each other dry, and the system cheers them on.",
+  "spineSummary": "The compact between Carrion Synod and Crown of Dust Pact broke in the silent decade, Carrion Synod and Crown of Dust Pact are bleeding each other dry, and the system cheers them on.",
 }
 `;

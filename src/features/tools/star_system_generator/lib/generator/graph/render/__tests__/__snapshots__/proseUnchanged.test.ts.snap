@@ -25,10 +25,12 @@ exports[`Phase 3 existing prose remains byte-identical > seed phase3-prose-2 pro
     "Transit: Radiation belts force looping transfers, hardened shelters, and costly orbital delays. Question: Which supposedly safe corridor shifted, and who knew before the convoy entered? Hook: Port authorities, insurers, and smugglers fight over legal and lethal corridor maps. Image: A navigation vault shows a convoy bending toward an uncharted hot belt.",
   ],
   "settlementTagHooks": [
-    "Outsiders call it Deep Ice, but the local pressure is sharper: travel, debt, and risk all orbit the next moving bleed opportunity. A corporate security crackdown makes the GU work impossible to treat as routine. Privately, the settlement has an evacuation ark nobody knows about. Whoever runs the quarantine station sets the terms here.",
+    "Outsiders call it Air Is Money, but the local pressure is sharper: legacy weapons make ordinary operations into negotiations. A drifting bleed node makes the GU work impossible to treat as routine. Privately, the site is a black prison. Whoever runs the chiral harvesting site sets the terms here.",
+    "Outsiders call it Archive War, but the local pressure is sharper: containment policy is shaping every personal choice. Coordination drift across the swarm makes transit lock overflow the choke point everyone fights over. Privately, corporate records were altered. Whatever the system fights over next, the ice-chirality sorting plant is where it lands.",
   ],
   "settlementWhyHere": [
-    "Meissa's Forge V minor-body complex is built into this orbital and works the surface from there. The reading here is high enough that Meissa's Forge V minor-body complex accepts the risk and the silence.",
+    "There is something rare in this volume, and Meissa's Forge II - Moon I is the answer to it.",
+    "Meissa's Forge Belt VI is anchored to Meissa's Forge Belt VI, with Snow-line organochemical feedstock keeping it viable. Meissa's Forge Belt VI stays because the yield outweighs everything that wants it gone.",
   ],
   "systemName": "Meissa's Forge",
 }
@@ -42,10 +44,10 @@ exports[`Phase 3 existing prose remains byte-identical > seed phase3-prose-3 pro
     "Transit: Radiation belts force looping transfers, hardened shelters, and costly orbital delays. Question: Which supposedly safe corridor shifted, and who knew before the convoy entered? Hook: Port authorities, insurers, and smugglers fight over legal and lethal corridor maps. Image: A navigation vault shows a convoy bending toward an uncharted hot belt.",
   ],
   "settlementTagHooks": [
-    "The public tag is Flare Refuge; the private trouble is Moving Node Rush, because short-lived opportunity is pushing people into unsafe choices. Coordination drift across the swarm makes single-room briefing cell the choke point everyone fights over. Privately, the settlement has an evacuation ark nobody knows about. Whoever runs the civilian colony sets the terms here.",
+    "The public tag is Aristocratic Dome; the private trouble is Hidden Navy, because military presence is deeper than the public registry admits. Coordination drift across the swarm makes town hall annex the choke point everyone fights over. Privately, the clinic is hiding a second exposure syndrome. Whoever runs the biosphere research station sets the terms here.",
   ],
   "settlementWhyHere": [
-    "Shengong-Prism III - Moon I occupies Shengong-Prism III and is held in place by Medical chirality stock. Shengong-Prism III - Moon I stays because the yield outweighs everything that wants it gone.",
+    "Shengong-Prism I minor-body complex occupies Shengong-Prism I and is held in place by Medical chirality stock. Shengong-Prism I minor-body complex stays because the yield outweighs everything that wants it gone.",
   ],
   "systemName": "Shengong-Prism",
 }
