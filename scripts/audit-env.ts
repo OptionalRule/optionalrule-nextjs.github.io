@@ -265,10 +265,30 @@ lifeUnderLethalFlare.slice(0, 5).forEach((h) => console.log(`  ${h.zone} | ${h.c
 // =========================================================
 const allHydros = new Map<string, number>()
 for (const b of bodies) allHydros.set(b.hydro, (allHydros.get(b.hydro) ?? 0) + 1)
-console.log('\n[FREQ] hydrosphere frequencies (top 25):')
-;[...allHydros.entries()].sort((a, b) => b[1] - a[1]).slice(0, 25).forEach(([v, n]) => console.log(`  ${String(n).padStart(4)}  ${v}`))
+console.log('\n[FREQ] hydrosphere frequencies (all):')
+;[...allHydros.entries()].sort((a, b) => b[1] - a[1]).forEach(([v, n]) => console.log(`  ${String(n).padStart(4)}  ${v}`))
 
 const allAtms = new Map<string, number>()
 for (const b of bodies) allAtms.set(b.atm, (allAtms.get(b.atm) ?? 0) + 1)
-console.log('\n[FREQ] atmosphere frequencies:')
+console.log('\n[FREQ] atmosphere frequencies (all):')
 ;[...allAtms.entries()].sort((a, b) => b[1] - a[1]).forEach(([v, n]) => console.log(`  ${String(n).padStart(4)}  ${v}`))
+
+const allGeos = new Map<string, number>()
+for (const b of bodies) allGeos.set(b.geo, (allGeos.get(b.geo) ?? 0) + 1)
+console.log('\n[FREQ] geology frequencies (all):')
+;[...allGeos.entries()].sort((a, b) => b[1] - a[1]).forEach(([v, n]) => console.log(`  ${String(n).padStart(4)}  ${v}`))
+
+const allBios = new Map<string, number>()
+for (const b of bodies) allBios.set(b.bio, (allBios.get(b.bio) ?? 0) + 1)
+console.log('\n[FREQ] biosphere frequencies (all):')
+;[...allBios.entries()].sort((a, b) => b[1] - a[1]).forEach(([v, n]) => console.log(`  ${String(n).padStart(4)}  ${v}`))
+
+const allRads = new Map<string, number>()
+for (const b of bodies) allRads.set(b.rad, (allRads.get(b.rad) ?? 0) + 1)
+console.log('\n[FREQ] radiation frequencies (all):')
+;[...allRads.entries()].sort((a, b) => b[1] - a[1]).forEach(([v, n]) => console.log(`  ${String(n).padStart(4)}  ${v}`))
+
+const allClimates = new Map<string, number>()
+for (const b of bodies) for (const c of b.climates) allClimates.set(c, (allClimates.get(c) ?? 0) + 1)
+console.log('\n[FREQ] climate frequencies (all):')
+;[...allClimates.entries()].sort((a, b) => b[1] - a[1]).forEach(([v, n]) => console.log(`  ${String(n).padStart(4)}  ${v}`))

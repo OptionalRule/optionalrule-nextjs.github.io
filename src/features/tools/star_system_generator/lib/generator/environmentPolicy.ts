@@ -332,6 +332,8 @@ function climateCompatible(climate: string, hydro: string, atm: string): boolean
   if ((climate === 'Twilight ocean' || climate === 'Dense lowland pressure seas') && !climateOpenOcean.has(hydro)) return false
   // Acidic precipitation needs sulfur/chlorine compounds in the atmosphere to fall as acid rain.
   if (climate === 'Acidic precipitation' && !sulfurChlorineAtms.has(atm)) return false
+  // Tidal flooding cycle needs surface liquid water/seas to flood.
+  if (climate === 'Tidal flooding cycle' && !climateOpenOcean.has(hydro)) return false
   return true
 }
 

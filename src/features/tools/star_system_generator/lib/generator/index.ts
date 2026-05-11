@@ -1257,8 +1257,12 @@ function rollGeology(rng: SeededRng, category: BodyCategory, thermalZone: string
   if (category === 'super-earth' || /high-gravity|super-earth|super-terrestrial/i.test(bodyClass.className)) roll += 2
   // Water-rich and karst-eligible classes get an occasional +1 to reach Karst / Magnetic dynamo flicker (13-14).
   if (/karst|aquifer|carbonate|ocean|biosphere/i.test(bodyClass.className)) roll += 1
+  // Glassy / vitrified surface (15): heavy impact or extreme heat
+  if (/dayside glass|glass world|ablating|carbon-rich furnace/i.test(bodyClass.className)) roll += 4
+  // Subglacial volcanism (16): tidally heated ice-shell worlds
+  if (/ice-shell|buried-ocean|tidally heated/i.test(bodyClass.className)) roll += 5
 
-  return pickTable(rng, clampTableRoll(roll, 14), geologyTable)
+  return pickTable(rng, clampTableRoll(roll, 16), geologyTable)
 }
 
 function classAtmosphereFlavor(className: string): string | undefined {
@@ -1277,7 +1281,7 @@ function rollAtmosphere(
 ): string {
   if (category === 'belt') return 'None / dispersed volatiles'
   if (category === 'sub-neptune' || category === 'gas-giant' || category === 'ice-giant') {
-    return pickTable(rng, clampTableRoll(d12(rng) + 3, 14), atmosphereTable)
+    return pickTable(rng, clampTableRoll(d12(rng) + 3, 16), atmosphereTable)
   }
   if (extremeHotThermalZones.has(thermalZone)) return pickOne(rng, extremeHotAtmospheres)
   const flavored = classAtmosphereFlavor(bodyClass.className)
@@ -1295,8 +1299,10 @@ function rollAtmosphere(
   if (/biosphere|terraforming|earth-like|earth-sized terrestrial/i.test(bodyClass.className)) roll += 2
   // Cold cryo-haze classes can roll Aerosol veil (14).
   if ((thermalZone === 'Cold' || thermalZone === 'Cryogenic' || thermalZone === 'Dark') && /methane|nitrogen|titan|cryo|frost|haze/i.test(bodyClass.className)) roll += 3
+  // Industrial/facility/abandoned classes can roll Halocarbon greenhouse (15) or Photochemical smog (16).
+  if (/industry|industrial|black-lab|facility|failed terraform|abandoned/i.test(bodyClass.className)) roll += 4
 
-  return pickTable(rng, clampTableRoll(roll, 14), atmosphereTable)
+  return pickTable(rng, clampTableRoll(roll, 16), atmosphereTable)
 }
 
 function classHydrosphereFlavor(className: string): string | undefined {
@@ -1325,8 +1331,14 @@ function rollHydrosphere(rng: SeededRng, category: BodyCategory, thermalZone: st
   if (bodyClass.className.includes('Hydrogen') || bodyClass.className.includes('Exotic')) roll += 1
   // Cold ammonia / cryo-active classes can reach Ammonia-water antifreeze ocean (13) and Cryo-geyser fields (14).
   if ((thermalZone === 'Cold' || thermalZone === 'Cryogenic' || thermalZone === 'Dark') && /ammonia|cryo|buried-ocean|ice-shell/i.test(bodyClass.className)) roll += 3
+  // Tidally heated sulfur-rich worlds reach Liquid sulfur seas (15) — Io-style.
+  if (/sulfur|tidally stretched volcanic|volcanic moon/i.test(bodyClass.className) && thermalZone === 'Hot') roll += 5
+  // Mars-like dry classes can roll Continental water tables (16) — subsurface aquifers without surface seas.
+  if (/mars-like|dry terrestrial|cold desert|frozen mars-like/i.test(bodyClass.className)) roll += 4
+  // Airless dwarf-body classes can roll Dust seas / fluidized regolith (17).
+  if (category === 'dwarf-body' && /airless|dust|regolith|charged/i.test(bodyClass.className)) roll += 5
 
-  return pickTable(rng, clampTableRoll(roll, 14), hydrosphereTable)
+  return pickTable(rng, clampTableRoll(roll, 17), hydrosphereTable)
 }
 
 function generateClimate(rng: SeededRng, category: BodyCategory, thermalZone: string, count: number) {
@@ -1355,10 +1367,15 @@ function generateClimate(rng: SeededRng, category: BodyCategory, thermalZone: st
   })
 }
 
-function generateRadiation(rng: SeededRng, category: BodyCategory, thermalZone: string, primary: Star): string {
+function generateRadiation(rng: SeededRng, category: BodyCategory, thermalZone: string, primary: Star, bodyClass?: WorldClassOption): string {
   const isEnvelopeWorld = category === 'sub-neptune' || category === 'gas-giant' || category === 'ice-giant'
   const isFlaring = isHighActivityStar(primary)
   const isActiveOrFlaring = isFlaring || primary.activity.value === 'Active'
+  // GU-tagged classes have a chance to land on the metric-driven GU-quantum decoherence band — radiation
+  // from metric distortion rather than stellar photons.
+  const className = bodyClass?.className ?? ''
+  const isGuTagged = /\bgu\b|chiral|observerse|bleed|programmable|metric/i.test(className)
+  if (isGuTagged && rng.chance(0.4)) return 'GU-quantum decoherence band'
   // M-dwarf systems and other variable stars commonly produce cyclical radiation patterns —
   // periodic flare/quiescence cycles rather than continuous danger.
   const isMDwarfFlaring = primary.spectralType.value.includes('M dwarf') && isFlaring
@@ -1380,7 +1397,15 @@ function generateRadiation(rng: SeededRng, category: BodyCategory, thermalZone: 
 function generateBiosphere(rng: SeededRng, category: BodyCategory, thermalZone: string, detail: Omit<PlanetaryDetail, 'biosphere'>, primary: Star, bodyClass?: WorldClassOption): string {
   if (!supportsComplexSurfaceEnvironment(category)) return 'Sterile'
   if (thermalZone === 'Furnace' || thermalZone === 'Inferno') return 'Sterile'
-  if (detail.atmosphere.value === 'None / hard vacuum' || detail.atmosphere.value === 'Trace exosphere') return 'Sterile'
+  // Vacuum atmospheres usually mean sterile — but if subsurface volatiles exist, a cryptic biosphere
+  // can hide below the surface (Mars-style deep brines, no orbital signature).
+  const subsurfaceVolatiles = new Set(['Subsurface ice', 'Polar caps / buried glaciers', 'Briny aquifers', 'Continental water tables', 'Ice-shell subsurface ocean', 'Cryo-geyser fields'])
+  if (detail.atmosphere.value === 'None / hard vacuum' || detail.atmosphere.value === 'Trace exosphere') {
+    if (subsurfaceVolatiles.has(detail.hydrosphere.value) && (thermalZone === 'Temperate band' || thermalZone === 'Cold') && rng.chance(0.18)) {
+      return 'Cryptic subsurface biosphere'
+    }
+    return 'Sterile'
+  }
 
   let score = twoD6(rng)
   if (thermalZone === 'Temperate band') score += 1
@@ -1484,7 +1509,7 @@ function generateDetail(
     ),
     climate: generateClimate(rng, category, thermalZone, climateCount),
     radiation: fact(
-      generateRadiation(rng, category, thermalZone, primary),
+      generateRadiation(rng, category, thermalZone, primary, bodyClass),
       'inferred',
       'MASS-GU 14 radiation d8 table with source modifiers'
     ),

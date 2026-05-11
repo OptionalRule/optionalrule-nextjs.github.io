@@ -1015,7 +1015,7 @@ describe('generateSystem', () => {
   })
 
   it('routes magma-ocean / lava / tidal-volcanic worlds to molten surface states', () => {
-    const moltenStates = new Set(['Magma seas / lava lakes', 'Vaporized volatile traces', 'Nightside mineral frost'])
+    const moltenStates = new Set(['Magma seas / lava lakes', 'Liquid sulfur seas', 'Vaporized volatile traces', 'Nightside mineral frost'])
     // Match silicate-surface molten worlds; exclude facility/anomaly classes that share a word like "furnace".
     const triggers = /^(?:lava planet|magma ocean world|carbon-rich furnace world|tidally stretched volcanic world)$/i
     let sawTrigger = false
