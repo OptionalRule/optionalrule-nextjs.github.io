@@ -56,6 +56,7 @@ import {
 import {
   activityLabels,
   atmosphereTable,
+  atmosphericTracesTable,
   biospheres,
   climateSourceTable,
   coldClimateTags,
@@ -68,6 +69,7 @@ import {
   geologyTable,
   hotClimateTags,
   hotEnvelopeClimateTags,
+  hydrologyTable,
   hydrosphereTable,
   magneticFieldTable,
   mineralCompositionTable,
@@ -1454,6 +1456,70 @@ function generateBiosphere(rng: SeededRng, category: BodyCategory, thermalZone: 
   return pickOne(rng, biospheres.filter((value) => value !== 'Sterile' && value !== 'Prebiotic chemistry'))
 }
 
+function generateAtmosphericTraces(rng: SeededRng, category: BodyCategory, atm: string, bodyClass: WorldClassOption): string {
+  if (category === 'belt') return 'Noble gas excess'
+  if (atm === 'None / hard vacuum' || atm === 'None / dispersed volatiles') return 'Noble gas excess'
+  // Oxygen-rich atm is a strong life signal — biosignature traces fire here
+  if (atm === 'Oxygen-rich pre-industrial atmosphere') {
+    const r = rng.int(1, 3)
+    if (r === 1) return 'Methane biosignature trace'
+    if (r === 2) return 'Ozone layer present'
+    return 'Carbon isotope biosignature'
+  }
+  if (atm === 'Aerosol veil') return 'Tholin photochemistry'
+  if (atm === 'Halocarbon greenhouse' || atm === 'Photochemical smog') return 'Industrial pollutant signatures'
+  if (atm === 'Hydrogen sulfide rich' || /sulfur|volcanic/i.test(bodyClass.className)) return 'Volcanic SO2 plumes'
+  if (/\bgu\b|chiral|observerse|bleed/i.test(bodyClass.className) && rng.chance(0.45)) return 'Cyanide / cyanogen trace'
+
+  let roll = rng.int(1, 12)
+  if (/dwarf-body/.test(category) || /airless|dust/i.test(bodyClass.className)) roll = pickOne(rng, [2, 11])  // He-3 / noble gas
+  if (atm === 'Steam atmosphere' || atm === 'Dense greenhouse') {
+    if (rng.chance(0.4)) roll = 6  // Volcanic SO2
+  }
+  return pickTable(rng, clampTableRoll(roll, 12), atmosphericTracesTable)
+}
+
+function generateHydrology(rng: SeededRng, category: BodyCategory, thermalZone: string, bodyClass: WorldClassOption, hydro: string, geology: string): string {
+  if (category === 'belt') return 'No active cycle'
+  if (category === 'sub-neptune' || category === 'gas-giant' || category === 'ice-giant') return 'No active cycle'
+
+  // Dry hydrospheres → no active cycle dominant
+  const dryHydros = new Set(['Bone dry', 'Hydrated minerals only', 'Vaporized volatile traces', 'Nightside mineral frost', 'No accessible surface volatiles', 'Magma seas / lava lakes', 'Dust seas / fluidized regolith'])
+  if (dryHydros.has(hydro)) return 'No active cycle'
+
+  // Forced by hydrosphere
+  if (hydro === 'Liquid sulfur seas') return 'Sulfur springs'
+  if (hydro === 'Salt / perchlorate flats') return 'Salt-flat ephemeral lakes'
+  if (hydro === 'Hydrocarbon lakes/seas') return 'Cryo-rivers / glacial meltwater channels'
+  if (hydro === 'Ice-shell subsurface ocean' || hydro === 'Cryo-geyser fields') return 'Subglacial lake belt'
+  if (hydro === 'Subsurface ice' || hydro === 'Polar caps / buried glaciers') return rng.chance(0.5) ? 'Frozen-thawed cycle lakes' : 'Cryo-rivers / glacial meltwater channels'
+  if (hydro === 'Methane permafrost cycle') return 'Frozen-thawed cycle lakes'
+  if (hydro === 'Cryogenic nitrogen reservoirs' || hydro === 'Cryovolcanic vents') return 'Cryo-rivers / glacial meltwater channels'
+  if (hydro === 'Continental water tables') return 'Subsurface artesian springs'
+  if (hydro === 'Briny aquifers') return rng.chance(0.6) ? 'Subsurface artesian springs' : 'Brackish marshlands'
+
+  // Forced by geology
+  if (geology === 'Karst / dissolution terrain') return 'Karst-fed underground rivers'
+
+  // Class-tagged tidally-locked classes
+  if (/tidally locked|terminator/i.test(bodyClass.className)) {
+    return rng.chance(0.5) ? 'Tidally-locked hemispheric water' : 'Hemispheric ocean migration'
+  }
+
+  // Open-ocean / liquid-water hydros — distribute among cycle styles
+  const openLiquid = new Set(['Local seas', 'Ocean-continent balance', 'Global ocean', 'High-pressure deep ocean', 'Ammonia-water antifreeze ocean'])
+  if (openLiquid.has(hydro)) {
+    const roll = rng.int(2, 14)  // skip "No active cycle"
+    if (rng.chance(0.25) && (geology === 'Active volcanism' || geology === 'Plate tectonic analogue' || geology === 'Extreme plume provinces' || geology === 'Tidal heating' || geology === 'Subglacial volcanism')) {
+      return 'Hot vent ecosystems'
+    }
+    return pickTable(rng, clampTableRoll(roll, 14), hydrologyTable)
+  }
+
+  // Exotic solvent / other — pick a generic flow style
+  return pickOne(rng, ['Drainage-basin watersheds', 'Subsurface artesian springs', 'Brackish marshlands'])
+}
+
 function generateMineralComposition(rng: SeededRng, category: BodyCategory, thermalZone: string, bodyClass: WorldClassOption, geology: string): string {
   if (category === 'belt') return 'Sulfide ore-dominant'
   if (category === 'sub-neptune' || category === 'gas-giant' || category === 'ice-giant') return 'Olivine-pyroxene mantle exposure'
@@ -1560,6 +1626,12 @@ function generateDetail(
         'gu-layer',
         'MASS-GU anomaly magnetic constraint'
       ),
+      atmosphericTraces: fact(
+        isFacilityLike ? 'Industrial pollutant signatures' : 'Cyanide / cyanogen trace',
+        'gu-layer',
+        'MASS-GU anomaly trace-gas constraint'
+      ),
+      hydrology: fact('No active cycle', 'gu-layer', 'MASS-GU anomaly hydrology constraint'),
     }
 
     return {
@@ -1599,14 +1671,24 @@ function generateDetail(
       'MASS-GU 14 radiation d8 table with source modifiers'
     ),
     mineralComposition: fact(
-      generateMineralComposition(rng, category, thermalZone, bodyClass, geology),
+      generateMineralComposition(rng.fork('mineral-composition'), category, thermalZone, bodyClass, geology),
       'inferred',
       'Generated lithology — biased by thermal zone, geology, and class chemistry'
     ),
     magneticField: fact(
-      generateMagneticField(rng, category, thermalZone, bodyClass, geology, physical),
+      generateMagneticField(rng.fork('magnetic-field'), category, thermalZone, bodyClass, geology, physical),
       'inferred',
       'Generated magnetic field profile — biased by mass, geology, and category'
+    ),
+    atmosphericTraces: fact(
+      generateAtmosphericTraces(rng.fork('atmospheric-traces'), category, atmosphere, bodyClass),
+      'inferred',
+      'Generated trace-gas signature — biased by atmosphere type and class chemistry'
+    ),
+    hydrology: fact(
+      generateHydrology(rng.fork('hydrology'), category, thermalZone, bodyClass, hydrosphere, geology),
+      'inferred',
+      'Generated water-cycle pattern — biased by hydrosphere reservoir, geology, and tidal status'
     ),
   }, environmentPolicy, thermalZone)
 
@@ -1635,6 +1717,8 @@ function mergeKnownDetail(generated: PlanetaryDetail, known?: PartialKnownBody['
     biosphere: mergeLockedFact(generated.biosphere, known?.biosphere),
     mineralComposition: mergeLockedFact(generated.mineralComposition, known?.mineralComposition),
     magneticField: mergeLockedFact(generated.magneticField, known?.magneticField),
+    atmosphericTraces: mergeLockedFact(generated.atmosphericTraces, known?.atmosphericTraces),
+    hydrology: mergeLockedFact(generated.hydrology, known?.hydrology),
   }
 }
 

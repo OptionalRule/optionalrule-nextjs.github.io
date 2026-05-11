@@ -134,6 +134,8 @@ export interface PlanetaryDetail {
   biosphere: Fact<string>
   mineralComposition: Fact<string>
   magneticField: Fact<string>
+  atmosphericTraces: Fact<string>
+  hydrology: Fact<string>
 }
 
 export interface Moon {

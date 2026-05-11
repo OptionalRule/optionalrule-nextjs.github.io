@@ -187,6 +187,36 @@
     { "min": 9, "max": 9, "value": "Aurora-belt dominated" },
     { "min": 10, "max": 10, "value": "GU monopole anomaly" }
   ],
+  "atmosphericTracesTable": [
+    { "min": 1, "max": 1, "value": "Pure (primary mix only)" },
+    { "min": 2, "max": 2, "value": "Helium-3 enriched" },
+    { "min": 3, "max": 3, "value": "Ozone layer present" },
+    { "min": 4, "max": 4, "value": "Methane biosignature trace" },
+    { "min": 5, "max": 5, "value": "Tholin photochemistry" },
+    { "min": 6, "max": 6, "value": "Volcanic SO2 plumes" },
+    { "min": 7, "max": 7, "value": "Lightning-driven NOx" },
+    { "min": 8, "max": 8, "value": "Cyanide / cyanogen trace" },
+    { "min": 9, "max": 9, "value": "Halogen mix" },
+    { "min": 10, "max": 10, "value": "Industrial pollutant signatures" },
+    { "min": 11, "max": 11, "value": "Noble gas excess" },
+    { "min": 12, "max": 12, "value": "Carbon isotope biosignature" }
+  ],
+  "hydrologyTable": [
+    { "min": 1, "max": 1, "value": "No active cycle" },
+    { "min": 2, "max": 2, "value": "Drainage-basin watersheds" },
+    { "min": 3, "max": 3, "value": "Continental rift seas" },
+    { "min": 4, "max": 4, "value": "Hemispheric ocean migration" },
+    { "min": 5, "max": 5, "value": "Subsurface artesian springs" },
+    { "min": 6, "max": 6, "value": "Brackish marshlands" },
+    { "min": 7, "max": 7, "value": "Hot vent ecosystems" },
+    { "min": 8, "max": 8, "value": "Karst-fed underground rivers" },
+    { "min": 9, "max": 9, "value": "Salt-flat ephemeral lakes" },
+    { "min": 10, "max": 10, "value": "Cryo-rivers / glacial meltwater channels" },
+    { "min": 11, "max": 11, "value": "Tidally-locked hemispheric water" },
+    { "min": 12, "max": 12, "value": "Frozen-thawed cycle lakes" },
+    { "min": 13, "max": 13, "value": "Sulfur springs" },
+    { "min": 14, "max": 14, "value": "Subglacial lake belt" }
+  ],
   "moonTypes": ["Airless rock", "Cratered ice-rock", "Captured asteroid", "Captured dwarf", "Subsurface ocean moon", "Thick ice-shell moon", "Cryovolcanic moon", "Volcanic tidal moon", "Dense-atmosphere moon", "Hydrocarbon moon", "Habitable-zone moon", "Radiation-scorched inner moon", "Ring-shepherd moon", "Chiral ice moon", "Dark-sector density moon", "Programmable regolith moon", "Former settlement moon", "Active mining moon", "Quarantine moon", "Moving bleed node moon"],
   "moonScales": ["minor captured moonlet", "small major moon", "mid-sized icy moon", "large differentiated moon", "planet-scale major moon"],
   "bodySites": {

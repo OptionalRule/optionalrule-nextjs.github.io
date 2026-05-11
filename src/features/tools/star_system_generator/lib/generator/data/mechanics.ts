@@ -34,6 +34,8 @@ interface MechanicsData {
   biospheres: readonly string[]
   mineralCompositionTable: Array<TableEntry<string>>
   magneticFieldTable: Array<TableEntry<string>>
+  atmosphericTracesTable: Array<TableEntry<string>>
+  hydrologyTable: Array<TableEntry<string>>
   moonTypes: readonly string[]
   moonScales: readonly string[]
   bodySites: BodySitePools
@@ -77,6 +79,8 @@ export const envelopeClimateTags = typedMechanicsData.envelopeClimateTags
 export const biospheres = typedMechanicsData.biospheres
 export const mineralCompositionTable = typedMechanicsData.mineralCompositionTable
 export const magneticFieldTable = typedMechanicsData.magneticFieldTable
+export const atmosphericTracesTable = typedMechanicsData.atmosphericTracesTable
+export const hydrologyTable = typedMechanicsData.hydrologyTable
 export const moonTypes = typedMechanicsData.moonTypes
 export const moonScales = typedMechanicsData.moonScales
 export const bodySites = typedMechanicsData.bodySites
