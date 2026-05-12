@@ -76,10 +76,52 @@ export function exportSystemMarkdown(system: GeneratedSystem): string {
         `HZ ${companion.subSystem.zones.habitableInnerAu.value}–${companion.subSystem.zones.habitableOuterAu.value} AU · Snow line ${companion.subSystem.zones.snowLineAu.value} AU`,
         ''
       )
+      lines.push('### Bodies', '')
       for (const body of companion.subSystem.bodies) {
         lines.push(`- **${body.name.value}** (${body.category.value}) at ${body.orbitAu.value} AU`)
       }
       lines.push('')
+
+      if (companion.subSystem.settlements.length) {
+        lines.push('### Settlement Profiles', '')
+        for (const settlement of companion.subSystem.settlements) {
+          lines.push(...formatSettlement(settlement), '')
+        }
+      }
+
+      if (companion.subSystem.gates.length) {
+        lines.push('### Gates', '')
+        for (const gate of companion.subSystem.gates) {
+          lines.push(...formatGate(gate), '')
+        }
+      }
+
+      if (companion.subSystem.ruins.length) {
+        lines.push('### Human Remnants', '')
+        for (const ruin of companion.subSystem.ruins) {
+          lines.push(
+            `#### ${ruin.remnantType.value}`,
+            `**Location:** ${ruin.location.value}`,
+            '',
+            ruin.hook.value,
+            ''
+          )
+        }
+      }
+
+      if (companion.subSystem.phenomena.length) {
+        lines.push('### System Phenomena', '')
+        for (const phenomenon of companion.subSystem.phenomena) {
+          lines.push(
+            `- **${phenomenon.phenomenon.value}**`,
+            `  - Transit: ${phenomenon.travelEffect.value}`,
+            `  - Question: ${phenomenon.surveyQuestion.value}`,
+            `  - Hook: ${phenomenon.conflictHook.value}`,
+            `  - Image: ${phenomenon.sceneAnchor.value}`
+          )
+        }
+        lines.push('')
+      }
     } else if (companion.mode === 'linked-independent' && companion.linkedSeed) {
       lines.push('', '## Linked Companion System', '')
       lines.push(`${companion.companionType.value} · ${companion.separation.value}`, '')

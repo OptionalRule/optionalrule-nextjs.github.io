@@ -135,9 +135,12 @@ describe('visualProfiles', () => {
     }, 'seed').surfaceSeed)
   })
 
-  it('uses companion type text for companion star color families', () => {
+  it('uses companion.star.spectralType for companion star color families', () => {
     const red = companionStarVisuals(fakeCompanion())
-    const white = companionStarVisuals(fakeCompanion({ id: 'companion-2', companionType: fact('White dwarf companion') }))
+    const white = companionStarVisuals(fakeCompanion({
+      id: 'companion-2',
+      star: fakeCompanionStar({ id: 'companion-star-2', spectralType: fact('White dwarf') }),
+    }))
 
     expect(red.coreColor).toMatch(/^#/)
     expect(white.coreColor).toMatch(/^#/)

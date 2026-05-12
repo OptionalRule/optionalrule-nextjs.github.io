@@ -111,6 +111,19 @@ function CompanionCard({ companion }: { companion: GeneratedSystem['companions']
     </p>
   )
 
+  const consequences = (
+    <dl className="mt-2 grid gap-2 sm:grid-cols-2 text-xs">
+      <div>
+        <dt className="text-[var(--text-tertiary)] uppercase tracking-wider">Planetary layout</dt>
+        <dd className="mt-0.5 text-[var(--text-primary)]">{companion.planetaryConsequence.value}</dd>
+      </div>
+      <div>
+        <dt className="text-[var(--text-tertiary)] uppercase tracking-wider">Route value</dt>
+        <dd className="mt-0.5 text-[var(--text-primary)]">{companion.guConsequence.value}</dd>
+      </div>
+    </dl>
+  )
+
   if (companion.mode === 'linked-independent') {
     const url = `?seed=${encodeURIComponent(companion.linkedSeed!.value)}`
     return (
@@ -119,6 +132,7 @@ function CompanionCard({ companion }: { companion: GeneratedSystem['companions']
           Linked Companion System
         </h3>
         {shared}
+        {consequences}
         <p className="mt-2 text-[var(--text-secondary)]">Generated independently. This system gains +1 reachable system.</p>
         <a className="mt-2 inline-block text-[var(--accent)] underline" href={url}>Open linked system →</a>
       </div>
@@ -133,6 +147,7 @@ function CompanionCard({ companion }: { companion: GeneratedSystem['companions']
           Orbital Sibling Companion
         </h3>
         {shared}
+        {consequences}
         <p className="mt-2 text-[var(--text-secondary)]">
           Hosts {bodies.length} {bodies.length === 1 ? 'body' : 'bodies'}. Generated below.
         </p>
@@ -147,6 +162,7 @@ function CompanionCard({ companion }: { companion: GeneratedSystem['companions']
           Circumbinary Companion
         </h3>
         {shared}
+        {consequences}
         <p className="mt-2 text-[var(--text-secondary)]">
           Bodies in this system orbit the binary&apos;s barycenter. Inner habitable edge sits beyond the keep-out zone.
         </p>
@@ -160,6 +176,7 @@ function CompanionCard({ companion }: { companion: GeneratedSystem['companions']
         Contact / Volatile Companion
       </h3>
       {shared}
+      {consequences}
       <p className="mt-2 text-[var(--text-secondary)]">
         Stars are contact-touching. No planets formed; hazardous debris and intense GU bleed dominate the inner system.
       </p>

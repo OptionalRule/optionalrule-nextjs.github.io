@@ -36,4 +36,25 @@ describe('markdown export with companions', () => {
     expect(md).toMatch(/Linked system:\s+`/i)
     expect(md).toContain(sys.companions[0].linkedSeed!.value)
   })
+
+  it('emits sub-system settlements in the Companion System section for orbital-sibling', () => {
+    let seed: string | null = null
+    for (let i = 0; i < 800; i++) {
+      const s = `md-orbsibset-${i}`
+      const sys = generateSystem({ ...baseOptions, seed: s })
+      if (
+        sys.companions[0]?.mode === 'orbital-sibling' &&
+        (sys.companions[0].subSystem?.settlements.length ?? 0) > 0
+      ) {
+        seed = s
+        break
+      }
+    }
+    if (!seed) throw new Error('no seed with sub-system settlements')
+
+    const sys = generateSystem({ ...baseOptions, seed })
+    const md = exportSystemMarkdown(sys)
+    const firstSettlementName = sys.companions[0].subSystem!.settlements[0].name.value
+    expect(md).toContain(firstSettlementName)
+  })
 })

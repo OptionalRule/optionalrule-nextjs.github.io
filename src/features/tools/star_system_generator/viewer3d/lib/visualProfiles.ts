@@ -370,13 +370,7 @@ export function buildBeltProfile(body: OrbitingBody, base: Omit<BeltVisual, 'col
 }
 
 export function companionStarVisuals(companion: StellarCompanion): Pick<StarVisual, 'coreColor' | 'coronaColor' | 'coronaRadius' | 'rayCount' | 'bloomStrength' | 'flareStrength' | 'pulseSpeed' | 'rayColor'> {
-  const text = [companion.companionType.value, companion.planetaryConsequence.value, companion.guConsequence.value].join(' ').toLowerCase()
-  const spectral = hasAny(text, ['white dwarf']) ? 'DA'
-    : hasAny(text, ['brown dwarf']) ? 'L2V'
-      : hasAny(text, ['red dwarf', 'm dwarf']) ? 'M4V'
-        : hasAny(text, ['blue', 'hot']) ? 'A2V'
-          : 'K5V'
-  const visuals = spectralVisuals(spectral, 45 + companion.rollMargin.value)
+  const visuals = spectralVisuals(companion.star.spectralType.value, companion.star.activityRoll.value)
   return {
     ...visuals,
     coronaRadius: visuals.coronaRadius * 0.72,
