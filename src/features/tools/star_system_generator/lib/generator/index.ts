@@ -22,6 +22,7 @@ import type {
   Star,
   StellarCompanion,
   SystemPhenomenon,
+  SystemZones,
 } from '../../types'
 import {
   buildArchitectureSlots,
@@ -4339,6 +4340,81 @@ export function generateSystem(options: GenerationOptions, knownSystem?: Partial
     },
   })
 
+  const companionsWithSubSystems: StellarCompanion[] = companions.map((companion, idx) => {
+    if (companion.mode !== 'orbital-sibling') return companion
+
+    const subRng = rootRng.fork(`subsystem-${idx + 1}`)
+    const subStar = companion.star
+    const subHz = calculateHabitableZone(subStar.luminositySolar.value)
+    const subSnowLine = calculateSnowLine(subStar.luminositySolar.value)
+    const subZones: SystemZones = {
+      habitableInnerAu: fact(subHz.inner, 'derived', '0.75 * sqrt(L) — companion luminosity'),
+      habitableCenterAu: fact(subHz.center, 'derived', 'sqrt(L) — companion luminosity'),
+      habitableOuterAu: fact(subHz.outer, 'derived', '1.77 * sqrt(L) — companion luminosity'),
+      snowLineAu: fact(subSnowLine, 'derived', '2.7 * sqrt(L) — companion luminosity'),
+    }
+
+    const prefix = `comp${idx + 1}-`
+    const rawSubBodies = generateBodies(
+      subRng.fork('bodies'),
+      subStar,
+      architectureResult.architecture.name.value,
+      `${name.value} (Companion)`,
+      [],
+      0,
+    )
+    const idMap = new Map<string, string>()
+    const subBodies: OrbitingBody[] = rawSubBodies.map((body) => {
+      const newId = `${prefix}${body.id}`
+      idMap.set(body.id, newId)
+      const remappedMoons: Moon[] = body.moons.map((moon) => {
+        const newMoonId = `${prefix}${moon.id}`
+        idMap.set(moon.id, newMoonId)
+        return { ...moon, id: newMoonId }
+      })
+      return { ...body, id: newId, moons: remappedMoons }
+    })
+
+    const subAllSettlements = generateSettlements(
+      subRng.fork('settlements'),
+      options,
+      `${name.value} (Companion)`,
+      subBodies,
+      guOverlay,
+      reachability,
+      architectureResult.architecture.name.value,
+    )
+    const remappedSettlements: Settlement[] = subAllSettlements.map((s) => ({
+      ...s,
+      id: `${prefix}${s.id}`,
+      bodyId: s.bodyId ? idMap.get(s.bodyId) ?? s.bodyId : s.bodyId,
+      moonId: s.moonId ? idMap.get(s.moonId) ?? s.moonId : s.moonId,
+    }))
+    const { settlements: subSettlements, gates: subGatesRaw } = partitionGates(remappedSettlements)
+    const subGates: Gate[] = subGatesRaw.map((g) => ({
+      ...g,
+      id: g.id.startsWith(prefix) ? g.id : `${prefix}${g.id}`,
+      bodyId: g.bodyId ? idMap.get(g.bodyId) ?? g.bodyId : g.bodyId,
+      moonId: g.moonId ? idMap.get(g.moonId) ?? g.moonId : g.moonId,
+    }))
+    const subRuinsRaw = generateHumanRemnants(subRng.fork('ruins'), subBodies, guOverlay)
+    const subRuins: HumanRemnant[] = subRuinsRaw.map((r) => ({ ...r, id: `${prefix}${r.id}` }))
+    const subPhenomenaRaw = generatePhenomena(subRng.fork('phenomena'), architectureResult.architecture.name.value, guOverlay)
+    const subPhenomena: SystemPhenomenon[] = subPhenomenaRaw.map((p) => ({ ...p, id: `${prefix}${p.id}` }))
+
+    return {
+      ...companion,
+      subSystem: {
+        zones: subZones,
+        bodies: subBodies,
+        settlements: subSettlements,
+        gates: subGates,
+        ruins: subRuins,
+        phenomena: subPhenomena,
+      },
+    }
+  })
+
   return runNoAlienGuard({
     id: knownSystem?.id ?? `system-${options.seed}`,
     seed: options.seed,
@@ -4349,7 +4425,7 @@ export function generateSystem(options: GenerationOptions, knownSystem?: Partial
       knownSystem?.dataBasis
     ),
     primary,
-    companions,
+    companions: companionsWithSubSystems,
     reachability,
     architecture: architectureResult.architecture,
     zones: {
