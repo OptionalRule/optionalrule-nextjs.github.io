@@ -609,7 +609,7 @@ function binarySeparationProfile(roll: number): Pick<StellarCompanion, 'separati
   }
 }
 
-function generateStellarCompanions(rng: SeededRng, primary: Star, parentSeed: string): StellarCompanion[] {
+function generateStellarCompanions(rng: SeededRng, primary: Star, parentSeed: string, options: GenerationOptions): StellarCompanion[] {
   const normalizedParent = normalizeSeed(parentSeed)
   const threshold = companionThreshold(primary.spectralType.value)
   let roll = twoD6(rng)
@@ -626,7 +626,11 @@ function generateStellarCompanions(rng: SeededRng, primary: Star, parentSeed: st
 
   const companionName = `${primary.name.value} B`
   const star = mode === 'linked-independent'
-    ? generateCompanionStar(createSeededRng(`${normalizedParent}:c1`).fork('star'), primary, companionName)
+    ? generatePrimaryStar(
+        createSeededRng(`${normalizedParent}:c1`).fork('star'),
+        { ...options, seed: `${normalizedParent}:c1` },
+        companionName,
+      )
     : generateCompanionStar(rng.fork('star1'), primary, companionName)
 
   const base: StellarCompanion = {
@@ -646,9 +650,9 @@ function generateStellarCompanions(rng: SeededRng, primary: Star, parentSeed: st
 
   if (separationValue === 'Hierarchical triple') {
     const outerName = `${primary.name.value} C`
-    const outerStar = generateCompanionStar(
+    const outerStar = generatePrimaryStar(
       createSeededRng(`${normalizedParent}:c2`).fork('star'),
-      primary,
+      { ...options, seed: `${normalizedParent}:c2` },
       outerName,
     )
     result.push({
@@ -4233,7 +4237,7 @@ export function generateSystem(options: GenerationOptions, knownSystem?: Partial
   const rootRng = createSeededRng(options.seed)
   const name = mergeLockedFact(fact(generateSystemName(rootRng.fork('name')), 'human-layer', 'Generated system name'), knownSystem?.name)
   const basePrimary = generatePrimaryStar(rootRng.fork('star'), options, name.value, knownSystem?.primary)
-  const companions = generateStellarCompanions(rootRng.fork('companions'), basePrimary, options.seed)
+  const companions = generateStellarCompanions(rootRng.fork('companions'), basePrimary, options.seed, options)
   const primary = applyCompanionActivityModifier(basePrimary, companions)
   const reachability = generateReachability(rootRng.fork('reachability'), options, primary, companions)
   const architectureResult = generateArchitecture(rootRng.fork('architecture'), options, primary, reachability.className.value)
