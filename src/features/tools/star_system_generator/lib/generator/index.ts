@@ -155,6 +155,8 @@ import { buildRelationshipGraph, renderSystemStory } from './graph'
 import { graphAwareReshape } from './prose'
 import { selectSystemHooks } from './hooks'
 import { createSeededRng, type SeededRng } from './rng'
+import { separationToMode } from './companionMode'
+import { generateCompanionStar } from './companionStar'
 
 export { architectureBodyPlanRules } from './architecture'
 
@@ -604,7 +606,7 @@ function binarySeparationProfile(roll: number): Pick<StellarCompanion, 'separati
   }
 }
 
-function generateStellarCompanions(rng: SeededRng, primary: Star): StellarCompanion[] {
+function generateStellarCompanions(rng: SeededRng, primary: Star, parentSeed: string): StellarCompanion[] {
   const threshold = companionThreshold(primary.spectralType.value)
   let roll = twoD6(rng)
   const modifiers: string[] = ['+1 major reachable system']
@@ -615,15 +617,28 @@ function generateStellarCompanions(rng: SeededRng, primary: Star): StellarCompan
 
   const separationRoll = twoD6(rng)
   const separationProfile = binarySeparationProfile(separationRoll)
+  const separationValue = separationProfile.separation.value
+  const mode = separationToMode(separationValue)
 
-  return [
-    {
-      id: 'companion-1',
-      companionType: fact(companionTypeFromMargin(margin), 'inferred', `MASS-GU companion threshold ${threshold}; modifiers ${modifiers.join(', ')}`),
-      ...separationProfile,
-      rollMargin: fact(margin, 'derived', `Modified 2d6 companion roll ${roll} vs threshold ${threshold}`),
-    },
-  ]
+  const companionName = `${primary.name.value} B`
+  const star = mode === 'linked-independent'
+    ? generateCompanionStar(createSeededRng(`${parentSeed}:c1`).fork('star'), primary, companionName)
+    : generateCompanionStar(rng.fork('star1'), primary, companionName)
+
+  const base: StellarCompanion = {
+    id: 'companion-1',
+    companionType: fact(companionTypeFromMargin(margin), 'inferred', `MASS-GU companion threshold ${threshold}; modifiers ${modifiers.join(', ')}`),
+    ...separationProfile,
+    rollMargin: fact(margin, 'derived', `Modified 2d6 companion roll ${roll} vs threshold ${threshold}`),
+    mode,
+    star,
+  }
+
+  if (mode === 'linked-independent') {
+    base.linkedSeed = fact(`${parentSeed}:c1`, 'derived', 'Derived seed for linked sibling system')
+  }
+
+  return [base]
 }
 
 function generateArchitecture(rng: SeededRng, options: GenerationOptions, primary: Star, reachabilityClass: string) {
@@ -4190,7 +4205,7 @@ export function generateSystem(options: GenerationOptions, knownSystem?: Partial
   const rootRng = createSeededRng(options.seed)
   const name = mergeLockedFact(fact(generateSystemName(rootRng.fork('name')), 'human-layer', 'Generated system name'), knownSystem?.name)
   const basePrimary = generatePrimaryStar(rootRng.fork('star'), options, name.value, knownSystem?.primary)
-  const companions = generateStellarCompanions(rootRng.fork('companions'), basePrimary)
+  const companions = generateStellarCompanions(rootRng.fork('companions'), basePrimary, options.seed)
   const primary = applyCompanionActivityModifier(basePrimary, companions)
   const reachability = generateReachability(rootRng.fork('reachability'), options, primary, companions)
   const architectureResult = generateArchitecture(rootRng.fork('architecture'), options, primary, reachability.className.value)

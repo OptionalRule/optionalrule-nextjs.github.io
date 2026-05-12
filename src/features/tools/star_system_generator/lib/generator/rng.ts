@@ -74,7 +74,9 @@ export function createRandomSeed(): string {
 }
 
 export function normalizeSeed(seed: string | null | undefined): string {
-  const cleaned = (seed ?? '').trim().replace(/[^a-fA-F0-9]/g, '').toLowerCase()
+  const trimmed = (seed ?? '').trim()
+  if (!trimmed) return createRandomSeed()
+  const cleaned = trimmed.replace(/[^a-fA-F0-9:]/g, '').toLowerCase()
   if (!cleaned) return createRandomSeed()
-  return cleaned.slice(0, 32)
+  return cleaned.slice(0, 40)
 }

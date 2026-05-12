@@ -92,8 +92,8 @@ export interface StellarCompanion {
   planetaryConsequence: Fact<string>
   guConsequence: Fact<string>
   rollMargin: Fact<number>
-  mode?: CompanionRelationshipMode
-  star?: Star
+  mode: CompanionRelationshipMode
+  star: Star
   linkedSeed?: Fact<string>
   subSystem?: CompanionSubSystem
 }
