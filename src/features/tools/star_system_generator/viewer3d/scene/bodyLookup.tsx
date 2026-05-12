@@ -26,14 +26,34 @@ const Ctx = createContext<SystemLookups | null>(null)
 
 export function BodyLookupProvider({ system, children }: { system: GeneratedSystem; children: ReactNode }) {
   const lookups = useMemo<SystemLookups>(() => {
-    const bodyMap = new Map(system.bodies.map((b) => [b.id, b]))
-    const settlementMap = new Map(system.settlements.map((s) => [s.id, s]))
-    const gateMap = new Map(system.gates.map((g) => [g.id, g]))
-    const ruinMap = new Map(system.ruins.map((r) => [r.id, r]))
-    const phenomenonMap = new Map(system.phenomena.map((p) => [p.id, p]))
+    const allBodies = [
+      ...system.bodies,
+      ...system.companions.flatMap((c) => c.subSystem?.bodies ?? []),
+    ]
+    const allSettlements = [
+      ...system.settlements,
+      ...system.companions.flatMap((c) => c.subSystem?.settlements ?? []),
+    ]
+    const allGates = [
+      ...system.gates,
+      ...system.companions.flatMap((c) => c.subSystem?.gates ?? []),
+    ]
+    const allRuins = [
+      ...system.ruins,
+      ...system.companions.flatMap((c) => c.subSystem?.ruins ?? []),
+    ]
+    const allPhenomena = [
+      ...system.phenomena,
+      ...system.companions.flatMap((c) => c.subSystem?.phenomena ?? []),
+    ]
+    const bodyMap = new Map(allBodies.map((b) => [b.id, b]))
+    const settlementMap = new Map(allSettlements.map((s) => [s.id, s]))
+    const gateMap = new Map(allGates.map((g) => [g.id, g]))
+    const ruinMap = new Map(allRuins.map((r) => [r.id, r]))
+    const phenomenonMap = new Map(allPhenomena.map((p) => [p.id, p]))
     const settlementsByBody = new Map<string, Settlement[]>()
     const settlementsByMoon = new Map<string, Settlement[]>()
-    for (const s of system.settlements) {
+    for (const s of allSettlements) {
       if (s.moonId) {
         const list = settlementsByMoon.get(s.moonId)
         if (list) list.push(s)
@@ -46,7 +66,7 @@ export function BodyLookupProvider({ system, children }: { system: GeneratedSyst
     }
     const gatesByBody = new Map<string, Gate[]>()
     const gatesByMoon = new Map<string, Gate[]>()
-    for (const g of system.gates) {
+    for (const g of allGates) {
       if (g.moonId) {
         const list = gatesByMoon.get(g.moonId)
         if (list) list.push(g)

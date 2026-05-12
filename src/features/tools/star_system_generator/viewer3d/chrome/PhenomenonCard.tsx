@@ -3,7 +3,10 @@
 import type { GeneratedSystem } from '../../types'
 
 export function PhenomenonCard({ phenomenonId, system }: { phenomenonId: string; system: GeneratedSystem }) {
-  const phen = system.phenomena.find((p) => p.id === phenomenonId)
+  const phen = [
+    ...system.phenomena,
+    ...system.companions.flatMap((c) => c.subSystem?.phenomena ?? []),
+  ].find((p) => p.id === phenomenonId)
   if (!phen) return null
   return (
     <article className="space-y-2 text-sm">

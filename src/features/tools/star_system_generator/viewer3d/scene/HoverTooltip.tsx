@@ -21,10 +21,16 @@ function resolveTooltip(
   liveBodyPosition: [number, number, number] | null,
 ): TooltipPosition | null {
   if (!hovered) return null
+  const subBodies = system.companions.flatMap((c) => c.subSystem?.bodies ?? [])
+  const subSettlements = system.companions.flatMap((c) => c.subSystem?.settlements ?? [])
+  const subGates = system.companions.flatMap((c) => c.subSystem?.gates ?? [])
+  const subPhenomena = system.companions.flatMap((c) => c.subSystem?.phenomena ?? [])
+  const subRuins = system.companions.flatMap((c) => c.subSystem?.ruins ?? [])
   switch (hovered.kind) {
     case 'body': {
       const body = graph.bodies.find((b) => b.id === hovered.id)
-      const source = system.bodies.find((b) => b.id === hovered.id)
+        ?? graph.subSystems.flatMap((s) => s.bodies).find((b) => b.id === hovered.id)
+      const source = [...system.bodies, ...subBodies].find((b) => b.id === hovered.id)
       if (!body || !source) return null
       const position = liveBodyPosition ?? [body.orbitRadius * Math.cos(body.phase0), 0, body.orbitRadius * Math.sin(body.phase0)]
       return {
@@ -35,7 +41,7 @@ function resolveTooltip(
       }
     }
     case 'settlement': {
-      const settlement = system.settlements.find((s) => s.id === hovered.id)
+      const settlement = [...system.settlements, ...subSettlements].find((s) => s.id === hovered.id)
       if (!settlement) return null
       const parentBody = settlement.bodyId
         ? graph.bodies.find((b) => b.id === settlement.bodyId)
@@ -55,7 +61,7 @@ function resolveTooltip(
       }
     }
     case 'gate': {
-      const gate = system.gates.find((g) => g.id === hovered.id)
+      const gate = [...system.gates, ...subGates].find((g) => g.id === hovered.id)
       if (!gate) return null
       const parentBody = gate.bodyId
         ? graph.bodies.find((b) => b.id === gate.bodyId)
@@ -93,15 +99,17 @@ function resolveTooltip(
       }
     }
     case 'phenomenon': {
-      const phen = system.phenomena.find((p) => p.id === hovered.id)
+      const phen = [...system.phenomena, ...subPhenomena].find((p) => p.id === hovered.id)
       if (!phen) return null
       const marker = graph.phenomena.find((p) => p.id === hovered.id)
+        ?? graph.subSystems.flatMap((s) => s.phenomena).find((p) => p.id === hovered.id)
       if (!marker) return null
       return { position: marker.position, title: phen.phenomenon.value, subtitle: 'system phenomenon' }
     }
     case 'ruin': {
-      const ruin = system.ruins.find((r) => r.id === hovered.id)
+      const ruin = [...system.ruins, ...subRuins].find((r) => r.id === hovered.id)
       const marker = graph.ruins.find((r) => r.id === hovered.id)
+        ?? graph.subSystems.flatMap((s) => s.ruins).find((r) => r.id === hovered.id)
       if (!ruin || !marker) return null
       return {
         position: [marker.position[0], marker.position[1] + 1.4, marker.position[2]],
