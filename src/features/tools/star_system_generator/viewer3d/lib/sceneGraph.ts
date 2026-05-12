@@ -28,28 +28,17 @@ import {
   phenomenonVisualProfile,
   primaryStarVisualExtras,
 } from './visualProfiles'
+import { separationToBucketAu } from '../../lib/generator/companionGeometry'
 
 const BODY_ORBIT_CLEARANCE = 2.5
 const MIN_MOON_PERIOD_SEC = 24
-const COMPANION_KEYS = ['close', 'near', 'moderate', 'wide', 'distant'] as const
-const COMPANION_AU: Record<typeof COMPANION_KEYS[number], number> = {
-  close: 0.5,
-  near: 2,
-  moderate: 8,
-  wide: 40,
-  distant: 80,
-}
 
 export interface BuildSceneGraphOptions {
   scaleMode?: OrbitScaleMode
 }
 
 function companionOffset(separation: string, hzCenterAu: number, scaleMode: OrbitScaleMode): number {
-  const lower = separation.toLowerCase()
-  for (const key of COMPANION_KEYS) {
-    if (lower.includes(key)) return auToScene(COMPANION_AU[key], hzCenterAu, scaleMode)
-  }
-  return auToScene(COMPANION_AU.moderate, hzCenterAu, scaleMode)
+  return auToScene(separationToBucketAu(separation), hzCenterAu, scaleMode)
 }
 
 function buildStar(system: GeneratedSystem): StarVisual {
