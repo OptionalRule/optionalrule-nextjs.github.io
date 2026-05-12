@@ -16,6 +16,7 @@ import { SystemViewer3DButton } from './components/SystemViewer3DButton'
 import { SectionHeader, SpectralChip, sectionShellClasses } from './components/visual'
 import { useGeneratedSystem } from './hooks/useGeneratedSystem'
 import { useGeneratorQueryState } from './hooks/useGeneratorQueryState'
+import { aggregatedCounts, formatSplitCount } from './lib/companionAggregations'
 import { formatStellarClass } from './lib/stellarLabels'
 import type { GeneratedSystem } from './types'
 
@@ -136,6 +137,7 @@ interface SummaryItem {
 }
 
 function SystemSummaryStrip({ system }: { system: GeneratedSystem }) {
+  const counts = aggregatedCounts(system)
   const items: SummaryItem[] = [
     {
       label: 'Star',
@@ -146,7 +148,7 @@ function SystemSummaryStrip({ system }: { system: GeneratedSystem }) {
     { label: 'Architecture', value: system.architecture.name.value, layer: 'physical' },
     { label: 'Reachability', value: system.reachability.className.value, layer: 'physical' },
     { label: 'Bodies', value: String(system.bodies.length), layer: 'physical' },
-    { label: 'Settlements', value: String(system.settlements.length), layer: 'human' },
+    { label: 'Settlements', value: formatSplitCount(counts.settlements.primary, counts.settlements.companion), layer: 'human' },
     { label: 'GU', value: system.guOverlay.intensity.value, layer: 'gu' },
   ]
 
