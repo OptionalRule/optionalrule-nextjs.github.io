@@ -10,6 +10,7 @@ import type {
   RuinMarker,
   SceneVec3,
   StarVisual,
+  SubSystemVisual,
   SystemSceneGraph,
   BodyShadingKey,
   RenderArchetype,
@@ -463,7 +464,7 @@ export function buildSceneGraph(system: GeneratedSystem, options: BuildSceneGrap
   const scaleMode = options.scaleMode ?? DEFAULT_ORBIT_SCALE_MODE
   const hzCenterAu = system.zones.habitableCenterAu.value > 0 ? system.zones.habitableCenterAu.value : 1
   const star = buildStar(system)
-  const inSceneCompanions = system.companions.filter((c) => c.mode !== 'linked-independent')
+  const inSceneCompanions = system.companions.filter((c) => c.mode !== 'linked-independent' && c.mode !== 'orbital-sibling')
   const linkedCompanions = system.companions.filter((c) => c.mode === 'linked-independent')
   const companions = inSceneCompanions.map((c) => buildCompanion(c, star, hzCenterAu, scaleMode))
 
@@ -494,6 +495,39 @@ export function buildSceneGraph(system: GeneratedSystem, options: BuildSceneGrap
     snowLine: auToScene(system.zones.snowLineAu.value, hzCenterAu, scaleMode),
   }
 
+  const subSystems: SubSystemVisual[] = []
+  for (let idx = 0; idx < system.companions.length; idx++) {
+    const c = system.companions[idx]
+    if (c.mode !== 'orbital-sibling' || !c.subSystem) continue
+
+    const companionStar = buildCompanion(c, star, hzCenterAu, scaleMode)
+    const subHzCenter = c.subSystem.zones.habitableCenterAu.value > 0
+      ? c.subSystem.zones.habitableCenterAu.value
+      : 1
+
+    const subSystemShim: GeneratedSystem = {
+      ...system,
+      zones: c.subSystem.zones,
+      bodies: c.subSystem.bodies,
+      settlements: c.subSystem.settlements,
+      gates: c.subSystem.gates,
+      ruins: c.subSystem.ruins,
+      phenomena: c.subSystem.phenomena,
+    }
+
+    const sortedSubBodies = [...c.subSystem.bodies].sort((l, r) => l.orbitAu.value - r.orbitAu.value)
+    const subOrbitIndex = new Map(sortedSubBodies.map((body, i) => [body.id, i]))
+    const subNonBelt = sortedSubBodies.filter((b) => b.category.value !== 'belt')
+    const subBeltBodies = sortedSubBodies.filter((b) => b.category.value === 'belt')
+
+    const subBodies = applyBodyOrbitClearance(
+      subNonBelt.map((b) => buildBody(b, subSystemShim, subHzCenter, scaleMode, subOrbitIndex.get(b.id) ?? 0)),
+    )
+    const subBelts = subBeltBodies.map((b) => buildBelt(b, subHzCenter, scaleMode, subOrbitIndex.get(b.id) ?? 0))
+
+    subSystems.push({ star: companionStar, bodies: subBodies, belts: subBelts })
+  }
+
   return {
     star,
     companions,
@@ -505,7 +539,7 @@ export function buildSceneGraph(system: GeneratedSystem, options: BuildSceneGrap
     phenomena,
     ruins,
     sceneRadius,
-    subSystems: [],
+    subSystems,
     distantMarkers,
     circumbinaryKeepOut: undefined,
   }

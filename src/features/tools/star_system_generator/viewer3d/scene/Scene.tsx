@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { Fragment, useState } from 'react'
 import { Canvas } from '@react-three/fiber'
 import { AdaptiveDpr, AdaptiveEvents, Html, PerformanceMonitor, Stars } from '@react-three/drei'
 import type { GeneratedSystem } from '../../types'
@@ -154,6 +154,22 @@ export function Scene({ graph, system }: SceneProps) {
       ))}
       <RuinPins ruins={graph.ruins.filter((r) => !r.attachedBodyId)} />
       <PhenomenonGlyphs phenomena={graph.phenomena} />
+      {graph.subSystems.map((sub) => (
+        <Fragment key={sub.star.id}>
+          {layers.physical ? <Star star={sub.star} /> : null}
+          <group position={sub.star.position}>
+            {layers.physical ? sub.bodies.map((body) => (
+              <Orbit key={`sub-orbit-${body.id}`} radius={body.orbitRadius} tiltY={body.orbitTiltY} color="#a07eff" />
+            )) : null}
+            {sub.bodies.map((body) => (
+              <Body key={`sub-body-${body.id}`} body={body} />
+            ))}
+            {layers.physical ? sub.belts.map((b) => (
+              <Belt key={`sub-belt-${b.id}`} belt={b} />
+            )) : null}
+          </group>
+        </Fragment>
+      ))}
       <HoverTooltip graph={graph} system={system} />
     </Canvas>
   )

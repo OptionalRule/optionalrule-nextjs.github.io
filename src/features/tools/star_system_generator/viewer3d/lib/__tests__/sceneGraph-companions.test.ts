@@ -35,4 +35,13 @@ describe('sceneGraph companion handling', () => {
     const graph = buildSceneGraph(sys)
     expect(graph.distantMarkers).toHaveLength(0)
   })
+
+  it('emits a subSystem entry with bodies for orbital-sibling companions', () => {
+    const seed = findSeedForMode('orbital-sibling')
+    const sys = generateSystem({ ...baseOptions, seed })
+    const graph = buildSceneGraph(sys)
+    expect(graph.subSystems).toHaveLength(1)
+    expect(graph.subSystems[0].bodies.length).toBeGreaterThan(0)
+    expect(graph.subSystems[0].star.id).toBe(sys.companions[0].id)
+  })
 })
