@@ -50,3 +50,17 @@ describe('SystemOverview with companions', () => {
     expect(screen.getByText(/Stars are contact-touching/i)).toBeTruthy()
   })
 })
+
+describe('SystemOverview parent-link affordance', () => {
+  it('renders a Return to parent system link when seed contains :c1', () => {
+    const sys = generateSystem({ ...baseOptions, seed: 'parent-test:c1' })
+    render(<SystemOverview system={sys} />)
+    expect(screen.getByText(/Return to parent system/i)).toBeTruthy()
+  })
+
+  it('does not render a parent link for a normal seed', () => {
+    const sys = generateSystem({ ...baseOptions, seed: 'parent-test' })
+    render(<SystemOverview system={sys} />)
+    expect(screen.queryByText(/Return to parent system/i)).toBeNull()
+  })
+})

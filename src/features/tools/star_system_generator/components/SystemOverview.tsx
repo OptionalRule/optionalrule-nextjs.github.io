@@ -3,6 +3,11 @@ import type { GeneratedSystem } from '../types'
 import { formatStellarClass, stellarClassNote } from '../lib/stellarLabels'
 import { FieldRow, SectionHeader, SpectralChip, sectionShellClasses } from './visual'
 
+function extractParentSeed(seed: string): string | undefined {
+  const match = seed.match(/^(.*):c\d+$/)
+  return match ? match[1] : undefined
+}
+
 export function SystemOverview({ system }: { system: GeneratedSystem }) {
   const stellarRadius = formatEstimatedStellarRadius(system)
   const spectralValue = system.primary.spectralType.value
@@ -69,6 +74,23 @@ export function SystemOverview({ system }: { system: GeneratedSystem }) {
           {stellarClassNote(spectralValue)}
         </span>
       </p>
+
+      {(() => {
+        const parent = extractParentSeed(system.seed)
+        if (!parent) return null
+        const url = `?seed=${encodeURIComponent(parent)}`
+        return (
+          <div className="mt-4 rounded-md border border-[var(--border-light)] bg-[var(--card-elevated)] p-3 text-sm">
+            <h3 className="text-[0.68rem] font-semibold uppercase tracking-[0.08em] text-[var(--text-tertiary)]">
+              Parent System
+            </h3>
+            <p className="mt-1 text-[var(--text-secondary)]">
+              This system is the linked companion of <span className="font-mono text-[var(--text-primary)]">{parent}</span>.
+            </p>
+            <a className="mt-2 inline-block text-[var(--accent)] underline" href={url}>← Return to parent system</a>
+          </div>
+        )
+      })()}
 
       {system.companions.length ? (
         <div className="mt-4 space-y-2">
