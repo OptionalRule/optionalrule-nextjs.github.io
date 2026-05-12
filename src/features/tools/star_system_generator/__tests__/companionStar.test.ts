@@ -43,4 +43,17 @@ describe('generateCompanionStar', () => {
     const c = generateCompanionStar(createSeededRng('named'), gPrimary, 'Sirius B')
     expect(c.name.value).toBe('Sirius B')
   })
+
+  it('biases companion spectral class to be at-or-smaller than primary across many seeds', () => {
+    const progression = ['O/B/A bright star', 'F star', 'G star', 'K star', 'M dwarf', 'Brown dwarf/substellar primary']
+    const primaryIdx = progression.indexOf(gPrimary.spectralType.value)
+    let atOrSmaller = 0
+    const trials = 60
+    for (let i = 0; i < trials; i++) {
+      const c = generateCompanionStar(createSeededRng(`bias-${i}`), gPrimary, 'C')
+      const cIdx = progression.indexOf(c.spectralType.value)
+      if (cIdx >= primaryIdx) atOrSmaller++
+    }
+    expect(atOrSmaller).toBe(trials)
+  })
 })

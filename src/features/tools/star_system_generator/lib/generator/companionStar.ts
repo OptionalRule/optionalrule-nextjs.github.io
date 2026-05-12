@@ -1,5 +1,5 @@
 import type { Star } from '../../types'
-import { fact } from './index'
+import { fact, activityFromRoll } from './index'
 import type { SeededRng } from './rng'
 import { twoD6 } from './dice'
 
@@ -62,7 +62,7 @@ export function generateCompanionStar(rng: SeededRng, primary: Star, name: strin
     luminositySolar: fact(Number(luminosity.toFixed(3)), 'derived', 'Mass-luminosity relation'),
     ageState: fact(primary.ageState.value, 'inferred', 'Coeval with primary'),
     metallicity: fact(primary.metallicity.value, 'inferred', 'Shared protostellar nebula'),
-    activity: fact(activityRoll >= 10 ? 'Flare-prone' : activityRoll >= 6 ? 'Active' : 'Quiet', 'inferred', `Companion activity roll ${activityRoll}`),
+    activity: fact(activityFromRoll(activityRoll), 'inferred', `Companion activity roll ${activityRoll}`),
     activityRoll: fact(activityRoll, 'derived', '2d6'),
     activityModifiers: [],
   }

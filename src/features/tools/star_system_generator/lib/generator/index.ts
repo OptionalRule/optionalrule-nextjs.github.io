@@ -406,7 +406,7 @@ function generateSystemName(rng: SeededRng): string {
   return `${core}'s ${form}`
 }
 
-function activityFromRoll(roll: number): string {
+export function activityFromRoll(roll: number): string {
   return activityLabels.find((entry) => roll <= entry.max)?.value ?? activityLabels[activityLabels.length - 1].value
 }
 
