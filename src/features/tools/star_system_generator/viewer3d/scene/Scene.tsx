@@ -18,6 +18,7 @@ import { HoverTooltip } from './HoverTooltip'
 import { useLayers, usePrefersReducedMotion, useSelectionActions } from '../chrome/ViewerContext'
 import { WebGLFallback } from '../chrome/WebGLFallback'
 import { invisibleHitMaterial, starSphereGeometry } from './renderAssets'
+import { buildSeedHref } from '../../lib/seedUrl'
 
 function detectWebGL(): boolean {
   try {
@@ -123,7 +124,7 @@ export function Scene({ graph, system }: SceneProps) {
               </mesh>
               <Html center sprite>
                 <a
-                  href={`?seed=${encodeURIComponent(m.linkedSeed)}`}
+                  href={buildSeedHref(m.linkedSeed)}
                   className="rounded bg-black/70 px-2 py-1 text-[10px] text-white underline"
                 >
                   {m.label}
