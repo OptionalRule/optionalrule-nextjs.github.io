@@ -2,6 +2,7 @@ import type { GeneratedSystem, OrbitingBody, Moon, StellarCompanion } from '../.
 import type {
   BeltVisual,
   BodyVisual,
+  DistantStarMarker,
   MoonVisual,
   OrbitScaleMode,
   PhenomenonMarker,
@@ -73,6 +74,29 @@ function buildCompanion(companion: StellarCompanion, _primary: StarVisual, hzCen
     pulseSpeed: visuals.pulseSpeed,
     rayColor: visuals.rayColor,
     position: [Math.cos(angle) * offset, 0, Math.sin(angle) * offset],
+  }
+}
+
+function buildDistantMarker(companion: StellarCompanion, outermostBodyAu: number, hzCenterAu: number, scaleMode: OrbitScaleMode): DistantStarMarker {
+  const visuals = companionStarVisuals(companion)
+  const sceneRadius = auToScene(Math.max(outermostBodyAu * 1.6, hzCenterAu * 4), hzCenterAu, scaleMode)
+  const angle = hashToUnit(`distant#${companion.id}`) * Math.PI * 2
+  return {
+    id: companion.id,
+    visual: {
+      id: companion.id,
+      coreColor: visuals.coreColor,
+      coronaColor: visuals.coronaColor,
+      coronaRadius: visuals.coronaRadius * 0.4,
+      rayCount: Math.max(2, Math.floor(visuals.rayCount / 2)),
+      bloomStrength: visuals.bloomStrength * 0.5,
+      flareStrength: visuals.flareStrength * 0.4,
+      pulseSpeed: visuals.pulseSpeed,
+      rayColor: visuals.rayColor,
+      position: [Math.cos(angle) * sceneRadius, 0, Math.sin(angle) * sceneRadius],
+    },
+    label: `${companion.star.name.value} →`,
+    linkedSeed: companion.linkedSeed?.value ?? '',
   }
 }
 
@@ -439,7 +463,12 @@ export function buildSceneGraph(system: GeneratedSystem, options: BuildSceneGrap
   const scaleMode = options.scaleMode ?? DEFAULT_ORBIT_SCALE_MODE
   const hzCenterAu = system.zones.habitableCenterAu.value > 0 ? system.zones.habitableCenterAu.value : 1
   const star = buildStar(system)
-  const companions = system.companions.map((c) => buildCompanion(c, star, hzCenterAu, scaleMode))
+  const inSceneCompanions = system.companions.filter((c) => c.mode !== 'linked-independent')
+  const linkedCompanions = system.companions.filter((c) => c.mode === 'linked-independent')
+  const companions = inSceneCompanions.map((c) => buildCompanion(c, star, hzCenterAu, scaleMode))
+
+  const outermostBodyAu = system.bodies.reduce((max, b) => Math.max(max, b.orbitAu.value), 0)
+  const distantMarkers = linkedCompanions.map((c) => buildDistantMarker(c, outermostBodyAu, hzCenterAu, scaleMode))
 
   const sortedOrbitingBodies = [...system.bodies].sort((left, right) => left.orbitAu.value - right.orbitAu.value)
   const orbitIndexById = new Map(sortedOrbitingBodies.map((body, index) => [body.id, index]))
@@ -477,7 +506,7 @@ export function buildSceneGraph(system: GeneratedSystem, options: BuildSceneGrap
     ruins,
     sceneRadius,
     subSystems: [],
-    distantMarkers: [],
+    distantMarkers,
     circumbinaryKeepOut: undefined,
   }
 }
