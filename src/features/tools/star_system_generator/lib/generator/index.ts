@@ -154,7 +154,7 @@ import { phenomenonNote } from './prose/phenomenonProse'
 import { buildRelationshipGraph, renderSystemStory } from './graph'
 import { graphAwareReshape } from './prose'
 import { selectSystemHooks } from './hooks'
-import { createSeededRng, type SeededRng } from './rng'
+import { createSeededRng, normalizeSeed, type SeededRng } from './rng'
 import { separationToMode } from './companionMode'
 import { generateCompanionStar } from './companionStar'
 
@@ -607,6 +607,7 @@ function binarySeparationProfile(roll: number): Pick<StellarCompanion, 'separati
 }
 
 function generateStellarCompanions(rng: SeededRng, primary: Star, parentSeed: string): StellarCompanion[] {
+  const normalizedParent = normalizeSeed(parentSeed)
   const threshold = companionThreshold(primary.spectralType.value)
   let roll = twoD6(rng)
   const modifiers: string[] = ['+1 major reachable system']
@@ -622,7 +623,7 @@ function generateStellarCompanions(rng: SeededRng, primary: Star, parentSeed: st
 
   const companionName = `${primary.name.value} B`
   const star = mode === 'linked-independent'
-    ? generateCompanionStar(createSeededRng(`${parentSeed}:c1`).fork('star'), primary, companionName)
+    ? generateCompanionStar(createSeededRng(`${normalizedParent}:c1`).fork('star'), primary, companionName)
     : generateCompanionStar(rng.fork('star1'), primary, companionName)
 
   const base: StellarCompanion = {
@@ -635,7 +636,7 @@ function generateStellarCompanions(rng: SeededRng, primary: Star, parentSeed: st
   }
 
   if (mode === 'linked-independent') {
-    base.linkedSeed = fact(`${parentSeed}:c1`, 'derived', 'Derived seed for linked sibling system')
+    base.linkedSeed = fact(`${normalizedParent}:c1`, 'derived', 'Derived seed for linked sibling system')
   }
 
   return [base]

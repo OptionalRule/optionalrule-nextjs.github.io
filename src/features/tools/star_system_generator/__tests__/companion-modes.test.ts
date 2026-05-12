@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { generateSystem } from '../lib/generator'
+import { normalizeSeed } from '../lib/generator/rng'
 import type { GenerationOptions } from '../types'
 
 const baseOptions: GenerationOptions = {
@@ -39,7 +40,7 @@ describe('companion modes', () => {
     const seed = findSeedWithSeparation('Very wide')
     const sys = generateSystem({ ...baseOptions, seed })
     expect(sys.companions[0].mode).toBe('linked-independent')
-    expect(sys.companions[0].linkedSeed?.value).toBe(`${seed}:c1`)
+    expect(sys.companions[0].linkedSeed?.value).toBe(`${normalizeSeed(seed)}:c1`)
   })
 
   it('sets mode = volatile for Contact / near-contact', () => {
