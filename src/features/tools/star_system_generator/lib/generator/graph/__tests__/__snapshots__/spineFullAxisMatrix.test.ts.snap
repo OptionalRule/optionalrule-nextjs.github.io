@@ -46,11 +46,11 @@ exports[`spine full axis matrix (16 representative cells) > baseline-realistic-a
 
 exports[`spine full axis matrix (16 representative cells) > baseline-realistic-balanced: stable spine + body[0] structural fields 1`] = `
 {
-  "body0": "The moving bleed-node river keeps shifting under Veyra-Locke Concession. Each pass of the narrow-AI perception fog costs Veyra-Locke Concession a margin it doesn't have.",
+  "body0": "The narrow-AI perception fog keeps shifting under Wouri Survey-176 I. Each pass of the moving bleed-node river costs Wouri Survey-176 I a margin it doesn't have. Wouri Survey-176 I Laboratory 18 can't plan around the narrow-AI fragmentation risk anymore. First-wave colony shell sits on Wouri Survey-176 I. Wouri Survey-176 I hosts Wouri Survey-176 I Laboratory 18. There, Wouri Survey-176 I Laboratory 18 draws everything it consumes from Pinchdrive calibration medium.",
   "spineEdgeType": "DESTABILIZES",
-  "spineObjectKind": "namedFaction",
+  "spineObjectKind": "body",
   "spineSubjectKind": "phenomenon",
-  "spineSummary": "Moving bleed-node river took shape in the early charters, the moving bleed-node river is rewriting the constants Veyra-Locke Concession was built around.",
+  "spineSummary": "The narrow-AI perception fog is rewriting the constants Wouri Survey-176 I was built around.",
   "spineVisibility": "public",
 }
 `;
@@ -112,7 +112,7 @@ exports[`spine full axis matrix (16 representative cells) > density-hub: stable 
 
 exports[`spine full axis matrix (16 representative cells) > density-normal: stable spine + body[0] structural fields 1`] = `
 {
-  "body0": "The long-period comet storm drifts the baselines Coronagraph Bureau relies on. The amplitude of the long-period comet storm exceeds the operating envelope of Vey Picket-265 Belt I. The chiral contamination bloom introduces a measurable perturbation in Vey Picket-265 Belt I. Pinchdrive accident scar sits on Vey Picket-265 Belt I. Vey Picket-265 Belt I hosts Vey Picket-265 Belt I Platform.",
+  "body0": "The long-period comet storm drifts the baselines Coronagraph Bureau relies on. The amplitude of the long-period comet storm exceeds the operating envelope of Vey Picket-265 Belt II. The long-period comet storm introduces a measurable perturbation in Vey Picket-265 Belt I. Pinchdrive accident scar sits on Vey Picket-265 Belt I. Vey Picket-265 Belt I hosts Vey Picket-265 Belt I Platform.",
   "spineEdgeType": "DESTABILIZES",
   "spineObjectKind": "namedFaction",
   "spineSubjectKind": "phenomenon",
