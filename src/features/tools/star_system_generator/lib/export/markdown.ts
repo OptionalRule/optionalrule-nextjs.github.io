@@ -65,6 +65,28 @@ export function exportSystemMarkdown(system: GeneratedSystem): string {
     }
   }
 
+  for (const companion of system.companions) {
+    if (companion.mode === 'orbital-sibling' && companion.subSystem) {
+      lines.push('', `## Companion System: ${companion.star.name.value}`, '')
+      lines.push(
+        `*${formatStellarClass(companion.star.spectralType.value)} · ${companion.star.massSolar.value} M☉*`,
+        ''
+      )
+      lines.push(
+        `HZ ${companion.subSystem.zones.habitableInnerAu.value}–${companion.subSystem.zones.habitableOuterAu.value} AU · Snow line ${companion.subSystem.zones.snowLineAu.value} AU`,
+        ''
+      )
+      for (const body of companion.subSystem.bodies) {
+        lines.push(`- **${body.name.value}** (${body.category.value}) at ${body.orbitAu.value} AU`)
+      }
+      lines.push('')
+    } else if (companion.mode === 'linked-independent' && companion.linkedSeed) {
+      lines.push('', '## Linked Companion System', '')
+      lines.push(`${companion.companionType.value} · ${companion.separation.value}`, '')
+      lines.push(`Linked system: \`?seed=${companion.linkedSeed.value}\``, '')
+    }
+  }
+
   const systemStory = formatSystemStory(system)
   if (systemStory.length) {
     lines.push('', '## System Story', '', ...systemStory)
