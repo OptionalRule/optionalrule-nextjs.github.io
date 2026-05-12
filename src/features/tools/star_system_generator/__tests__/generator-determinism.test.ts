@@ -1611,4 +1611,25 @@ describe('generateSystem', () => {
     expect(median(moonCounts(superJovians))).toBeGreaterThanOrEqual(12)
     expect(average(moonCounts(largeOrdinaryGasGiants))).toBeGreaterThan(average(moonCounts(smallOrdinaryGasGiants)) + 2)
   })
+
+  it('produces the same companions array for the same seed across multiple runs', () => {
+    const opts: GenerationOptions = { ...options, seed: 'det-companion-1' }
+    const a = generateSystem(opts)
+    const b = generateSystem(opts)
+    expect(a.companions).toEqual(b.companions)
+  })
+
+  it('produces a deterministic linked-independent linkedSeed across runs', () => {
+    let found = false
+    for (let i = 0; i < 200 && !found; i++) {
+      const opts: GenerationOptions = { ...options, seed: `det-linked-${i}` }
+      const a = generateSystem(opts)
+      const b = generateSystem(opts)
+      if (a.companions[0]?.mode === 'linked-independent') {
+        expect(a.companions[0].linkedSeed?.value).toBe(b.companions[0].linkedSeed?.value)
+        found = true
+      }
+    }
+    expect(found).toBe(true)
+  })
 })
