@@ -216,6 +216,8 @@ export interface SubSystemVisual {
   star: StarVisual
   bodies: BodyVisual[]
   belts: BeltVisual[]
+  ruins: RuinMarker[]
+  phenomena: PhenomenonMarker[]
 }
 
 export interface SystemSceneGraph {

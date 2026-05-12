@@ -531,7 +531,10 @@ export function buildSceneGraph(system: GeneratedSystem, options: BuildSceneGrap
     )
     const subBelts = subBeltBodies.map((b) => buildBelt(b, subHzCenter, scaleMode, subOrbitIndex.get(b.id) ?? 0))
 
-    subSystems.push({ star: companionStar, bodies: subBodies, belts: subBelts })
+    const subRuins = c.subSystem.ruins.map((r) => buildRuin(r, subSystemShim, subBodies, subBelts, subHzCenter, scaleMode))
+    const subPhenomena = c.subSystem.phenomena.map((p) => buildPhenomenon(p, subSystemShim, subBodies, subBelts, subHzCenter, scaleMode))
+
+    subSystems.push({ star: companionStar, bodies: subBodies, belts: subBelts, ruins: subRuins, phenomena: subPhenomena })
   }
 
   return {

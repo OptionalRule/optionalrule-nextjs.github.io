@@ -175,6 +175,8 @@ export function Scene({ graph, system }: SceneProps) {
             {layers.physical ? sub.belts.map((b) => (
               <Belt key={`sub-belt-${b.id}`} belt={b} />
             )) : null}
+            <RuinPins ruins={sub.ruins.filter((r) => !r.attachedBodyId)} />
+            <PhenomenonGlyphs phenomena={sub.phenomena} />
           </group>
         </Fragment>
       ))}
