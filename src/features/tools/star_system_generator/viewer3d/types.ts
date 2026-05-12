@@ -205,6 +205,19 @@ export interface RuinMarker {
   renderArchetype: 'ruin-marker'
 }
 
+export interface DistantStarMarker {
+  id: string
+  visual: StarVisual
+  label: string
+  linkedSeed: string
+}
+
+export interface SubSystemVisual {
+  star: StarVisual
+  bodies: BodyVisual[]
+  belts: BeltVisual[]
+}
+
 export interface SystemSceneGraph {
   star: StarVisual
   companions: StarVisual[]
@@ -216,6 +229,9 @@ export interface SystemSceneGraph {
   phenomena: PhenomenonMarker[]
   ruins: RuinMarker[]
   sceneRadius: number
+  subSystems: SubSystemVisual[]
+  distantMarkers: DistantStarMarker[]
+  circumbinaryKeepOut?: number
 }
 
 export type LayerKey = 'physical' | 'gu' | 'human' | 'moonOrbits'

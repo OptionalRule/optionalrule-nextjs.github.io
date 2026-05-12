@@ -476,5 +476,8 @@ export function buildSceneGraph(system: GeneratedSystem, options: BuildSceneGrap
     phenomena,
     ruins,
     sceneRadius,
+    subSystems: [],
+    distantMarkers: [],
+    circumbinaryKeepOut: undefined,
   }
 }
