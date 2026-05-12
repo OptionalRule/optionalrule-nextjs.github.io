@@ -1,6 +1,7 @@
 'use client'
 
 import { Building2, Orbit } from 'lucide-react'
+import { CompanionSubSystem } from './components/CompanionSubSystem'
 import { ExportPanel } from './components/ExportPanel'
 import { GeneratorControls } from './components/GeneratorControls'
 import { GuOverlayPanel } from './components/GuOverlayPanel'
@@ -78,6 +79,12 @@ export default function StarSystemGenerator({ className }: StarSystemGeneratorPr
         <div id="orbit">
           <OrbitalTable system={system} />
         </div>
+
+        {system.companions
+          .filter((c) => c.mode === 'orbital-sibling' && c.subSystem)
+          .map((c) => (
+            <CompanionSubSystem key={c.id} system={system} companion={c} />
+          ))}
 
         <section id="settlements" className={sectionShellClasses('human')}>
           <SectionHeader
