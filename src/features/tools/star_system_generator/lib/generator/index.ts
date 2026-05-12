@@ -157,6 +157,7 @@ import { selectSystemHooks } from './hooks'
 import { createSeededRng, normalizeSeed, type SeededRng } from './rng'
 import { separationToMode } from './companionMode'
 import { generateCompanionStar } from './companionStar'
+import { buildVolatileHazardBelt, buildBinaryContactPhenomenon } from './volatileSystem'
 
 export { architectureBodyPlanRules } from './architecture'
 
@@ -4234,12 +4235,22 @@ export function generateSystem(options: GenerationOptions, knownSystem?: Partial
   const architectureResult = generateArchitecture(rootRng.fork('architecture'), options, primary, reachability.className.value)
   const hz = calculateHabitableZone(primary.luminositySolar.value)
   const snowLine = calculateSnowLine(primary.luminositySolar.value)
-  const bodies = generateBodies(rootRng.fork('bodies'), primary, architectureResult.architecture.name.value, name.value, knownSystem?.bodies)
+  const hasVolatileCompanion = companions.some((c) => c.mode === 'volatile')
+  const bodies = hasVolatileCompanion
+    ? [buildVolatileHazardBelt(name.value)]
+    : generateBodies(rootRng.fork('bodies'), primary, architectureResult.architecture.name.value, name.value, knownSystem?.bodies)
   const guOverlay = generateGuOverlay(rootRng.fork('gu'), options.gu, primary, companions, bodies, architectureResult.architecture.name.value)
-  const allSettlements = generateSettlements(rootRng.fork('settlements'), options, name.value, bodies, guOverlay, reachability, architectureResult.architecture.name.value)
+  const allSettlements = hasVolatileCompanion
+    ? []
+    : generateSettlements(rootRng.fork('settlements'), options, name.value, bodies, guOverlay, reachability, architectureResult.architecture.name.value)
   const { settlements, gates } = partitionGates(allSettlements)
-  const ruins = generateHumanRemnants(rootRng.fork('ruins'), bodies, guOverlay)
-  const phenomena = generatePhenomena(rootRng.fork('phenomena'), architectureResult.architecture.name.value, guOverlay)
+  const ruins = hasVolatileCompanion
+    ? []
+    : generateHumanRemnants(rootRng.fork('ruins'), bodies, guOverlay)
+  const generatedPhenomena = generatePhenomena(rootRng.fork('phenomena'), architectureResult.architecture.name.value, guOverlay)
+  const phenomena = hasVolatileCompanion
+    ? [buildBinaryContactPhenomenon(), ...generatedPhenomena]
+    : generatedPhenomena
   const narrativeFacts = buildNarrativeFacts({
     options,
     systemName: name,

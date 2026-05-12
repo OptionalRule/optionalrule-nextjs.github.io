@@ -408,6 +408,7 @@ describe('generateSystem', () => {
 
     for (let index = 0; index < 40; index++) {
       const system = generateSystem({ ...options, seed: `a13f9c2e41b8${index.toString(16).padStart(4, '0')}` })
+      if (system.companions.some((companion) => companion.mode === 'volatile')) continue
       for (const body of system.bodies) {
         if (body.thermalZone.value === 'Furnace' || body.thermalZone.value === 'Inferno') {
           expect(body.moons).toHaveLength(0)
@@ -508,7 +509,7 @@ describe('generateSystem', () => {
   it('adds richer body profiles for belts, minor bodies, and anomalies', () => {
     const systems = Array.from({ length: 80 }, (_, index) =>
       generateSystem({ ...options, seed: `c93f9c2e41b8${index.toString(16).padStart(4, '0')}` })
-    )
+    ).filter((system) => !system.companions.some((companion) => companion.mode === 'volatile'))
     const profiledBodies = systems.flatMap((system) =>
       system.bodies.filter((body) =>
         body.category.value === 'belt' ||
@@ -764,7 +765,7 @@ describe('generateSystem', () => {
 
     const systems = Array.from({ length: 500 }, (_, index) =>
       generateSystem({ ...options, seed: `611a9c2e41b8${index.toString(16).padStart(4, '0')}` })
-    )
+    ).filter((system) => !system.companions.some((companion) => companion.mode === 'volatile'))
 
     expect(new Set(systems.map((system) => system.architecture.name.value)).size).toBeGreaterThan(5)
 
@@ -893,8 +894,10 @@ describe('generateSystem', () => {
           settlements: density as GenerationOptions['settlements'],
           seed: `5e771e5${index.toString(16).padStart(8, '0')}`,
         })
-        return system.settlements.length + system.gates.length
+        return system
       })
+        .filter((system) => !system.companions.some((companion) => companion.mode === 'volatile'))
+        .map((system) => system.settlements.length + system.gates.length)
 
       expect(Math.min(...counts)).toBeGreaterThanOrEqual(density === 'sparse' ? min : 1)
       expect(Math.max(...counts)).toBeLessThanOrEqual(max)
