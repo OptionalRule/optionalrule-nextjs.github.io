@@ -48,4 +48,16 @@ describe('companion modes', () => {
     const sys = generateSystem({ ...baseOptions, seed })
     expect(sys.companions[0].mode).toBe('volatile')
   })
+
+  it('emits two companions for Hierarchical triple — inner orbital-sibling and outer linked-independent', () => {
+    const seed = findSeedWithSeparation('Hierarchical triple')
+    const sys = generateSystem({ ...baseOptions, seed })
+
+    expect(sys.companions).toHaveLength(2)
+    expect(sys.companions[0].mode).toBe('orbital-sibling')
+    expect(sys.companions[0].id).toBe('companion-1')
+    expect(sys.companions[1].mode).toBe('linked-independent')
+    expect(sys.companions[1].id).toBe('companion-2')
+    expect(sys.companions[1].linkedSeed?.value).toBe(`${normalizeSeed(seed)}:c2`)
+  })
 })

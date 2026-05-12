@@ -639,7 +639,29 @@ function generateStellarCompanions(rng: SeededRng, primary: Star, parentSeed: st
     base.linkedSeed = fact(`${normalizedParent}:c1`, 'derived', 'Derived seed for linked sibling system')
   }
 
-  return [base]
+  const result: StellarCompanion[] = [base]
+
+  if (separationValue === 'Hierarchical triple') {
+    const outerName = `${primary.name.value} C`
+    const outerStar = generateCompanionStar(
+      createSeededRng(`${normalizedParent}:c2`).fork('star'),
+      primary,
+      outerName,
+    )
+    result.push({
+      id: 'companion-2',
+      companionType: fact('Hierarchical triple — outer linked system', 'inferred', 'Hierarchical triple outer member'),
+      separation: fact('Very wide', 'inferred', 'Outer member of hierarchical triple'),
+      planetaryConsequence: fact('Treated as an independently generated linked system.', 'inferred', 'Hierarchical outer convention'),
+      guConsequence: fact('Long-haul intra-system frontier; see linked system for details.', 'gu-layer', 'Hierarchical outer convention'),
+      rollMargin: fact(margin, 'derived', 'Inherits margin from primary companion roll'),
+      mode: 'linked-independent',
+      star: outerStar,
+      linkedSeed: fact(`${normalizedParent}:c2`, 'derived', 'Derived seed for hierarchical outer system'),
+    })
+  }
+
+  return result
 }
 
 function generateArchitecture(rng: SeededRng, options: GenerationOptions, primary: Star, reachabilityClass: string) {
