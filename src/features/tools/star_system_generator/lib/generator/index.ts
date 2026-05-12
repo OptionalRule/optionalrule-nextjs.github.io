@@ -157,6 +157,7 @@ import { selectSystemHooks } from './hooks'
 import { createSeededRng, normalizeSeed, type SeededRng } from './rng'
 import { separationToMode } from './companionMode'
 import { generateCompanionStar } from './companionStar'
+import { separationToBucketAu } from './companionGeometry'
 import { buildVolatileHazardBelt, buildBinaryContactPhenomenon } from './volatileSystem'
 
 export { architectureBodyPlanRules } from './architecture'
@@ -2799,7 +2800,7 @@ function addKnownOrbitBandNote(body: OrbitingBody, slot: ArchitectureSlot): Orbi
   }
 }
 
-function generateBodies(rng: SeededRng, primary: Star, architectureName: string, systemName: string, knownBodies: PartialKnownBody[] = []): OrbitingBody[] {
+function generateBodies(rng: SeededRng, primary: Star, architectureName: string, systemName: string, knownBodies: PartialKnownBody[] = [], minOrbitAu = 0): OrbitingBody[] {
   const slots = expandSlotsForKnownBodies(buildArchitectureSlots(rng.fork('body-plan'), architectureName), knownBodies)
   const orbitAssignments = generateOrbitAssignments(rng, primary.luminositySolar.value, primary.massSolar.value, slots, knownBodies)
   const bodies: OrbitingBody[] = []
@@ -2842,7 +2843,8 @@ function generateBodies(rng: SeededRng, primary: Star, architectureName: string,
     previousFiltered = generated.filtered
   }
 
-  return applyFinalDesignations(systemName, bodies)
+  const filtered = bodies.filter((b) => b.orbitAu.locked || b.orbitAu.value >= minOrbitAu)
+  return applyFinalDesignations(systemName, filtered)
 }
 
 function intensityFromRoll(roll: number): string {
@@ -3677,6 +3679,7 @@ function partitionGates(allSettlements: Settlement[]): { settlements: Settlement
 }
 
 function generateHumanRemnants(rng: SeededRng, bodies: OrbitingBody[], guOverlay: GuOverlay): HumanRemnant[] {
+  if (bodies.length === 0) return []
   const count = guOverlay.intensity.value.includes('fracture') || guOverlay.intensity.value.includes('shear') ? 3 : 2
   return Array.from({ length: count }, (_, index) => {
     const body = pickOne(rng, bodies)
@@ -4233,12 +4236,31 @@ export function generateSystem(options: GenerationOptions, knownSystem?: Partial
   const primary = applyCompanionActivityModifier(basePrimary, companions)
   const reachability = generateReachability(rootRng.fork('reachability'), options, primary, companions)
   const architectureResult = generateArchitecture(rootRng.fork('architecture'), options, primary, reachability.className.value)
-  const hz = calculateHabitableZone(primary.luminositySolar.value)
-  const snowLine = calculateSnowLine(primary.luminositySolar.value)
+  const circumbinaryCompanion = companions.find((c) => c.mode === 'circumbinary')
+  const effectiveLuminosity = circumbinaryCompanion
+    ? primary.luminositySolar.value + circumbinaryCompanion.star.luminositySolar.value
+    : primary.luminositySolar.value
+  const keepOutAu = circumbinaryCompanion
+    ? 2 * separationToBucketAu(circumbinaryCompanion.separation.value)
+    : 0
+  const baseHz = calculateHabitableZone(effectiveLuminosity)
+  const hz = {
+    inner: Math.max(baseHz.inner, keepOutAu),
+    center: Math.max(baseHz.center, keepOutAu * 1.2),
+    outer: Math.max(baseHz.outer, keepOutAu * 1.4),
+  }
+  const snowLine = Math.max(calculateSnowLine(effectiveLuminosity), keepOutAu * 1.5)
   const hasVolatileCompanion = companions.some((c) => c.mode === 'volatile')
   const bodies = hasVolatileCompanion
     ? [buildVolatileHazardBelt(name.value)]
-    : generateBodies(rootRng.fork('bodies'), primary, architectureResult.architecture.name.value, name.value, knownSystem?.bodies)
+    : generateBodies(
+        rootRng.fork('bodies'),
+        primary,
+        architectureResult.architecture.name.value,
+        name.value,
+        knownSystem?.bodies,
+        keepOutAu,
+      )
   const guOverlay = generateGuOverlay(rootRng.fork('gu'), options.gu, primary, companions, bodies, architectureResult.architecture.name.value)
   const allSettlements = hasVolatileCompanion
     ? []

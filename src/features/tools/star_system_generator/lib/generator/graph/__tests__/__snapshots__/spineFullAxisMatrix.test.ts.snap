@@ -46,11 +46,11 @@ exports[`spine full axis matrix (16 representative cells) > baseline-realistic-a
 
 exports[`spine full axis matrix (16 representative cells) > baseline-realistic-balanced: stable spine + body[0] structural fields 1`] = `
 {
-  "body0": "The narrow-AI perception fog keeps shifting under Wouri Survey-176 III. Each pass of the narrow-AI perception fog costs Wouri Survey-176 IV a margin it doesn't have. Wouri Survey-176 IV can't plan around the moving bleed-node river anymore. Wouri Survey-176 III Laboratory 18 sits on Wouri Survey-176 III. Wouri Survey-176 IV hosts Wouri Survey-176 IV Charter.",
+  "body0": "The moving bleed-node river keeps shifting under Veyra-Locke Concession. Each pass of the narrow-AI perception fog costs Veyra-Locke Concession a margin it doesn't have.",
   "spineEdgeType": "DESTABILIZES",
-  "spineObjectKind": "body",
+  "spineObjectKind": "namedFaction",
   "spineSubjectKind": "phenomenon",
-  "spineSummary": "Narrow-AI perception fog took shape in the early charters, the narrow-AI perception fog is rewriting the constants Wouri Survey-176 III was built around.",
+  "spineSummary": "Moving bleed-node river took shape in the early charters, the moving bleed-node river is rewriting the constants Veyra-Locke Concession was built around.",
   "spineVisibility": "public",
 }
 `;
@@ -112,7 +112,7 @@ exports[`spine full axis matrix (16 representative cells) > density-hub: stable 
 
 exports[`spine full axis matrix (16 representative cells) > density-normal: stable spine + body[0] structural fields 1`] = `
 {
-  "body0": "The long-period comet storm drifts the baselines Coronagraph Bureau relies on. The amplitude of the long-period comet storm exceeds the operating envelope of Vey Picket-265 II. The chiral contamination bloom introduces a measurable perturbation in Vey Picket-265 II. Vey Picket-265 II Redoubt sits on Vey Picket-265 II.",
+  "body0": "The long-period comet storm drifts the baselines Coronagraph Bureau relies on. The amplitude of the long-period comet storm exceeds the operating envelope of Vey Picket-265 Belt I. The chiral contamination bloom introduces a measurable perturbation in Vey Picket-265 Belt I. Pinchdrive accident scar sits on Vey Picket-265 Belt I. Vey Picket-265 Belt I hosts Vey Picket-265 Belt I Platform.",
   "spineEdgeType": "DESTABILIZES",
   "spineObjectKind": "namedFaction",
   "spineSubjectKind": "phenomenon",
@@ -156,12 +156,12 @@ exports[`spine full axis matrix (16 representative cells) > gu-axis-high: stable
 
 exports[`spine full axis matrix (16 representative cells) > gu-axis-low: stable spine + body[0] structural fields 1`] = `
 {
-  "body0": "The public festival tied to safe transit windows is corroding Glasshouse Biosafety Compact. The failed Iggygate wake is corroding Glasshouse Biosafety Compact.",
-  "spineEdgeType": "DESTABILIZES",
+  "body0": "Helion Debt Synod and Red Vane Labor Combine both want the trade ledger. Ash Meridian Navy and Glasshouse Biosafety Compact both want the chain of authority. Helion Debt Synod refuses to recognize Kestrel Free Compact's authority.",
+  "spineEdgeType": "CONTESTS",
   "spineObjectKind": "namedFaction",
-  "spineSubjectKind": "phenomenon",
-  "spineSummary": "Public festival tied to safe transit windows took shape after the first audit, the public festival tied to safe transit windows is rewriting the constants Glasshouse Biosafety Compact was built around.",
-  "spineVisibility": "public",
+  "spineSubjectKind": "namedFaction",
+  "spineSummary": "Helion Debt Synod and Red Vane Labor Combine can't both set the rules — and the rest of the system knows it.",
+  "spineVisibility": "contested",
 }
 `;
 

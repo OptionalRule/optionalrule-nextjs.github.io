@@ -563,7 +563,7 @@ describe('generateSystem', () => {
   it('generates a fuller orbital profile across frontier seeds', () => {
     const systems = Array.from({ length: 30 }, (_, index) =>
       generateSystem({ ...options, seed: `b13f9c2e41b8${index.toString(16).padStart(4, '0')}` })
-    )
+    ).filter((system) => !system.companions.some((companion) => companion.mode === 'volatile' || companion.mode === 'circumbinary'))
     const averageBodies = systems.reduce((sum, system) => sum + system.bodies.length, 0) / systems.length
     const systemsWithMoons = systems.filter((system) => system.bodies.some((body) => body.moons.length > 0)).length
 
@@ -574,7 +574,9 @@ describe('generateSystem', () => {
   it('makes giant-rich and migrated architectures actually include giants with moons', () => {
     const giantBearingSystems = Array.from({ length: 100 }, (_, index) =>
       generateSystem({ ...options, seed: `c13f9c2e41b8${index.toString(16).padStart(4, '0')}` })
-    ).filter((system) => system.architecture.name.value === 'Giant-rich or chaotic' || system.architecture.name.value === 'Migrated giant')
+    )
+      .filter((system) => !system.companions.some((companion) => companion.mode === 'volatile' || companion.mode === 'circumbinary'))
+      .filter((system) => system.architecture.name.value === 'Giant-rich or chaotic' || system.architecture.name.value === 'Migrated giant')
 
     expect(giantBearingSystems.length).toBeGreaterThan(0)
     for (const system of giantBearingSystems) {
@@ -765,7 +767,7 @@ describe('generateSystem', () => {
 
     const systems = Array.from({ length: 500 }, (_, index) =>
       generateSystem({ ...options, seed: `611a9c2e41b8${index.toString(16).padStart(4, '0')}` })
-    ).filter((system) => !system.companions.some((companion) => companion.mode === 'volatile'))
+    ).filter((system) => !system.companions.some((companion) => companion.mode === 'volatile' || companion.mode === 'circumbinary'))
 
     expect(new Set(systems.map((system) => system.architecture.name.value)).size).toBeGreaterThan(5)
 
@@ -896,7 +898,7 @@ describe('generateSystem', () => {
         })
         return system
       })
-        .filter((system) => !system.companions.some((companion) => companion.mode === 'volatile'))
+        .filter((system) => !system.companions.some((companion) => companion.mode === 'volatile' || companion.mode === 'circumbinary'))
         .map((system) => system.settlements.length + system.gates.length)
 
       expect(Math.min(...counts)).toBeGreaterThanOrEqual(density === 'sparse' ? min : 1)
