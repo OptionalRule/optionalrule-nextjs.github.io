@@ -106,6 +106,31 @@ export function Scene({ graph, system }: SceneProps) {
           {graph.companions.map((c) => (
             <Star key={c.id} star={c} />
           ))}
+          {graph.distantMarkers.map((m) => (
+            <group key={m.id} position={m.visual.position}>
+              <mesh
+                onClick={(e) => {
+                  e.stopPropagation()
+                  if (typeof window !== 'undefined' && m.linkedSeed) {
+                    const url = new URL(window.location.href)
+                    url.searchParams.set('seed', m.linkedSeed)
+                    window.location.href = url.toString()
+                  }
+                }}
+              >
+                <sphereGeometry args={[0.3, 16, 16]} />
+                <meshBasicMaterial color={m.visual.coreColor} />
+              </mesh>
+              <Html center sprite>
+                <a
+                  href={`?seed=${encodeURIComponent(m.linkedSeed)}`}
+                  className="rounded bg-black/70 px-2 py-1 text-[10px] text-white underline"
+                >
+                  {m.label}
+                </a>
+              </Html>
+            </group>
+          ))}
           <Zones
             habitableInner={graph.zones.habitableInner}
             habitableOuter={graph.zones.habitableOuter}
