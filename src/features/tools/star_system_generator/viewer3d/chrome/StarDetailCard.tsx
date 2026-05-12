@@ -27,7 +27,15 @@ export function StarDetailCard({ system }: { system: GeneratedSystem }) {
           <ul className="mt-1 space-y-1 text-xs">
             {system.companions.map((c) => (
               <li key={c.id} className="rounded border border-[var(--border)] bg-[var(--card-elevated)] px-2 py-1">
-                {c.companionType.value} · {c.separation.value}
+                <div>{c.companionType.value} · {c.separation.value}</div>
+                {c.mode === 'linked-independent' && c.linkedSeed ? (
+                  <a
+                    className="mt-1 inline-block text-[10px] text-[var(--accent)] underline"
+                    href={`?seed=${encodeURIComponent(c.linkedSeed.value)}`}
+                  >
+                    Open linked system →
+                  </a>
+                ) : null}
               </li>
             ))}
           </ul>
