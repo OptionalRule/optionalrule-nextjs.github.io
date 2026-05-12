@@ -26,25 +26,26 @@ const Ctx = createContext<SystemLookups | null>(null)
 
 export function BodyLookupProvider({ system, children }: { system: GeneratedSystem; children: ReactNode }) {
   const lookups = useMemo<SystemLookups>(() => {
+    const companions = system.companions ?? []
     const allBodies = [
       ...system.bodies,
-      ...system.companions.flatMap((c) => c.subSystem?.bodies ?? []),
+      ...companions.flatMap((c) => c.subSystem?.bodies ?? []),
     ]
     const allSettlements = [
       ...system.settlements,
-      ...system.companions.flatMap((c) => c.subSystem?.settlements ?? []),
+      ...companions.flatMap((c) => c.subSystem?.settlements ?? []),
     ]
     const allGates = [
       ...system.gates,
-      ...system.companions.flatMap((c) => c.subSystem?.gates ?? []),
+      ...companions.flatMap((c) => c.subSystem?.gates ?? []),
     ]
     const allRuins = [
       ...system.ruins,
-      ...system.companions.flatMap((c) => c.subSystem?.ruins ?? []),
+      ...companions.flatMap((c) => c.subSystem?.ruins ?? []),
     ]
     const allPhenomena = [
       ...system.phenomena,
-      ...system.companions.flatMap((c) => c.subSystem?.phenomena ?? []),
+      ...companions.flatMap((c) => c.subSystem?.phenomena ?? []),
     ]
     const bodyMap = new Map(allBodies.map((b) => [b.id, b]))
     const settlementMap = new Map(allSettlements.map((s) => [s.id, s]))
