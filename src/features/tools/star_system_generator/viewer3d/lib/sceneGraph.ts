@@ -62,15 +62,16 @@ function buildStar(system: GeneratedSystem): StarVisual {
 
 function buildCompanion(companion: StellarCompanion, _primary: StarVisual, hzCenterAu: number, scaleMode: OrbitScaleMode): StarVisual {
   const visuals = companionStarVisuals(companion)
-  const offset = companionOffset(companion.separation.value, hzCenterAu, scaleMode)
+  const baseOffset = companionOffset(companion.separation.value, hzCenterAu, scaleMode)
+  const offset = companion.mode === 'volatile' ? baseOffset * 0.1 : baseOffset
   const angle = hashToUnit(`companion#${companion.id}`) * Math.PI * 2
   return {
     id: companion.id,
     coreColor: visuals.coreColor,
     coronaColor: visuals.coronaColor,
-    coronaRadius: visuals.coronaRadius,
+    coronaRadius: visuals.coronaRadius * (companion.mode === 'volatile' ? 1.4 : 1),
     rayCount: visuals.rayCount,
-    bloomStrength: visuals.bloomStrength,
+    bloomStrength: visuals.bloomStrength * (companion.mode === 'volatile' ? 1.5 : 1),
     flareStrength: visuals.flareStrength,
     pulseSpeed: visuals.pulseSpeed,
     rayColor: visuals.rayColor,
@@ -468,6 +469,11 @@ export function buildSceneGraph(system: GeneratedSystem, options: BuildSceneGrap
   const linkedCompanions = system.companions.filter((c) => c.mode === 'linked-independent')
   const companions = inSceneCompanions.map((c) => buildCompanion(c, star, hzCenterAu, scaleMode))
 
+  const circumbinaryCompanion = system.companions.find((c) => c.mode === 'circumbinary')
+  const circumbinaryKeepOut = circumbinaryCompanion
+    ? auToScene(2 * separationToBucketAu(circumbinaryCompanion.separation.value), hzCenterAu, scaleMode)
+    : undefined
+
   const outermostBodyAu = system.bodies.reduce((max, b) => Math.max(max, b.orbitAu.value), 0)
   const distantMarkers = linkedCompanions.map((c) => buildDistantMarker(c, outermostBodyAu, hzCenterAu, scaleMode))
 
@@ -541,6 +547,6 @@ export function buildSceneGraph(system: GeneratedSystem, options: BuildSceneGrap
     sceneRadius,
     subSystems,
     distantMarkers,
-    circumbinaryKeepOut: undefined,
+    circumbinaryKeepOut,
   }
 }

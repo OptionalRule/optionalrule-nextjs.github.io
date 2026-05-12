@@ -135,6 +135,13 @@ export function Scene({ graph, system }: SceneProps) {
             habitableInner={graph.zones.habitableInner}
             habitableOuter={graph.zones.habitableOuter}
           />
+          {graph.circumbinaryKeepOut !== undefined ? (
+            <Orbit
+              radius={graph.circumbinaryKeepOut}
+              tiltY={0}
+              color="#ff6f6f"
+            />
+          ) : null}
           {graph.bodies.map((body) => (
             <Orbit key={`orbit-${body.id}`} radius={body.orbitRadius} tiltY={body.orbitTiltY} color="#5fb6e8" />
           ))}
