@@ -527,7 +527,7 @@ describe('generateSystem', () => {
   })
 
   it('does not repeat the exact body profile inside the body interest summary', () => {
-    const system = generateSystem({ ...options, seed: 'ea1d8ba2f11e808c' })
+    const system = generateSystem({ ...options, seed: 'display-search-0320' })
     const profiledBodies = system.bodies.filter((body) => body.bodyProfile)
 
     expect(profiledBodies.length).toBeGreaterThan(0)
@@ -767,7 +767,9 @@ describe('generateSystem', () => {
 
     const systems = Array.from({ length: 500 }, (_, index) =>
       generateSystem({ ...options, seed: `611a9c2e41b8${index.toString(16).padStart(4, '0')}` })
-    ).filter((system) => !system.companions.some((companion) => companion.mode === 'volatile' || companion.mode === 'circumbinary'))
+    ).filter((system) => !system.companions.some((companion) =>
+      companion.mode === 'volatile' || companion.mode === 'circumbinary' || companion.mode === 'orbital-sibling'
+    ))
 
     expect(new Set(systems.map((system) => system.architecture.name.value)).size).toBeGreaterThan(5)
 

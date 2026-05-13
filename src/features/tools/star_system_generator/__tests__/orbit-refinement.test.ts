@@ -18,6 +18,10 @@ function systemsFor(architectureName: string): GeneratedSystem[] {
   return corpus.filter((system) => system.architecture.name.value === architectureName)
 }
 
+function isUnboundedByCompanions(system: GeneratedSystem): boolean {
+  return system.companions.every((c) => c.mode !== 'orbital-sibling' && c.mode !== 'volatile')
+}
+
 function outermost(system: GeneratedSystem): number {
   return Math.max(...system.bodies.map((body) => body.orbitAu.value))
 }
@@ -58,7 +62,7 @@ describe('orbit refinement', () => {
   })
 
   it('places solar-ish belts and giants around or beyond the snow line', () => {
-    const systems = systemsFor('Solar-ish mixed')
+    const systems = systemsFor('Solar-ish mixed').filter(isUnboundedByCompanions)
     expect(systems.length).toBeGreaterThan(20)
 
     const anchorBodies = systems.flatMap((system) =>
@@ -83,7 +87,7 @@ describe('orbit refinement', () => {
   })
 
   it('extends giant-rich systems beyond the snow line', () => {
-    const systems = systemsFor('Giant-rich or chaotic')
+    const systems = systemsFor('Giant-rich or chaotic').filter(isUnboundedByCompanions)
     expect(systems.length).toBeGreaterThan(10)
 
     expect(median(systems.map(outerSnowRatio))).toBeGreaterThan(3)

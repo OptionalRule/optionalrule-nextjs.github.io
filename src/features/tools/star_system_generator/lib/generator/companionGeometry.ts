@@ -2,13 +2,13 @@ export const companionBucketKeys = ['close', 'tight', 'near', 'moderate', 'wide'
 export type CompanionBucketKey = typeof companionBucketKeys[number]
 
 const COMPANION_AU: Record<CompanionBucketKey, number> = {
+  near: 0.05,
   close: 0.5,
-  tight: 1.0,
-  near: 2,
-  moderate: 8,
-  wide: 40,
-  distant: 80,
-  triple: 1.0,
+  tight: 1.5,
+  triple: 1.5,
+  moderate: 20,
+  wide: 150,
+  distant: 1500,
 }
 
 export function separationToBucketAu(separation: string): number {

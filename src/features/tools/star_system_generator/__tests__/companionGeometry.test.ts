@@ -19,9 +19,10 @@ describe('separationToBucketAu', () => {
     expect(separationToBucketAu('made up label')).toBe(separationToBucketAu('moderate'))
   })
 
-  it('orders buckets close < near < moderate < wide < distant', () => {
-    expect(separationToBucketAu('close')).toBeLessThan(separationToBucketAu('near'))
-    expect(separationToBucketAu('near')).toBeLessThan(separationToBucketAu('moderate'))
+  it('orders buckets physically: near (contact) < close < tight < moderate < wide < distant', () => {
+    expect(separationToBucketAu('near')).toBeLessThan(separationToBucketAu('close'))
+    expect(separationToBucketAu('close')).toBeLessThan(separationToBucketAu('tight'))
+    expect(separationToBucketAu('tight')).toBeLessThan(separationToBucketAu('moderate'))
     expect(separationToBucketAu('moderate')).toBeLessThan(separationToBucketAu('wide'))
     expect(separationToBucketAu('wide')).toBeLessThan(separationToBucketAu('distant'))
   })
@@ -45,7 +46,11 @@ describe('separationToBucketAu', () => {
     expect(separationToBucketAu('Tight binary')).toBeLessThan(separationToBucketAu('Moderate binary'))
   })
 
-  it('Hierarchical triple inner pair maps to a tight AU', () => {
-    expect(separationToBucketAu('Hierarchical triple')).toBeLessThanOrEqual(separationToBucketAu('Near binary'))
+  it('Hierarchical triple inner pair maps to a tight AU comparable to tight binary', () => {
+    expect(separationToBucketAu('Hierarchical triple')).toBe(separationToBucketAu('tight'))
+  })
+
+  it('Contact / near-contact maps to a sub-AU separation', () => {
+    expect(separationToBucketAu('Contact / near-contact')).toBeLessThan(1)
   })
 })

@@ -159,6 +159,7 @@ import { createSeededRng, normalizeSeed, type SeededRng } from './rng'
 import { separationToMode } from './companionMode'
 import { generateCompanionStar } from './companionStar'
 import { separationToBucketAu } from './companionGeometry'
+import { circumbinaryInnerAuLimit, siblingOuterAuLimit } from './companionStability'
 import { buildVolatileHazardBelt, buildBinaryContactPhenomenon } from './volatileSystem'
 
 export { architectureBodyPlanRules } from './architecture'
@@ -752,8 +753,14 @@ function orbitRangeForBand(luminositySolar: number, band: OrbitBand): OrbitRange
   return ranges[band]
 }
 
-function sampleOrbitInBand(rng: SeededRng, luminositySolar: number, band: OrbitBand): number {
-  const range = orbitRangeForBand(luminositySolar, band)
+function clampOrbitRange(range: OrbitRange, maxOrbitAu: number): OrbitRange | null {
+  if (range.min > maxOrbitAu) return null
+  return { min: range.min, max: Math.min(range.max, maxOrbitAu) }
+}
+
+function sampleOrbitInBand(rng: SeededRng, luminositySolar: number, band: OrbitBand, maxOrbitAu: number = Number.POSITIVE_INFINITY): number {
+  const baseRange = orbitRangeForBand(luminositySolar, band)
+  const range = clampOrbitRange(baseRange, maxOrbitAu) ?? baseRange
   const logMin = Math.log(range.min)
   const logMax = Math.log(range.max)
   return Math.exp(rng.float(logMin, logMax))
@@ -855,17 +862,24 @@ function placeGeneratedOrbit(
   preferredBand: OrbitBand,
   preferredOrbit: number,
   massEarth: number,
-  occupied: OccupiedOrbit[]
-): number {
+  occupied: OccupiedOrbit[],
+  maxOrbitAu: number = Number.POSITIVE_INFINITY,
+): number | undefined {
   for (const band of widerOrbitBands(preferredBand)) {
-    const range = orbitRangeForBand(luminositySolar, band)
-    const preferred = band === preferredBand ? preferredOrbit : sampleOrbitInBand(rng, luminositySolar, band)
+    const baseRange = orbitRangeForBand(luminositySolar, band)
+    const range = clampOrbitRange(baseRange, maxOrbitAu)
+    if (!range) continue
+    const preferred = band === preferredBand
+      ? Math.min(preferredOrbit, range.max)
+      : sampleOrbitInBand(rng, luminositySolar, band, maxOrbitAu)
     const fitted = fitOrbitInBand(preferred, range, massEarth, occupied, stellarMassSolar)
     if (fitted !== undefined) return fitted
   }
 
-  const outermost = occupied.at(-1)?.orbitAu ?? sampleOrbitInBand(rng, luminositySolar, preferredBand)
-  return roundTo(outermost + orbitSeparation(outermost) * rng.float(1.1, 2.2), 3)
+  const outermost = occupied.at(-1)?.orbitAu ?? sampleOrbitInBand(rng, luminositySolar, preferredBand, maxOrbitAu)
+  const candidate = outermost + orbitSeparation(outermost) * rng.float(1.1, 2.2)
+  if (candidate > maxOrbitAu) return undefined
+  return roundTo(candidate, 3)
 }
 
 function isOrbitInBand(luminositySolar: number, band: OrbitBand, orbitAu: number): boolean {
@@ -878,13 +892,18 @@ function generateOrbitAssignments(
   luminositySolar: number,
   stellarMassSolar: number,
   slots: ArchitectureSlot[],
-  knownBodies: PartialKnownBody[]
+  knownBodies: PartialKnownBody[],
+  maxOrbitAu: number = Number.POSITIVE_INFINITY,
 ): OrbitAssignment[] {
-  const preferredOrbits = slots.map((slot) =>
-    sampleOrbitInBand(rng.fork(`slot-${slot.id}:preferred-orbit`), luminositySolar, slot.orbitBand ?? defaultOrbitBand(slot.planKind))
+  const eligibleSlots = slots.filter((slot) => {
+    const band = slot.orbitBand ?? defaultOrbitBand(slot.planKind)
+    return orbitRangeForBand(luminositySolar, band).min <= maxOrbitAu
+  })
+  const preferredOrbits = eligibleSlots.map((slot) =>
+    sampleOrbitInBand(rng.fork(`slot-${slot.id}:preferred-orbit`), luminositySolar, slot.orbitBand ?? defaultOrbitBand(slot.planKind), maxOrbitAu)
   )
   const knownSlots = reservedKnownSlots(preferredOrbits, knownBodies)
-  const rawAssignments = slots.map((slot, index) => {
+  const rawAssignments = eligibleSlots.map((slot, index) => {
     const known = knownSlots.get(index)
     return {
       slot,
@@ -910,9 +929,11 @@ function generateOrbitAssignments(
           band,
           assignment.preferredOrbit,
           massEarth,
-          occupied
+          occupied,
+          maxOrbitAu,
         )
 
+    if (orbitAu === undefined) continue
     occupied.push({ orbitAu, massEarth })
     occupied.sort((left, right) => left.orbitAu - right.orbitAu)
     assignments.push({
@@ -2756,7 +2777,13 @@ function expandSlotsForKnownBodies(slots: ArchitectureSlot[], knownBodies: Parti
   return expanded
 }
 
-function replacementOrbitAu(rng: SeededRng, primary: Star, bodies: OrbitingBody[], slot: ArchitectureSlot): number {
+function replacementOrbitAu(
+  rng: SeededRng,
+  primary: Star,
+  bodies: OrbitingBody[],
+  slot: ArchitectureSlot,
+  maxOrbitAu: number = Number.POSITIVE_INFINITY,
+): number | undefined {
   const occupied = bodies
     .map((body) => ({
       orbitAu: body.orbitAu.value,
@@ -2766,14 +2793,16 @@ function replacementOrbitAu(rng: SeededRng, primary: Star, bodies: OrbitingBody[
     }))
     .sort((left, right) => left.orbitAu - right.orbitAu)
   const band = slot.orbitBand ?? defaultOrbitBand(slot.planKind)
+  if (orbitRangeForBand(primary.luminositySolar.value, band).min > maxOrbitAu) return undefined
   return placeGeneratedOrbit(
     rng,
     primary.luminositySolar.value,
     primary.massSolar.value,
     band,
-    sampleOrbitInBand(rng.fork('preferred-replacement-orbit'), primary.luminositySolar.value, band),
+    sampleOrbitInBand(rng.fork('preferred-replacement-orbit'), primary.luminositySolar.value, band, maxOrbitAu),
     estimatedPlanMassEarth(slot.planKind, undefined, slot),
-    occupied
+    occupied,
+    maxOrbitAu,
   )
 }
 
@@ -2805,9 +2834,17 @@ function addKnownOrbitBandNote(body: OrbitingBody, slot: ArchitectureSlot): Orbi
   }
 }
 
-function generateBodies(rng: SeededRng, primary: Star, architectureName: string, systemName: string, knownBodies: PartialKnownBody[] = [], minOrbitAu = 0): OrbitingBody[] {
+function generateBodies(
+  rng: SeededRng,
+  primary: Star,
+  architectureName: string,
+  systemName: string,
+  knownBodies: PartialKnownBody[] = [],
+  minOrbitAu = 0,
+  maxOrbitAu: number = Number.POSITIVE_INFINITY,
+): OrbitingBody[] {
   const slots = expandSlotsForKnownBodies(buildArchitectureSlots(rng.fork('body-plan'), architectureName), knownBodies)
-  const orbitAssignments = generateOrbitAssignments(rng, primary.luminositySolar.value, primary.massSolar.value, slots, knownBodies)
+  const orbitAssignments = generateOrbitAssignments(rng, primary.luminositySolar.value, primary.massSolar.value, slots, knownBodies, maxOrbitAu)
   const bodies: OrbitingBody[] = []
   let previousFiltered: FilteredWorldClass | null = null
 
@@ -2832,12 +2869,14 @@ function generateBodies(rng: SeededRng, primary: Star, architectureName: string,
   const replacementSlots = replacementSlotsForUnsatisfiedRequirements(evaluateArchitectureSatisfaction(architectureName, bodies))
   for (const slot of replacementSlots) {
     const replacementIndex = bodies.length
+    const replacementOrbit = replacementOrbitAu(rng.fork(`slot-${slot.id}:orbit`), primary, bodies, slot, maxOrbitAu)
+    if (replacementOrbit === undefined) continue
     const generated = generatedBody(
       rng.fork(`slot-${slot.id}:replacement`),
       primary,
       architectureName,
       systemName,
-      replacementOrbitAu(rng.fork(`slot-${slot.id}:orbit`), primary, bodies, slot),
+      replacementOrbit,
       replacementIndex,
       slot.planKind,
       previousFiltered,
@@ -2848,7 +2887,7 @@ function generateBodies(rng: SeededRng, primary: Star, architectureName: string,
     previousFiltered = generated.filtered
   }
 
-  const filtered = bodies.filter((b) => b.orbitAu.locked || b.orbitAu.value >= minOrbitAu)
+  const filtered = bodies.filter((b) => b.orbitAu.locked || (b.orbitAu.value >= minOrbitAu && b.orbitAu.value <= maxOrbitAu))
   return applyFinalDesignations(systemName, filtered)
 }
 
@@ -4246,7 +4285,11 @@ export function generateSystem(options: GenerationOptions, knownSystem?: Partial
     ? primary.luminositySolar.value + circumbinaryCompanion.star.luminositySolar.value
     : primary.luminositySolar.value
   const keepOutAu = circumbinaryCompanion
-    ? 2 * separationToBucketAu(circumbinaryCompanion.separation.value)
+    ? circumbinaryInnerAuLimit(
+        separationToBucketAu(circumbinaryCompanion.separation.value),
+        primary.massSolar.value,
+        circumbinaryCompanion.star.massSolar.value,
+      )
     : 0
   const baseHz = calculateHabitableZone(effectiveLuminosity)
   const hz = {
@@ -4256,6 +4299,18 @@ export function generateSystem(options: GenerationOptions, knownSystem?: Partial
   }
   const snowLine = Math.max(calculateSnowLine(effectiveLuminosity), keepOutAu * 1.5)
   const hasVolatileCompanion = companions.some((c) => c.mode === 'volatile')
+  const siblingCompanions = companions.filter((c) => c.mode === 'orbital-sibling')
+  const primaryMaxOrbitAu = siblingCompanions.length === 0
+    ? Number.POSITIVE_INFINITY
+    : Math.min(
+        ...siblingCompanions.map((c) =>
+          siblingOuterAuLimit(
+            separationToBucketAu(c.separation.value),
+            primary.massSolar.value,
+            c.star.massSolar.value,
+          )
+        )
+      )
   const bodies = hasVolatileCompanion
     ? [buildVolatileHazardBelt(name.value)]
     : generateBodies(
@@ -4265,6 +4320,7 @@ export function generateSystem(options: GenerationOptions, knownSystem?: Partial
         name.value,
         knownSystem?.bodies,
         keepOutAu,
+        primaryMaxOrbitAu,
       )
   const guOverlay = generateGuOverlay(rootRng.fork('gu'), options.gu, primary, companions, bodies, architectureResult.architecture.name.value)
   const allSettlements = hasVolatileCompanion
@@ -4359,6 +4415,11 @@ export function generateSystem(options: GenerationOptions, knownSystem?: Partial
     }
 
     const prefix = `comp${idx + 1}-`
+    const companionMaxOrbitAu = siblingOuterAuLimit(
+      separationToBucketAu(companion.separation.value),
+      primary.massSolar.value,
+      subStar.massSolar.value,
+    )
     const rawSubBodies = generateBodies(
       subRng.fork('bodies'),
       subStar,
@@ -4366,6 +4427,7 @@ export function generateSystem(options: GenerationOptions, knownSystem?: Partial
       `${name.value} (Companion)`,
       [],
       0,
+      companionMaxOrbitAu,
     )
     const idMap = new Map<string, string>()
     const subBodies: OrbitingBody[] = rawSubBodies.map((body) => {

@@ -6,7 +6,7 @@ import { generateSystem } from '../lib/generator'
 import type { GenerationOptions } from '../types'
 
 const options: GenerationOptions = {
-  seed: 'ea1d8ba2f11e808c',
+  seed: 'display-search-0320',
   distribution: 'frontier',
   tone: 'balanced',
   gu: 'normal',
