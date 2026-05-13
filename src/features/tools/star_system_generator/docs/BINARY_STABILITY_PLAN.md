@@ -1,5 +1,7 @@
 # Binary System Orbital Stability Plan
 
+Status: implemented (commits edc02b3, d96c668, ae7bf4e, a541285).
+
 ## Purpose
 
 Generated multi-star systems produce too many orbits that intersect the companion star or sit deep inside the companion's destabilizing zone. The companion stars feature shipped the four-mode classification and gave circumbinary systems an inner keep-out, but orbital-sibling mode places bodies around each star with no outer cutoff, and the circumbinary inner keep-out is below the canonical Holman-Wiegert threshold. The result is physically implausible layouts in moderate-binary systems and (less often) circumbinary systems.
