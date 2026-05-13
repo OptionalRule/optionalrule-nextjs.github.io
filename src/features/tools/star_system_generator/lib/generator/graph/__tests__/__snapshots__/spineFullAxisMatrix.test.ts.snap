@@ -46,11 +46,11 @@ exports[`spine full axis matrix (16 representative cells) > baseline-realistic-a
 
 exports[`spine full axis matrix (16 representative cells) > baseline-realistic-balanced: stable spine + body[0] structural fields 1`] = `
 {
-  "body0": "The narrow-AI perception fog keeps shifting under Wouri Survey-176 I. Each pass of the moving bleed-node river costs Wouri Survey-176 I a margin it doesn't have. Wouri Survey-176 I Laboratory 18 can't plan around the narrow-AI fragmentation risk anymore. First-wave colony shell sits on Wouri Survey-176 I. Wouri Survey-176 I hosts Wouri Survey-176 I Laboratory 18. There, Wouri Survey-176 I Laboratory 18 draws everything it consumes from Pinchdrive calibration medium.",
+  "body0": "The moving bleed-node river keeps shifting under Veyra-Locke Concession. Each pass of the narrow-AI perception fog costs Veyra-Locke Concession a margin it doesn't have.",
   "spineEdgeType": "DESTABILIZES",
-  "spineObjectKind": "body",
+  "spineObjectKind": "namedFaction",
   "spineSubjectKind": "phenomenon",
-  "spineSummary": "The narrow-AI perception fog is rewriting the constants Wouri Survey-176 I was built around.",
+  "spineSummary": "Moving bleed-node river took shape in the early charters, the moving bleed-node river is rewriting the constants Veyra-Locke Concession was built around.",
   "spineVisibility": "public",
 }
 `;
@@ -68,11 +68,11 @@ exports[`spine full axis matrix (16 representative cells) > baseline-realistic-c
 
 exports[`spine full axis matrix (16 representative cells) > corner-frontier-cinematic-fracture-hub: stable spine + body[0] structural fields 1`] = `
 {
-  "body0": "Bone Lantern Wake keeps the receipts. Last Ledger Synod keeps the witnesses. Between Last Ledger Synod and Sisters of Synod the knife is already drawn. Red Wake Pact swore the pact would hold; Sisters of Synod swore otherwise. Pipit's Delta V - Moon I Station draws everything it consumes from Illegal Sol-prohibited geometry sample. Pipit's Delta I Charter depends on Illegal Sol-prohibited geometry sample for everything.",
+  "body0": "Last Ledger Cabal keeps the receipts. Long Knife Run keeps the witnesses. Between Bone Lantern Wake and Last Ledger Synod the knife is already drawn. Last Ledger Synod swore the pact would hold; Sisters of Synod swore otherwise. Pipit's Delta II Freeport draws everything it consumes from Illegal Sol-prohibited geometry sample.",
   "spineEdgeType": "CONTESTS",
   "spineObjectKind": "namedFaction",
   "spineSubjectKind": "namedFaction",
-  "spineSummary": "Between Bone Lantern Wake and Last Ledger Synod the war is already lost; only the funerals remain.",
+  "spineSummary": "The compact between Last Ledger Cabal and Long Knife Run broke in the silent decade, Between Last Ledger Cabal and Long Knife Run the war is already lost; only the funerals remain.",
   "spineVisibility": "contested",
 }
 `;
@@ -156,12 +156,12 @@ exports[`spine full axis matrix (16 representative cells) > gu-axis-high: stable
 
 exports[`spine full axis matrix (16 representative cells) > gu-axis-low: stable spine + body[0] structural fields 1`] = `
 {
-  "body0": "Helion Debt Synod and Red Vane Labor Combine both want the trade ledger. Ash Meridian Navy and Glasshouse Biosafety Compact both want the chain of authority. Helion Debt Synod refuses to recognize Kestrel Free Compact's authority.",
-  "spineEdgeType": "CONTESTS",
+  "body0": "The public festival tied to safe transit windows is corroding Glasshouse Biosafety Compact. The failed Iggygate wake is corroding Glasshouse Biosafety Compact.",
+  "spineEdgeType": "DESTABILIZES",
   "spineObjectKind": "namedFaction",
-  "spineSubjectKind": "namedFaction",
-  "spineSummary": "Helion Debt Synod and Red Vane Labor Combine can't both set the rules — and the rest of the system knows it.",
-  "spineVisibility": "contested",
+  "spineSubjectKind": "phenomenon",
+  "spineSummary": "Public festival tied to safe transit windows took shape after the first audit, the public festival tied to safe transit windows is rewriting the constants Glasshouse Biosafety Compact was built around.",
+  "spineVisibility": "public",
 }
 `;
 
