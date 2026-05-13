@@ -6,6 +6,8 @@ import {
 } from '../src/features/tools/star_system_generator/lib/generator/domain'
 import { frontierStarTypes, realisticStarTypes } from '../src/features/tools/star_system_generator/lib/generator/tables'
 import { validateSystem, type ValidationFinding, type ValidationSource } from '../src/features/tools/star_system_generator/lib/generator/validation'
+import { separationToBucketAu } from '../src/features/tools/star_system_generator/lib/generator/companionGeometry'
+import { siblingOuterAuLimit } from '../src/features/tools/star_system_generator/lib/generator/companionStability'
 import { isNamedEntity, EDGE_TYPES, HISTORICAL_ELIGIBLE_TYPES } from '../src/features/tools/star_system_generator/lib/generator/graph'
 import type { EdgeType } from '../src/features/tools/star_system_generator/lib/generator/graph'
 import {
@@ -87,6 +89,9 @@ interface CorpusStats {
   guIntensityModifiers: Map<string, number>
   companionTypes: Map<string, number>
   companionSeparations: Map<string, number>
+  companionModes: Map<string, number>
+  binaryStabilityFindings: number
+  binaryStabilityLockedConflicts: number
   activityModifiers: Map<string, number>
   reachabilityModifiers: Map<string, number>
   reachabilityClasses: Map<string, number>
@@ -570,7 +575,14 @@ function isSuspiciouslyCompact(system: GeneratedSystem, outermostOrbit: number, 
 
 function auditSystem(system: GeneratedSystem, findings: Finding[], stats: CorpusStats): void {
   const seed = system.seed
-  addValidationFindings(findings, seed, validateSystem(system))
+  const validationFindings = validateSystem(system)
+  addValidationFindings(findings, seed, validationFindings)
+  for (const finding of validationFindings) {
+    if (finding.code === 'BINARY_STABILITY_CONFLICT') stats.binaryStabilityFindings += 1
+    if (finding.code === 'LOCKED_FACT_CONFLICT' && finding.policyCode === 'BINARY_STABILITY_CONFLICT') {
+      stats.binaryStabilityLockedConflicts += 1
+    }
+  }
 
   stats.systems += 1
   stats.bodies += system.bodies.length
@@ -604,6 +616,7 @@ function auditSystem(system: GeneratedSystem, findings: Finding[], stats: Corpus
   system.companions.forEach((companion) => {
     increment(stats.companionTypes, companion.companionType.value)
     increment(stats.companionSeparations, companion.separation.value)
+    increment(stats.companionModes, companion.mode)
   })
   system.bodies.forEach((body, bodyIndex) => {
     increment(stats.bodyNames, body.name.value)
@@ -967,7 +980,20 @@ function auditSystem(system: GeneratedSystem, findings: Finding[], stats: Corpus
   }
 
   if (system.bodies.length === 0) {
-    addFinding(findings, 'error', seed, 'bodies', 'System generated no orbital bodies.')
+    const hasTightBinary = system.companions.some((c) => c.mode === 'volatile')
+      || system.companions.some((c) => c.mode === 'orbital-sibling' && (() => {
+        const limit = siblingOuterAuLimit(
+          separationToBucketAu(c.separation.value),
+          system.primary.massSolar.value,
+          c.star.massSolar.value,
+        )
+        return limit < 1
+      })())
+    if (hasTightBinary) {
+      addFinding(findings, 'warning', seed, 'bodies', 'System generated no orbital bodies (orbit volume constrained by binary stability).')
+    } else {
+      addFinding(findings, 'error', seed, 'bodies', 'System generated no orbital bodies.')
+    }
   }
 
   if (hasDuplicates(system.bodies.map((body) => body.id))) {
@@ -1383,6 +1409,9 @@ const stats: CorpusStats = {
   guIntensityModifiers: new Map(),
   companionTypes: new Map(),
   companionSeparations: new Map(),
+  companionModes: new Map(),
+  binaryStabilityFindings: 0,
+  binaryStabilityLockedConflicts: 0,
   activityModifiers: new Map(),
   reachabilityModifiers: new Map(),
   reachabilityClasses: new Map(),
@@ -1542,6 +1571,9 @@ console.log(`Suspicious compact counts by architecture: ${formatMap(stats.suspic
 console.log(`Reachability classes: ${formatMap(stats.reachabilityClasses)}`)
 console.log(`Companion types: ${formatMap(stats.companionTypes)}`)
 console.log(`Companion separations: ${formatMap(stats.companionSeparations)}`)
+console.log(`Companion modes: ${formatMap(stats.companionModes) || 'none'}`)
+console.log(`Binary stability findings (generated): ${stats.binaryStabilityFindings}`)
+console.log(`Binary stability findings (locked imports): ${stats.binaryStabilityLockedConflicts}`)
 console.log(`Activity modifiers: ${formatMap(stats.activityModifiers)}`)
 console.log(`Reachability modifiers: ${formatMap(stats.reachabilityModifiers)}`)
 console.log('Settlement counts by density:')

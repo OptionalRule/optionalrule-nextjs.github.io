@@ -1,7 +1,9 @@
 import { describe, expect, it } from 'vitest'
 import type { BodyCategory, Fact, GeneratedSystem, OrbitingBody, Settlement } from '../types'
+import type { Star, StellarCompanion } from '../types'
 import {
   validateArchitecture,
+  validateBinaryStability,
   validateBodyEnvironment,
   validateBodyInterestText,
   validateBodyPhysicalContract,
@@ -325,5 +327,112 @@ describe('star system validation contracts', () => {
     }))
 
     expect(findings.map((finding) => finding.code)).toContain('BODY_BELT_PHYSICAL')
+  })
+})
+
+function star(overrides: Partial<Star> = {}): Star {
+  return {
+    id: 'star-test',
+    name: fact('Test Star'),
+    spectralType: fact('G star'),
+    massSolar: fact(1),
+    luminositySolar: fact(1),
+    ageState: fact('Mature'),
+    metallicity: fact('Solar-like'),
+    activity: fact('Quiet'),
+    activityRoll: fact(7),
+    activityModifiers: [],
+    ...overrides,
+  }
+}
+
+function companion(overrides: Partial<StellarCompanion>): StellarCompanion {
+  return {
+    id: 'companion-1',
+    companionType: fact('Stellar'),
+    separation: fact('Moderate binary'),
+    planetaryConsequence: fact('Outer trim'),
+    guConsequence: fact('Standard'),
+    rollMargin: fact(0),
+    mode: 'orbital-sibling',
+    star: star({ id: 'companion-star-1', name: fact('Companion Star') }),
+    ...overrides,
+  }
+}
+
+describe('validateBinaryStability', () => {
+  it('reports no findings for a single-star system', () => {
+    const findings = validateBinaryStability(system({
+      primary: star(),
+      companions: [],
+      bodies: [body({ id: 'b1', orbitAu: fact(5) })],
+    }))
+    expect(findings).toEqual([])
+  })
+
+  it('flags a generated body inside the circumbinary inner stability limit', () => {
+    const findings = validateBinaryStability(system({
+      primary: star(),
+      companions: [companion({
+        mode: 'circumbinary',
+        separation: fact('Tight binary'),
+        star: star({ id: 'comp', name: fact('Companion') }),
+      })],
+      bodies: [body({ id: 'too-close', orbitAu: fact(0.5) })],
+    }))
+    expect(findings).toHaveLength(1)
+    expect(findings[0].code).toBe('BINARY_STABILITY_CONFLICT')
+    expect(findings[0].severity).toBe('error')
+    expect(findings[0].targetId).toBe('too-close')
+  })
+
+  it('records a locked circumbinary violation as a locked-fact conflict', () => {
+    const locked = <T,>(value: T): Fact<T> => ({ value, confidence: 'confirmed', source: 'Test', locked: true })
+    const findings = validateBinaryStability(system({
+      primary: star(),
+      companions: [companion({
+        mode: 'circumbinary',
+        separation: fact('Tight binary'),
+        star: star({ id: 'comp', name: fact('Companion') }),
+      })],
+      bodies: [body({ id: 'locked-too-close', orbitAu: locked(0.5) })],
+    }))
+    expect(findings).toHaveLength(1)
+    expect(findings[0].code).toBe('LOCKED_FACT_CONFLICT')
+    expect(findings[0].policyCode).toBe('BINARY_STABILITY_CONFLICT')
+    expect(findings[0].severity).toBe('warning')
+    expect(findings[0].locked).toBe(true)
+  })
+
+  it('flags a generated body outside an orbital-sibling outer stability limit', () => {
+    const findings = validateBinaryStability(system({
+      primary: star(),
+      companions: [companion()],
+      bodies: [body({ id: 'too-far', orbitAu: fact(15) })],
+    }))
+    expect(findings.length).toBeGreaterThan(0)
+    expect(findings[0].code).toBe('BINARY_STABILITY_CONFLICT')
+    expect(findings[0].targetId).toBe('too-far')
+  })
+
+  it('flags sub-system bodies that exceed the companion outer stability limit', () => {
+    const findings = validateBinaryStability(system({
+      primary: star(),
+      companions: [companion({
+        subSystem: {
+          zones: {} as GeneratedSystem['zones'],
+          bodies: [body({ id: 'sub-too-far', orbitAu: fact(15) })],
+          settlements: [],
+          gates: [],
+          ruins: [],
+          phenomena: [],
+        },
+      })],
+      bodies: [],
+    }))
+    const subFindings = findings.filter((f) => f.path.includes('subSystem'))
+    expect(subFindings.length).toBeGreaterThan(0)
+    expect(subFindings[0].code).toBe('BINARY_STABILITY_CONFLICT')
+    expect(subFindings[0].targetId).toBe('sub-too-far')
   })
 })
