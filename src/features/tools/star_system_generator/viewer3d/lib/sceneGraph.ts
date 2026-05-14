@@ -32,7 +32,7 @@ import {
 } from './visualProfiles'
 import { separationToBucketAu } from '../../lib/generator/companionGeometry'
 
-const BODY_ORBIT_CLEARANCE = 2.5
+const BODY_ORBIT_CLEARANCE = 3.5
 const MIN_MOON_PERIOD_SEC = 24
 
 export interface BuildSceneGraphOptions {
@@ -108,20 +108,20 @@ function ringFor(body: OrbitingBody, parentSize: number): RingVisual | undefined
 
 function moonScaleFactor(scale: string): number {
   const lower = scale.toLowerCase()
-  if (lower.includes('planet-scale')) return 0.32
-  if (lower.includes('large differentiated')) return 0.24
-  if (lower.includes('mid-sized')) return 0.17
-  if (lower.includes('small major')) return 0.12
-  return 0.075
+  if (lower.includes('planet-scale')) return 0.27
+  if (lower.includes('large differentiated')) return 0.20
+  if (lower.includes('mid-sized')) return 0.14
+  if (lower.includes('small major')) return 0.10
+  return 0.065
 }
 
 function moonOrbitShell(scale: string): number {
   const lower = scale.toLowerCase()
-  if (lower.includes('planet-scale')) return 5.5
-  if (lower.includes('large differentiated')) return 4.5
-  if (lower.includes('mid-sized')) return 3.7
-  if (lower.includes('small major')) return 3.0
-  return 2.35
+  if (lower.includes('planet-scale')) return 4.4
+  if (lower.includes('large differentiated')) return 3.6
+  if (lower.includes('mid-sized')) return 3.0
+  if (lower.includes('small major')) return 2.5
+  return 2.0
 }
 
 function fallbackParentMass(body: OrbitingBody): number {
@@ -149,7 +149,7 @@ function moonPeriodSeconds(body: OrbitingBody, parentSize: number, orbit: number
 
 function moonsFor(body: OrbitingBody, _seed: string, parentSize: number): MoonVisual[] {
   const count = body.moons.length
-  const orbitStep = parentSize * (count > 6 ? 0.5 : 0.72)
+  const orbitStep = parentSize * (count > 6 ? 0.4 : 0.6)
   const crowdScale = count > 6 ? Math.max(0.55, Math.sqrt(6 / count)) : 1
   return body.moons.map((moon: Moon, idx: number) => {
     const scaleFactor = moonScaleFactor(moon.scale.value) * crowdScale
@@ -265,7 +265,11 @@ function buildBody(body: OrbitingBody, system: GeneratedSystem, hzCenterAu: numb
 }
 
 function bodyVisualExtent(body: BodyVisual): number {
-  return body.rings ? Math.max(body.visualSize, body.rings.outerRadius) : body.visualSize
+  const ringExtent = body.rings?.outerRadius ?? 0
+  const moonExtent = body.moons.length > 0
+    ? Math.max(...body.moons.map((m) => m.parentRelativeOrbit + m.visualSize))
+    : 0
+  return Math.max(body.visualSize, ringExtent, moonExtent)
 }
 
 function applyBodyOrbitClearance(bodies: BodyVisual[]): BodyVisual[] {

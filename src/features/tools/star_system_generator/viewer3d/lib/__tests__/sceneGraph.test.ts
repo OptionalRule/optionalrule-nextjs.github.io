@@ -69,12 +69,19 @@ describe('buildSceneGraph', () => {
     }
   })
 
-  it('keeps adjacent rendered bodies visually separated', () => {
+  it('keeps adjacent rendered bodies visually separated, including moon system reach', () => {
     const sorted = [...graph.bodies].sort((a, b) => a.orbitRadius - b.orbitRadius)
+    const visualExtent = (body: typeof sorted[number]) => {
+      const ringOrSize = body.rings?.outerRadius ?? body.visualSize
+      const moonExtent = body.moons.length > 0
+        ? Math.max(...body.moons.map((m) => m.parentRelativeOrbit + m.visualSize))
+        : 0
+      return Math.max(body.visualSize, ringOrSize, moonExtent)
+    }
     for (let i = 1; i < sorted.length; i++) {
-      const leftExtent = sorted[i - 1].rings?.outerRadius ?? sorted[i - 1].visualSize
-      const rightExtent = sorted[i].rings?.outerRadius ?? sorted[i].visualSize
-      expect(sorted[i].orbitRadius - sorted[i - 1].orbitRadius).toBeGreaterThanOrEqual(leftExtent + rightExtent + 2.5)
+      const leftExtent = visualExtent(sorted[i - 1])
+      const rightExtent = visualExtent(sorted[i])
+      expect(sorted[i].orbitRadius - sorted[i - 1].orbitRadius).toBeGreaterThanOrEqual(leftExtent + rightExtent + 3.5)
     }
   })
 
@@ -117,7 +124,7 @@ describe('buildSceneGraph', () => {
     expect(relative.bodies.length).toBe(readable.bodies.length)
     expect(schematic.bodies.length).toBe(readable.bodies.length)
     expect(relative.sceneRadius).toBeGreaterThan(readable.sceneRadius)
-    expect(schematic.bodies[1].orbitRadius - schematic.bodies[0].orbitRadius).toBeGreaterThanOrEqual(2.5)
+    expect(schematic.bodies[1].orbitRadius - schematic.bodies[0].orbitRadius).toBeGreaterThanOrEqual(3.5)
   })
 
   it('represents every generated moon for a body', () => {
