@@ -81,7 +81,6 @@ export function Scene({ graph, system }: SceneProps) {
         count={Math.round(8500 * qualityScale)}
         factor={graph.sceneRadius * 0.42 * qualityScale}
         saturation={0}
-        fade
         speed={prefersReducedMotion ? 0 : 0.2}
       />
       <CameraRig sceneRadius={graph.sceneRadius} />
