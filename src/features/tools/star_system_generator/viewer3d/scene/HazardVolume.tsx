@@ -22,7 +22,7 @@ export function HazardVolume({ hazard }: { hazard: HazardVisual }) {
 
   useEffect(() => () => material.dispose(), [material])
 
-  if (hazard.unclassified || !layers.physical) return null
+  if (!layers.physical) return null
 
   return (
     <>

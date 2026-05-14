@@ -15,7 +15,7 @@ import { BeltSettlements } from './BeltSettlements'
 import { Starfield } from './Starfield'
 import { HazardVolume } from './HazardVolume'
 import { GuBleedVolume } from './GuBleedVolume'
-import { PhenomenonGlyphs, RuinPins } from './MarkerInstances'
+import { RuinPins } from './MarkerInstances'
 import { HoverTooltip } from './HoverTooltip'
 import { StellarBadge } from './StellarBadge'
 import { useLayers, usePrefersReducedMotion, useSelectionActions } from '../chrome/ViewerContext'
@@ -167,7 +167,6 @@ export function Scene({ graph, system }: SceneProps) {
         <GuBleedVolume key={`gu-${g.id}`} bleed={g} />
       ))}
       <RuinPins ruins={graph.ruins.filter((r) => !r.attachedBodyId)} />
-      <PhenomenonGlyphs phenomena={graph.phenomena} />
       {graph.subSystems.map((sub) => (
         <Fragment key={sub.star.id}>
           {layers.physical ? <Star star={sub.star} /> : null}
@@ -185,7 +184,6 @@ export function Scene({ graph, system }: SceneProps) {
               <BeltSettlements key={`sub-belt-settlements-${b.id}`} belt={b} />
             ))}
             <RuinPins ruins={sub.ruins.filter((r) => !r.attachedBodyId)} />
-            <PhenomenonGlyphs phenomena={sub.phenomena} />
           </group>
         </Fragment>
       ))}

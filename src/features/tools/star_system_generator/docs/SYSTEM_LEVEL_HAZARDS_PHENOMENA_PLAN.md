@@ -1,6 +1,6 @@
 # System-Level Hazards And Phenomena Side Rail Plan
 
-Status: open.
+Status: implemented (commits 6f3d0a1, a9819e0, fc62e53, 0072e0c, 42ea370, plus Phase 6 cleanup).
 
 ## Purpose
 
