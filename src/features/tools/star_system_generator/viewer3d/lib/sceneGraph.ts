@@ -22,6 +22,7 @@ import { spectralVisuals } from './stellarColor'
 import { chooseShading } from './bodyShading'
 import { classifyHazard } from './hazardClassifier'
 import { classifyGuBleed } from './guBleedClassifier'
+import { classifyRuin } from './ruinClassifier'
 import {
   buildBeltProfile,
   buildBodySurfaceProfile,
@@ -307,9 +308,13 @@ function buildRuin(
   belts: BeltVisual[],
   hzCenterAu: number,
   scaleMode: OrbitScaleMode,
-): RuinMarker {
+): RuinMarker | null {
   const sourceBody = system.bodies.find((body) => ruinMatchesBody(ruin, body))
-  const matched = sourceBody ? bodies.find((b) => b.id === sourceBody.id) : undefined
+    ?? classifyRuin(ruin, system)?.body
+    ?? null
+  if (!sourceBody) return null
+
+  const matched = bodies.find((b) => b.id === sourceBody.id)
   if (matched) {
     return {
       id: ruin.id,
@@ -318,7 +323,7 @@ function buildRuin(
       renderArchetype: 'ruin-marker',
     }
   }
-  if (sourceBody?.category.value === 'belt') {
+  if (sourceBody.category.value === 'belt') {
     const belt = belts.find((b) => b.id === sourceBody.id)
     if (belt) {
       const angle = hashToUnit(`ruin-belt-angle#${sourceBody.id}#${ruin.id}`) * Math.PI * 2
@@ -333,25 +338,12 @@ function buildRuin(
       }
     }
   }
-  if (sourceBody) {
-    const bodyIndex = system.bodies.findIndex((body) => body.id === sourceBody.id)
-    const r = orbitRadiusForBody(sourceBody, hzCenterAu, scaleMode, Math.max(0, bodyIndex))
-    const angle = hashToUnit(`ruin-body#${sourceBody.id}#${ruin.id}`) * Math.PI * 2
-    return {
-      id: ruin.id,
-      position: [Math.cos(angle) * r, 0, Math.sin(angle) * r],
-      renderArchetype: 'ruin-marker',
-    }
-  }
-  const outer = bodies.reduce<BodyVisual | undefined>(
-    (acc, b) => (acc && acc.orbitRadius > b.orbitRadius ? acc : b),
-    undefined,
-  )
-  const baseR = (outer ? outer.orbitRadius : auToScene(system.zones.snowLineAu.value, hzCenterAu, scaleMode)) * 1.2
-  const angle = hashToUnit(`ruin#${ruin.id}`) * Math.PI * 2
+  const bodyIndex = system.bodies.findIndex((body) => body.id === sourceBody.id)
+  const r = orbitRadiusForBody(sourceBody, hzCenterAu, scaleMode, Math.max(0, bodyIndex))
+  const angle = hashToUnit(`ruin-body#${sourceBody.id}#${ruin.id}`) * Math.PI * 2
   return {
     id: ruin.id,
-    position: [Math.cos(angle) * baseR, 0, Math.sin(angle) * baseR],
+    position: [Math.cos(angle) * r, 0, Math.sin(angle) * r],
     renderArchetype: 'ruin-marker',
   }
 }
@@ -400,8 +392,13 @@ export function buildSceneGraph(system: GeneratedSystem, options: BuildSceneGrap
   const guBleeds = [classifyGuBleed(system.guOverlay, system, hzCenterAu)]
   const systemLevelPhenomena = system.phenomena.map(buildSystemLevelPhenomenon)
   const phenomena: PhenomenonMarker[] = []
-  const ruins = system.ruins.map((r) => buildRuin(r, system, bodies, belts, hzCenterAu, scaleMode))
+  const ruins: RuinMarker[] = []
   const systemLevelRuins: string[] = []
+  for (const ruin of system.ruins) {
+    const marker = buildRuin(ruin, system, bodies, belts, hzCenterAu, scaleMode)
+    if (marker) ruins.push(marker)
+    else systemLevelRuins.push(ruin.id)
+  }
 
   const maxBodyOrbit = Math.max(...bodies.map((b) => b.orbitRadius), 0)
   const maxBeltOrbit = Math.max(...belts.map((b) => b.outerRadius), 0)
@@ -444,7 +441,13 @@ export function buildSceneGraph(system: GeneratedSystem, options: BuildSceneGrap
     )
     const subBelts = subBeltBodies.map((b) => buildBelt(b, subHzCenter, scaleMode, subOrbitIndex.get(b.id) ?? 0))
 
-    const subRuins = c.subSystem.ruins.map((r) => buildRuin(r, subSystemShim, subBodies, subBelts, subHzCenter, scaleMode))
+    const subRuins: RuinMarker[] = []
+    const subSystemLevelRuins: string[] = []
+    for (const ruin of c.subSystem.ruins) {
+      const marker = buildRuin(ruin, subSystemShim, subBodies, subBelts, subHzCenter, scaleMode)
+      if (marker) subRuins.push(marker)
+      else subSystemLevelRuins.push(ruin.id)
+    }
     const subPhenomena: PhenomenonMarker[] = []
     const subSystemLevelPhenomena = c.subSystem.phenomena.map(buildSystemLevelPhenomenon)
 
@@ -456,7 +459,7 @@ export function buildSceneGraph(system: GeneratedSystem, options: BuildSceneGrap
       phenomena: subPhenomena,
       systemLevelPhenomena: subSystemLevelPhenomena,
       systemLevelHazards: [],
-      systemLevelRuins: [],
+      systemLevelRuins: subSystemLevelRuins,
     })
   }
 
