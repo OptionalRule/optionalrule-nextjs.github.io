@@ -17,6 +17,7 @@ import { HazardVolume } from './HazardVolume'
 import { GuBleedVolume } from './GuBleedVolume'
 import { PhenomenonGlyphs, RuinPins } from './MarkerInstances'
 import { HoverTooltip } from './HoverTooltip'
+import { StellarBadge } from './StellarBadge'
 import { useLayers, usePrefersReducedMotion, useSelectionActions } from '../chrome/ViewerContext'
 import { WebGLFallback } from '../chrome/WebGLFallback'
 import { invisibleHitMaterial, starSphereGeometry } from './renderAssets'
@@ -104,6 +105,11 @@ export function Scene({ graph, system }: SceneProps) {
           {graph.companions.map((c) => (
             <Star key={c.id} star={c} />
           ))}
+          <StellarBadge
+            starPosition={graph.star.position}
+            starRadius={graph.star.coronaRadius}
+            hazards={graph.systemLevelHazards.filter((h) => h.anchorDescription === 'stellar')}
+          />
           {graph.distantMarkers.map((m) => (
             <group key={m.id} position={m.visual.position}>
               <mesh
