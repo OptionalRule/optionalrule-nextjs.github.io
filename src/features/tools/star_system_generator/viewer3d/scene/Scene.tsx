@@ -11,6 +11,7 @@ import { Orbit } from './Orbit'
 import { Zones } from './Zones'
 import { Body } from './Body'
 import { Belt } from './Belt'
+import { BeltSettlements } from './BeltSettlements'
 import { HazardVolume } from './HazardVolume'
 import { GuBleedVolume } from './GuBleedVolume'
 import { PhenomenonGlyphs, RuinPins } from './MarkerInstances'
@@ -154,6 +155,9 @@ export function Scene({ graph, system }: SceneProps) {
       {layers.physical ? graph.belts.map((b) => (
         <Belt key={`belt-${b.id}`} belt={b} />
       )) : null}
+      {graph.belts.map((b) => (
+        <BeltSettlements key={`belt-settlements-${b.id}`} belt={b} />
+      ))}
       {layers.physical ? graph.hazards.map((h) => (
         <HazardVolume key={`hz-${h.id}`} hazard={h} />
       )) : null}
@@ -175,6 +179,9 @@ export function Scene({ graph, system }: SceneProps) {
             {layers.physical ? sub.belts.map((b) => (
               <Belt key={`sub-belt-${b.id}`} belt={b} />
             )) : null}
+            {sub.belts.map((b) => (
+              <BeltSettlements key={`sub-belt-settlements-${b.id}`} belt={b} />
+            ))}
             <RuinPins ruins={sub.ruins.filter((r) => !r.attachedBodyId)} />
             <PhenomenonGlyphs phenomena={sub.phenomena} />
           </group>
