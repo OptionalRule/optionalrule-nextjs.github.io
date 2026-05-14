@@ -2,7 +2,7 @@
 
 import { Fragment, useState } from 'react'
 import { Canvas } from '@react-three/fiber'
-import { AdaptiveDpr, AdaptiveEvents, Html, PerformanceMonitor, Stars } from '@react-three/drei'
+import { AdaptiveDpr, AdaptiveEvents, Html, PerformanceMonitor } from '@react-three/drei'
 import type { GeneratedSystem } from '../../types'
 import type { SystemSceneGraph } from '../types'
 import { CameraRig } from './CameraRig'
@@ -12,6 +12,7 @@ import { Zones } from './Zones'
 import { Body } from './Body'
 import { Belt } from './Belt'
 import { BeltSettlements } from './BeltSettlements'
+import { Starfield } from './Starfield'
 import { HazardVolume } from './HazardVolume'
 import { GuBleedVolume } from './GuBleedVolume'
 import { PhenomenonGlyphs, RuinPins } from './MarkerInstances'
@@ -75,13 +76,9 @@ export function Scene({ graph, system }: SceneProps) {
         distance={graph.sceneRadius * 4}
         decay={0.6}
       />
-      <Stars
+      <Starfield
         radius={graph.sceneRadius * 5}
-        depth={graph.sceneRadius * 1.5}
         count={Math.round(8500 * qualityScale)}
-        factor={graph.sceneRadius * 0.42 * qualityScale}
-        saturation={0}
-        speed={prefersReducedMotion ? 0 : 0.2}
       />
       <CameraRig sceneRadius={graph.sceneRadius} />
       {!hasBodies ? (
