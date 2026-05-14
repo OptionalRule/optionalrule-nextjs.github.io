@@ -8,6 +8,7 @@ import { ViewerModal } from './chrome/ViewerModal'
 import { LayerToggles } from './chrome/LayerToggles'
 import { DetailSidebar } from './chrome/DetailSidebar'
 import { ViewerLegend } from './chrome/ViewerLegend'
+import { SystemLevelRail } from './chrome/SystemLevelRail'
 import { Scene } from './scene/Scene'
 import { BodyLookupProvider } from './scene/bodyLookup'
 import { formatStellarClass } from '../lib/stellarLabels'
@@ -88,6 +89,7 @@ function SystemViewer3DModalContent({ system, onClose, title }: SystemViewer3DMo
       <BodyLookupProvider system={system}>
         <div className={`relative flex-1 transition-opacity duration-200 ${mounted ? 'opacity-100' : 'opacity-0'}`}>
           <Scene graph={graph} system={system} />
+          <SystemLevelRail graph={graph} system={system} />
         </div>
         <DetailSidebar>
           <SidebarContent system={system} graph={graph} />
@@ -153,7 +155,11 @@ function SidebarContent({ system, graph }: { system: GeneratedSystem; graph: Ret
       return <StarDetailCard system={system} />
     }
     case 'hazard': {
-      const h = graph.hazards.find((x) => x.id === selection.id)
+      const h = [
+        ...graph.hazards,
+        ...graph.systemLevelHazards,
+        ...graph.subSystems.flatMap((s) => s.systemLevelHazards),
+      ].find((x) => x.id === selection.id)
       return h ? <HazardCard hazard={h} /> : null
     }
     case 'gu-bleed': {
