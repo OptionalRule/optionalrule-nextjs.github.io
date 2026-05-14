@@ -1,5 +1,7 @@
 # Viewer 3D Scale And Orbit Correction Plan
 
+Status: implemented. Shipped in commits 0e7df4a (physical-radius body sizes), cc1e922 (scale- and parent-aware moon visuals), 3c2e41b (orbit scale modes), a19c4b5 (orbit start distribution). Follow-up: 980dd2d extended bodyVisualExtent to include moon system reach so applyBodyOrbitClearance no longer under-spaces planets with extensive moon systems; clearance bumped 2.5 -> 3.5 and moon orbit shells / sizes shrunk ~15-20%.
+
 ## Purpose
 
 Correct three related Star System Generator issues:
