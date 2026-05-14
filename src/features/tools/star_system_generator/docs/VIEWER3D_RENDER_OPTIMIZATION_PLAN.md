@@ -1,6 +1,6 @@
 # Viewer 3D Render Optimization Plan
 
-Status: implemented. Shipped in commits 9248445 (shared render asset catalog) and f0f8aad (instanced marker batches). Object-pooling deliberately deferred per the plan; revisit when the viewer gains transient effects.
+Status: implemented. Shipped in commits 9248445 (shared render asset catalog) and f0f8aad (instanced marker batches). Object-pooling deliberately deferred per the plan; revisit when the viewer gains transient effects. Note: the PhenomenonGlyph reference in Step 4 below is historical — phenomena no longer render in 3D following the system-level rail work (see SYSTEM_LEVEL_HAZARDS_PHENOMENA_PLAN.md).
 
 ## Purpose
 
