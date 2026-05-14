@@ -233,6 +233,34 @@ describe('buildSceneGraph', () => {
     expect(radius).toBeLessThanOrEqual(belt?.outerRadius ?? 0)
   })
 
+  it('routes a no-anchor ruin to systemLevelRuins instead of inventing a position', () => {
+    const ruin = {
+      id: 'drift-ruin',
+      location: fact('Adrift in a deep-space cloud', 'human-layer'),
+      remnantType: fact('Generation-ship fragment', 'human-layer'),
+      hook: fact('Its registry keeps re-transmitting.', 'human-layer'),
+    }
+    const patchedGraph = buildSceneGraph({ ...system, ruins: [ruin] })
+    expect(patchedGraph.ruins.find((r) => r.id === ruin.id)).toBeUndefined()
+    expect(patchedGraph.systemLevelRuins).toContain(ruin.id)
+  })
+
+  it('classifies a belt-keyword ruin onto a belt body when one exists', () => {
+    const beltIds = system.bodies.filter((b) => b.category.value === 'belt').map((b) => b.id)
+    if (beltIds.length === 0) return
+    const ruin = {
+      id: 'belt-keyword-ruin',
+      location: fact('Lost in the asteroid swarm', 'human-layer'),
+      remnantType: fact('Salvage flotilla', 'human-layer'),
+      hook: fact('Beacon still pings.', 'human-layer'),
+    }
+    const patchedGraph = buildSceneGraph({ ...system, ruins: [ruin] })
+    const marker = patchedGraph.ruins.find((r) => r.id === ruin.id)
+    expect(marker?.attachedBeltId).toBeDefined()
+    expect(beltIds).toContain(marker?.attachedBeltId)
+    expect(patchedGraph.systemLevelRuins).not.toContain(ruin.id)
+  })
+
   it('routes every generated phenomenon into systemLevelPhenomena', () => {
     const phenomenon = {
       id: 'test-phenomenon',
