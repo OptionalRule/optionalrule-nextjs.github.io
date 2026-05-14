@@ -394,8 +394,10 @@ function phenomenonPosition(
   const fallbackAu = hasAny(text, ['gate', 'route', 'convoy', 'ark', 'fleet', 'beacon', 'quarantine'])
     ? (system.zones.habitableCenterAu.value + system.zones.snowLineAu.value) / 2
     : system.zones.habitableCenterAu.value
-  const radius = auToScene(fallbackAu, hzCenterAu, scaleMode)
-  return orbitPoint(radius * (1.05 + hashToUnit(`phen-radius#${phen.id}`) * 0.25), `phen#${phen.id}`, 0.45)
+  const baseRadius = auToScene(fallbackAu, hzCenterAu, scaleMode)
+  const radiusJitter = 0.55 + hashToUnit(`phen-radius#${phen.id}`) * 1.6
+  const yJitter = (hashToUnit(`phen-y#${phen.id}`) - 0.5) * 2.4
+  return orbitPoint(baseRadius * radiusJitter, `phen-angle#${phen.id}`, yJitter)
 }
 
 function buildPhenomenon(
