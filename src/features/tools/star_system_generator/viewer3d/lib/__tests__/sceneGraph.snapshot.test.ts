@@ -24,7 +24,9 @@ describe('buildSceneGraph snapshot corpus', () => {
       expect(graph.star.coronaRadius).toBeGreaterThan(0)
       expect(graph.bodies.length + graph.belts.length).toBe(system.bodies.length)
       expect(graph.guBleeds.length).toBe(1)
-      expect(graph.hazards.length).toBe(system.majorHazards.length)
+      expect(graph.hazards.length + graph.systemLevelHazards.length).toBe(system.majorHazards.length)
+      expect(graph.systemLevelPhenomena.length).toBe(system.phenomena.length)
+      expect(graph.phenomena.length).toBe(0)
       expect(graph.sceneRadius).toBeGreaterThan(0)
       // every BodyVisual has an existing OrbitingBody source
       for (const bv of graph.bodies) {

@@ -198,6 +198,13 @@ export interface PhenomenonMarker {
   renderArchetype: 'phenomenon-marker'
 }
 
+export interface SystemLevelPhenomenon {
+  id: string
+  kind: string
+  color: string
+  glowColor: string
+}
+
 export interface RuinMarker {
   id: string
   attachedBodyId?: string
@@ -220,6 +227,9 @@ export interface SubSystemVisual {
   belts: BeltVisual[]
   ruins: RuinMarker[]
   phenomena: PhenomenonMarker[]
+  systemLevelPhenomena: SystemLevelPhenomenon[]
+  systemLevelHazards: HazardVisual[]
+  systemLevelRuins: string[]
 }
 
 export interface SystemSceneGraph {
@@ -232,6 +242,9 @@ export interface SystemSceneGraph {
   guBleeds: GuBleedVisual[]
   phenomena: PhenomenonMarker[]
   ruins: RuinMarker[]
+  systemLevelPhenomena: SystemLevelPhenomenon[]
+  systemLevelHazards: HazardVisual[]
+  systemLevelRuins: string[]
   sceneRadius: number
   subSystems: SubSystemVisual[]
   distantMarkers: DistantStarMarker[]

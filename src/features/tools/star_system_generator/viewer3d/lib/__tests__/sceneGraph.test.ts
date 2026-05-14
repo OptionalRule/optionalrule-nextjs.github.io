@@ -96,8 +96,23 @@ describe('buildSceneGraph', () => {
     expect(JSON.stringify(a)).toBe(JSON.stringify(b))
   })
 
-  it('produces one HazardVisual per major hazard', () => {
-    expect(graph.hazards.length).toBe(system.majorHazards.length)
+  it('partitions hazards across in-scene and system-level slots, one per major hazard', () => {
+    expect(graph.hazards.length + graph.systemLevelHazards.length).toBe(system.majorHazards.length)
+  })
+
+  it('routes stellar / system-wide / unclassified hazards to systemLevelHazards', () => {
+    for (const hazard of graph.systemLevelHazards) {
+      expect(
+        hazard.unclassified
+          || hazard.anchorDescription === 'system-wide'
+          || hazard.anchorDescription === 'stellar',
+      ).toBe(true)
+    }
+    for (const hazard of graph.hazards) {
+      expect(hazard.unclassified).toBe(false)
+      expect(hazard.anchorDescription).not.toBe('system-wide')
+      expect(hazard.anchorDescription).not.toBe('stellar')
+    }
   })
 
   it('produces exactly one GuBleedVisual per system', () => {
@@ -218,7 +233,7 @@ describe('buildSceneGraph', () => {
     expect(radius).toBeLessThanOrEqual(belt?.outerRadius ?? 0)
   })
 
-  it('assigns marker archetypes to GU phenomena', () => {
+  it('routes every generated phenomenon into systemLevelPhenomena', () => {
     const phenomenon = {
       id: 'test-phenomenon',
       phenomenon: fact('Fold static', 'gu-layer'),
@@ -230,24 +245,10 @@ describe('buildSceneGraph', () => {
     }
     const patchedGraph = buildSceneGraph({ ...system, phenomena: [phenomenon] })
 
-    expect(patchedGraph.phenomena).toHaveLength(1)
-    expect(patchedGraph.phenomena[0].renderArchetype).toBe('phenomenon-marker')
-  })
-
-  it('anchors belt-like phenomena inside a rendered belt', () => {
-    const phenomenon = {
-      id: 'belt-phenomenon',
-      phenomenon: fact('Snow-line chiral belt', 'gu-layer'),
-      note: fact('Every ice tank flags the same handedness.', 'gu-layer'),
-      travelEffect: fact('Ships detour through clean transfer windows.', 'gu-layer'),
-      surveyQuestion: fact('Which fragments flipped first?', 'gu-layer'),
-      conflictHook: fact('Claims crews fight over quarantine math.', 'gu-layer'),
-      sceneAnchor: fact('Clean ice turns quarantine amber along the snow line.', 'gu-layer'),
-    }
-    const patchedGraph = buildSceneGraph({ ...system, phenomena: [phenomenon] })
-    const marker = patchedGraph.phenomena[0]
-    const radius = Math.hypot(marker.position[0], marker.position[2])
-
-    expect(patchedGraph.belts.some((belt) => radius >= belt.innerRadius && radius <= belt.outerRadius)).toBe(true)
+    expect(patchedGraph.phenomena).toHaveLength(0)
+    expect(patchedGraph.systemLevelPhenomena).toHaveLength(1)
+    expect(patchedGraph.systemLevelPhenomena[0].id).toBe('test-phenomenon')
+    expect(patchedGraph.systemLevelPhenomena[0].kind).toBe('Fold static')
+    expect(patchedGraph.systemLevelPhenomena[0].color).toMatch(/^#/)
   })
 })
