@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react'
-import { Compass, FileSearch, Layers, Moon } from 'lucide-react'
-import type { GeneratedSystem, OrbitingBody } from '../types'
+import { Compass, FileSearch, Layers, Moon, Telescope } from 'lucide-react'
+import type { GeneratedSystem, OrbitingBody, PlanetaryDetail } from '../types'
 import { BodyCategoryIcon, FieldRow, ThermalZoneTag, sectionShellClasses } from './visual'
 
 export function BodyDetailPanel({ body, system }: { body: OrbitingBody; system: GeneratedSystem }) {
@@ -121,6 +121,8 @@ export function BodyDetailContent({
         ) : null}
       </SubBlock>
 
+      <DeeperSurvey detail={body.detail} compact={compact} />
+
       <div className="mt-5 space-y-5 text-sm">
         <SubBlock title="Orbital Companions" icon={Moon}>
           {body.moons.length ? (
@@ -239,6 +241,89 @@ function formatRatio(value: number): string {
   if (value >= 10) return value.toFixed(0)
   if (value >= 1) return value.toFixed(1)
   return value.toFixed(2)
+}
+
+interface DeeperGroup {
+  title: string
+  rows: Array<{ label: string; value: string }>
+}
+
+function buildDeeperGroups(detail: PlanetaryDetail): DeeperGroup[] {
+  const groups: DeeperGroup[] = [
+    {
+      title: 'Surface & Geology',
+      rows: [
+        { label: 'Minerals', value: detail.mineralComposition.value },
+        { label: 'Topography', value: detail.topography.value },
+        { label: 'Surface hazards', value: detail.surfaceHazards.value },
+        { label: 'Hydrology', value: detail.hydrology.value },
+        { label: 'Seismic activity', value: detail.seismicActivity.value },
+      ],
+    },
+    {
+      title: 'Atmosphere',
+      rows: [
+        { label: 'Pressure', value: detail.atmosphericPressure.value },
+        { label: 'Traces', value: detail.atmosphericTraces.value },
+        { label: 'Wind regime', value: detail.windRegime.value },
+      ],
+    },
+    {
+      title: 'Rotation & Light',
+      rows: [
+        { label: 'Rotation profile', value: detail.rotationProfile.value },
+        { label: 'Day length', value: detail.dayLength.value },
+        { label: 'Surface light', value: detail.surfaceLight.value },
+        { label: 'Axial tilt', value: detail.axialTilt.value },
+      ],
+    },
+    {
+      title: 'Magnetic & Sky',
+      rows: [
+        { label: 'Magnetic field', value: detail.magneticField.value },
+        { label: 'Sky phenomena', value: detail.skyPhenomena.value },
+        { label: 'Tidal regime', value: detail.tidalRegime.value },
+      ],
+    },
+    {
+      title: 'Biosphere & Economy',
+      rows: [
+        { label: 'Distribution', value: detail.biosphereDistribution.value },
+        { label: 'Resource access', value: detail.resourceAccess.value },
+        { label: 'Acoustic environment', value: detail.acousticEnvironment.value },
+      ],
+    },
+  ]
+  return groups.map((g) => ({ ...g, rows: g.rows.filter((r) => r.value && r.value.trim().length > 0) })).filter((g) => g.rows.length > 0)
+}
+
+function DeeperSurvey({ detail, compact }: { detail: PlanetaryDetail; compact: boolean }) {
+  const groups = buildDeeperGroups(detail)
+  if (groups.length === 0) return null
+  return (
+    <SubBlock
+      title="Deeper Survey"
+      icon={Telescope}
+      className={compact ? 'mt-4 border-t border-[var(--border-light)] pt-3' : 'mt-3 rounded-md border border-[var(--border-light)] bg-[var(--card-elevated)] p-3'}
+    >
+      <div className="space-y-4">
+        {groups.map((group) => (
+          <div key={group.title}>
+            <h4 className="text-[0.62rem] font-semibold uppercase tracking-[0.12em] text-[var(--text-tertiary)]">
+              {group.title}
+            </h4>
+            <dl className="mt-1.5 grid gap-1.5 sm:grid-cols-2 lg:grid-cols-3">
+              {group.rows.map((row) => (
+                <FieldRow key={row.label} label={row.label} layer="physical">
+                  {row.value}
+                </FieldRow>
+              ))}
+            </dl>
+          </div>
+        ))}
+      </div>
+    </SubBlock>
+  )
 }
 
 function MoonAttr({ label, value }: { label: string; value: string }) {

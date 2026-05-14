@@ -1,8 +1,8 @@
 'use client'
 
-import { useState } from 'react'
+import { Fragment, useState } from 'react'
 import { Canvas } from '@react-three/fiber'
-import { AdaptiveDpr, AdaptiveEvents, Html, PerformanceMonitor, Stars } from '@react-three/drei'
+import { AdaptiveDpr, AdaptiveEvents, Html, PerformanceMonitor } from '@react-three/drei'
 import type { GeneratedSystem } from '../../types'
 import type { SystemSceneGraph } from '../types'
 import { CameraRig } from './CameraRig'
@@ -11,13 +11,17 @@ import { Orbit } from './Orbit'
 import { Zones } from './Zones'
 import { Body } from './Body'
 import { Belt } from './Belt'
+import { BeltSettlements } from './BeltSettlements'
+import { Starfield } from './Starfield'
 import { HazardVolume } from './HazardVolume'
 import { GuBleedVolume } from './GuBleedVolume'
-import { PhenomenonGlyphs, RuinPins } from './MarkerInstances'
+import { RuinPins } from './MarkerInstances'
 import { HoverTooltip } from './HoverTooltip'
+import { StellarBadge } from './StellarBadge'
 import { useLayers, usePrefersReducedMotion, useSelectionActions } from '../chrome/ViewerContext'
 import { WebGLFallback } from '../chrome/WebGLFallback'
 import { invisibleHitMaterial, starSphereGeometry } from './renderAssets'
+import { buildSeedHref } from '../../lib/seedUrl'
 
 function detectWebGL(): boolean {
   try {
@@ -73,14 +77,9 @@ export function Scene({ graph, system }: SceneProps) {
         distance={graph.sceneRadius * 4}
         decay={0.6}
       />
-      <Stars
+      <Starfield
         radius={graph.sceneRadius * 5}
-        depth={graph.sceneRadius * 1.5}
         count={Math.round(8500 * qualityScale)}
-        factor={graph.sceneRadius * 0.42 * qualityScale}
-        saturation={0}
-        fade
-        speed={prefersReducedMotion ? 0 : 0.2}
       />
       <CameraRig sceneRadius={graph.sceneRadius} />
       {!hasBodies ? (
@@ -106,10 +105,47 @@ export function Scene({ graph, system }: SceneProps) {
           {graph.companions.map((c) => (
             <Star key={c.id} star={c} />
           ))}
+          <StellarBadge
+            starPosition={graph.star.position}
+            starRadius={graph.star.coronaRadius}
+            hazards={graph.systemLevelHazards.filter((h) => h.anchorDescription === 'stellar')}
+          />
+          {graph.distantMarkers.map((m) => (
+            <group key={m.id} position={m.visual.position}>
+              <mesh
+                onClick={(e) => {
+                  e.stopPropagation()
+                  if (typeof window !== 'undefined' && m.linkedSeed) {
+                    const url = new URL(window.location.href)
+                    url.searchParams.set('seed', m.linkedSeed)
+                    window.location.href = url.toString()
+                  }
+                }}
+              >
+                <sphereGeometry args={[0.3, 16, 16]} />
+                <meshBasicMaterial color={m.visual.coreColor} />
+              </mesh>
+              <Html center sprite>
+                <a
+                  href={buildSeedHref(m.linkedSeed)}
+                  className="rounded bg-black/70 px-2 py-1 text-[10px] text-white underline"
+                >
+                  {m.label}
+                </a>
+              </Html>
+            </group>
+          ))}
           <Zones
             habitableInner={graph.zones.habitableInner}
             habitableOuter={graph.zones.habitableOuter}
           />
+          {graph.circumbinaryKeepOut !== undefined ? (
+            <Orbit
+              radius={graph.circumbinaryKeepOut}
+              tiltY={0}
+              color="#ff6f6f"
+            />
+          ) : null}
           {graph.bodies.map((body) => (
             <Orbit key={`orbit-${body.id}`} radius={body.orbitRadius} tiltY={body.orbitTiltY} color="#5fb6e8" />
           ))}
@@ -121,6 +157,9 @@ export function Scene({ graph, system }: SceneProps) {
       {layers.physical ? graph.belts.map((b) => (
         <Belt key={`belt-${b.id}`} belt={b} />
       )) : null}
+      {graph.belts.map((b) => (
+        <BeltSettlements key={`belt-settlements-${b.id}`} belt={b} />
+      ))}
       {layers.physical ? graph.hazards.map((h) => (
         <HazardVolume key={`hz-${h.id}`} hazard={h} />
       )) : null}
@@ -128,7 +167,26 @@ export function Scene({ graph, system }: SceneProps) {
         <GuBleedVolume key={`gu-${g.id}`} bleed={g} />
       ))}
       <RuinPins ruins={graph.ruins.filter((r) => !r.attachedBodyId)} />
-      <PhenomenonGlyphs phenomena={graph.phenomena} />
+      {graph.subSystems.map((sub) => (
+        <Fragment key={sub.star.id}>
+          {layers.physical ? <Star star={sub.star} /> : null}
+          <group position={sub.star.position}>
+            {layers.physical ? sub.bodies.map((body) => (
+              <Orbit key={`sub-orbit-${body.id}`} radius={body.orbitRadius} tiltY={body.orbitTiltY} color="#a07eff" />
+            )) : null}
+            {sub.bodies.map((body) => (
+              <Body key={`sub-body-${body.id}`} body={body} />
+            ))}
+            {layers.physical ? sub.belts.map((b) => (
+              <Belt key={`sub-belt-${b.id}`} belt={b} />
+            )) : null}
+            {sub.belts.map((b) => (
+              <BeltSettlements key={`sub-belt-settlements-${b.id}`} belt={b} />
+            ))}
+            <RuinPins ruins={sub.ruins.filter((r) => !r.attachedBodyId)} />
+          </group>
+        </Fragment>
+      ))}
       <HoverTooltip graph={graph} system={system} />
     </Canvas>
   )

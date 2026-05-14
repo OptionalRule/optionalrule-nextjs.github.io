@@ -35,9 +35,9 @@ describe('ViewerModal', () => {
     expect(onClose).toHaveBeenCalled()
   })
 
-  it('exposes a redundant floating close button', () => {
+  it('renders a single close button in the header', () => {
     renderModal(<ViewerModal title="X" onClose={() => undefined}><p>body</p></ViewerModal>)
-    expect(screen.getAllByRole('button', { name: /close/i }).length).toBeGreaterThanOrEqual(2)
+    expect(screen.getAllByRole('button', { name: /close/i })).toHaveLength(1)
   })
 
   it('locks page scroll while open and restores on unmount', () => {

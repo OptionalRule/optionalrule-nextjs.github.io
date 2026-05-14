@@ -12,10 +12,12 @@ export interface StarProps {
 
 const surfaceVertexShader = `
   varying vec3 vNormal;
+  varying vec3 vObjectNormal;
   varying vec3 vWorldPosition;
 
   void main() {
     vNormal = normalize(normalMatrix * normal);
+    vObjectNormal = normal;
     vec4 worldPosition = modelMatrix * vec4(position, 1.0);
     vWorldPosition = worldPosition.xyz;
     gl_Position = projectionMatrix * viewMatrix * worldPosition;
@@ -30,8 +32,10 @@ const surfaceFragmentShader = `
   uniform float uGranulationScale;
   uniform float uGranulationStrength;
   uniform float uLimbPower;
+  uniform float uPulse;
   uniform float uTime;
   varying vec3 vNormal;
+  varying vec3 vObjectNormal;
   varying vec3 vWorldPosition;
 
   float hash(vec3 p) {
@@ -55,20 +59,23 @@ const surfaceFragmentShader = `
 
   void main() {
     vec3 normal = normalize(vNormal);
+    vec3 objectNormal = normalize(vObjectNormal);
     vec3 viewDirection = normalize(cameraPosition - vWorldPosition);
     float facing = clamp(dot(normal, viewDirection), 0.0, 1.0);
     float limb = pow(1.0 - facing, uLimbPower);
 
     vec3 drift = vec3(uTime * 0.035, -uTime * 0.022, uTime * 0.017);
-    float largeCells = noise(normal * uGranulationScale + drift);
-    float fineCells = noise(normal * uGranulationScale * 2.7 - drift.yzx * 1.4);
+    float largeCells = noise(objectNormal * uGranulationScale + drift);
+    float fineCells = noise(objectNormal * uGranulationScale * 2.7 - drift.yzx * 1.4);
     float cells = smoothstep(0.28, 0.82, largeCells) * 0.72 + fineCells * 0.28;
     float heat = (cells - 0.48) * uGranulationStrength;
 
-    vec3 color = mix(uEdgeColor, uCoreColor, facing * 0.96 + 0.04);
-    color += uHotColor * max(heat, 0.0) * (0.26 + uActivity * 0.28);
-    color *= 1.0 - min(0.36, limb * 0.32);
-    color = mix(color, uEdgeColor, limb * (0.3 + uActivity * 0.16));
+    vec3 color = uCoreColor;
+    color = mix(color, uEdgeColor, 0.12);
+    color += uHotColor * max(heat, 0.0) * (0.22 + uActivity * 0.24);
+    color *= 1.0 - min(0.08, limb * 0.08);
+    color = mix(color, uEdgeColor, limb * (0.08 + uActivity * 0.05));
+    color *= 1.0 + uPulse * 0.55;
 
     gl_FragColor = vec4(color, 1.0);
   }
@@ -90,6 +97,7 @@ const coronaFragmentShader = `
   uniform vec3 uColor;
   uniform float uActivity;
   uniform float uOpacity;
+  uniform float uPulse;
   uniform float uTime;
   varying vec3 vNormal;
   varying vec3 vWorldPosition;
@@ -106,7 +114,7 @@ const coronaFragmentShader = `
     float facing = clamp(dot(normal, viewDirection), 0.0, 1.0);
     float rim = pow(1.0 - facing, 2.25);
     float texture = 0.72 + hash(normal * 8.0 + vec3(uTime * 0.12)) * 0.28;
-    float alpha = rim * texture * uOpacity * (0.7 + uActivity * 0.45);
+    float alpha = rim * texture * uOpacity * (0.7 + uActivity * 0.45) * (1.0 + uPulse * 0.8);
     gl_FragColor = vec4(uColor, alpha);
   }
 `
@@ -160,6 +168,8 @@ function hashToUnit(value: string): number {
 
 export function Star({ star }: StarProps) {
   const billboardRef = useRef<THREE.Group | null>(null)
+  const surfaceRef = useRef<THREE.Mesh | null>(null)
+  const coronaRef = useRef<THREE.Mesh | null>(null)
   const coreSize = star.coronaRadius * 0.48
   const activity = clamp(star.bloomStrength / 1.2, 0.12, 1.35)
   const flickerPhase = useMemo(() => hashToUnit(`${star.id}#glow-flicker`) * Math.PI * 2, [star.id])
@@ -173,6 +183,7 @@ export function Star({ star }: StarProps) {
         uGranulationStrength: { value: 0.5 + star.flareStrength * 0.55 },
         uHotColor: { value: new THREE.Color('#ffffff') },
         uLimbPower: { value: 1.55 + star.flareStrength * 0.28 },
+        uPulse: { value: 0 },
         uTime: { value: 0 },
       },
       vertexShader: surfaceVertexShader,
@@ -187,6 +198,7 @@ export function Star({ star }: StarProps) {
         uActivity: { value: activity },
         uColor: { value: new THREE.Color(star.coronaColor) },
         uOpacity: { value: 0.2 + star.bloomStrength * 0.08 },
+        uPulse: { value: 0 },
         uTime: { value: 0 },
       },
       vertexShader: coronaVertexShader,
@@ -285,15 +297,30 @@ export function Star({ star }: StarProps) {
     surfaceMaterial.dispose()
   }, [coronaMaterial, innerGlowMaterial, outerGlowMaterial, prominenceGeometry, prominenceMaterial, surfaceMaterial])
 
-  useFrame((state) => {
-    surfaceMaterial.uniforms.uTime.value = state.clock.elapsedTime
-    coronaMaterial.uniforms.uTime.value = state.clock.elapsedTime
-    innerGlowMaterial.uniforms.uTime.value = state.clock.elapsedTime
-    outerGlowMaterial.uniforms.uTime.value = state.clock.elapsedTime
-    const pulse = 1 + Math.sin(state.clock.elapsedTime * star.pulseSpeed) * 0.04 * star.flareStrength
-    if (!billboardRef.current) return
-    billboardRef.current.scale.setScalar(pulse)
-    billboardRef.current.lookAt(state.camera.position)
+  useFrame((state, delta) => {
+    const t = state.clock.elapsedTime
+    surfaceMaterial.uniforms.uTime.value = t
+    coronaMaterial.uniforms.uTime.value = t
+    innerGlowMaterial.uniforms.uTime.value = t
+    outerGlowMaterial.uniforms.uTime.value = t
+    const pulseAmp = star.pulseAmplitude * (0.7 + star.flareStrength * 0.6)
+    const pulsePhase = Math.sin(t * star.pulseSpeed)
+    const billboardScale = 1 + pulsePhase * pulseAmp * 1.6
+    const sphereScale = 1 + pulsePhase * pulseAmp * 0.9
+    surfaceMaterial.uniforms.uPulse.value = pulsePhase * pulseAmp
+    coronaMaterial.uniforms.uPulse.value = pulsePhase * pulseAmp
+    if (billboardRef.current) {
+      billboardRef.current.scale.setScalar(billboardScale)
+      billboardRef.current.lookAt(state.camera.position)
+    }
+    if (surfaceRef.current) {
+      surfaceRef.current.rotation.y += delta * star.rotationSpeed
+      surfaceRef.current.scale.setScalar(coreSize * sphereScale)
+    }
+    if (coronaRef.current) {
+      coronaRef.current.rotation.y -= delta * star.rotationSpeed * 0.4
+      coronaRef.current.scale.setScalar(coreSize * 1.16 * sphereScale)
+    }
   })
 
   return (
@@ -303,8 +330,8 @@ export function Star({ star }: StarProps) {
         <mesh geometry={starGlowPlaneGeometry} material={innerGlowMaterial} scale={star.coronaRadius * 2.25} renderOrder={-1} dispose={null} />
         <lineSegments geometry={prominenceGeometry} material={prominenceMaterial} renderOrder={1} dispose={null} />
       </group>
-      <mesh geometry={starSphereGeometry} material={surfaceMaterial} scale={coreSize} dispose={null} />
-      <mesh geometry={starSphereGeometry} material={coronaMaterial} scale={coreSize * 1.16} dispose={null} />
+      <mesh ref={surfaceRef} geometry={starSphereGeometry} material={surfaceMaterial} scale={coreSize} dispose={null} />
+      <mesh ref={coronaRef} geometry={starSphereGeometry} material={coronaMaterial} scale={coreSize * 1.16} dispose={null} />
     </group>
   )
 }

@@ -57,6 +57,18 @@ export interface BodySurfaceVisual {
   cityLightColor: string
   surfaceSeed: number
   cloudSeed: number
+  cloudTraceTint: string
+  cloudTraceBlend: number
+  cloudBandStrength: number
+  cloudRotationMultiplier: number
+  atmospherePressureMultiplier: number
+  auroraIntensity: number
+  auroraColor: string
+  auroraMode: number
+  auroraPulse: number
+  auroraAxisOffset: number
+  darkSectorStrength: number
+  refractionHaloBoost: number
 }
 
 export interface MoonSurfaceVisual {
@@ -81,6 +93,8 @@ export interface StarVisual {
   bloomStrength: number
   flareStrength: number
   pulseSpeed: number
+  pulseAmplitude: number
+  rotationSpeed: number
   rayColor: string
   position: SceneVec3
 }
@@ -184,6 +198,13 @@ export interface PhenomenonMarker {
   renderArchetype: 'phenomenon-marker'
 }
 
+export interface SystemLevelPhenomenon {
+  id: string
+  kind: string
+  color: string
+  glowColor: string
+}
+
 export interface RuinMarker {
   id: string
   attachedBodyId?: string
@@ -191,6 +212,24 @@ export interface RuinMarker {
   attachedMoonId?: string
   position: SceneVec3
   renderArchetype: 'ruin-marker'
+}
+
+export interface DistantStarMarker {
+  id: string
+  visual: StarVisual
+  label: string
+  linkedSeed: string
+}
+
+export interface SubSystemVisual {
+  star: StarVisual
+  bodies: BodyVisual[]
+  belts: BeltVisual[]
+  ruins: RuinMarker[]
+  phenomena: PhenomenonMarker[]
+  systemLevelPhenomena: SystemLevelPhenomenon[]
+  systemLevelHazards: HazardVisual[]
+  systemLevelRuins: string[]
 }
 
 export interface SystemSceneGraph {
@@ -203,7 +242,13 @@ export interface SystemSceneGraph {
   guBleeds: GuBleedVisual[]
   phenomena: PhenomenonMarker[]
   ruins: RuinMarker[]
+  systemLevelPhenomena: SystemLevelPhenomenon[]
+  systemLevelHazards: HazardVisual[]
+  systemLevelRuins: string[]
   sceneRadius: number
+  subSystems: SubSystemVisual[]
+  distantMarkers: DistantStarMarker[]
+  circumbinaryKeepOut?: number
 }
 
 export type LayerKey = 'physical' | 'gu' | 'human' | 'moonOrbits'

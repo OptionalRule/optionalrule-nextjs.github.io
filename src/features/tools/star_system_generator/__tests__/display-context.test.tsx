@@ -6,7 +6,7 @@ import { generateSystem } from '../lib/generator'
 import type { GenerationOptions } from '../types'
 
 const options: GenerationOptions = {
-  seed: 'ea1d8ba2f11e808c',
+  seed: 'display-search-0320',
   distribution: 'frontier',
   tone: 'balanced',
   gu: 'normal',
@@ -21,9 +21,10 @@ describe('star system display context', () => {
 
     expect(screen.getByText('Est. radius')).toBeInTheDocument()
     expect(screen.getByText(/solar radii \([0-9.]+ AU\)/)).toBeInTheDocument()
-    expect(screen.getByText('Multiple-Star Context')).toBeInTheDocument()
-    expect(screen.getByText('Planetary layout')).toBeInTheDocument()
-    expect(screen.getByText('Route value')).toBeInTheDocument()
+    expect(screen.getByText('Orbital Sibling Companion')).toBeInTheDocument()
+    expect(screen.getByText('Linked Companion System')).toBeInTheDocument()
+    expect(screen.getByText(/Generated below/i)).toBeInTheDocument()
+    expect(screen.getByText(/Open linked system/i)).toBeInTheDocument()
   })
 
   it('uses belt-appropriate physical details instead of a body radius', () => {

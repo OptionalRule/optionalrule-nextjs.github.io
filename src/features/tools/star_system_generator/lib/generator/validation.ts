@@ -1,5 +1,7 @@
 import type { BodyCategory, Fact, GeneratedSystem, OrbitingBody, Settlement } from '../../types'
 import { evaluateArchitectureSatisfaction } from './architecture'
+import { separationToBucketAu } from './companionGeometry'
+import { circumbinaryInnerAuLimit, siblingOuterAuLimit } from './companionStability'
 import {
   rockyChainCategories,
 } from './domain'
@@ -75,6 +77,7 @@ export const validationCodes = {
   repairApplied: 'REPAIR_APPLIED',
   proseSingularMoonGrammar: 'PROSE_SINGULAR_MOON_GRAMMAR',
   proseRedundantZoneWording: 'PROSE_REDUNDANT_ZONE_WORDING',
+  binaryStabilityConflict: 'BINARY_STABILITY_CONFLICT',
 } as const
 
 export type ValidationCode = typeof validationCodes[keyof typeof validationCodes] | (string & {})
@@ -427,12 +430,32 @@ export function validateBodyPhysicalContract(body: OrbitingBody, path = 'body'):
   return findings
 }
 
+function systemIsOrbitVolumeConstrained(system: GeneratedSystem): boolean {
+  if (!system.primary?.massSolar) return false
+  if (system.companions.some((c) => c.mode === 'volatile')) return true
+  const siblings = system.companions.filter((c) => c.mode === 'orbital-sibling')
+  if (siblings.length === 0) return false
+  const limit = Math.min(
+    ...siblings.map((c) =>
+      siblingOuterAuLimit(
+        separationToBucketAu(c.separation.value),
+        system.primary.massSolar.value,
+        c.star.massSolar.value,
+      )
+    )
+  )
+  return limit < 1
+}
+
 export function validateArchitecture(system: GeneratedSystem): ValidationFinding[] {
+  const orbitVolumeConstrained = systemIsOrbitVolumeConstrained(system)
   return evaluateArchitectureSatisfaction(system.architecture.name.value, system.bodies).map((result) => finding({
-    severity: 'error',
+    severity: orbitVolumeConstrained ? 'warning' : 'error',
     code: validationCodes.architectureMinimumUnsatisfied,
     path: 'architecture.bodyPlan',
-    message: result.message,
+    message: orbitVolumeConstrained
+      ? `${result.message} (orbit volume constrained by binary stability)`
+      : result.message,
     targetId: system.id,
     targetKind: 'architecture',
     source: 'generated-error',
@@ -582,10 +605,104 @@ export function validateLockedBodyDetail(body: OrbitingBody, path = 'body'): Val
   return validateBodyEnvironment(body, path).filter((finding) => finding.source === validationSources.lockedConflict)
 }
 
+export function validateBinaryStability(system: GeneratedSystem): ValidationFinding[] {
+  const findings: ValidationFinding[] = []
+  if (!system.primary?.massSolar || system.companions.length === 0) return findings
+  const primaryMass = system.primary.massSolar.value
+
+  const circumbinary = system.companions.find((c) => c.mode === 'circumbinary')
+  if (circumbinary) {
+    const innerLimit = circumbinaryInnerAuLimit(
+      separationToBucketAu(circumbinary.separation.value),
+      primaryMass,
+      circumbinary.star.massSolar.value,
+    )
+    system.bodies.forEach((body, index) => {
+      if (body.orbitAu.value < innerLimit) {
+        const locked = body.orbitAu.locked === true
+        findings.push({
+          severity: locked ? 'warning' : 'error',
+          code: locked ? validationCodes.lockedFactConflict : validationCodes.binaryStabilityConflict,
+          path: `bodies[${index}].orbitAu`,
+          message: `Body sits at ${body.orbitAu.value} AU, inside the circumbinary inner stability limit ${innerLimit.toFixed(2)} AU.`,
+          targetId: body.id,
+          targetKind: 'body',
+          source: validationSources.generatedError,
+          observed: body.orbitAu.value,
+          expected: `>= ${innerLimit.toFixed(2)}`,
+          policyCode: locked ? validationCodes.binaryStabilityConflict : undefined,
+          locked,
+        })
+      }
+    })
+  }
+
+  const siblings = system.companions.filter((c) => c.mode === 'orbital-sibling')
+  if (siblings.length > 0) {
+    const limit = Math.min(
+      ...siblings.map((c) =>
+        siblingOuterAuLimit(
+          separationToBucketAu(c.separation.value),
+          primaryMass,
+          c.star.massSolar.value,
+        )
+      )
+    )
+    system.bodies.forEach((body, index) => {
+      if (body.orbitAu.value > limit) {
+        const locked = body.orbitAu.locked === true
+        findings.push({
+          severity: locked ? 'warning' : 'error',
+          code: locked ? validationCodes.lockedFactConflict : validationCodes.binaryStabilityConflict,
+          path: `bodies[${index}].orbitAu`,
+          message: `Body sits at ${body.orbitAu.value} AU, outside the sibling-binary outer stability limit ${limit.toFixed(2)} AU.`,
+          targetId: body.id,
+          targetKind: 'body',
+          source: validationSources.generatedError,
+          observed: body.orbitAu.value,
+          expected: `<= ${limit.toFixed(2)}`,
+          policyCode: locked ? validationCodes.binaryStabilityConflict : undefined,
+          locked,
+        })
+      }
+    })
+  }
+
+  for (const companion of siblings) {
+    if (!companion.subSystem) continue
+    const compLimit = siblingOuterAuLimit(
+      separationToBucketAu(companion.separation.value),
+      primaryMass,
+      companion.star.massSolar.value,
+    )
+    companion.subSystem.bodies.forEach((body, index) => {
+      if (body.orbitAu.value > compLimit) {
+        const locked = body.orbitAu.locked === true
+        findings.push({
+          severity: locked ? 'warning' : 'error',
+          code: locked ? validationCodes.lockedFactConflict : validationCodes.binaryStabilityConflict,
+          path: `companions[${companion.id}].subSystem.bodies[${index}].orbitAu`,
+          message: `Sub-system body sits at ${body.orbitAu.value} AU, outside the sibling-binary outer stability limit ${compLimit.toFixed(2)} AU.`,
+          targetId: body.id,
+          targetKind: 'body',
+          source: validationSources.generatedError,
+          observed: body.orbitAu.value,
+          expected: `<= ${compLimit.toFixed(2)}`,
+          policyCode: locked ? validationCodes.binaryStabilityConflict : undefined,
+          locked,
+        })
+      }
+    })
+  }
+
+  return findings
+}
+
 export function validateSystem(system: GeneratedSystem): ValidationFinding[] {
   return [
     ...validateArchitecture(system),
     ...validateSettlementNames(system),
+    ...validateBinaryStability(system),
     ...system.bodies.flatMap((body, index) => [
       ...validateBodyEnvironment(body, `bodies[${index}]`),
       ...validateBodyPhysicalContract(body, `bodies[${index}]`),

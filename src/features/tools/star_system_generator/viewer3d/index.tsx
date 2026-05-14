@@ -8,6 +8,7 @@ import { ViewerModal } from './chrome/ViewerModal'
 import { LayerToggles } from './chrome/LayerToggles'
 import { DetailSidebar } from './chrome/DetailSidebar'
 import { ViewerLegend } from './chrome/ViewerLegend'
+import { SystemLevelRail } from './chrome/SystemLevelRail'
 import { Scene } from './scene/Scene'
 import { BodyLookupProvider } from './scene/bodyLookup'
 import { formatStellarClass } from '../lib/stellarLabels'
@@ -88,6 +89,7 @@ function SystemViewer3DModalContent({ system, onClose, title }: SystemViewer3DMo
       <BodyLookupProvider system={system}>
         <div className={`relative flex-1 transition-opacity duration-200 ${mounted ? 'opacity-100' : 'opacity-0'}`}>
           <Scene graph={graph} system={system} />
+          <SystemLevelRail graph={graph} system={system} />
         </div>
         <DetailSidebar>
           <SidebarContent system={system} graph={graph} />
@@ -97,6 +99,34 @@ function SystemViewer3DModalContent({ system, onClose, title }: SystemViewer3DMo
   )
 }
 
+function allBodies(system: GeneratedSystem): GeneratedSystem['bodies'] {
+  return [
+    ...system.bodies,
+    ...system.companions.flatMap((c) => c.subSystem?.bodies ?? []),
+  ]
+}
+
+function allSettlements(system: GeneratedSystem): GeneratedSystem['settlements'] {
+  return [
+    ...system.settlements,
+    ...system.companions.flatMap((c) => c.subSystem?.settlements ?? []),
+  ]
+}
+
+function allGates(system: GeneratedSystem): GeneratedSystem['gates'] {
+  return [
+    ...system.gates,
+    ...system.companions.flatMap((c) => c.subSystem?.gates ?? []),
+  ]
+}
+
+function allRuins(system: GeneratedSystem): GeneratedSystem['ruins'] {
+  return [
+    ...system.ruins,
+    ...system.companions.flatMap((c) => c.subSystem?.ruins ?? []),
+  ]
+}
+
 function SidebarContent({ system, graph }: { system: GeneratedSystem; graph: ReturnType<typeof buildSceneGraph> }) {
   const { selection } = useSelectionState()
   if (!selection) {
@@ -104,28 +134,32 @@ function SidebarContent({ system, graph }: { system: GeneratedSystem; graph: Ret
   }
   switch (selection.kind) {
     case 'body': {
-      const body = system.bodies.find((b) => b.id === selection.id)
+      const body = allBodies(system).find((b) => b.id === selection.id)
       if (!body) return null
       return <BodyDetailContent body={body} system={system} compact />
     }
     case 'moon': {
-      const parent = system.bodies.find((b) => b.moons.some((m) => m.id === selection.id))
+      const parent = allBodies(system).find((b) => b.moons.some((m) => m.id === selection.id))
       if (!parent) return null
       return <BodyDetailContent body={parent} system={system} compact />
     }
     case 'settlement': {
-      const s = system.settlements.find((x) => x.id === selection.id)
+      const s = allSettlements(system).find((x) => x.id === selection.id)
       return s ? <SettlementCard settlement={s} /> : null
     }
     case 'gate': {
-      const gate = system.gates.find((g) => g.id === selection.id)
+      const gate = allGates(system).find((g) => g.id === selection.id)
       return gate ? <GateDetailCard gate={gate} /> : null
     }
     case 'star': {
       return <StarDetailCard system={system} />
     }
     case 'hazard': {
-      const h = graph.hazards.find((x) => x.id === selection.id)
+      const h = [
+        ...graph.hazards,
+        ...graph.systemLevelHazards,
+        ...graph.subSystems.flatMap((s) => s.systemLevelHazards),
+      ].find((x) => x.id === selection.id)
       return h ? <HazardCard hazard={h} /> : null
     }
     case 'gu-bleed': {
@@ -135,7 +169,7 @@ function SidebarContent({ system, graph }: { system: GeneratedSystem; graph: Ret
       return <PhenomenonCard phenomenonId={selection.id} system={system} />
     }
     case 'ruin': {
-      const ruin = system.ruins.find((x) => x.id === selection.id)
+      const ruin = allRuins(system).find((x) => x.id === selection.id)
       return ruin ? <RemnantDetailCard ruin={ruin} /> : null
     }
     default:

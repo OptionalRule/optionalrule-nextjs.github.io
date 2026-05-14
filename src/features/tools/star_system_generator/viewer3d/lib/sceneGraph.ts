@@ -2,13 +2,16 @@ import type { GeneratedSystem, OrbitingBody, Moon, StellarCompanion } from '../.
 import type {
   BeltVisual,
   BodyVisual,
+  DistantStarMarker,
+  HazardVisual,
   MoonVisual,
   OrbitScaleMode,
   PhenomenonMarker,
   RingVisual,
   RuinMarker,
-  SceneVec3,
   StarVisual,
+  SubSystemVisual,
+  SystemLevelPhenomenon,
   SystemSceneGraph,
   BodyShadingKey,
   RenderArchetype,
@@ -19,6 +22,7 @@ import { spectralVisuals } from './stellarColor'
 import { chooseShading } from './bodyShading'
 import { classifyHazard } from './hazardClassifier'
 import { classifyGuBleed } from './guBleedClassifier'
+import { classifyRuin } from './ruinClassifier'
 import {
   buildBeltProfile,
   buildBodySurfaceProfile,
@@ -28,28 +32,17 @@ import {
   phenomenonVisualProfile,
   primaryStarVisualExtras,
 } from './visualProfiles'
+import { separationToBucketAu } from '../../lib/generator/companionGeometry'
 
-const BODY_ORBIT_CLEARANCE = 2.5
+const BODY_ORBIT_CLEARANCE = 3.5
 const MIN_MOON_PERIOD_SEC = 24
-const COMPANION_KEYS = ['close', 'near', 'moderate', 'wide', 'distant'] as const
-const COMPANION_AU: Record<typeof COMPANION_KEYS[number], number> = {
-  close: 0.5,
-  near: 2,
-  moderate: 8,
-  wide: 40,
-  distant: 80,
-}
 
 export interface BuildSceneGraphOptions {
   scaleMode?: OrbitScaleMode
 }
 
 function companionOffset(separation: string, hzCenterAu: number, scaleMode: OrbitScaleMode): number {
-  const lower = separation.toLowerCase()
-  for (const key of COMPANION_KEYS) {
-    if (lower.includes(key)) return auToScene(COMPANION_AU[key], hzCenterAu, scaleMode)
-  }
-  return auToScene(COMPANION_AU.moderate, hzCenterAu, scaleMode)
+  return auToScene(separationToBucketAu(separation), hzCenterAu, scaleMode)
 }
 
 function buildStar(system: GeneratedSystem): StarVisual {
@@ -64,6 +57,8 @@ function buildStar(system: GeneratedSystem): StarVisual {
     bloomStrength: visuals.bloomStrength,
     flareStrength: extras.flareStrength,
     pulseSpeed: extras.pulseSpeed,
+    pulseAmplitude: extras.pulseAmplitude,
+    rotationSpeed: extras.rotationSpeed,
     rayColor: extras.rayColor,
     position: [0, 0, 0],
   }
@@ -71,19 +66,47 @@ function buildStar(system: GeneratedSystem): StarVisual {
 
 function buildCompanion(companion: StellarCompanion, _primary: StarVisual, hzCenterAu: number, scaleMode: OrbitScaleMode): StarVisual {
   const visuals = companionStarVisuals(companion)
-  const offset = companionOffset(companion.separation.value, hzCenterAu, scaleMode)
+  const baseOffset = companionOffset(companion.separation.value, hzCenterAu, scaleMode)
+  const offset = companion.mode === 'volatile' ? baseOffset * 0.1 : baseOffset
   const angle = hashToUnit(`companion#${companion.id}`) * Math.PI * 2
   return {
     id: companion.id,
     coreColor: visuals.coreColor,
     coronaColor: visuals.coronaColor,
-    coronaRadius: visuals.coronaRadius,
+    coronaRadius: visuals.coronaRadius * (companion.mode === 'volatile' ? 1.4 : 1),
     rayCount: visuals.rayCount,
-    bloomStrength: visuals.bloomStrength,
+    bloomStrength: visuals.bloomStrength * (companion.mode === 'volatile' ? 1.5 : 1),
     flareStrength: visuals.flareStrength,
     pulseSpeed: visuals.pulseSpeed,
+    pulseAmplitude: visuals.pulseAmplitude,
+    rotationSpeed: visuals.rotationSpeed,
     rayColor: visuals.rayColor,
     position: [Math.cos(angle) * offset, 0, Math.sin(angle) * offset],
+  }
+}
+
+function buildDistantMarker(companion: StellarCompanion, outermostBodyAu: number, hzCenterAu: number, scaleMode: OrbitScaleMode): DistantStarMarker {
+  const visuals = companionStarVisuals(companion)
+  const sceneRadius = auToScene(Math.max(outermostBodyAu * 1.6, hzCenterAu * 4), hzCenterAu, scaleMode)
+  const angle = hashToUnit(`distant#${companion.id}`) * Math.PI * 2
+  return {
+    id: companion.id,
+    visual: {
+      id: companion.id,
+      coreColor: visuals.coreColor,
+      coronaColor: visuals.coronaColor,
+      coronaRadius: visuals.coronaRadius * 0.4,
+      rayCount: Math.max(2, Math.floor(visuals.rayCount / 2)),
+      bloomStrength: visuals.bloomStrength * 0.5,
+      flareStrength: visuals.flareStrength * 0.4,
+      pulseSpeed: visuals.pulseSpeed,
+      pulseAmplitude: visuals.pulseAmplitude,
+      rotationSpeed: visuals.rotationSpeed,
+      rayColor: visuals.rayColor,
+      position: [Math.cos(angle) * sceneRadius, 0, Math.sin(angle) * sceneRadius],
+    },
+    label: `${companion.star.name.value} →`,
+    linkedSeed: companion.linkedSeed?.value ?? '',
   }
 }
 
@@ -93,20 +116,20 @@ function ringFor(body: OrbitingBody, parentSize: number): RingVisual | undefined
 
 function moonScaleFactor(scale: string): number {
   const lower = scale.toLowerCase()
-  if (lower.includes('planet-scale')) return 0.32
-  if (lower.includes('large differentiated')) return 0.24
-  if (lower.includes('mid-sized')) return 0.17
-  if (lower.includes('small major')) return 0.12
-  return 0.075
+  if (lower.includes('planet-scale')) return 0.27
+  if (lower.includes('large differentiated')) return 0.20
+  if (lower.includes('mid-sized')) return 0.14
+  if (lower.includes('small major')) return 0.10
+  return 0.065
 }
 
 function moonOrbitShell(scale: string): number {
   const lower = scale.toLowerCase()
-  if (lower.includes('planet-scale')) return 5.5
-  if (lower.includes('large differentiated')) return 4.5
-  if (lower.includes('mid-sized')) return 3.7
-  if (lower.includes('small major')) return 3.0
-  return 2.35
+  if (lower.includes('planet-scale')) return 4.4
+  if (lower.includes('large differentiated')) return 3.6
+  if (lower.includes('mid-sized')) return 3.0
+  if (lower.includes('small major')) return 2.5
+  return 2.0
 }
 
 function fallbackParentMass(body: OrbitingBody): number {
@@ -134,7 +157,7 @@ function moonPeriodSeconds(body: OrbitingBody, parentSize: number, orbit: number
 
 function moonsFor(body: OrbitingBody, _seed: string, parentSize: number): MoonVisual[] {
   const count = body.moons.length
-  const orbitStep = parentSize * (count > 6 ? 0.5 : 0.72)
+  const orbitStep = parentSize * (count > 6 ? 0.4 : 0.6)
   const crowdScale = count > 6 ? Math.max(0.55, Math.sqrt(6 / count)) : 1
   return body.moons.map((moon: Moon, idx: number) => {
     const scaleFactor = moonScaleFactor(moon.scale.value) * crowdScale
@@ -169,10 +192,6 @@ function locationMatchesEntity(location: string, entityValue: string): boolean {
     locationText.endsWith(` ${entityText}`) ||
     locationText.includes(` ${entityText} `)
   )
-}
-
-function hasAny(text: string, terms: readonly string[]): boolean {
-  return terms.some((term) => text.includes(term))
 }
 
 function ruinMatchesBody(ruin: GeneratedSystem['ruins'][number], body: OrbitingBody): boolean {
@@ -220,13 +239,13 @@ function buildBody(body: OrbitingBody, system: GeneratedSystem, hzCenterAu: numb
   const size = bodyVisualSize(body.category.value, body.physical.radiusEarth.value)
   const shading = chooseShading(body)
   const settlementIds = system.settlements
-    .filter((s) => s.bodyId === body.id || body.moons.some((m) => m.id === s.moonId))
+    .filter((s) => s.bodyId === body.id && !s.moonId)
     .map((s) => s.id)
   const ruinIds = system.ruins
     .filter((r) => ruinMatchesBody(r, body))
     .map((r) => r.id)
   const gateIds = system.gates
-    .filter((g) => g.bodyId === body.id || body.moons.some((m) => m.id === g.moonId))
+    .filter((g) => g.bodyId === body.id && !g.moonId)
     .map((g) => g.id)
   return {
     id: body.id,
@@ -250,7 +269,11 @@ function buildBody(body: OrbitingBody, system: GeneratedSystem, hzCenterAu: numb
 }
 
 function bodyVisualExtent(body: BodyVisual): number {
-  return body.rings ? Math.max(body.visualSize, body.rings.outerRadius) : body.visualSize
+  const ringExtent = body.rings?.outerRadius ?? 0
+  const moonExtent = body.moons.length > 0
+    ? Math.max(...body.moons.map((m) => m.parentRelativeOrbit + m.visualSize))
+    : 0
+  return Math.max(body.visualSize, ringExtent, moonExtent)
 }
 
 function applyBodyOrbitClearance(bodies: BodyVisual[]): BodyVisual[] {
@@ -278,118 +301,6 @@ function buildBelt(body: OrbitingBody, hzCenterAu: number, scaleMode: OrbitScale
   })
 }
 
-function visualBodyPosition(body: BodyVisual, radialOffset = 0, verticalOffset = 0): SceneVec3 {
-  const radius = body.orbitRadius + radialOffset
-  return [Math.cos(body.phase0) * radius, verticalOffset, -Math.sin(body.phase0) * radius]
-}
-
-function orbitPoint(radius: number, key: string, verticalOffset = 0): SceneVec3 {
-  const angle = hashToUnit(key) * Math.PI * 2
-  return [Math.cos(angle) * radius, verticalOffset, Math.sin(angle) * radius]
-}
-
-function phenomenonText(phen: GeneratedSystem['phenomena'][number]): string {
-  return [
-    phen.phenomenon.value,
-    phen.note.value,
-    phen.travelEffect.value,
-    phen.surveyQuestion.value,
-    phen.conflictHook.value,
-    phen.sceneAnchor.value,
-  ].join(' ').toLowerCase()
-}
-
-function anchorNearBody(body: BodyVisual, phenId: string, scale = 1.8): SceneVec3 {
-  const verticalOffset = (hashToUnit(`phen-y#${phenId}`) - 0.5) * Math.max(1.2, body.visualSize * 0.9)
-  return visualBodyPosition(body, body.visualSize + scale + 0.85, verticalOffset)
-}
-
-function anchorNearBelt(belt: BeltVisual, phenId: string): SceneVec3 {
-  const angle = hashToUnit(`phen-belt-angle#${phenId}`) * Math.PI * 2
-  const radiusT = 0.35 + hashToUnit(`phen-belt-radius#${phenId}`) * 0.3
-  const radius = belt.innerRadius + (belt.outerRadius - belt.innerRadius) * radiusT
-  const y = (hashToUnit(`phen-belt-y#${phenId}`) - 0.5) * Math.max(1.2, belt.jitter * 2.4)
-  return [Math.cos(angle) * radius, y, Math.sin(angle) * radius]
-}
-
-function phenomenonPosition(
-  phen: GeneratedSystem['phenomena'][number],
-  system: GeneratedSystem,
-  bodies: BodyVisual[],
-  belts: BeltVisual[],
-  hzCenterAu: number,
-  scaleMode: OrbitScaleMode,
-): SceneVec3 {
-  const text = phenomenonText(phen)
-  const bodyById = new Map(bodies.map((body) => [body.id, body]))
-  const namedSourceBody = system.bodies.find((body) => locationMatchesEntity(text, body.name.value))
-  const namedVisual = namedSourceBody ? bodyById.get(namedSourceBody.id) : undefined
-  if (namedVisual) return anchorNearBody(namedVisual, phen.id)
-
-  if (hasAny(text, ['flare', 'stellar', 'star', 'solar furnace', 'red storm'])) {
-    return orbitPoint(Math.max(auToScene(system.zones.habitableInnerAu.value, hzCenterAu, scaleMode) * 0.55, 3.2), `phen-star#${phen.id}`, 0.35)
-  }
-
-  if (hasAny(text, ['ring arc', 'ringed', 'phase dust'])) {
-    const ringed = system.bodies.find((body) => body.rings)
-    const visual = ringed ? bodyById.get(ringed.id) : undefined
-    if (visual) return anchorNearBody(visual, phen.id, 1.3)
-  }
-
-  if (hasAny(text, ['belt', 'debris', 'disk', 'swarm', 'asteroid', 'snow-line', 'snow line', 'chiral ice'])) {
-    const belt = belts[Math.floor(hashToUnit(`phen-belt#${phen.id}`) * belts.length)] ?? belts[0]
-    if (belt) return anchorNearBelt(belt, phen.id)
-  }
-
-  if (hasAny(text, ['moon', 'plume', 'ejecta'])) {
-    const visual = bodies.find((body) => body.moons.length > 0)
-    if (visual) return anchorNearBody(visual, phen.id, visual.visualSize + 2.2)
-  }
-
-  if (hasAny(text, ['gas giant', 'radiation maze', 'hot belt'])) {
-    const giant = system.bodies.find((body) => ['gas-giant', 'ice-giant'].includes(body.category.value))
-    const visual = giant ? bodyById.get(giant.id) : bodies.find((body) => ['gas-giant', 'ice-giant'].includes(body.category))
-    if (visual) return anchorNearBody(visual, phen.id, 2.4)
-  }
-
-  if (hasAny(text, ['rogue', 'captured', 'lightless planet'])) {
-    const rogue = system.bodies.find((body) => body.category.value === 'rogue-captured')
-    const visual = rogue ? bodyById.get(rogue.id) : undefined
-    if (visual) return anchorNearBody(visual, phen.id, 1.8)
-  }
-
-  if (hasAny(text, ['compact chain', 'resonant', 'metronome'])) {
-    const chainBodies = bodies.slice(0, Math.min(3, bodies.length))
-    if (chainBodies.length > 0) {
-      const averageRadius = chainBodies.reduce((sum, body) => sum + body.orbitRadius, 0) / chainBodies.length
-      return orbitPoint(averageRadius, `phen-chain#${phen.id}`, 0.7)
-    }
-  }
-
-  const fallbackAu = hasAny(text, ['gate', 'route', 'convoy', 'ark', 'fleet', 'beacon', 'quarantine'])
-    ? (system.zones.habitableCenterAu.value + system.zones.snowLineAu.value) / 2
-    : system.zones.habitableCenterAu.value
-  const radius = auToScene(fallbackAu, hzCenterAu, scaleMode)
-  return orbitPoint(radius * (1.05 + hashToUnit(`phen-radius#${phen.id}`) * 0.25), `phen#${phen.id}`, 0.45)
-}
-
-function buildPhenomenon(
-  phen: GeneratedSystem['phenomena'][number],
-  system: GeneratedSystem,
-  bodies: BodyVisual[],
-  belts: BeltVisual[],
-  hzCenterAu: number,
-  scaleMode: OrbitScaleMode,
-): PhenomenonMarker {
-  return {
-    id: phen.id,
-    position: phenomenonPosition(phen, system, bodies, belts, hzCenterAu, scaleMode),
-    kind: phen.phenomenon.value,
-    ...phenomenonVisualProfile(phen.phenomenon.value, phen.id),
-    renderArchetype: 'phenomenon-marker',
-  }
-}
-
 function buildRuin(
   ruin: GeneratedSystem['ruins'][number],
   system: GeneratedSystem,
@@ -397,9 +308,13 @@ function buildRuin(
   belts: BeltVisual[],
   hzCenterAu: number,
   scaleMode: OrbitScaleMode,
-): RuinMarker {
+): RuinMarker | null {
   const sourceBody = system.bodies.find((body) => ruinMatchesBody(ruin, body))
-  const matched = sourceBody ? bodies.find((b) => b.id === sourceBody.id) : undefined
+    ?? classifyRuin(ruin, system)?.body
+    ?? null
+  if (!sourceBody) return null
+
+  const matched = bodies.find((b) => b.id === sourceBody.id)
   if (matched) {
     return {
       id: ruin.id,
@@ -408,7 +323,7 @@ function buildRuin(
       renderArchetype: 'ruin-marker',
     }
   }
-  if (sourceBody?.category.value === 'belt') {
+  if (sourceBody.category.value === 'belt') {
     const belt = belts.find((b) => b.id === sourceBody.id)
     if (belt) {
       const angle = hashToUnit(`ruin-belt-angle#${sourceBody.id}#${ruin.id}`) * Math.PI * 2
@@ -423,26 +338,27 @@ function buildRuin(
       }
     }
   }
-  if (sourceBody) {
-    const bodyIndex = system.bodies.findIndex((body) => body.id === sourceBody.id)
-    const r = orbitRadiusForBody(sourceBody, hzCenterAu, scaleMode, Math.max(0, bodyIndex))
-    const angle = hashToUnit(`ruin-body#${sourceBody.id}#${ruin.id}`) * Math.PI * 2
-    return {
-      id: ruin.id,
-      position: [Math.cos(angle) * r, 0, Math.sin(angle) * r],
-      renderArchetype: 'ruin-marker',
-    }
-  }
-  const outer = bodies.reduce<BodyVisual | undefined>(
-    (acc, b) => (acc && acc.orbitRadius > b.orbitRadius ? acc : b),
-    undefined,
-  )
-  const baseR = (outer ? outer.orbitRadius : auToScene(system.zones.snowLineAu.value, hzCenterAu, scaleMode)) * 1.2
-  const angle = hashToUnit(`ruin#${ruin.id}`) * Math.PI * 2
+  const bodyIndex = system.bodies.findIndex((body) => body.id === sourceBody.id)
+  const r = orbitRadiusForBody(sourceBody, hzCenterAu, scaleMode, Math.max(0, bodyIndex))
+  const angle = hashToUnit(`ruin-body#${sourceBody.id}#${ruin.id}`) * Math.PI * 2
   return {
     id: ruin.id,
-    position: [Math.cos(angle) * baseR, 0, Math.sin(angle) * baseR],
+    position: [Math.cos(angle) * r, 0, Math.sin(angle) * r],
     renderArchetype: 'ruin-marker',
+  }
+}
+
+function isSystemLevelHazard(hazard: HazardVisual): boolean {
+  return hazard.unclassified || hazard.anchorDescription === 'system-wide' || hazard.anchorDescription === 'stellar'
+}
+
+function buildSystemLevelPhenomenon(phen: GeneratedSystem['phenomena'][number]): SystemLevelPhenomenon {
+  const profile = phenomenonVisualProfile(phen.phenomenon.value, phen.id)
+  return {
+    id: phen.id,
+    kind: phen.phenomenon.value,
+    color: profile.color,
+    glowColor: profile.glowColor,
   }
 }
 
@@ -450,7 +366,17 @@ export function buildSceneGraph(system: GeneratedSystem, options: BuildSceneGrap
   const scaleMode = options.scaleMode ?? DEFAULT_ORBIT_SCALE_MODE
   const hzCenterAu = system.zones.habitableCenterAu.value > 0 ? system.zones.habitableCenterAu.value : 1
   const star = buildStar(system)
-  const companions = system.companions.map((c) => buildCompanion(c, star, hzCenterAu, scaleMode))
+  const inSceneCompanions = system.companions.filter((c) => c.mode !== 'linked-independent' && c.mode !== 'orbital-sibling')
+  const linkedCompanions = system.companions.filter((c) => c.mode === 'linked-independent')
+  const companions = inSceneCompanions.map((c) => buildCompanion(c, star, hzCenterAu, scaleMode))
+
+  const circumbinaryCompanion = system.companions.find((c) => c.mode === 'circumbinary')
+  const circumbinaryKeepOut = circumbinaryCompanion
+    ? auToScene(2 * separationToBucketAu(circumbinaryCompanion.separation.value), hzCenterAu, scaleMode)
+    : undefined
+
+  const outermostBodyAu = system.bodies.reduce((max, b) => Math.max(max, b.orbitAu.value), 0)
+  const distantMarkers = linkedCompanions.map((c) => buildDistantMarker(c, outermostBodyAu, hzCenterAu, scaleMode))
 
   const sortedOrbitingBodies = [...system.bodies].sort((left, right) => left.orbitAu.value - right.orbitAu.value)
   const orbitIndexById = new Map(sortedOrbitingBodies.map((body, index) => [body.id, index]))
@@ -460,10 +386,19 @@ export function buildSceneGraph(system: GeneratedSystem, options: BuildSceneGrap
   const bodies = applyBodyOrbitClearance(nonBelt.map((b) => buildBody(b, system, hzCenterAu, scaleMode, orbitIndexById.get(b.id) ?? 0)))
   const belts = beltBodies.map((b) => buildBelt(b, hzCenterAu, scaleMode, orbitIndexById.get(b.id) ?? 0))
 
-  const hazards = system.majorHazards.map((h) => classifyHazard(h, system, hzCenterAu))
+  const allHazards = system.majorHazards.map((h) => classifyHazard(h, system, hzCenterAu))
+  const hazards = allHazards.filter((h) => !isSystemLevelHazard(h))
+  const systemLevelHazards = allHazards.filter((h) => isSystemLevelHazard(h))
   const guBleeds = [classifyGuBleed(system.guOverlay, system, hzCenterAu)]
-  const phenomena = system.phenomena.map((p) => buildPhenomenon(p, system, bodies, belts, hzCenterAu, scaleMode))
-  const ruins = system.ruins.map((r) => buildRuin(r, system, bodies, belts, hzCenterAu, scaleMode))
+  const systemLevelPhenomena = system.phenomena.map(buildSystemLevelPhenomenon)
+  const phenomena: PhenomenonMarker[] = []
+  const ruins: RuinMarker[] = []
+  const systemLevelRuins: string[] = []
+  for (const ruin of system.ruins) {
+    const marker = buildRuin(ruin, system, bodies, belts, hzCenterAu, scaleMode)
+    if (marker) ruins.push(marker)
+    else systemLevelRuins.push(ruin.id)
+  }
 
   const maxBodyOrbit = Math.max(...bodies.map((b) => b.orbitRadius), 0)
   const maxBeltOrbit = Math.max(...belts.map((b) => b.outerRadius), 0)
@@ -476,6 +411,58 @@ export function buildSceneGraph(system: GeneratedSystem, options: BuildSceneGrap
     snowLine: auToScene(system.zones.snowLineAu.value, hzCenterAu, scaleMode),
   }
 
+  const subSystems: SubSystemVisual[] = []
+  for (let idx = 0; idx < system.companions.length; idx++) {
+    const c = system.companions[idx]
+    if (c.mode !== 'orbital-sibling' || !c.subSystem) continue
+
+    const companionStar = buildCompanion(c, star, hzCenterAu, scaleMode)
+    const subHzCenter = c.subSystem.zones.habitableCenterAu.value > 0
+      ? c.subSystem.zones.habitableCenterAu.value
+      : 1
+
+    const subSystemShim: GeneratedSystem = {
+      ...system,
+      zones: c.subSystem.zones,
+      bodies: c.subSystem.bodies,
+      settlements: c.subSystem.settlements,
+      gates: c.subSystem.gates,
+      ruins: c.subSystem.ruins,
+      phenomena: c.subSystem.phenomena,
+    }
+
+    const sortedSubBodies = [...c.subSystem.bodies].sort((l, r) => l.orbitAu.value - r.orbitAu.value)
+    const subOrbitIndex = new Map(sortedSubBodies.map((body, i) => [body.id, i]))
+    const subNonBelt = sortedSubBodies.filter((b) => b.category.value !== 'belt')
+    const subBeltBodies = sortedSubBodies.filter((b) => b.category.value === 'belt')
+
+    const subBodies = applyBodyOrbitClearance(
+      subNonBelt.map((b) => buildBody(b, subSystemShim, subHzCenter, scaleMode, subOrbitIndex.get(b.id) ?? 0)),
+    )
+    const subBelts = subBeltBodies.map((b) => buildBelt(b, subHzCenter, scaleMode, subOrbitIndex.get(b.id) ?? 0))
+
+    const subRuins: RuinMarker[] = []
+    const subSystemLevelRuins: string[] = []
+    for (const ruin of c.subSystem.ruins) {
+      const marker = buildRuin(ruin, subSystemShim, subBodies, subBelts, subHzCenter, scaleMode)
+      if (marker) subRuins.push(marker)
+      else subSystemLevelRuins.push(ruin.id)
+    }
+    const subPhenomena: PhenomenonMarker[] = []
+    const subSystemLevelPhenomena = c.subSystem.phenomena.map(buildSystemLevelPhenomenon)
+
+    subSystems.push({
+      star: companionStar,
+      bodies: subBodies,
+      belts: subBelts,
+      ruins: subRuins,
+      phenomena: subPhenomena,
+      systemLevelPhenomena: subSystemLevelPhenomena,
+      systemLevelHazards: [],
+      systemLevelRuins: subSystemLevelRuins,
+    })
+  }
+
   return {
     star,
     companions,
@@ -486,6 +473,12 @@ export function buildSceneGraph(system: GeneratedSystem, options: BuildSceneGrap
     guBleeds,
     phenomena,
     ruins,
+    systemLevelPhenomena,
+    systemLevelHazards,
+    systemLevelRuins,
     sceneRadius,
+    subSystems,
+    distantMarkers,
+    circumbinaryKeepOut,
   }
 }

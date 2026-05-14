@@ -1,7 +1,20 @@
 # Shader Field Wiring Plan
 
-**Status:** Draft, not yet started
-**Scope:** Surface this session's 24-field `PlanetaryDetail` data into the 3D viewer's shader pipeline. Currently the body shader only consumes the original 6 fields (atmosphere/hydrosphere/geology/climate/radiation/biosphere) plus body class names. The 18 new fields are invisible to the renderer.
+**Status:** All 5 phases complete (2026-05-11)
+**Scope (at kickoff):** Surface the 24-field `PlanetaryDetail` data into the 3D viewer's shader pipeline. At kickoff the body shader only consumed the original 6 fields (atmosphere/hydrosphere/geology/climate/radiation/biosphere) plus body class names; the 18 deeper-layer fields were invisible to the renderer.
+
+## Outcomes
+
+| Phase | Commit | Fields wired | Pattern |
+|---|---|---|---|
+| 1 | `10aa89c` | mineralComposition, topography, surfaceHazards | A — 8 body uniforms + chiral fresnel shimmer |
+| 2 | `652543b` | atmosphericTraces, windRegime, atmosphericPressure, rotationProfile, dayLength | A — CloudShell tint/band, AtmosphereShell opacity |
+| 3 | `d2917d5` | surfaceLight, biosphereDistribution, axialTilt | A — 5 body uniforms (ambient, vegetation, ice asymmetry) |
+| 4 | `626e014` | magneticField | B — new `AuroraShell.tsx` mesh, 5 mode variants, fresnel × night |
+| 5 | `c01bfb0` | skyPhenomena | A+C — dark-sector body uniform, atmosphere halo boost, aurora floor |
+| Follow-up | `a8ee4aa` | All 18 fields surfaced in sidebar + camera dolly | "Deeper Survey" SubBlock in `BodyDetailPanel.tsx`, real close-up camera |
+
+**12 of 18 fields** wired to visible shader effects. **6 stay text-only** in the sidebar (acousticEnvironment, resourceAccess, seismicActivity, hydrology, tidalRegime, spectroscopic atmosphericTraces subset) — as planned in the Skip section below.
 
 ---
 
@@ -111,7 +124,7 @@ Most fields fit Pattern A (more uniforms). Magnetic field and sky phenomena warr
 
 ## Phased implementation
 
-### Phase 1 — Surface palette + features
+### Phase 1 — Surface palette + features ✓ shipped (`10aa89c`)
 **Fields:** mineralComposition, topography, surfaceHazards
 **Pattern:** A — ~10 new uniforms on body shader
 
@@ -125,31 +138,33 @@ Most fields fit Pattern A (more uniforms). Magnetic field and sky phenomena warr
 - `uTopographyMode` (int enum), `uTopographyStrength` (float)
 - `uHazardTint` (vec3), `uHazardBlend` (float 0-1)
 
-**Mappings (representative, not exhaustive):**
-- `Iron-rich (red oxide)` → `uMineralTint = #b6603d`, `uMineralBlend = 0.35`
-- `Carbon-rich (diamond precursor)` → `#2a2528`, blend 0.4
-- `Sulfide ore-dominant` → `#caa84a`, blend 0.25
-- `Salt / evaporite-rich` → `#e8e2c8`, blend 0.3
-- `Chiral organics in soil` → `#a880ff`, blend 0.2 (fresnel-style)
-- `Programmable-matter substrate` → `#5e6ad8`, blend 0.3
+**Mappings (representative, not exhaustive — distinctive blend ranges):**
+- `Iron-rich (red oxide)` → `uMineralTint = #b6603d`, `uMineralBlend = 0.55`
+- `Carbon-rich (diamond precursor)` → `#2a2528`, blend 0.55
+- `Sulfide ore-dominant` → `#caa84a`, blend 0.45
+- `Salt / evaporite-rich` → `#e8e2c8`, blend 0.50
+- `Chiral organics in soil` → `#a880ff`, blend 0.40 + fresnel-additive shimmer 0.25 on rim
+- `Programmable-matter substrate` → `#5e6ad8`, blend 0.50 + fresnel-additive 0.25
 - `Highland-continent dichotomy` topography → enum 1, strength 0.5
 - `Sand seas / dune fields` → enum 2 (banded bright/dark)
 - `Glassy / vitrified surface` → enum 3 (reflective patches)
-- `Perchlorate-laden soil` → `uHazardTint = #c9a35a`, blend 0.15
-- `Sulfuric acid pools` → `#d9c450`, blend 0.18
-- `Mercury vapor pockets` → `#c9c8b8`, blend 0.12
-- `Programmable-matter contamination` → `#5e6ad8`, blend 0.2 (subtle shimmer)
+- `Perchlorate-laden soil` → `uHazardTint = #c9a35a`, blend 0.30
+- `Sulfuric acid pools` → `#d9c450`, blend 0.32
+- `Mercury vapor pockets` → `#c9c8b8`, blend 0.25
+- `Programmable-matter contamination` → `#5e6ad8`, blend 0.35 + shimmer
 
 **GLSL outline:**
 - Apply `uMineralTint` multiplicatively to base after the noise blend
 - Topography mode switches between feature masks (dichotomy = hemispheric albedo split via `unitPos.y` sign; dune fields = stretched noise; glassy = high specular patches)
 - Hazard tint applies as final overlay before light calc
 
-**Estimated:** 1-2 commits, moderate GLSL work. **Risk:** visual chaos if blend strengths too high — bias toward ≤0.35.
+**Phase 1 also trims:** carbon/chiral and iron/metal regex branches in `bodyShading.ts:colorsFor()` — those palette overrides are superseded by the new explicit `mineralComposition` tint pass. Family-level regex (earthlike-ocean detection, desert-iron classification) stays — that still drives the palette base.
+
+**Estimated:** 1-2 commits, moderate GLSL work.
 
 ---
 
-### Phase 2 — Atmosphere/cloud chemistry
+### Phase 2 — Atmosphere/cloud chemistry ✓ shipped (`652543b`)
 **Fields:** atmosphericTraces, windRegime, atmosphericPressure, rotationProfile + dayLength
 **Pattern:** A — CloudShell + AtmosphereShell uniforms
 
@@ -184,7 +199,7 @@ Most fields fit Pattern A (more uniforms). Magnetic field and sky phenomena warr
 
 ---
 
-### Phase 3 — Lighting + biosphere + axial tilt
+### Phase 3 — Lighting + biosphere + axial tilt ✓ shipped (`d2917d5`)
 **Fields:** surfaceLight, biosphereDistribution, axialTilt
 **Pattern:** A — body shader
 
@@ -221,7 +236,7 @@ Most fields fit Pattern A (more uniforms). Magnetic field and sky phenomena warr
 
 ---
 
-### Phase 4 — Aurora shell
+### Phase 4 — Aurora shell ✓ shipped (`626e014`)
 **Field:** magneticField
 **Pattern:** B — new mesh layer
 
@@ -234,16 +249,18 @@ Most fields fit Pattern A (more uniforms). Magnetic field and sky phenomena warr
 - Color varies by magnetic field type
 - Rotates on its own axis offset 15-30° from rotation axis (magnetic pole tilt)
 
-**Mappings:**
+**Mappings (revised intensity ceilings, fresnel-weighted, night-biased):**
 - `No field (naked)` / `Weak crustal remnant` → AuroraShell not rendered
-- `Earth-like dipole` → subtle yellow-green bands, low intensity (0.15)
-- `Strong dipole shield` → vivid green/red bands, medium intensity (0.4)
-- `Aurora-belt dominated` → strong dual-band display (0.7)
-- `Pulsing / flickering` → time-modulated intensity using `uTime`
+- `Earth-like dipole` → subtle yellow-green bands, intensity 0.15
+- `Strong dipole shield` → vivid green/red bands, intensity 0.35
+- `Aurora-belt dominated` → strong dual-band display, intensity 0.50
+- `Pulsing / flickering` → time-modulated intensity using `uTime` (slow ~5s cycle)
 - `Multipolar chaos` → splotchy noise pattern instead of latitude bands
 - `Twin-pole shifting` → bands offset further toward equator
 - `Crustal magnetic stripes` → narrow longitudinal bands
-- `GU monopole anomaly` → single-pole violet cap glow
+- `GU monopole anomaly` → single-pole violet cap glow, intensity 0.60 (loudest treatment)
+
+All intensities are pre-modulation. Final shader: `intensity * fresnel * (0.4 + 0.6 * night)` — brightest at the limb, dim on the sunlit side. Aurora effectively invisible at sub-observer point on day side.
 
 **Wire-in (`Body.tsx`):**
 ```tsx
@@ -260,7 +277,7 @@ Most fields fit Pattern A (more uniforms). Magnetic field and sky phenomena warr
 
 ---
 
-### Phase 5 — Scene-level sky phenomena
+### Phase 5 — Scene-level sky phenomena ✓ shipped (`c01bfb0`)
 **Field:** skyPhenomena
 **Pattern:** C — Scene.tsx and accessory meshes
 
@@ -293,7 +310,7 @@ Total: ~5-7 commits across the phased plan.
 
 ## Tradeoffs
 
-**Risk: visual chaos.** Layering 5+ effects on every body can make every world look "busy." Bias toward subtle blends (≤0.35 strength on most tints) and use the existing palette discipline. Keep magnetic aurora and other dramatic effects rare — they should be moments of "wow," not constant background.
+**Risk: visual chaos.** Layering 5+ effects on every body can make every world look "busy." Direction is **distinctive over subtle** — blends pushed to the upper end of plausible (mineral 0.45-0.60, hazard 0.25-0.35). Earth-like and anomaly worlds are the priority showcase. Chiral/GU treatments get the loudest fresnel-additive shimmer. Risk mitigation is taste-checks per phase, not blend timidity.
 
 **Risk: shader compilation cost.** Each new uniform/branch adds compilation time. On a 9-body system that's still under 1s; on cheap hardware it could spike. Pattern A (single shader, more uniforms) is cheaper than Pattern B/C. Recommend keeping ~80% of new wiring in Pattern A.
 
@@ -311,10 +328,16 @@ Total: ~5-7 commits across the phased plan.
 
 ---
 
-## Open questions
+## Resolved decisions (2026-05-11)
 
-1. **Color discipline.** Should mineral tints be additive or multiplicative? Multiplicative preserves shadow; additive can wash out. Likely multiplicative, but worth A/B testing on Phase 1.
-2. **Aurora intensity.** How bright is "too bright"? Aurora should be a notable feature on magnetic worlds without dominating the scene's exposure. Start at intensity 0.3-0.4 max.
-3. **Latitude bias for vegetation.** Equatorial belt biosphere should still show some polar coverage to look natural. Use a smooth falloff rather than hard cutoff.
-4. **Performance budget.** Each new uniform is ~1 GPU register. Body shader currently uses ~25; new uniforms push to ~55. Still well under hardware limits but worth profiling on the symbol-guide preview.
-5. **Class-name overrides.** The existing `bodyShading.ts` has lots of class-name regex matching. Some of the new wiring duplicates that signal (e.g., `Carbon-rich furnace world` class already routes to dark palette via class regex). Decide: prefer the new explicit `mineralComposition` field over the class-name regex, or use the field as a refinement on top of class.
+1. **Color discipline → multiplicative with `mix()` weight.** `vec3 tinted = base * uMineralTint; base = mix(base, tinted, uMineralBlend);` Preserves FBM detail and day/night shading; pure additive blows out highlights; pure replace flattens noise into solid color. Exception: chiral / programmable-matter get a fresnel-additive shimmer on the rim (`lit += uMineralTint * fresnel * 0.25`) — that's what distinguishes "shimmer" from "iron oxide."
+
+2. **Aurora intensity → distinctive ceilings, night-biased.** Aurora-belt 0.50, GU monopole 0.60, Strong dipole 0.35, Earth-like dipole 0.15. All multiplied by `fresnel * (0.4 + 0.6 * night)` so they read as ring-at-limb on the night side and fade to nothing on the day side. Pulsing classes use a slow `sin(uTime * 1.2)` cycle (~5s); faster reads as flicker, reserved for the literal "flickering" entry.
+
+3. **Vegetation falloff → smooth with non-zero floor.** Equatorial: `equatorial = 1.0 - smoothstep(0.0, 0.85, abs(unitPos.y))`, masked with `max(0.15, equatorial)` so polar refugia stay visible even on tropical-belt worlds. Multiply by `smoothstep(0.0, 0.4, 1.0 - waterMask)` so vegetation lands on coasts/continents, not open ocean.
+
+4. **Performance → reuse existing FBM samples.** 55 uniforms is far under hardware limits — the real cost is FBM calls. Body shader currently does 5; mineral/hazard masks reuse the existing `n` and `detail` samples (different thresholds, same noise field). New FBM only for things that genuinely need different frequencies — dune fields (stretched), glassy patches (high frequency), vegetation (lower frequency). Realistic total: ~6 FBM calls.
+
+5. **Class-regex → trim where superseded.** `mineralComposition` is the canonical source for surface tint, so the carbon/chiral and iron/metal palette overrides in `bodyShading.ts:colorsFor()` are deleted in Phase 1. Family-level regex (earthlike-ocean detection, desert-iron classification) stays — that still drives the palette **base** that the new tints layer on top of.
+
+**Aesthetic direction:** distinctive over subtle. Earth-like and anomaly worlds are the priority showcase — tune palettes against those two first each phase, sanity-check the rest after.

@@ -13,6 +13,7 @@ import { Moon } from './Moon'
 import { BodySettlements } from './BodySettlements'
 import { bodySphereGeometry, invisibleHitMaterial } from './renderAssets'
 import { AtmosphereShell, CloudShell } from './BodyShells'
+import { AuroraShell } from './AuroraShell'
 import { MoonOrbit } from './MoonOrbit'
 
 export interface BodyProps {
@@ -59,6 +60,20 @@ export function Body({ body }: BodyProps) {
       mat.uniforms.uReliefStrength.value = body.surface?.reliefStrength ?? 0.15
       mat.uniforms.uNightLightStrength.value = body.surface?.nightLightStrength ?? 0
       mat.uniforms.uCityLightColor.value.set(body.surface?.cityLightColor ?? '#ffb15c')
+      mat.uniforms.uMineralTint.value.set(u.mineralTint)
+      mat.uniforms.uMineralBlend.value = u.mineralBlend
+      mat.uniforms.uHazardTint.value.set(u.hazardTint)
+      mat.uniforms.uHazardBlend.value = u.hazardBlend
+      mat.uniforms.uTopographyMode.value = u.topographyMode
+      mat.uniforms.uTopographyStrength.value = u.topographyStrength
+      mat.uniforms.uShimmerColor.value.set(u.shimmerColor)
+      mat.uniforms.uShimmerStrength.value = u.shimmerStrength
+      mat.uniforms.uAmbientLevel.value = u.ambientLevel
+      mat.uniforms.uVegetationMask.value = u.vegetationMask
+      mat.uniforms.uVegetationColor.value.set(u.vegetationColor)
+      mat.uniforms.uVegetationLatitudeBias.value = u.vegetationLatitudeBias
+      mat.uniforms.uIceCapAsymmetry.value = u.iceCapAsymmetry
+      mat.uniforms.uDarkSectorStrength.value = body.surface?.darkSectorStrength ?? 0
     }
     return mat
   }, [body, orbitingBody])
@@ -84,11 +99,19 @@ export function Body({ body }: BodyProps) {
   }), [isHovered, isInspected])
 
   useEffect(() => {
-    const dict = window as Window & { __viewer3dBodyPositions?: Record<string, [number, number, number]> }
+    const dict = window as Window & {
+      __viewer3dBodyPositions?: Record<string, [number, number, number]>
+      __viewer3dBodySizes?: Record<string, number>
+    }
     if (!dict.__viewer3dBodyPositions) dict.__viewer3dBodyPositions = {}
+    if (!dict.__viewer3dBodySizes) dict.__viewer3dBodySizes = {}
     dict.__viewer3dBodyPositions[body.id] = posTuple.current
-    return () => { delete dict.__viewer3dBodyPositions?.[body.id] }
-  }, [body.id])
+    dict.__viewer3dBodySizes[body.id] = body.visualSize
+    return () => {
+      delete dict.__viewer3dBodyPositions?.[body.id]
+      delete dict.__viewer3dBodySizes?.[body.id]
+    }
+  }, [body.id, body.visualSize])
 
   useEffect(() => () => material.dispose(), [material])
   useEffect(() => () => highlightMaterial.dispose(), [highlightMaterial])
@@ -144,6 +167,7 @@ export function Body({ body }: BodyProps) {
               <>
                 <AtmosphereShell body={body} />
                 <CloudShell body={body} />
+                <AuroraShell body={body} />
               </>
             ) : null}
             {body.rings ? <Ring ring={body.rings} /> : null}

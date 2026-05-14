@@ -69,12 +69,19 @@ describe('buildSceneGraph', () => {
     }
   })
 
-  it('keeps adjacent rendered bodies visually separated', () => {
+  it('keeps adjacent rendered bodies visually separated, including moon system reach', () => {
     const sorted = [...graph.bodies].sort((a, b) => a.orbitRadius - b.orbitRadius)
+    const visualExtent = (body: typeof sorted[number]) => {
+      const ringOrSize = body.rings?.outerRadius ?? body.visualSize
+      const moonExtent = body.moons.length > 0
+        ? Math.max(...body.moons.map((m) => m.parentRelativeOrbit + m.visualSize))
+        : 0
+      return Math.max(body.visualSize, ringOrSize, moonExtent)
+    }
     for (let i = 1; i < sorted.length; i++) {
-      const leftExtent = sorted[i - 1].rings?.outerRadius ?? sorted[i - 1].visualSize
-      const rightExtent = sorted[i].rings?.outerRadius ?? sorted[i].visualSize
-      expect(sorted[i].orbitRadius - sorted[i - 1].orbitRadius).toBeGreaterThanOrEqual(leftExtent + rightExtent + 2.5)
+      const leftExtent = visualExtent(sorted[i - 1])
+      const rightExtent = visualExtent(sorted[i])
+      expect(sorted[i].orbitRadius - sorted[i - 1].orbitRadius).toBeGreaterThanOrEqual(leftExtent + rightExtent + 3.5)
     }
   })
 
@@ -89,8 +96,23 @@ describe('buildSceneGraph', () => {
     expect(JSON.stringify(a)).toBe(JSON.stringify(b))
   })
 
-  it('produces one HazardVisual per major hazard', () => {
-    expect(graph.hazards.length).toBe(system.majorHazards.length)
+  it('partitions hazards across in-scene and system-level slots, one per major hazard', () => {
+    expect(graph.hazards.length + graph.systemLevelHazards.length).toBe(system.majorHazards.length)
+  })
+
+  it('routes stellar / system-wide / unclassified hazards to systemLevelHazards', () => {
+    for (const hazard of graph.systemLevelHazards) {
+      expect(
+        hazard.unclassified
+          || hazard.anchorDescription === 'system-wide'
+          || hazard.anchorDescription === 'stellar',
+      ).toBe(true)
+    }
+    for (const hazard of graph.hazards) {
+      expect(hazard.unclassified).toBe(false)
+      expect(hazard.anchorDescription).not.toBe('system-wide')
+      expect(hazard.anchorDescription).not.toBe('stellar')
+    }
   })
 
   it('produces exactly one GuBleedVisual per system', () => {
@@ -117,7 +139,7 @@ describe('buildSceneGraph', () => {
     expect(relative.bodies.length).toBe(readable.bodies.length)
     expect(schematic.bodies.length).toBe(readable.bodies.length)
     expect(relative.sceneRadius).toBeGreaterThan(readable.sceneRadius)
-    expect(schematic.bodies[1].orbitRadius - schematic.bodies[0].orbitRadius).toBeGreaterThanOrEqual(2.5)
+    expect(schematic.bodies[1].orbitRadius - schematic.bodies[0].orbitRadius).toBeGreaterThanOrEqual(3.5)
   })
 
   it('represents every generated moon for a body', () => {
@@ -211,7 +233,35 @@ describe('buildSceneGraph', () => {
     expect(radius).toBeLessThanOrEqual(belt?.outerRadius ?? 0)
   })
 
-  it('assigns marker archetypes to GU phenomena', () => {
+  it('routes a no-anchor ruin to systemLevelRuins instead of inventing a position', () => {
+    const ruin = {
+      id: 'drift-ruin',
+      location: fact('Adrift in a deep-space cloud', 'human-layer'),
+      remnantType: fact('Generation-ship fragment', 'human-layer'),
+      hook: fact('Its registry keeps re-transmitting.', 'human-layer'),
+    }
+    const patchedGraph = buildSceneGraph({ ...system, ruins: [ruin] })
+    expect(patchedGraph.ruins.find((r) => r.id === ruin.id)).toBeUndefined()
+    expect(patchedGraph.systemLevelRuins).toContain(ruin.id)
+  })
+
+  it('classifies a belt-keyword ruin onto a belt body when one exists', () => {
+    const beltIds = system.bodies.filter((b) => b.category.value === 'belt').map((b) => b.id)
+    if (beltIds.length === 0) return
+    const ruin = {
+      id: 'belt-keyword-ruin',
+      location: fact('Lost in the asteroid swarm', 'human-layer'),
+      remnantType: fact('Salvage flotilla', 'human-layer'),
+      hook: fact('Beacon still pings.', 'human-layer'),
+    }
+    const patchedGraph = buildSceneGraph({ ...system, ruins: [ruin] })
+    const marker = patchedGraph.ruins.find((r) => r.id === ruin.id)
+    expect(marker?.attachedBeltId).toBeDefined()
+    expect(beltIds).toContain(marker?.attachedBeltId)
+    expect(patchedGraph.systemLevelRuins).not.toContain(ruin.id)
+  })
+
+  it('routes every generated phenomenon into systemLevelPhenomena', () => {
     const phenomenon = {
       id: 'test-phenomenon',
       phenomenon: fact('Fold static', 'gu-layer'),
@@ -223,24 +273,10 @@ describe('buildSceneGraph', () => {
     }
     const patchedGraph = buildSceneGraph({ ...system, phenomena: [phenomenon] })
 
-    expect(patchedGraph.phenomena).toHaveLength(1)
-    expect(patchedGraph.phenomena[0].renderArchetype).toBe('phenomenon-marker')
-  })
-
-  it('anchors belt-like phenomena inside a rendered belt', () => {
-    const phenomenon = {
-      id: 'belt-phenomenon',
-      phenomenon: fact('Snow-line chiral belt', 'gu-layer'),
-      note: fact('Every ice tank flags the same handedness.', 'gu-layer'),
-      travelEffect: fact('Ships detour through clean transfer windows.', 'gu-layer'),
-      surveyQuestion: fact('Which fragments flipped first?', 'gu-layer'),
-      conflictHook: fact('Claims crews fight over quarantine math.', 'gu-layer'),
-      sceneAnchor: fact('Clean ice turns quarantine amber along the snow line.', 'gu-layer'),
-    }
-    const patchedGraph = buildSceneGraph({ ...system, phenomena: [phenomenon] })
-    const marker = patchedGraph.phenomena[0]
-    const radius = Math.hypot(marker.position[0], marker.position[2])
-
-    expect(patchedGraph.belts.some((belt) => radius >= belt.innerRadius && radius <= belt.outerRadius)).toBe(true)
+    expect(patchedGraph.phenomena).toHaveLength(0)
+    expect(patchedGraph.systemLevelPhenomena).toHaveLength(1)
+    expect(patchedGraph.systemLevelPhenomena[0].id).toBe('test-phenomenon')
+    expect(patchedGraph.systemLevelPhenomena[0].kind).toBe('Fold static')
+    expect(patchedGraph.systemLevelPhenomena[0].color).toMatch(/^#/)
   })
 })

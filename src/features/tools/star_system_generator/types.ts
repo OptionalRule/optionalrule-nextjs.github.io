@@ -92,6 +92,25 @@ export interface StellarCompanion {
   planetaryConsequence: Fact<string>
   guConsequence: Fact<string>
   rollMargin: Fact<number>
+  mode: CompanionRelationshipMode
+  star: Star
+  linkedSeed?: Fact<string>
+  subSystem?: CompanionSubSystem
+}
+
+export type CompanionRelationshipMode =
+  | 'volatile'
+  | 'circumbinary'
+  | 'orbital-sibling'
+  | 'linked-independent'
+
+export interface CompanionSubSystem {
+  zones: SystemZones
+  bodies: OrbitingBody[]
+  settlements: Settlement[]
+  gates: Gate[]
+  ruins: HumanRemnant[]
+  phenomena: SystemPhenomenon[]
 }
 
 export interface Reachability {

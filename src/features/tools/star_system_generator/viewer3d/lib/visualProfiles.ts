@@ -11,7 +11,7 @@ import type {
   VolumeShape,
 } from '../types'
 import { hashToUnit } from './motion'
-import { spectralVisuals } from './stellarColor'
+import { spectralDynamics, spectralVisuals } from './stellarColor'
 
 function clamp01(value: number): number {
   return Math.min(1, Math.max(0, value))
@@ -112,6 +112,12 @@ export function buildBodySurfaceProfile(
   const atmo = atmosphereStrength(text, body.physical.volatileEnvelope.value)
   const clouds = cloudStrength(text, family, body.physical.volatileEnvelope.value)
   const surfaceSeed = hashToUnit(`${seed}#${body.id}#surface-profile/v1`) * 31.7
+  const cloudTrace = cloudTraceFor(body)
+  const cloudBand = cloudBandMultiplierFor(body)
+  const cloudRotationMult = cloudRotationMultiplierFor(body)
+  const pressureMult = atmospherePressureMultiplierFor(body)
+  const aurora = auroraFor(body, seed)
+  const skyEffects = skyPhenomenaEffects(body, aurora.intensity)
   return {
     profileVersion: 1,
     family,
@@ -127,7 +133,154 @@ export function buildBodySurfaceProfile(
     cityLightColor: family === 'anomaly' ? '#b891ff' : '#ffb15c',
     surfaceSeed,
     cloudSeed: hashToUnit(`${seed}#${body.id}#cloud-profile/v1`) * 29.3,
+    cloudTraceTint: cloudTrace.tint,
+    cloudTraceBlend: cloudTrace.blend,
+    cloudBandStrength: cloudBand,
+    cloudRotationMultiplier: cloudRotationMult,
+    atmospherePressureMultiplier: pressureMult,
+    auroraIntensity: skyEffects.auroraIntensity,
+    auroraColor: aurora.color,
+    auroraMode: aurora.mode,
+    auroraPulse: aurora.pulse,
+    auroraAxisOffset: aurora.axisOffset,
+    darkSectorStrength: skyEffects.darkSectorStrength,
+    refractionHaloBoost: skyEffects.refractionHaloBoost,
   }
+}
+
+const CLOUD_TRACE_MAP: Record<string, { tint: string; blend: number }> = {
+  'Pure (primary mix only)': { tint: '#ffffff', blend: 0 },
+  'Helium-3 enriched': { tint: '#ffffff', blend: 0 },
+  'Ozone layer present': { tint: '#7ac7e0', blend: 0.15 },
+  'Methane biosignature trace': { tint: '#ffffff', blend: 0 },
+  'Tholin photochemistry': { tint: '#d49a52', blend: 0.45 },
+  'Volcanic SO2 plumes': { tint: '#e2cf68', blend: 0.40 },
+  'Lightning-driven NOx': { tint: '#c2a878', blend: 0.25 },
+  'Cyanide / cyanogen trace': { tint: '#ffffff', blend: 0 },
+  'Halogen mix': { tint: '#a8c879', blend: 0.30 },
+  'Industrial pollutant signatures': { tint: '#7c5a45', blend: 0.40 },
+  'Noble gas excess': { tint: '#ffffff', blend: 0 },
+  'Carbon isotope biosignature': { tint: '#ffffff', blend: 0 },
+}
+
+function cloudTraceFor(body: OrbitingBody): { tint: string; blend: number } {
+  return CLOUD_TRACE_MAP[body.detail.atmosphericTraces.value] ?? { tint: '#ffffff', blend: 0 }
+}
+
+const WIND_BAND_MAP: Record<string, number> = {
+  'Still / calm': 0.6,
+  'Light breeze': 0.8,
+  'Earth-typical winds': 1.0,
+  'Persistent strong winds': 1.2,
+  'Storm-prone with high gusts': 1.4,
+  'Hurricane-class continuous winds': 1.6,
+  'Hypercane / supersonic jet streams': 1.8,
+  'Periodic dust storm season': 1.3,
+  'Stratified zonal jets (banded)': 1.5,
+  'Chiral wind chemistry': 1.3,
+}
+
+function cloudBandMultiplierFor(body: OrbitingBody): number {
+  return WIND_BAND_MAP[body.detail.windRegime.value] ?? 1.0
+}
+
+const DAY_LENGTH_SPEED: Record<string, number> = {
+  'Very short day (under 6 Earth hours)': 3.0,
+  'Short day (6-18 hours)': 1.5,
+  'Earth-like day (~24 hours)': 1.0,
+  'Long day (1-3 Earth days)': 0.3,
+  'Multi-day cycle (3-30 days)': 0.1,
+  'Mercury-style year-length day': 0.02,
+  'No day-night cycle (tidally locked)': 0.0,
+}
+
+const ROTATION_DIRECTION: Record<string, number> = {
+  'Slow rotation (Mercury-style)': 0.2,
+  'Resonant rotation (3:2)': 0.5,
+  'Earth-like 24h cycle': 1.0,
+  'Fast rotation': 1.0,
+  'Retrograde rotation': -1.0,
+  'Precessing axis': 1.0,
+  'Wobbling rotation': 0.9,
+  'Chaotic rotation': 0.6,
+}
+
+function cloudRotationMultiplierFor(body: OrbitingBody): number {
+  const day = DAY_LENGTH_SPEED[body.detail.dayLength.value] ?? 1.0
+  const dir = ROTATION_DIRECTION[body.detail.rotationProfile.value] ?? 1.0
+  return day * dir
+}
+
+const PRESSURE_MAP: Record<string, number> = {
+  'Hard vacuum (<0.001 atm)': 0,
+  'Near-vacuum (~0.01 atm)': 0.05,
+  'Thin (~0.3 atm, pressure-gear required)': 0.18,
+  'Standard (~1 atm)': 0.28,
+  'Dense (~3 atm)': 0.36,
+  'High-pressure (~10 atm)': 0.42,
+  'Crushing (~50 atm)': 0.45,
+  'Supercritical (Venus-extreme, ~90+ atm)': 0.50,
+}
+
+function atmospherePressureMultiplierFor(body: OrbitingBody): number {
+  const value = body.detail.atmosphericPressure.value
+  if (!value || !(value in PRESSURE_MAP)) return -1
+  return PRESSURE_MAP[value]
+}
+
+interface AuroraProfile {
+  intensity: number
+  color: string
+  mode: number
+  pulse: number
+  axisOffset: number
+}
+
+const AURORA_MAP: Record<string, Omit<AuroraProfile, 'axisOffset'>> = {
+  'No field (naked)': { intensity: 0, color: '#ffffff', mode: 0, pulse: 0 },
+  'Weak crustal remnant': { intensity: 0, color: '#ffffff', mode: 0, pulse: 0 },
+  'Earth-like dipole': { intensity: 0.15, color: '#9bcb6f', mode: 0, pulse: 0 },
+  'Strong dipole shield': { intensity: 0.35, color: '#6ad17a', mode: 0, pulse: 0 },
+  'Pulsing / flickering': { intensity: 0.30, color: '#8cd4a8', mode: 0, pulse: 1 },
+  'Multipolar chaos': { intensity: 0.30, color: '#b8c8e0', mode: 1, pulse: 0 },
+  'Twin-pole shifting': { intensity: 0.30, color: '#7ee0a6', mode: 4, pulse: 0 },
+  'Crustal magnetic stripes': { intensity: 0.20, color: '#9cb8d4', mode: 2, pulse: 0 },
+  'Aurora-belt dominated': { intensity: 0.50, color: '#5ce39a', mode: 0, pulse: 0 },
+  'GU monopole anomaly': { intensity: 0.60, color: '#b18cff', mode: 3, pulse: 0 },
+}
+
+function auroraFor(body: OrbitingBody, seed: string): AuroraProfile {
+  const base = AURORA_MAP[body.detail.magneticField.value] ?? { intensity: 0, color: '#ffffff', mode: 0, pulse: 0 }
+  const axisOffset = (hashToUnit(`${seed}#${body.id}#aurora-tilt`) - 0.5) * 0.6
+  return { ...base, axisOffset }
+}
+
+interface SkyEffects {
+  darkSectorStrength: number
+  refractionHaloBoost: number
+  auroraIntensity: number
+}
+
+function skyPhenomenaEffects(body: OrbitingBody, baseAuroraIntensity: number): SkyEffects {
+  const value = body.detail.skyPhenomena.value
+  let darkSectorStrength = 0
+  let refractionHaloBoost = 1.0
+  let auroraIntensity = baseAuroraIntensity
+  switch (value) {
+    case 'Dark-sector visible nullzones':
+      darkSectorStrength = 0.55
+      break
+    case 'Atmospheric refraction halos':
+      refractionHaloBoost = 1.6
+      break
+    case 'Aurora ribbons':
+      auroraIntensity = Math.max(baseAuroraIntensity, 0.25)
+      break
+    case 'Charged-particle sky glow':
+      auroraIntensity = Math.max(baseAuroraIntensity, 0.30)
+      break
+  }
+  return { darkSectorStrength, refractionHaloBoost, auroraIntensity }
 }
 
 function moonFamily(moon: Moon): SurfaceFamily {
@@ -216,30 +369,30 @@ export function buildBeltProfile(body: OrbitingBody, base: Omit<BeltVisual, 'col
   }
 }
 
-export function companionStarVisuals(companion: StellarCompanion): Pick<StarVisual, 'coreColor' | 'coronaColor' | 'coronaRadius' | 'rayCount' | 'bloomStrength' | 'flareStrength' | 'pulseSpeed' | 'rayColor'> {
-  const text = [companion.companionType.value, companion.planetaryConsequence.value, companion.guConsequence.value].join(' ').toLowerCase()
-  const spectral = hasAny(text, ['white dwarf']) ? 'DA'
-    : hasAny(text, ['brown dwarf']) ? 'L2V'
-      : hasAny(text, ['red dwarf', 'm dwarf']) ? 'M4V'
-        : hasAny(text, ['blue', 'hot']) ? 'A2V'
-          : 'K5V'
-  const visuals = spectralVisuals(spectral, 45 + companion.rollMargin.value)
+export function companionStarVisuals(companion: StellarCompanion): Pick<StarVisual, 'coreColor' | 'coronaColor' | 'coronaRadius' | 'rayCount' | 'bloomStrength' | 'flareStrength' | 'pulseSpeed' | 'pulseAmplitude' | 'rotationSpeed' | 'rayColor'> {
+  const visuals = spectralVisuals(companion.star.spectralType.value, companion.star.activityRoll.value)
+  const dynamics = spectralDynamics(companion.star.spectralType.value, companion.star.activityRoll.value)
   return {
     ...visuals,
     coronaRadius: visuals.coronaRadius * 0.72,
     bloomStrength: visuals.bloomStrength * 0.72,
     flareStrength: 0.28 + hashToUnit(`companion-flare#${companion.id}`) * 0.35,
-    pulseSpeed: 0.2 + hashToUnit(`companion-pulse#${companion.id}`) * 0.4,
+    pulseSpeed: dynamics.pulseSpeed,
+    pulseAmplitude: dynamics.pulseAmplitude,
+    rotationSpeed: dynamics.rotationSpeed,
     rayColor: visuals.coronaColor,
   }
 }
 
-export function primaryStarVisualExtras(system: GeneratedSystem): Pick<StarVisual, 'flareStrength' | 'pulseSpeed' | 'rayColor'> {
+export function primaryStarVisualExtras(system: GeneratedSystem): Pick<StarVisual, 'flareStrength' | 'pulseSpeed' | 'pulseAmplitude' | 'rotationSpeed' | 'rayColor'> {
   const activity = clamp01(system.primary.activityRoll.value / 100)
   const visuals = spectralVisuals(system.primary.spectralType.value, system.primary.activityRoll.value)
+  const dynamics = spectralDynamics(system.primary.spectralType.value, system.primary.activityRoll.value)
   return {
     flareStrength: 0.35 + activity * 0.45,
-    pulseSpeed: 0.12 + activity * 0.45,
+    pulseSpeed: dynamics.pulseSpeed,
+    pulseAmplitude: dynamics.pulseAmplitude,
+    rotationSpeed: dynamics.rotationSpeed,
     rayColor: visuals.coronaColor,
   }
 }

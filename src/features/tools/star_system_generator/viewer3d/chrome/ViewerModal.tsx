@@ -106,14 +106,6 @@ export function ViewerModal({ title, onClose, header, footer, children }: Viewer
       </header>
       <div className="relative flex flex-1 overflow-hidden">
         {children}
-        <button
-          type="button"
-          onClick={onClose}
-          className="absolute right-3 top-3 z-10 inline-flex h-9 w-9 items-center justify-center rounded-full border border-[var(--accent)]/40 bg-[#0f141c]/85 text-[var(--accent)] shadow-lg backdrop-blur transition-colors hover:bg-[var(--accent)]/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]"
-          aria-label="Close 3D viewer"
-        >
-          <X className="h-5 w-5" aria-hidden="true" />
-        </button>
       </div>
       {footer ? <footer className="border-t border-[var(--border)] bg-[var(--card)] px-4 py-1.5 text-xs text-[var(--text-tertiary)]">{footer}</footer> : null}
     </div>,

@@ -1,5 +1,7 @@
 # 3D Viewer Visual Rendering Plan
 
+Status: implemented. Initial 9-step pass shipped in commits 16bc0c6, c8fa832, 28fa11c, 783f4a7, 101373d. Post-implementation polish follow-ups: belt-anchored settlement rendering (2cfdbeb), moon orbit clearance + size tuning (980dd2d), starfield rebuild for constant pixel size and per-star variation (5af8a1c, 795d125), spectral-type-aware star rotation and pulse (05474e8), uniform self-luminous star surface (d5ccb81, f2cb592), phenomenon marker fallback dispersion (5ef4f70), and redundant-close-button removal (38bcbd1).
+
 ## Goal
 
 Improve the solar system display so generated systems are more visually distinct, physically legible, deterministic for the same seed, and still performant on typical browser hardware.

@@ -46,11 +46,11 @@ exports[`spine full axis matrix (16 representative cells) > baseline-realistic-a
 
 exports[`spine full axis matrix (16 representative cells) > baseline-realistic-balanced: stable spine + body[0] structural fields 1`] = `
 {
-  "body0": "The narrow-AI perception fog keeps shifting under Wouri Survey-176 III. Each pass of the narrow-AI perception fog costs Wouri Survey-176 IV a margin it doesn't have. Wouri Survey-176 IV can't plan around the moving bleed-node river anymore. Wouri Survey-176 III Laboratory 18 sits on Wouri Survey-176 III. Wouri Survey-176 IV hosts Wouri Survey-176 IV Charter.",
+  "body0": "The moving bleed-node river keeps shifting under Veyra-Locke Concession. Each pass of the narrow-AI perception fog costs Veyra-Locke Concession a margin it doesn't have.",
   "spineEdgeType": "DESTABILIZES",
-  "spineObjectKind": "body",
+  "spineObjectKind": "namedFaction",
   "spineSubjectKind": "phenomenon",
-  "spineSummary": "Narrow-AI perception fog took shape in the early charters, the narrow-AI perception fog is rewriting the constants Wouri Survey-176 III was built around.",
+  "spineSummary": "Moving bleed-node river took shape in the early charters, the moving bleed-node river is rewriting the constants Veyra-Locke Concession was built around.",
   "spineVisibility": "public",
 }
 `;
@@ -68,11 +68,11 @@ exports[`spine full axis matrix (16 representative cells) > baseline-realistic-c
 
 exports[`spine full axis matrix (16 representative cells) > corner-frontier-cinematic-fracture-hub: stable spine + body[0] structural fields 1`] = `
 {
-  "body0": "Bone Lantern Wake keeps the receipts. Last Ledger Synod keeps the witnesses. Between Last Ledger Synod and Sisters of Synod the knife is already drawn. Red Wake Pact swore the pact would hold; Sisters of Synod swore otherwise. Pipit's Delta V - Moon I Station draws everything it consumes from Illegal Sol-prohibited geometry sample. Pipit's Delta I Charter depends on Illegal Sol-prohibited geometry sample for everything.",
+  "body0": "Last Ledger Cabal keeps the receipts. Long Knife Run keeps the witnesses. Between Bone Lantern Wake and Last Ledger Synod the knife is already drawn. Last Ledger Synod swore the pact would hold; Sisters of Synod swore otherwise. Pipit's Delta II Freeport draws everything it consumes from Illegal Sol-prohibited geometry sample.",
   "spineEdgeType": "CONTESTS",
   "spineObjectKind": "namedFaction",
   "spineSubjectKind": "namedFaction",
-  "spineSummary": "Between Bone Lantern Wake and Last Ledger Synod the war is already lost; only the funerals remain.",
+  "spineSummary": "The compact between Last Ledger Cabal and Long Knife Run broke in the silent decade, Between Last Ledger Cabal and Long Knife Run the war is already lost; only the funerals remain.",
   "spineVisibility": "contested",
 }
 `;
@@ -112,7 +112,7 @@ exports[`spine full axis matrix (16 representative cells) > density-hub: stable 
 
 exports[`spine full axis matrix (16 representative cells) > density-normal: stable spine + body[0] structural fields 1`] = `
 {
-  "body0": "The long-period comet storm drifts the baselines Coronagraph Bureau relies on. The amplitude of the long-period comet storm exceeds the operating envelope of Vey Picket-265 II. The chiral contamination bloom introduces a measurable perturbation in Vey Picket-265 II. Vey Picket-265 II Redoubt sits on Vey Picket-265 II.",
+  "body0": "The long-period comet storm drifts the baselines Coronagraph Bureau relies on. The amplitude of the long-period comet storm exceeds the operating envelope of Vey Picket-265 Belt II. The long-period comet storm introduces a measurable perturbation in Vey Picket-265 Belt I. Pinchdrive accident scar sits on Vey Picket-265 Belt I. Vey Picket-265 Belt I hosts Vey Picket-265 Belt I Platform.",
   "spineEdgeType": "DESTABILIZES",
   "spineObjectKind": "namedFaction",
   "spineSubjectKind": "phenomenon",

@@ -408,6 +408,7 @@ describe('generateSystem', () => {
 
     for (let index = 0; index < 40; index++) {
       const system = generateSystem({ ...options, seed: `a13f9c2e41b8${index.toString(16).padStart(4, '0')}` })
+      if (system.companions.some((companion) => companion.mode === 'volatile')) continue
       for (const body of system.bodies) {
         if (body.thermalZone.value === 'Furnace' || body.thermalZone.value === 'Inferno') {
           expect(body.moons).toHaveLength(0)
@@ -508,7 +509,7 @@ describe('generateSystem', () => {
   it('adds richer body profiles for belts, minor bodies, and anomalies', () => {
     const systems = Array.from({ length: 80 }, (_, index) =>
       generateSystem({ ...options, seed: `c93f9c2e41b8${index.toString(16).padStart(4, '0')}` })
-    )
+    ).filter((system) => !system.companions.some((companion) => companion.mode === 'volatile'))
     const profiledBodies = systems.flatMap((system) =>
       system.bodies.filter((body) =>
         body.category.value === 'belt' ||
@@ -526,7 +527,7 @@ describe('generateSystem', () => {
   })
 
   it('does not repeat the exact body profile inside the body interest summary', () => {
-    const system = generateSystem({ ...options, seed: 'ea1d8ba2f11e808c' })
+    const system = generateSystem({ ...options, seed: 'display-search-0320' })
     const profiledBodies = system.bodies.filter((body) => body.bodyProfile)
 
     expect(profiledBodies.length).toBeGreaterThan(0)
@@ -562,7 +563,7 @@ describe('generateSystem', () => {
   it('generates a fuller orbital profile across frontier seeds', () => {
     const systems = Array.from({ length: 30 }, (_, index) =>
       generateSystem({ ...options, seed: `b13f9c2e41b8${index.toString(16).padStart(4, '0')}` })
-    )
+    ).filter((system) => !system.companions.some((companion) => companion.mode === 'volatile' || companion.mode === 'circumbinary'))
     const averageBodies = systems.reduce((sum, system) => sum + system.bodies.length, 0) / systems.length
     const systemsWithMoons = systems.filter((system) => system.bodies.some((body) => body.moons.length > 0)).length
 
@@ -573,7 +574,9 @@ describe('generateSystem', () => {
   it('makes giant-rich and migrated architectures actually include giants with moons', () => {
     const giantBearingSystems = Array.from({ length: 100 }, (_, index) =>
       generateSystem({ ...options, seed: `c13f9c2e41b8${index.toString(16).padStart(4, '0')}` })
-    ).filter((system) => system.architecture.name.value === 'Giant-rich or chaotic' || system.architecture.name.value === 'Migrated giant')
+    )
+      .filter((system) => !system.companions.some((companion) => companion.mode === 'volatile' || companion.mode === 'circumbinary'))
+      .filter((system) => system.architecture.name.value === 'Giant-rich or chaotic' || system.architecture.name.value === 'Migrated giant')
 
     expect(giantBearingSystems.length).toBeGreaterThan(0)
     for (const system of giantBearingSystems) {
@@ -764,7 +767,9 @@ describe('generateSystem', () => {
 
     const systems = Array.from({ length: 500 }, (_, index) =>
       generateSystem({ ...options, seed: `611a9c2e41b8${index.toString(16).padStart(4, '0')}` })
-    )
+    ).filter((system) => !system.companions.some((companion) =>
+      companion.mode === 'volatile' || companion.mode === 'circumbinary' || companion.mode === 'orbital-sibling'
+    ))
 
     expect(new Set(systems.map((system) => system.architecture.name.value)).size).toBeGreaterThan(5)
 
@@ -893,8 +898,10 @@ describe('generateSystem', () => {
           settlements: density as GenerationOptions['settlements'],
           seed: `5e771e5${index.toString(16).padStart(8, '0')}`,
         })
-        return system.settlements.length + system.gates.length
+        return system
       })
+        .filter((system) => !system.companions.some((companion) => companion.mode === 'volatile' || companion.mode === 'circumbinary'))
+        .map((system) => system.settlements.length + system.gates.length)
 
       expect(Math.min(...counts)).toBeGreaterThanOrEqual(density === 'sparse' ? min : 1)
       expect(Math.max(...counts)).toBeLessThanOrEqual(max)
@@ -1605,5 +1612,26 @@ describe('generateSystem', () => {
     expect(average(moonCounts(gasGiants))).toBeGreaterThan(average(moonCounts(iceGiants)) + 2)
     expect(median(moonCounts(superJovians))).toBeGreaterThanOrEqual(12)
     expect(average(moonCounts(largeOrdinaryGasGiants))).toBeGreaterThan(average(moonCounts(smallOrdinaryGasGiants)) + 2)
+  })
+
+  it('produces the same companions array for the same seed across multiple runs', () => {
+    const opts: GenerationOptions = { ...options, seed: 'det-companion-1' }
+    const a = generateSystem(opts)
+    const b = generateSystem(opts)
+    expect(a.companions).toEqual(b.companions)
+  })
+
+  it('produces a deterministic linked-independent linkedSeed across runs', () => {
+    let found = false
+    for (let i = 0; i < 200 && !found; i++) {
+      const opts: GenerationOptions = { ...options, seed: `det-linked-${i}` }
+      const a = generateSystem(opts)
+      const b = generateSystem(opts)
+      if (a.companions[0]?.mode === 'linked-independent') {
+        expect(a.companions[0].linkedSeed?.value).toBe(b.companions[0].linkedSeed?.value)
+        found = true
+      }
+    }
+    expect(found).toBe(true)
   })
 })

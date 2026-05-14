@@ -1,6 +1,7 @@
 'use client'
 
 import { Building2, Orbit } from 'lucide-react'
+import { CompanionSubSystem } from './components/CompanionSubSystem'
 import { ExportPanel } from './components/ExportPanel'
 import { GeneratorControls } from './components/GeneratorControls'
 import { GuOverlayPanel } from './components/GuOverlayPanel'
@@ -15,6 +16,7 @@ import { SystemViewer3DButton } from './components/SystemViewer3DButton'
 import { SectionHeader, SpectralChip, sectionShellClasses } from './components/visual'
 import { useGeneratedSystem } from './hooks/useGeneratedSystem'
 import { useGeneratorQueryState } from './hooks/useGeneratorQueryState'
+import { aggregatedCounts, formatSplitCount } from './lib/companionAggregations'
 import { formatStellarClass } from './lib/stellarLabels'
 import type { GeneratedSystem } from './types'
 
@@ -79,6 +81,12 @@ export default function StarSystemGenerator({ className }: StarSystemGeneratorPr
           <OrbitalTable system={system} />
         </div>
 
+        {system.companions
+          .filter((c) => c.mode === 'orbital-sibling' && c.subSystem)
+          .map((c) => (
+            <CompanionSubSystem key={c.id} system={system} companion={c} />
+          ))}
+
         <section id="settlements" className={sectionShellClasses('human')}>
           <SectionHeader
             layer="human"
@@ -129,6 +137,7 @@ interface SummaryItem {
 }
 
 function SystemSummaryStrip({ system }: { system: GeneratedSystem }) {
+  const counts = aggregatedCounts(system)
   const items: SummaryItem[] = [
     {
       label: 'Star',
@@ -139,7 +148,7 @@ function SystemSummaryStrip({ system }: { system: GeneratedSystem }) {
     { label: 'Architecture', value: system.architecture.name.value, layer: 'physical' },
     { label: 'Reachability', value: system.reachability.className.value, layer: 'physical' },
     { label: 'Bodies', value: String(system.bodies.length), layer: 'physical' },
-    { label: 'Settlements', value: String(system.settlements.length), layer: 'human' },
+    { label: 'Settlements', value: formatSplitCount(counts.settlements.primary, counts.settlements.companion), layer: 'human' },
     { label: 'GU', value: system.guOverlay.intensity.value, layer: 'gu' },
   ]
 

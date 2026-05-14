@@ -1,29 +1,9 @@
 'use client'
 
-import type { PhenomenonMarker, RuinMarker } from '../types'
+import type { RuinMarker } from '../types'
 import { useLayers } from '../chrome/ViewerContext'
 import { OverlayMarker } from './overlay/OverlayMarker'
-import { usePhenomenonLookup, useRuinLookup } from './bodyLookup'
-
-export function PhenomenonGlyphs({ phenomena }: { phenomena: PhenomenonMarker[] }) {
-  const { layers } = useLayers()
-  const lookup = usePhenomenonLookup()
-  if (!layers.gu || phenomena.length === 0) return null
-  return (
-    <>
-      {phenomena.map((p) => (
-        <OverlayMarker
-          key={p.id}
-          position={p.position}
-          glyphId="PH"
-          kind="phenomenon"
-          id={p.id}
-          label={lookup(p.id)?.phenomenon.value}
-        />
-      ))}
-    </>
-  )
-}
+import { useRuinLookup } from './bodyLookup'
 
 export function RuinPins({ ruins }: { ruins: RuinMarker[] }) {
   const { layers } = useLayers()

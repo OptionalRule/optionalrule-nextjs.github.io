@@ -14,8 +14,7 @@ const CHIPS: LegendChipSpec[] = [
   { color: STATUS_HUMAN.active.color, label: 'settlement' },
   { color: REGISTER_COLORS.gate,      label: 'gate' },
   { color: REGISTER_COLORS.ruin,      label: 'ruin' },
-  { color: REGISTER_COLORS.phenomenon, label: 'phenomenon' },
-  { color: REGISTER_COLORS.hazard,    label: 'hazard' },
+  { color: REGISTER_COLORS.hazard,    label: 'hazard (anchored)' },
   { color: REGISTER_COLORS.gu,        label: 'GU bleed' },
 ]
 

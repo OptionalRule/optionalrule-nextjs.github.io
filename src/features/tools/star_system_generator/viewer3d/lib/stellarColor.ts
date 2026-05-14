@@ -57,3 +57,33 @@ export function spectralVisuals(spectralType: string, activityRoll: number): Ste
     bloomStrength: 0.4 + activityT * 0.8,
   }
 }
+
+export interface SpectralDynamics {
+  rotationSpeed: number
+  pulseSpeed: number
+  pulseAmplitude: number
+}
+
+const SPECTRAL_DYNAMICS: Record<string, SpectralDynamics> = {
+  O: { rotationSpeed: 0.055, pulseSpeed: 1.4, pulseAmplitude: 0.045 },
+  B: { rotationSpeed: 0.045, pulseSpeed: 1.2, pulseAmplitude: 0.045 },
+  A: { rotationSpeed: 0.035, pulseSpeed: 0.95, pulseAmplitude: 0.055 },
+  F: { rotationSpeed: 0.024, pulseSpeed: 0.65, pulseAmplitude: 0.06 },
+  G: { rotationSpeed: 0.018, pulseSpeed: 0.4, pulseAmplitude: 0.07 },
+  K: { rotationSpeed: 0.013, pulseSpeed: 0.3, pulseAmplitude: 0.09 },
+  M: { rotationSpeed: 0.009, pulseSpeed: 0.22, pulseAmplitude: 0.14 },
+  L: { rotationSpeed: 0.045, pulseSpeed: 0.55, pulseAmplitude: 0.085 },
+  T: { rotationSpeed: 0.040, pulseSpeed: 0.5, pulseAmplitude: 0.065 },
+  Y: { rotationSpeed: 0.038, pulseSpeed: 0.45, pulseAmplitude: 0.055 },
+  D: { rotationSpeed: 0.060, pulseSpeed: 0.18, pulseAmplitude: 0.025 },
+}
+
+export function spectralDynamics(spectralType: string, activityRoll: number): SpectralDynamics {
+  const base = SPECTRAL_DYNAMICS[spectralLetter(spectralType)] ?? SPECTRAL_DYNAMICS.G
+  const activityT = Math.min(Math.max(activityRoll, 0), 100) / 100
+  return {
+    rotationSpeed: base.rotationSpeed,
+    pulseSpeed: base.pulseSpeed * (0.85 + activityT * 0.4),
+    pulseAmplitude: base.pulseAmplitude * (0.8 + activityT * 0.6),
+  }
+}

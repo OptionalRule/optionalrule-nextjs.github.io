@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import type { Fact, OrbitingBody, StellarCompanion } from '../../../types'
+import type { Fact, OrbitingBody, Star, StellarCompanion } from '../../../types'
 import {
   buildBodySurfaceProfile,
   buildMoonSurfaceProfile,
@@ -38,6 +38,24 @@ function fakeBody(overrides: Partial<OrbitingBody> = {}): OrbitingBody {
       climate: [fact('Storm tracks')],
       radiation: fact('low'),
       biosphere: fact('none'),
+      mineralComposition: fact(''),
+      magneticField: fact(''),
+      atmosphericTraces: fact(''),
+      hydrology: fact(''),
+      topography: fact(''),
+      rotationProfile: fact(''),
+      seismicActivity: fact(''),
+      surfaceHazards: fact(''),
+      dayLength: fact(''),
+      surfaceLight: fact(''),
+      axialTilt: fact(''),
+      skyPhenomena: fact(''),
+      atmosphericPressure: fact(''),
+      windRegime: fact(''),
+      tidalRegime: fact(''),
+      acousticEnvironment: fact(''),
+      resourceAccess: fact(''),
+      biosphereDistribution: fact(''),
     },
     moons: [],
     filterNotes: [],
@@ -45,6 +63,22 @@ function fakeBody(overrides: Partial<OrbitingBody> = {}): OrbitingBody {
     sites: [],
     ...overrides,
   } as OrbitingBody
+}
+
+function fakeCompanionStar(overrides: Partial<Star> = {}): Star {
+  return {
+    id: 'companion-star-1',
+    name: fact('Companion'),
+    spectralType: fact('M dwarf'),
+    massSolar: fact(0.3),
+    luminositySolar: fact(0.05),
+    ageState: fact('Main sequence, mature'),
+    metallicity: fact('Solar'),
+    activity: fact('Quiet'),
+    activityRoll: fact(7),
+    activityModifiers: [],
+    ...overrides,
+  }
 }
 
 function fakeCompanion(overrides: Partial<StellarCompanion> = {}): StellarCompanion {
@@ -55,6 +89,8 @@ function fakeCompanion(overrides: Partial<StellarCompanion> = {}): StellarCompan
     planetaryConsequence: fact('stable outer companion'),
     guConsequence: fact('none'),
     rollMargin: fact(4),
+    mode: 'orbital-sibling',
+    star: fakeCompanionStar(),
     ...overrides,
   }
 }
@@ -99,9 +135,12 @@ describe('visualProfiles', () => {
     }, 'seed').surfaceSeed)
   })
 
-  it('uses companion type text for companion star color families', () => {
+  it('uses companion.star.spectralType for companion star color families', () => {
     const red = companionStarVisuals(fakeCompanion())
-    const white = companionStarVisuals(fakeCompanion({ id: 'companion-2', companionType: fact('White dwarf companion') }))
+    const white = companionStarVisuals(fakeCompanion({
+      id: 'companion-2',
+      star: fakeCompanionStar({ id: 'companion-star-2', spectralType: fact('White dwarf') }),
+    }))
 
     expect(red.coreColor).toMatch(/^#/)
     expect(white.coreColor).toMatch(/^#/)
