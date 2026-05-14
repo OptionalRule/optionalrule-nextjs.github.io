@@ -65,17 +65,17 @@ export interface SpectralDynamics {
 }
 
 const SPECTRAL_DYNAMICS: Record<string, SpectralDynamics> = {
-  O: { rotationSpeed: 0.055, pulseSpeed: 1.4, pulseAmplitude: 0.025 },
-  B: { rotationSpeed: 0.045, pulseSpeed: 1.2, pulseAmplitude: 0.025 },
-  A: { rotationSpeed: 0.035, pulseSpeed: 0.95, pulseAmplitude: 0.03 },
-  F: { rotationSpeed: 0.024, pulseSpeed: 0.65, pulseAmplitude: 0.035 },
-  G: { rotationSpeed: 0.018, pulseSpeed: 0.4, pulseAmplitude: 0.04 },
-  K: { rotationSpeed: 0.013, pulseSpeed: 0.3, pulseAmplitude: 0.055 },
-  M: { rotationSpeed: 0.009, pulseSpeed: 0.22, pulseAmplitude: 0.085 },
-  L: { rotationSpeed: 0.045, pulseSpeed: 0.55, pulseAmplitude: 0.05 },
-  T: { rotationSpeed: 0.040, pulseSpeed: 0.5, pulseAmplitude: 0.04 },
-  Y: { rotationSpeed: 0.038, pulseSpeed: 0.45, pulseAmplitude: 0.035 },
-  D: { rotationSpeed: 0.060, pulseSpeed: 0.18, pulseAmplitude: 0.015 },
+  O: { rotationSpeed: 0.055, pulseSpeed: 1.4, pulseAmplitude: 0.045 },
+  B: { rotationSpeed: 0.045, pulseSpeed: 1.2, pulseAmplitude: 0.045 },
+  A: { rotationSpeed: 0.035, pulseSpeed: 0.95, pulseAmplitude: 0.055 },
+  F: { rotationSpeed: 0.024, pulseSpeed: 0.65, pulseAmplitude: 0.06 },
+  G: { rotationSpeed: 0.018, pulseSpeed: 0.4, pulseAmplitude: 0.07 },
+  K: { rotationSpeed: 0.013, pulseSpeed: 0.3, pulseAmplitude: 0.09 },
+  M: { rotationSpeed: 0.009, pulseSpeed: 0.22, pulseAmplitude: 0.14 },
+  L: { rotationSpeed: 0.045, pulseSpeed: 0.55, pulseAmplitude: 0.085 },
+  T: { rotationSpeed: 0.040, pulseSpeed: 0.5, pulseAmplitude: 0.065 },
+  Y: { rotationSpeed: 0.038, pulseSpeed: 0.45, pulseAmplitude: 0.055 },
+  D: { rotationSpeed: 0.060, pulseSpeed: 0.18, pulseAmplitude: 0.025 },
 }
 
 export function spectralDynamics(spectralType: string, activityRoll: number): SpectralDynamics {

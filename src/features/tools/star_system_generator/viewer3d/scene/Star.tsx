@@ -65,10 +65,11 @@ const surfaceFragmentShader = `
     float cells = smoothstep(0.28, 0.82, largeCells) * 0.72 + fineCells * 0.28;
     float heat = (cells - 0.48) * uGranulationStrength;
 
-    vec3 color = mix(uEdgeColor, uCoreColor, facing * 0.96 + 0.04);
-    color += uHotColor * max(heat, 0.0) * (0.26 + uActivity * 0.28);
-    color *= 1.0 - min(0.36, limb * 0.32);
-    color = mix(color, uEdgeColor, limb * (0.3 + uActivity * 0.16));
+    vec3 color = uCoreColor;
+    color = mix(color, uEdgeColor, 0.12);
+    color += uHotColor * max(heat, 0.0) * (0.22 + uActivity * 0.24);
+    color *= 1.0 - min(0.08, limb * 0.08);
+    color = mix(color, uEdgeColor, limb * (0.08 + uActivity * 0.05));
 
     gl_FragColor = vec4(color, 1.0);
   }
