@@ -92,11 +92,11 @@ export function Body({ body }: BodyProps) {
   const highlightMaterial = useMemo(() => new THREE.MeshBasicMaterial({
     color: '#8fd6ff',
     transparent: true,
-    opacity: isInspected ? 0.3 : isHovered ? 0.24 : 0,
+    opacity: isHovered ? 0.24 : 0,
     wireframe: true,
     depthWrite: false,
     toneMapped: false,
-  }), [isHovered, isInspected])
+  }), [isHovered])
 
   useEffect(() => {
     const dict = window as Window & {
@@ -154,7 +154,7 @@ export function Body({ body }: BodyProps) {
               onPointerOut={(e) => { e.stopPropagation(); hover(null); document.body.style.cursor = '' }}
               onClick={(e) => { e.stopPropagation(); select({ kind: 'body', id: body.id }) }}
             />
-            {(isHovered || isInspected) ? (
+            {isHovered ? (
               <mesh
                 geometry={bodySphereGeometry}
                 material={highlightMaterial}

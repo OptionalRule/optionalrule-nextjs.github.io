@@ -18,6 +18,7 @@ import { GuBleedVolume } from './GuBleedVolume'
 import { RuinPins } from './MarkerInstances'
 import { HoverTooltip } from './HoverTooltip'
 import { StellarBadge } from './StellarBadge'
+import { BodyDetailCard } from './BodyDetailCard'
 import { useLayers, usePrefersReducedMotion, useSelectionActions } from '../chrome/ViewerContext'
 import { WebGLFallback } from '../chrome/WebGLFallback'
 import { invisibleHitMaterial, starSphereGeometry } from './renderAssets'
@@ -188,6 +189,7 @@ export function Scene({ graph, system }: SceneProps) {
         </Fragment>
       ))}
       <HoverTooltip graph={graph} system={system} />
+      <BodyDetailCard graph={graph} system={system} />
     </Canvas>
   )
 }

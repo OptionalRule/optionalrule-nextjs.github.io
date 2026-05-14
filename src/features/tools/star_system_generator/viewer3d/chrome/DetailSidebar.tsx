@@ -11,7 +11,7 @@ export interface DetailSidebarProps {
 export function DetailSidebar({ children }: DetailSidebarProps) {
   const { selection } = useSelectionState()
   const { select } = useSelectionActions()
-  const open = selection !== null
+  const open = selection !== null && selection.kind !== 'body' && selection.kind !== 'moon'
 
   return (
     <aside
