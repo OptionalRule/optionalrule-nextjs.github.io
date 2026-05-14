@@ -160,6 +160,8 @@ function hashToUnit(value: string): number {
 
 export function Star({ star }: StarProps) {
   const billboardRef = useRef<THREE.Group | null>(null)
+  const surfaceRef = useRef<THREE.Mesh | null>(null)
+  const coronaRef = useRef<THREE.Mesh | null>(null)
   const coreSize = star.coronaRadius * 0.48
   const activity = clamp(star.bloomStrength / 1.2, 0.12, 1.35)
   const flickerPhase = useMemo(() => hashToUnit(`${star.id}#glow-flicker`) * Math.PI * 2, [star.id])
@@ -285,15 +287,18 @@ export function Star({ star }: StarProps) {
     surfaceMaterial.dispose()
   }, [coronaMaterial, innerGlowMaterial, outerGlowMaterial, prominenceGeometry, prominenceMaterial, surfaceMaterial])
 
-  useFrame((state) => {
+  useFrame((state, delta) => {
     surfaceMaterial.uniforms.uTime.value = state.clock.elapsedTime
     coronaMaterial.uniforms.uTime.value = state.clock.elapsedTime
     innerGlowMaterial.uniforms.uTime.value = state.clock.elapsedTime
     outerGlowMaterial.uniforms.uTime.value = state.clock.elapsedTime
-    const pulse = 1 + Math.sin(state.clock.elapsedTime * star.pulseSpeed) * 0.04 * star.flareStrength
-    if (!billboardRef.current) return
-    billboardRef.current.scale.setScalar(pulse)
-    billboardRef.current.lookAt(state.camera.position)
+    const pulse = 1 + Math.sin(state.clock.elapsedTime * star.pulseSpeed) * star.pulseAmplitude * (0.6 + star.flareStrength * 0.6)
+    if (billboardRef.current) {
+      billboardRef.current.scale.setScalar(pulse)
+      billboardRef.current.lookAt(state.camera.position)
+    }
+    if (surfaceRef.current) surfaceRef.current.rotation.y += delta * star.rotationSpeed
+    if (coronaRef.current) coronaRef.current.rotation.y -= delta * star.rotationSpeed * 0.4
   })
 
   return (
@@ -303,8 +308,8 @@ export function Star({ star }: StarProps) {
         <mesh geometry={starGlowPlaneGeometry} material={innerGlowMaterial} scale={star.coronaRadius * 2.25} renderOrder={-1} dispose={null} />
         <lineSegments geometry={prominenceGeometry} material={prominenceMaterial} renderOrder={1} dispose={null} />
       </group>
-      <mesh geometry={starSphereGeometry} material={surfaceMaterial} scale={coreSize} dispose={null} />
-      <mesh geometry={starSphereGeometry} material={coronaMaterial} scale={coreSize * 1.16} dispose={null} />
+      <mesh ref={surfaceRef} geometry={starSphereGeometry} material={surfaceMaterial} scale={coreSize} dispose={null} />
+      <mesh ref={coronaRef} geometry={starSphereGeometry} material={coronaMaterial} scale={coreSize * 1.16} dispose={null} />
     </group>
   )
 }

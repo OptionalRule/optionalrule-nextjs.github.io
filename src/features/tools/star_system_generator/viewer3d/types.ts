@@ -93,6 +93,8 @@ export interface StarVisual {
   bloomStrength: number
   flareStrength: number
   pulseSpeed: number
+  pulseAmplitude: number
+  rotationSpeed: number
   rayColor: string
   position: SceneVec3
 }

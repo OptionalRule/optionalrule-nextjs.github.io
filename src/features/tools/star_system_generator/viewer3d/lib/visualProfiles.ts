@@ -11,7 +11,7 @@ import type {
   VolumeShape,
 } from '../types'
 import { hashToUnit } from './motion'
-import { spectralVisuals } from './stellarColor'
+import { spectralDynamics, spectralVisuals } from './stellarColor'
 
 function clamp01(value: number): number {
   return Math.min(1, Math.max(0, value))
@@ -369,24 +369,30 @@ export function buildBeltProfile(body: OrbitingBody, base: Omit<BeltVisual, 'col
   }
 }
 
-export function companionStarVisuals(companion: StellarCompanion): Pick<StarVisual, 'coreColor' | 'coronaColor' | 'coronaRadius' | 'rayCount' | 'bloomStrength' | 'flareStrength' | 'pulseSpeed' | 'rayColor'> {
+export function companionStarVisuals(companion: StellarCompanion): Pick<StarVisual, 'coreColor' | 'coronaColor' | 'coronaRadius' | 'rayCount' | 'bloomStrength' | 'flareStrength' | 'pulseSpeed' | 'pulseAmplitude' | 'rotationSpeed' | 'rayColor'> {
   const visuals = spectralVisuals(companion.star.spectralType.value, companion.star.activityRoll.value)
+  const dynamics = spectralDynamics(companion.star.spectralType.value, companion.star.activityRoll.value)
   return {
     ...visuals,
     coronaRadius: visuals.coronaRadius * 0.72,
     bloomStrength: visuals.bloomStrength * 0.72,
     flareStrength: 0.28 + hashToUnit(`companion-flare#${companion.id}`) * 0.35,
-    pulseSpeed: 0.2 + hashToUnit(`companion-pulse#${companion.id}`) * 0.4,
+    pulseSpeed: dynamics.pulseSpeed,
+    pulseAmplitude: dynamics.pulseAmplitude,
+    rotationSpeed: dynamics.rotationSpeed,
     rayColor: visuals.coronaColor,
   }
 }
 
-export function primaryStarVisualExtras(system: GeneratedSystem): Pick<StarVisual, 'flareStrength' | 'pulseSpeed' | 'rayColor'> {
+export function primaryStarVisualExtras(system: GeneratedSystem): Pick<StarVisual, 'flareStrength' | 'pulseSpeed' | 'pulseAmplitude' | 'rotationSpeed' | 'rayColor'> {
   const activity = clamp01(system.primary.activityRoll.value / 100)
   const visuals = spectralVisuals(system.primary.spectralType.value, system.primary.activityRoll.value)
+  const dynamics = spectralDynamics(system.primary.spectralType.value, system.primary.activityRoll.value)
   return {
     flareStrength: 0.35 + activity * 0.45,
-    pulseSpeed: 0.12 + activity * 0.45,
+    pulseSpeed: dynamics.pulseSpeed,
+    pulseAmplitude: dynamics.pulseAmplitude,
+    rotationSpeed: dynamics.rotationSpeed,
     rayColor: visuals.coronaColor,
   }
 }

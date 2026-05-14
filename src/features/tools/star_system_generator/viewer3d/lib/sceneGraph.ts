@@ -55,6 +55,8 @@ function buildStar(system: GeneratedSystem): StarVisual {
     bloomStrength: visuals.bloomStrength,
     flareStrength: extras.flareStrength,
     pulseSpeed: extras.pulseSpeed,
+    pulseAmplitude: extras.pulseAmplitude,
+    rotationSpeed: extras.rotationSpeed,
     rayColor: extras.rayColor,
     position: [0, 0, 0],
   }
@@ -74,6 +76,8 @@ function buildCompanion(companion: StellarCompanion, _primary: StarVisual, hzCen
     bloomStrength: visuals.bloomStrength * (companion.mode === 'volatile' ? 1.5 : 1),
     flareStrength: visuals.flareStrength,
     pulseSpeed: visuals.pulseSpeed,
+    pulseAmplitude: visuals.pulseAmplitude,
+    rotationSpeed: visuals.rotationSpeed,
     rayColor: visuals.rayColor,
     position: [Math.cos(angle) * offset, 0, Math.sin(angle) * offset],
   }
@@ -94,6 +98,8 @@ function buildDistantMarker(companion: StellarCompanion, outermostBodyAu: number
       bloomStrength: visuals.bloomStrength * 0.5,
       flareStrength: visuals.flareStrength * 0.4,
       pulseSpeed: visuals.pulseSpeed,
+      pulseAmplitude: visuals.pulseAmplitude,
+      rotationSpeed: visuals.rotationSpeed,
       rayColor: visuals.rayColor,
       position: [Math.cos(angle) * sceneRadius, 0, Math.sin(angle) * sceneRadius],
     },
