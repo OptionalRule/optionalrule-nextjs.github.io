@@ -7,7 +7,7 @@ function fact<T>(value: T): { value: T; confidence: 'derived' } {
   return { value, confidence: 'derived' }
 }
 
-function makeVolatileCompanion(base: ReturnType<typeof generateSystem>): StellarCompanion {
+function makeVolatileCompanion(_base: ReturnType<typeof generateSystem>): StellarCompanion {
   return {
     id: 'synthetic-volatile',
     companionType: fact('Contact binary companion'),
