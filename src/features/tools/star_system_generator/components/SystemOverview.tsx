@@ -1,7 +1,8 @@
-import { Sun, Telescope, Thermometer } from 'lucide-react'
+import { Sun, Telescope, Thermometer, Users } from 'lucide-react'
 import type { GeneratedSystem } from '../types'
 import { formatStellarClass, stellarClassNote } from '../lib/stellarLabels'
 import { buildSeedHref } from '../lib/seedUrl'
+import { formatSystemPopulationLine } from '../lib/populationDisplay'
 import { FieldRow, SectionHeader, SpectralChip, sectionShellClasses } from './visual'
 
 function extractParentSeed(seed: string): string | undefined {
@@ -73,6 +74,14 @@ export function SystemOverview({ system }: { system: GeneratedSystem }) {
         <span>
           <span className="font-semibold text-[var(--text-primary)]">Stellar class note:</span>{' '}
           {stellarClassNote(spectralValue)}
+        </span>
+      </p>
+
+      <p className="mt-2 flex gap-2 text-sm text-[var(--text-secondary)]">
+        <Users aria-hidden="true" className="mt-0.5 h-4 w-4 shrink-0 text-[var(--accent-warm)]" />
+        <span>
+          <span className="font-semibold text-[var(--text-primary)]">Population:</span>{' '}
+          {formatSystemPopulationLine(system)}
         </span>
       </p>
 

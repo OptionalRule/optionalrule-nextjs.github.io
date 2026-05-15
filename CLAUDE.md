@@ -17,6 +17,14 @@ This is a Next.js 15 static blog site for Optional Rule Games that deploys to Gi
 - `npm run find-empty-links` - Scan content for broken markdown links
 - `npm run create-post` - Create new blog post with frontmatter template
 
+## Git Workflow
+
+- **Working branch**: `develop` — commit feature work and fixes directly here
+- **Release flow**: `develop` is periodically merged into `main`, which triggers GitHub Pages deploy via `.github/workflows/deploy.yml`
+- **Commit cadence**: Commit and push to `origin/develop` as each addition or fix is completed — don't batch unrelated changes into one commit, and don't leave work uncommitted between turns
+- **Commit messages**: Use Conventional Commits with an optional scope: `feat(viewer3d): ...`, `fix: ...`, `docs: ...`, `chore: ...`, `test: ...`, `refactor: ...`
+- **Never** force-push or rewrite history on `develop` or `main` without explicit user request
+
 ## Architecture Overview
 
 ### Static Site Generation

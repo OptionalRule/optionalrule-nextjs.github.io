@@ -282,3 +282,9 @@ These should wait until the polish pass is complete:
 - campaign persistence
 - map visualization
 - live external astronomy data
+
+## Adjacent Plans
+
+Beyond this roadmap, the following adjacent plans have shipped and changed what generated systems look like at the table:
+
+- [Body-level population layer](./POPULATION_LAYER_PLAN.md) — implied background population on every body (nine bands from `empty` to `dense-world`), surface/underground/orbital presence, terraform state with failed-terraform-to-ruin emission, system-level Population line on the overview, habitation glyph in the 3D viewer. Reframes the named settlements as the *noted* subset of a larger system population. All 5 phases on `develop`.

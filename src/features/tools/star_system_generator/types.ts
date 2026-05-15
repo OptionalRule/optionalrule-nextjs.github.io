@@ -26,6 +26,60 @@ export type SettlementPopulation =
   | '10+ million'
   | 'Unknown'
 
+export type BodyPopulationBand =
+  | 'empty'
+  | 'automated'
+  | 'transient'
+  | 'outpost'
+  | 'frontier'
+  | 'colony'
+  | 'established'
+  | 'populous'
+  | 'dense-world'
+
+export type BodySurfacePresence = 'none' | 'scattered' | 'widespread' | 'dominant'
+export type BodyOrbitalPresence = 'none' | 'minimal' | 'substantial' | 'ring-city'
+
+export type TerraformState =
+  | 'none'
+  | 'candidate'
+  | 'in-progress'
+  | 'stabilized'
+  | 'failed'
+
+export type BodyUnnamedSiteCount =
+  | 'none'
+  | 'a handful'
+  | 'dozens'
+  | 'hundreds'
+  | 'thousands'
+  | 'continuous'
+
+export interface BodyPopulation {
+  band: BodyPopulationBand
+  surface: BodySurfacePresence
+  underground: BodySurfacePresence
+  orbital: BodyOrbitalPresence
+  unnamedSiteCount: BodyUnnamedSiteCount
+  prominentForm: string | null
+  terraformState: TerraformState
+  terraformNote: string | null
+}
+
+export type SystemPopulationBand =
+  | 'skeleton'
+  | 'frontier-scatter'
+  | 'working'
+  | 'established-hub'
+  | 'dense-sector'
+
+export interface SystemPopulationSummary {
+  systemBand: SystemPopulationBand
+  anchorBodyId: string | null
+  populatedBodyCount: number
+  totalUnnamedSiteScale: 'none' | 'scattered' | 'extensive' | 'continuous'
+}
+
 export type SettlementHabitationPattern =
   | 'Surface settlement'
   | 'Orbital station'
@@ -179,6 +233,7 @@ export interface Moon {
   resource: Fact<string>
   hazard: Fact<string>
   use: Fact<string>
+  population?: Fact<BodyPopulation> | null
 }
 
 export interface RingSystem {
@@ -213,6 +268,7 @@ export interface OrbitingBody {
   filterNotes: Array<Fact<string>>
   traits: Array<Fact<string>>
   sites: Array<Fact<string>>
+  population?: Fact<BodyPopulation> | null
 }
 
 export interface PartialKnownBody {

@@ -10,6 +10,7 @@ Planned client-side tool for generating astronomy-grounded, game-facing star sys
 - Audit fix plan: `docs/AUDIT_FIX_PLAN.md`
 - Post-audit procedural remodel plan: `docs/POST_AUDIT_REMODEL_PLAN.md`
 - Narrative/data polish roadmap: `docs/POLISH_ROADMAP.md`
+- Body-level population layer plan: `docs/POPULATION_LAYER_PLAN.md`
 
 ## Development Notes
 

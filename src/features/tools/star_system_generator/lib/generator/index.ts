@@ -155,6 +155,7 @@ import { phenomenonNote } from './prose/phenomenonProse'
 import { buildRelationshipGraph, renderSystemStory } from './graph'
 import { graphAwareReshape } from './prose'
 import { selectSystemHooks } from './hooks'
+import { derivePopulationLayer } from './population'
 import { createSeededRng, normalizeSeed, type SeededRng } from './rng'
 import { separationToMode } from './companionMode'
 import { generateCompanionStar } from './companionStar'
@@ -4481,7 +4482,7 @@ export function generateSystem(options: GenerationOptions, knownSystem?: Partial
     }
   })
 
-  return runNoAlienGuard({
+  return derivePopulationLayer(runNoAlienGuard({
     id: knownSystem?.id ?? `system-${options.seed}`,
     seed: options.seed,
     options,
@@ -4511,5 +4512,5 @@ export function generateSystem(options: GenerationOptions, knownSystem?: Partial
     systemStory,
     hooks,
     majorHazards: [guOverlay.hazard, ...stellarActivityHazards(primary)],
-  })
+  }))
 }

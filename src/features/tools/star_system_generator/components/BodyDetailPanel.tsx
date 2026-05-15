@@ -1,6 +1,14 @@
 import type { ReactNode } from 'react'
-import { Compass, FileSearch, Layers, Moon, Telescope } from 'lucide-react'
+import { Compass, FileSearch, Layers, Moon, Telescope, Users } from 'lucide-react'
 import type { GeneratedSystem, OrbitingBody, PlanetaryDetail } from '../types'
+import {
+  bandLabel,
+  formatBodyPopulationSuffix,
+  orbitalPresenceLabel,
+  presenceLabel,
+  terraformLabel,
+  unnamedSiteCountLabel,
+} from '../lib/populationDisplay'
 import { BodyCategoryIcon, FieldRow, ThermalZoneTag, sectionShellClasses } from './visual'
 
 export function BodyDetailPanel({ body, system }: { body: OrbitingBody; system: GeneratedSystem }) {
@@ -121,6 +129,8 @@ export function BodyDetailContent({
         ) : null}
       </SubBlock>
 
+      <PopulationBlock body={body} compact={compact} />
+
       <DeeperSurvey detail={body.detail} compact={compact} />
 
       <div className="mt-5 space-y-5 text-sm">
@@ -195,6 +205,46 @@ function SubBlock({
       </h3>
       <div className="mt-2 text-sm">{children}</div>
     </section>
+  )
+}
+
+function PopulationBlock({ body, compact }: { body: OrbitingBody; compact: boolean }) {
+  const pop = body.population?.value
+  if (!pop) return null
+
+  const presenceLines: string[] = []
+  if (pop.surface !== 'none') presenceLines.push(`Surface ${presenceLabel(pop.surface)}`)
+  if (pop.underground !== 'none') presenceLines.push(`Subsurface ${presenceLabel(pop.underground)}`)
+  if (pop.orbital !== 'none') presenceLines.push(`Orbital ${orbitalPresenceLabel(pop.orbital)}`)
+
+  const suffix = formatBodyPopulationSuffix(body)
+
+  return (
+    <SubBlock
+      title="Population"
+      icon={Users}
+      className={compact ? 'mt-4 border-t border-[var(--border-light)] pt-3' : 'mt-3 rounded-md border border-[var(--border-light)] bg-[var(--card-elevated)] p-3'}
+    >
+      <div className="space-y-1.5">
+        <p>
+          <span className="font-semibold text-[var(--accent-warm)]">{bandLabel(pop.band)}</span>
+          {suffix ? <span className="text-[var(--text-tertiary)]">{' '}— {suffix}</span> : null}
+        </p>
+        {presenceLines.length ? (
+          <p className="text-[var(--text-secondary)]">{presenceLines.join(' · ')}</p>
+        ) : null}
+        <p className="text-[var(--text-tertiary)]">
+          {unnamedSiteCountLabel(pop.unnamedSiteCount)}
+          {pop.prominentForm ? <>{' · prominent form '}<span className="text-[var(--text-secondary)]">{pop.prominentForm}</span></> : null}
+        </p>
+        {pop.terraformState !== 'none' ? (
+          <p className="text-[var(--text-secondary)]">
+            <span className="font-medium">Terraform:</span> {terraformLabel(pop.terraformState)}
+            {pop.terraformNote ? <span className="text-[var(--text-tertiary)]">{' '}— {pop.terraformNote}</span> : null}
+          </p>
+        ) : null}
+      </div>
+    </SubBlock>
   )
 }
 

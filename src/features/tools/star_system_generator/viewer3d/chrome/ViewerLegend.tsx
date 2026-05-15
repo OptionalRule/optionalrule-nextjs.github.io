@@ -12,6 +12,7 @@ const CHIPS: LegendChipSpec[] = [
   { color: 'var(--accent)',           label: 'solid rings: body orbits' },
   { color: 'rgb(125 211 252 / 0.6)',  label: 'blue band: habitable zone' },
   { color: STATUS_HUMAN.active.color, label: 'settlement' },
+  { color: STATUS_HUMAN.active.color, label: 'inhabited body' },
   { color: REGISTER_COLORS.gate,      label: 'gate' },
   { color: REGISTER_COLORS.ruin,      label: 'ruin' },
   { color: REGISTER_COLORS.hazard,    label: 'hazard (anchored)' },

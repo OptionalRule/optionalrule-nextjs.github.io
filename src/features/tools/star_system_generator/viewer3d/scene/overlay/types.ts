@@ -18,6 +18,7 @@ export type GlyphId =
   | 'PH'
   | 'HZ'
   | 'GU'
+  | 'HB'
 
 export type GlyphRegister = 'human' | 'gate' | 'ruin' | 'phenomenon' | 'hazard' | 'gu'
 

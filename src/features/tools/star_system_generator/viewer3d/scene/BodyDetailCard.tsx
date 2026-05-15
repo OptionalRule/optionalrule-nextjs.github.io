@@ -1,12 +1,15 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { forwardRef, useEffect, useRef, useState } from 'react'
 import { Html } from '@react-three/drei'
 import { useFrame } from '@react-three/fiber'
+import * as THREE from 'three'
 import { X } from 'lucide-react'
 import type { GeneratedSystem, OrbitingBody } from '../../types'
 import type { SystemSceneGraph, SceneVec3 } from '../types'
 import { useSelectionActions, useSelectionState } from '../chrome/ViewerContext'
+
+const projectVec = new THREE.Vector3()
 
 interface ResolvedSelection {
   body: OrbitingBody
@@ -52,6 +55,7 @@ export function BodyDetailCard({ graph, system }: BodyDetailCardProps) {
   const { selection } = useSelectionState()
   const { select } = useSelectionActions()
   const [livePosition, setLivePosition] = useState<SceneVec3 | null>(null)
+  const cardRef = useRef<HTMLDivElement | null>(null)
 
   const resolved = resolveSelection(graph, system, selection)
   const bodyId = resolved?.bodyId ?? null
@@ -82,30 +86,58 @@ export function BodyDetailCard({ graph, system }: BodyDetailCardProps) {
 
   if (!resolved || !livePosition) return null
   const { body } = resolved
-  const sizeLift = (() => {
-    const sizes = (window as Window & { __viewer3dBodySizes?: Record<string, number> }).__viewer3dBodySizes
-    return sizes?.[body.id] ?? 1
-  })()
 
-  const cardPosition: SceneVec3 = [
-    livePosition[0] + sizeLift * 1.4,
-    livePosition[1] + sizeLift * 1.4,
-    livePosition[2],
-  ]
+  const calculatePosition = (
+    el: THREE.Object3D,
+    camera: THREE.Camera,
+    size: { width: number; height: number },
+  ): number[] => {
+    projectVec.setFromMatrixPosition(el.matrixWorld).project(camera)
+    const halfW = size.width / 2
+    const halfH = size.height / 2
+    const anchorX = projectVec.x * halfW + halfW
+    const anchorY = -projectVec.y * halfH + halfH
+
+    const card = cardRef.current
+    const cardW = card?.offsetWidth ?? 280
+    const cardH = card?.offsetHeight ?? 220
+    const margin = 12
+    const gap = 18
+
+    let x = anchorX + gap
+    let y = anchorY - cardH - gap
+
+    if (x + cardW + margin > size.width) {
+      x = anchorX - cardW - gap
+    }
+    if (y < margin) {
+      y = anchorY + gap
+    }
+
+    x = Math.max(margin, Math.min(x, size.width - cardW - margin))
+    y = Math.max(margin, Math.min(y, size.height - cardH - margin))
+    return [x, y]
+  }
 
   return (
     <Html
-      position={cardPosition}
+      position={livePosition}
       pointerEvents="auto"
       zIndexRange={[120, 0]}
-      style={{ transform: 'translate(0, -100%)' }}
+      calculatePosition={calculatePosition}
     >
-      <CardBody body={body} system={system} onClose={() => select(null)} />
+      <CardBody ref={cardRef} body={body} system={system} onClose={() => select(null)} />
     </Html>
   )
 }
 
-function CardBody({ body, system, onClose }: { body: OrbitingBody; system: GeneratedSystem; onClose: () => void }) {
+interface CardBodyProps {
+  body: OrbitingBody
+  system: GeneratedSystem
+  onClose: () => void
+}
+
+const CardBody = forwardRef<HTMLDivElement, CardBodyProps>(function CardBody({ body, system, onClose }, ref) {
   const isBelt = body.category.value === 'belt'
   const isAnomaly = body.category.value === 'anomaly'
 
@@ -119,6 +151,7 @@ function CardBody({ body, system, onClose }: { body: OrbitingBody; system: Gener
 
   return (
     <article
+      ref={ref}
       role="dialog"
       aria-label={`${body.name.value} details`}
       className="pointer-events-auto w-[280px] rounded-md border border-[var(--accent)]/40 bg-[#0f141c]/80 p-3 text-[11px] text-[var(--text-primary)] shadow-lg shadow-black/40 backdrop-blur-md"
@@ -192,4 +225,4 @@ function CardBody({ body, system, onClose }: { body: OrbitingBody; system: Gener
       ) : null}
     </article>
   )
-}
+})

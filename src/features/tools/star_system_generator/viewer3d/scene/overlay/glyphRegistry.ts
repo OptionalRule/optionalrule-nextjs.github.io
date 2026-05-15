@@ -16,6 +16,7 @@ import { Ruin } from './glyphs/Ruin'
 import { Phenomenon } from './glyphs/Phenomenon'
 import { HazardLabel } from './glyphs/HazardLabel'
 import { GuBleedLabel } from './glyphs/GuBleedLabel'
+import { Habitation } from './glyphs/Habitation'
 
 export const GLYPH_COMPONENTS: Record<GlyphId, GlyphComponent> = {
   A1: SurfaceCity,
@@ -35,6 +36,7 @@ export const GLYPH_COMPONENTS: Record<GlyphId, GlyphComponent> = {
   PH: Phenomenon,
   HZ: HazardLabel,
   GU: GuBleedLabel,
+  HB: Habitation,
 }
 
 export const GLYPH_META: Record<GlyphId, GlyphMeta> = {
@@ -55,10 +57,11 @@ export const GLYPH_META: Record<GlyphId, GlyphMeta> = {
   PH: { id: 'PH', name: 'Phenomenon', register: 'phenomenon', description: 'System anomaly · magenta' },
   HZ: { id: 'HZ', name: 'Hazard label', register: 'hazard', description: 'Companion glyph for HazardVolume · orange' },
   GU: { id: 'GU', name: 'GU bleed label', register: 'gu', description: 'Companion glyph for GuBleedVolume · violet-pink' },
+  HB: { id: 'HB', name: 'Habitation · Inhabited body', register: 'human', description: 'Shelter ideogram on bodies with background population beyond the named settlements' },
 }
 
 export const GLYPH_IDS: ReadonlyArray<GlyphId> = [
   'A1', 'A2', 'A3', 'BR', 'DR',
   'B1', 'B2', 'B3', 'B4', 'B5', 'B6', 'B7',
-  'GT', 'RU', 'PH', 'HZ', 'GU',
+  'GT', 'RU', 'PH', 'HZ', 'GU', 'HB',
 ]

@@ -39,6 +39,32 @@ describe('star system exports', () => {
     expect(markdown.endsWith('\n')).toBe(true)
   })
 
+  it('includes a system Population line and per-body population in markdown export', () => {
+    const system = generateSystem({ ...options, seed: 'export-pop-header', settlements: 'hub' })
+    const markdown = exportSystemMarkdown(system)
+
+    expect(markdown).toContain('**Population:**')
+
+    const populatedBody = system.bodies.find((b) => {
+      const band = b.population?.value.band
+      return band && !['empty', 'automated', 'transient'].includes(band)
+    })
+    if (populatedBody) {
+      expect(markdown).toContain(populatedBody.name.value)
+      const band = populatedBody.population!.value.band
+      const friendlyBand = band.replace('-', ' ')
+      expect(markdown.toLowerCase()).toContain(friendlyBand.toLowerCase())
+    }
+  })
+
+  it('exports population structures in JSON', () => {
+    const system = generateSystem(options)
+    const json = exportSystemJson(system)
+    const parsed = JSON.parse(json)
+    expect(parsed.bodies[0].population).toBeDefined()
+    expect(parsed.bodies[0].population.value.band).toBeDefined()
+  })
+
   it('exports parseable JSON using the generated system schema', () => {
     const system = generateSystem(options)
     const json = exportSystemJson(system)

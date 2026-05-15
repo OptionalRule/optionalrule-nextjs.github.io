@@ -1,7 +1,8 @@
 import { Fragment, useState } from 'react'
 import { ChevronDown, ChevronRight, Orbit } from 'lucide-react'
-import type { GeneratedSystem } from '../types'
+import type { GeneratedSystem, OrbitingBody } from '../types'
 import { BodyDetailContent } from './BodyDetailPanel'
+import { bandLabel, formatBodyPopulationSuffix } from '../lib/populationDisplay'
 import { BodyCategoryIcon, SectionHeader, ThermalZoneTag, sectionShellClasses } from './visual'
 
 interface OrbitalTableProps {
@@ -122,6 +123,7 @@ export function OrbitalTable({ system }: OrbitalTableProps) {
                         moons={body.moons.length}
                         sites={body.sites.length}
                         rings={Boolean(body.rings)}
+                        body={body}
                       />
                     </td>
                   </tr>
@@ -142,12 +144,18 @@ export function OrbitalTable({ system }: OrbitalTableProps) {
   )
 }
 
-function SatelliteSummary({ moons, sites, rings }: { moons: number; sites: number; rings: boolean }) {
+function SatelliteSummary({ moons, sites, rings, body }: { moons: number; sites: number; rings: boolean; body: OrbitingBody }) {
   const parts: Array<{ label: string; emphasized: boolean }> = []
   if (moons > 0) parts.push({ label: `${moons} moon${moons === 1 ? '' : 's'}`, emphasized: true })
   if (sites > 0) parts.push({ label: `${sites} site${sites === 1 ? '' : 's'}`, emphasized: true })
   if (rings) parts.push({ label: 'rings', emphasized: false })
-  if (parts.length === 0) return <span className="text-[var(--text-tertiary)]">—</span>
+
+  const pop = body.population?.value
+  const popLabel = pop && !['empty', 'automated', 'transient'].includes(pop.band) ? bandLabel(pop.band) : null
+  const popSuffix = formatBodyPopulationSuffix(body)
+
+  if (parts.length === 0 && !popLabel) return <span className="text-[var(--text-tertiary)]">—</span>
+
   return (
     <span className="inline-flex flex-wrap items-center gap-x-1.5 gap-y-0.5">
       {parts.map((part, index) => (
@@ -158,6 +166,15 @@ function SatelliteSummary({ moons, sites, rings }: { moons: number; sites: numbe
           </span>
         </Fragment>
       ))}
+      {popLabel ? (
+        <>
+          {parts.length > 0 ? <span className="text-[var(--text-tertiary)]">·</span> : null}
+          <span className="font-medium text-[var(--accent-warm)]">{popLabel}</span>
+          {popSuffix ? (
+            <span className="text-[var(--text-tertiary)]">+ {popSuffix}</span>
+          ) : null}
+        </>
+      ) : null}
     </span>
   )
 }
