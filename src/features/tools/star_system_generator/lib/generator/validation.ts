@@ -672,8 +672,8 @@ export function validateBinaryStability(system: GeneratedSystem): ValidationFind
     if (!companion.subSystem) continue
     const compLimit = siblingOuterAuLimit(
       separationToBucketAu(companion.separation.value),
-      primaryMass,
       companion.star.massSolar.value,
+      primaryMass,
     )
     companion.subSystem.bodies.forEach((body, index) => {
       if (body.orbitAu.value > compLimit) {
