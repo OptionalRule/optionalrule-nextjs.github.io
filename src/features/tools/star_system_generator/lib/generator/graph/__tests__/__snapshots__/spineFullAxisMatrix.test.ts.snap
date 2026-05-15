@@ -24,12 +24,12 @@ exports[`spine full axis matrix (16 representative cells) > baseline-frontier-ba
 
 exports[`spine full axis matrix (16 representative cells) > baseline-frontier-cinematic: stable spine + body[0] structural fields 1`] = `
 {
-  "body0": "Carrion Wake keeps the receipts. Vow-Breaker Wake keeps the witnesses. Between Pale Saint Pact and Vow-Breaker Wake the knife is already drawn. Brothers of Choir wants Carrion Wake to bleed first.",
-  "spineEdgeType": "CONTESTS",
-  "spineObjectKind": "namedFaction",
-  "spineSubjectKind": "namedFaction",
-  "spineSummary": "Between Carrion Wake and Vow-Breaker Wake the war is already lost; only the funerals remain.",
-  "spineVisibility": "contested",
+  "body0": "Ceibo's Breach VII has been watching the moving bleed-node river eat its margins for a generation. Something is wrong under Ceibo's Breach IV, and debt-fleet anchor graveyard is the name people whisper for it. The debt-fleet anchor graveyard is closing on Ceibo's Breach VII like a tide. Ceibo's Breach VII carries Ceibo's Breach VII Station on its surface. Ceibo's Breach IV Redoubt is the only major foothold on Ceibo's Breach IV.",
+  "spineEdgeType": "DESTABILIZES",
+  "spineObjectKind": "body",
+  "spineSubjectKind": "phenomenon",
+  "spineSummary": "Everything Ceibo's Breach VII was built to outlast is being unmade by the moving bleed-node river.",
+  "spineVisibility": "public",
 }
 `;
 
