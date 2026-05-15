@@ -319,6 +319,7 @@ Implemented close to source method
 - Import-ready locked-fact foundations for known stars and bodies, including locked conflict reporting.
 - Markdown and JSON export.
 - Final no-alien guard converts old alien-style mystery labels into MASS-GU replacements and records the check result.
+- Body-level population layer: nine-band derived `BodyPopulation` field on every `OrbitingBody` (`empty` through `dense-world`), surface/underground/orbital presence flags, unnamed-site count, prominent built-form, and terraform state. Pure derivation from existing facts (no new RNG fork). Surfaces on SystemOverview, OrbitalTable, BodyDetailPanel, Markdown, JSON, and a body-level `HB` habitation glyph in the 3D viewer. Failed-terraform bodies deterministically emit terraform-ruin entries. See `POPULATION_LAYER_PLAN.md` for the full design.
 
 First-pass approximations
 - Planet class tables are expanded from the source writeup but still use compressed equal-choice lists rather than exact d20 weighting.

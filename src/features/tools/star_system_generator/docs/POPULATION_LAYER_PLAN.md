@@ -276,43 +276,68 @@ In the existing ruin generation pass, after population derivation runs, any body
 lib/generator/
 +-- population.ts                            [NEW]
 |   - derivePopulationLayer (the entry point)
+|   - selectBand, distributePresence
 |   - classifyHabitability, classifyResource, classifyStrategic, classifyLoad
-|   - selectBand (decision tree)
-|   - distributePresence
-|   - selectProminentForm
-|   - deriveTerraformState
-+-- data/
-|   +-- populationTables.ts                  [NEW]
-|       - BAND_LOOKUP (4-axis table)
-|       - PROMINENT_FORMS_BY_CONTEXT
-|       - TERRAFORM_NOTE_POOLS
-|       - SYSTEM_BAND_FROM_BODIES (rollup)
-+-- index.ts                                 (modified: call derivePopulationLayer)
+|   - deriveTerraformState, selectProminentForm, unnamedSiteCountForBand
+|   - collectTerraformRuins (Phase 3)
+|   - TERRAFORM_RUIN_TYPES, isTerraformRuinType (Phase 5, used by audit + tests)
+|   - decision tables inline (BAND_ORDER, HABITABILITY_SCORE,
+|     PROMINENT_FORMS_BY_HABITABILITY, TERRAFORM_RUIN_TYPES/HOOKS)
++-- index.ts                                 (modified: import + call derivePopulationLayer
+                                              after runNoAlienGuard)
+
+lib/
++-- populationDisplay.ts                     [NEW]
+|   - bandLabel, presenceLabel, orbitalPresenceLabel, terraformLabel
+|   - unnamedSiteCountLabel, systemBandLabel
+|   - systemPopulationSummary (derived rollup)
+|   - formatBodyPopulationSuffix, formatSystemPopulationLine
 
 viewer3d/scene/overlay/
 +-- glyphs/
 |   +-- Habitation.tsx                       [NEW]
-+-- glyphRegistry.ts                         (modified: register HB)
++-- pickHabitation.ts                        [NEW]
++-- glyphRegistry.ts                         (modified: register HB + meta)
 +-- types.ts                                 (modified: 'HB' added to GlyphId union)
 
 viewer3d/scene/
-+-- BodySettlements.tsx                      (modified: append habitation glyph)
++-- BodySettlements.tsx                      (modified: append habitation marker via picker)
++-- Body.tsx                                 (modified: unconditionally render BodySettlements
+                                              so populated-only bodies still show the glyph)
+
+viewer3d/chrome/
++-- ViewerLegend.tsx                         (modified: "inhabited body" chip)
 
 components/
-+-- BodyDetailPanel.tsx                      (modified: population section)
-+-- OrbitalTable.tsx                         (modified: sites column suffix)
-+-- SystemOverview.tsx                       (modified: population line)
++-- BodyDetailPanel.tsx                      (modified: PopulationBlock subsection)
++-- OrbitalTable.tsx                         (modified: band label + suffix in Moons/Sites col)
++-- SystemOverview.tsx                       (modified: Population paragraph)
 
 lib/export/
-+-- markdown.ts                              (modified: population in body + overview)
++-- markdown.ts                              (modified: system Population line + body sites col)
 +-- json.ts                                  (passes through new field)
 
-types.ts                                     (modified: BodyPopulation, OrbitingBody.population)
+types.ts                                     (modified: BodyPopulation, BodyPopulationBand,
+                                              BodySurfacePresence, BodyOrbitalPresence,
+                                              TerraformState, BodyUnnamedSiteCount,
+                                              SystemPopulationBand, SystemPopulationSummary,
+                                              OrbitingBody.population, Moon.population)
+
+scripts/
++-- audit-star-system-generator.ts           (modified: auditPopulation function with five
+                                              new finding codes)
 
 __tests__/
-+-- population-derivation.test.ts            [NEW]
-+-- population-export.test.ts                [NEW]
-+-- BodyPopulationSection.test.tsx           [NEW]
++-- population-band.test.ts                  [NEW] — selectBand decision tree (13 cases)
++-- population-presence.test.ts              [NEW] — distributePresence (13 cases)
++-- population-derivation.test.ts            [NEW] — orchestrator + determinism (9 cases)
++-- populationDisplay.test.ts                [NEW] — display helpers (11 cases)
++-- population-ui.test.tsx                   [NEW] — SystemOverview/OrbitalTable/BodyDetailPanel
++-- population-terraform-ruins.test.ts       [NEW] — failed-terraform → ruin pairing
++-- export.test.ts                           (extended: population in Markdown + JSON)
+
+viewer3d/scene/overlay/__tests__/
++-- pickHabitation.test.ts                   [NEW] — glyph picker (7 cases)
 ```
 
 ## Testing Strategy
@@ -360,15 +385,22 @@ Reuse the existing fixture seed library (sparse, hub, GU-heavy, GU-light, single
 
 Each phase is independently shippable. No phase removes capability until validation in Phase 5.
 
-| Phase | Work | Effort | Verifiable end state |
+| Phase | Work | Effort | Status |
 |---|---|---|---|
-| **1** | Types (`BodyPopulation`, `BodyPopulationBand`, `BodySurfacePresence`, `BodyOrbitalPresence`, `TerraformState`). Field on `OrbitingBody` and `Moon`. `lib/generator/population.ts` with derivation function. `lib/generator/data/populationTables.ts`. Unit tests for derivation and determinism. Wire into pipeline after settlements. | 1.5 days | Field present in JSON for all generated systems. Existing tests pass. Snapshot regen documented. |
-| **2** | Body detail panel "Population" section. Orbital table sites-column suffix. System overview "Population" line. Markdown/JSON export passes through. Tests for each surface. | 1.5 days | Generated systems show population on all four surfaces. Sample review of 10 systems confirms readability. |
-| **3** | Failed-terraform → `HumanRemnant` integration. Audit check: every failed-terraform body produces a terraform ruin. Unit tests. | 1 day | Failed-terraform systems produce ruins. Audit passes. |
-| **4** | 3D viewer habitation glyph. New `HB` glyph component, registry entry, type union update. `BodySettlements.tsx` renders the glyph per band. Layer toggle integration. Legend entry. | 1 day | Inhabited bodies show the glyph in the 3D viewer. Toggling the Human layer hides it. Visual review of 5 sample systems. |
-| **5** | New audit checks (4 floor/ceiling rules). Manual review of 20 generated systems comparing pre/post output. Tune the band-lookup table and terraform-note pools based on review. | 0.5–1 day | Audit checks pass. Sample review shows clear improvement in cross-layer population context. |
+| **1** | Types (`BodyPopulation`, `BodyPopulationBand`, `BodySurfacePresence`, `BodyOrbitalPresence`, `TerraformState`). Field on `OrbitingBody` and `Moon`. `lib/generator/population.ts` with derivation function + decision tables. Unit tests for `selectBand`, `distributePresence`, and orchestrator determinism. Wire into pipeline after `runNoAlienGuard`. | 1.5 days | ✅ Shipped — `d3487b2` |
+| **2** | Body detail panel "Population" section. Orbital table sites-column band label + suffix. System overview "Population" line. Markdown/JSON export passes through. `lib/populationDisplay.ts` with `bandLabel` / `presenceLabel` / `terraformLabel` / `systemPopulationSummary` / `formatSystemPopulationLine`. Tests for each surface. | 1.5 days | ✅ Shipped — `b71f5de` |
+| **3** | Failed-terraform → `HumanRemnant` integration. `derivePopulationLayer` collects terraform-ruin entries (six type variants, six hooks) for any body with `terraformState: 'failed'`, including companion sub-system bodies. Determinism via `stableHash(bodyId)`. Unit tests cover emission, idempotence, and absence on systems without failed terraforms. | 1 day | ✅ Shipped — `f9cebcd` |
+| **4** | 3D viewer habitation glyph. New `HB` shelter-ideogram component, registry entry, `GlyphId` union expansion. `pickHabitation.ts` picker with present/dominant sizing + terraform-ring flag. `BodySettlements.tsx` consults the body lookup and appends the habitation marker. `Body.tsx` gating removed so populated-only bodies still render the indicator. Legend entry "inhabited body". | 1 day | ✅ Shipped — `f6d08c7` |
+| **5** | New audit checks: `POPULATION_MISSING`, `POPULATION_FLOOR_VIOLATED`, `POPULATION_DENSE_WORLD_GATE`, `POPULATION_STABLE_ATM_GATE`, `POPULATION_TERRAFORM_RUIN_MISSING`. `TERRAFORM_RUIN_TYPES` + `isTerraformRuinType` exported so audit and tests share the canonical list. Sample review across 12 distribution/density combinations confirms band distribution and readability. | 0.5–1 day | ✅ Shipped — `347dc87` |
 
-**Total: ~5 days** of focused work.
+**Total: ~5 days** of focused work. **Completed:** all 5 phases on `develop`.
+
+### Departures from the original plan
+
+- `lib/generator/data/populationTables.ts` was not created as a separate file. The lookup tables (`BAND_ORDER`, `HABITABILITY_SCORE`, `PROMINENT_FORMS_BY_HABITABILITY`, `TERRAFORM_RUIN_TYPES`, `TERRAFORM_RUIN_HOOKS`) all live inside `population.ts`. Split out only if the file grows past readability.
+- `selectProminentForm` is keyed by habitability rather than the multi-axis `(habitability, surface, underground)` matrix in the plan. Sample review showed habitability alone gave enough variety; the multi-axis matrix can be added later if Phase 5+ review surfaces repetition.
+- The Phase 5 system-level check "every `settlementDensity: 'hub'` system has at least one `colony+` body" was kept as a unit test instead of an audit rule. On frontier distributions the M-dwarf flare cap legitimately keeps top bands below colony for many systems; the audit would noise.
+- Sample review covered 12 systems instead of the planned 20. The pre/post comparison was implicit (Phase 5 ships after Phase 1–4 are already in `develop`), so the review focused on band distribution and readability across distribution/density axes rather than diffing against a baseline corpus.
 
 ## Risk Mitigation
 
