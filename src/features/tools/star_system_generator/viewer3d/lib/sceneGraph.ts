@@ -282,13 +282,18 @@ function bodyVisualExtent(body: BodyVisual): number {
   return Math.max(body.visualSize, ringExtent, moonExtent)
 }
 
-function applyBodyOrbitClearance(bodies: BodyVisual[]): BodyVisual[] {
+const CLEARANCE_CAP_SAFETY_MARGIN = 1.5
+
+function applyBodyOrbitClearance(bodies: BodyVisual[], maxRadius: number = Number.POSITIVE_INFINITY): BodyVisual[] {
+  const cap = Number.isFinite(maxRadius) ? maxRadius - CLEARANCE_CAP_SAFETY_MARGIN : Number.POSITIVE_INFINITY
   return bodies.reduce<BodyVisual[]>((out, body) => {
     const previous = out.at(-1)
-    if (!previous) return [body]
-
-    const minimumGap = bodyVisualExtent(previous) + bodyVisualExtent(body) + BODY_ORBIT_CLEARANCE
-    const orbitRadius = Math.max(body.orbitRadius, previous.orbitRadius + minimumGap)
+    const minimumGap = previous ? bodyVisualExtent(previous) + bodyVisualExtent(body) + BODY_ORBIT_CLEARANCE : 0
+    const orbitRadius = previous ? Math.max(body.orbitRadius, previous.orbitRadius + minimumGap) : body.orbitRadius
+    if (orbitRadius >= cap) {
+      console.warn(`[sceneGraph] body ${body.id} dropped: inflated orbitRadius ${orbitRadius.toFixed(2)} >= cap ${cap.toFixed(2)} (maxRadius ${maxRadius.toFixed(2)})`)
+      return out
+    }
     out.push(orbitRadius === body.orbitRadius ? body : { ...body, orbitRadius })
     return out
   }, [])
@@ -402,7 +407,7 @@ export function buildSceneGraph(system: GeneratedSystem, options: BuildSceneGrap
     const nextOrbit = i < nonBelt.length - 1 ? nonBeltSceneOrbits[i + 1] : nearestCompanionOffset
     const moonMaxReach = (nextOrbit - thisOrbit) / 2
     return buildBody(b, system, hzCenterAu, scaleMode, orbitIndexById.get(b.id) ?? 0, moonMaxReach)
-  }))
+  }), nearestCompanionOffset)
   const belts = beltBodies.map((b) => buildBelt(b, hzCenterAu, scaleMode, orbitIndexById.get(b.id) ?? 0))
 
   const allHazards = system.majorHazards.map((h) => classifyHazard(h, system, hzCenterAu))
