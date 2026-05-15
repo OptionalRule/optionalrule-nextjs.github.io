@@ -4418,8 +4418,8 @@ export function generateSystem(options: GenerationOptions, knownSystem?: Partial
     const prefix = `comp${idx + 1}-`
     const companionMaxOrbitAu = siblingOuterAuLimit(
       separationToBucketAu(companion.separation.value),
-      primary.massSolar.value,
       subStar.massSolar.value,
+      primary.massSolar.value,
     )
     const rawSubBodies = generateBodies(
       subRng.fork('bodies'),
