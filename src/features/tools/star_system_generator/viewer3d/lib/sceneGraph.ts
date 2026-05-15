@@ -33,6 +33,7 @@ import {
   primaryStarVisualExtras,
 } from './visualProfiles'
 import { separationToBucketAu } from '../../lib/generator/companionGeometry'
+import { circumbinaryInnerAuLimit } from '../../lib/generator/companionStability'
 
 const BODY_ORBIT_CLEARANCE = 3.5
 const MIN_MOON_PERIOD_SEC = 24
@@ -383,7 +384,15 @@ export function buildSceneGraph(system: GeneratedSystem, options: BuildSceneGrap
 
   const circumbinaryCompanion = system.companions.find((c) => c.mode === 'circumbinary')
   const circumbinaryKeepOut = circumbinaryCompanion
-    ? auToScene(2 * separationToBucketAu(circumbinaryCompanion.separation.value), hzCenterAu, scaleMode)
+    ? auToScene(
+        circumbinaryInnerAuLimit(
+          separationToBucketAu(circumbinaryCompanion.separation.value),
+          system.primary.massSolar.value,
+          circumbinaryCompanion.star.massSolar.value,
+        ),
+        hzCenterAu,
+        scaleMode,
+      )
     : undefined
 
   const outermostBodyAu = system.bodies.reduce((max, b) => Math.max(max, b.orbitAu.value), 0)
