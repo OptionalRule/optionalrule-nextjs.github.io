@@ -1,0 +1,144 @@
+{
+  "archetypes": {
+    "mass-transfer-stream": {
+      "label": "Mass-Transfer Stream",
+      "whyHerePool": ["placeholder"],
+      "prizePool": ["placeholder"],
+      "guCharacterPool": ["placeholder"],
+      "phenomenon": {
+        "labelPool": ["L1 mass-transfer stream"],
+        "notePool": ["placeholder"],
+        "travelEffectPool": ["placeholder"],
+        "surveyQuestionPool": ["placeholder"],
+        "conflictHookPool": ["placeholder"],
+        "sceneAnchorPool": ["placeholder"]
+      }
+    },
+    "common-envelope-shell": {
+      "label": "Common-Envelope Ejecta Shell",
+      "whyHerePool": ["placeholder"],
+      "prizePool": ["placeholder"],
+      "guCharacterPool": ["placeholder"],
+      "phenomenon": {
+        "labelPool": ["Common-envelope ejecta shell"],
+        "notePool": ["placeholder"],
+        "travelEffectPool": ["placeholder"],
+        "surveyQuestionPool": ["placeholder"],
+        "conflictHookPool": ["placeholder"],
+        "sceneAnchorPool": ["placeholder"]
+      }
+    },
+    "polar-ring": {
+      "label": "Polar Circumbinary Ring",
+      "whyHerePool": ["placeholder"],
+      "prizePool": ["placeholder"],
+      "guCharacterPool": ["placeholder"],
+      "phenomenon": {
+        "labelPool": ["Polar circumbinary ring"],
+        "notePool": ["placeholder"],
+        "travelEffectPool": ["placeholder"],
+        "surveyQuestionPool": ["placeholder"],
+        "conflictHookPool": ["placeholder"],
+        "sceneAnchorPool": ["placeholder"]
+      }
+    },
+    "trojan-camp": {
+      "label": "Binary Trojan Camp",
+      "whyHerePool": ["placeholder"],
+      "prizePool": ["placeholder"],
+      "guCharacterPool": ["placeholder"],
+      "phenomenon": {
+        "labelPool": ["Binary Trojan camp"],
+        "notePool": ["placeholder"],
+        "travelEffectPool": ["placeholder"],
+        "surveyQuestionPool": ["placeholder"],
+        "conflictHookPool": ["placeholder"],
+        "sceneAnchorPool": ["placeholder"]
+      }
+    },
+    "inner-pair-halo": {
+      "label": "Hierarchical Inner-Pair Halo",
+      "whyHerePool": ["placeholder"],
+      "prizePool": ["placeholder"],
+      "guCharacterPool": ["placeholder"],
+      "phenomenon": {
+        "labelPool": ["Hierarchical inner-pair halo"],
+        "notePool": ["placeholder"],
+        "travelEffectPool": ["placeholder"],
+        "surveyQuestionPool": ["placeholder"],
+        "conflictHookPool": ["placeholder"],
+        "sceneAnchorPool": ["placeholder"]
+      }
+    },
+    "kozai-scattered-halo": {
+      "label": "Kozai-Lidov Scattered Halo",
+      "whyHerePool": ["placeholder"],
+      "prizePool": ["placeholder"],
+      "guCharacterPool": ["placeholder"],
+      "phenomenon": {
+        "labelPool": ["Kozai-Lidov scattered halo"],
+        "notePool": ["placeholder"],
+        "travelEffectPool": ["placeholder"],
+        "surveyQuestionPool": ["placeholder"],
+        "conflictHookPool": ["placeholder"],
+        "sceneAnchorPool": ["placeholder"]
+      }
+    },
+    "hill-sphere-capture-cone": {
+      "label": "Hill-Sphere Capture Cone",
+      "whyHerePool": ["placeholder"],
+      "prizePool": ["placeholder"],
+      "guCharacterPool": ["placeholder"],
+      "phenomenon": {
+        "labelPool": ["Hill-sphere capture cone"],
+        "notePool": ["placeholder"],
+        "travelEffectPool": ["placeholder"],
+        "surveyQuestionPool": ["placeholder"],
+        "conflictHookPool": ["placeholder"],
+        "sceneAnchorPool": ["placeholder"]
+      }
+    },
+    "exocomet-swarm": {
+      "label": "Resonance-Pumped Exocomet Swarm",
+      "whyHerePool": ["placeholder"],
+      "prizePool": ["placeholder"],
+      "guCharacterPool": ["placeholder"],
+      "phenomenon": {
+        "labelPool": ["Resonance-pumped exocomet swarm"],
+        "notePool": ["placeholder"],
+        "travelEffectPool": ["placeholder"],
+        "surveyQuestionPool": ["placeholder"],
+        "conflictHookPool": ["placeholder"],
+        "sceneAnchorPool": ["placeholder"]
+      }
+    },
+    "accretion-bridge": {
+      "label": "Accretion Bridge",
+      "whyHerePool": ["placeholder"],
+      "prizePool": ["placeholder"],
+      "guCharacterPool": ["placeholder"],
+      "phenomenon": {
+        "labelPool": ["Accretion bridge"],
+        "notePool": ["placeholder"],
+        "travelEffectPool": ["placeholder"],
+        "surveyQuestionPool": ["placeholder"],
+        "conflictHookPool": ["placeholder"],
+        "sceneAnchorPool": ["placeholder"]
+      }
+    },
+    "gardener-cordon": {
+      "label": "Gardener-Quarantine Cordon",
+      "whyHerePool": ["placeholder"],
+      "prizePool": ["placeholder"],
+      "guCharacterPool": ["placeholder"],
+      "phenomenon": {
+        "labelPool": ["Gardener-quarantine cordon"],
+        "notePool": ["placeholder"],
+        "travelEffectPool": ["placeholder"],
+        "surveyQuestionPool": ["placeholder"],
+        "conflictHookPool": ["placeholder"],
+        "sceneAnchorPool": ["placeholder"]
+      }
+    }
+  }
+}
