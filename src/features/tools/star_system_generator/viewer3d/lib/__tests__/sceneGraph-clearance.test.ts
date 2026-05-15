@@ -62,4 +62,39 @@ describe('clearance inflation does not push bodies past the companion', () => {
         .toBeLessThan(companionOffset)
     }
   })
+
+  it('orbital-sibling sub-system companion: no primary body inflates past its scene position', () => {
+    // The empirical investigation documented probe-frontier-astronomy-low-normal-7-211
+    // as a moderate-binary case where clearance inflation pushed a primary body's
+    // scene radius (20.3) past the orbital-sibling companion's scene offset (17.1).
+    const seeds = [
+      'probe-frontier-astronomy-low-normal-7-211',
+      'clearance-sibling-1',
+      'clearance-sibling-2',
+      'clearance-sibling-3',
+      'clearance-sibling-4',
+      'clearance-sibling-5',
+    ]
+    let exercised = false
+    for (const seed of seeds) {
+      const system = generateSystem({
+        seed,
+        distribution: 'frontier',
+        tone: 'astronomy',
+        gu: 'low',
+        settlements: 'normal',
+      })
+      const graph = buildSceneGraph(system)
+      const sub = graph.subSystems[0]
+      if (!sub) continue
+      const subOffset = Math.hypot(...sub.star.position)
+      if (subOffset === 0 || !Number.isFinite(subOffset)) continue
+      exercised = true
+      for (const body of graph.bodies) {
+        expect(body.orbitRadius, `${seed} primary body ${body.id} radius ${body.orbitRadius} >= sub-system companion offset ${subOffset}`)
+          .toBeLessThan(subOffset)
+      }
+    }
+    expect(exercised, 'No orbital-sibling sub-system available in probe seeds').toBe(true)
+  })
 })

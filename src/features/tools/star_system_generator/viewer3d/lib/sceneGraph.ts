@@ -395,11 +395,16 @@ export function buildSceneGraph(system: GeneratedSystem, options: BuildSceneGrap
   const beltBodies = sortedOrbitingBodies.filter((b) => b.category.value === 'belt')
 
   const nearestCompanionOffset = (() => {
-    const nonCircumbinaryCompanions = inSceneCompanions
-      .map((src, i) => ({ src, visual: companions[i] }))
-      .filter(({ src }) => src.mode !== 'circumbinary')
-    if (nonCircumbinaryCompanions.length === 0) return Infinity
-    return Math.min(...nonCircumbinaryCompanions.map(({ visual }) => Math.hypot(...visual.position)))
+    const offsets: number[] = []
+    for (let i = 0; i < inSceneCompanions.length; i++) {
+      if (inSceneCompanions[i].mode === 'circumbinary') continue
+      offsets.push(Math.hypot(...companions[i].position))
+    }
+    for (const c of system.companions) {
+      if (c.mode !== 'orbital-sibling' || !c.subSystem) continue
+      offsets.push(Math.hypot(...buildCompanion(c, star, hzCenterAu, scaleMode).position))
+    }
+    return offsets.length === 0 ? Infinity : Math.min(...offsets)
   })()
   const nonBeltSceneOrbits = nonBelt.map((b) => orbitRadiusForBody(b, hzCenterAu, scaleMode, orbitIndexById.get(b.id) ?? 0))
   const bodies = applyBodyOrbitClearance(nonBelt.map((b, i) => {
