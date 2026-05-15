@@ -2,6 +2,7 @@ import type { BodyCategory, Fact, GeneratedSystem, OrbitingBody, Settlement } fr
 import { evaluateArchitectureSatisfaction } from './architecture'
 import { separationToBucketAu } from './companionGeometry'
 import { circumbinaryInnerAuLimit, siblingOuterAuLimit } from './companionStability'
+import { selectArchetypeForCompanion } from './debrisFields'
 import {
   rockyChainCategories,
 } from './domain'
@@ -78,6 +79,10 @@ export const validationCodes = {
   proseSingularMoonGrammar: 'PROSE_SINGULAR_MOON_GRAMMAR',
   proseRedundantZoneWording: 'PROSE_REDUNDANT_ZONE_WORDING',
   binaryStabilityConflict: 'BINARY_STABILITY_CONFLICT',
+  debrisFieldMissing: 'DEBRIS_FIELD_MISSING',
+  debrisFieldGeometryInvalid: 'DEBRIS_FIELD_GEOMETRY_INVALID',
+  debrisFieldAnchorViolation: 'DEBRIS_FIELD_ANCHOR_VIOLATION',
+  debrisFieldPhenomenonOrphan: 'DEBRIS_FIELD_PHENOMENON_ORPHAN',
 } as const
 
 export type ValidationCode = typeof validationCodes[keyof typeof validationCodes] | (string & {})
@@ -698,11 +703,172 @@ export function validateBinaryStability(system: GeneratedSystem): ValidationFind
   return findings
 }
 
+const TRANSIENT_MOBILE_PATTERNS = new Set(['Distributed swarm', 'Mobile site'])
+
+export function validateDebrisFields(system: GeneratedSystem): ValidationFinding[] {
+  const findings: ValidationFinding[] = []
+  const debrisFields = system.debrisFields ?? []
+  const phenomena = system.phenomena ?? []
+  const ruins = system.ruins ?? []
+  const hierarchicalTriple = system.companions.some(c => c.id === 'companion-2')
+  const fieldById = new Map(debrisFields.map(f => [f.id, f]))
+  const fieldByCompanionId = new Map(debrisFields.map(f => [f.companionId, f]))
+  const phenomenonIds = new Set(phenomena.map(p => p.id))
+  const debrisSpawnedPhenomenonIds = new Set(
+    debrisFields.flatMap(f => f.spawnedPhenomenonId ? [f.spawnedPhenomenonId] : [])
+  )
+
+  for (const companion of system.companions) {
+    const expected = selectArchetypeForCompanion(
+      { seed: system.seed },
+      companion,
+      system.primary,
+      { hierarchicalTriple },
+    )
+    if (!expected) continue
+    if (!fieldByCompanionId.has(companion.id)) {
+      findings.push(finding({
+        severity: 'error',
+        code: validationCodes.debrisFieldMissing,
+        path: `companions[${companion.id}].debrisField`,
+        message: `Companion ${companion.id} (mode: ${companion.mode}) should produce a debris field (shape: ${expected.shape}) but none exists in system.debrisFields.`,
+        targetId: companion.id,
+        targetKind: 'system',
+        source: validationSources.audit,
+        observed: null,
+        expected: expected.shape,
+      }))
+    }
+  }
+
+  const circumbinary = system.companions.find(c => c.mode === 'circumbinary')
+  if (circumbinary && system.primary?.massSolar) {
+    const sepAu = separationToBucketAu(circumbinary.separation.value)
+    const innerLimit = circumbinaryInnerAuLimit(sepAu, system.primary.massSolar.value, circumbinary.star.massSolar.value)
+    const coOrbitalShapes = new Set<string>(['trojan-camp', 'mass-transfer-stream', 'accretion-bridge', 'inner-pair-halo'])
+    debrisFields.forEach((field, index) => {
+      if (coOrbitalShapes.has(field.shape.value)) return
+      if (field.spatialExtent.innerAu.value < innerLimit) {
+        findings.push(finding({
+          severity: 'error',
+          code: validationCodes.debrisFieldGeometryInvalid,
+          path: `debrisFields[${index}].spatialExtent.innerAu`,
+          message: `Debris field ${field.id} (shape: ${field.shape.value}) innerAu ${field.spatialExtent.innerAu.value.toFixed(3)} AU is inside the circumbinary keep-out radius ${innerLimit.toFixed(3)} AU.`,
+          targetId: field.id,
+          targetKind: 'system',
+          source: validationSources.audit,
+          observed: field.spatialExtent.innerAu.value,
+          expected: `>= ${innerLimit.toFixed(3)}`,
+        }))
+      }
+    })
+
+    debrisFields.forEach((field, index) => {
+      if (field.anchorMode.value !== 'unanchorable') return
+      system.bodies.forEach((body, bodyIndex) => {
+        const orbit = body.orbitAu.value
+        if (orbit >= field.spatialExtent.innerAu.value && orbit <= field.spatialExtent.outerAu.value) {
+          findings.push(finding({
+            severity: 'error',
+            code: validationCodes.debrisFieldGeometryInvalid,
+            path: `debrisFields[${index}].spatialExtent`,
+            message: `Unanchorable debris field ${field.id} overlaps body ${body.id} at orbit ${orbit.toFixed(3)} AU (field extent: ${field.spatialExtent.innerAu.value.toFixed(3)}-${field.spatialExtent.outerAu.value.toFixed(3)} AU).`,
+            targetId: field.id,
+            targetKind: 'body',
+            source: validationSources.audit,
+            observed: orbit,
+            expected: `outside ${field.spatialExtent.innerAu.value.toFixed(3)}-${field.spatialExtent.outerAu.value.toFixed(3)} AU`,
+          }))
+          void bodyIndex
+        }
+      })
+    })
+  }
+
+  const allAnchoredEntities: Array<{ debrisFieldId: string; id: string; kind: string; habitationPattern?: string }> = [
+    ...system.settlements
+      .filter(s => s.debrisFieldId !== undefined)
+      .map(s => ({ debrisFieldId: s.debrisFieldId as string, id: s.id, kind: 'settlement', habitationPattern: s.habitationPattern.value })),
+    ...ruins
+      .filter(r => r.debrisFieldId !== undefined)
+      .map(r => ({ debrisFieldId: r.debrisFieldId as string, id: r.id, kind: 'ruin' })),
+  ]
+
+  for (const entity of allAnchoredEntities) {
+    const field = fieldById.get(entity.debrisFieldId)
+    if (!field) continue
+    const anchorMode = field.anchorMode.value
+    if (anchorMode === 'unanchorable') {
+      findings.push(finding({
+        severity: 'error',
+        code: validationCodes.debrisFieldAnchorViolation,
+        path: `${entity.kind}[${entity.id}].debrisFieldId`,
+        message: `${entity.kind} ${entity.id} is anchored to debris field ${field.id} whose anchorMode is 'unanchorable'.`,
+        targetId: entity.id,
+        targetKind: entity.kind === 'settlement' ? 'settlement' : 'system',
+        source: validationSources.audit,
+        observed: anchorMode,
+        expected: 'embedded | edge-only | transient-only',
+      }))
+    } else if (anchorMode === 'transient-only' && entity.kind === 'settlement') {
+      const pattern = entity.habitationPattern ?? ''
+      if (!TRANSIENT_MOBILE_PATTERNS.has(pattern)) {
+        findings.push(finding({
+          severity: 'error',
+          code: validationCodes.debrisFieldAnchorViolation,
+          path: `settlements[${entity.id}].debrisFieldId`,
+          message: `Settlement ${entity.id} (pattern: '${pattern}') is anchored to debris field ${field.id} whose anchorMode is 'transient-only', but the pattern is not mobile.`,
+          targetId: entity.id,
+          targetKind: 'settlement',
+          source: validationSources.audit,
+          observed: pattern,
+          expected: `one of: ${[...TRANSIENT_MOBILE_PATTERNS].join(', ')}`,
+        }))
+      }
+    }
+  }
+
+  debrisFields.forEach((field, index) => {
+    if (field.spawnedPhenomenonId !== null && !phenomenonIds.has(field.spawnedPhenomenonId)) {
+      findings.push(finding({
+        severity: 'error',
+        code: validationCodes.debrisFieldPhenomenonOrphan,
+        path: `debrisFields[${index}].spawnedPhenomenonId`,
+        message: `Debris field ${field.id} references phenomenon ${field.spawnedPhenomenonId} which does not exist in system.phenomena.`,
+        targetId: field.id,
+        targetKind: 'system',
+        source: validationSources.audit,
+        observed: field.spawnedPhenomenonId,
+        expected: 'existing phenomenon id',
+      }))
+    }
+  })
+
+  phenomena.forEach((phenomenon, index) => {
+    if (phenomenon.id.startsWith('phen-debris-') && !debrisSpawnedPhenomenonIds.has(phenomenon.id)) {
+      findings.push(finding({
+        severity: 'error',
+        code: validationCodes.debrisFieldPhenomenonOrphan,
+        path: `phenomena[${index}].id`,
+        message: `Phenomenon ${phenomenon.id} appears to be debris-spawned (id prefix 'phen-debris-') but no debris field claims it as spawnedPhenomenonId.`,
+        targetId: phenomenon.id,
+        targetKind: 'system',
+        source: validationSources.audit,
+        observed: phenomenon.id,
+        expected: 'referenced by a debris field spawnedPhenomenonId',
+      }))
+    }
+  })
+
+  return findings
+}
+
 export function validateSystem(system: GeneratedSystem): ValidationFinding[] {
   return [
     ...validateArchitecture(system),
     ...validateSettlementNames(system),
     ...validateBinaryStability(system),
+    ...validateDebrisFields(system),
     ...system.bodies.flatMap((body, index) => [
       ...validateBodyEnvironment(body, `bodies[${index}]`),
       ...validateBodyPhysicalContract(body, `bodies[${index}]`),
