@@ -7,6 +7,8 @@ import type {
   Fact,
   GeneratedSystem,
   GenerationOptions,
+  HumanRemnant,
+  Settlement,
   StellarCompanion,
   Star,
   SystemPhenomenon,
@@ -272,18 +274,60 @@ export function deriveDebrisFields(
   return { debrisFields: fields, spawnedPhenomena }
 }
 
-export function attachSettlementsToDebrisFields<T extends { debrisFieldId?: string; bodyId?: string }>(
-  _rng: SeededRng,
-  settlements: T[],
-  _debrisFields: DebrisField[],
-): T[] {
-  return settlements
+const ATTACHMENT_PROB: Record<DebrisAnchorMode, number> = {
+  embedded: 0.30,
+  'edge-only': 0.15,
+  'transient-only': 0.50,
+  unanchorable: 0,
 }
 
-export function attachRuinsToDebrisFields<T extends { debrisFieldId?: string }>(
-  _rng: SeededRng,
-  ruins: T[],
-  _debrisFields: DebrisField[],
-): T[] {
-  return ruins
+const TRANSIENT_PATTERNS = new Set(['Mobile site', 'Distributed swarm'])
+
+export function attachSettlementsToDebrisFields(
+  rng: SeededRng,
+  settlements: Settlement[],
+  debrisFields: DebrisField[],
+  bodyOrbitAuById: Map<string, number>,
+): Settlement[] {
+  if (debrisFields.length === 0) return settlements
+  return settlements.map(settlement => {
+    if (!settlement.bodyId) return settlement
+    const bodyOrbit = bodyOrbitAuById.get(settlement.bodyId)
+    if (bodyOrbit === undefined) return settlement
+    for (const field of debrisFields) {
+      const inExtent = bodyOrbit >= field.spatialExtent.innerAu.value && bodyOrbit <= field.spatialExtent.outerAu.value
+      if (!inExtent) continue
+      const anchorMode = field.anchorMode.value
+      const prob = ATTACHMENT_PROB[anchorMode]
+      if (prob === 0) continue
+      if (anchorMode === 'transient-only' && !TRANSIENT_PATTERNS.has(settlement.habitationPattern.value)) continue
+      const roll = rng.fork(`s-${settlement.id}-f-${field.id}`).next()
+      if (roll > prob) continue
+      return { ...settlement, debrisFieldId: field.id, bodyId: undefined }
+    }
+    return settlement
+  })
+}
+
+export function attachRuinsToDebrisFields(
+  rng: SeededRng,
+  ruins: HumanRemnant[],
+  debrisFields: DebrisField[],
+  ruinBodyOrbitById: Map<string, number>,
+): HumanRemnant[] {
+  if (debrisFields.length === 0) return ruins
+  return ruins.map(ruin => {
+    const orbit = ruinBodyOrbitById.get(ruin.id)
+    if (orbit === undefined) return ruin
+    for (const field of debrisFields) {
+      const inExtent = orbit >= field.spatialExtent.innerAu.value && orbit <= field.spatialExtent.outerAu.value
+      if (!inExtent) continue
+      const prob = ATTACHMENT_PROB[field.anchorMode.value]
+      if (prob === 0) continue
+      const roll = rng.fork(`r-${ruin.id}-f-${field.id}`).next()
+      if (roll > prob) continue
+      return { ...ruin, debrisFieldId: field.id }
+    }
+    return ruin
+  })
 }

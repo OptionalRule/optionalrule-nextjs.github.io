@@ -162,7 +162,7 @@ import { generateCompanionStar } from './companionStar'
 import { separationToBucketAu } from './companionGeometry'
 import { circumbinaryInnerAuLimit, siblingOuterAuLimit } from './companionStability'
 import { buildVolatileHazardBelt, buildBinaryContactPhenomenon } from './volatileSystem'
-import { deriveDebrisFields } from './debrisFields'
+import { deriveDebrisFields, attachSettlementsToDebrisFields, attachRuinsToDebrisFields } from './debrisFields'
 
 export { architectureBodyPlanRules } from './architecture'
 
@@ -4407,6 +4407,20 @@ export function generateSystem(options: GenerationOptions, knownSystem?: Partial
     },
   })
 
+  const bodyOrbitAuById = new Map(bodies.map(b => [b.id, b.orbitAu.value]))
+  const settlementsWithDebris = attachSettlementsToDebrisFields(
+    rootRng.fork('debris-settlement-anchor'),
+    reshapedSettlements,
+    debrisFields,
+    bodyOrbitAuById,
+  )
+  const ruinsWithDebris = attachRuinsToDebrisFields(
+    rootRng.fork('debris-ruin-anchor'),
+    ruins,
+    debrisFields,
+    new Map(),
+  )
+
   const companionsWithSubSystems: StellarCompanion[] = companions.map((companion, idx) => {
     if (companion.mode !== 'orbital-sibling') return companion
 
@@ -4510,9 +4524,9 @@ export function generateSystem(options: GenerationOptions, knownSystem?: Partial
     bodies,
     debrisFields,
     guOverlay,
-    settlements: reshapedSettlements,
+    settlements: settlementsWithDebris,
     gates,
-    ruins,
+    ruins: ruinsWithDebris,
     phenomena: reshapedPhenomena,
     narrativeFacts,
     relationshipGraph,
