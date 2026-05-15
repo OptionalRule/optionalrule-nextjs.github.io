@@ -19,22 +19,24 @@ vi.mock('three', () => {
     clone() { return new Color() }
     lerp(_other: Color, _t: number) { return this }
   }
-  return { BufferGeometry, BufferAttribute, Color }
+  class LineBasicMaterial {
+    type = 'LineBasicMaterial'
+    constructor(_opts?: unknown) {}
+  }
+  class Line {
+    type = 'Line'
+    constructor(public geometry?: unknown, public material?: unknown) {}
+  }
+  return { BufferGeometry, BufferAttribute, Color, LineBasicMaterial, Line }
 })
 
 vi.mock('@react-three/fiber', () => ({}))
 
 declare global {
-  // eslint-disable-next-line @typescript-eslint/no-namespace
   namespace JSX {
     interface IntrinsicElements {
       group: React.HTMLAttributes<HTMLElement>
-      line: React.HTMLAttributes<HTMLElement> & { geometry?: unknown }
-      lineBasicMaterial: React.HTMLAttributes<HTMLElement> & {
-        vertexColors?: boolean
-        transparent?: boolean
-        opacity?: number
-      }
+      primitive: React.HTMLAttributes<HTMLElement> & { object?: unknown }
       mesh: React.HTMLAttributes<HTMLElement> & { position?: unknown }
       sphereGeometry: React.HTMLAttributes<HTMLElement> & { args?: unknown }
       meshBasicMaterial: React.HTMLAttributes<HTMLElement> & {
@@ -49,14 +51,14 @@ declare global {
 import { DebrisFieldStream } from '../DebrisFieldStream'
 
 describe('DebrisFieldStream', () => {
-  it('renders a line and hot-spot mesh with default params', () => {
+  it('renders a primitive line and hot-spot mesh with default params', () => {
     const { container } = render(
       <DebrisFieldStream
         startRadius={3} endRadius={8} centerAngleDeg={45}
         opacity={0.7} color="#88aaff"
       />
     )
-    expect(container.querySelector('line')).not.toBeNull()
+    expect(container.querySelector('primitive')).not.toBeNull()
     expect(container.querySelector('mesh')).not.toBeNull()
   })
 
@@ -67,7 +69,7 @@ describe('DebrisFieldStream', () => {
         opacity={0.5} color="#ff8888"
       />
     )
-    expect(container.querySelector('line')).not.toBeNull()
+    expect(container.querySelector('primitive')).not.toBeNull()
     expect(container.querySelector('mesh')).not.toBeNull()
   })
 })

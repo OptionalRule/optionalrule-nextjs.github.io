@@ -16,7 +16,7 @@ vi.mock('three', () => {
 vi.mock('@react-three/fiber', () => ({}))
 
 declare global {
-  // eslint-disable-next-line @typescript-eslint/no-namespace
+   
   namespace JSX {
     interface IntrinsicElements {
       mesh: React.HTMLAttributes<HTMLElement> & { geometry?: unknown; rotation?: unknown }

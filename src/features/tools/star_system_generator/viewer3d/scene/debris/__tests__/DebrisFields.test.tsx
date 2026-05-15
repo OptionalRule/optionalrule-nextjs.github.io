@@ -14,13 +14,18 @@ vi.mock('three', () => {
     r = 0; g = 0; b = 0
     clone() { return { lerp: (_c: unknown, _t: unknown) => ({ r: 0, g: 0, b: 0 }) } }
   }
-  return { RingGeometry, BufferGeometry, BufferAttribute, Color, DoubleSide }
+  class LineBasicMaterial { type = 'LineBasicMaterial' }
+  class Line {
+    type = 'Line'
+    constructor(public geometry?: unknown, public material?: unknown) {}
+  }
+  return { RingGeometry, BufferGeometry, BufferAttribute, Color, DoubleSide, LineBasicMaterial, Line }
 })
 
 vi.mock('@react-three/fiber', () => ({}))
 
 declare global {
-  // eslint-disable-next-line @typescript-eslint/no-namespace
+   
   namespace JSX {
     interface IntrinsicElements {
       mesh: React.HTMLAttributes<HTMLElement> & { geometry?: unknown; rotation?: unknown; position?: unknown; scale?: unknown }
@@ -100,14 +105,14 @@ describe('DebrisFields integrator', () => {
     expect(container.querySelector('points')).not.toBeNull()
   })
 
-  it('renders a stream (line) for mass-transfer-stream when physical is on', () => {
+  it('renders a stream (primitive) for mass-transfer-stream when physical is on', () => {
     const { container } = render(
       <DebrisFields
         fields={[makeField('mass-transfer-stream')]}
         layerVisibility={{ physical: true, gu: true, human: true }}
       />
     )
-    expect(container.querySelector('line')).not.toBeNull()
+    expect(container.querySelector('primitive')).not.toBeNull()
   })
 
   it('renders a halo (points) for kozai-scattered-halo when physical is on', () => {
