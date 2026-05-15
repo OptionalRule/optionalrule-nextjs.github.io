@@ -19,6 +19,7 @@ import { GuOverlayPanel } from '../components/GuOverlayPanel'
 import { StarDetailCard } from './chrome/StarDetailCard'
 import { HazardCard } from './chrome/HazardCard'
 import { PhenomenonCard } from './chrome/PhenomenonCard'
+import { DebrisFieldCard } from './chrome/DebrisFieldCard'
 import { useScaleMode, useSelectionState } from './chrome/ViewerContext'
 import type { OrbitScaleMode } from './types'
 
@@ -184,6 +185,10 @@ function SidebarContent({ system, graph }: { system: GeneratedSystem; graph: Ret
     case 'ruin': {
       const ruin = allRuins(system).find((x) => x.id === selection.id)
       return ruin ? <RemnantDetailCard ruin={ruin} /> : null
+    }
+    case 'debris': {
+      const field = system.debrisFields.find((d) => d.id === selection.id)
+      return field ? <DebrisFieldCard field={field} /> : null
     }
     default:
       return null

@@ -2,19 +2,31 @@
 
 import { useMemo } from 'react'
 import * as THREE from 'three'
+import { hashToUnit } from '../../lib/motion'
+import { getDustMaterial } from './dustMaterial'
+import { DebrisChunks, type ChunkPlacement } from './debrisChunks'
 
 interface DebrisFieldStreamProps {
+  fieldId?: string
   startRadius: number
   endRadius: number
   centerAngleDeg: number
   opacity: number
   color: string
+  dustCount?: number
+  chunkCount?: number
 }
 
 export function DebrisFieldStream(props: DebrisFieldStreamProps) {
+  const fieldId = props.fieldId ?? `stream-${props.centerAngleDeg}-${props.startRadius}`
+  const dustCount = Math.max(0, Math.round(props.dustCount ?? 250))
+  const chunkCount = Math.max(0, Math.round(props.chunkCount ?? 15))
+  const angleRad = props.centerAngleDeg * Math.PI / 180
+  const length = Math.max(0.0001, Math.abs(props.endRadius - props.startRadius))
+  const sheathRadius = Math.max(0.4, length * 0.06)
+
   const streamLine = useMemo(() => {
-    const angleRad = props.centerAngleDeg * Math.PI / 180
-    const segments = 20
+    const segments = 24
     const positions = new Float32Array((segments + 1) * 3)
     const colors = new Float32Array((segments + 1) * 3)
     const colorHot = new THREE.Color('#ffe6aa')
@@ -35,16 +47,82 @@ export function DebrisFieldStream(props: DebrisFieldStreamProps) {
     g.setAttribute('color', new THREE.BufferAttribute(colors, 3))
     const material = new THREE.LineBasicMaterial({ vertexColors: true, transparent: true, opacity: props.opacity })
     return new THREE.Line(g, material)
-  }, [props.startRadius, props.endRadius, props.centerAngleDeg, props.color, props.opacity])
+  }, [props.startRadius, props.endRadius, props.color, props.opacity, angleRad])
 
-  const hotSpotX = props.endRadius * Math.cos(props.centerAngleDeg * Math.PI / 180)
-  const hotSpotZ = props.endRadius * Math.sin(props.centerAngleDeg * Math.PI / 180)
+  const dustGeometry = useMemo(() => {
+    const positions = new Float32Array(dustCount * 3)
+    const axisX = Math.cos(angleRad)
+    const axisZ = Math.sin(angleRad)
+    const perpX = -axisZ
+    const perpZ = axisX
+    for (let i = 0; i < dustCount; i++) {
+      const t = hashToUnit(`debris-stream-t#${fieldId}#${i}`)
+      const r = props.startRadius + (props.endRadius - props.startRadius) * t
+      const cx = r * axisX
+      const cz = r * axisZ
+      const sagPhase = hashToUnit(`debris-stream-phase#${fieldId}#${i}`)
+      const sag = (Math.sin(t * Math.PI * 2 + sagPhase * Math.PI * 2)) * sheathRadius * 0.4
+      const radialU = hashToUnit(`debris-stream-radial#${fieldId}#${i}`)
+      const radialAngle = hashToUnit(`debris-stream-angle#${fieldId}#${i}`) * Math.PI * 2
+      const taper = 1 - Math.abs(t - 0.5) * 0.3
+      const ringR = Math.sqrt(radialU) * sheathRadius * taper
+      const offY = Math.sin(radialAngle) * ringR + sag * 0.4
+      const offPerp = Math.cos(radialAngle) * ringR
+      positions[i * 3] = cx + perpX * offPerp
+      positions[i * 3 + 1] = offY
+      positions[i * 3 + 2] = cz + perpZ * offPerp
+    }
+    const g = new THREE.BufferGeometry()
+    g.setAttribute('position', new THREE.BufferAttribute(positions, 3))
+    return g
+  }, [fieldId, dustCount, props.startRadius, props.endRadius, angleRad, sheathRadius])
+
+  const dustMaterial = useMemo(() => getDustMaterial({
+    color: props.color,
+    opacity: Math.min(1, props.opacity * 0.72),
+    size: Math.max(0.3, sheathRadius * 0.5),
+  }), [props.color, props.opacity, sheathRadius])
+
+  const chunkPlacements = useMemo<ChunkPlacement[]>(() => {
+    const out: ChunkPlacement[] = []
+    const axisX = Math.cos(angleRad)
+    const axisZ = Math.sin(angleRad)
+    const perpX = -axisZ
+    const perpZ = axisX
+    for (let i = 0; i < chunkCount; i++) {
+      const t = hashToUnit(`debris-stream-chunk-t#${fieldId}#${i}`)
+      const r = props.startRadius + (props.endRadius - props.startRadius) * t
+      const cx = r * axisX
+      const cz = r * axisZ
+      const offY = (hashToUnit(`debris-stream-chunk-y#${fieldId}#${i}`) - 0.5) * sheathRadius * 0.9
+      const offPerp = (hashToUnit(`debris-stream-chunk-p#${fieldId}#${i}`) - 0.5) * sheathRadius * 1.2
+      const baseSize = (0.55 + Math.pow(hashToUnit(`debris-stream-chunk-size#${fieldId}#${i}`), 2.5) * 1.4)
+        * Math.max(0.55, sheathRadius * 0.45)
+      const brightness = 0.6 + hashToUnit(`debris-stream-chunk-bright#${fieldId}#${i}`) * 0.5
+      out.push({
+        position: [cx + perpX * offPerp, offY, cz + perpZ * offPerp],
+        scale: baseSize,
+        rotation: [
+          hashToUnit(`debris-stream-chunk-rx#${fieldId}#${i}`) * Math.PI,
+          hashToUnit(`debris-stream-chunk-ry#${fieldId}#${i}`) * Math.PI,
+          hashToUnit(`debris-stream-chunk-rz#${fieldId}#${i}`) * Math.PI,
+        ],
+        brightness,
+      })
+    }
+    return out
+  }, [fieldId, chunkCount, props.startRadius, props.endRadius, angleRad, sheathRadius])
+
+  const hotSpotX = props.endRadius * Math.cos(angleRad)
+  const hotSpotZ = props.endRadius * Math.sin(angleRad)
 
   return (
     <group>
       <primitive object={streamLine} />
+      <points geometry={dustGeometry} material={dustMaterial} renderOrder={2} raycast={() => undefined} />
+      <DebrisChunks fieldId={fieldId} count={chunkCount} color={props.color} placements={chunkPlacements} />
       <mesh position={[hotSpotX, 0, hotSpotZ]}>
-        <sphereGeometry args={[0.3, 8, 8]} />
+        <sphereGeometry args={[Math.max(0.3, sheathRadius * 0.65), 12, 12]} />
         <meshBasicMaterial color="#ffe6aa" transparent opacity={Math.min(1, props.opacity + 0.2)} />
       </mesh>
     </group>

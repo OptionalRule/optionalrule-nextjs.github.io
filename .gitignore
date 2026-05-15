@@ -2,6 +2,7 @@
 
 # other
 tmp_local/
+tmp/
 
 # dependencies
 /node_modules

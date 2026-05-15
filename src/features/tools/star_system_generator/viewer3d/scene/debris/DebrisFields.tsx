@@ -5,6 +5,7 @@ import { DebrisFieldShell } from './DebrisFieldShell'
 import { DebrisFieldStream } from './DebrisFieldStream'
 import { DebrisFieldHalo } from './DebrisFieldHalo'
 import { pickDebrisRenderer } from './pickDebris'
+import { OverlayMarker } from '../overlay/OverlayMarker'
 import type { DebrisFieldShape } from '../../../types'
 import type { DebrisFieldVisual } from '../../types'
 
@@ -26,6 +27,18 @@ interface DebrisFieldsProps {
   layerVisibility: { physical: boolean; gu: boolean; human: boolean }
 }
 
+function glyphPositionFor(v: DebrisFieldVisual): [number, number, number] {
+  const meanR = (v.innerRadius + v.outerRadius) / 2
+  const angle = v.centerAngleDeg * Math.PI / 180
+  const tilt = v.inclinationDeg * Math.PI / 180
+  const baseY = meanR * 0.05
+  const x = Math.cos(angle) * meanR
+  const z = Math.sin(angle) * meanR
+  // For non-equatorial rings (inclined), nudge slightly along the tilt axis.
+  const y = baseY + Math.sin(tilt - Math.PI / 2) * 0
+  return [x, y, z]
+}
+
 export function DebrisFields({ fields, layerVisibility }: DebrisFieldsProps) {
   return (
     <>
@@ -37,13 +50,14 @@ export function DebrisFields({ fields, layerVisibility }: DebrisFieldsProps) {
 
         const picked = pickDebrisRenderer({ shape, densityBand: v.field.densityBand.value })
         const color = COLOR_BY_SHAPE[shape]
-        const baseProps = { opacity: picked.visualParams.opacity, color }
+        const baseProps = { opacity: picked.visualParams.opacity, color, fieldId: v.field.id }
+        const glyphPos = glyphPositionFor(v)
 
+        let renderer: React.ReactNode = null
         switch (picked.component) {
           case 'ring':
-            return (
+            renderer = (
               <DebrisFieldRing
-                key={v.field.id}
                 innerRadius={v.innerRadius}
                 outerRadius={v.outerRadius}
                 inclinationDeg={v.inclinationDeg}
@@ -52,30 +66,30 @@ export function DebrisFields({ fields, layerVisibility }: DebrisFieldsProps) {
                 {...baseProps}
               />
             )
+            break
           case 'shell':
-            return (
+            renderer = (
               <DebrisFieldShell
-                key={v.field.id}
                 innerRadius={v.innerRadius}
                 outerRadius={v.outerRadius}
                 particleCount={picked.visualParams.particleCount}
                 {...baseProps}
               />
             )
+            break
           case 'stream':
-            return (
+            renderer = (
               <DebrisFieldStream
-                key={v.field.id}
                 startRadius={v.innerRadius}
                 endRadius={v.outerRadius}
                 centerAngleDeg={v.centerAngleDeg}
                 {...baseProps}
               />
             )
+            break
           case 'halo':
-            return (
+            renderer = (
               <DebrisFieldHalo
-                key={v.field.id}
                 innerRadius={v.innerRadius}
                 outerRadius={v.outerRadius}
                 inclinationDeg={v.inclinationDeg}
@@ -83,7 +97,21 @@ export function DebrisFields({ fields, layerVisibility }: DebrisFieldsProps) {
                 {...baseProps}
               />
             )
+            break
         }
+
+        return (
+          <group key={v.field.id}>
+            {renderer}
+            <OverlayMarker
+              position={glyphPos}
+              glyphId="HZ"
+              kind="debris"
+              id={v.field.id}
+              label={v.field.archetypeName.value}
+            />
+          </group>
+        )
       })}
     </>
   )
