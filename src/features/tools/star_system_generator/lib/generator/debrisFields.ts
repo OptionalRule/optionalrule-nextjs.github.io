@@ -1,7 +1,22 @@
-import type { DebrisField, DebrisFieldShape, DebrisFieldSpatialExtent, Fact, GeneratedSystem, GenerationOptions, StellarCompanion, Star } from '../../types'
+import type {
+  DebrisField,
+  DebrisFieldShape,
+  DebrisFieldSpatialExtent,
+  DebrisAnchorMode,
+  DebrisDensityBand,
+  Fact,
+  GeneratedSystem,
+  GenerationOptions,
+  StellarCompanion,
+  Star,
+  SystemPhenomenon,
+} from '../../types'
 import { fact } from './index'
 import { createSeededRng } from './rng'
 import type { SeededRng } from './rng'
+import { separationToBucketAu } from './companionGeometry'
+import { siblingOuterAuLimit, circumbinaryInnerAuLimit } from './companionStability'
+import { debrisArchetypeData } from './data/debrisFields'
 
 export interface SpatialInputs {
   separationAu: number
@@ -150,12 +165,111 @@ export function selectArchetypeForCompanion(
   return null
 }
 
+const ANCHOR_BY_SHAPE: Record<DebrisFieldShape, DebrisAnchorMode> = {
+  'mass-transfer-stream': 'edge-only',
+  'common-envelope-shell': 'embedded',
+  'polar-ring': 'edge-only',
+  'trojan-camp': 'embedded',
+  'inner-pair-halo': 'edge-only',
+  'kozai-scattered-halo': 'transient-only',
+  'hill-sphere-capture-cone': 'transient-only',
+  'exocomet-swarm': 'unanchorable',
+  'accretion-bridge': 'unanchorable',
+  'gardener-cordon': 'unanchorable',
+}
+
+const DENSITY_BY_SHAPE: Record<DebrisFieldShape, DebrisDensityBand> = {
+  'mass-transfer-stream': 'stream',
+  'common-envelope-shell': 'shell-dense',
+  'polar-ring': 'asteroid-fleet',
+  'trojan-camp': 'asteroid-fleet',
+  'inner-pair-halo': 'asteroid-fleet',
+  'kozai-scattered-halo': 'sparse',
+  'hill-sphere-capture-cone': 'sparse',
+  'exocomet-swarm': 'sparse',
+  'accretion-bridge': 'dust',
+  'gardener-cordon': 'dust',
+}
+
+function pickOneFromPool<T>(rng: SeededRng, pool: T[]): T {
+  if (pool.length === 0) throw new Error('empty pool')
+  return pool[Math.floor(rng.next() * pool.length) % pool.length]
+}
+
+function spawnPhenomenonForField(
+  rng: SeededRng,
+  fieldId: string,
+  shape: DebrisFieldShape,
+): SystemPhenomenon {
+  const data = debrisArchetypeData(shape)
+  return {
+    id: `phen-debris-${fieldId}`,
+    phenomenon: fact(pickOneFromPool(rng.fork('label'), data.phenomenon.labelPool), 'inferred', `Spawned by debris field ${fieldId}`),
+    note: fact(pickOneFromPool(rng.fork('note'), data.phenomenon.notePool), 'inferred', 'Debris-spawned phenomenon'),
+    travelEffect: fact(pickOneFromPool(rng.fork('travel'), data.phenomenon.travelEffectPool), 'inferred', 'Debris-spawned'),
+    surveyQuestion: fact(pickOneFromPool(rng.fork('survey'), data.phenomenon.surveyQuestionPool), 'inferred', 'Debris-spawned'),
+    conflictHook: fact(pickOneFromPool(rng.fork('conflict'), data.phenomenon.conflictHookPool), 'inferred', 'Debris-spawned'),
+    sceneAnchor: fact(pickOneFromPool(rng.fork('anchor'), data.phenomenon.sceneAnchorPool), 'inferred', 'Debris-spawned'),
+  }
+}
+
+export interface DebrisDerivationResult {
+  debrisFields: DebrisField[]
+  spawnedPhenomena: SystemPhenomenon[]
+}
+
 export function deriveDebrisFields(
-  _rng: SeededRng,
-  _system: GeneratedSystem,
+  rng: SeededRng,
+  system: Pick<GeneratedSystem, 'seed' | 'primary' | 'companions'>,
   _options: GenerationOptions,
-): DebrisField[] {
-  return []
+): DebrisDerivationResult {
+  const fields: DebrisField[] = []
+  const spawnedPhenomena: SystemPhenomenon[] = []
+  const hierarchicalTriple = system.companions.some(c => c.id === 'companion-2')
+
+  for (const companion of system.companions) {
+    const selection = selectArchetypeForCompanion(
+      { seed: system.seed },
+      companion,
+      system.primary,
+      { hierarchicalTriple },
+    )
+    if (!selection) continue
+
+    const sepAu = separationToBucketAu(companion.separation.value)
+    const hwInner = circumbinaryInnerAuLimit(sepAu, system.primary.massSolar.value, companion.star.massSolar.value)
+    const hwOuter = siblingOuterAuLimit(sepAu, system.primary.massSolar.value, companion.star.massSolar.value)
+
+    const fieldRng = rng.fork(`field-${companion.id}`)
+    const archetype = debrisArchetypeData(selection.shape)
+    const fieldId = `debris-${companion.id}-${selection.shape}`
+
+    const spawned = spawnPhenomenonForField(fieldRng.fork('phenomenon'), fieldId, selection.shape)
+    spawnedPhenomena.push(spawned)
+
+    const field: DebrisField = {
+      id: fieldId,
+      shape: fact(selection.shape, 'derived', `Selected by ${companion.id} mode/mu/activity`),
+      archetypeName: fact(archetype.label, 'derived', 'archetype data'),
+      companionId: companion.id,
+      spatialExtent: spatialExtentForShape(selection.shape, {
+        separationAu: sepAu,
+        primaryMass: system.primary.massSolar.value,
+        companionMass: companion.star.massSolar.value,
+        hwInner,
+        hwOuter,
+      }),
+      densityBand: fact(DENSITY_BY_SHAPE[selection.shape], 'inferred', 'shape default'),
+      anchorMode: fact(ANCHOR_BY_SHAPE[selection.shape], 'inferred', 'shape default'),
+      guCharacter: fact(pickOneFromPool(fieldRng.fork('gu'), archetype.guCharacterPool), 'gu-layer', 'archetype data'),
+      prize: fact(pickOneFromPool(fieldRng.fork('prize'), archetype.prizePool), 'inferred', 'archetype data'),
+      spawnedPhenomenonId: spawned.id,
+      whyHere: fact(pickOneFromPool(fieldRng.fork('why'), archetype.whyHerePool), 'inferred', 'archetype data'),
+    }
+    fields.push(field)
+  }
+
+  return { debrisFields: fields, spawnedPhenomena }
 }
 
 export function attachSettlementsToDebrisFields<T extends { debrisFieldId?: string; bodyId?: string }>(
