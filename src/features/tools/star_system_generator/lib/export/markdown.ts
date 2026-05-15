@@ -5,6 +5,12 @@ import {
   formatBodyPopulationSuffix,
   formatSystemPopulationLine,
 } from '../populationDisplay'
+import {
+  debrisShapeLabel,
+  densityBandLabel,
+  anchorModeLabel,
+  formatDebrisExtentLine,
+} from '../debrisFieldDisplay'
 
 export function exportSystemMarkdown(system: GeneratedSystem): string {
   const lines: string[] = [
@@ -31,10 +37,15 @@ export function exportSystemMarkdown(system: GeneratedSystem): string {
     ...formatBodyRows(system),
   ]
 
+  const debrisSection = renderDebrisFields(system)
+  if (debrisSection) {
+    lines.push('', debrisSection)
+  }
+
   if (system.settlements.length) {
     lines.push('', '## Settlement Profiles', '')
     for (const settlement of system.settlements) {
-      lines.push(...formatSettlement(settlement), '')
+      lines.push(...formatSettlement(settlement, system), '')
     }
   }
 
@@ -48,9 +59,11 @@ export function exportSystemMarkdown(system: GeneratedSystem): string {
   if (system.ruins.length) {
     lines.push('## Human Remnants', '')
     for (const ruin of system.ruins) {
+      const ruinField = system.debrisFields.find(d => d.id === ruin.debrisFieldId)
       lines.push(
         `### ${ruin.remnantType.value}`,
         `**Location:** ${ruin.location.value}`,
+        ...(ruinField ? [`**Region:** ${ruinField.archetypeName.value}`] : []),
         '',
         ruin.hook.value,
         ''
@@ -91,7 +104,7 @@ export function exportSystemMarkdown(system: GeneratedSystem): string {
       if (companion.subSystem.settlements.length) {
         lines.push('### Settlement Profiles', '')
         for (const settlement of companion.subSystem.settlements) {
-          lines.push(...formatSettlement(settlement), '')
+          lines.push(...formatSettlement(settlement, undefined), '')
         }
       }
 
@@ -286,13 +299,41 @@ function formatSites(body: OrbitingBody): string {
   return parts.join('; ')
 }
 
-function formatSettlement(settlement: Settlement): string[] {
+function renderDebrisFields(system: GeneratedSystem): string {
+  if (system.debrisFields.length === 0) return ''
+  const lines: string[] = ['## Debris Fields', '']
+  for (const field of system.debrisFields) {
+    lines.push(`### ${field.archetypeName.value}`)
+    lines.push('')
+    lines.push(`- **Shape:** ${debrisShapeLabel(field.shape.value)}`)
+    lines.push(`- **Extent:** ${formatDebrisExtentLine({ inner: field.spatialExtent.innerAu.value, outer: field.spatialExtent.outerAu.value, inclinationDeg: field.spatialExtent.inclinationDeg.value })}`)
+    lines.push(`- **Density:** ${densityBandLabel(field.densityBand.value)}`)
+    lines.push(`- **Settlements:** ${anchorModeLabel(field.anchorMode.value)}`)
+    lines.push(`- **Prize:** ${field.prize.value}`)
+    lines.push(`- **GU character:** ${field.guCharacter.value}`)
+    lines.push(`- **Why here:** ${field.whyHere.value}`)
+    const phen = system.phenomena.find(p => p.id === field.spawnedPhenomenonId)
+    if (phen) {
+      lines.push('')
+      lines.push(`*Travel effect:* ${phen.travelEffect.value}`)
+      lines.push(`*Survey question:* ${phen.surveyQuestion.value}`)
+      lines.push(`*Conflict hook:* ${phen.conflictHook.value}`)
+      lines.push(`*Scene anchor:* ${phen.sceneAnchor.value}`)
+    }
+    lines.push('')
+  }
+  return lines.join('\n')
+}
+
+function formatSettlement(settlement: Settlement, system: GeneratedSystem | undefined): string[] {
+  const field = system?.debrisFields.find(d => d.id === settlement.debrisFieldId)
   return [
     `### ${settlement.name.value}`,
     '',
     `**Population:** ${settlement.population.value}.`,
     `**Habitation:** ${settlement.habitationPattern.value}.`,
     `**Location:** ${settlement.location.value}; ${settlement.anchorName.value} (${settlement.anchorKind.value}).`,
+    ...(field ? [`**Region:** ${field.archetypeName.value}`] : []),
     `**Authority:** ${settlement.authority.value}.`,
     `**Function:** ${settlement.function.value}.`,
     `**Built Form:** ${settlement.builtForm.value}.`,
