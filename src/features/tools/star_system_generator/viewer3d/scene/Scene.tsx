@@ -162,7 +162,7 @@ export function Scene({ graph, system }: SceneProps) {
       {graph.belts.map((b) => (
         <BeltSettlements key={`belt-settlements-${b.id}`} belt={b} />
       ))}
-      <DebrisFields fields={graph.debrisFields} layerVisibility={layers} />
+      <DebrisFields fields={graph.debrisFields} layerVisibility={layers} qualityScale={qualityScale} />
       {layers.physical ? graph.hazards.map((h) => (
         <HazardVolume key={`hz-${h.id}`} hazard={h} />
       )) : null}

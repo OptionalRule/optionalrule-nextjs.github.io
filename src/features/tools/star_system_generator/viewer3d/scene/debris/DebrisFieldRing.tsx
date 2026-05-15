@@ -1,6 +1,6 @@
 'use client'
 
-import { useMemo } from 'react'
+import { useEffect, useMemo } from 'react'
 import * as THREE from 'three'
 import { hashToUnit } from '../../lib/motion'
 import { getDustMaterial } from './dustMaterial'
@@ -17,14 +17,14 @@ interface DebrisFieldRingProps {
   color: string
   dustCount?: number
   chunkCount?: number
+  qualityScale?: number
 }
-
-const TWO_PI = Math.PI * 2
 
 export function DebrisFieldRing(props: DebrisFieldRingProps) {
   const fieldId = props.fieldId ?? `ring-${props.centerAngleDeg}-${props.innerRadius}`
-  const dustCount = Math.max(0, Math.round(props.dustCount ?? 600))
-  const chunkCount = Math.max(0, Math.round(props.chunkCount ?? 40))
+  const quality = props.qualityScale ?? 1
+  const dustCount = Math.max(0, Math.round((props.dustCount ?? 600) * quality))
+  const chunkCount = Math.max(6, Math.round((props.chunkCount ?? 40) * quality))
   const inclinationRad = props.inclinationDeg * Math.PI / 180
 
   const centerRad = props.centerAngleDeg * Math.PI / 180
@@ -34,14 +34,15 @@ export function DebrisFieldRing(props: DebrisFieldRingProps) {
   const meanRadius = (props.outerRadius + props.innerRadius) * 0.5
   const verticalThickness = Math.max(radialThickness * 0.18, meanRadius * 0.025)
 
-  const bandCount = 3 + Math.floor(hashToUnit(`debris-bands#${fieldId}`) * 3)
-  const bandCenters = useMemo(() => {
-    return Array.from({ length: bandCount }, (_, idx) => {
-      const slot = (idx + 0.5) / bandCount
-      const jitter = (hashToUnit(`debris-band-slot#${fieldId}#${idx}`) - 0.5) * (0.5 / bandCount)
+  const { bandCount, bandCenters } = useMemo(() => {
+    const count = 3 + Math.floor(hashToUnit(`debris-bands#${fieldId}`) * 3)
+    const centers = Array.from({ length: count }, (_, idx) => {
+      const slot = (idx + 0.5) / count
+      const jitter = (hashToUnit(`debris-band-slot#${fieldId}#${idx}`) - 0.5) * (0.5 / count)
       return Math.min(0.95, Math.max(0.05, slot + jitter))
     })
-  }, [fieldId, bandCount])
+    return { bandCount: count, bandCenters: centers }
+  }, [fieldId])
 
   const dustGeometry = useMemo(() => {
     const positions = new Float32Array(dustCount * 3)
@@ -66,6 +67,8 @@ export function DebrisFieldRing(props: DebrisFieldRingProps) {
     g.setAttribute('position', new THREE.BufferAttribute(positions, 3))
     return g
   }, [fieldId, dustCount, props.innerRadius, radialThickness, startRad, halfSpanRad, verticalThickness, bandCenters, bandCount])
+
+  useEffect(() => () => { dustGeometry.dispose() }, [dustGeometry])
 
   const dustMaterial = useMemo(() => getDustMaterial({
     color: props.color,
@@ -101,14 +104,10 @@ export function DebrisFieldRing(props: DebrisFieldRingProps) {
     return out
   }, [fieldId, chunkCount, props.innerRadius, radialThickness, startRad, halfSpanRad, verticalThickness, meanRadius, bandCenters, bandCount])
 
-  const useTorus = props.spanDeg >= 359.5 && Math.abs(props.inclinationDeg - 90) < 0.5
-  void useTorus // currently unused; reserved for future torus-fill polish
-  void TWO_PI
-
   return (
     <group rotation={[Math.PI / 2 - inclinationRad, 0, 0]}>
       <points geometry={dustGeometry} material={dustMaterial} renderOrder={2} raycast={() => undefined} />
-      <DebrisChunks fieldId={fieldId} count={chunkCount} color={props.color} placements={chunkPlacements} />
+      <DebrisChunks fieldId={fieldId} color={props.color} placements={chunkPlacements} />
     </group>
   )
 }

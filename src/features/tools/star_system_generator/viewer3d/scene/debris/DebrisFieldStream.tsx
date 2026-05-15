@@ -1,6 +1,6 @@
 'use client'
 
-import { useMemo } from 'react'
+import { useEffect, useMemo } from 'react'
 import * as THREE from 'three'
 import { hashToUnit } from '../../lib/motion'
 import { getDustMaterial } from './dustMaterial'
@@ -15,32 +15,35 @@ interface DebrisFieldStreamProps {
   color: string
   dustCount?: number
   chunkCount?: number
+  qualityScale?: number
 }
 
 export function DebrisFieldStream(props: DebrisFieldStreamProps) {
   const fieldId = props.fieldId ?? `stream-${props.centerAngleDeg}-${props.startRadius}`
-  const dustCount = Math.max(0, Math.round(props.dustCount ?? 250))
-  const chunkCount = Math.max(0, Math.round(props.chunkCount ?? 15))
+  const quality = props.qualityScale ?? 1
+  const dustCount = Math.max(0, Math.round((props.dustCount ?? 250) * quality))
+  const chunkCount = Math.max(4, Math.round((props.chunkCount ?? 8) * quality))
   const angleRad = props.centerAngleDeg * Math.PI / 180
   const length = Math.max(0.0001, Math.abs(props.endRadius - props.startRadius))
   const sheathRadius = Math.max(0.4, length * 0.06)
 
   const streamLine = useMemo(() => {
-    const segments = 24
+    const segments = 12
     const positions = new Float32Array((segments + 1) * 3)
     const colors = new Float32Array((segments + 1) * 3)
     const colorHot = new THREE.Color('#ffe6aa')
     const colorCool = new THREE.Color(props.color)
+    const scratch = new THREE.Color()
     for (let i = 0; i <= segments; i++) {
       const t = i / segments
       const r = props.startRadius + (props.endRadius - props.startRadius) * t
       positions[i * 3] = r * Math.cos(angleRad)
       positions[i * 3 + 1] = 0
       positions[i * 3 + 2] = r * Math.sin(angleRad)
-      const c = colorCool.clone().lerp(colorHot, 1 - t)
-      colors[i * 3] = c.r
-      colors[i * 3 + 1] = c.g
-      colors[i * 3 + 2] = c.b
+      scratch.copy(colorCool).lerp(colorHot, 1 - t)
+      colors[i * 3] = scratch.r
+      colors[i * 3 + 1] = scratch.g
+      colors[i * 3 + 2] = scratch.b
     }
     const g = new THREE.BufferGeometry()
     g.setAttribute('position', new THREE.BufferAttribute(positions, 3))
@@ -48,6 +51,13 @@ export function DebrisFieldStream(props: DebrisFieldStreamProps) {
     const material = new THREE.LineBasicMaterial({ vertexColors: true, transparent: true, opacity: props.opacity })
     return new THREE.Line(g, material)
   }, [props.startRadius, props.endRadius, props.color, props.opacity, angleRad])
+
+  useEffect(() => () => {
+    streamLine.geometry.dispose()
+    const mat = streamLine.material as THREE.Material | THREE.Material[]
+    if (Array.isArray(mat)) mat.forEach((m) => m.dispose())
+    else mat.dispose()
+  }, [streamLine])
 
   const dustGeometry = useMemo(() => {
     const positions = new Float32Array(dustCount * 3)
@@ -76,6 +86,8 @@ export function DebrisFieldStream(props: DebrisFieldStreamProps) {
     g.setAttribute('position', new THREE.BufferAttribute(positions, 3))
     return g
   }, [fieldId, dustCount, props.startRadius, props.endRadius, angleRad, sheathRadius])
+
+  useEffect(() => () => { dustGeometry.dispose() }, [dustGeometry])
 
   const dustMaterial = useMemo(() => getDustMaterial({
     color: props.color,
@@ -120,7 +132,7 @@ export function DebrisFieldStream(props: DebrisFieldStreamProps) {
     <group>
       <primitive object={streamLine} />
       <points geometry={dustGeometry} material={dustMaterial} renderOrder={2} raycast={() => undefined} />
-      <DebrisChunks fieldId={fieldId} count={chunkCount} color={props.color} placements={chunkPlacements} />
+      <DebrisChunks fieldId={fieldId} color={props.color} placements={chunkPlacements} />
       <mesh position={[hotSpotX, 0, hotSpotZ]}>
         <sphereGeometry args={[Math.max(0.3, sheathRadius * 0.65), 12, 12]} />
         <meshBasicMaterial color="#ffe6aa" transparent opacity={Math.min(1, props.opacity + 0.2)} />

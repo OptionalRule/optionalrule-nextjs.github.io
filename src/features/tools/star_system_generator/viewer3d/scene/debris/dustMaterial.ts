@@ -41,16 +41,18 @@ export interface DustMaterialOptions {
 }
 
 export function getDustMaterial(opts: DustMaterialOptions): THREE.PointsMaterial {
-  const key = `${opts.color}|${opts.opacity.toFixed(3)}|${opts.size.toFixed(3)}`
+  const opacityBucket = Math.round(opts.opacity * 20)
+  const sizeBucket = Math.max(1, Math.round(opts.size * 4))
+  const key = `${opts.color}|${opacityBucket}|${sizeBucket}`
   const existing = materialCache.get(key)
   if (existing) return existing
   const material = new THREE.PointsMaterial({
     map: buildDustSpriteTexture(),
     color: opts.color,
-    size: opts.size,
+    size: sizeBucket / 4,
     sizeAttenuation: true,
     transparent: true,
-    opacity: opts.opacity,
+    opacity: opacityBucket / 20,
     depthWrite: false,
     blending: THREE.AdditiveBlending,
     alphaTest: 0.01,

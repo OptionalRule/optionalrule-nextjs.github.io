@@ -25,6 +25,7 @@ const COLOR_BY_SHAPE: Record<DebrisFieldShape, string> = {
 interface DebrisFieldsProps {
   fields: DebrisFieldVisual[]
   layerVisibility: { physical: boolean; gu: boolean; human: boolean }
+  qualityScale?: number
 }
 
 function glyphPositionFor(v: DebrisFieldVisual): [number, number, number] {
@@ -32,14 +33,11 @@ function glyphPositionFor(v: DebrisFieldVisual): [number, number, number] {
   const angle = v.centerAngleDeg * Math.PI / 180
   const tilt = v.inclinationDeg * Math.PI / 180
   const baseY = meanR * 0.05
-  const x = Math.cos(angle) * meanR
-  const z = Math.sin(angle) * meanR
-  // For non-equatorial rings (inclined), nudge slightly along the tilt axis.
-  const y = baseY + Math.sin(tilt - Math.PI / 2) * 0
-  return [x, y, z]
+  const tiltLift = Math.sin(tilt - Math.PI / 2) * meanR * 0.18
+  return [Math.cos(angle) * meanR, baseY + tiltLift, Math.sin(angle) * meanR]
 }
 
-export function DebrisFields({ fields, layerVisibility }: DebrisFieldsProps) {
+export function DebrisFields({ fields, layerVisibility, qualityScale = 1 }: DebrisFieldsProps) {
   return (
     <>
       {fields.map((v) => {
@@ -50,7 +48,7 @@ export function DebrisFields({ fields, layerVisibility }: DebrisFieldsProps) {
 
         const picked = pickDebrisRenderer({ shape, densityBand: v.field.densityBand.value })
         const color = COLOR_BY_SHAPE[shape]
-        const baseProps = { opacity: picked.visualParams.opacity, color, fieldId: v.field.id }
+        const baseProps = { opacity: picked.visualParams.opacity, color, fieldId: v.field.id, qualityScale }
         const glyphPos = glyphPositionFor(v)
 
         let renderer: React.ReactNode = null

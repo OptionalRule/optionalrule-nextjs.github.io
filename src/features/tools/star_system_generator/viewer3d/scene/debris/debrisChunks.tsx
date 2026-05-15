@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useMemo } from 'react'
+import { useMemo } from 'react'
 import * as THREE from 'three'
 import { beltChunkGeometry, beltParticleGeometry, beltShardGeometry } from '../renderAssets'
 
@@ -13,7 +13,6 @@ export interface ChunkPlacement {
 
 interface DebrisChunksProps {
   fieldId: string
-  count: number
   color: string
   placements: ChunkPlacement[]
 }
@@ -57,10 +56,16 @@ void main() {
 }
 `
 
-export function DebrisChunks({ fieldId, count, color, placements }: DebrisChunksProps) {
+const SHARED_CHUNK_MATERIAL = new THREE.ShaderMaterial({
+  vertexShader: chunkVertexShader,
+  fragmentShader: chunkFragmentShader,
+  toneMapped: false,
+})
+
+export function DebrisChunks({ fieldId, color, placements }: DebrisChunksProps) {
   const group = useMemo(() => {
     const g = new THREE.Group()
-    if (count <= 0 || placements.length === 0) return g
+    if (placements.length === 0) return g
     const dummy = new THREE.Object3D()
     const tint = new THREE.Color()
     const base = new THREE.Color(color)
@@ -71,12 +76,7 @@ export function DebrisChunks({ fieldId, count, color, placements }: DebrisChunks
         ? placements.length - cursor
         : Math.max(1, Math.round(placements.length * shares[idx]))
       if (shapeCount <= 0) return
-      const material = new THREE.ShaderMaterial({
-        vertexShader: chunkVertexShader,
-        fragmentShader: chunkFragmentShader,
-        toneMapped: false,
-      })
-      const mesh = new THREE.InstancedMesh(geometry, material, shapeCount)
+      const mesh = new THREE.InstancedMesh(geometry, SHARED_CHUNK_MATERIAL, shapeCount)
       mesh.name = `debris-chunks-${fieldId}-${idx}`
       for (let local = 0; local < shapeCount; local++) {
         const p = placements[cursor + local]
@@ -94,19 +94,8 @@ export function DebrisChunks({ fieldId, count, color, placements }: DebrisChunks
       cursor += shapeCount
     })
     return g
-  }, [fieldId, count, color, placements])
+  }, [fieldId, color, placements])
 
-  useEffect(() => () => {
-    group.traverse((object) => {
-      if (!(object instanceof THREE.InstancedMesh)) return
-      if (Array.isArray(object.material)) {
-        object.material.forEach((m) => m.dispose())
-      } else {
-        object.material.dispose()
-      }
-    })
-  }, [group])
-
-  if (count <= 0 || placements.length === 0) return null
+  if (placements.length === 0) return null
   return <primitive object={group} dispose={null} />
 }

@@ -1,6 +1,6 @@
 'use client'
 
-import { useMemo } from 'react'
+import { useEffect, useMemo } from 'react'
 import * as THREE from 'three'
 import { hashToUnit } from '../../lib/motion'
 import { getDustMaterial } from './dustMaterial'
@@ -15,12 +15,15 @@ interface DebrisFieldHaloProps {
   opacity: number
   color: string
   chunkCount?: number
+  qualityScale?: number
 }
 
 export function DebrisFieldHalo(props: DebrisFieldHaloProps) {
   const fieldId = props.fieldId ?? `halo-${props.innerRadius}-${props.outerRadius}`
-  const dustCount = Math.max(0, Math.round(props.particleCount))
-  const chunkCount = Math.max(0, Math.round(props.chunkCount ?? Math.min(40, dustCount * 0.06)))
+  const quality = props.qualityScale ?? 1
+  const dustCount = Math.max(0, Math.round(props.particleCount * quality))
+  const defaultChunks = Math.min(40, dustCount * 0.06)
+  const chunkCount = Math.max(6, Math.round((props.chunkCount ?? defaultChunks) * quality))
   const maxTiltRad = props.inclinationDeg * Math.PI / 180
   const meanRadius = (props.outerRadius + props.innerRadius) * 0.5
 
@@ -41,6 +44,8 @@ export function DebrisFieldHalo(props: DebrisFieldHaloProps) {
     g.setAttribute('position', new THREE.BufferAttribute(positions, 3))
     return g
   }, [fieldId, dustCount, props.innerRadius, props.outerRadius, maxTiltRad])
+
+  useEffect(() => () => { dustGeometry.dispose() }, [dustGeometry])
 
   const dustMaterial = useMemo(() => getDustMaterial({
     color: props.color,
@@ -81,7 +86,7 @@ export function DebrisFieldHalo(props: DebrisFieldHaloProps) {
   return (
     <group>
       <points geometry={dustGeometry} material={dustMaterial} renderOrder={2} raycast={() => undefined} />
-      <DebrisChunks fieldId={fieldId} count={chunkCount} color={props.color} placements={chunkPlacements} />
+      <DebrisChunks fieldId={fieldId} color={props.color} placements={chunkPlacements} />
     </group>
   )
 }

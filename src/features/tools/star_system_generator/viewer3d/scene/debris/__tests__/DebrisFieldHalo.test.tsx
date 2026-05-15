@@ -3,7 +3,7 @@ import { render } from '@testing-library/react'
 import React from 'react'
 
 vi.mock('three', () => {
-  class BufferGeometry { type = 'BufferGeometry'; setAttribute() {} }
+  class BufferGeometry { type = 'BufferGeometry'; setAttribute() {}; dispose() {} }
   class BufferAttribute {
     constructor(public array: Float32Array, public itemSize: number) {}
   }

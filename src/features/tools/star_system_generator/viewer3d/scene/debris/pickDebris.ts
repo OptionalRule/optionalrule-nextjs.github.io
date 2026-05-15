@@ -31,7 +31,7 @@ export function pickDebrisRenderer(args: { shape: DebrisFieldShape; densityBand:
     args.densityBand === 'shell-dense' ? 600 :
     args.densityBand === 'asteroid-fleet' ? 300 :
     args.densityBand === 'sparse' ? 120 :
-    args.densityBand === 'dust' ? 80 : 200
+    args.densityBand === 'dust' ? 40 : 200
   const opacity =
     args.densityBand === 'dust' ? 0.35 :
     args.densityBand === 'sparse' ? 0.55 : 0.85

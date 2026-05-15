@@ -3,7 +3,7 @@ import { render } from '@testing-library/react'
 import React from 'react'
 
 vi.mock('three', () => {
-  class BufferGeometry { type = 'BufferGeometry'; setAttribute() {} }
+  class BufferGeometry { type = 'BufferGeometry'; setAttribute() {}; dispose() {} }
   class BufferAttribute {
     constructor(public array: Float32Array, public itemSize: number) {}
   }
@@ -16,7 +16,7 @@ vi.mock('three', () => {
   class MeshStandardMaterial { constructor(_o?: unknown) {} dispose() {} }
   class PointsMaterial { toneMapped = false; constructor(_o?: unknown) {} dispose() {} }
   class ShaderMaterial { constructor(_o?: unknown) {} dispose() {} }
-  class LineBasicMaterial { constructor(_o?: unknown) {} }
+  class LineBasicMaterial { constructor(_o?: unknown) {} dispose() {} }
   class Texture { needsUpdate = false; colorSpace = ''; minFilter = 0; magFilter = 0 }
   class CanvasTexture extends Texture {}
   class Color {
