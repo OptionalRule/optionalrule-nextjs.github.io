@@ -4502,6 +4502,7 @@ export function generateSystem(options: GenerationOptions, knownSystem?: Partial
       snowLineAu: fact(snowLine, 'derived', '2.7 * sqrt(L)'),
     },
     bodies,
+    debrisFields: [],
     guOverlay,
     settlements: reshapedSettlements,
     gates,
