@@ -46,7 +46,7 @@ exports[`spine full axis matrix (16 representative cells) > baseline-realistic-a
 
 exports[`spine full axis matrix (16 representative cells) > baseline-realistic-balanced: stable spine + body[0] structural fields 1`] = `
 {
-  "body0": "The moving bleed-node river keeps shifting under Veyra-Locke Concession. Each pass of the polar circumbinary ring costs Veyra-Locke Concession a margin it doesn't have. Veyra-Locke Concession can't plan around the narrow-AI perception fog anymore.",
+  "body0": "The moving bleed-node river keeps shifting under Veyra-Locke Concession. Each pass of the tilted crown costs Veyra-Locke Concession a margin it doesn't have. Veyra-Locke Concession can't plan around the narrow-AI perception fog anymore.",
   "spineEdgeType": "DESTABILIZES",
   "spineObjectKind": "namedFaction",
   "spineSubjectKind": "phenomenon",
@@ -112,11 +112,11 @@ exports[`spine full axis matrix (16 representative cells) > density-hub: stable 
 
 exports[`spine full axis matrix (16 representative cells) > density-normal: stable spine + body[0] structural fields 1`] = `
 {
-  "body0": "The polar circumbinary ring drifts the baselines Vey Picket-265 Belt I relies on. The amplitude of the polar circumbinary ring exceeds the operating envelope of Vey Picket-265 Belt II. The long-period comet storm introduces a measurable perturbation in Vey Picket-265 Belt II. Pinchdrive accident scar sits on Vey Picket-265 Belt I. Vey Picket-265 Belt I hosts Vey Picket-265 Belt I Platform.",
+  "body0": "The tilted crown drifts the baselines Vey Picket-265 Belt I relies on. The amplitude of the tilted crown exceeds the operating envelope of Vey Picket-265 Belt II. The long-period comet storm introduces a measurable perturbation in Vey Picket-265 Belt II. Pinchdrive accident scar sits on Vey Picket-265 Belt I. Vey Picket-265 Belt I hosts Vey Picket-265 Belt I Platform.",
   "spineEdgeType": "DESTABILIZES",
   "spineObjectKind": "body",
   "spineSubjectKind": "phenomenon",
-  "spineSummary": "Polar circumbinary ring took shape between the calibration runs, the polar circumbinary ring is drifting the baselines on which Vey Picket-265 Belt I was sited.",
+  "spineSummary": "Tilted crown took shape between the calibration runs, the tilted crown is drifting the baselines on which Vey Picket-265 Belt I was sited.",
   "spineVisibility": "public",
 }
 `;
@@ -156,7 +156,7 @@ exports[`spine full axis matrix (16 representative cells) > gu-axis-high: stable
 
 exports[`spine full axis matrix (16 representative cells) > gu-axis-low: stable spine + body[0] structural fields 1`] = `
 {
-  "body0": "The public festival tied to safe transit windows is corroding Glasshouse Biosafety Compact. The polar circumbinary ring is corroding Glasshouse Biosafety Compact. Each pass of the failed Iggygate wake costs Glasshouse Biosafety Compact a margin it doesn't have.",
+  "body0": "The public festival tied to safe transit windows is corroding Glasshouse Biosafety Compact. The tilted crown is corroding Glasshouse Biosafety Compact. Each pass of the failed Iggygate wake costs Glasshouse Biosafety Compact a margin it doesn't have.",
   "spineEdgeType": "DESTABILIZES",
   "spineObjectKind": "namedFaction",
   "spineSubjectKind": "phenomenon",

@@ -1,143 +1,668 @@
 {
+  "_notes": {
+    "file": "Companion-driven debris configurations. One entry per DebrisFieldShape archetype.",
+    "editing": "Pools should be terse, present-tense, and focused on consequence — match the voice of phenomena entries in narrative.json. Each archetype's spawned SystemPhenomenon draws from the four-beat structure (travelEffect / surveyQuestion / conflictHook / sceneAnchor).",
+    "minimums": "Audit floor: whyHerePool, prizePool, guCharacterPool, notePool, travelEffectPool, surveyQuestionPool, conflictHookPool, sceneAnchorPool >= 5 entries each. labelPool >= 3."
+  },
   "archetypes": {
     "mass-transfer-stream": {
       "label": "Mass-Transfer Stream",
-      "whyHerePool": ["placeholder"],
-      "prizePool": ["placeholder"],
-      "guCharacterPool": ["placeholder"],
+      "whyHerePool": [
+        "Material falls continuously from one star to the other across the L1 saddle, lighting the gulf between them.",
+        "The stream pulses on the binary orbital period; brightness peaks correlate with rare-element accretion.",
+        "Successive generations of harvesters have learned to time crossings against the stream's flare clock.",
+        "The donor star is shedding its outer envelope on a geological timescale; the stream is a fossil-in-progress.",
+        "Crews report the stream looks like a glowing river from a quarter-AU out."
+      ],
+      "prizePool": [
+        "post-stellar heavy elements unavailable anywhere else in-system",
+        "chiral aerosols carrying single-handedness collapse signatures",
+        "fresh accretion-disc plasma sampled at the impact spot",
+        "industrial-grade isotopes dredged from a stellar interior",
+        "calibration-medium fractions only the stream produces"
+      ],
+      "guCharacterPool": [
+        "The L1 throat sits inside a continuous Shiab-math instability; ships that cross take a hammering they can quantify only after.",
+        "Chiral output of the stream collapses to a single handedness over hours, the cleanest single-chirality source in-system.",
+        "Bleed inside the stream reads as a continuous extreme node; long exposures kill instruments before they kill crew.",
+        "Iggygate construction across the stream would short the geometry between the two stars; no one has tried since the warning beacons appeared.",
+        "Metric storms hit on the stream's brightness cycle; the only safe windows are dim phases."
+      ],
       "phenomenon": {
-        "labelPool": ["L1 mass-transfer stream"],
-        "notePool": ["placeholder"],
-        "travelEffectPool": ["placeholder"],
-        "surveyQuestionPool": ["placeholder"],
-        "conflictHookPool": ["placeholder"],
-        "sceneAnchorPool": ["placeholder"]
+        "labelPool": [
+          "L1 mass-transfer stream",
+          "Inter-stellar plasma corridor",
+          "Roche-lobe overflow lane"
+        ],
+        "notePool": [
+          "A visible river of stellar plasma arcs from one star's photosphere onto the other across the L1 saddle.",
+          "Stream brightness pulses on the binary orbital period; rare elements concentrate at the accretion hot spot.",
+          "The stream is photometrically resolvable from beyond the system; pilgrims and observatories alike track it.",
+          "Generations of harvesters have learned to read the stream's flare clock by eye.",
+          "Stream geometry shifts hour-to-hour as the donor's atmospheric layers vent."
+        ],
+        "travelEffectPool": [
+          "Approach corridors are constantly redrawn; lanes inside one AU lose viability hour-to-hour.",
+          "Crossings only succeed during a brief dim-phase window; missing it costs a synodic period of waiting.",
+          "Particle flux on the stream's leading edge degrades shielding integrity within minutes of exposure.",
+          "Ship hulls accumulate isotopic markers from a single crossing; customs uses the markers to track who's been where.",
+          "X-ray spillover from the impact hot spot blinds nav sensors for hours after every transit."
+        ],
+        "surveyQuestionPool": [
+          "Where is the next stable shear edge, and how long before paired flares close it?",
+          "Is the donor's mass-loss rate accelerating toward runaway, or holding?",
+          "Which photospheric layer is the stream currently sampling, and what does that say about the donor's interior?",
+          "Can the accretion hot spot's flicker frequency be predicted enough to insure a passage?",
+          "Has anything organic ever entered the stream and produced legible spectroscopy on the way through?"
+        ],
+        "conflictHookPool": [
+          "Salvage operators race paired flare cycles to extract rare post-stellar elements; the cycle math is contested by competing AI providers.",
+          "A chiral-monopoly cartel controls the only-known single-chirality aerosol source; new entrants are quietly disappeared.",
+          "Two rival route-weather boards publish incompatible safe-crossing windows; both sell insurance.",
+          "Gardener warning beacons appeared near the stream a generation ago; nobody has explained why, and the local interdiction council bills as if they know.",
+          "A donor-star measurement-rights treaty between three houses is up for renewal; the new terms determine who gets to publish the next century's accretion-rate forecasts."
+        ],
+        "sceneAnchorPool": [
+          "A skiff threads the dim-phase shear edge; the bridge view shows the stream arcing from one sun to the other like a frozen lightning bolt.",
+          "An accretion-disc refinery rides the rim of the hot spot, hauls running at maximum cool.",
+          "Three pilgrim transports queue in low parking, waiting for the next stable observation window.",
+          "A customs cutter scans an arriving freighter's hull for stream-isotope markers and finds three that do not match the manifest.",
+          "A wake-reader sits cross-legged on a glassed observation deck, listening to the stream and saying nothing."
+        ]
       }
     },
     "common-envelope-shell": {
       "label": "Common-Envelope Ejecta Shell",
-      "whyHerePool": ["placeholder"],
-      "prizePool": ["placeholder"],
-      "guCharacterPool": ["placeholder"],
+      "whyHerePool": [
+        "Centuries ago this binary ejected its shared envelope in a single event; the shell is still expanding outward.",
+        "Settlements inside the shell were laid before anyone realized the system carried this scar.",
+        "The shell's inner front is still photoionized by the stripped core; some nights it still glows.",
+        "Heavy elements ejected from one star's interior salt every body inside the shell.",
+        "The natural transponder-scrambling of the shell makes traffic inside slightly off-the-books by default."
+      ],
+      "prizePool": [
+        "heavy-element-enriched regolith on every body inside the shell",
+        "first-wave salvage cached when the local archive collapsed",
+        "concentric chiral assay readings older than any current government",
+        "ionization-resistant alloys distilled from envelope dust",
+        "untracked freight that drifted into the shell during the silent decades"
+      ],
+      "guCharacterPool": [
+        "The shell is a fossilized metric storm; bleed inside reads as scar-class, occasionally re-igniting at the inner front.",
+        "Concentric handedness bands record the event the way tree rings record summers; a careful assay reads the whole history.",
+        "The metric inside is unusually flat — the storm passed, and what remains is the silence after.",
+        "Outer-shell anchor points are some of the quietest legal Iggygate sites in the reachable region.",
+        "Photoionization at the inner front still pulses with the orbital remnant; clocks run subtly fast there."
+      ],
       "phenomenon": {
-        "labelPool": ["Common-envelope ejecta shell"],
-        "notePool": ["placeholder"],
-        "travelEffectPool": ["placeholder"],
-        "surveyQuestionPool": ["placeholder"],
-        "conflictHookPool": ["placeholder"],
-        "sceneAnchorPool": ["placeholder"]
+        "labelPool": [
+          "Common-envelope ejecta shell",
+          "Legacy mass-loss cocoon",
+          "First-wave ionization shell"
+        ],
+        "notePool": [
+          "A near-spherical shell of dust and gas surrounds the binary, decades to millennia old.",
+          "Inner-shell ionization makes the local sky glow faintly pink on the night side of every body inside.",
+          "Settlements inside the shell were laid before anyone understood what the shell was; their charters predate the diagnosis.",
+          "The shell scrambles long-range transponders; freight inside is harder to track than freight outside.",
+          "Heavy-element enrichment in shell-interior planets makes them metallurgically valuable and politically contested."
+        ],
+        "travelEffectPool": [
+          "Crossing the shell is slow; low-density dust still abrades hulls.",
+          "Transponder reliability drops by half inside the shell, by half again at the inner ionization front.",
+          "Long-range communication blackouts of three to fifteen minutes are routine inside the shell.",
+          "Dust accretion on cooler instruments forces a recalibration every transit.",
+          "Stable approach lanes are aligned to the original ejection axis; off-axis crossings cost extra fuel."
+        ],
+        "surveyQuestionPool": [
+          "Which star contributed which material, and when did the envelope event happen?",
+          "Is the shell still expanding, or has it stalled against the local interstellar medium?",
+          "What evacuated installation is buried in the inner regolith of which body?",
+          "Whose charter predates the ejection, and does the paperwork still hold?",
+          "Are the inner-front photoionization pulses consistent with a single event, or two?"
+        ],
+        "conflictHookPool": [
+          "A salvage court claim around a shell-buried installation could overturn current concessions held by three rival houses.",
+          "The current factions inherited the shell; an heir surfaces every decade with paperwork older than any of them.",
+          "A first-wave compliance audit is suddenly relevant because the shell's quiet zone hosts a Gardener-watched site nobody acknowledges.",
+          "Heavy-element extraction rights inside the shell are being renegotiated; the previous treaty assumed the shell was inert.",
+          "Two settlement councils dispute which side of the envelope they originally came from; the case turns on chiral assay of buried tools."
+        ],
+        "sceneAnchorPool": [
+          "A dust-veiled twilight system where every horizon glows faintly pink and the stars look filtered.",
+          "A surveyor scrapes paint from a buoy that is older than any local record.",
+          "An ionization-front auroral display silently lights a settlement's morning side once per local week.",
+          "A clerk in a sealed records vault flips through paper charters that predate the binary's current names.",
+          "A salvage crew opens a long-buried hatch and finds the air inside is still pressurized."
+        ]
       }
     },
     "polar-ring": {
       "label": "Polar Circumbinary Ring",
-      "whyHerePool": ["placeholder"],
-      "prizePool": ["placeholder"],
-      "guCharacterPool": ["placeholder"],
+      "whyHerePool": [
+        "A ring of dust and pebbles orbits the close binary perpendicular to the orbital plane, a tilted crown above and below the suns.",
+        "The polar ring sits in the metric-quiet band between the binary's rhythmic tides; a station hovering above it sees a far cleaner local geometry than one in-plane.",
+        "The ring's age does not match the system's other belts; isotopes read older, as if captured from elsewhere.",
+        "Every binary orbital period, the ring eclipses both stars once from the perspective of any in-plane body — a recurring sky event the locals plan their calendars around.",
+        "Dust transport along the ring follows secular resonance, not Keplerian flow; mining requires custom navigation."
+      ],
+      "prizePool": [
+        "rare metallicity-mismatched grains hinting at capture from a vanished primordial disk",
+        "uncontested astrometric vantage above the binary plane",
+        "shielded observation real estate that no in-plane sensor can match",
+        "concentrated dust at the ring's two in-plane intersection nodes",
+        "polar-aligned cargo storage immune to the binary's flare cones"
+      ],
+      "guCharacterPool": [
+        "Bleed is moderate but eerily clean — a metric eye between the binary's two beat patterns.",
+        "Chiral concentration is low except at the equatorial intersection points, where two gradients meet at right angles.",
+        "Anchor candidacy is high for stations seated above the binary plane; the polar quiet band is a rare Iggygate site.",
+        "The intersection points are pinch hazards, not anchor sites; anything that lingers there sweats matter-phase instability.",
+        "The polar geometry favors observerse anchors that depend on metric stillness rather than mass loading."
+      ],
       "phenomenon": {
-        "labelPool": ["Polar circumbinary ring"],
-        "notePool": ["placeholder"],
-        "travelEffectPool": ["placeholder"],
-        "surveyQuestionPool": ["placeholder"],
-        "conflictHookPool": ["placeholder"],
-        "sceneAnchorPool": ["placeholder"]
+        "labelPool": [
+          "Polar circumbinary ring",
+          "Tilted crown",
+          "Perpendicular dust halo"
+        ],
+        "notePool": [
+          "A perpendicular ring of dust and small bodies orbits the binary at right angles to the orbital plane.",
+          "The ring eclipses both suns once per binary period, casting a recurring false winter on circumbinary planets.",
+          "Two in-plane intersection nodes concentrate the ring's mass; everywhere else the band is thin.",
+          "Stations seated above or below the binary plane sit in the cleanest local metric in the system.",
+          "The ring's composition reads as foreign to local stellar metallicity — older, captured, unaccounted for."
+        ],
+        "travelEffectPool": [
+          "In-plane traffic ignores the ring entirely except during the twice-per-period eclipse cone.",
+          "High-inclination surveys must cross the ring; dust counts blank sensors for fifteen to thirty minutes per crossing.",
+          "Polar-vector approaches into the system are the fastest path to the inner zone, but only one syndicate publishes the chart.",
+          "Cargo storage above the plane saves fuel for any operation that needs astrometric stability.",
+          "Equatorial intersection-node transits are a known cause of pinchdrive misjumps."
+        ],
+        "surveyQuestionPool": [
+          "Where did the ring's older material come from?",
+          "Which intersection node is currently denser, and how is that shifting?",
+          "Is the ring stable on the system's age, or is it draining inward toward the keep-out?",
+          "Could a chiral assay date the ring's capture event to within a century?",
+          "What does the ring's eclipse cycle do to circumbinary planet biospheres over millennia?"
+        ],
+        "conflictHookPool": [
+          "The polar shadow station controls astrometric truth for the whole system; whoever holds it sells the calibration.",
+          "A survey bureau's polar-passage chart is contested by three competing operators; lives depend on which one is right.",
+          "An interdiction picket holds the polar approach; the local government insists it is a customs station and not a Gardener proxy.",
+          "Inheritance of a polar shadow platform is in dispute because the original charter pre-dates the local government's recognition of polar real estate.",
+          "A sensor-truth cartel publishes the only widely accepted ring-density forecasts and quietly suppresses competing data."
+        ],
+        "sceneAnchorPool": [
+          "A station hangs perfectly still inside a glittering halo while both suns blaze sideways across the windows.",
+          "Surveyors watch a settlement's hazard data being rewritten in real time as the ring rotates overhead.",
+          "An eclipse cone slides across a circumbinary planet's dayside, dimming everything for three hours by the clock.",
+          "A polar-route smuggler exits the ring at the dense intersection node, escorted by a tug that knows the dust storms by name.",
+          "A geometer drops a probe through the polar shadow and listens to it report back as if from a quieter universe."
+        ]
       }
     },
     "trojan-camp": {
       "label": "Binary Trojan Camp",
-      "whyHerePool": ["placeholder"],
-      "prizePool": ["placeholder"],
-      "guCharacterPool": ["placeholder"],
+      "whyHerePool": [
+        "Two tadpole-shaped swarms ride sixty degrees ahead of and behind the secondary, captured planetesimals librating around the Lagrange points.",
+        "Trojan habitats are intrinsically stable; the same orbit that holds the rocks holds the cities.",
+        "Long-duration crews report L4-harvested ice cores favor one chirality and L5 the other by about one part in eight, a difference that matters at refinery scale.",
+        "The Trojan camps have hosted continuous habitation since before any current jurisdiction was named.",
+        "Whoever holds the L4/L5 holdings of the more massive star sets the calibration-medium price for the whole pair."
+      ],
+      "prizePool": [
+        "primordial planetesimals mixed with cached storage hulks",
+        "asteroid-tunnel-grade ore on long-term claim ledgers",
+        "single-handedness ice cores from one of the two Lagrange wells",
+        "co-orbital cargo caches outside any in-plane customs jurisdiction",
+        "ancient claim records held by families older than the local government"
+      ],
+      "guCharacterPool": [
+        "Bleed is faint and reliable — Trojans sit at stable equilibria, so bleed there sits on the useful end of the intensity band.",
+        "L4 and L5 run opposite handed; long-duration crews tell each other apart by their chiral signatures.",
+        "Anchor candidacy is excellent; listening posts, observerse anchor stations, and witness-core vaults end up here disproportionately.",
+        "The Trojan camps are the closest thing to honest real estate a binary system offers.",
+        "Iggygate construction at either Trojan is documented and broadly stable; the throat sits inside a quiet metric well."
+      ],
       "phenomenon": {
-        "labelPool": ["Binary Trojan camp"],
-        "notePool": ["placeholder"],
-        "travelEffectPool": ["placeholder"],
-        "surveyQuestionPool": ["placeholder"],
-        "conflictHookPool": ["placeholder"],
-        "sceneAnchorPool": ["placeholder"]
+        "labelPool": [
+          "Binary Trojan camp",
+          "Co-orbital Lagrange swarm",
+          "Tadpole settlement zone"
+        ],
+        "notePool": [
+          "Two co-orbital swarms of captured planetesimals ride the binary's L4 and L5 points, each a tadpole-shaped libration cloud.",
+          "Asteroid-tunnel cities and family-trust refineries inhabit the larger rocks; smaller ones are claim-marked but unworked.",
+          "The two camps run measurably different chiralities — refineries specialize accordingly.",
+          "Approach to the Trojans is straightforward in principle but politically dense; every approach lane has a contracted operator.",
+          "A missed Trojan-clear window costs a synodic period of waiting, no matter the ship's class."
+        ],
+        "travelEffectPool": [
+          "Trojan clouds force ships through monitored gaps shared by dust and salvage drones.",
+          "Inter-camp transfers must wait for a synodic alignment that recurs predictably but rarely.",
+          "Cargo manifests crossing between L4 and L5 are scrutinized for chiral-signature drift.",
+          "The leading and trailing cones obscure deep-sky observation for a measurable fraction of each binary year.",
+          "Smuggler routes thread the outer tadpole boundary where rocks are sparser but ephemerides are unreliable."
+        ],
+        "surveyQuestionPool": [
+          "Which clusters are primordial, and which conceal storage hulks or contraband habitats?",
+          "How much of the difference between L4 and L5 chirality is original, and how much is the result of centuries of selective refining?",
+          "Is the libration period drifting, or stable on the system's age?",
+          "Which family's claim ledger is the oldest legitimate record in the camp?",
+          "What did the captured planetesimals form around before they fell into this orbit?"
+        ],
+        "conflictHookPool": [
+          "Mining combines and traffic authorities dispute whether the swarm is resource or hazard.",
+          "Two old families claim the same Trojan-rock charter under different generations of the same treaty.",
+          "A calibration-medium price war between the L4 and L5 refineries threatens to crater the system's whole economy for a decade.",
+          "A storage hulk inside one tadpole is rumored to hold a witness core; three syndicates have offered to buy the rock under different names.",
+          "A new Iggygate proposal at L5 conflicts with an existing anchor at L4; the legal question is whether the binary can support both."
+        ],
+        "sceneAnchorPool": [
+          "The Lagrange horizon looks solid with stones blinking claimant beacons.",
+          "Two camps of asteroids 60 degrees ahead and behind a sun, sharing the same orbit but never meeting.",
+          "A family-trust refinery drops a chirality-sealed vial into a courier's hand; the seal will be opened in another camp seven months from now.",
+          "A blinker-field of claimant lights against a starscape where two suns hold steady relative positions while the rest of the sky rotates.",
+          "An anchor crew tunes an Iggygate throat at L4 while their counterpart at L5 listens for the harmonics."
+        ]
       }
     },
     "inner-pair-halo": {
       "label": "Hierarchical Inner-Pair Halo",
-      "whyHerePool": ["placeholder"],
-      "prizePool": ["placeholder"],
-      "guCharacterPool": ["placeholder"],
+      "whyHerePool": [
+        "Debris pumped by the close inner pair is contained by the distant outer star, forming a layered halo with resonance-stable bands.",
+        "The halo's chemistry betrays the inner pair's metallicity in concentric layers, like a planetary nebula seen from inside.",
+        "Outer-star planets sit comfortably beyond the halo; inner-pair operations sit just inside the keep-out — the halo is the buffer.",
+        "Mean-motion resonance with the outer companion carves natural gaps through the halo; these are the only stable trade routes.",
+        "The whole inner halo is high-military-value real estate; every faction in a hierarchical triple has an opinion about it."
+      ],
+      "prizePool": [
+        "single-handedness chiral ore concentrated at predictable orbital phases",
+        "resonance-stable real estate at the halo gaps",
+        "primordial inner-pair condensate too pumped to settle elsewhere",
+        "salvage from the centuries of attempted trans-halo crossings",
+        "anchor-mass auction lots for proposed Iggygates at resonance nodes"
+      ],
+      "guCharacterPool": [
+        "Bleed is rich and rhythmic; the halo lives inside two beat patterns at once, with major nodes at the resonance crossings.",
+        "Chiral pumping sorts material by handedness over long timescales, producing concentrated reserves at predictable orbital phases.",
+        "Anchor candidacy is very high at specific resonance-stable points and very low elsewhere; the cartography of the halo is itself the prize.",
+        "The 'major bleed economy' the canonical hierarchical-triple line points at lives here.",
+        "An Iggygate built on a halo resonance node carries one of the highest stability ratings in the reachable universe; building one is correspondingly expensive and contested."
+      ],
       "phenomenon": {
-        "labelPool": ["Hierarchical inner-pair halo"],
-        "notePool": ["placeholder"],
-        "travelEffectPool": ["placeholder"],
-        "surveyQuestionPool": ["placeholder"],
-        "conflictHookPool": ["placeholder"],
-        "sceneAnchorPool": ["placeholder"]
+        "labelPool": [
+          "Hierarchical inner-pair halo",
+          "Layered triple-pumped halo",
+          "Containment annulus of the inner pair"
+        ],
+        "notePool": [
+          "An annulus of debris between the inner-pair keep-out and the outer companion's orbit, pumped by the inner pair and contained by the outer star.",
+          "Resonance with the outer companion carves natural gaps through the halo; gap stations dominate inter-tier traffic.",
+          "Halo composition is layered by inner-pair stellar wind and ejection history; chiral assay reads the layers like book pages.",
+          "Outer-star planets are normal civilian real estate; inner-pair installations are industrial; the halo is contested in between.",
+          "A two-tier economy operates around the halo — inner-pair workers and outer-star civilians mediated by halo gate-keepers."
+        ],
+        "travelEffectPool": [
+          "Inter-tier transits must thread one of the resonance gaps; off-resonance crossings are not survivable.",
+          "Gap-station tolls scale with cargo mass and political season.",
+          "The halo's pumped material occasionally throws a planetesimal inward on a Kozai-like cycle; every century or so a hazard alert closes the gaps.",
+          "Sensor signatures inside the halo are scrambled by resonance harmonics; navigation falls back to anchored beacons.",
+          "Customs picket boats inside the halo gaps cycle through patrol seasons that align with the outer-companion year."
+        ],
+        "surveyQuestionPool": [
+          "Which resonance gaps are stable on the system's age, and which are drifting?",
+          "How is the chiral layering of the halo evolving as the inner pair ages?",
+          "Was the outer companion an original system member or a captured passer-by?",
+          "Where in the halo could a new Iggygate sit without disturbing an existing one?",
+          "What did the last hazard cycle teach about the halo's pumping rate?"
+        ],
+        "conflictHookPool": [
+          "Inner-pair workers and outer-star civilians dispute the halo gap toll schedule, mediated by gate-keepers whose authority is unclear.",
+          "An old gap-station's charter has lapsed; three operators claim continuity, two with weapons.",
+          "A new anchor mass auction at a resonance node is in dispute because two prospective gates would interfere with each other.",
+          "Strikebreaker history at the inner-pair industrial belt resurfaces; the halo's gap station logs the case file.",
+          "A halo composition study would prove or disprove the outer companion's capture origin, with major political consequences for the system's chartering."
+        ],
+        "sceneAnchorPool": [
+          "A gap station hangs in a clear lane; halo dust scrapes against the outer hull and the inner-pair flares light it from below.",
+          "A geometer at an anchor-mass site listens for the harmonics of the halo's two beat patterns crossing.",
+          "An inner-pair refinery's morning shift watches the halo gap close on the customs schedule and waits.",
+          "An outer-star civilian liner threads the same gap a hundred years after the last family member's first transit.",
+          "A negotiator from the inner-pair labor council sits across a gap-station table from a Gardener-compliance auditor; neither blinks."
+        ]
       }
     },
     "kozai-scattered-halo": {
       "label": "Kozai-Lidov Scattered Halo",
-      "whyHerePool": ["placeholder"],
-      "prizePool": ["placeholder"],
-      "guCharacterPool": ["placeholder"],
+      "whyHerePool": [
+        "A distant third companion drives the local debris into chaotic high-inclination orbits on a Kozai-Lidov cycle measured in centuries.",
+        "Bodies in this halo are on chaotic, high-inclination, eccentric paths; conventional ephemerides fail past a few decades.",
+        "The halo has been quiet for the last two hundred years; the previous tenants left because that stopped being true; the next tenants are due.",
+        "Whoever owns the cycle clock owns the harvest; nobody has a working clock everybody agrees on.",
+        "Material here cycles between dormant and lethal; the gap between is the only time anyone works."
+      ],
+      "prizePool": [
+        "high-inclination ice cores from the dormant phase between pump cycles",
+        "rare metric-active fragments tossed inward by Kozai oscillations",
+        "outer-system primordial material delivered cheaply at every perihelion swing",
+        "salvage from the last cycle's failed operations",
+        "century-scale predictive contracts for the next cycle"
+      ],
+      "guCharacterPool": [
+        "Bleed is pulsed; quiet for ten thousand years, a major shear zone for a thousand, then quiet again.",
+        "Every Kozai cycle re-shuffles handedness; the halo is one of the few stable sources of both chiralities in measurable quantity.",
+        "Anchor candidacy is poor for permanent structures, excellent for seasonal operations; a refinery designed to leave on a five-century clock can do well.",
+        "Whoever holds the clock on a Kozai halo holds the harvest; the clocks themselves are contested instruments.",
+        "Pinchdrive misjump rates spike during pump cycles; routine traffic is suspended for the duration."
+      ],
       "phenomenon": {
-        "labelPool": ["Kozai-Lidov scattered halo"],
-        "notePool": ["placeholder"],
-        "travelEffectPool": ["placeholder"],
-        "surveyQuestionPool": ["placeholder"],
-        "conflictHookPool": ["placeholder"],
-        "sceneAnchorPool": ["placeholder"]
+        "labelPool": [
+          "Kozai-Lidov scattered halo",
+          "Triple-pumped chaos belt",
+          "Generational scatter cycle"
+        ],
+        "notePool": [
+          "A halo of bodies on chaotic high-inclination orbits pumped by a distant third star.",
+          "Orbits cannot be back-propagated past about ten thousand years; the chaos is mathematical, not technological.",
+          "Bodies cycle between quiet and pumped phases on a Kozai timescale of centuries to millennia.",
+          "Each pump phase delivers a wave of inward-falling debris that lasts for generations.",
+          "The next pump phase is the subject of a forecasting industry of competing AI providers."
+        ],
+        "travelEffectPool": [
+          "Conventional ephemerides fail; ships subscribe to a chaos-forecast service or trade at risk.",
+          "Storm-chaser convoys follow individual bodies for months at a time, never settling.",
+          "Pump-phase weather closes the halo to ordinary traffic for years on end.",
+          "Three certified ephemerides for the same body can disagree by AU-scale margins; insurance underwriters arbitrate.",
+          "Inertial dampers strain inside the halo; long crossings require unusual maintenance."
+        ],
+        "surveyQuestionPool": [
+          "When did the last pump cycle peak, and what is the next forecast?",
+          "Which bodies are quiet long enough to host a temporary camp?",
+          "How does the halo's chiral distribution vary with phase?",
+          "What buried instrument from the last cycle is still recoverable?",
+          "Whose chaos model has the best track record over the previous three cycles?"
+        ],
+        "conflictHookPool": [
+          "The navigation guild that sells halo-passage forecasts is selling probabilistic guesses; failures are profitable for the firm that wrote the policy.",
+          "Different certified AIs give different halo predictions; choosing one closes off the others.",
+          "A late-cycle harvest is racing the next pump phase; multiple operators are running the same calendar against each other.",
+          "A failed Kozai forecast caused a fleet-scale disaster a decade ago; the case is still in the courts and someone is paying to keep it there.",
+          "An inheritance dispute hinges on which heir signed leases for the next cycle's harvest, when the cycle's start was misforecast."
+        ],
+        "sceneAnchorPool": [
+          "A nav shack lit by three overlaid hazard projections; the dispatcher draws straws with the captain over which one to plot against.",
+          "A storm-chaser convoy ties down on an asteroid that will be ejected in eighteen months by their own forecast.",
+          "An astronomer-priest reads the halo's chaos signature like a divination; the result will be sold by the syndicate her order signed for.",
+          "A salvage crew uncovers a refinery from the previous pump cycle and finds the records intact.",
+          "A wake-reader listens to a freshly arrived body and says the bleed in it is older than the system."
+        ]
       }
     },
     "hill-sphere-capture-cone": {
       "label": "Hill-Sphere Capture Cone",
-      "whyHerePool": ["placeholder"],
-      "prizePool": ["placeholder"],
-      "guCharacterPool": ["placeholder"],
+      "whyHerePool": [
+        "A companion star sweeps the system's edge, capturing dust and weakly bound rocks in its trailing wake.",
+        "Captured material settles into chaotic, often retrograde orbits for years to decades before being ejected.",
+        "Stations on captured bodies live on a clock; once your asteroid is ejected, you go with it.",
+        "Inventory in the cone changes between surveys; last year's three asteroids are gone, there are seven new ones now.",
+        "Smugglers love the cone's one-way valve behavior; legitimate traders do not."
+      ],
+      "prizePool": [
+        "interstellar dust the companion has dragged in from outside the system",
+        "weakly bound planetesimals from the primary's outer halo, now in temporary custody",
+        "ancient ejecta from past common-envelope events captured in transit",
+        "untracked freight that drifted into the cone during the silent decades",
+        "title-portable real estate that travels with the rock"
+      ],
+      "guCharacterPool": [
+        "Bleed is chronic and moderate — the Hill-sphere edge is a continuous low-grade metric tide.",
+        "Material constantly re-mixes; long-term residents report mild but persistent chiral contamination even with clean stock.",
+        "Anchor candidacy is tolerable but not great; the cone is not stable enough for an Iggygate but is stable enough for a working bleed harvester.",
+        "The cone is working-class harvester country; independent captains, eighteen-month leases, calibration-medium refineries the size of a hab module.",
+        "Wake-readers do good business at the cone's edge; the geometry there talks back."
+      ],
       "phenomenon": {
-        "labelPool": ["Hill-sphere capture cone"],
-        "notePool": ["placeholder"],
-        "travelEffectPool": ["placeholder"],
-        "surveyQuestionPool": ["placeholder"],
-        "conflictHookPool": ["placeholder"],
-        "sceneAnchorPool": ["placeholder"]
+        "labelPool": [
+          "Hill-sphere capture cone",
+          "Companion sweeper's wake",
+          "One-way capture valve"
+        ],
+        "notePool": [
+          "A trailing wake of debris the companion star captures and re-ejects on its orbital schedule.",
+          "Captured bodies linger for years or decades before being thrown back out by the same companion that caught them.",
+          "Inventory inside the cone is fundamentally non-stationary; charts age in months, not years.",
+          "Salvage courts hate the cone; title transfers with the rock.",
+          "The cone's leading bow accumulates dust the companion swept from the interstellar medium; the trailing tail carries stolen primary-system material."
+        ],
+        "travelEffectPool": [
+          "Drift in during one orbital phase, get reliably ejected on a later phase, no propulsion needed.",
+          "Smugglers use the cone as a deniable rendezvous; legitimate freight avoids it for the same reason.",
+          "Continuous astrogation surveys are needed to map the cone's current contents; published charts are out of date the day they print.",
+          "Hull abrasion from the cone's swept dust is unusually high; coatings have to be specified for it.",
+          "Customs cutters patrol the cone's neck, where every captured body has to pass through to leave."
+        ],
+        "surveyQuestionPool": [
+          "What is currently in the cone, and when will each thing be ejected?",
+          "Which captured rocks carry isotopes that didn't originate in this system?",
+          "How long has any given installation been in the cone, and where is it going?",
+          "Whose claims on which currently-captured bodies are still valid?",
+          "Has anyone maintained a continuous registry across more than one ejection cycle?"
+        ],
+        "conflictHookPool": [
+          "An old claim filed on a body that left the cone two ejection cycles ago is now legally on a rock somewhere else entirely.",
+          "A salvage court refuses to recognize cone-resident claims; the court's own building is on a captured body that will leave next year.",
+          "A smuggler-port mayor argues for cone-resident voting rights; the legal question is whether the mayor's office is still in the system after the next ejection.",
+          "Two ore concerns dispute which of them filed first on a body whose ephemerides put it in different jurisdictions at different times.",
+          "A free-captain court rules on inheritance cases involving cone-captured assets; the ruling's binding scope is itself disputed."
+        ],
+        "sceneAnchorPool": [
+          "A salvage crew tethered to an asteroid watches the binary slowly tilt overhead, with a countdown on the navigator's panel marked 'ejection window.'",
+          "A wake-reader sits on a cone-edge platform and listens to the new captures, naming each one before its first survey report.",
+          "A smuggler port's whole population packs up over a season because their host body is leaving.",
+          "A customs cutter scans an outbound captured rock and finds three cargo holds it didn't expect.",
+          "A free-captain court meets on whatever rock is most central this quarter; the lawyers complain but show up anyway."
+        ]
       }
     },
     "exocomet-swarm": {
       "label": "Resonance-Pumped Exocomet Swarm",
-      "whyHerePool": ["placeholder"],
-      "prizePool": ["placeholder"],
-      "guCharacterPool": ["placeholder"],
+      "whyHerePool": [
+        "Long-period comets pumped by binary resonance return through the habitable zone on a predictable multi-millennial cadence.",
+        "The swarm has the same fifty or so comets every cycle; the locals name them, track them, plan around them.",
+        "Civilizations old enough remember the last apparition as a religious event or an apocalypse-myth.",
+        "The system's route weather has an era, not just a day; quiet centuries and rich centuries alternate.",
+        "Insurance products exist for comet-crossing seasons, written by underwriters whose grandparents wrote the last cycle's terms."
+      ],
+      "prizePool": [
+        "frozen original-system material delivered at periapsis without anyone needing to fly out for it",
+        "chiral comet ice favored by the swarm's resonance pump",
+        "predictable harvest schedules a religious order can finance",
+        "spectroscopic samples of outer-system reservoir material",
+        "century-old apparition calendars that still hold against current observation"
+      ],
+      "guCharacterPool": [
+        "Bleed arrives with each apparition; nodes that move, on a schedule.",
+        "Long-period sorting collapses comets toward single handedness over megayears; experienced observers predict the next apparition's chirality from this one's.",
+        "Anchor candidacy is irrelevant for the swarm itself; very relevant for the habitable-zone planets the swarm crosses.",
+        "Settled worlds in resonance-pumped systems build their long-term religious calendars and their freight schedules around comet arrivals.",
+        "Gardener-fear cults love these systems; the calendar is older than any current human authority and the apparitions arrive on it."
+      ],
       "phenomenon": {
-        "labelPool": ["Resonance-pumped exocomet swarm"],
-        "notePool": ["placeholder"],
-        "travelEffectPool": ["placeholder"],
-        "surveyQuestionPool": ["placeholder"],
-        "conflictHookPool": ["placeholder"],
-        "sceneAnchorPool": ["placeholder"]
+        "labelPool": [
+          "Resonance-pumped exocomet swarm",
+          "Generational comet armada",
+          "Periodic apparition cycle"
+        ],
+        "notePool": [
+          "A swarm of long-period comets pumped by binary resonance returns on a predictable multi-millennial cycle.",
+          "The same comets recur; the locals name and track them.",
+          "Each apparition delivers measurable volatiles to inner planets, salting biospheres and economies alike.",
+          "Outer-system reservoirs feed the swarm; cycle length depends on the binary's exact resonance.",
+          "A rich apparition period is the most contested commercial event in the system's century-scale calendar."
+        ],
+        "travelEffectPool": [
+          "Outer-approach lanes are dangerous during rich apparition periods, easy during quiet ones.",
+          "Comet-shadow ambushes are a recurring tactical reality during inbound periods.",
+          "Long-haul freight routes are scheduled around the next apparition window.",
+          "Insurance rates for inner-system traffic shift by orders of magnitude across the cycle.",
+          "Apparition seasons close certain ports outright for the duration."
+        ],
+        "surveyQuestionPool": [
+          "Which comet is leading the next apparition season?",
+          "Has the cycle clock drifted since the last well-documented event?",
+          "Who owns the right to sample any given comet this time around?",
+          "What previously-undelivered volatile chemistry will arrive this cycle?",
+          "Does the chirality forecast for this apparition match the religious calendar prediction?"
+        ],
+        "conflictHookPool": [
+          "The comet is six years out and three families are already arguing about who gets the chiral assay. The last one made three families and ended two.",
+          "Sampling rights for the next apparition are held by a defunct corporation; six successor claims are in court.",
+          "A religious order's calendar predicts the apparition will deliver an apocalyptic chiral signature; an insurance combine is lobbying for a counter-narrative.",
+          "Two harvest fleets are racing to be the first to land a probe; the first probe back sets the cycle's prevailing price.",
+          "A Gardener-fear cult buries its dead in advance of every apparition; the burial sites are increasingly disputed real estate."
+        ],
+        "sceneAnchorPool": [
+          "A cold dawn at an observatory watching the first of the season come in — a single bright streak after generations of waiting.",
+          "An astronomer-priest reads the apparition forecast to a congregation that has not seen this comet in three lifetimes.",
+          "A salvage fleet drops sample probes one after another into a single body whose name is on every century-old map.",
+          "An insurance adjuster signs off on a cycle's policy after reading the previous cycle's claim ledger in one sitting.",
+          "An apparition calendar in a sealed glass case dates its last entry to before the local government existed."
+        ]
       }
     },
     "accretion-bridge": {
       "label": "Accretion Bridge",
-      "whyHerePool": ["placeholder"],
-      "prizePool": ["placeholder"],
-      "guCharacterPool": ["placeholder"],
+      "whyHerePool": [
+        "A narrow, optically visible gas and dust corridor connects two close stars; tighter and more coherent than a diffuse stream.",
+        "The system is a beacon from light-years away; pilgrim traffic, observatory traffic, and Sol-interdiction scrutiny all converge on it.",
+        "The bridge has chemistry that doesn't match either star alone; surveys keep returning the same impossible spectrum.",
+        "Locals say the two stars are holding hands across the thread; whatever you drop into it goes somewhere there is no chart for.",
+        "The Gardener has dropped warning beacons near the bridge every time someone proposes building a structure inside it."
+      ],
+      "prizePool": [
+        "spectroscopically unique mixed-photosphere chemistry sampled near the footpoints",
+        "tourist and pilgrim traffic measured in the millions per local year",
+        "scarcity rents on the one or two viewing platforms cleared for use",
+        "exotic decay products that drift inward from the bridge's middle",
+        "covert deniable disposal services rumored to operate at the bridge's center"
+      ],
+      "guCharacterPool": [
+        "The bridge is itself a bleed corridor; the geometry between the two stars goes thin along its length and along no other axis.",
+        "Metric stress is extreme along the long axis and near-zero perpendicular; crews who learn to enter perpendicular survive.",
+        "Anchor candidacy at in-bridge sites is zero; at the paired footpoints on each star's photosphere, near-uniquely high.",
+        "An Iggygate across the bridge could in principle short the geometry between the two stars; none has been attempted, and the Gardener has dropped warning beacons every time someone considered.",
+        "Smugglers' grandparents tell stories about the bridge; what gets dropped in it does not come back."
+      ],
       "phenomenon": {
-        "labelPool": ["Accretion bridge"],
-        "notePool": ["placeholder"],
-        "travelEffectPool": ["placeholder"],
-        "surveyQuestionPool": ["placeholder"],
-        "conflictHookPool": ["placeholder"],
-        "sceneAnchorPool": ["placeholder"]
+        "labelPool": [
+          "Accretion bridge",
+          "Inter-stellar luminous corridor",
+          "Photospheric handshake"
+        ],
+        "notePool": [
+          "A visibly luminous gas-and-dust corridor connects two close stars, narrow and coherent.",
+          "The bridge has chemistry from neither star alone; the spectrum is the system's signature.",
+          "Pilgrim traffic, observatory traffic, and interdiction scrutiny converge on the bridge's two endpoints.",
+          "The bridge is a chronic, navigable, scheduled hazard; the only safe transits are perpendicular to its long axis.",
+          "A folk reputation has built up around the bridge: things dropped into its center are not recovered."
+        ],
+        "travelEffectPool": [
+          "Crossing parallel to the bridge is forbidden; perpendicular crossings are tolerated and tightly logged.",
+          "Long-range communications garble inside the bridge's plasma envelope.",
+          "Hull radiation hardening must exceed normal stellar-photosphere rating to survive a brief bridge transit.",
+          "Pilgrim transports follow a low-parking lane that takes a season longer than a direct path.",
+          "Stealth ops favor the bridge's noise floor; legitimate traffic avoids it for the same reason."
+        ],
+        "surveyQuestionPool": [
+          "What's in the bridge's middle, and why does the spectrum read the same year over year?",
+          "Is the bridge a natural feature or a GU-layer phenomenon being mistaken for one?",
+          "Which star is currently donating which elements to the bridge?",
+          "Why do Gardener warning beacons appear in the same locations every generation?",
+          "Has any object dropped into the bridge ever been recovered?"
+        ],
+        "conflictHookPool": [
+          "Two pilgrim orders dispute access to the only cleared viewing platform; the platform's structural certification is being renewed and the certifying body is bribable.",
+          "Sol-interdiction inspectors visit on a fixed cycle; the local government schedules its more contested business around the visits.",
+          "A smuggling combine offers deniable disposal at the bridge's center; the price has risen every decade since the practice was first rumored.",
+          "Observatories from three jurisdictions argue over publication rights for the bridge's spectroscopic surveys.",
+          "An attempted Iggygate at one bridge footpoint was abandoned a generation ago; the wreckage is still there, and reopening the project is a recurring proposal."
+        ],
+        "sceneAnchorPool": [
+          "A pilgrim transport docks at a viewing platform; the bridge fills half the sky like a frozen lightning bolt that has been burning quietly for a million years.",
+          "A surveyor at the perpendicular crossing line photographs the bridge from one of the only angles the certifying body allows.",
+          "A smuggler boat skips a payload over the bridge's middle and the crew refuses to watch where it lands.",
+          "A Gardener-warning beacon arrives at one of the bridge's footpoints; nobody around it speaks for an hour after.",
+          "An astronomer publishes the bridge's spectrum every generation and every generation it reads exactly the same."
+        ]
       }
     },
     "gardener-cordon": {
       "label": "Gardener-Quarantine Cordon",
-      "whyHerePool": ["placeholder"],
-      "prizePool": ["placeholder"],
-      "guCharacterPool": ["placeholder"],
+      "whyHerePool": [
+        "A geometry-perfect ring of debris marks a perimeter the Gardener does not want crossed; nobody built it, and everyone knows what built it.",
+        "The cordon's material is geometrically locked, all the same handedness, all aligned to the same metric — the only known material with that signature is post-strike residue.",
+        "Inside the cordon: unknown. Outside the cordon: normal local conditions. The warning beacons mean it.",
+        "Insurance, customs, navigation, religion — every part of the route economy bends around a Gardener cordon.",
+        "No human installation has been permitted to survive on a cordon for more than a few years."
+      ],
+      "prizePool": [
+        "samples of post-strike residue material the Gardener leaves behind",
+        "perimeter cartography sold by professional cordon-mappers",
+        "interdiction-compliance certification rents for adjacent traffic",
+        "salvage from prior installations that did not survive the Gardener's notice",
+        "religious-pilgrimage access fees to the outer perimeter"
+      ],
+      "guCharacterPool": [
+        "The cordon material is flat, dead, scar-class; outside the cordon, local conditions resume.",
+        "Cordon residue carries a forced single chirality and a locked metric; no other material in the reachable universe matches.",
+        "The cordon is itself an anchor for something nobody human understands; no installation built on one has lasted.",
+        "Detour at any cost is the canonical rule; insurance, customs, religion, navigation all bend around the cordon.",
+        "The thing that built the cordon is still watching it; the warning beacons confirm this on a regular schedule."
+      ],
       "phenomenon": {
-        "labelPool": ["Gardener-quarantine cordon"],
-        "notePool": ["placeholder"],
-        "travelEffectPool": ["placeholder"],
-        "surveyQuestionPool": ["placeholder"],
-        "conflictHookPool": ["placeholder"],
-        "sceneAnchorPool": ["placeholder"]
+        "labelPool": [
+          "Gardener-quarantine cordon",
+          "Post-strike perimeter",
+          "Surgical-strike scar ring"
+        ],
+        "notePool": [
+          "A ring of debris with the unmistakable signature of a surgical-strike edge case marks a perimeter the Gardener does not want crossed.",
+          "The cordon material is geometrically locked; all the same handedness, all the same metric alignment, no other source.",
+          "Warning beacons arrive at predictable intervals; the source is unknown but reliable.",
+          "No human installation on a cordon has survived more than a few years.",
+          "Religious orders treat the cordon as sacred; interdiction-compliance auditors treat it as bright-line forbidden."
+        ],
+        "travelEffectPool": [
+          "Standard navigation forbids crossing; every commercial routing system has the cordon hard-coded.",
+          "Detour costs are absorbed by the route economy without question; cordons price in below the noise.",
+          "Communication near the cordon experiences periodic interference matching the warning-beacon schedule.",
+          "Insurance underwriters refuse coverage for any operation within a defined radius.",
+          "Sensor data inside the cordon's nominal volume returns null; instruments report 'nothing,' which is exactly the wrong kind of nothing."
+        ],
+        "surveyQuestionPool": [
+          "What was here before the strike?",
+          "Why has the cordon's geometry not decayed in centuries of observation?",
+          "What is the warning-beacon schedule actually warning?",
+          "Why does this site exist, when others nearby do not?",
+          "Has anything ever crossed the cordon and returned with legible logs?"
+        ],
+        "conflictHookPool": [
+          "An interdiction-compliance auditor finds an unlogged installation just inside the cordon's outer edge; the question is whose responsibility it is to remove it.",
+          "A religious order petitions for pilgrimage access to the cordon's outer perimeter; the regional government cannot decide whether to grant or deny without provoking the Gardener.",
+          "A salvage syndicate found the wreckage of a prior installation just outside the cordon; the salvage rights are contested by descendants of the original builders.",
+          "A scientific expedition proposes to sample cordon residue; the proposal has been re-submitted every decade for a century without approval.",
+          "A smuggling combine routes through the cordon-adjacent traffic corridor for the political cover; the corridor's customs station is overwhelmed."
+        ],
+        "sceneAnchorPool": [
+          "The ring is geometry-perfect, captain. We did not build it. The thing that built it is still watching it.",
+          "A warning beacon arrives at a buoy at the cordon's outer edge; the buoy's onboard chronometer is the only system in the region that doesn't reset.",
+          "A pilgrim approaches the cordon's nominal perimeter, kneels, and reads aloud from a list of names the cordon is rumored to commemorate.",
+          "An interdiction-compliance auditor reads a logbook entry from a hundred years ago that begins 'standard approach' and ends mid-sentence.",
+          "A salvage crew picks through wreckage just outside the cordon and finds a tool whose serial number predates the local government."
+        ]
       }
     }
   }
