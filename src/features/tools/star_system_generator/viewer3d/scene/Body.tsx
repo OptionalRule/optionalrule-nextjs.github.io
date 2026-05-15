@@ -179,7 +179,7 @@ export function Body({ body }: BodyProps) {
             ))}
           </>
         ) : null}
-        {body.hasSettlements || body.gateIds.length > 0 ? <BodySettlements bodyId={body.id} bodySize={body.visualSize} /> : null}
+        <BodySettlements bodyId={body.id} bodySize={body.visualSize} />
       </group>
     </group>
   )
