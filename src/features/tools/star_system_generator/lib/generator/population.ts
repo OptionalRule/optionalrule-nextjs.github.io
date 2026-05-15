@@ -520,7 +520,7 @@ function applyToBodies(bodies: OrbitingBody[], ctx: BodyContext): OrbitingBody[]
   }))
 }
 
-const TERRAFORM_RUIN_TYPES: readonly string[] = [
+export const TERRAFORM_RUIN_TYPES: readonly string[] = [
   'Ruined terraforming plant',
   'Mirror array collapse site',
   'Failed garden dome',
@@ -528,6 +528,10 @@ const TERRAFORM_RUIN_TYPES: readonly string[] = [
   'Terraforming command burnsite',
   'Collapsed atmosphere scaffolding',
 ]
+
+export function isTerraformRuinType(value: string): boolean {
+  return TERRAFORM_RUIN_TYPES.includes(value)
+}
 
 const TERRAFORM_RUIN_HOOKS: readonly string[] = [
   'Atmospheric scaffolding still hums below the rust; locals say the controllers wake on bleed nights.',

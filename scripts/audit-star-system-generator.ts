@@ -1,4 +1,5 @@
 import { generateSystem } from '../src/features/tools/star_system_generator/lib/generator/index'
+import { isTerraformRuinType } from '../src/features/tools/star_system_generator/lib/generator/population'
 import {
   coldThermalZones as coldZones,
   envelopeCategories,
@@ -462,6 +463,83 @@ function auditBody(system: GeneratedSystem, body: OrbitingBody, bodyIndex: numbe
     assertText(findings, seed, `${path}.moons[${moonIndex}].moonType`, moon.moonType.value, 'Moon type')
     assertText(findings, seed, `${path}.moons[${moonIndex}].use`, moon.use.value, 'Moon use')
   })
+
+  auditPopulation(system, body, bodyIndex, findings)
+}
+
+function auditPopulation(system: GeneratedSystem, body: OrbitingBody, bodyIndex: number, findings: Finding[]): void {
+  const seed = system.seed
+  const path = `bodies[${bodyIndex}].population`
+  const pop = body.population?.value
+  if (!pop) {
+    addFinding(findings, 'error', seed, path, 'Body missing derived population field.', 'audit', 'POPULATION_MISSING')
+    return
+  }
+
+  const settlementsOnBody = system.settlements.filter((s) => s.bodyId === body.id)
+  const hasMajorSettlement = settlementsOnBody.some((s) => {
+    const popValue = s.population.value
+    return popValue === '10+ million' || popValue === '1-10 million' || popValue === '100,001-1 million'
+  })
+  if (hasMajorSettlement && (pop.band === 'empty' || pop.band === 'automated' || pop.band === 'transient')) {
+    addFinding(
+      findings,
+      'error',
+      seed,
+      path,
+      `Body hosts a major settlement but population band is "${pop.band}".`,
+      'audit',
+      'POPULATION_FLOOR_VIOLATED',
+    )
+  }
+
+  if (pop.band === 'dense-world') {
+    const isComfortable = body.thermalZone.value === 'Temperate band' && /oxygen-rich|breathable|earth-like/i.test(body.detail.atmosphere.value)
+    if (pop.terraformState !== 'stabilized' && !isComfortable) {
+      addFinding(
+        findings,
+        'error',
+        seed,
+        path,
+        'dense-world band without stabilized terraform or comfortable habitability.',
+        'audit',
+        'POPULATION_DENSE_WORLD_GATE',
+      )
+    }
+  }
+
+  if (pop.band === 'populous' || pop.band === 'dense-world') {
+    const atm = body.detail.atmosphere.value.toLowerCase()
+    const stableAtm = /oxygen-rich|breathable|earth-like|nitrogen-oxygen/.test(atm)
+    if (!stableAtm) {
+      addFinding(
+        findings,
+        'error',
+        seed,
+        path,
+        `${pop.band} band on a body without stable atmosphere ("${body.detail.atmosphere.value}").`,
+        'audit',
+        'POPULATION_STABLE_ATM_GATE',
+      )
+    }
+  }
+
+  if (pop.terraformState === 'failed') {
+    const matching = system.ruins.filter((r) =>
+      r.location.value === body.name.value && isTerraformRuinType(r.remnantType.value),
+    )
+    if (matching.length === 0) {
+      addFinding(
+        findings,
+        'error',
+        seed,
+        path,
+        'Failed-terraform body produces no terraform ruin.',
+        'audit',
+        'POPULATION_TERRAFORM_RUIN_MISSING',
+      )
+    }
+  }
 }
 
 function auditSettlement(system: GeneratedSystem, settlement: Settlement, settlementIndex: number, findings: Finding[]): void {

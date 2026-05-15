@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { generateSystem } from '../lib/generator'
+import { isTerraformRuinType } from '../lib/generator/population'
 import type { GenerationOptions } from '../types'
 
 const baseOptions: GenerationOptions = {
@@ -30,8 +31,7 @@ describe('failed terraform → HumanRemnant', () => {
     const failedBodies = sys.bodies.filter((b) => b.population?.value.terraformState === 'failed')
     for (const body of failedBodies) {
       const matching = sys.ruins.filter((r) =>
-        r.location.value === body.name.value
-        && /terraform|garden|mirror|dome/i.test(r.remnantType.value),
+        r.location.value === body.name.value && isTerraformRuinType(r.remnantType.value),
       )
       expect(matching.length).toBeGreaterThan(0)
     }
@@ -51,9 +51,7 @@ describe('failed terraform → HumanRemnant', () => {
       .filter((b) => b.population?.value.terraformState === 'failed')
       .map((b) => b.name.value)
     if (failedBodyNames.length !== 0) return
-    const phantomRuins = sys.ruins.filter((r) =>
-      /mirror array collapse|failed garden|dome necropolis|burnsite/i.test(r.remnantType.value),
-    )
+    const phantomRuins = sys.ruins.filter((r) => isTerraformRuinType(r.remnantType.value))
     expect(phantomRuins.length).toBe(0)
   })
 })
