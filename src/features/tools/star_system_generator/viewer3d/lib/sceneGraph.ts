@@ -156,13 +156,18 @@ function moonPeriodSeconds(body: OrbitingBody, parentSize: number, orbit: number
   return Math.max(MIN_MOON_PERIOD_SEC, period)
 }
 
-function moonsFor(body: OrbitingBody, _seed: string, parentSize: number): MoonVisual[] {
+function moonsFor(body: OrbitingBody, _seed: string, parentSize: number, maxReach: number): MoonVisual[] {
   const count = body.moons.length
   const orbitStep = parentSize * (count > 6 ? 0.4 : 0.6)
   const crowdScale = count > 6 ? Math.max(0.55, Math.sqrt(6 / count)) : 1
+  const rawOrbits = body.moons.map((_moon: Moon, idx: number) =>
+    parentSize * moonOrbitShell(_moon.scale.value) + idx * orbitStep,
+  )
+  const naturalReach = Math.max(...rawOrbits)
+  const scale = naturalReach > maxReach && naturalReach > 0 ? maxReach / naturalReach : 1
   return body.moons.map((moon: Moon, idx: number) => {
     const scaleFactor = moonScaleFactor(moon.scale.value) * crowdScale
-    const orbit = parentSize * moonOrbitShell(moon.scale.value) + idx * orbitStep
+    const orbit = rawOrbits[idx] * scale
     const periodSec = moonPeriodSeconds(body, parentSize, orbit, idx, _seed)
     const tilt = (hashToUnit(`moon-tilt#${moon.id}`) - 0.5) * 0.6
     return {
@@ -236,7 +241,7 @@ function orbitRadiusForBody(body: OrbitingBody, hzCenterAu: number, scaleMode: O
     : auToScene(body.orbitAu.value, hzCenterAu, scaleMode)
 }
 
-function buildBody(body: OrbitingBody, system: GeneratedSystem, hzCenterAu: number, scaleMode: OrbitScaleMode, orbitIndex: number): BodyVisual {
+function buildBody(body: OrbitingBody, system: GeneratedSystem, hzCenterAu: number, scaleMode: OrbitScaleMode, orbitIndex: number, moonMaxReach: number): BodyVisual {
   const size = bodyVisualSize(body.category.value, body.physical.radiusEarth.value)
   const shading = chooseShading(body)
   const settlementIds = system.settlements
@@ -260,7 +265,7 @@ function buildBody(body: OrbitingBody, system: GeneratedSystem, hzCenterAu: numb
     category: body.category.value,
     surface: buildBodySurfaceProfile(body, system.seed, settlementIds.length),
     rings: ringFor(body, size),
-    moons: moonsFor(body, system.seed, size),
+    moons: moonsFor(body, system.seed, size, moonMaxReach),
     guAccent: bodyHasGuFracture(body),
     hasSettlements: settlementIds.length > 0,
     settlementIds,
@@ -384,7 +389,20 @@ export function buildSceneGraph(system: GeneratedSystem, options: BuildSceneGrap
   const nonBelt = sortedOrbitingBodies.filter((b) => b.category.value !== 'belt')
   const beltBodies = sortedOrbitingBodies.filter((b) => b.category.value === 'belt')
 
-  const bodies = applyBodyOrbitClearance(nonBelt.map((b) => buildBody(b, system, hzCenterAu, scaleMode, orbitIndexById.get(b.id) ?? 0)))
+  const nearestCompanionOffset = (() => {
+    const nonCircumbinaryCompanions = inSceneCompanions
+      .map((src, i) => ({ src, visual: companions[i] }))
+      .filter(({ src }) => src.mode !== 'circumbinary')
+    if (nonCircumbinaryCompanions.length === 0) return Infinity
+    return Math.min(...nonCircumbinaryCompanions.map(({ visual }) => Math.hypot(...visual.position)))
+  })()
+  const nonBeltSceneOrbits = nonBelt.map((b) => orbitRadiusForBody(b, hzCenterAu, scaleMode, orbitIndexById.get(b.id) ?? 0))
+  const bodies = applyBodyOrbitClearance(nonBelt.map((b, i) => {
+    const thisOrbit = nonBeltSceneOrbits[i]
+    const nextOrbit = i < nonBelt.length - 1 ? nonBeltSceneOrbits[i + 1] : nearestCompanionOffset
+    const moonMaxReach = (nextOrbit - thisOrbit) / 2
+    return buildBody(b, system, hzCenterAu, scaleMode, orbitIndexById.get(b.id) ?? 0, moonMaxReach)
+  }))
   const belts = beltBodies.map((b) => buildBelt(b, hzCenterAu, scaleMode, orbitIndexById.get(b.id) ?? 0))
 
   const allHazards = system.majorHazards.map((h) => classifyHazard(h, system, hzCenterAu))
@@ -440,8 +458,14 @@ export function buildSceneGraph(system: GeneratedSystem, options: BuildSceneGrap
     const subCompanionOffset = Math.hypot(...companionStar.position)
     const subOrbitRadiusCap = subCompanionOffset * SUB_SYSTEM_EXTENT_FRACTION
 
+    const subNonBeltSceneOrbits = subNonBelt.map((b) => orbitRadiusForBody(b, subHzCenter, scaleMode, subOrbitIndex.get(b.id) ?? 0))
     const subBodiesUncapped = applyBodyOrbitClearance(
-      subNonBelt.map((b) => buildBody(b, subSystemShim, subHzCenter, scaleMode, subOrbitIndex.get(b.id) ?? 0)),
+      subNonBelt.map((b, i) => {
+        const thisOrbit = subNonBeltSceneOrbits[i]
+        const nextOrbit = i < subNonBelt.length - 1 ? subNonBeltSceneOrbits[i + 1] : subOrbitRadiusCap
+        const moonMaxReach = (nextOrbit - thisOrbit) / 2
+        return buildBody(b, subSystemShim, subHzCenter, scaleMode, subOrbitIndex.get(b.id) ?? 0, moonMaxReach)
+      }),
     )
     const subBodies = subBodiesUncapped.map((b) =>
       b.orbitRadius <= subOrbitRadiusCap ? b : { ...b, orbitRadius: subOrbitRadiusCap },
