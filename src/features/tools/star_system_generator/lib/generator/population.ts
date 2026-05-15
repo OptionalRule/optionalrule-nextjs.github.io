@@ -9,6 +9,7 @@ import type {
   GenerationOptions,
   GeneratedSystem,
   GuOverlay,
+  HumanRemnant,
   Moon,
   OrbitingBody,
   Reachability,
@@ -519,6 +520,59 @@ function applyToBodies(bodies: OrbitingBody[], ctx: BodyContext): OrbitingBody[]
   }))
 }
 
+const TERRAFORM_RUIN_TYPES: readonly string[] = [
+  'Ruined terraforming plant',
+  'Mirror array collapse site',
+  'Failed garden dome',
+  'Dome necropolis',
+  'Terraforming command burnsite',
+  'Collapsed atmosphere scaffolding',
+]
+
+const TERRAFORM_RUIN_HOOKS: readonly string[] = [
+  'Atmospheric scaffolding still hums below the rust; locals say the controllers wake on bleed nights.',
+  'The mirror array tore itself apart when the climate model lied; survivors keep the receipts.',
+  'The biosphere succeeded for one season before the failure cascade; the hothouse stayed.',
+  'A liability case still moves through abandoned court archives; nobody pays, nobody leaves.',
+  'Dome pressure holds; the population does not. Debt-fleet barges still check headcounts.',
+  'The terraform mirrors were sold off ledger; the buyer never returned and the climate slipped.',
+]
+
+function terraformRuinForBody(body: OrbitingBody, index: number): HumanRemnant {
+  const remnantTypeIdx = stableHash(`${body.id}|type`) % TERRAFORM_RUIN_TYPES.length
+  const hookIdx = stableHash(`${body.id}|hook`) % TERRAFORM_RUIN_HOOKS.length
+  return {
+    id: `terraform-ruin-${body.id}-${index}`,
+    location: {
+      value: body.name.value,
+      confidence: 'human-layer',
+      source: 'Failed-terraform body emits a terraform-ruin entry',
+    },
+    remnantType: {
+      value: TERRAFORM_RUIN_TYPES[remnantTypeIdx],
+      confidence: 'human-layer',
+      source: 'Failed-terraform ruin type pool',
+    },
+    hook: {
+      value: TERRAFORM_RUIN_HOOKS[hookIdx],
+      confidence: 'human-layer',
+      source: 'Failed-terraform ruin hook pool',
+    },
+  }
+}
+
+function collectTerraformRuins(bodies: OrbitingBody[]): HumanRemnant[] {
+  const ruins: HumanRemnant[] = []
+  let index = 0
+  for (const body of bodies) {
+    if (body.population?.value.terraformState === 'failed') {
+      ruins.push(terraformRuinForBody(body, index))
+      index += 1
+    }
+  }
+  return ruins
+}
+
 export function derivePopulationLayer(system: GeneratedSystem): GeneratedSystem {
   const mainCtx: BodyContext = {
     settlements: system.settlements,
@@ -529,6 +583,7 @@ export function derivePopulationLayer(system: GeneratedSystem): GeneratedSystem 
     options: system.options,
   }
   const populatedBodies = applyToBodies(system.bodies, mainCtx)
+  const mainTerraformRuins = collectTerraformRuins(populatedBodies)
 
   const companions: StellarCompanion[] = system.companions.map((companion) => {
     if (!companion.subSystem) return companion
@@ -541,8 +596,21 @@ export function derivePopulationLayer(system: GeneratedSystem): GeneratedSystem 
       options: system.options,
     }
     const subBodies = applyToBodies(companion.subSystem.bodies, subCtx)
-    return { ...companion, subSystem: { ...companion.subSystem, bodies: subBodies } }
+    const subTerraformRuins = collectTerraformRuins(subBodies)
+    return {
+      ...companion,
+      subSystem: {
+        ...companion.subSystem,
+        bodies: subBodies,
+        ruins: [...companion.subSystem.ruins, ...subTerraformRuins],
+      },
+    }
   })
 
-  return { ...system, bodies: populatedBodies, companions }
+  return {
+    ...system,
+    bodies: populatedBodies,
+    companions,
+    ruins: [...system.ruins, ...mainTerraformRuins],
+  }
 }
