@@ -2,6 +2,7 @@ import type { GeneratedSystem, OrbitingBody, Moon, StellarCompanion } from '../.
 import type {
   BeltVisual,
   BodyVisual,
+  DebrisFieldVisual,
   DistantStarMarker,
   HazardVisual,
   MoonVisual,
@@ -438,6 +439,15 @@ export function buildSceneGraph(system: GeneratedSystem, options: BuildSceneGrap
     else systemLevelRuins.push(ruin.id)
   }
 
+  const debrisFields: DebrisFieldVisual[] = system.debrisFields.map((field) => ({
+    field,
+    innerRadius: auToScene(field.spatialExtent.innerAu.value, hzCenterAu, scaleMode),
+    outerRadius: auToScene(field.spatialExtent.outerAu.value, hzCenterAu, scaleMode),
+    inclinationDeg: field.spatialExtent.inclinationDeg.value,
+    spanDeg: field.spatialExtent.spanDeg.value,
+    centerAngleDeg: field.spatialExtent.centerAngleDeg.value,
+  }))
+
   const maxBodyOrbit = Math.max(...bodies.map((b) => b.orbitRadius), 0)
   const maxBeltOrbit = Math.max(...belts.map((b) => b.outerRadius), 0)
   const sceneRadius = Math.max(maxBodyOrbit, maxBeltOrbit, auToScene(system.zones.snowLineAu.value, hzCenterAu, scaleMode)) * 1.15
@@ -530,5 +540,6 @@ export function buildSceneGraph(system: GeneratedSystem, options: BuildSceneGrap
     subSystems,
     distantMarkers,
     circumbinaryKeepOut,
+    debrisFields,
   }
 }

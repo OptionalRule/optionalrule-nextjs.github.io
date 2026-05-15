@@ -1,4 +1,4 @@
-import type { BodyCategory } from '../types'
+import type { BodyCategory, DebrisField } from '../types'
 
 export type SceneVec3 = [number, number, number]
 
@@ -214,6 +214,15 @@ export interface RuinMarker {
   renderArchetype: 'ruin-marker'
 }
 
+export interface DebrisFieldVisual {
+  field: DebrisField
+  innerRadius: number
+  outerRadius: number
+  inclinationDeg: number
+  spanDeg: number
+  centerAngleDeg: number
+}
+
 export interface DistantStarMarker {
   id: string
   visual: StarVisual
@@ -249,6 +258,7 @@ export interface SystemSceneGraph {
   subSystems: SubSystemVisual[]
   distantMarkers: DistantStarMarker[]
   circumbinaryKeepOut?: number
+  debrisFields: DebrisFieldVisual[]
 }
 
 export type LayerKey = 'physical' | 'gu' | 'human' | 'moonOrbits'
