@@ -1,5 +1,10 @@
 import type { GeneratedSystem, Gate, OrbitingBody, Settlement, SystemHook, SystemHooks } from '../../types'
 import { formatStellarClass } from '../stellarLabels'
+import {
+  bandLabel,
+  formatBodyPopulationSuffix,
+  formatSystemPopulationLine,
+} from '../populationDisplay'
 
 export function exportSystemMarkdown(system: GeneratedSystem): string {
   const lines: string[] = [
@@ -16,6 +21,7 @@ export function exportSystemMarkdown(system: GeneratedSystem): string {
     `**GU Intensity:** ${system.guOverlay.intensity.value}; ${system.guOverlay.bleedLocation.value}; ${system.guOverlay.bleedBehavior.value}.`,
     `**Primary Economy:** ${formatPrimaryEconomy(system)}`,
     `**Major Hazards:** ${formatMajorHazards(system)}`,
+    `**Population:** ${formatSystemPopulationLine(system)}`,
     `**No-Alien Check:** ${system.noAlienCheck.passed ? 'Passed' : 'Needs review'}; ${system.noAlienCheck.note}`,
     '',
     '## Orbital Bodies',
@@ -267,8 +273,17 @@ function formatBodyTraits(body: OrbitingBody): string {
 }
 
 function formatSites(body: OrbitingBody): string {
-  if (!body.sites.length) return '-'
-  return body.sites.map((site) => site.value).join(', ')
+  const sitesText = body.sites.length ? body.sites.map((site) => site.value).join(', ') : ''
+  const populationSuffix = formatBodyPopulationSuffix(body)
+  const populationLabel = body.population?.value.band
+  if (!sitesText && !populationSuffix && !populationLabel) return '-'
+  const parts: string[] = []
+  if (sitesText) parts.push(sitesText)
+  if (populationLabel) {
+    const label = bandLabel(body.population!.value.band)
+    parts.push(populationSuffix ? `${label.toLowerCase()} + ${populationSuffix}` : label.toLowerCase())
+  }
+  return parts.join('; ')
 }
 
 function formatSettlement(settlement: Settlement): string[] {
