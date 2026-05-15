@@ -36,6 +36,7 @@ import { separationToBucketAu } from '../../lib/generator/companionGeometry'
 
 const BODY_ORBIT_CLEARANCE = 3.5
 const MIN_MOON_PERIOD_SEC = 24
+const SUB_SYSTEM_EXTENT_FRACTION = 0.85
 
 export interface BuildSceneGraphOptions {
   scaleMode?: OrbitScaleMode
@@ -436,8 +437,14 @@ export function buildSceneGraph(system: GeneratedSystem, options: BuildSceneGrap
     const subNonBelt = sortedSubBodies.filter((b) => b.category.value !== 'belt')
     const subBeltBodies = sortedSubBodies.filter((b) => b.category.value === 'belt')
 
-    const subBodies = applyBodyOrbitClearance(
+    const subCompanionOffset = Math.hypot(...companionStar.position)
+    const subOrbitRadiusCap = subCompanionOffset * SUB_SYSTEM_EXTENT_FRACTION
+
+    const subBodiesUncapped = applyBodyOrbitClearance(
       subNonBelt.map((b) => buildBody(b, subSystemShim, subHzCenter, scaleMode, subOrbitIndex.get(b.id) ?? 0)),
+    )
+    const subBodies = subBodiesUncapped.map((b) =>
+      b.orbitRadius <= subOrbitRadiusCap ? b : { ...b, orbitRadius: subOrbitRadiusCap },
     )
     const subBelts = subBeltBodies.map((b) => buildBelt(b, subHzCenter, scaleMode, subOrbitIndex.get(b.id) ?? 0))
 
