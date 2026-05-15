@@ -3,14 +3,14 @@ import { selectArchetypeForCompanion } from '../lib/generator/debrisFields'
 import { fact } from '../lib/generator'
 import type { StellarCompanion, Star } from '../types'
 
-function fakeStar(massSolar: number, activity: string = 'Quiet'): Star {
+function fakeStar(massSolar: number, activity: string = 'Quiet', ageState: string = 'Mature'): Star {
   return {
     id: 'fake',
     name: fact('Fake', 'human-layer', 'test'),
     spectralType: fact('K star', 'inferred', 'test'),
     massSolar: fact(massSolar, 'derived', 'test'),
     luminositySolar: fact(0.5, 'derived', 'test'),
-    ageState: fact('Mature', 'inferred', 'test'),
+    ageState: fact(ageState, 'inferred', 'test'),
     metallicity: fact('Average', 'inferred', 'test'),
     activity: fact(activity, 'inferred', 'test'),
     activityRoll: fact(7, 'derived', 'test'),
@@ -18,7 +18,7 @@ function fakeStar(massSolar: number, activity: string = 'Quiet'): Star {
   }
 }
 
-function fakeCompanion(mode: StellarCompanion['mode'], separation: string, companionMass: number, activity: string = 'Quiet', id: string = 'companion-1'): StellarCompanion {
+function fakeCompanion(mode: StellarCompanion['mode'], separation: string, companionMass: number, activity: string = 'Quiet', id: string = 'companion-1', ageState: string = 'Mature'): StellarCompanion {
   return {
     id,
     companionType: fact('Test', 'inferred', 'test'),
@@ -27,7 +27,7 @@ function fakeCompanion(mode: StellarCompanion['mode'], separation: string, compa
     guConsequence: fact('test', 'gu-layer', 'test'),
     rollMargin: fact(0, 'derived', 'test'),
     mode,
-    star: fakeStar(companionMass, activity),
+    star: fakeStar(companionMass, activity, ageState),
   }
 }
 
@@ -79,5 +79,41 @@ describe('selectArchetypeForCompanion eligibility', () => {
     const primary = fakeStar(1.0)
     const r = selectArchetypeForCompanion({ seed: 'eligibility-test-7' }, c, primary, { hierarchicalTriple: false })
     expect(r).toBeNull()
+  })
+
+  it('volatile + evolved primary can select accretion-bridge or common-envelope-shell', () => {
+    const seen = new Set<string>()
+    for (let i = 0; i < 60; i++) {
+      const c = fakeCompanion('volatile', 'Contact / near-contact', 0.5, 'Quiet', 'companion-1', 'Evolved')
+      const primary = fakeStar(1.0, 'Quiet', 'Evolved')
+      const r = selectArchetypeForCompanion({ seed: `eligibility-evolved-${i}` }, c, primary, { hierarchicalTriple: false })
+      if (r) seen.add(r.shape)
+    }
+    expect(seen.has('accretion-bridge'), 'accretion-bridge must be reachable').toBe(true)
+    expect(seen.has('common-envelope-shell'), 'common-envelope-shell must be reachable').toBe(true)
+  })
+
+  it('circumbinary + aging primary can select common-envelope-shell', () => {
+    const seen = new Set<string>()
+    for (let i = 0; i < 60; i++) {
+      const c = fakeCompanion('circumbinary', 'Tight binary', 0.5, 'Quiet', 'companion-1', 'Aging')
+      const primary = fakeStar(1.0, 'Quiet', 'Aging')
+      const r = selectArchetypeForCompanion({ seed: `eligibility-aging-${i}` }, c, primary, { hierarchicalTriple: false })
+      if (r) seen.add(r.shape)
+    }
+    expect(seen.has('common-envelope-shell'), 'common-envelope-shell must be reachable').toBe(true)
+  })
+
+  it('gardener-cordon is reachable at the ~3% base rate across companion modes', () => {
+    let cordonHits = 0
+    const iterations = 500
+    for (let i = 0; i < iterations; i++) {
+      const c = fakeCompanion('circumbinary', 'Close binary', 0.5)
+      const primary = fakeStar(1.0)
+      const r = selectArchetypeForCompanion({ seed: `eligibility-cordon-${i}` }, c, primary, { hierarchicalTriple: false })
+      if (r?.shape === 'gardener-cordon') cordonHits++
+    }
+    expect(cordonHits, `expected ~3% cordons, got ${cordonHits}/${iterations}`).toBeGreaterThan(0)
+    expect(cordonHits / iterations, `cordon rate should be roughly 3%`).toBeLessThan(0.08)
   })
 })

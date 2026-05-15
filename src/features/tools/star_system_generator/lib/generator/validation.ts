@@ -745,7 +745,7 @@ export function validateDebrisFields(system: GeneratedSystem): ValidationFinding
   if (circumbinary && system.primary?.massSolar) {
     const sepAu = separationToBucketAu(circumbinary.separation.value)
     const innerLimit = circumbinaryInnerAuLimit(sepAu, system.primary.massSolar.value, circumbinary.star.massSolar.value)
-    const coOrbitalShapes = new Set<string>(['trojan-camp', 'mass-transfer-stream', 'accretion-bridge', 'inner-pair-halo'])
+    const coOrbitalShapes = new Set<string>(['trojan-camp', 'mass-transfer-stream', 'accretion-bridge', 'inner-pair-halo', 'gardener-cordon'])
     debrisFields.forEach((field, index) => {
       if (coOrbitalShapes.has(field.shape.value)) return
       if (field.spatialExtent.innerAu.value < innerLimit) {
@@ -763,27 +763,28 @@ export function validateDebrisFields(system: GeneratedSystem): ValidationFinding
       }
     })
 
-    debrisFields.forEach((field, index) => {
-      if (field.anchorMode.value !== 'unanchorable') return
-      system.bodies.forEach((body, bodyIndex) => {
-        const orbit = body.orbitAu.value
-        if (orbit >= field.spatialExtent.innerAu.value && orbit <= field.spatialExtent.outerAu.value) {
-          findings.push(finding({
-            severity: 'error',
-            code: validationCodes.debrisFieldGeometryInvalid,
-            path: `debrisFields[${index}].spatialExtent`,
-            message: `Unanchorable debris field ${field.id} overlaps body ${body.id} at orbit ${orbit.toFixed(3)} AU (field extent: ${field.spatialExtent.innerAu.value.toFixed(3)}-${field.spatialExtent.outerAu.value.toFixed(3)} AU).`,
-            targetId: field.id,
-            targetKind: 'body',
-            source: validationSources.audit,
-            observed: orbit,
-            expected: `outside ${field.spatialExtent.innerAu.value.toFixed(3)}-${field.spatialExtent.outerAu.value.toFixed(3)} AU`,
-          }))
-          void bodyIndex
-        }
-      })
-    })
   }
+
+  debrisFields.forEach((field, index) => {
+    if (field.anchorMode.value !== 'unanchorable') return
+    system.bodies.forEach((body, bodyIndex) => {
+      const orbit = body.orbitAu.value
+      if (orbit >= field.spatialExtent.innerAu.value && orbit <= field.spatialExtent.outerAu.value) {
+        findings.push(finding({
+          severity: 'error',
+          code: validationCodes.debrisFieldGeometryInvalid,
+          path: `debrisFields[${index}].spatialExtent`,
+          message: `Unanchorable debris field ${field.id} overlaps body ${body.id} at orbit ${orbit.toFixed(3)} AU (field extent: ${field.spatialExtent.innerAu.value.toFixed(3)}-${field.spatialExtent.outerAu.value.toFixed(3)} AU).`,
+          targetId: field.id,
+          targetKind: 'body',
+          source: validationSources.audit,
+          observed: orbit,
+          expected: `outside ${field.spatialExtent.innerAu.value.toFixed(3)}-${field.spatialExtent.outerAu.value.toFixed(3)} AU`,
+        }))
+        void bodyIndex
+      }
+    })
+  })
 
   const allAnchoredEntities: Array<{ debrisFieldId: string; id: string; kind: string; habitationPattern?: string }> = [
     ...system.settlements

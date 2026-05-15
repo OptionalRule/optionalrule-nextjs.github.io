@@ -125,6 +125,8 @@ interface SelectionResult {
   shape: DebrisFieldShape
 }
 
+const EVOLVED_AGE_STATES = new Set(['Aging', 'Evolved'])
+
 export function selectArchetypeForCompanion(
   rngSeed: { seed: string },
   companion: StellarCompanion,
@@ -135,18 +137,33 @@ export function selectArchetypeForCompanion(
   const massRatio = companion.star.massSolar.value / (primary.massSolar.value + companion.star.massSolar.value)
   const activity = companion.star.activity.value
   const mode = companion.mode
+  const primaryAge = primary.ageState.value
+  const companionAge = companion.star.ageState.value
+  const evolvedSystem = EVOLVED_AGE_STATES.has(primaryAge) || EVOLVED_AGE_STATES.has(companionAge)
 
   if (mode === 'linked-independent') return null
+
+  if (rng.fork('cordon').next() < 0.03) {
+    return { shape: 'gardener-cordon' }
+  }
 
   if (context.hierarchicalTriple && companion.id === 'companion-1') {
     return { shape: 'inner-pair-halo' }
   }
 
   if (mode === 'volatile') {
+    if (evolvedSystem) {
+      const evolvedRoll = rng.fork('volatile-evolved').next()
+      if (evolvedRoll < 0.5) return { shape: 'accretion-bridge' }
+      return { shape: 'common-envelope-shell' }
+    }
     return { shape: 'mass-transfer-stream' }
   }
 
   if (mode === 'circumbinary') {
+    if (evolvedSystem && rng.fork('cb-evolved').next() < 0.5) {
+      return { shape: 'common-envelope-shell' }
+    }
     if (massRatio <= 0.15) return { shape: 'trojan-camp' }
     return { shape: 'polar-ring' }
   }

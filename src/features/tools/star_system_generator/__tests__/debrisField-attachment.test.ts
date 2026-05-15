@@ -19,15 +19,16 @@ describe('settlement and ruin attachment to debris fields', () => {
     }
   })
 
-  it('unanchorable fields never receive ruins', () => {
+  it('ruins do not gain debrisFieldId in v1 (HumanRemnant has no body-id reference for orbit lookup)', () => {
+    let scanned = 0
     for (let i = 0; i < 50; i++) {
-      const sys = generateSystem({ ...baseOptions, settlements: 'crowded' as const, seed: `attach-unanchorable-ruin-${i}` })
-      const unanchorable = sys.debrisFields.filter(d => d.anchorMode.value === 'unanchorable')
-      for (const field of unanchorable) {
-        const attached = sys.ruins.filter(r => r.debrisFieldId === field.id)
-        expect(attached.length, `${field.id} (unanchorable) should have zero attached ruins`).toBe(0)
+      const sys = generateSystem({ ...baseOptions, settlements: 'crowded' as const, seed: `attach-ruin-${i}` })
+      for (const r of sys.ruins) {
+        scanned++
+        expect(r.debrisFieldId, `ruin ${r.id} unexpectedly carries debrisFieldId — ruin attachment was deferred (spec §Pipeline)`).toBeUndefined()
       }
     }
+    expect(scanned, 'sweep generated no ruins to scan').toBeGreaterThan(0)
   })
 
   it('transient-only fields only attract mobile habitation patterns', () => {
