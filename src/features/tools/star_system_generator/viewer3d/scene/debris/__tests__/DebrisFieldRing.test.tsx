@@ -12,6 +12,7 @@ vi.mock('three', () => {
   class DodecahedronGeometry {}
   class IcosahedronGeometry {}
   class TorusGeometry {}
+  class RingGeometry { type = 'RingGeometry'; dispose() {} }
   class MeshBasicMaterial { constructor(_o?: unknown) {} dispose() {} }
   class MeshStandardMaterial { constructor(_o?: unknown) {} dispose() {} }
   class PointsMaterial { toneMapped = false; constructor(_o?: unknown) {} dispose() {} }
@@ -47,7 +48,7 @@ vi.mock('three', () => {
   class Line { constructor(public geometry?: unknown, public material?: unknown) {} }
   return {
     BufferGeometry, BufferAttribute,
-    SphereGeometry, PlaneGeometry, DodecahedronGeometry, IcosahedronGeometry, TorusGeometry,
+    SphereGeometry, PlaneGeometry, DodecahedronGeometry, IcosahedronGeometry, TorusGeometry, RingGeometry,
     MeshBasicMaterial, MeshStandardMaterial, PointsMaterial, ShaderMaterial, LineBasicMaterial,
     Texture, CanvasTexture, Color, Object3D, Group, InstancedMesh, Line,
     AdditiveBlending: 2, SRGBColorSpace: 'srgb', LinearFilter: 1006, DoubleSide: 2,

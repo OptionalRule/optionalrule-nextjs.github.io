@@ -18,6 +18,13 @@ interface DebrisFieldStreamProps {
   qualityScale?: number
 }
 
+function jitterTint(seed: string): [number, number, number] {
+  const r = 0.78 + hashToUnit(`${seed}-r`) * 0.44
+  const g = 0.78 + hashToUnit(`${seed}-g`) * 0.44
+  const b = 0.78 + hashToUnit(`${seed}-b`) * 0.44
+  return [r, g, b]
+}
+
 export function DebrisFieldStream(props: DebrisFieldStreamProps) {
   const fieldId = props.fieldId ?? `stream-${props.centerAngleDeg}-${props.startRadius}`
   const quality = props.qualityScale ?? 1
@@ -26,6 +33,7 @@ export function DebrisFieldStream(props: DebrisFieldStreamProps) {
   const angleRad = props.centerAngleDeg * Math.PI / 180
   const length = Math.max(0.0001, Math.abs(props.endRadius - props.startRadius))
   const sheathRadius = Math.max(0.4, length * 0.06)
+  const baseSize = Math.max(0.4, sheathRadius * 0.85)
 
   const streamLine = useMemo(() => {
     const segments = 12
@@ -61,6 +69,8 @@ export function DebrisFieldStream(props: DebrisFieldStreamProps) {
 
   const dustGeometry = useMemo(() => {
     const positions = new Float32Array(dustCount * 3)
+    const sizes = new Float32Array(dustCount)
+    const tints = new Float32Array(dustCount * 3)
     const axisX = Math.cos(angleRad)
     const axisZ = Math.sin(angleRad)
     const perpX = -axisZ
@@ -81,19 +91,28 @@ export function DebrisFieldStream(props: DebrisFieldStreamProps) {
       positions[i * 3] = cx + perpX * offPerp
       positions[i * 3 + 1] = offY
       positions[i * 3 + 2] = cz + perpZ * offPerp
+      const sizeRoll = hashToUnit(`debris-stream-size#${fieldId}#${i}`)
+      sizes[i] = baseSize * (0.4 + Math.pow(sizeRoll, 3.0) * 2.0)
+      const [tr, tg, tb] = jitterTint(`debris-stream-tint#${fieldId}#${i}`)
+      // Hotter end glows brighter.
+      const heatBoost = 0.7 + (1 - t) * 0.5
+      tints[i * 3] = tr * heatBoost
+      tints[i * 3 + 1] = tg * heatBoost
+      tints[i * 3 + 2] = tb * heatBoost
     }
     const g = new THREE.BufferGeometry()
     g.setAttribute('position', new THREE.BufferAttribute(positions, 3))
+    g.setAttribute('aSize', new THREE.BufferAttribute(sizes, 1))
+    g.setAttribute('aTint', new THREE.BufferAttribute(tints, 3))
     return g
-  }, [fieldId, dustCount, props.startRadius, props.endRadius, angleRad, sheathRadius])
+  }, [fieldId, dustCount, props.startRadius, props.endRadius, angleRad, sheathRadius, baseSize])
 
   useEffect(() => () => { dustGeometry.dispose() }, [dustGeometry])
 
   const dustMaterial = useMemo(() => getDustMaterial({
     color: props.color,
-    opacity: Math.min(1, props.opacity * 0.72),
-    size: Math.max(0.3, sheathRadius * 0.5),
-  }), [props.color, props.opacity, sheathRadius])
+    opacity: Math.min(1, props.opacity * 0.75),
+  }), [props.color, props.opacity])
 
   const chunkPlacements = useMemo<ChunkPlacement[]>(() => {
     const out: ChunkPlacement[] = []
@@ -108,12 +127,12 @@ export function DebrisFieldStream(props: DebrisFieldStreamProps) {
       const cz = r * axisZ
       const offY = (hashToUnit(`debris-stream-chunk-y#${fieldId}#${i}`) - 0.5) * sheathRadius * 0.9
       const offPerp = (hashToUnit(`debris-stream-chunk-p#${fieldId}#${i}`) - 0.5) * sheathRadius * 1.2
-      const baseSize = (0.55 + Math.pow(hashToUnit(`debris-stream-chunk-size#${fieldId}#${i}`), 2.5) * 1.4)
+      const chunkSize = (0.55 + Math.pow(hashToUnit(`debris-stream-chunk-size#${fieldId}#${i}`), 2.5) * 1.4)
         * Math.max(0.55, sheathRadius * 0.45)
       const brightness = 0.6 + hashToUnit(`debris-stream-chunk-bright#${fieldId}#${i}`) * 0.5
       out.push({
         position: [cx + perpX * offPerp, offY, cz + perpZ * offPerp],
-        scale: baseSize,
+        scale: chunkSize,
         rotation: [
           hashToUnit(`debris-stream-chunk-rx#${fieldId}#${i}`) * Math.PI,
           hashToUnit(`debris-stream-chunk-ry#${fieldId}#${i}`) * Math.PI,
