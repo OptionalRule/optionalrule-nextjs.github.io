@@ -8,11 +8,29 @@ vi.mock('three', () => {
     constructor(public array: Float32Array, public itemSize: number) {}
   }
   class SphereGeometry {}
-  class PlaneGeometry {}
+  class PlaneGeometry {
+    attributes = { position: {}, uv: {}, normal: {} }
+    index = {}
+  }
   class DodecahedronGeometry {}
   class IcosahedronGeometry {}
   class TorusGeometry {}
   class RingGeometry { type = 'RingGeometry'; dispose() {} }
+  class InstancedBufferGeometry {
+    attributes: Record<string, unknown> = {}
+    index: unknown = null
+    instanceCount = 0
+    setAttribute(name: string, attr: unknown) { this.attributes[name] = attr }
+    dispose() {}
+  }
+  class InstancedBufferAttribute {
+    constructor(public array: Float32Array, public itemSize: number) {}
+  }
+  class Mesh {
+    name = ''
+    frustumCulled = true
+    constructor(public geometry?: unknown, public material?: unknown) {}
+  }
   class MeshBasicMaterial { constructor(_o?: unknown) {} dispose() {} }
   class MeshStandardMaterial { constructor(_o?: unknown) {} dispose() {} }
   class PointsMaterial { toneMapped = false; constructor(_o?: unknown) {} dispose() {} }
@@ -28,6 +46,8 @@ vi.mock('three', () => {
     lerp() { return this }
     multiplyScalar() { return this }
     set() { return this }
+    setHSL(_h: number, _s: number, _l: number) { return this }
+    getHSL(target: { h: number; s: number; l: number }) { target.h = 0; target.s = 0; target.l = 0.5; return target }
   }
   class Object3D {
     position = { set: () => {} }
@@ -51,6 +71,7 @@ vi.mock('three', () => {
     SphereGeometry, PlaneGeometry, DodecahedronGeometry, IcosahedronGeometry, TorusGeometry, RingGeometry,
     MeshBasicMaterial, MeshStandardMaterial, PointsMaterial, ShaderMaterial, LineBasicMaterial,
     Texture, CanvasTexture, Color, Object3D, Group, InstancedMesh, Line,
+    InstancedBufferGeometry, InstancedBufferAttribute, Mesh,
     AdditiveBlending: 2, SRGBColorSpace: 'srgb', LinearFilter: 1006, DoubleSide: 2,
   }
 })
@@ -81,7 +102,7 @@ describe('DebrisFieldRing', () => {
       />
     )
     expect(container.querySelector('group')).not.toBeNull()
-    expect(container.querySelector('points')).not.toBeNull()
+    expect(container.querySelector('primitive')).not.toBeNull()
   })
 
   it('renders for a partial-span arc', () => {
@@ -91,7 +112,7 @@ describe('DebrisFieldRing', () => {
         spanDeg={60} centerAngleDeg={60} opacity={0.5} color="#ffaa88"
       />
     )
-    expect(container.querySelector('points')).not.toBeNull()
+    expect(container.querySelector('primitive')).not.toBeNull()
   })
 
   it('renders zero-chunk variant without throwing', () => {
@@ -102,6 +123,6 @@ describe('DebrisFieldRing', () => {
         chunkCount={0}
       />
     )
-    expect(container.querySelector('points')).not.toBeNull()
+    expect(container.querySelector('primitive')).not.toBeNull()
   })
 })

@@ -3,8 +3,9 @@
 import { useEffect, useMemo } from 'react'
 import * as THREE from 'three'
 import { hashToUnit } from '../../lib/motion'
-import { getDustMaterial } from './dustMaterial'
+import { DustBillboards, type DustBillboard } from './dustBillboards'
 import { DebrisChunks, type ChunkPlacement } from './debrisChunks'
+import { hexToHsl, jitteredTint } from './tintUtils'
 
 interface DebrisFieldStreamProps {
   fieldId?: string
@@ -18,13 +19,6 @@ interface DebrisFieldStreamProps {
   qualityScale?: number
 }
 
-function jitterTint(seed: string): [number, number, number] {
-  const r = 0.78 + hashToUnit(`${seed}-r`) * 0.44
-  const g = 0.78 + hashToUnit(`${seed}-g`) * 0.44
-  const b = 0.78 + hashToUnit(`${seed}-b`) * 0.44
-  return [r, g, b]
-}
-
 export function DebrisFieldStream(props: DebrisFieldStreamProps) {
   const fieldId = props.fieldId ?? `stream-${props.centerAngleDeg}-${props.startRadius}`
   const quality = props.qualityScale ?? 1
@@ -32,8 +26,9 @@ export function DebrisFieldStream(props: DebrisFieldStreamProps) {
   const chunkCount = Math.max(4, Math.round((props.chunkCount ?? 8) * quality))
   const angleRad = props.centerAngleDeg * Math.PI / 180
   const length = Math.max(0.0001, Math.abs(props.endRadius - props.startRadius))
-  const sheathRadius = Math.max(0.4, length * 0.06)
-  const baseSize = Math.max(0.4, sheathRadius * 0.85)
+  const sheathRadius = Math.max(0.4, length * 0.08)
+  const baseSize = Math.max(0.5, sheathRadius * 1.4)
+  const baseHsl = useMemo(() => hexToHsl(props.color), [props.color])
 
   const streamLine = useMemo(() => {
     const segments = 12
@@ -67,10 +62,8 @@ export function DebrisFieldStream(props: DebrisFieldStreamProps) {
     else mat.dispose()
   }, [streamLine])
 
-  const dustGeometry = useMemo(() => {
-    const positions = new Float32Array(dustCount * 3)
-    const sizes = new Float32Array(dustCount)
-    const tints = new Float32Array(dustCount * 3)
+  const billboards = useMemo<DustBillboard[]>(() => {
+    const out: DustBillboard[] = []
     const axisX = Math.cos(angleRad)
     const axisZ = Math.sin(angleRad)
     const perpX = -axisZ
@@ -81,38 +74,27 @@ export function DebrisFieldStream(props: DebrisFieldStreamProps) {
       const cx = r * axisX
       const cz = r * axisZ
       const sagPhase = hashToUnit(`debris-stream-phase#${fieldId}#${i}`)
-      const sag = (Math.sin(t * Math.PI * 2 + sagPhase * Math.PI * 2)) * sheathRadius * 0.4
+      const sag = Math.sin(t * Math.PI * 2 + sagPhase * Math.PI * 2) * sheathRadius * 0.4
       const radialU = hashToUnit(`debris-stream-radial#${fieldId}#${i}`)
       const radialAngle = hashToUnit(`debris-stream-angle#${fieldId}#${i}`) * Math.PI * 2
       const taper = 1 - Math.abs(t - 0.5) * 0.3
       const ringR = Math.sqrt(radialU) * sheathRadius * taper
       const offY = Math.sin(radialAngle) * ringR + sag * 0.4
       const offPerp = Math.cos(radialAngle) * ringR
-      positions[i * 3] = cx + perpX * offPerp
-      positions[i * 3 + 1] = offY
-      positions[i * 3 + 2] = cz + perpZ * offPerp
-      const sizeRoll = hashToUnit(`debris-stream-size#${fieldId}#${i}`)
-      sizes[i] = baseSize * (0.4 + Math.pow(sizeRoll, 3.0) * 2.0)
-      const [tr, tg, tb] = jitterTint(`debris-stream-tint#${fieldId}#${i}`)
-      // Hotter end glows brighter.
-      const heatBoost = 0.7 + (1 - t) * 0.5
-      tints[i * 3] = tr * heatBoost
-      tints[i * 3 + 1] = tg * heatBoost
-      tints[i * 3 + 2] = tb * heatBoost
+      const sizeMul = 0.4 + Math.pow(hashToUnit(`debris-stream-size#${fieldId}#${i}`), 3.0) * 3.5
+      const tint = jitteredTint(`debris-stream-tint#${fieldId}#${i}`, baseHsl)
+      // Boost brightness toward hot end.
+      const heatBoost = 0.7 + (1 - t) * 0.6
+      out.push({
+        position: [cx + perpX * offPerp, offY, cz + perpZ * offPerp],
+        scale: baseSize * sizeMul,
+        rotation: hashToUnit(`debris-stream-rot#${fieldId}#${i}`) * Math.PI * 2,
+        tint: [tint[0] * heatBoost, tint[1] * heatBoost, tint[2] * heatBoost],
+        spriteIndex: Math.floor(hashToUnit(`debris-stream-sprite#${fieldId}#${i}`) * 4),
+      })
     }
-    const g = new THREE.BufferGeometry()
-    g.setAttribute('position', new THREE.BufferAttribute(positions, 3))
-    g.setAttribute('aSize', new THREE.BufferAttribute(sizes, 1))
-    g.setAttribute('aTint', new THREE.BufferAttribute(tints, 3))
-    return g
-  }, [fieldId, dustCount, props.startRadius, props.endRadius, angleRad, sheathRadius, baseSize])
-
-  useEffect(() => () => { dustGeometry.dispose() }, [dustGeometry])
-
-  const dustMaterial = useMemo(() => getDustMaterial({
-    color: props.color,
-    opacity: Math.min(1, props.opacity * 0.75),
-  }), [props.color, props.opacity])
+    return out
+  }, [fieldId, dustCount, props.startRadius, props.endRadius, angleRad, sheathRadius, baseSize, baseHsl])
 
   const chunkPlacements = useMemo<ChunkPlacement[]>(() => {
     const out: ChunkPlacement[] = []
@@ -125,20 +107,28 @@ export function DebrisFieldStream(props: DebrisFieldStreamProps) {
       const r = props.startRadius + (props.endRadius - props.startRadius) * t
       const cx = r * axisX
       const cz = r * axisZ
-      const offY = (hashToUnit(`debris-stream-chunk-y#${fieldId}#${i}`) - 0.5) * sheathRadius * 0.9
-      const offPerp = (hashToUnit(`debris-stream-chunk-p#${fieldId}#${i}`) - 0.5) * sheathRadius * 1.2
-      const chunkSize = (0.55 + Math.pow(hashToUnit(`debris-stream-chunk-size#${fieldId}#${i}`), 2.5) * 1.4)
-        * Math.max(0.55, sheathRadius * 0.45)
+      const offY = (hashToUnit(`debris-stream-chunk-y#${fieldId}#${i}`) - 0.5) * sheathRadius * 1.8
+      const offPerp = (hashToUnit(`debris-stream-chunk-p#${fieldId}#${i}`) - 0.5) * sheathRadius * 2.0
+      const isHero = i === 0
+      const sizeMul = isHero
+        ? 4 + hashToUnit(`debris-stream-hero-size#${fieldId}`) * 4
+        : 0.55 + Math.pow(hashToUnit(`debris-stream-chunk-size#${fieldId}#${i}`), 2.5) * 1.6
+      const chunkSize = sizeMul * Math.max(0.55, sheathRadius * 0.5)
       const brightness = 0.6 + hashToUnit(`debris-stream-chunk-bright#${fieldId}#${i}`) * 0.5
       out.push({
         position: [cx + perpX * offPerp, offY, cz + perpZ * offPerp],
         scale: chunkSize,
         rotation: [
-          hashToUnit(`debris-stream-chunk-rx#${fieldId}#${i}`) * Math.PI,
-          hashToUnit(`debris-stream-chunk-ry#${fieldId}#${i}`) * Math.PI,
-          hashToUnit(`debris-stream-chunk-rz#${fieldId}#${i}`) * Math.PI,
+          hashToUnit(`debris-stream-chunk-rx#${fieldId}#${i}`) * Math.PI * 2,
+          hashToUnit(`debris-stream-chunk-ry#${fieldId}#${i}`) * Math.PI * 2,
+          hashToUnit(`debris-stream-chunk-rz#${fieldId}#${i}`) * Math.PI * 2,
         ],
         brightness,
+        stretch: [
+          0.55 + hashToUnit(`debris-stream-chunk-sx#${fieldId}#${i}`) * 0.95,
+          0.5 + hashToUnit(`debris-stream-chunk-sy#${fieldId}#${i}`) * 0.85,
+          0.55 + hashToUnit(`debris-stream-chunk-sz#${fieldId}#${i}`) * 1.05,
+        ],
       })
     }
     return out
@@ -150,7 +140,7 @@ export function DebrisFieldStream(props: DebrisFieldStreamProps) {
   return (
     <group>
       <primitive object={streamLine} />
-      <points geometry={dustGeometry} material={dustMaterial} renderOrder={2} raycast={() => undefined} />
+      <DustBillboards fieldId={fieldId} color={props.color} opacity={Math.min(1, props.opacity * 0.8)} billboards={billboards} />
       <DebrisChunks fieldId={fieldId} color={props.color} placements={chunkPlacements} />
       <mesh position={[hotSpotX, 0, hotSpotZ]}>
         <sphereGeometry args={[Math.max(0.3, sheathRadius * 0.65), 12, 12]} />
