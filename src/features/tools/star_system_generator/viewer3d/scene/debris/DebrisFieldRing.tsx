@@ -49,7 +49,7 @@ export function DebrisFieldRing(props: DebrisFieldRingProps) {
   // Thicker disk so off-plane particles read at oblique camera angles.
   const verticalThickness = Math.max(radialThickness * 0.18, meanRadius * 0.1)
 
-  const baseSize = Math.max(0.7, meanRadius * 0.06)
+  const baseSize = Math.max(0.12, meanRadius * 0.012)
   const baseHsl = useMemo(() => hexToHsl(props.color), [props.color])
 
   const clusterCount = 8 + Math.floor(hashToUnit(`debris-clusters#${fieldId}`) * 5)
@@ -90,9 +90,9 @@ export function DebrisFieldRing(props: DebrisFieldRingProps) {
       // Lens-shaped vertical: thicker at midradius, taper at edges.
       const vertEnvelope = Math.pow(Math.sin(radialT * Math.PI), 0.7)
       const yJitter = (hashToUnit(`debris-dust-y#${fieldId}#${i}`) - 0.5) * verticalThickness * 2 * vertEnvelope
-      // Heavy-tail size: most small, occasional much larger.
+      // Heavy-tail size: most small, occasional 2-3x larger but capped.
       const sizeRoll = hashToUnit(`debris-dust-size#${fieldId}#${i}`)
-      const sizeMul = 0.35 + Math.pow(sizeRoll, 3.5) * 5.0
+      const sizeMul = 0.5 + Math.pow(sizeRoll, 2.5) * 2.2
       // HSL-jittered tint: hue rotates ±22° around base, sat fluctuates, lightness varies.
       const hShift = (hashToUnit(`debris-dust-h#${fieldId}#${i}`) - 0.5) * 0.12
       const sShift = (hashToUnit(`debris-dust-s#${fieldId}#${i}`) - 0.5) * 0.4
@@ -134,13 +134,13 @@ export function DebrisFieldRing(props: DebrisFieldRingProps) {
       const angle = startRad + turn * spanRad
       const r = props.innerRadius + radialT * radialThickness
       const yJitter = (hashToUnit(`debris-chunk-y#${fieldId}#${i}`) - 0.5) * verticalThickness * 3.0
-      // Power-law scale with rare large outliers.
+      // Power-law scale with rare large outliers. Belt-tier base size.
       const sizeRoll = hashToUnit(`debris-chunk-size#${fieldId}#${i}`)
-      const isHero = i < Math.min(4, Math.max(1, Math.round(chunkCount * 0.08)))
+      const isHero = i < Math.min(3, Math.max(1, Math.round(chunkCount * 0.06)))
       const sizeMul = isHero
-        ? 6 + hashToUnit(`debris-chunk-hero-size#${fieldId}#${i}`) * 6
-        : 0.5 + Math.pow(sizeRoll, 2.6) * 2.4
-      const chunkSize = sizeMul * Math.max(0.6, meanRadius * 0.11)
+        ? 2.2 + hashToUnit(`debris-chunk-hero-size#${fieldId}#${i}`) * 1.8
+        : 0.4 + Math.pow(sizeRoll, 2.8) * 1.6
+      const chunkSize = sizeMul * Math.max(0.4, meanRadius * 0.05)
       const brightness = 0.5 + hashToUnit(`debris-chunk-bright#${fieldId}#${i}`) * 0.6
       out.push({
         position: [Math.cos(angle) * r, yJitter, Math.sin(angle) * r],
@@ -170,7 +170,7 @@ export function DebrisFieldRing(props: DebrisFieldRingProps) {
 
   const hazeMaterial = useMemo(() => getHazeRingMaterial({
     color: props.color,
-    opacity: Math.min(0.8, Math.max(0.25, props.opacity * 0.9)),
+    opacity: Math.min(0.35, Math.max(0.12, props.opacity * 0.35)),
     innerRadius: props.innerRadius * 0.9,
     outerRadius: props.outerRadius * 1.1,
     seed: hashToUnit(`debris-haze-seed#${fieldId}`) * 1000,
@@ -181,7 +181,7 @@ export function DebrisFieldRing(props: DebrisFieldRingProps) {
   return (
     <group rotation={[Math.PI / 2 - inclinationRad, 0, 0]}>
       <mesh geometry={hazeGeometry} material={hazeMaterial} renderOrder={1} raycast={() => undefined} />
-      <DustBillboards fieldId={fieldId} color={props.color} opacity={Math.min(1, props.opacity * 0.95)} billboards={billboards} />
+      <DustBillboards fieldId={fieldId} color={props.color} opacity={Math.min(0.55, props.opacity * 0.45)} billboards={billboards} />
       <DebrisChunks fieldId={fieldId} color={props.color} placements={chunkPlacements} />
     </group>
   )

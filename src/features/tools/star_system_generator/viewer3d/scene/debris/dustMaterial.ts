@@ -6,79 +6,44 @@ const billboardMaterialCache = new Map<string, THREE.ShaderMaterial>()
 const ATLAS_SIZE = 256
 const ATLAS_CELL = 128
 
-function drawRadialSprite(ctx: CanvasRenderingContext2D, x: number, y: number) {
-  const g = ctx.createRadialGradient(x + ATLAS_CELL / 2, y + ATLAS_CELL / 2, 0, x + ATLAS_CELL / 2, y + ATLAS_CELL / 2, ATLAS_CELL / 2 - 2)
-  g.addColorStop(0, 'rgba(255, 255, 255, 1)')
-  g.addColorStop(0.35, 'rgba(255, 255, 255, 0.55)')
-  g.addColorStop(0.7, 'rgba(255, 255, 255, 0.18)')
-  g.addColorStop(1, 'rgba(255, 255, 255, 0)')
-  ctx.fillStyle = g
-  ctx.fillRect(x, y, ATLAS_CELL, ATLAS_CELL)
-}
-
-function drawEllipseSprite(ctx: CanvasRenderingContext2D, x: number, y: number) {
+function drawBlob(
+  ctx: CanvasRenderingContext2D,
+  x: number,
+  y: number,
+  opts: { cx?: number; cy?: number; rx: number; ry: number; core: number; midStop: number; midAlpha: number },
+) {
   ctx.save()
-  ctx.translate(x + ATLAS_CELL / 2, y + ATLAS_CELL / 2)
-  ctx.scale(1, 0.45)
-  const g = ctx.createRadialGradient(0, 0, 0, 0, 0, ATLAS_CELL / 2 - 2)
+  ctx.translate(x + ATLAS_CELL / 2 + (opts.cx ?? 0), y + ATLAS_CELL / 2 + (opts.cy ?? 0))
+  const maxR = Math.max(opts.rx, opts.ry)
+  ctx.scale(opts.rx / maxR, opts.ry / maxR)
+  const g = ctx.createRadialGradient(0, 0, 0, 0, 0, maxR)
   g.addColorStop(0, 'rgba(255, 255, 255, 1)')
-  g.addColorStop(0.4, 'rgba(255, 255, 255, 0.5)')
-  g.addColorStop(0.85, 'rgba(255, 255, 255, 0.1)')
+  g.addColorStop(opts.core, 'rgba(255, 255, 255, 0.7)')
+  g.addColorStop(opts.midStop, `rgba(255, 255, 255, ${opts.midAlpha})`)
   g.addColorStop(1, 'rgba(255, 255, 255, 0)')
   ctx.fillStyle = g
-  ctx.beginPath()
-  ctx.arc(0, 0, ATLAS_CELL / 2 - 2, 0, Math.PI * 2)
-  ctx.fill()
+  ctx.fillRect(-maxR, -maxR, maxR * 2, maxR * 2)
   ctx.restore()
 }
 
-function drawWispSprite(ctx: CanvasRenderingContext2D, x: number, y: number) {
-  const cx = x + ATLAS_CELL * 0.38
-  const cy = y + ATLAS_CELL * 0.5
-  const g = ctx.createRadialGradient(cx, cy, 0, cx, cy, ATLAS_CELL * 0.42)
-  g.addColorStop(0, 'rgba(255, 255, 255, 1)')
-  g.addColorStop(0.25, 'rgba(255, 255, 255, 0.45)')
-  g.addColorStop(0.6, 'rgba(255, 255, 255, 0.12)')
-  g.addColorStop(1, 'rgba(255, 255, 255, 0)')
-  ctx.fillStyle = g
-  ctx.fillRect(x, y, ATLAS_CELL, ATLAS_CELL)
-  const trail = ctx.createLinearGradient(cx, cy, x + ATLAS_CELL * 0.95, cy)
-  trail.addColorStop(0, 'rgba(255, 255, 255, 0.45)')
-  trail.addColorStop(0.5, 'rgba(255, 255, 255, 0.18)')
-  trail.addColorStop(1, 'rgba(255, 255, 255, 0)')
-  ctx.fillStyle = trail
-  ctx.beginPath()
-  ctx.moveTo(cx, cy - 6)
-  ctx.lineTo(x + ATLAS_CELL * 0.95, cy)
-  ctx.lineTo(cx, cy + 6)
-  ctx.closePath()
-  ctx.fill()
+function drawSpriteVariant0(ctx: CanvasRenderingContext2D, x: number, y: number) {
+  // Round soft blob — the "default" mote.
+  drawBlob(ctx, x, y, { rx: ATLAS_CELL * 0.45, ry: ATLAS_CELL * 0.45, core: 0.3, midStop: 0.65, midAlpha: 0.18 })
 }
 
-function drawCrescentSprite(ctx: CanvasRenderingContext2D, x: number, y: number) {
-  const cx = x + ATLAS_CELL / 2
-  const cy = y + ATLAS_CELL / 2
-  const ring = ctx.createRadialGradient(cx, cy, ATLAS_CELL * 0.22, cx, cy, ATLAS_CELL * 0.46)
-  ring.addColorStop(0, 'rgba(255, 255, 255, 0)')
-  ring.addColorStop(0.35, 'rgba(255, 255, 255, 0.55)')
-  ring.addColorStop(0.65, 'rgba(255, 255, 255, 0.35)')
-  ring.addColorStop(1, 'rgba(255, 255, 255, 0)')
-  ctx.fillStyle = ring
-  ctx.beginPath()
-  ctx.arc(cx, cy, ATLAS_CELL * 0.46, 0, Math.PI * 2)
-  ctx.fill()
-  // Punch out one side to make crescent shape.
-  ctx.save()
-  ctx.globalCompositeOperation = 'destination-out'
-  const cutG = ctx.createRadialGradient(cx + ATLAS_CELL * 0.18, cy, 0, cx + ATLAS_CELL * 0.18, cy, ATLAS_CELL * 0.38)
-  cutG.addColorStop(0, 'rgba(0, 0, 0, 1)')
-  cutG.addColorStop(0.7, 'rgba(0, 0, 0, 0.6)')
-  cutG.addColorStop(1, 'rgba(0, 0, 0, 0)')
-  ctx.fillStyle = cutG
-  ctx.beginPath()
-  ctx.arc(cx + ATLAS_CELL * 0.18, cy, ATLAS_CELL * 0.38, 0, Math.PI * 2)
-  ctx.fill()
-  ctx.restore()
+function drawSpriteVariant1(ctx: CanvasRenderingContext2D, x: number, y: number) {
+  // Gentle ellipse — 1.5:1 aspect, not stretched enough to read as elongated.
+  drawBlob(ctx, x, y, { rx: ATLAS_CELL * 0.45, ry: ATLAS_CELL * 0.3, core: 0.28, midStop: 0.7, midAlpha: 0.15 })
+}
+
+function drawSpriteVariant2(ctx: CanvasRenderingContext2D, x: number, y: number) {
+  // Brighter pinpoint — small bright core with fast falloff.
+  drawBlob(ctx, x, y, { rx: ATLAS_CELL * 0.35, ry: ATLAS_CELL * 0.35, core: 0.15, midStop: 0.45, midAlpha: 0.22 })
+}
+
+function drawSpriteVariant3(ctx: CanvasRenderingContext2D, x: number, y: number) {
+  // Wider diffuse blob — softer fade, no sharp core.
+  drawBlob(ctx, x, y, { rx: ATLAS_CELL * 0.48, ry: ATLAS_CELL * 0.42, core: 0.45, midStop: 0.78, midAlpha: 0.1 })
 }
 
 function buildSpriteAtlas(): THREE.Texture {
@@ -96,10 +61,10 @@ function buildSpriteAtlas(): THREE.Texture {
     return cachedAtlas
   }
   ctx.clearRect(0, 0, ATLAS_SIZE, ATLAS_SIZE)
-  drawRadialSprite(ctx, 0, 0)
-  drawEllipseSprite(ctx, ATLAS_CELL, 0)
-  drawWispSprite(ctx, 0, ATLAS_CELL)
-  drawCrescentSprite(ctx, ATLAS_CELL, ATLAS_CELL)
+  drawSpriteVariant0(ctx, 0, 0)
+  drawSpriteVariant1(ctx, ATLAS_CELL, 0)
+  drawSpriteVariant2(ctx, 0, ATLAS_CELL)
+  drawSpriteVariant3(ctx, ATLAS_CELL, ATLAS_CELL)
   const texture = new THREE.CanvasTexture(canvas)
   texture.colorSpace = THREE.SRGBColorSpace
   texture.minFilter = THREE.LinearFilter

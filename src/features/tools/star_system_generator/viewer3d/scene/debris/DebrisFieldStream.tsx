@@ -27,7 +27,7 @@ export function DebrisFieldStream(props: DebrisFieldStreamProps) {
   const angleRad = props.centerAngleDeg * Math.PI / 180
   const length = Math.max(0.0001, Math.abs(props.endRadius - props.startRadius))
   const sheathRadius = Math.max(0.4, length * 0.08)
-  const baseSize = Math.max(0.5, sheathRadius * 1.4)
+  const baseSize = Math.max(0.15, sheathRadius * 0.3)
   const baseHsl = useMemo(() => hexToHsl(props.color), [props.color])
 
   const streamLine = useMemo(() => {
@@ -81,7 +81,7 @@ export function DebrisFieldStream(props: DebrisFieldStreamProps) {
       const ringR = Math.sqrt(radialU) * sheathRadius * taper
       const offY = Math.sin(radialAngle) * ringR + sag * 0.4
       const offPerp = Math.cos(radialAngle) * ringR
-      const sizeMul = 0.4 + Math.pow(hashToUnit(`debris-stream-size#${fieldId}#${i}`), 3.0) * 3.5
+      const sizeMul = 0.5 + Math.pow(hashToUnit(`debris-stream-size#${fieldId}#${i}`), 2.5) * 2.0
       const tint = jitteredTint(`debris-stream-tint#${fieldId}#${i}`, baseHsl)
       // Boost brightness toward hot end.
       const heatBoost = 0.7 + (1 - t) * 0.6
@@ -111,9 +111,9 @@ export function DebrisFieldStream(props: DebrisFieldStreamProps) {
       const offPerp = (hashToUnit(`debris-stream-chunk-p#${fieldId}#${i}`) - 0.5) * sheathRadius * 2.0
       const isHero = i === 0
       const sizeMul = isHero
-        ? 4 + hashToUnit(`debris-stream-hero-size#${fieldId}`) * 4
-        : 0.55 + Math.pow(hashToUnit(`debris-stream-chunk-size#${fieldId}#${i}`), 2.5) * 1.6
-      const chunkSize = sizeMul * Math.max(0.55, sheathRadius * 0.5)
+        ? 2.0 + hashToUnit(`debris-stream-hero-size#${fieldId}`) * 1.5
+        : 0.4 + Math.pow(hashToUnit(`debris-stream-chunk-size#${fieldId}#${i}`), 2.8) * 1.5
+      const chunkSize = sizeMul * Math.max(0.35, sheathRadius * 0.3)
       const brightness = 0.6 + hashToUnit(`debris-stream-chunk-bright#${fieldId}#${i}`) * 0.5
       out.push({
         position: [cx + perpX * offPerp, offY, cz + perpZ * offPerp],
@@ -140,7 +140,7 @@ export function DebrisFieldStream(props: DebrisFieldStreamProps) {
   return (
     <group>
       <primitive object={streamLine} />
-      <DustBillboards fieldId={fieldId} color={props.color} opacity={Math.min(1, props.opacity * 0.8)} billboards={billboards} />
+      <DustBillboards fieldId={fieldId} color={props.color} opacity={Math.min(0.5, props.opacity * 0.4)} billboards={billboards} />
       <DebrisChunks fieldId={fieldId} color={props.color} placements={chunkPlacements} />
       <mesh position={[hotSpotX, 0, hotSpotZ]}>
         <sphereGeometry args={[Math.max(0.3, sheathRadius * 0.65), 12, 12]} />

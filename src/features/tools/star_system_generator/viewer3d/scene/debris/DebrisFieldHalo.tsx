@@ -26,7 +26,7 @@ export function DebrisFieldHalo(props: DebrisFieldHaloProps) {
   const chunkCount = Math.max(6, Math.round((props.chunkCount ?? defaultChunks) * quality))
   const maxTiltRad = props.inclinationDeg * Math.PI / 180
   const meanRadius = (props.outerRadius + props.innerRadius) * 0.5
-  const baseSize = Math.max(0.6, meanRadius * 0.05)
+  const baseSize = Math.max(0.12, meanRadius * 0.011)
   const baseHsl = useMemo(() => hexToHsl(props.color), [props.color])
 
   const billboards = useMemo<DustBillboard[]>(() => {
@@ -38,7 +38,7 @@ export function DebrisFieldHalo(props: DebrisFieldHaloProps) {
       const r = props.innerRadius + (props.outerRadius - props.innerRadius) * Math.pow(u, 0.8)
       const phi = 2 * Math.PI * v
       const tilt = (w - 0.5) * 2 * maxTiltRad
-      const sizeMul = 0.35 + Math.pow(hashToUnit(`debris-halo-size#${fieldId}#${i}`), 3.2) * 4.0
+      const sizeMul = 0.5 + Math.pow(hashToUnit(`debris-halo-size#${fieldId}#${i}`), 2.5) * 2.2
       out.push({
         position: [
           r * Math.cos(phi) * Math.cos(tilt),
@@ -63,11 +63,11 @@ export function DebrisFieldHalo(props: DebrisFieldHaloProps) {
       const r = props.innerRadius + (props.outerRadius - props.innerRadius) * u
       const phi = 2 * Math.PI * v
       const tilt = (w - 0.5) * 2 * maxTiltRad
-      const isHero = i < Math.min(3, Math.max(1, Math.round(chunkCount * 0.08)))
+      const isHero = i < Math.min(2, Math.max(1, Math.round(chunkCount * 0.06)))
       const sizeMul = isHero
-        ? 5 + hashToUnit(`debris-halo-hero-size#${fieldId}#${i}`) * 5
-        : 0.5 + Math.pow(hashToUnit(`debris-halo-chunk-size#${fieldId}#${i}`), 2.4) * 1.6
-      const chunkSize = sizeMul * Math.max(0.6, meanRadius * 0.11)
+        ? 2.2 + hashToUnit(`debris-halo-hero-size#${fieldId}#${i}`) * 1.8
+        : 0.4 + Math.pow(hashToUnit(`debris-halo-chunk-size#${fieldId}#${i}`), 2.8) * 1.6
+      const chunkSize = sizeMul * Math.max(0.4, meanRadius * 0.05)
       const brightness = 0.55 + hashToUnit(`debris-halo-chunk-bright#${fieldId}#${i}`) * 0.55
       out.push({
         position: [
@@ -94,7 +94,7 @@ export function DebrisFieldHalo(props: DebrisFieldHaloProps) {
 
   return (
     <group>
-      <DustBillboards fieldId={fieldId} color={props.color} opacity={Math.min(1, props.opacity * 0.8)} billboards={billboards} />
+      <DustBillboards fieldId={fieldId} color={props.color} opacity={Math.min(0.5, props.opacity * 0.4)} billboards={billboards} />
       <DebrisChunks fieldId={fieldId} color={props.color} placements={chunkPlacements} />
     </group>
   )

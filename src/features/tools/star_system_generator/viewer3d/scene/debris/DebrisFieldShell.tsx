@@ -24,7 +24,7 @@ export function DebrisFieldShell(props: DebrisFieldShellProps) {
   const defaultChunks = Math.min(15, dustCount * 0.04)
   const chunkCount = Math.max(6, Math.round((props.chunkCount ?? defaultChunks) * quality))
   const meanRadius = (props.outerRadius + props.innerRadius) * 0.5
-  const baseSize = Math.max(0.7, meanRadius * 0.065)
+  const baseSize = Math.max(0.12, meanRadius * 0.013)
   const baseHsl = useMemo(() => hexToHsl(props.color), [props.color])
 
   const billboards = useMemo<DustBillboard[]>(() => {
@@ -37,7 +37,7 @@ export function DebrisFieldShell(props: DebrisFieldShellProps) {
       const r = props.innerRadius + (props.outerRadius - props.innerRadius) * rT
       const theta = Math.acos(2 * v - 1)
       const phi = 2 * Math.PI * w
-      const sizeMul = 0.35 + Math.pow(hashToUnit(`debris-shell-size#${fieldId}#${i}`), 3.2) * 4.0
+      const sizeMul = 0.5 + Math.pow(hashToUnit(`debris-shell-size#${fieldId}#${i}`), 2.5) * 2.2
       out.push({
         position: [r * Math.sin(theta) * Math.cos(phi), r * Math.cos(theta), r * Math.sin(theta) * Math.sin(phi)],
         scale: baseSize * sizeMul,
@@ -58,11 +58,11 @@ export function DebrisFieldShell(props: DebrisFieldShellProps) {
       const r = props.innerRadius + (props.outerRadius - props.innerRadius) * u
       const theta = Math.acos(2 * v - 1)
       const phi = 2 * Math.PI * w
-      const isHero = i < Math.min(3, Math.max(1, Math.round(chunkCount * 0.1)))
+      const isHero = i < Math.min(2, Math.max(1, Math.round(chunkCount * 0.08)))
       const sizeMul = isHero
-        ? 5 + hashToUnit(`debris-shell-hero-size#${fieldId}#${i}`) * 5
-        : 0.5 + Math.pow(hashToUnit(`debris-shell-chunk-size#${fieldId}#${i}`), 2.4) * 1.6
-      const chunkSize = sizeMul * Math.max(0.6, meanRadius * 0.11)
+        ? 2.2 + hashToUnit(`debris-shell-hero-size#${fieldId}#${i}`) * 1.8
+        : 0.4 + Math.pow(hashToUnit(`debris-shell-chunk-size#${fieldId}#${i}`), 2.8) * 1.6
+      const chunkSize = sizeMul * Math.max(0.4, meanRadius * 0.05)
       const brightness = 0.55 + hashToUnit(`debris-shell-chunk-bright#${fieldId}#${i}`) * 0.55
       out.push({
         position: [r * Math.sin(theta) * Math.cos(phi), r * Math.cos(theta), r * Math.sin(theta) * Math.sin(phi)],
@@ -85,7 +85,7 @@ export function DebrisFieldShell(props: DebrisFieldShellProps) {
 
   return (
     <group>
-      <DustBillboards fieldId={fieldId} color={props.color} opacity={Math.min(1, props.opacity * 0.85)} billboards={billboards} />
+      <DustBillboards fieldId={fieldId} color={props.color} opacity={Math.min(0.5, props.opacity * 0.4)} billboards={billboards} />
       <DebrisChunks fieldId={fieldId} color={props.color} placements={chunkPlacements} />
     </group>
   )
