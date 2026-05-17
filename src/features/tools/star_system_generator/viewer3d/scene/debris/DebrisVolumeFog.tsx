@@ -135,15 +135,23 @@ function buildShellLayers(props: DebrisVolumeFogProps, count: number): VolumeFog
 }
 
 export function DebrisVolumeFog(props: DebrisVolumeFogProps) {
+  const {
+    fieldId, mode, innerRadius, outerRadius, opacity, color, profile,
+    thetaStart, thetaLength, verticalThickness, flattenY,
+  } = props
   const qualityScale = props.qualityScale ?? 1
-  const layerCount = volumeFogLayerCount(props.profile, qualityScale, props.mode)
+  const layerCount = volumeFogLayerCount(profile, qualityScale, mode)
 
   const layers = useMemo(() => {
-    if (layerCount <= 0 || props.opacity <= 0) return []
-    return props.mode === 'disk'
+    if (layerCount <= 0 || opacity <= 0) return []
+    return mode === 'disk'
       ? buildDiskLayers(props, layerCount)
       : buildShellLayers(props, layerCount)
-  }, [layerCount, props])
+    // Building uses the props snapshot above; the listed deps are the only fields
+    // it actually reads, so we omit the unstable `props` object reference.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [layerCount, fieldId, mode, innerRadius, outerRadius, opacity, color, profile,
+      thetaStart, thetaLength, verticalThickness, flattenY])
 
   useEffect(() => () => {
     layers.forEach((layer) => {

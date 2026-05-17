@@ -113,11 +113,13 @@ export function DebrisChunks({ fieldId, color, placements }: DebrisChunksProps) 
     return g
   }, [fieldId, color, placements])
 
+  // Geometry + SHARED_CHUNK_MATERIAL are module-scoped; only the per-mesh
+  // instance buffers belong to this group and need GPU release.
   useEffect(() => () => {
     group.traverse((object) => {
       if (object instanceof THREE.InstancedMesh) {
-        // Do not dispose SHARED_CHUNK_MATERIAL; it is module-scoped.
-        // Geometry is shared from renderAssets too.
+        object.instanceMatrix.dispose()
+        object.instanceColor?.dispose()
       }
     })
   }, [group])

@@ -1,11 +1,12 @@
 'use client'
 
+import { useMemo } from 'react'
 import { DebrisFieldRing } from './DebrisFieldRing'
 import { DebrisFieldShell } from './DebrisFieldShell'
 import { DebrisFieldStream } from './DebrisFieldStream'
 import { DebrisFieldHalo } from './DebrisFieldHalo'
 import { pickDebrisRenderer } from './pickDebris'
-import { debrisVisualProfile } from './debrisVisualProfile'
+import { debrisVisualProfile, type DebrisVisualProfile } from './debrisVisualProfile'
 import { OverlayMarker } from '../overlay/OverlayMarker'
 import type { DebrisFieldShape } from '../../../types'
 import type { DebrisFieldVisual } from '../../types'
@@ -39,6 +40,15 @@ function glyphPositionFor(v: DebrisFieldVisual): [number, number, number] {
 }
 
 export function DebrisFields({ fields, layerVisibility, qualityScale = 1 }: DebrisFieldsProps) {
+  // Profiles are derived from immutable per-field facts; stabilize the reference
+  // so downstream renderer useMemos (sampling, shader compile) don't invalidate
+  // on every parent render.
+  const profilesById = useMemo(() => {
+    const map = new Map<string, DebrisVisualProfile>()
+    for (const v of fields) map.set(v.field.id, debrisVisualProfile(v))
+    return map
+  }, [fields])
+
   return (
     <>
       {fields.map((v) => {
@@ -49,7 +59,7 @@ export function DebrisFields({ fields, layerVisibility, qualityScale = 1 }: Debr
 
         const picked = pickDebrisRenderer({ shape, densityBand: v.field.densityBand.value })
         const color = COLOR_BY_SHAPE[shape]
-        const profile = debrisVisualProfile(v)
+        const profile = profilesById.get(v.field.id) ?? debrisVisualProfile(v)
         const baseProps = { opacity: picked.visualParams.opacity, color, fieldId: v.field.id, qualityScale, profile }
         const glyphPos = glyphPositionFor(v)
 

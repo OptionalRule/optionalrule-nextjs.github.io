@@ -180,18 +180,27 @@ export function defaultDebrisVisualProfile(
   }
 }
 
+const CHAOS_TEXT_MARKERS = ['chaos', 'primordial', 'young']
+
+function shouldElevateChaos(v: DebrisFieldVisual): boolean {
+  if (v.field.companionId === null) return true
+  // Authored prose tagged with chaos/primordial/young keywords signals an intent
+  // for elevated visual turbulence even when the field is companion-anchored.
+  const title = `${v.field.archetypeName.value} ${v.field.whyHere.value}`.toLowerCase()
+  return CHAOS_TEXT_MARKERS.some((m) => title.includes(m))
+}
+
 export function debrisVisualProfile(v: DebrisFieldVisual): DebrisVisualProfile {
   const shape = v.field.shape.value
   const base = profileForShape(shape)
-  const density = densityMultiplier(v.field.densityBand.value)
-  const systemOrigin = v.field.companionId === null
-  const title = `${v.field.archetypeName.value} ${v.field.whyHere.value}`.toLowerCase()
-  const explicitChaos = systemOrigin || title.includes('chaos') || title.includes('primordial') || title.includes('young')
-
-  if (!explicitChaos) {
-    return defaultDebrisVisualProfile(shape, v.field.densityBand.value)
+  const densityScale = densityMultiplier(v.field.densityBand.value)
+  if (!shouldElevateChaos(v)) {
+    return {
+      ...base,
+      dustOpacity: clamp01(base.dustOpacity * densityScale),
+      hazeOpacity: clamp01(base.hazeOpacity * densityScale),
+    }
   }
-
   return {
     ...base,
     style: base.style === 'ejecta-shell' ? 'ejecta-shell' : 'chaotic-disk',
@@ -200,10 +209,10 @@ export function debrisVisualProfile(v: DebrisFieldVisual): DebrisVisualProfile {
     filamentCount: Math.max(base.filamentCount, 9),
     knotCount: Math.max(base.knotCount, 16),
     outlierFraction: Math.max(base.outlierFraction, 0.22),
-    dustOpacity: clamp01(Math.max(base.dustOpacity, 0.52) * density),
+    dustOpacity: clamp01(Math.max(base.dustOpacity, 0.52) * densityScale),
     glintFraction: Math.max(base.glintFraction, 0.05),
     chunkScale: Math.max(base.chunkScale, 1.35),
     verticalScatter: Math.max(base.verticalScatter, 2.2),
-    hazeOpacity: clamp01(Math.max(base.hazeOpacity, 0.42) * density),
+    hazeOpacity: clamp01(Math.max(base.hazeOpacity, 0.42) * densityScale),
   }
 }

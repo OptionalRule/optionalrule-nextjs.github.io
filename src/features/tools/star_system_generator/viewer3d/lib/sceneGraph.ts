@@ -17,7 +17,7 @@ import type {
   BodyShadingKey,
   RenderArchetype,
 } from '../types'
-import { auToScene, bodyVisualSize, DEFAULT_ORBIT_SCALE_MODE, ORBIT_MIN_OFFSET, schematicOrbitRadius } from './scale'
+import { auToScene, bodyVisualSize, clamp, DEFAULT_ORBIT_SCALE_MODE, ORBIT_MIN_OFFSET, schematicOrbitRadius } from './scale'
 import { angularSpeedFromPeriod, hashToUnit, phase0ForBody } from './motion'
 import { spectralVisuals } from './stellarColor'
 import { chooseShading } from './bodyShading'
@@ -50,10 +50,6 @@ export interface BuildSceneGraphOptions {
 
 function companionOffset(separation: string, hzCenterAu: number, scaleMode: OrbitScaleMode): number {
   return auToScene(separationToBucketAu(separation), hzCenterAu, scaleMode)
-}
-
-function clamp(value: number, min: number, max: number): number {
-  return Math.min(max, Math.max(min, value))
 }
 
 interface BinarySceneEnvelope {

@@ -22,10 +22,12 @@ interface DebrisFieldHaloProps {
   profile?: DebrisVisualProfile
 }
 
+const DEFAULT_HALO_PROFILE = defaultDebrisVisualProfile('kozai-scattered-halo', 'sparse')
+
 export function DebrisFieldHalo(props: DebrisFieldHaloProps) {
   const fieldId = props.fieldId ?? `halo-${props.innerRadius}-${props.outerRadius}`
   const quality = props.qualityScale ?? 1
-  const profile = props.profile ?? defaultDebrisVisualProfile('kozai-scattered-halo', 'sparse')
+  const profile = props.profile ?? DEFAULT_HALO_PROFILE
   const dustCount = Math.max(0, Math.round(props.particleCount * (0.75 + profile.clumpiness * 0.65) * quality))
   const chunkCount = debrisChunkBudget({ kind: 'halo', profile, qualityScale: quality, explicitCount: props.chunkCount })
   const maxTiltRad = props.inclinationDeg * Math.PI / 180

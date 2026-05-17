@@ -1,10 +1,12 @@
 import * as THREE from 'three'
 import { hashToUnit } from '../../lib/motion'
 
+const SCRATCH_COLOR = new THREE.Color()
+const SCRATCH_HSL = { h: 0, s: 0, l: 0 }
+
 export function hexToHsl(hex: string): { h: number; s: number; l: number } {
-  const target = { h: 0, s: 0, l: 0 }
-  new THREE.Color(hex).getHSL(target)
-  return target
+  SCRATCH_COLOR.set(hex).getHSL(SCRATCH_HSL)
+  return { h: SCRATCH_HSL.h, s: SCRATCH_HSL.s, l: SCRATCH_HSL.l }
 }
 
 export function jitteredTint(
@@ -18,7 +20,7 @@ export function jitteredTint(
   const h = ((baseHsl.h + hShift) % 1 + 1) % 1
   const s = Math.min(1, Math.max(0, baseHsl.s + sShift))
   const l = Math.min(0.95, Math.max(0.15, baseHsl.l + lShift))
-  const out = new THREE.Color().setHSL(h, s, l)
+  SCRATCH_COLOR.setHSL(h, s, l)
   const baseLum = baseHsl.l + 0.001
-  return [out.r / baseLum * 0.8, out.g / baseLum * 0.8, out.b / baseLum * 0.8]
+  return [SCRATCH_COLOR.r / baseLum * 0.8, SCRATCH_COLOR.g / baseLum * 0.8, SCRATCH_COLOR.b / baseLum * 0.8]
 }

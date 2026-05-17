@@ -11,6 +11,13 @@ import { defaultDebrisVisualProfile, type DebrisVisualProfile } from './debrisVi
 import { sampleRingChunks, sampleRingDust } from './fieldSampling'
 import { DebrisVolumeFog } from './DebrisVolumeFog'
 import { debrisChunkBudget } from './chunkBudget'
+import { hexToHsl, jitteredTint } from './tintUtils'
+
+// Ring uses narrower jitter than the volumetric renderers — settled rings should
+// read as a coherent band, not a smear.
+const RING_TINT_JITTER = { h: 0.1, s: 0.34, l: 0.36 }
+
+const DEFAULT_RING_PROFILE = defaultDebrisVisualProfile('polar-ring')
 
 interface DebrisFieldRingProps {
   fieldId?: string
@@ -27,22 +34,10 @@ interface DebrisFieldRingProps {
   profile?: DebrisVisualProfile
 }
 
-function hslToRgb(h: number, s: number, l: number): [number, number, number] {
-  const c = new THREE.Color().setHSL(h, s, l)
-  return [c.r, c.g, c.b]
-}
-
-function hexToHsl(hex: string): { h: number; s: number; l: number } {
-  const c = new THREE.Color(hex)
-  const hsl = { h: 0, s: 0, l: 0 }
-  c.getHSL(hsl)
-  return hsl
-}
-
 export function DebrisFieldRing(props: DebrisFieldRingProps) {
   const fieldId = props.fieldId ?? `ring-${props.centerAngleDeg}-${props.innerRadius}`
   const quality = props.qualityScale ?? 1
-  const profile = props.profile ?? defaultDebrisVisualProfile('polar-ring')
+  const profile = props.profile ?? DEFAULT_RING_PROFILE
   const dustCount = Math.max(0, Math.round((props.dustCount ?? Math.round(460 * (0.75 + profile.clumpiness))) * quality))
   const chunkCount = debrisChunkBudget({ kind: 'ring', profile, qualityScale: quality, explicitCount: props.chunkCount })
   const inclinationRad = props.inclinationDeg * Math.PI / 180
@@ -72,25 +67,12 @@ export function DebrisFieldRing(props: DebrisFieldRingProps) {
       kind: 'dust',
     })
     return samples.map((sample, i) => {
-      const hShift = (hashToUnit(`debris-dust-h#${fieldId}#${i}`) - 0.5) * 0.1
-      const sShift = (hashToUnit(`debris-dust-s#${fieldId}#${i}`) - 0.5) * 0.34
-      const lShift = (hashToUnit(`debris-dust-l#${fieldId}#${i}`) - 0.5) * 0.36
-      const tint = hslToRgb(
-        ((baseHsl.h + hShift) % 1 + 1) % 1,
-        Math.min(1, Math.max(0, baseHsl.s + sShift)),
-        Math.min(0.95, Math.max(0.15, baseHsl.l + lShift)),
-      )
-      const baseLum = baseHsl.l + 0.001
-      const tintMul: [number, number, number] = [tint[0] / baseLum * 0.8, tint[1] / baseLum * 0.8, tint[2] / baseLum * 0.8]
+      const tint = jitteredTint(`debris-ring-tint#${fieldId}#${i}`, baseHsl, RING_TINT_JITTER)
       return {
         position: sample.position,
         scale: baseSize * sample.sizeMul,
         rotation: sample.rotation,
-        tint: [
-          tintMul[0] * sample.tintHeat,
-          tintMul[1] * sample.tintHeat,
-          tintMul[2] * sample.tintHeat,
-        ],
+        tint: [tint[0] * sample.tintHeat, tint[1] * sample.tintHeat, tint[2] * sample.tintHeat],
         opacity: sample.opacity,
         aspect: sample.aspect,
         spriteIndex: sample.spriteIndex,

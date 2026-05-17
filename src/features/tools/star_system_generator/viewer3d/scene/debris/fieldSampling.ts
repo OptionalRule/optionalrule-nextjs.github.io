@@ -1,4 +1,5 @@
 import { hashToUnit } from '../../lib/motion'
+import { clamp } from '../../lib/scale'
 import type { DebrisVisualProfile } from './debrisVisualProfile'
 
 export interface DebrisDustSample {
@@ -64,10 +65,6 @@ interface Lane {
 
 function signedHash(seed: string): number {
   return hashToUnit(seed) - hashToUnit(`${seed}:b`)
-}
-
-function clamp(value: number, min: number, max: number): number {
-  return Math.min(max, Math.max(min, value))
 }
 
 function smoothstep01(value: number): number {

@@ -21,10 +21,12 @@ interface DebrisFieldShellProps {
   profile?: DebrisVisualProfile
 }
 
+const DEFAULT_SHELL_PROFILE = defaultDebrisVisualProfile('common-envelope-shell', 'shell-dense')
+
 export function DebrisFieldShell(props: DebrisFieldShellProps) {
   const fieldId = props.fieldId ?? `shell-${props.innerRadius}-${props.outerRadius}`
   const quality = props.qualityScale ?? 1
-  const profile = props.profile ?? defaultDebrisVisualProfile('common-envelope-shell', 'shell-dense')
+  const profile = props.profile ?? DEFAULT_SHELL_PROFILE
   const dustCount = Math.max(0, Math.round(props.particleCount * (0.8 + profile.clumpiness * 0.6) * quality))
   const chunkCount = debrisChunkBudget({ kind: 'shell', profile, qualityScale: quality, explicitCount: props.chunkCount })
   const meanRadius = (props.outerRadius + props.innerRadius) * 0.5

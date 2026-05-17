@@ -22,10 +22,12 @@ interface DebrisFieldStreamProps {
   profile?: DebrisVisualProfile
 }
 
+const DEFAULT_STREAM_PROFILE = defaultDebrisVisualProfile('mass-transfer-stream', 'stream')
+
 export function DebrisFieldStream(props: DebrisFieldStreamProps) {
   const fieldId = props.fieldId ?? `stream-${props.centerAngleDeg}-${props.startRadius}`
   const quality = props.qualityScale ?? 1
-  const profile = props.profile ?? defaultDebrisVisualProfile('mass-transfer-stream', 'stream')
+  const profile = props.profile ?? DEFAULT_STREAM_PROFILE
   const dustCount = Math.max(0, Math.round((props.dustCount ?? Math.round(230 * (0.75 + profile.clumpiness * 0.45))) * quality))
   const chunkCount = debrisChunkBudget({ kind: 'stream', profile, qualityScale: quality, explicitCount: props.chunkCount })
   const angleRad = props.centerAngleDeg * Math.PI / 180

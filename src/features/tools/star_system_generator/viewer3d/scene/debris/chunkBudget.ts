@@ -1,3 +1,4 @@
+import { clamp } from '../../lib/scale'
 import type { DebrisVisualProfile } from './debrisVisualProfile'
 
 export type DebrisChunkFieldKind = 'ring' | 'halo' | 'shell' | 'stream'
@@ -14,10 +15,6 @@ const BUDGET_BY_KIND: Record<DebrisChunkFieldKind, { base: number; chaos: number
   halo: { base: 20, chaos: 92, min: 6, max: 176 },
   shell: { base: 18, chaos: 104, min: 6, max: 190 },
   stream: { base: 5, chaos: 16, min: 4, max: 42 },
-}
-
-function clamp(value: number, min: number, max: number): number {
-  return Math.min(max, Math.max(min, value))
 }
 
 export function debrisChunkBudget({
