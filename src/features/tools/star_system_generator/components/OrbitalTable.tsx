@@ -3,6 +3,7 @@ import { ChevronDown, ChevronRight, Orbit } from 'lucide-react'
 import type { GeneratedSystem, OrbitingBody } from '../types'
 import { BodyDetailContent } from './BodyDetailPanel'
 import { bandLabel, formatBodyPopulationSuffix } from '../lib/populationDisplay'
+import { formatDebrisRegionSuffix } from '../lib/debrisFieldDisplay'
 import { BodyCategoryIcon, SectionHeader, ThermalZoneTag, sectionShellClasses } from './visual'
 
 interface OrbitalTableProps {
@@ -124,6 +125,7 @@ export function OrbitalTable({ system }: OrbitalTableProps) {
                         sites={body.sites.length}
                         rings={Boolean(body.rings)}
                         body={body}
+                        system={system}
                       />
                     </td>
                   </tr>
@@ -144,7 +146,7 @@ export function OrbitalTable({ system }: OrbitalTableProps) {
   )
 }
 
-function SatelliteSummary({ moons, sites, rings, body }: { moons: number; sites: number; rings: boolean; body: OrbitingBody }) {
+function SatelliteSummary({ moons, sites, rings, body, system }: { moons: number; sites: number; rings: boolean; body: OrbitingBody; system: GeneratedSystem }) {
   const parts: Array<{ label: string; emphasized: boolean }> = []
   if (moons > 0) parts.push({ label: `${moons} moon${moons === 1 ? '' : 's'}`, emphasized: true })
   if (sites > 0) parts.push({ label: `${sites} site${sites === 1 ? '' : 's'}`, emphasized: true })
@@ -154,7 +156,18 @@ function SatelliteSummary({ moons, sites, rings, body }: { moons: number; sites:
   const popLabel = pop && !['empty', 'automated', 'transient'].includes(pop.band) ? bandLabel(pop.band) : null
   const popSuffix = formatBodyPopulationSuffix(body)
 
-  if (parts.length === 0 && !popLabel) return <span className="text-[var(--text-tertiary)]">—</span>
+  const orbit = body.orbitAu.value
+  const debrisRegion = system.debrisFields.find(
+    (field) =>
+      orbit >= field.spatialExtent.innerAu.value &&
+      orbit <= field.spatialExtent.outerAu.value &&
+      system.settlements.some((s) => s.debrisFieldId === field.id),
+  )
+  const regionSuffix = debrisRegion
+    ? formatDebrisRegionSuffix({ archetypeName: debrisRegion.archetypeName.value })
+    : null
+
+  if (parts.length === 0 && !popLabel && !regionSuffix) return <span className="text-[var(--text-tertiary)]">—</span>
 
   return (
     <span className="inline-flex flex-wrap items-center gap-x-1.5 gap-y-0.5">
@@ -174,6 +187,9 @@ function SatelliteSummary({ moons, sites, rings, body }: { moons: number; sites:
             <span className="text-[var(--text-tertiary)]">+ {popSuffix}</span>
           ) : null}
         </>
+      ) : null}
+      {regionSuffix ? (
+        <span className="text-xs text-[var(--text-tertiary)]">({regionSuffix})</span>
       ) : null}
     </span>
   )

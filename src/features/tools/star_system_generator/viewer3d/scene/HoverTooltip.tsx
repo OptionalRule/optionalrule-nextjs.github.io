@@ -117,6 +117,17 @@ function resolveTooltip(
         subtitle: ruin.location.value,
       }
     }
+    case 'debris': {
+      const visual = graph.debrisFields.find((d) => d.field.id === hovered.id)
+      if (!visual) return null
+      const meanR = (visual.innerRadius + visual.outerRadius) / 2
+      const angle = visual.centerAngleDeg * Math.PI / 180
+      return {
+        position: [Math.cos(angle) * meanR, 0, Math.sin(angle) * meanR],
+        title: visual.field.archetypeName.value,
+        subtitle: `${visual.field.shape.value.replace(/-/g, ' ')} · ${visual.field.densityBand.value}`,
+      }
+    }
     default:
       return null
   }

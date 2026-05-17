@@ -2,6 +2,7 @@ import type { GeneratedSystem, OrbitingBody, Moon, StellarCompanion } from '../.
 import type {
   BeltVisual,
   BodyVisual,
+  DebrisFieldVisual,
   DistantStarMarker,
   HazardVisual,
   MoonVisual,
@@ -16,7 +17,7 @@ import type {
   BodyShadingKey,
   RenderArchetype,
 } from '../types'
-import { auToScene, bodyVisualSize, DEFAULT_ORBIT_SCALE_MODE, schematicOrbitRadius } from './scale'
+import { auToScene, bodyVisualSize, clamp, DEFAULT_ORBIT_SCALE_MODE, ORBIT_MIN_OFFSET, schematicOrbitRadius } from './scale'
 import { angularSpeedFromPeriod, hashToUnit, phase0ForBody } from './motion'
 import { spectralVisuals } from './stellarColor'
 import { chooseShading } from './bodyShading'
@@ -33,9 +34,15 @@ import {
   primaryStarVisualExtras,
 } from './visualProfiles'
 import { separationToBucketAu } from '../../lib/generator/companionGeometry'
+import { circumbinaryInnerAuLimit, siblingOuterAuLimit } from '../../lib/generator/companionStability'
 
 const BODY_ORBIT_CLEARANCE = 3.5
 const MIN_MOON_PERIOD_SEC = 24
+const SUB_SYSTEM_EXTENT_FRACTION = 0.85
+const SIBLING_ENVELOPE_MARGIN = 1.08
+const SIBLING_ENVELOPE_MIN_FRACTION = 0.22
+const SIBLING_ENVELOPE_MAX_FRACTION = 0.58
+const CLEARANCE_CAP_EPSILON = 0.001
 
 export interface BuildSceneGraphOptions {
   scaleMode?: OrbitScaleMode
@@ -43,6 +50,71 @@ export interface BuildSceneGraphOptions {
 
 function companionOffset(separation: string, hzCenterAu: number, scaleMode: OrbitScaleMode): number {
   return auToScene(separationToBucketAu(separation), hzCenterAu, scaleMode)
+}
+
+interface BinarySceneEnvelope {
+  rawLimitRadius: number
+  capRadius: number
+}
+
+function siblingEnvelopeFraction(stableLimitAu: number, separationAu: number): number {
+  if (stableLimitAu <= 0 || separationAu <= 0) return SUB_SYSTEM_EXTENT_FRACTION
+  const auFraction = clamp(stableLimitAu / separationAu, 0.01, 1)
+  return clamp(
+    Math.sqrt(auFraction) * SIBLING_ENVELOPE_MARGIN,
+    SIBLING_ENVELOPE_MIN_FRACTION,
+    SIBLING_ENVELOPE_MAX_FRACTION,
+  )
+}
+
+function siblingSceneEnvelope(args: {
+  separationAu: number
+  stableLimitAu: number
+  companionOffset: number
+  hzCenterAu: number
+  scaleMode: OrbitScaleMode
+}): BinarySceneEnvelope | undefined {
+  if (args.scaleMode === 'schematic') return undefined
+  if (args.stableLimitAu <= 0 || args.separationAu <= 0 || args.companionOffset <= 0) return undefined
+
+  const maxCap = args.companionOffset * SUB_SYSTEM_EXTENT_FRACTION
+  const targetCap = args.companionOffset * siblingEnvelopeFraction(args.stableLimitAu, args.separationAu)
+  const minReadableCap = ORBIT_MIN_OFFSET + BODY_ORBIT_CLEARANCE
+  return {
+    rawLimitRadius: auToScene(args.stableLimitAu, args.hzCenterAu, args.scaleMode),
+    capRadius: Math.min(maxCap, Math.max(minReadableCap, targetCap)),
+  }
+}
+
+function compressOrbitIntoBinaryEnvelope(orbitRadius: number, envelope: BinarySceneEnvelope): number {
+  if (envelope.rawLimitRadius <= envelope.capRadius) return orbitRadius
+  if (orbitRadius <= ORBIT_MIN_OFFSET) return orbitRadius
+
+  const span = Math.max(0.001, envelope.rawLimitRadius - ORBIT_MIN_OFFSET)
+  const compressedSpan = Math.max(0.001, envelope.capRadius - ORBIT_MIN_OFFSET)
+  const compressed = ORBIT_MIN_OFFSET + (orbitRadius - ORBIT_MIN_OFFSET) * (compressedSpan / span)
+  return Math.min(envelope.capRadius, compressed)
+}
+
+function applyBinaryEnvelopes(orbitRadius: number, envelopes: BinarySceneEnvelope[]): number {
+  return envelopes.reduce(
+    (radius, envelope) => Math.min(radius, compressOrbitIntoBinaryEnvelope(radius, envelope)),
+    orbitRadius,
+  )
+}
+
+function envelopeCap(envelopes: BinarySceneEnvelope[]): number | undefined {
+  if (envelopes.length === 0) return undefined
+  return Math.min(...envelopes.map((envelope) => envelope.capRadius))
+}
+
+function clearanceMaxForCap(capRadius: number | undefined, fallback: number): number {
+  if (capRadius === undefined || !Number.isFinite(capRadius)) return fallback
+  return Math.min(fallback, capRadius + CLEARANCE_CAP_SAFETY_MARGIN + CLEARANCE_CAP_EPSILON)
+}
+
+function moonMaxReachBetween(thisOrbit: number, nextOrbit: number): number {
+  return Math.max(0.35, (nextOrbit - thisOrbit) / 2)
 }
 
 function buildStar(system: GeneratedSystem): StarVisual {
@@ -155,13 +227,18 @@ function moonPeriodSeconds(body: OrbitingBody, parentSize: number, orbit: number
   return Math.max(MIN_MOON_PERIOD_SEC, period)
 }
 
-function moonsFor(body: OrbitingBody, _seed: string, parentSize: number): MoonVisual[] {
+function moonsFor(body: OrbitingBody, _seed: string, parentSize: number, maxReach: number): MoonVisual[] {
   const count = body.moons.length
   const orbitStep = parentSize * (count > 6 ? 0.4 : 0.6)
   const crowdScale = count > 6 ? Math.max(0.55, Math.sqrt(6 / count)) : 1
+  const rawOrbits = body.moons.map((_moon: Moon, idx: number) =>
+    parentSize * moonOrbitShell(_moon.scale.value) + idx * orbitStep,
+  )
+  const naturalReach = Math.max(...rawOrbits)
+  const scale = naturalReach > maxReach && naturalReach > 0 ? maxReach / naturalReach : 1
   return body.moons.map((moon: Moon, idx: number) => {
     const scaleFactor = moonScaleFactor(moon.scale.value) * crowdScale
-    const orbit = parentSize * moonOrbitShell(moon.scale.value) + idx * orbitStep
+    const orbit = rawOrbits[idx] * scale
     const periodSec = moonPeriodSeconds(body, parentSize, orbit, idx, _seed)
     const tilt = (hashToUnit(`moon-tilt#${moon.id}`) - 0.5) * 0.6
     return {
@@ -235,7 +312,15 @@ function orbitRadiusForBody(body: OrbitingBody, hzCenterAu: number, scaleMode: O
     : auToScene(body.orbitAu.value, hzCenterAu, scaleMode)
 }
 
-function buildBody(body: OrbitingBody, system: GeneratedSystem, hzCenterAu: number, scaleMode: OrbitScaleMode, orbitIndex: number): BodyVisual {
+function buildBody(
+  body: OrbitingBody,
+  system: GeneratedSystem,
+  hzCenterAu: number,
+  scaleMode: OrbitScaleMode,
+  orbitIndex: number,
+  moonMaxReach: number,
+  orbitRadiusOverride?: number,
+): BodyVisual {
   const size = bodyVisualSize(body.category.value, body.physical.radiusEarth.value)
   const shading = chooseShading(body)
   const settlementIds = system.settlements
@@ -249,7 +334,7 @@ function buildBody(body: OrbitingBody, system: GeneratedSystem, hzCenterAu: numb
     .map((g) => g.id)
   return {
     id: body.id,
-    orbitRadius: orbitRadiusForBody(body, hzCenterAu, scaleMode, orbitIndex),
+    orbitRadius: orbitRadiusOverride ?? orbitRadiusForBody(body, hzCenterAu, scaleMode, orbitIndex),
     orbitTiltY: (hashToUnit(`tilt#${body.id}`) - 0.5) * 0.4,
     phase0: phase0ForBody(body.id, system.seed, orbitIndex),
     angularSpeed: angularSpeedFromPeriod(body.physical.periodDays.value),
@@ -259,7 +344,7 @@ function buildBody(body: OrbitingBody, system: GeneratedSystem, hzCenterAu: numb
     category: body.category.value,
     surface: buildBodySurfaceProfile(body, system.seed, settlementIds.length),
     rings: ringFor(body, size),
-    moons: moonsFor(body, system.seed, size),
+    moons: moonsFor(body, system.seed, size, moonMaxReach),
     guAccent: bodyHasGuFracture(body),
     hasSettlements: settlementIds.length > 0,
     settlementIds,
@@ -276,24 +361,40 @@ function bodyVisualExtent(body: BodyVisual): number {
   return Math.max(body.visualSize, ringExtent, moonExtent)
 }
 
-function applyBodyOrbitClearance(bodies: BodyVisual[]): BodyVisual[] {
+const CLEARANCE_CAP_SAFETY_MARGIN = 1.5
+
+function applyBodyOrbitClearance(bodies: BodyVisual[], maxRadius: number = Number.POSITIVE_INFINITY): BodyVisual[] {
+  const cap = Number.isFinite(maxRadius) ? maxRadius - CLEARANCE_CAP_SAFETY_MARGIN : Number.POSITIVE_INFINITY
   return bodies.reduce<BodyVisual[]>((out, body) => {
     const previous = out.at(-1)
-    if (!previous) return [body]
-
-    const minimumGap = bodyVisualExtent(previous) + bodyVisualExtent(body) + BODY_ORBIT_CLEARANCE
-    const orbitRadius = Math.max(body.orbitRadius, previous.orbitRadius + minimumGap)
+    const minimumGap = previous ? bodyVisualExtent(previous) + bodyVisualExtent(body) + BODY_ORBIT_CLEARANCE : 0
+    const orbitRadius = previous ? Math.max(body.orbitRadius, previous.orbitRadius + minimumGap) : body.orbitRadius
+    if (orbitRadius >= cap) {
+      console.warn(`[sceneGraph] body ${body.id} dropped: inflated orbitRadius ${orbitRadius.toFixed(2)} >= cap ${cap.toFixed(2)} (maxRadius ${maxRadius.toFixed(2)})`)
+      return out
+    }
     out.push(orbitRadius === body.orbitRadius ? body : { ...body, orbitRadius })
     return out
   }, [])
 }
 
-function buildBelt(body: OrbitingBody, hzCenterAu: number, scaleMode: OrbitScaleMode, orbitIndex: number): BeltVisual {
-  const r = orbitRadiusForBody(body, hzCenterAu, scaleMode, orbitIndex)
+function buildBelt(
+  body: OrbitingBody,
+  hzCenterAu: number,
+  scaleMode: OrbitScaleMode,
+  orbitIndex: number,
+  orbitRadiusOverride?: number,
+  maxOuterRadius?: number,
+): BeltVisual {
+  const r = orbitRadiusOverride ?? orbitRadiusForBody(body, hzCenterAu, scaleMode, orbitIndex)
+  const naturalInner = r * 0.92
+  const naturalOuter = r * 1.08
+  const outerRadius = maxOuterRadius === undefined ? naturalOuter : Math.min(naturalOuter, maxOuterRadius)
+  const innerRadius = Math.min(naturalInner, outerRadius * 0.92)
   return buildBeltProfile(body, {
     id: body.id,
-    innerRadius: r * 0.92,
-    outerRadius: r * 1.08,
+    innerRadius,
+    outerRadius,
     particleCount: 750,
     jitter: r * 0.04,
     color: '#9a9186',
@@ -372,7 +473,15 @@ export function buildSceneGraph(system: GeneratedSystem, options: BuildSceneGrap
 
   const circumbinaryCompanion = system.companions.find((c) => c.mode === 'circumbinary')
   const circumbinaryKeepOut = circumbinaryCompanion
-    ? auToScene(2 * separationToBucketAu(circumbinaryCompanion.separation.value), hzCenterAu, scaleMode)
+    ? auToScene(
+        circumbinaryInnerAuLimit(
+          separationToBucketAu(circumbinaryCompanion.separation.value),
+          system.primary.massSolar.value,
+          circumbinaryCompanion.star.massSolar.value,
+        ),
+        hzCenterAu,
+        scaleMode,
+      )
     : undefined
 
   const outermostBodyAu = system.bodies.reduce((max, b) => Math.max(max, b.orbitAu.value), 0)
@@ -383,8 +492,51 @@ export function buildSceneGraph(system: GeneratedSystem, options: BuildSceneGrap
   const nonBelt = sortedOrbitingBodies.filter((b) => b.category.value !== 'belt')
   const beltBodies = sortedOrbitingBodies.filter((b) => b.category.value === 'belt')
 
-  const bodies = applyBodyOrbitClearance(nonBelt.map((b) => buildBody(b, system, hzCenterAu, scaleMode, orbitIndexById.get(b.id) ?? 0)))
-  const belts = beltBodies.map((b) => buildBelt(b, hzCenterAu, scaleMode, orbitIndexById.get(b.id) ?? 0))
+  const nearestCompanionOffset = (() => {
+    const offsets: number[] = []
+    for (let i = 0; i < inSceneCompanions.length; i++) {
+      if (inSceneCompanions[i].mode === 'circumbinary') continue
+      offsets.push(Math.hypot(...companions[i].position))
+    }
+    for (const c of system.companions) {
+      if (c.mode !== 'orbital-sibling' || !c.subSystem) continue
+      offsets.push(Math.hypot(...buildCompanion(c, star, hzCenterAu, scaleMode).position))
+    }
+    return offsets.length === 0 ? Infinity : Math.min(...offsets)
+  })()
+  const primaryBinaryEnvelopes = system.companions
+    .filter((c) => c.mode === 'orbital-sibling')
+    .map((c) => {
+      const separationAu = separationToBucketAu(c.separation.value)
+      const companionVisual = buildCompanion(c, star, hzCenterAu, scaleMode)
+      return siblingSceneEnvelope({
+        separationAu,
+        stableLimitAu: siblingOuterAuLimit(separationAu, system.primary.massSolar.value, c.star.massSolar.value),
+        companionOffset: Math.hypot(...companionVisual.position),
+        hzCenterAu,
+        scaleMode,
+      })
+    })
+    .filter((envelope): envelope is BinarySceneEnvelope => Boolean(envelope))
+  const primaryOrbitCap = envelopeCap(primaryBinaryEnvelopes)
+  const primaryClearanceMax = clearanceMaxForCap(primaryOrbitCap, nearestCompanionOffset)
+  const nonBeltSceneOrbits = nonBelt.map((b) =>
+    applyBinaryEnvelopes(
+      orbitRadiusForBody(b, hzCenterAu, scaleMode, orbitIndexById.get(b.id) ?? 0),
+      primaryBinaryEnvelopes,
+    )
+  )
+  const bodies = applyBodyOrbitClearance(nonBelt.map((b, i) => {
+    const thisOrbit = nonBeltSceneOrbits[i]
+    const nextOrbit = i < nonBelt.length - 1 ? nonBeltSceneOrbits[i + 1] : (primaryOrbitCap ?? nearestCompanionOffset)
+    const moonMaxReach = moonMaxReachBetween(thisOrbit, nextOrbit)
+    return buildBody(b, system, hzCenterAu, scaleMode, orbitIndexById.get(b.id) ?? 0, moonMaxReach, thisOrbit)
+  }), primaryClearanceMax)
+  const belts = beltBodies.map((b) => {
+    const rawOrbit = orbitRadiusForBody(b, hzCenterAu, scaleMode, orbitIndexById.get(b.id) ?? 0)
+    const orbit = applyBinaryEnvelopes(rawOrbit, primaryBinaryEnvelopes)
+    return buildBelt(b, hzCenterAu, scaleMode, orbitIndexById.get(b.id) ?? 0, orbit, primaryOrbitCap)
+  })
 
   const allHazards = system.majorHazards.map((h) => classifyHazard(h, system, hzCenterAu))
   const hazards = allHazards.filter((h) => !isSystemLevelHazard(h))
@@ -399,6 +551,15 @@ export function buildSceneGraph(system: GeneratedSystem, options: BuildSceneGrap
     if (marker) ruins.push(marker)
     else systemLevelRuins.push(ruin.id)
   }
+
+  const debrisFields: DebrisFieldVisual[] = system.debrisFields.map((field) => ({
+    field,
+    innerRadius: auToScene(field.spatialExtent.innerAu.value, hzCenterAu, scaleMode),
+    outerRadius: auToScene(field.spatialExtent.outerAu.value, hzCenterAu, scaleMode),
+    inclinationDeg: field.spatialExtent.inclinationDeg.value,
+    spanDeg: field.spatialExtent.spanDeg.value,
+    centerAngleDeg: field.spatialExtent.centerAngleDeg.value,
+  }))
 
   const maxBodyOrbit = Math.max(...bodies.map((b) => b.orbitRadius), 0)
   const maxBeltOrbit = Math.max(...belts.map((b) => b.outerRadius), 0)
@@ -436,10 +597,38 @@ export function buildSceneGraph(system: GeneratedSystem, options: BuildSceneGrap
     const subNonBelt = sortedSubBodies.filter((b) => b.category.value !== 'belt')
     const subBeltBodies = sortedSubBodies.filter((b) => b.category.value === 'belt')
 
-    const subBodies = applyBodyOrbitClearance(
-      subNonBelt.map((b) => buildBody(b, subSystemShim, subHzCenter, scaleMode, subOrbitIndex.get(b.id) ?? 0)),
+    const subCompanionOffset = Math.hypot(...companionStar.position)
+    const separationAu = separationToBucketAu(c.separation.value)
+    const subEnvelope = siblingSceneEnvelope({
+      separationAu,
+      stableLimitAu: siblingOuterAuLimit(separationAu, c.star.massSolar.value, system.primary.massSolar.value),
+      companionOffset: subCompanionOffset,
+      hzCenterAu: subHzCenter,
+      scaleMode,
+    })
+    const subBinaryEnvelopes = subEnvelope ? [subEnvelope] : []
+    const subOrbitRadiusCap = envelopeCap(subBinaryEnvelopes) ?? subCompanionOffset * SUB_SYSTEM_EXTENT_FRACTION
+
+    const subNonBeltSceneOrbits = subNonBelt.map((b) =>
+      applyBinaryEnvelopes(
+        orbitRadiusForBody(b, subHzCenter, scaleMode, subOrbitIndex.get(b.id) ?? 0),
+        subBinaryEnvelopes,
+      )
     )
-    const subBelts = subBeltBodies.map((b) => buildBelt(b, subHzCenter, scaleMode, subOrbitIndex.get(b.id) ?? 0))
+    const subBodies = applyBodyOrbitClearance(
+      subNonBelt.map((b, i) => {
+        const thisOrbit = subNonBeltSceneOrbits[i]
+        const nextOrbit = i < subNonBelt.length - 1 ? subNonBeltSceneOrbits[i + 1] : subOrbitRadiusCap
+        const moonMaxReach = moonMaxReachBetween(thisOrbit, nextOrbit)
+        return buildBody(b, subSystemShim, subHzCenter, scaleMode, subOrbitIndex.get(b.id) ?? 0, moonMaxReach, thisOrbit)
+      }),
+      subOrbitRadiusCap + CLEARANCE_CAP_SAFETY_MARGIN + CLEARANCE_CAP_EPSILON,
+    )
+    const subBelts = subBeltBodies.map((b) => {
+      const rawOrbit = orbitRadiusForBody(b, subHzCenter, scaleMode, subOrbitIndex.get(b.id) ?? 0)
+      const orbit = applyBinaryEnvelopes(rawOrbit, subBinaryEnvelopes)
+      return buildBelt(b, subHzCenter, scaleMode, subOrbitIndex.get(b.id) ?? 0, orbit, subOrbitRadiusCap)
+    })
 
     const subRuins: RuinMarker[] = []
     const subSystemLevelRuins: string[] = []
@@ -480,5 +669,6 @@ export function buildSceneGraph(system: GeneratedSystem, options: BuildSceneGrap
     subSystems,
     distantMarkers,
     circumbinaryKeepOut,
+    debrisFields,
   }
 }

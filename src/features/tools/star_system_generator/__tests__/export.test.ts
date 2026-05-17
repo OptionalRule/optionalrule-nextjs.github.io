@@ -82,3 +82,102 @@ describe('star system exports', () => {
     expect(json.endsWith('\n')).toBe(true)
   })
 })
+
+describe('Markdown export with debris fields', () => {
+  it('includes ## Debris Fields section when system has debris fields', () => {
+    for (let i = 0; i < 30; i++) {
+      const system = generateSystem({
+        seed: `export-debris-md-${i}`,
+        distribution: 'frontier',
+        tone: 'cinematic',
+        gu: 'normal',
+        settlements: 'normal',
+      })
+      if (system.debrisFields.length === 0) continue
+      const md = exportSystemMarkdown(system)
+      expect(md).toMatch(/## Debris Fields/)
+      const first = system.debrisFields[0]
+      expect(md).toContain(first.archetypeName.value)
+      return
+    }
+    throw new Error('no debris-field system found in 30 seeds')
+  })
+
+  it('settlements anchored to a debris field include a Region: line in Markdown', () => {
+    for (let i = 0; i < 80; i++) {
+      const system = generateSystem({
+        seed: `export-debris-md-anchor-${i}`,
+        distribution: 'frontier',
+        tone: 'balanced',
+        gu: 'normal',
+        settlements: 'crowded',
+      })
+      const anchored = system.settlements.find(s => s.debrisFieldId)
+      if (!anchored) continue
+      const field = system.debrisFields.find(d => d.id === anchored.debrisFieldId)!
+      const md = exportSystemMarkdown(system)
+      expect(md).toMatch(new RegExp(`\\*\\*Region:\\*\\*.*${field.archetypeName.value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}`))
+      return
+    }
+  })
+
+  it('omits ## Debris Fields section when system has no debris fields', () => {
+    for (let i = 0; i < 30; i++) {
+      const system = generateSystem({
+        seed: `export-no-debris-md-${i}`,
+        distribution: 'realistic',
+        tone: 'balanced',
+        gu: 'normal',
+        settlements: 'normal',
+      })
+      if (system.debrisFields.length > 0) continue
+      const md = exportSystemMarkdown(system)
+      expect(md).not.toMatch(/## Debris Fields/)
+      return
+    }
+  })
+})
+
+describe('JSON export with debris fields', () => {
+  it('debrisFields[] appears in output', () => {
+    for (let i = 0; i < 30; i++) {
+      const system = generateSystem({
+        seed: `export-debris-json-${i}`,
+        distribution: 'frontier',
+        tone: 'cinematic',
+        gu: 'normal',
+        settlements: 'normal',
+      })
+      if (system.debrisFields.length === 0) continue
+      const json = JSON.parse(exportSystemJson(system))
+      expect(Array.isArray(json.debrisFields)).toBe(true)
+      expect(json.debrisFields.length).toBeGreaterThan(0)
+      return
+    }
+    throw new Error('no debris-field system found in JSON export sweep')
+  })
+
+  it('settlement.debrisFieldId passes through to JSON', () => {
+    for (let i = 0; i < 80; i++) {
+      const system = generateSystem({
+        seed: `export-debris-json-anchor-${i}`,
+        distribution: 'frontier',
+        tone: 'balanced',
+        gu: 'normal',
+        settlements: 'crowded',
+      })
+      const anchored = system.settlements.find(s => s.debrisFieldId)
+      if (!anchored) continue
+      const json = JSON.parse(exportSystemJson(system))
+      const exported = json.settlements.find((s: { id: string }) => s.id === anchored.id)
+      expect(exported.debrisFieldId).toBe(anchored.debrisFieldId)
+      return
+    }
+  })
+
+  it('debrisFields array is present even when empty', () => {
+    const system = generateSystem(options)
+    const json = JSON.parse(exportSystemJson(system))
+    expect(Array.isArray(json.debrisFields)).toBe(true)
+  })
+})

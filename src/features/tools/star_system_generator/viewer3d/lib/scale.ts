@@ -54,7 +54,7 @@ const VISUAL_SIZE_CLAMP_BY_CATEGORY: Record<BodyCategory, [number, number]> = {
   anomaly: [0.65, 1.45],
 }
 
-function clamp(value: number, min: number, max: number): number {
+export function clamp(value: number, min: number, max: number): number {
   return Math.min(max, Math.max(min, value))
 }
 

@@ -162,6 +162,7 @@ import { generateCompanionStar } from './companionStar'
 import { separationToBucketAu } from './companionGeometry'
 import { circumbinaryInnerAuLimit, siblingOuterAuLimit } from './companionStability'
 import { buildVolatileHazardBelt, buildBinaryContactPhenomenon } from './volatileSystem'
+import { deriveDebrisFields, attachSettlementsToDebrisFields, attachRuinsToDebrisFields } from './debrisFields'
 
 export { architectureBodyPlanRules } from './architecture'
 
@@ -4332,9 +4333,19 @@ export function generateSystem(options: GenerationOptions, knownSystem?: Partial
     ? []
     : generateHumanRemnants(rootRng.fork('ruins'), bodies, guOverlay)
   const generatedPhenomena = generatePhenomena(rootRng.fork('phenomena'), architectureResult.architecture.name.value, guOverlay)
+  const { debrisFields, spawnedPhenomena } = deriveDebrisFields(
+    rootRng.fork('debris'),
+    { seed: options.seed, primary, companions },
+    options,
+    {
+      architectureName: architectureResult.architecture.name.value,
+      habitableOuterAu: hz.outer,
+      snowLineAu: snowLine,
+    },
+  )
   const phenomena = hasVolatileCompanion
-    ? [buildBinaryContactPhenomenon(), ...generatedPhenomena]
-    : generatedPhenomena
+    ? [buildBinaryContactPhenomenon(), ...generatedPhenomena, ...spawnedPhenomena]
+    : [...generatedPhenomena, ...spawnedPhenomena]
   const narrativeFacts = buildNarrativeFacts({
     options,
     systemName: name,
@@ -4401,6 +4412,20 @@ export function generateSystem(options: GenerationOptions, knownSystem?: Partial
     },
   })
 
+  const bodyOrbitAuById = new Map(bodies.map(b => [b.id, b.orbitAu.value]))
+  const settlementsWithDebris = attachSettlementsToDebrisFields(
+    rootRng.fork('debris-settlement-anchor'),
+    reshapedSettlements,
+    debrisFields,
+    bodyOrbitAuById,
+  )
+  const ruinsWithDebris = attachRuinsToDebrisFields(
+    rootRng.fork('debris-ruin-anchor'),
+    ruins,
+    debrisFields,
+    new Map(),
+  )
+
   const companionsWithSubSystems: StellarCompanion[] = companions.map((companion, idx) => {
     if (companion.mode !== 'orbital-sibling') return companion
 
@@ -4418,8 +4443,8 @@ export function generateSystem(options: GenerationOptions, knownSystem?: Partial
     const prefix = `comp${idx + 1}-`
     const companionMaxOrbitAu = siblingOuterAuLimit(
       separationToBucketAu(companion.separation.value),
-      primary.massSolar.value,
       subStar.massSolar.value,
+      primary.massSolar.value,
     )
     const rawSubBodies = generateBodies(
       subRng.fork('bodies'),
@@ -4502,10 +4527,11 @@ export function generateSystem(options: GenerationOptions, knownSystem?: Partial
       snowLineAu: fact(snowLine, 'derived', '2.7 * sqrt(L)'),
     },
     bodies,
+    debrisFields,
     guOverlay,
-    settlements: reshapedSettlements,
+    settlements: settlementsWithDebris,
     gates,
-    ruins,
+    ruins: ruinsWithDebris,
     phenomena: reshapedPhenomena,
     narrativeFacts,
     relationshipGraph,

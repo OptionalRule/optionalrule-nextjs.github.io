@@ -5,13 +5,14 @@ exports[`Phase 3 existing prose remains byte-identical > seed phase3-prose-1 pro
   "phenomenonNotes": [
     "Transit: Old landing grids still work but route ships through abandoned hazards. Question: Who erased the last colony updates, and which sealed habitat still has power? Hook: Descendant claimants, insurers, and scavengers need incompatible rulings on the colony's fate. Image: A lit administration dome broadcasts docking instructions to empty streets.",
     "Transit: The rogue's eccentric orbit creates rare close-pass windows and gravitational surprises. Question: Do its volatiles, heat signature, or crust records contradict local histories? Hook: Colonies, science teams, and GU administrators contest hazard, depot, or archive status. Image: A lightless planet rolls through floodlamp glare and survey tug exhaust.",
+    "A swarm of long-period comets pumped by binary resonance returns on a predictable multi-millennial cycle.",
   ],
   "settlementTagHooks": [
     "The public tag is Free Captain Nest; the private trouble is Flare Refuge, because survival protocols double as social control. A failed terraforming release makes the GU work impossible to treat as routine. Privately, the site is an illegal AI lab. Control of the route weather bureau decides who has leverage.",
     "AI Whisper Cult is the surface story, but Spare Parts Monarchy shows who benefits from the tension: control of replacement parts has hardened into hereditary or cartel power. The cluster's tether-bridges are fraying, and civilian shelter overflow is the chokepoint for everyone trying to cross. Privately, the founders committed a crime. Whatever the system fights over next, the ice-chirality sorting plant is where it lands.",
   ],
   "settlementWhyHere": [
-    "Irena-61 III route geometry is built into this orbital and works the surface from there. Irena-61 III route geometry stays because the yield outweighs everything that wants it gone.",
+    "Irena-61 III route geometry keeps a footprint on Irena-61 III only because of Phase-stable superconductive lattice. Irena-61 III route geometry stays because the yield outweighs everything that wants it gone.",
     "Irena-61 Belt V maintains its footprint on the body it occupies. The reading here is high enough that Irena-61 Belt V accepts the risk and the silence.",
   ],
   "systemName": "Irena-61",

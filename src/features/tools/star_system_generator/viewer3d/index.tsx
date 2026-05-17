@@ -8,6 +8,7 @@ import { ViewerModal } from './chrome/ViewerModal'
 import { LayerToggles } from './chrome/LayerToggles'
 import { DetailSidebar } from './chrome/DetailSidebar'
 import { ViewerLegend } from './chrome/ViewerLegend'
+import type { DebrisChipFlags } from './chrome/ViewerLegend'
 import { SystemLevelRail } from './chrome/SystemLevelRail'
 import { Scene } from './scene/Scene'
 import { BodyLookupProvider } from './scene/bodyLookup'
@@ -18,12 +19,24 @@ import { GuOverlayPanel } from '../components/GuOverlayPanel'
 import { StarDetailCard } from './chrome/StarDetailCard'
 import { HazardCard } from './chrome/HazardCard'
 import { PhenomenonCard } from './chrome/PhenomenonCard'
+import { DebrisFieldCard } from './chrome/DebrisFieldCard'
 import { useScaleMode, useSelectionState } from './chrome/ViewerContext'
 import type { OrbitScaleMode } from './types'
 
 export interface SystemViewer3DModalProps {
   system: GeneratedSystem
   onClose: () => void
+}
+
+function computeDebrisChipFlags(system: GeneratedSystem): DebrisChipFlags {
+  const shapes = new Set(system.debrisFields.map((f) => f.shape.value))
+  return {
+    ring: shapes.has('polar-ring') || shapes.has('trojan-camp') || shapes.has('inner-pair-halo'),
+    shell: shapes.has('common-envelope-shell'),
+    stream: shapes.has('mass-transfer-stream') || shapes.has('accretion-bridge'),
+    halo: shapes.has('kozai-scattered-halo') || shapes.has('hill-sphere-capture-cone') || shapes.has('exocomet-swarm'),
+    cordon: shapes.has('gardener-cordon'),
+  }
 }
 
 function makeScaleNote(system: GeneratedSystem, scaleMode: OrbitScaleMode): string {
@@ -83,6 +96,7 @@ function SystemViewer3DModalContent({ system, onClose, title }: SystemViewer3DMo
         <ViewerLegend
           scaleNote={makeScaleNote(system, scaleMode)}
           onFrame={() => window.dispatchEvent(new CustomEvent('viewer3d:frame-system'))}
+          hasDebris={computeDebrisChipFlags(system)}
         />
       }
     >
@@ -171,6 +185,10 @@ function SidebarContent({ system, graph }: { system: GeneratedSystem; graph: Ret
     case 'ruin': {
       const ruin = allRuins(system).find((x) => x.id === selection.id)
       return ruin ? <RemnantDetailCard ruin={ruin} /> : null
+    }
+    case 'debris': {
+      const field = system.debrisFields.find((d) => d.id === selection.id)
+      return field ? <DebrisFieldCard field={field} /> : null
     }
     default:
       return null

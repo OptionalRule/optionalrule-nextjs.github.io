@@ -1524,21 +1524,28 @@ describe('generateSystem', () => {
       const system = generateSystem({ ...options, seed: `a93f9c2e41b8${index.toString(16).padStart(4, '0')}` })
 
       for (const settlement of system.settlements) {
-        const body = system.bodies.find((candidate) => candidate.id === settlement.bodyId)
-        expect(body).toBeTruthy()
+        // Settlements have either a body anchor or a debris-field anchor, never both.
+        if (settlement.debrisFieldId !== undefined) {
+          const field = system.debrisFields.find((f) => f.id === settlement.debrisFieldId)
+          expect(field).toBeTruthy()
+          expect(settlement.bodyId).toBeUndefined()
+        } else {
+          const body = system.bodies.find((candidate) => candidate.id === settlement.bodyId)
+          expect(body).toBeTruthy()
 
-        if (settlement.siteCategory.value === 'Moon base') {
-          expect(settlement.moonId).toBeTruthy()
-          const moon = body?.moons.find((candidate) => candidate.id === settlement.moonId)
-          expect(moon).toBeTruthy()
-          expect(settlement.anchorKind.value).toBe('major moon')
-          expect(settlement.anchorName.value).toBe(moon?.name.value)
-          expect(settlement.anchorName.value).toMatch(/ - Moon [IVXLCDM]+$/)
-        }
+          if (settlement.siteCategory.value === 'Moon base') {
+            expect(settlement.moonId).toBeTruthy()
+            const moon = body?.moons.find((candidate) => candidate.id === settlement.moonId)
+            expect(moon).toBeTruthy()
+            expect(settlement.anchorKind.value).toBe('major moon')
+            expect(settlement.anchorName.value).toBe(moon?.name.value)
+            expect(settlement.anchorName.value).toMatch(/ - Moon [IVXLCDM]+$/)
+          }
 
-        if (settlement.siteCategory.value === 'Surface settlement') {
-          expect(settlement.anchorKind.value).toBe('body surface')
-          expect(settlement.anchorName.value).toBe(body?.name.value)
+          if (settlement.siteCategory.value === 'Surface settlement') {
+            expect(settlement.anchorKind.value).toBe('body surface')
+            expect(settlement.anchorName.value).toBe(body?.name.value)
+          }
         }
 
         expect(settlement.anchorDetail.value.length).toBeGreaterThan(20)

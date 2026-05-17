@@ -288,6 +288,7 @@ export interface PartialKnownSystem {
   dataBasis?: Fact<string>
   primary?: PartialKnownStar
   bodies?: PartialKnownBody[]
+  debrisFields?: DebrisField[]
 }
 
 export interface GuOverlay {
@@ -305,6 +306,7 @@ export interface Settlement {
   name: Fact<string>
   bodyId?: string
   moonId?: string
+  debrisFieldId?: string
   anchorKind: Fact<string>
   anchorName: Fact<string>
   anchorDetail: Fact<string>
@@ -343,6 +345,7 @@ export interface HumanRemnant {
   location: Fact<string>
   remnantType: Fact<string>
   hook: Fact<string>
+  debrisFieldId?: string
 }
 
 export interface Gate {
@@ -371,6 +374,53 @@ export interface SystemPhenomenon {
   surveyQuestion: Fact<string>
   conflictHook: Fact<string>
   sceneAnchor: Fact<string>
+}
+
+export type DebrisFieldShape =
+  | 'polar-ring'
+  | 'mass-transfer-stream'
+  | 'common-envelope-shell'
+  | 'inner-pair-halo'
+  | 'trojan-camp'
+  | 'kozai-scattered-halo'
+  | 'hill-sphere-capture-cone'
+  | 'exocomet-swarm'
+  | 'accretion-bridge'
+  | 'gardener-cordon'
+
+export type DebrisDensityBand =
+  | 'dust'
+  | 'sparse'
+  | 'asteroid-fleet'
+  | 'shell-dense'
+  | 'stream'
+
+export type DebrisAnchorMode =
+  | 'unanchorable'
+  | 'transient-only'
+  | 'edge-only'
+  | 'embedded'
+
+export interface DebrisFieldSpatialExtent {
+  innerAu: Fact<number>
+  outerAu: Fact<number>
+  inclinationDeg: Fact<number>
+  spanDeg: Fact<number>
+  centerAngleDeg: Fact<number>
+}
+
+export interface DebrisField {
+  id: string
+  shape: Fact<DebrisFieldShape>
+  archetypeName: Fact<string>
+  companionId: string | null
+  spatialExtent: DebrisFieldSpatialExtent
+  densityBand: Fact<DebrisDensityBand>
+  anchorMode: Fact<DebrisAnchorMode>
+  guCharacter: Fact<string>
+  prize: Fact<string>
+  spawnedPhenomenonId: string | null
+  whyHere: Fact<string>
 }
 
 export type NarrativeFactStatus = 'established' | 'inferred' | 'rumor' | 'secret' | 'cover-story'
@@ -431,6 +481,7 @@ export interface GeneratedSystem {
   architecture: SystemArchitecture
   zones: SystemZones
   bodies: OrbitingBody[]
+  debrisFields: DebrisField[]
   guOverlay: GuOverlay
   settlements: Settlement[]
   gates: Gate[]

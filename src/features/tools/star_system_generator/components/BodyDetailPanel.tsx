@@ -11,6 +11,17 @@ import {
 } from '../lib/populationDisplay'
 import { BodyCategoryIcon, FieldRow, ThermalZoneTag, sectionShellClasses } from './visual'
 
+function debrisRegionsForBody(body: OrbitingBody, system: GeneratedSystem): Array<{ id: string; archetypeName: string }> {
+  const orbit = body.orbitAu.value
+  return system.debrisFields
+    .filter((field) => {
+      const inExtent = orbit >= field.spatialExtent.innerAu.value && orbit <= field.spatialExtent.outerAu.value
+      if (!inExtent) return false
+      return system.settlements.some((s) => s.debrisFieldId === field.id)
+    })
+    .map((field) => ({ id: field.id, archetypeName: field.archetypeName.value }))
+}
+
 export function BodyDetailPanel({ body, system }: { body: OrbitingBody; system: GeneratedSystem }) {
   return (
     <section className={sectionShellClasses('physical')}>
@@ -32,6 +43,7 @@ export function BodyDetailContent({
 }) {
   const isAnomaly = body.category.value === 'anomaly'
   const isBelt = body.category.value === 'belt'
+  const regions = debrisRegionsForBody(body, system)
 
   const physicalFields: Array<{ label: string; value: ReactNode }> = isBelt
     ? [
@@ -73,6 +85,10 @@ export function BodyDetailContent({
     { label: 'Radiation', value: body.detail.radiation.value },
     { label: 'Biosphere', value: body.detail.biosphere.value },
     { label: 'Climate', value: body.detail.climate.map((tag) => tag.value).join(', ') },
+    ...regions.map((region) => ({
+      label: 'Region',
+      value: <span className="text-[var(--text-primary)]">{region.archetypeName}</span>,
+    })),
   ]
 
   return (
