@@ -89,6 +89,10 @@ export function DebrisChunks({ fieldId, color, placements }: DebrisChunksProps) 
       if (indices.length === 0) return
       const mesh = new THREE.InstancedMesh(geometry, SHARED_CHUNK_MATERIAL, indices.length)
       mesh.name = `debris-chunks-${fieldId}-${idx}`
+      mesh.frustumCulled = false
+      mesh.renderOrder = 2
+      mesh.raycast = () => {}
+      mesh.instanceMatrix.setUsage?.(THREE.StaticDrawUsage)
       for (let local = 0; local < indices.length; local++) {
         const p = placements[indices[local]]
         const stretch = p.stretch ?? [1, 1, 1]

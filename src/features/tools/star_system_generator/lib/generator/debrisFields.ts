@@ -125,7 +125,15 @@ interface SelectionResult {
   shape: DebrisFieldShape
 }
 
-const EVOLVED_AGE_STATES = new Set(['Aging', 'Evolved'])
+const EVOLVED_AGE_STATES = new Set([
+  'Old',
+  'Very old',
+  'Ancient/remnant-associated',
+  // Legacy labels kept so older tests/imports still classify correctly.
+  'Aging',
+  'Evolved',
+])
+const YOUNG_CHAOS_AGE_STATES = new Set(['Embryonic/very young', 'Young'])
 
 export function selectArchetypeForCompanion(
   rngSeed: { seed: string },
@@ -237,10 +245,82 @@ export interface DebrisDerivationResult {
   spawnedPhenomena: SystemPhenomenon[]
 }
 
+export interface SystemDebrisContext {
+  architectureName?: string
+  habitableOuterAu?: number
+  snowLineAu?: number
+}
+
+interface SystemDebrisSelection {
+  shape: DebrisFieldShape
+  densityBand: DebrisDensityBand
+  anchorMode: DebrisAnchorMode
+  archetypeName: string
+  whyHere: string
+}
+
+function selectSystemOriginDebris(primary: Star, context?: SystemDebrisContext): SystemDebrisSelection | null {
+  const age = primary.ageState.value
+  const architecture = context?.architectureName ?? ''
+
+  if (age === 'Embryonic/very young') {
+    return {
+      shape: 'exocomet-swarm',
+      densityBand: 'shell-dense',
+      anchorMode: 'transient-only',
+      archetypeName: 'Primordial debris chaos',
+      whyHere: 'The system is still young enough that planetesimal debris has not settled into clean belts.',
+    }
+  }
+
+  if (YOUNG_CHAOS_AGE_STATES.has(age) || architecture === 'Debris-dominated') {
+    return {
+      shape: 'exocomet-swarm',
+      densityBand: 'asteroid-fleet',
+      anchorMode: 'transient-only',
+      archetypeName: 'Young-system debris storm',
+      whyHere: 'Recent formation and migration left broken lanes of dust, ice, and planetesimal rubble across the outer system.',
+    }
+  }
+
+  if (architecture === 'Giant-rich or chaotic' || architecture === 'Migrated giant') {
+    return {
+      shape: 'kozai-scattered-halo',
+      densityBand: 'sparse',
+      anchorMode: 'transient-only',
+      archetypeName: 'Dynamically scattered debris',
+      whyHere: 'Giant-planet migration and resonance pumping keep the system littered with eccentric debris paths.',
+    }
+  }
+
+  return null
+}
+
+function spatialExtentForSystemOriginDebris(selection: SystemDebrisSelection, context?: SystemDebrisContext): DebrisFieldSpatialExtent {
+  const f = (n: number, src: string): Fact<number> => fact(n, 'derived', src)
+  const hzOuter = Math.max(0.05, context?.habitableOuterAu ?? 1.6)
+  const snowLine = Math.max(hzOuter * 1.4, context?.snowLineAu ?? hzOuter * 2.7)
+  const inner = selection.archetypeName.includes('Primordial')
+    ? Math.max(0.05, hzOuter * 0.28)
+    : Math.max(0.1, hzOuter * 0.75)
+  const outer = selection.archetypeName.includes('Primordial')
+    ? Math.max(snowLine * 3.6, inner * 8)
+    : Math.max(snowLine * 2.8, inner * 4)
+
+  return {
+    innerAu: f(inner, 'system-origin debris inner edge'),
+    outerAu: f(outer, 'system-origin debris outer extent'),
+    inclinationDeg: f(selection.shape === 'kozai-scattered-halo' ? 58 : 24, 'system-origin debris scatter inclination'),
+    spanDeg: f(360, 'system-origin debris wraps the system'),
+    centerAngleDeg: f(0, 'system-origin debris has no preferred azimuth'),
+  }
+}
+
 export function deriveDebrisFields(
   rng: SeededRng,
   system: Pick<GeneratedSystem, 'seed' | 'primary' | 'companions'>,
   _options: GenerationOptions,
+  context?: SystemDebrisContext,
 ): DebrisDerivationResult {
   const fields: DebrisField[] = []
   const spawnedPhenomena: SystemPhenomenon[] = []
@@ -286,6 +366,26 @@ export function deriveDebrisFields(
       whyHere: fact(pickOneFromPool(fieldRng.fork('why'), archetype.whyHerePool), 'inferred', 'archetype data'),
     }
     fields.push(field)
+  }
+
+  const systemSelection = selectSystemOriginDebris(system.primary, context)
+  if (systemSelection) {
+    const fieldId = `debris-system-${systemSelection.shape}`
+    if (!fields.some((field) => field.id === fieldId)) {
+      fields.push({
+        id: fieldId,
+        shape: fact(systemSelection.shape, 'derived', 'Selected by system age/architecture chaos'),
+        archetypeName: fact(systemSelection.archetypeName, 'derived', 'system-origin debris profile'),
+        companionId: null,
+        spatialExtent: spatialExtentForSystemOriginDebris(systemSelection, context),
+        densityBand: fact(systemSelection.densityBand, 'inferred', 'system-origin debris density'),
+        anchorMode: fact(systemSelection.anchorMode, 'inferred', 'system-origin debris anchor mode'),
+        guCharacter: fact('Bleed is uneven across the debris lanes; long exposures are worse near dense knots.', 'gu-layer', 'system-origin debris'),
+        prize: fact('freshly exposed planetesimal cores, volatile ice, and unclaimed formation-era debris', 'inferred', 'system-origin debris'),
+        spawnedPhenomenonId: null,
+        whyHere: fact(systemSelection.whyHere, 'inferred', 'system-origin debris'),
+      })
+    }
   }
 
   return { debrisFields: fields, spawnedPhenomena }

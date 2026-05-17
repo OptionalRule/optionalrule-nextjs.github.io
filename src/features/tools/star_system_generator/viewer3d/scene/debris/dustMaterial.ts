@@ -27,23 +27,20 @@ function drawBlob(
 }
 
 function drawSpriteVariant0(ctx: CanvasRenderingContext2D, x: number, y: number) {
-  // Round soft blob — the "default" mote.
-  drawBlob(ctx, x, y, { rx: ATLAS_CELL * 0.45, ry: ATLAS_CELL * 0.45, core: 0.3, midStop: 0.65, midAlpha: 0.18 })
+  drawBlob(ctx, x, y, { rx: ATLAS_CELL * 0.2, ry: ATLAS_CELL * 0.18, core: 0.16, midStop: 0.55, midAlpha: 0.16 })
 }
 
 function drawSpriteVariant1(ctx: CanvasRenderingContext2D, x: number, y: number) {
-  // Gentle ellipse — 1.5:1 aspect, not stretched enough to read as elongated.
-  drawBlob(ctx, x, y, { rx: ATLAS_CELL * 0.45, ry: ATLAS_CELL * 0.3, core: 0.28, midStop: 0.7, midAlpha: 0.15 })
+  drawBlob(ctx, x, y, { rx: ATLAS_CELL * 0.45, ry: ATLAS_CELL * 0.1, core: 0.08, midStop: 0.62, midAlpha: 0.13 })
 }
 
 function drawSpriteVariant2(ctx: CanvasRenderingContext2D, x: number, y: number) {
-  // Brighter pinpoint — small bright core with fast falloff.
-  drawBlob(ctx, x, y, { rx: ATLAS_CELL * 0.35, ry: ATLAS_CELL * 0.35, core: 0.15, midStop: 0.45, midAlpha: 0.22 })
+  drawBlob(ctx, x, y, { rx: ATLAS_CELL * 0.12, ry: ATLAS_CELL * 0.12, core: 0.1, midStop: 0.42, midAlpha: 0.2 })
 }
 
 function drawSpriteVariant3(ctx: CanvasRenderingContext2D, x: number, y: number) {
-  // Wider diffuse blob — softer fade, no sharp core.
-  drawBlob(ctx, x, y, { rx: ATLAS_CELL * 0.48, ry: ATLAS_CELL * 0.42, core: 0.45, midStop: 0.78, midAlpha: 0.1 })
+  drawBlob(ctx, x, y, { rx: ATLAS_CELL * 0.34, ry: ATLAS_CELL * 0.22, core: 0.32, midStop: 0.8, midAlpha: 0.07 })
+  drawBlob(ctx, x + ATLAS_CELL * 0.12, y - ATLAS_CELL * 0.08, { rx: ATLAS_CELL * 0.16, ry: ATLAS_CELL * 0.08, core: 0.2, midStop: 0.72, midAlpha: 0.08 })
 }
 
 function buildSpriteAtlas(): THREE.Texture {
@@ -80,15 +77,18 @@ attribute float aScale;
 attribute float aRotation;
 attribute vec3 aTint;
 attribute float aSpriteIndex;
+attribute float aOpacity;
+attribute vec2 aAspect;
 
 varying vec2 vAtlasUv;
 varying vec3 vTint;
+varying float vOpacity;
 
 void main() {
   float c = cos(aRotation);
   float s = sin(aRotation);
   vec2 rotated = vec2(position.x * c - position.y * s, position.x * s + position.y * c);
-  vec2 scaled = rotated * aScale;
+  vec2 scaled = rotated * aScale * aAspect;
   vec4 worldOffset = modelViewMatrix * vec4(aOffset, 1.0);
   vec4 pos = vec4(worldOffset.xyz + vec3(scaled, 0.0), 1.0);
   gl_Position = projectionMatrix * pos;
@@ -102,6 +102,7 @@ void main() {
   // PlaneGeometry uv is in [0,1].
   vAtlasUv = cellOrigin + uv * cellSize;
   vTint = aTint;
+  vOpacity = aOpacity;
 }
 `
 
@@ -111,14 +112,14 @@ uniform vec3 uBaseColor;
 uniform float uOpacity;
 varying vec2 vAtlasUv;
 varying vec3 vTint;
+varying float vOpacity;
 
 void main() {
   vec4 tex = texture2D(uAtlas, vAtlasUv);
   if (tex.a < 0.01) discard;
   vec3 color = uBaseColor * vTint;
-  // Pre-multiplied output; AdditiveBlending uses SrcAlpha + One, so we set
-  // alpha to 1.0 to avoid double-multiplying the contribution.
-  gl_FragColor = vec4(color * tex.a * uOpacity, 1.0);
+  float alpha = tex.a * uOpacity * vOpacity;
+  gl_FragColor = vec4(color, alpha);
 }
 `
 
@@ -142,7 +143,6 @@ export function getDustBillboardMaterial(opts: BillboardMaterialOptions): THREE.
     fragmentShader: billboardFragmentShader,
     transparent: true,
     depthWrite: false,
-    blending: THREE.AdditiveBlending,
     toneMapped: false,
   })
   billboardMaterialCache.set(key, material)
@@ -166,6 +166,7 @@ uniform float uInnerRadius;
 uniform float uOuterRadius;
 uniform float uNoiseScale;
 uniform float uSeed;
+uniform float uEdgeFade;
 varying vec3 vLocalPos;
 
 float hash(vec2 p) {
@@ -194,20 +195,24 @@ float fbm(vec2 p) {
   return v;
 }
 
+float radialEdgeFade(float t) {
+  float w = max(uEdgeFade, 0.001);
+  return smoothstep(0.0, w, t) * (1.0 - smoothstep(1.0 - w, 1.0, t));
+}
+
 void main() {
   float r = length(vLocalPos.xy);
   float t = (r - uInnerRadius) / max(uOuterRadius - uInnerRadius, 0.001);
   if (t < 0.0 || t > 1.0) discard;
   // Lens-shaped radial mask, peak at midradius.
-  float radialMask = sin(t * 3.14159);
-  radialMask = pow(radialMask, 0.65);
+  float radialMask = pow(max(sin(t * 3.14159), 0.0), 0.72) * radialEdgeFade(t);
   // World-position-based noise (not parametric) so clumps look like patches, not arcs.
   vec2 noiseUv = vLocalPos.xy * uNoiseScale * 0.05;
   float n = fbm(noiseUv);
   // Heat-shift color: inner (hot) -> outer (cool).
   vec3 col = mix(uColor, uColorOuter, t);
-  float patch = 0.35 + n * 1.15;
-  float alpha = radialMask * patch * uOpacity;
+  float patchDensity = 0.35 + n * 1.15;
+  float alpha = radialMask * patchDensity * uOpacity;
   // Pre-multiplied output; alpha=1.0 to avoid AdditiveBlending double-multiply.
   gl_FragColor = vec4(col * alpha, 1.0);
 }
@@ -230,6 +235,7 @@ export function getHazeRingMaterial(opts: {
       uOuterRadius: { value: opts.outerRadius },
       uNoiseScale: { value: 6.0 },
       uSeed: { value: opts.seed },
+      uEdgeFade: { value: 0.24 },
     },
     vertexShader: hazeVertexShader,
     fragmentShader: hazeFragmentShader,

@@ -7,7 +7,7 @@ describe('debris-field audit rules', () => {
     let found = false
     for (let i = 0; i < 50; i++) {
       const sys = generateSystem({ seed: `audit-debris-missing-${i}`, distribution: 'frontier', tone: 'balanced', gu: 'normal', settlements: 'normal' })
-      if (sys.debrisFields.length === 0) continue
+      if (!sys.debrisFields.some((field) => field.companionId !== null)) continue
       found = true
       const mutated = { ...sys, debrisFields: [] }
       const findings = validateSystem(mutated)

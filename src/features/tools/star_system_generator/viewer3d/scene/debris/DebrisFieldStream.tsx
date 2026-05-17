@@ -2,10 +2,12 @@
 
 import { useEffect, useMemo } from 'react'
 import * as THREE from 'three'
-import { hashToUnit } from '../../lib/motion'
 import { DustBillboards, type DustBillboard } from './dustBillboards'
 import { DebrisChunks, type ChunkPlacement } from './debrisChunks'
 import { hexToHsl, jitteredTint } from './tintUtils'
+import { defaultDebrisVisualProfile, type DebrisVisualProfile } from './debrisVisualProfile'
+import { sampleStreamChunks, sampleStreamDust } from './fieldSampling'
+import { debrisChunkBudget } from './chunkBudget'
 
 interface DebrisFieldStreamProps {
   fieldId?: string
@@ -17,17 +19,19 @@ interface DebrisFieldStreamProps {
   dustCount?: number
   chunkCount?: number
   qualityScale?: number
+  profile?: DebrisVisualProfile
 }
 
 export function DebrisFieldStream(props: DebrisFieldStreamProps) {
   const fieldId = props.fieldId ?? `stream-${props.centerAngleDeg}-${props.startRadius}`
   const quality = props.qualityScale ?? 1
-  const dustCount = Math.max(0, Math.round((props.dustCount ?? 250) * quality))
-  const chunkCount = Math.max(4, Math.round((props.chunkCount ?? 8) * quality))
+  const profile = props.profile ?? defaultDebrisVisualProfile('mass-transfer-stream', 'stream')
+  const dustCount = Math.max(0, Math.round((props.dustCount ?? Math.round(230 * (0.75 + profile.clumpiness * 0.45))) * quality))
+  const chunkCount = debrisChunkBudget({ kind: 'stream', profile, qualityScale: quality, explicitCount: props.chunkCount })
   const angleRad = props.centerAngleDeg * Math.PI / 180
   const length = Math.max(0.0001, Math.abs(props.endRadius - props.startRadius))
   const sheathRadius = Math.max(0.4, length * 0.08)
-  const baseSize = Math.max(0.15, sheathRadius * 0.3)
+  const baseSize = Math.max(0.04, sheathRadius * 0.12)
   const baseHsl = useMemo(() => hexToHsl(props.color), [props.color])
 
   const streamLine = useMemo(() => {
@@ -63,89 +67,53 @@ export function DebrisFieldStream(props: DebrisFieldStreamProps) {
   }, [streamLine])
 
   const billboards = useMemo<DustBillboard[]>(() => {
-    const out: DustBillboard[] = []
-    const axisX = Math.cos(angleRad)
-    const axisZ = Math.sin(angleRad)
-    const perpX = -axisZ
-    const perpZ = axisX
-    for (let i = 0; i < dustCount; i++) {
-      const t = hashToUnit(`debris-stream-t#${fieldId}#${i}`)
-      const r = props.startRadius + (props.endRadius - props.startRadius) * t
-      const cx = r * axisX
-      const cz = r * axisZ
-      const sagPhase = hashToUnit(`debris-stream-phase#${fieldId}#${i}`)
-      const sag = Math.sin(t * Math.PI * 2 + sagPhase * Math.PI * 2) * sheathRadius * 0.4
-      const radialU = hashToUnit(`debris-stream-radial#${fieldId}#${i}`)
-      const radialAngle = hashToUnit(`debris-stream-angle#${fieldId}#${i}`) * Math.PI * 2
-      const taper = 1 - Math.abs(t - 0.5) * 0.3
-      const ringR = Math.sqrt(radialU) * sheathRadius * taper
-      const offY = Math.sin(radialAngle) * ringR + sag * 0.4
-      const offPerp = Math.cos(radialAngle) * ringR
-      const sizeMul = 0.5 + Math.pow(hashToUnit(`debris-stream-size#${fieldId}#${i}`), 2.5) * 2.0
+    return sampleStreamDust({
+      fieldId,
+      count: dustCount,
+      startRadius: props.startRadius,
+      endRadius: props.endRadius,
+      angleRad,
+      sheathRadius,
+      profile,
+      kind: 'dust',
+    }).map((sample, i) => {
       const tint = jitteredTint(`debris-stream-tint#${fieldId}#${i}`, baseHsl)
-      // Boost brightness toward hot end.
-      const heatBoost = 0.7 + (1 - t) * 0.6
-      out.push({
-        position: [cx + perpX * offPerp, offY, cz + perpZ * offPerp],
-        scale: baseSize * sizeMul,
-        rotation: hashToUnit(`debris-stream-rot#${fieldId}#${i}`) * Math.PI * 2,
-        tint: [tint[0] * heatBoost, tint[1] * heatBoost, tint[2] * heatBoost],
-        spriteIndex: Math.floor(hashToUnit(`debris-stream-sprite#${fieldId}#${i}`) * 4),
-      })
-    }
-    return out
-  }, [fieldId, dustCount, props.startRadius, props.endRadius, angleRad, sheathRadius, baseSize, baseHsl])
+      return {
+        position: sample.position,
+        scale: baseSize * sample.sizeMul,
+        rotation: sample.rotation,
+        tint: [tint[0] * sample.tintHeat, tint[1] * sample.tintHeat, tint[2] * sample.tintHeat],
+        opacity: sample.opacity,
+        aspect: sample.aspect,
+        spriteIndex: sample.spriteIndex,
+      }
+    })
+  }, [fieldId, dustCount, props.startRadius, props.endRadius, angleRad, sheathRadius, baseSize, baseHsl, profile])
 
   const chunkPlacements = useMemo<ChunkPlacement[]>(() => {
-    const out: ChunkPlacement[] = []
-    const axisX = Math.cos(angleRad)
-    const axisZ = Math.sin(angleRad)
-    const perpX = -axisZ
-    const perpZ = axisX
-    for (let i = 0; i < chunkCount; i++) {
-      const t = hashToUnit(`debris-stream-chunk-t#${fieldId}#${i}`)
-      const r = props.startRadius + (props.endRadius - props.startRadius) * t
-      const cx = r * axisX
-      const cz = r * axisZ
-      const offY = (hashToUnit(`debris-stream-chunk-y#${fieldId}#${i}`) - 0.5) * sheathRadius * 1.8
-      const offPerp = (hashToUnit(`debris-stream-chunk-p#${fieldId}#${i}`) - 0.5) * sheathRadius * 2.0
-      const isHero = i === 0
-      const sizeMul = isHero
-        ? 2.0 + hashToUnit(`debris-stream-hero-size#${fieldId}`) * 1.5
-        : 0.4 + Math.pow(hashToUnit(`debris-stream-chunk-size#${fieldId}#${i}`), 2.8) * 1.5
-      const chunkSize = sizeMul * Math.max(0.35, sheathRadius * 0.3)
-      const brightness = 0.6 + hashToUnit(`debris-stream-chunk-bright#${fieldId}#${i}`) * 0.5
-      out.push({
-        position: [cx + perpX * offPerp, offY, cz + perpZ * offPerp],
-        scale: chunkSize,
-        rotation: [
-          hashToUnit(`debris-stream-chunk-rx#${fieldId}#${i}`) * Math.PI * 2,
-          hashToUnit(`debris-stream-chunk-ry#${fieldId}#${i}`) * Math.PI * 2,
-          hashToUnit(`debris-stream-chunk-rz#${fieldId}#${i}`) * Math.PI * 2,
-        ],
-        brightness,
-        stretch: [
-          0.55 + hashToUnit(`debris-stream-chunk-sx#${fieldId}#${i}`) * 0.95,
-          0.5 + hashToUnit(`debris-stream-chunk-sy#${fieldId}#${i}`) * 0.85,
-          0.55 + hashToUnit(`debris-stream-chunk-sz#${fieldId}#${i}`) * 1.05,
-        ],
-      })
-    }
-    return out
-  }, [fieldId, chunkCount, props.startRadius, props.endRadius, angleRad, sheathRadius])
-
-  const hotSpotX = props.endRadius * Math.cos(angleRad)
-  const hotSpotZ = props.endRadius * Math.sin(angleRad)
+    return sampleStreamChunks({
+      fieldId,
+      count: chunkCount,
+      startRadius: props.startRadius,
+      endRadius: props.endRadius,
+      angleRad,
+      sheathRadius,
+      profile,
+      kind: 'chunk',
+    }).map((sample) => ({
+      position: sample.position,
+      scale: sample.sizeMul * Math.max(0.18, sheathRadius * 0.2),
+      rotation: sample.rotation,
+      brightness: sample.brightness,
+      stretch: sample.stretch,
+    }))
+  }, [fieldId, chunkCount, props.startRadius, props.endRadius, angleRad, sheathRadius, profile])
 
   return (
     <group>
       <primitive object={streamLine} />
-      <DustBillboards fieldId={fieldId} color={props.color} opacity={Math.min(0.5, props.opacity * 0.4)} billboards={billboards} />
+      <DustBillboards fieldId={fieldId} color={props.color} opacity={Math.min(0.48, props.opacity)} billboards={billboards} />
       <DebrisChunks fieldId={fieldId} color={props.color} placements={chunkPlacements} />
-      <mesh position={[hotSpotX, 0, hotSpotZ]}>
-        <sphereGeometry args={[Math.max(0.3, sheathRadius * 0.65), 12, 12]} />
-        <meshBasicMaterial color="#ffe6aa" transparent opacity={Math.min(1, props.opacity + 0.2)} />
-      </mesh>
     </group>
   )
 }

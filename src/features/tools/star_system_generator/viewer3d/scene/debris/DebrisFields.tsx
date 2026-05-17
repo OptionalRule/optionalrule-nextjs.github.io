@@ -5,6 +5,7 @@ import { DebrisFieldShell } from './DebrisFieldShell'
 import { DebrisFieldStream } from './DebrisFieldStream'
 import { DebrisFieldHalo } from './DebrisFieldHalo'
 import { pickDebrisRenderer } from './pickDebris'
+import { debrisVisualProfile } from './debrisVisualProfile'
 import { OverlayMarker } from '../overlay/OverlayMarker'
 import type { DebrisFieldShape } from '../../../types'
 import type { DebrisFieldVisual } from '../../types'
@@ -48,7 +49,8 @@ export function DebrisFields({ fields, layerVisibility, qualityScale = 1 }: Debr
 
         const picked = pickDebrisRenderer({ shape, densityBand: v.field.densityBand.value })
         const color = COLOR_BY_SHAPE[shape]
-        const baseProps = { opacity: picked.visualParams.opacity, color, fieldId: v.field.id, qualityScale }
+        const profile = debrisVisualProfile(v)
+        const baseProps = { opacity: picked.visualParams.opacity, color, fieldId: v.field.id, qualityScale, profile }
         const glyphPos = glyphPositionFor(v)
 
         let renderer: React.ReactNode = null

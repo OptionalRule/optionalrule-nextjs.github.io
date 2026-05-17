@@ -95,16 +95,14 @@ declare global {
 import { DebrisFieldStream } from '../DebrisFieldStream'
 
 describe('DebrisFieldStream', () => {
-  it('renders a primitive line, dust sheath, and hot-spot mesh with default params', () => {
+  it('renders a primitive line and debris sheath with default params', () => {
     const { container } = render(
       <DebrisFieldStream
         fieldId="t1" startRadius={3} endRadius={8} centerAngleDeg={45}
         opacity={0.7} color="#88aaff"
       />
     )
-    expect(container.querySelector('primitive')).not.toBeNull()
-    expect(container.querySelector('mesh')).not.toBeNull()
-    expect(container.querySelector('primitive')).not.toBeNull()
+    expect(container.querySelectorAll('primitive').length).toBeGreaterThanOrEqual(2)
   })
 
   it('renders when start and end radius are equal (zero-length stream)', () => {
@@ -114,7 +112,6 @@ describe('DebrisFieldStream', () => {
         opacity={0.5} color="#ff8888"
       />
     )
-    expect(container.querySelector('primitive')).not.toBeNull()
-    expect(container.querySelector('mesh')).not.toBeNull()
+    expect(container.querySelectorAll('primitive').length).toBeGreaterThanOrEqual(2)
   })
 })

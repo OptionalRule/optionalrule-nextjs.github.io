@@ -4337,6 +4337,11 @@ export function generateSystem(options: GenerationOptions, knownSystem?: Partial
     rootRng.fork('debris'),
     { seed: options.seed, primary, companions },
     options,
+    {
+      architectureName: architectureResult.architecture.name.value,
+      habitableOuterAu: hz.outer,
+      snowLineAu: snowLine,
+    },
   )
   const phenomena = hasVolatileCompanion
     ? [buildBinaryContactPhenomenon(), ...generatedPhenomena, ...spawnedPhenomena]

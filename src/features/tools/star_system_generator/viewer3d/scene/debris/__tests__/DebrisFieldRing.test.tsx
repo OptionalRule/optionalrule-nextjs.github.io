@@ -7,7 +7,7 @@ vi.mock('three', () => {
   class BufferAttribute {
     constructor(public array: Float32Array, public itemSize: number) {}
   }
-  class SphereGeometry {}
+  class SphereGeometry { type = 'SphereGeometry'; dispose() {} }
   class PlaneGeometry {
     attributes = { position: {}, uv: {}, normal: {} }
     index = {}
@@ -81,7 +81,7 @@ vi.mock('@react-three/fiber', () => ({}))
 declare global {
   namespace JSX {
     interface IntrinsicElements {
-      mesh: React.HTMLAttributes<HTMLElement> & { geometry?: unknown; rotation?: unknown; position?: unknown }
+      mesh: React.HTMLAttributes<HTMLElement> & { geometry?: unknown; material?: unknown; rotation?: unknown; position?: unknown; scale?: unknown; renderOrder?: number; raycast?: unknown }
       group: React.HTMLAttributes<HTMLElement> & { rotation?: unknown }
       points: React.HTMLAttributes<HTMLElement> & { geometry?: unknown; material?: unknown; renderOrder?: number }
       primitive: React.HTMLAttributes<HTMLElement> & { object?: unknown; dispose?: unknown }

@@ -33,6 +33,10 @@ describe('deriveDebrisFields end-to-end', () => {
       const sys = generateSystem({ ...baseOptions, seed })
       for (const field of sys.debrisFields) {
         exercised++
+        if (field.companionId === null) {
+          expect(field.spawnedPhenomenonId, `${seed} ${field.id}`).toBeNull()
+          continue
+        }
         expect(field.spawnedPhenomenonId, `${seed} ${field.id}`).not.toBeNull()
         const phen = sys.phenomena.find(p => p.id === field.spawnedPhenomenonId)
         expect(phen, `${seed} ${field.id} phenomenon missing`).toBeDefined()
@@ -45,13 +49,13 @@ describe('deriveDebrisFields end-to-end', () => {
     expect(exercised, 'no debris fields generated across probe seeds').toBeGreaterThan(0)
   })
 
-  it('linked-independent companion alone produces zero debris fields', () => {
+  it('linked-independent companion alone produces no companion-linked debris fields', () => {
     for (let i = 0; i < 100; i++) {
       const sys = generateSystem({ ...baseOptions, seed: `debris-linked-${i}` })
       const hasNonLinked = sys.companions.some(c => c.mode !== 'linked-independent')
       const hasLinked = sys.companions.some(c => c.mode === 'linked-independent')
       if (hasLinked && !hasNonLinked) {
-        expect(sys.debrisFields.length).toBe(0)
+        expect(sys.debrisFields.filter((field) => field.companionId !== null).length).toBe(0)
         return
       }
     }

@@ -1,10 +1,13 @@
 'use client'
 
 import { useMemo } from 'react'
-import { hashToUnit } from '../../lib/motion'
 import { DustBillboards, type DustBillboard } from './dustBillboards'
 import { DebrisChunks, type ChunkPlacement } from './debrisChunks'
 import { hexToHsl, jitteredTint } from './tintUtils'
+import { defaultDebrisVisualProfile, type DebrisVisualProfile } from './debrisVisualProfile'
+import { sampleVolumeChunks, sampleVolumeDust } from './fieldSampling'
+import { DebrisVolumeFog } from './DebrisVolumeFog'
+import { debrisChunkBudget } from './chunkBudget'
 
 interface DebrisFieldHaloProps {
   fieldId?: string
@@ -16,85 +19,76 @@ interface DebrisFieldHaloProps {
   color: string
   chunkCount?: number
   qualityScale?: number
+  profile?: DebrisVisualProfile
 }
 
 export function DebrisFieldHalo(props: DebrisFieldHaloProps) {
   const fieldId = props.fieldId ?? `halo-${props.innerRadius}-${props.outerRadius}`
   const quality = props.qualityScale ?? 1
-  const dustCount = Math.max(0, Math.round(props.particleCount * quality))
-  const defaultChunks = Math.min(40, dustCount * 0.06)
-  const chunkCount = Math.max(6, Math.round((props.chunkCount ?? defaultChunks) * quality))
+  const profile = props.profile ?? defaultDebrisVisualProfile('kozai-scattered-halo', 'sparse')
+  const dustCount = Math.max(0, Math.round(props.particleCount * (0.75 + profile.clumpiness * 0.65) * quality))
+  const chunkCount = debrisChunkBudget({ kind: 'halo', profile, qualityScale: quality, explicitCount: props.chunkCount })
   const maxTiltRad = props.inclinationDeg * Math.PI / 180
   const meanRadius = (props.outerRadius + props.innerRadius) * 0.5
-  const baseSize = Math.max(0.12, meanRadius * 0.011)
+  const baseSize = Math.max(0.035, meanRadius * 0.006)
   const baseHsl = useMemo(() => hexToHsl(props.color), [props.color])
+  const flattenY = Math.max(0.35, Math.min(1, Math.sin(Math.max(maxTiltRad, Math.PI / 10)) * 0.95))
 
   const billboards = useMemo<DustBillboard[]>(() => {
-    const out: DustBillboard[] = []
-    for (let i = 0; i < dustCount; i++) {
-      const u = hashToUnit(`debris-halo-u#${fieldId}#${i}`)
-      const v = hashToUnit(`debris-halo-v#${fieldId}#${i}`)
-      const w = hashToUnit(`debris-halo-w#${fieldId}#${i}`)
-      const r = props.innerRadius + (props.outerRadius - props.innerRadius) * Math.pow(u, 0.8)
-      const phi = 2 * Math.PI * v
-      const tilt = (w - 0.5) * 2 * maxTiltRad
-      const sizeMul = 0.5 + Math.pow(hashToUnit(`debris-halo-size#${fieldId}#${i}`), 2.5) * 2.2
-      out.push({
-        position: [
-          r * Math.cos(phi) * Math.cos(tilt),
-          r * Math.sin(tilt),
-          r * Math.sin(phi) * Math.cos(tilt),
-        ],
-        scale: baseSize * sizeMul,
-        rotation: hashToUnit(`debris-halo-rot#${fieldId}#${i}`) * Math.PI * 2,
-        tint: jitteredTint(`debris-halo-tint#${fieldId}#${i}`, baseHsl),
-        spriteIndex: Math.floor(hashToUnit(`debris-halo-sprite#${fieldId}#${i}`) * 4),
-      })
-    }
-    return out
-  }, [fieldId, dustCount, props.innerRadius, props.outerRadius, maxTiltRad, baseSize, baseHsl])
+    return sampleVolumeDust({
+      fieldId,
+      count: dustCount,
+      innerRadius: props.innerRadius,
+      outerRadius: props.outerRadius,
+      maxTiltRad,
+      profile,
+      kind: 'dust',
+    }).map((sample, i) => {
+      const tint = jitteredTint(`debris-halo-tint#${fieldId}#${i}`, baseHsl)
+      return {
+        position: sample.position,
+        scale: baseSize * sample.sizeMul,
+        rotation: sample.rotation,
+        tint: [tint[0] * sample.tintHeat, tint[1] * sample.tintHeat, tint[2] * sample.tintHeat],
+        opacity: sample.opacity,
+        aspect: sample.aspect,
+        spriteIndex: sample.spriteIndex,
+      }
+    })
+  }, [fieldId, dustCount, props.innerRadius, props.outerRadius, maxTiltRad, baseSize, baseHsl, profile])
 
   const chunkPlacements = useMemo<ChunkPlacement[]>(() => {
-    const out: ChunkPlacement[] = []
-    for (let i = 0; i < chunkCount; i++) {
-      const u = hashToUnit(`debris-halo-chunk-u#${fieldId}#${i}`)
-      const v = hashToUnit(`debris-halo-chunk-v#${fieldId}#${i}`)
-      const w = hashToUnit(`debris-halo-chunk-w#${fieldId}#${i}`)
-      const r = props.innerRadius + (props.outerRadius - props.innerRadius) * u
-      const phi = 2 * Math.PI * v
-      const tilt = (w - 0.5) * 2 * maxTiltRad
-      const isHero = i < Math.min(2, Math.max(1, Math.round(chunkCount * 0.06)))
-      const sizeMul = isHero
-        ? 2.2 + hashToUnit(`debris-halo-hero-size#${fieldId}#${i}`) * 1.8
-        : 0.4 + Math.pow(hashToUnit(`debris-halo-chunk-size#${fieldId}#${i}`), 2.8) * 1.6
-      const chunkSize = sizeMul * Math.max(0.4, meanRadius * 0.05)
-      const brightness = 0.55 + hashToUnit(`debris-halo-chunk-bright#${fieldId}#${i}`) * 0.55
-      out.push({
-        position: [
-          r * Math.cos(phi) * Math.cos(tilt),
-          r * Math.sin(tilt),
-          r * Math.sin(phi) * Math.cos(tilt),
-        ],
-        scale: chunkSize,
-        rotation: [
-          hashToUnit(`debris-halo-chunk-rx#${fieldId}#${i}`) * Math.PI * 2,
-          hashToUnit(`debris-halo-chunk-ry#${fieldId}#${i}`) * Math.PI * 2,
-          hashToUnit(`debris-halo-chunk-rz#${fieldId}#${i}`) * Math.PI * 2,
-        ],
-        brightness,
-        stretch: [
-          0.55 + hashToUnit(`debris-halo-chunk-sx#${fieldId}#${i}`) * 0.95,
-          0.5 + hashToUnit(`debris-halo-chunk-sy#${fieldId}#${i}`) * 0.85,
-          0.55 + hashToUnit(`debris-halo-chunk-sz#${fieldId}#${i}`) * 1.05,
-        ],
-      })
-    }
-    return out
-  }, [fieldId, chunkCount, props.innerRadius, props.outerRadius, maxTiltRad, meanRadius])
+    return sampleVolumeChunks({
+      fieldId,
+      count: chunkCount,
+      innerRadius: props.innerRadius,
+      outerRadius: props.outerRadius,
+      maxTiltRad,
+      profile,
+      kind: 'chunk',
+    }).map((sample) => ({
+      position: sample.position,
+      scale: sample.sizeMul * Math.max(0.3, meanRadius * 0.045),
+      rotation: sample.rotation,
+      brightness: sample.brightness,
+      stretch: sample.stretch,
+    }))
+  }, [fieldId, chunkCount, props.innerRadius, props.outerRadius, maxTiltRad, meanRadius, profile])
 
   return (
     <group>
-      <DustBillboards fieldId={fieldId} color={props.color} opacity={Math.min(0.5, props.opacity * 0.4)} billboards={billboards} />
+      <DebrisVolumeFog
+        fieldId={fieldId}
+        mode="shell"
+        innerRadius={props.innerRadius * 0.9}
+        outerRadius={props.outerRadius * 1.08}
+        opacity={Math.min(0.32, props.opacity * profile.hazeOpacity)}
+        color={props.color}
+        profile={profile}
+        qualityScale={quality}
+        flattenY={flattenY}
+      />
+      <DustBillboards fieldId={fieldId} color={props.color} opacity={Math.min(0.46, props.opacity)} billboards={billboards} />
       <DebrisChunks fieldId={fieldId} color={props.color} placements={chunkPlacements} />
     </group>
   )

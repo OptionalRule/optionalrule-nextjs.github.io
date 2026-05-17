@@ -7,7 +7,7 @@ vi.mock('three', () => {
   class BufferAttribute {
     constructor(public array: Float32Array, public itemSize: number) {}
   }
-  class SphereGeometry {}
+  class SphereGeometry { type = 'SphereGeometry'; dispose() {} }
   class PlaneGeometry {
     attributes = { position: {}, uv: {}, normal: {} }
     index = {}
@@ -81,6 +81,7 @@ declare global {
   namespace JSX {
     interface IntrinsicElements {
       group: React.HTMLAttributes<HTMLElement>
+      mesh: React.HTMLAttributes<HTMLElement> & { geometry?: unknown; material?: unknown; position?: unknown; scale?: unknown; renderOrder?: number; raycast?: unknown }
       points: React.HTMLAttributes<HTMLElement> & { geometry?: unknown; material?: unknown; renderOrder?: number }
       primitive: React.HTMLAttributes<HTMLElement> & { object?: unknown; dispose?: unknown }
     }

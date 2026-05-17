@@ -7,7 +7,7 @@ vi.mock('three', () => {
   class BufferAttribute {
     constructor(public array: Float32Array, public itemSize: number) {}
   }
-  class SphereGeometry {}
+  class SphereGeometry { type = 'SphereGeometry'; dispose() {} }
   class PlaneGeometry {
     attributes = { position: {}, uv: {}, normal: {} }
     index = {}
@@ -87,7 +87,7 @@ vi.mock('../../overlay/OverlayMarker', () => ({
 declare global {
   namespace JSX {
     interface IntrinsicElements {
-      mesh: React.HTMLAttributes<HTMLElement> & { geometry?: unknown; rotation?: unknown; position?: unknown; scale?: unknown }
+      mesh: React.HTMLAttributes<HTMLElement> & { geometry?: unknown; material?: unknown; rotation?: unknown; position?: unknown; scale?: unknown; renderOrder?: number; raycast?: unknown }
       meshBasicMaterial: React.HTMLAttributes<HTMLElement> & { color?: string; transparent?: boolean; opacity?: number; side?: unknown }
       points: React.HTMLAttributes<HTMLElement> & { geometry?: unknown; material?: unknown; renderOrder?: number }
       pointsMaterial: React.HTMLAttributes<HTMLElement> & { color?: string; size?: number; sizeAttenuation?: boolean; transparent?: boolean; opacity?: number }

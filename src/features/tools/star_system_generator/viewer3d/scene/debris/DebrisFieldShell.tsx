@@ -1,10 +1,13 @@
 'use client'
 
 import { useMemo } from 'react'
-import { hashToUnit } from '../../lib/motion'
 import { DustBillboards, type DustBillboard } from './dustBillboards'
 import { DebrisChunks, type ChunkPlacement } from './debrisChunks'
 import { hexToHsl, jitteredTint } from './tintUtils'
+import { defaultDebrisVisualProfile, type DebrisVisualProfile } from './debrisVisualProfile'
+import { sampleVolumeChunks, sampleVolumeDust } from './fieldSampling'
+import { DebrisVolumeFog } from './DebrisVolumeFog'
+import { debrisChunkBudget } from './chunkBudget'
 
 interface DebrisFieldShellProps {
   fieldId?: string
@@ -15,77 +18,74 @@ interface DebrisFieldShellProps {
   color: string
   chunkCount?: number
   qualityScale?: number
+  profile?: DebrisVisualProfile
 }
 
 export function DebrisFieldShell(props: DebrisFieldShellProps) {
   const fieldId = props.fieldId ?? `shell-${props.innerRadius}-${props.outerRadius}`
   const quality = props.qualityScale ?? 1
-  const dustCount = Math.max(0, Math.round(props.particleCount * quality))
-  const defaultChunks = Math.min(15, dustCount * 0.04)
-  const chunkCount = Math.max(6, Math.round((props.chunkCount ?? defaultChunks) * quality))
+  const profile = props.profile ?? defaultDebrisVisualProfile('common-envelope-shell', 'shell-dense')
+  const dustCount = Math.max(0, Math.round(props.particleCount * (0.8 + profile.clumpiness * 0.6) * quality))
+  const chunkCount = debrisChunkBudget({ kind: 'shell', profile, qualityScale: quality, explicitCount: props.chunkCount })
   const meanRadius = (props.outerRadius + props.innerRadius) * 0.5
-  const baseSize = Math.max(0.12, meanRadius * 0.013)
+  const baseSize = Math.max(0.035, meanRadius * 0.0065)
   const baseHsl = useMemo(() => hexToHsl(props.color), [props.color])
 
   const billboards = useMemo<DustBillboard[]>(() => {
-    const out: DustBillboard[] = []
-    for (let i = 0; i < dustCount; i++) {
-      const u = hashToUnit(`debris-shell-u#${fieldId}#${i}`)
-      const v = hashToUnit(`debris-shell-v#${fieldId}#${i}`)
-      const w = hashToUnit(`debris-shell-w#${fieldId}#${i}`)
-      const rT = Math.pow(u, 0.7)
-      const r = props.innerRadius + (props.outerRadius - props.innerRadius) * rT
-      const theta = Math.acos(2 * v - 1)
-      const phi = 2 * Math.PI * w
-      const sizeMul = 0.5 + Math.pow(hashToUnit(`debris-shell-size#${fieldId}#${i}`), 2.5) * 2.2
-      out.push({
-        position: [r * Math.sin(theta) * Math.cos(phi), r * Math.cos(theta), r * Math.sin(theta) * Math.sin(phi)],
-        scale: baseSize * sizeMul,
-        rotation: hashToUnit(`debris-shell-rot#${fieldId}#${i}`) * Math.PI * 2,
-        tint: jitteredTint(`debris-shell-tint#${fieldId}#${i}`, baseHsl),
-        spriteIndex: Math.floor(hashToUnit(`debris-shell-sprite#${fieldId}#${i}`) * 4),
-      })
-    }
-    return out
-  }, [fieldId, dustCount, props.innerRadius, props.outerRadius, baseSize, baseHsl])
+    return sampleVolumeDust({
+      fieldId,
+      count: dustCount,
+      innerRadius: props.innerRadius,
+      outerRadius: props.outerRadius,
+      profile,
+      kind: 'dust',
+      shell: true,
+    }).map((sample, i) => {
+      const tint = jitteredTint(`debris-shell-tint#${fieldId}#${i}`, baseHsl)
+      return {
+        position: sample.position,
+        scale: baseSize * sample.sizeMul,
+        rotation: sample.rotation,
+        tint: [tint[0] * sample.tintHeat, tint[1] * sample.tintHeat, tint[2] * sample.tintHeat],
+        opacity: sample.opacity,
+        aspect: sample.aspect,
+        spriteIndex: sample.spriteIndex,
+      }
+    })
+  }, [fieldId, dustCount, props.innerRadius, props.outerRadius, baseSize, baseHsl, profile])
 
   const chunkPlacements = useMemo<ChunkPlacement[]>(() => {
-    const out: ChunkPlacement[] = []
-    for (let i = 0; i < chunkCount; i++) {
-      const u = hashToUnit(`debris-shell-chunk-u#${fieldId}#${i}`)
-      const v = hashToUnit(`debris-shell-chunk-v#${fieldId}#${i}`)
-      const w = hashToUnit(`debris-shell-chunk-w#${fieldId}#${i}`)
-      const r = props.innerRadius + (props.outerRadius - props.innerRadius) * u
-      const theta = Math.acos(2 * v - 1)
-      const phi = 2 * Math.PI * w
-      const isHero = i < Math.min(2, Math.max(1, Math.round(chunkCount * 0.08)))
-      const sizeMul = isHero
-        ? 2.2 + hashToUnit(`debris-shell-hero-size#${fieldId}#${i}`) * 1.8
-        : 0.4 + Math.pow(hashToUnit(`debris-shell-chunk-size#${fieldId}#${i}`), 2.8) * 1.6
-      const chunkSize = sizeMul * Math.max(0.4, meanRadius * 0.05)
-      const brightness = 0.55 + hashToUnit(`debris-shell-chunk-bright#${fieldId}#${i}`) * 0.55
-      out.push({
-        position: [r * Math.sin(theta) * Math.cos(phi), r * Math.cos(theta), r * Math.sin(theta) * Math.sin(phi)],
-        scale: chunkSize,
-        rotation: [
-          hashToUnit(`debris-shell-chunk-rx#${fieldId}#${i}`) * Math.PI * 2,
-          hashToUnit(`debris-shell-chunk-ry#${fieldId}#${i}`) * Math.PI * 2,
-          hashToUnit(`debris-shell-chunk-rz#${fieldId}#${i}`) * Math.PI * 2,
-        ],
-        brightness,
-        stretch: [
-          0.55 + hashToUnit(`debris-shell-chunk-sx#${fieldId}#${i}`) * 0.95,
-          0.5 + hashToUnit(`debris-shell-chunk-sy#${fieldId}#${i}`) * 0.85,
-          0.55 + hashToUnit(`debris-shell-chunk-sz#${fieldId}#${i}`) * 1.05,
-        ],
-      })
-    }
-    return out
-  }, [fieldId, chunkCount, props.innerRadius, props.outerRadius, meanRadius])
+    return sampleVolumeChunks({
+      fieldId,
+      count: chunkCount,
+      innerRadius: props.innerRadius,
+      outerRadius: props.outerRadius,
+      profile,
+      kind: 'chunk',
+      shell: true,
+    }).map((sample) => ({
+      position: sample.position,
+      scale: sample.sizeMul * Math.max(0.34, meanRadius * 0.05),
+      rotation: sample.rotation,
+      brightness: sample.brightness,
+      stretch: sample.stretch,
+    }))
+  }, [fieldId, chunkCount, props.innerRadius, props.outerRadius, meanRadius, profile])
 
   return (
     <group>
-      <DustBillboards fieldId={fieldId} color={props.color} opacity={Math.min(0.5, props.opacity * 0.4)} billboards={billboards} />
+      <DebrisVolumeFog
+        fieldId={fieldId}
+        mode="shell"
+        innerRadius={props.innerRadius * 0.88}
+        outerRadius={props.outerRadius * 1.12}
+        opacity={Math.min(0.36, props.opacity * profile.hazeOpacity)}
+        color={props.color}
+        profile={profile}
+        qualityScale={quality}
+        flattenY={1}
+      />
+      <DustBillboards fieldId={fieldId} color={props.color} opacity={Math.min(0.48, props.opacity)} billboards={billboards} />
       <DebrisChunks fieldId={fieldId} color={props.color} placements={chunkPlacements} />
     </group>
   )

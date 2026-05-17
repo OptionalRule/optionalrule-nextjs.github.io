@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest'
-import { selectArchetypeForCompanion } from '../lib/generator/debrisFields'
+import { deriveDebrisFields, selectArchetypeForCompanion } from '../lib/generator/debrisFields'
 import { fact } from '../lib/generator'
+import { createSeededRng } from '../lib/generator/rng'
 import type { StellarCompanion, Star } from '../types'
 
 function fakeStar(massSolar: number, activity: string = 'Quiet', ageState: string = 'Mature'): Star {
@@ -84,8 +85,8 @@ describe('selectArchetypeForCompanion eligibility', () => {
   it('volatile + evolved primary can select accretion-bridge or common-envelope-shell', () => {
     const seen = new Set<string>()
     for (let i = 0; i < 60; i++) {
-      const c = fakeCompanion('volatile', 'Contact / near-contact', 0.5, 'Quiet', 'companion-1', 'Evolved')
-      const primary = fakeStar(1.0, 'Quiet', 'Evolved')
+      const c = fakeCompanion('volatile', 'Contact / near-contact', 0.5, 'Quiet', 'companion-1', 'Very old')
+      const primary = fakeStar(1.0, 'Quiet', 'Very old')
       const r = selectArchetypeForCompanion({ seed: `eligibility-evolved-${i}` }, c, primary, { hierarchicalTriple: false })
       if (r) seen.add(r.shape)
     }
@@ -96,12 +97,27 @@ describe('selectArchetypeForCompanion eligibility', () => {
   it('circumbinary + aging primary can select common-envelope-shell', () => {
     const seen = new Set<string>()
     for (let i = 0; i < 60; i++) {
-      const c = fakeCompanion('circumbinary', 'Tight binary', 0.5, 'Quiet', 'companion-1', 'Aging')
-      const primary = fakeStar(1.0, 'Quiet', 'Aging')
+      const c = fakeCompanion('circumbinary', 'Tight binary', 0.5, 'Quiet', 'companion-1', 'Old')
+      const primary = fakeStar(1.0, 'Quiet', 'Old')
       const r = selectArchetypeForCompanion({ seed: `eligibility-aging-${i}` }, c, primary, { hierarchicalTriple: false })
       if (r) seen.add(r.shape)
     }
     expect(seen.has('common-envelope-shell'), 'common-envelope-shell must be reachable').toBe(true)
+  })
+
+  it('young systems can produce a system-origin debris field without companions', () => {
+    const result = deriveDebrisFields(
+      createSeededRng('system-origin-debris'),
+      { seed: 'system-origin-debris', primary: fakeStar(1.0, 'Quiet', 'Young'), companions: [] },
+      { seed: 'system-origin-debris', distribution: 'frontier', tone: 'balanced', gu: 'normal', settlements: 'normal' },
+      { architectureName: 'Debris-dominated', habitableOuterAu: 1.8, snowLineAu: 4.5 },
+    )
+
+    const field = result.debrisFields.find((d) => d.companionId === null)
+    expect(field).toBeDefined()
+    expect(field?.anchorMode.value).toBe('transient-only')
+    expect(field?.spawnedPhenomenonId).toBeNull()
+    expect(result.spawnedPhenomena.length).toBe(0)
   })
 
   it('gardener-cordon is reachable at the ~3% base rate across companion modes', () => {
