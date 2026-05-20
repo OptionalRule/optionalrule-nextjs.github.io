@@ -32,7 +32,8 @@
       "WebFetch(domain:devblogs.microsoft.com)",
       "WebFetch(domain:gist.github.com)",
       "Bash(git push *)",
-      "Bash(git branch *)"
+      "Bash(git branch *)",
+      "Bash(npm audit *)"
     ],
     "deny": [],
     "ask": [],
