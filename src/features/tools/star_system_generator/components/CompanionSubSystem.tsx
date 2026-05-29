@@ -15,6 +15,8 @@ export function CompanionSubSystem({ system: _system, companion }: CompanionSubS
   const sub = companion.subSystem
   if (!sub) return null
 
+  const detailId = `companion-${companion.id}-detail`
+
   const bodyCount = sub.bodies.length
   const settlementCount = sub.settlements.length
   const gateCount = sub.gates.length
@@ -26,6 +28,7 @@ export function CompanionSubSystem({ system: _system, companion }: CompanionSubS
         onClick={() => setExpanded((e) => !e)}
         className="flex w-full items-center justify-between text-left"
         aria-expanded={expanded}
+        aria-controls={detailId}
       >
         <div>
           <h2 className="text-base font-semibold text-[var(--text-primary)]">
@@ -43,7 +46,7 @@ export function CompanionSubSystem({ system: _system, companion }: CompanionSubS
       </button>
 
       {expanded ? (
-        <div className="mt-3 space-y-2 text-sm text-[var(--text-secondary)]">
+        <div id={detailId} className="mt-3 space-y-2 text-sm text-[var(--text-secondary)]">
           <p>
             Mass {companion.star.massSolar.value} M☉ · Luminosity {companion.star.luminositySolar.value} L☉ · Age{' '}
             {companion.star.ageState.value}
