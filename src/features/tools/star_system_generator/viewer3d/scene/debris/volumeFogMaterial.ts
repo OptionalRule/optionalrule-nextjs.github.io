@@ -16,7 +16,12 @@ void main() {
 }
 `
 
-const fragmentShader = /* glsl */ `
+// Shared uniform/varying declarations and noise helpers. The disk and shell mains
+// were previously a single shader gated per-fragment on a uMode uniform; splitting
+// them removes that branch (and, for each mode, the other mode's dead code: the
+// rim/view term for disk and the radial length()/edge-fade for shell) at no visual
+// cost — every value the branch produced is reproduced exactly below.
+const fragmentHeader = /* glsl */ `
 uniform vec3 uColorInner;
 uniform vec3 uColorOuter;
 uniform float uOpacity;
@@ -26,7 +31,6 @@ uniform float uChaos;
 uniform float uClumpiness;
 uniform float uFilamentCount;
 uniform float uLayerT;
-uniform float uMode;
 uniform float uNoiseScale;
 uniform float uSeed;
 uniform float uEdgeFade;
@@ -77,12 +81,14 @@ float radialEdgeFade(float t) {
   float w = max(uEdgeFade, 0.001);
   return smoothstep(0.0, w, t) * (1.0 - smoothstep(1.0 - w, 1.0, t));
 }
+`
 
+const diskFragmentShader = /* glsl */ `
+${fragmentHeader}
 void main() {
   float radialDistance = length(vLocalPos.xy);
   float radialT = (radialDistance - uInnerRadius) / max(uOuterRadius - uInnerRadius, 0.001);
-  if (uMode < 0.5 && (radialT < 0.0 || radialT > 1.0)) discard;
-  if (uMode > 0.5) radialT = uLayerT;
+  if (radialT < 0.0 || radialT > 1.0) discard;
 
   float layerDistance = abs(uLayerT * 2.0 - 1.0);
   float angle = atan(vLocalPos.y, vLocalPos.x);
@@ -102,15 +108,52 @@ void main() {
   float tornMask = smoothstep(0.34 - uChaos * 0.1, 0.88, tearNoise + filamentDensity * 0.18);
   float clumpMask = smoothstep(0.38 - uClumpiness * 0.12, 0.94, fogNoise + warpB * 0.42);
 
-  float radialMask = pow(max(sin(clamp(radialT, 0.0, 1.0) * 3.14159), 0.0), mix(0.6, 0.42, uMode));
-  if (uMode < 0.5) radialMask *= radialEdgeFade(radialT);
-  float layerMask = uMode < 0.5
-    ? 0.34 + pow(max(1.0 - layerDistance, 0.0), 0.55) * 0.86
-    : 1.0;
+  float radialMask = pow(max(sin(clamp(radialT, 0.0, 1.0) * 3.14159), 0.0), 0.6);
+  radialMask *= radialEdgeFade(radialT);
+  float layerMask = 0.34 + pow(max(1.0 - layerDistance, 0.0), 0.55) * 0.86;
+  float viewMask = 1.0;
+
+  float chaoticDensity = mix(cloudDensity, max(cloudDensity, filamentDensity), clamp(uChaos * 0.72, 0.0, 1.0));
+  float density = radialMask * layerMask * viewMask * chaoticDensity * voidMask;
+  density *= mix(1.0, tornMask * clumpMask, clamp(uChaos * 0.88, 0.0, 1.0));
+  density *= mix(0.62, 1.18, uClumpiness);
+  if (density < 0.01) discard;
+
+  vec3 col = mix(uColorInner, uColorOuter, clamp(radialT, 0.0, 1.0));
+  col *= 0.58 + cloudDensity * 0.55 + filamentDensity * 0.16;
+  gl_FragColor = vec4(col, density * uOpacity);
+}
+`
+
+const shellFragmentShader = /* glsl */ `
+${fragmentHeader}
+void main() {
+  float radialT = uLayerT;
+
+  float layerDistance = abs(uLayerT * 2.0 - 1.0);
+  float angle = atan(vLocalPos.y, vLocalPos.x);
+  vec3 noisePos = vWorldPos * uNoiseScale + vec3(uSeed * 0.013, uSeed * 0.021, uSeed * 0.034);
+
+  float warpA = fbm3(noisePos * 0.72);
+  float warpB = fbm3(noisePos * (1.45 + uChaos * 0.65) + vec3(warpA * 2.4, -warpA * 1.7, warpA));
+  float fogNoise = fbm3(noisePos * (2.2 + uChaos) + warpB * 3.0);
+  float cloudDensity = smoothstep(0.28 - uChaos * 0.12, 0.9, warpB * 0.65 + fogNoise * 0.55);
+
+  float voidNoise = fbm3(noisePos * (3.7 + uChaos * 1.2) - warpB * 2.2);
+  float voidMask = smoothstep(0.16 + uChaos * 0.16, 0.98, voidNoise + cloudDensity * 0.22);
+
+  float filamentWave = sin(angle * max(1.0, uFilamentCount) + radialT * (8.0 + uChaos * 9.0) + warpA * 6.0 + uLayerT * 4.0);
+  float filamentDensity = smoothstep(0.54 - uChaos * 0.16, 1.0, filamentWave * 0.5 + 0.5);
+  float tearNoise = fbm3(vec3(angle * 0.8, radialT * 4.2, uLayerT * 2.7) + vec3(warpA * 2.0, warpB, uSeed * 0.01));
+  float tornMask = smoothstep(0.34 - uChaos * 0.1, 0.88, tearNoise + filamentDensity * 0.18);
+  float clumpMask = smoothstep(0.38 - uClumpiness * 0.12, 0.94, fogNoise + warpB * 0.42);
+
+  float radialMask = pow(max(sin(clamp(radialT, 0.0, 1.0) * 3.14159), 0.0), 0.42);
+  float layerMask = 1.0;
 
   vec3 viewDir = normalize(cameraPosition - vWorldPos);
   float rimDensity = pow(1.0 - abs(dot(normalize(vWorldNormal), viewDir)), 0.72);
-  float viewMask = uMode < 0.5 ? 1.0 : 0.24 + rimDensity * 0.82;
+  float viewMask = 0.24 + rimDensity * 0.82;
 
   float chaoticDensity = mix(cloudDensity, max(cloudDensity, filamentDensity), clamp(uChaos * 0.72, 0.0, 1.0));
   float density = radialMask * layerMask * viewMask * chaoticDensity * voidMask;
@@ -152,13 +195,12 @@ export function makeVolumeFogMaterial(opts: {
       uClumpiness: { value: opts.clumpiness },
       uFilamentCount: { value: opts.filamentCount },
       uLayerT: { value: opts.layerT },
-      uMode: { value: opts.mode === 'disk' ? 0 : 1 },
       uNoiseScale: { value: noiseScale },
       uSeed: { value: opts.seed },
       uEdgeFade: { value: opts.mode === 'disk' ? 0.24 : 0.01 },
     },
     vertexShader,
-    fragmentShader,
+    fragmentShader: opts.mode === 'disk' ? diskFragmentShader : shellFragmentShader,
     transparent: true,
     depthWrite: false,
     side: THREE.DoubleSide,
