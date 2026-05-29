@@ -94,7 +94,7 @@ export function DebrisFieldRing(props: DebrisFieldRingProps) {
     })
     return samples.map((sample) => ({
       position: sample.position,
-      scale: sample.sizeMul * Math.max(0.32, meanRadius * 0.048),
+      scale: sample.sizeMul * Math.min(0.42, Math.max(0.3, meanRadius * 0.048)),
       rotation: sample.rotation,
       brightness: sample.brightness,
       stretch: sample.stretch,

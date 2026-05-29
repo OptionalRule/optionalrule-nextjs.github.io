@@ -67,7 +67,7 @@ export function DebrisFieldShell(props: DebrisFieldShellProps) {
       shell: true,
     }).map((sample) => ({
       position: sample.position,
-      scale: sample.sizeMul * Math.max(0.34, meanRadius * 0.05),
+      scale: sample.sizeMul * Math.min(0.44, Math.max(0.3, meanRadius * 0.05)),
       rotation: sample.rotation,
       brightness: sample.brightness,
       stretch: sample.stretch,

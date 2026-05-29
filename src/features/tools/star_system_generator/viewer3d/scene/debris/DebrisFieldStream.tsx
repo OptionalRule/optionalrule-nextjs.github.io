@@ -104,7 +104,7 @@ export function DebrisFieldStream(props: DebrisFieldStreamProps) {
       kind: 'chunk',
     }).map((sample) => ({
       position: sample.position,
-      scale: sample.sizeMul * Math.max(0.18, sheathRadius * 0.2),
+      scale: sample.sizeMul * Math.min(0.4, Math.max(0.18, sheathRadius * 0.2)),
       rotation: sample.rotation,
       brightness: sample.brightness,
       stretch: sample.stretch,

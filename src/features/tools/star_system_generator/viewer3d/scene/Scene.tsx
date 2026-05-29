@@ -1,6 +1,7 @@
 'use client'
 
 import { Fragment, useState } from 'react'
+import * as THREE from 'three'
 import { Canvas } from '@react-three/fiber'
 import { AdaptiveDpr, AdaptiveEvents, Html, PerformanceMonitor } from '@react-three/drei'
 import type { GeneratedSystem } from '../../types'
@@ -13,6 +14,7 @@ import { Body } from './Body'
 import { Belt } from './Belt'
 import { BeltSettlements } from './BeltSettlements'
 import { Starfield } from './Starfield'
+import { Nebula } from './Nebula'
 import { HazardVolume } from './HazardVolume'
 import { GuBleedVolume } from './GuBleedVolume'
 import { RuinPins } from './MarkerInstances'
@@ -24,6 +26,7 @@ import { WebGLFallback } from '../chrome/WebGLFallback'
 import { invisibleHitMaterial, starSphereGeometry } from './renderAssets'
 import { buildSeedHref } from '../../lib/seedUrl'
 import { DebrisFields } from './debris/DebrisFields'
+import { PostFx } from './PostFx'
 
 function detectWebGL(): boolean {
   try {
@@ -45,6 +48,11 @@ export function Scene({ graph, system }: SceneProps) {
   const prefersReducedMotion = usePrefersReducedMotion()
   const [supported] = useState<boolean>(() => typeof document === 'undefined' ? true : detectWebGL())
   const [qualityScale, setQualityScale] = useState(1)
+  // Rich post-processing (bloom + nebula) starts on and degrades ONE-WAY: the first
+  // time PerformanceMonitor reports a hard fallback we shed it permanently for the
+  // session. This avoids the flicker/stutter that came from mounting, unmounting, or
+  // rebuilding the EffectComposer every time the monitor hunts the framerate target.
+  const [richFx, setRichFx] = useState(true)
   if (!supported) {
     return <WebGLFallback onClose={() => window.dispatchEvent(new CustomEvent('viewer3d:close'))} />
   }
@@ -56,7 +64,7 @@ export function Scene({ graph, system }: SceneProps) {
       frameloop={prefersReducedMotion ? 'demand' : 'always'}
       performance={{ min: 0.5, max: 1, debounce: 300 }}
       camera={{ fov: 45, near: 0.1, far: graph.sceneRadius * 12, position: [0, graph.sceneRadius * 0.35, graph.sceneRadius * 0.95] }}
-      gl={{ antialias: true, alpha: false }}
+      gl={{ antialias: true, alpha: false, toneMapping: THREE.ACESFilmicToneMapping, toneMappingExposure: 1.1 }}
       style={{
         background:
           'radial-gradient(ellipse at 30% 20%, rgba(60, 40, 90, 0.18) 0%, transparent 55%),' +
@@ -64,10 +72,11 @@ export function Scene({ graph, system }: SceneProps) {
           'radial-gradient(ellipse at center, #142036 0%, #0a1426 45%, #060a18 100%)',
       }}
     >
+      <color attach="background" args={['#05080f']} />
       <PerformanceMonitor
         onDecline={() => setQualityScale(0.68)}
         onIncline={() => setQualityScale(1)}
-        onFallback={() => setQualityScale(0.5)}
+        onFallback={() => { setQualityScale(0.5); setRichFx(false) }}
       />
       <AdaptiveDpr />
       <AdaptiveEvents />
@@ -79,6 +88,7 @@ export function Scene({ graph, system }: SceneProps) {
         distance={graph.sceneRadius * 4}
         decay={0.6}
       />
+      {richFx ? <Nebula sceneRadius={graph.sceneRadius} /> : null}
       <Starfield
         radius={graph.sceneRadius * 5}
         count={Math.round(8500 * qualityScale)}
@@ -192,6 +202,7 @@ export function Scene({ graph, system }: SceneProps) {
       ))}
       <HoverTooltip graph={graph} system={system} />
       <BodyDetailCard graph={graph} system={system} />
+      {richFx ? <PostFx /> : null}
     </Canvas>
   )
 }

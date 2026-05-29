@@ -72,8 +72,11 @@ describe('debris field sampling', () => {
     })
 
     const sizes = chunks.map((sample) => sample.sizeMul)
-    expect(Math.max(...sizes)).toBeGreaterThan(3)
-    expect(sizes.filter((size) => size > 1.2).length).toBeGreaterThan(28)
+    // Hero boulders stay prominent relative to the field, but the multiplier is
+    // capped so that — after the absolute world-size clamp in DebrisField*.tsx —
+    // no chunk ever reaches planet scale.
+    expect(Math.max(...sizes)).toBeGreaterThan(1.8)
+    expect(sizes.filter((size) => size > 1.2).length).toBeGreaterThan(12)
   })
 
   it('fades ring dust opacity toward inner and outer radial edges', () => {

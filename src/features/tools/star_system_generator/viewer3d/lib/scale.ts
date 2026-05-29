@@ -18,16 +18,19 @@ export function schematicOrbitRadius(index: number): number {
   return ORBIT_MIN_OFFSET + (index + 1) * 8
 }
 
+// Visual radii are capped well below the smallest star core (see STAR_MIN_CORE_RADIUS
+// in stellarColor.ts) so a planet can never out-size its host star on screen, while
+// the gas-giant → dwarf ordering stays clearly legible.
 const VISUAL_SIZE_BY_CATEGORY: Record<BodyCategory, number> = {
-  'gas-giant': 2.4,
-  'ice-giant': 2.0,
-  'sub-neptune': 1.4,
-  'super-earth': 1.1,
-  'rocky-planet': 0.85,
-  'dwarf-body': 0.6,
-  'rogue-captured': 0.75,
-  belt: 0.55,
-  anomaly: 0.95,
+  'gas-giant': 1.45,
+  'ice-giant': 1.2,
+  'sub-neptune': 0.92,
+  'super-earth': 0.78,
+  'rocky-planet': 0.6,
+  'dwarf-body': 0.42,
+  'rogue-captured': 0.55,
+  belt: 0.42,
+  anomaly: 0.7,
 }
 
 const REFERENCE_RADIUS_EARTH_BY_CATEGORY: Record<BodyCategory, number> = {
@@ -43,15 +46,15 @@ const REFERENCE_RADIUS_EARTH_BY_CATEGORY: Record<BodyCategory, number> = {
 }
 
 const VISUAL_SIZE_CLAMP_BY_CATEGORY: Record<BodyCategory, [number, number]> = {
-  'gas-giant': [1.9, 3.0],
-  'ice-giant': [1.45, 2.3],
-  'sub-neptune': [1.15, 1.8],
-  'super-earth': [0.85, 1.35],
-  'rocky-planet': [0.38, 0.98],
-  'dwarf-body': [0.22, 0.5],
-  'rogue-captured': [0.5, 1.35],
-  belt: [0.35, 0.55],
-  anomaly: [0.65, 1.45],
+  'gas-giant': [1.15, 1.55],
+  'ice-giant': [0.95, 1.35],
+  'sub-neptune': [0.78, 1.1],
+  'super-earth': [0.62, 0.95],
+  'rocky-planet': [0.34, 0.72],
+  'dwarf-body': [0.2, 0.52],
+  'rogue-captured': [0.4, 0.95],
+  belt: [0.3, 0.5],
+  anomaly: [0.5, 1.0],
 }
 
 export function clamp(value: number, min: number, max: number): number {
