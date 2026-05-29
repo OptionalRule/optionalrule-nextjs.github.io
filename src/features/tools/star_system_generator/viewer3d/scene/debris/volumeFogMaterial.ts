@@ -99,14 +99,8 @@ void main() {
   float fogNoise = fbm3(noisePos * (2.2 + uChaos) + warpB * 3.0);
   float cloudDensity = smoothstep(0.28 - uChaos * 0.12, 0.9, warpB * 0.65 + fogNoise * 0.55);
 
-  float voidNoise = fbm3(noisePos * (3.7 + uChaos * 1.2) - warpB * 2.2);
-  float voidMask = smoothstep(0.16 + uChaos * 0.16, 0.98, voidNoise + cloudDensity * 0.22);
-
   float filamentWave = sin(angle * max(1.0, uFilamentCount) + radialT * (8.0 + uChaos * 9.0) + warpA * 6.0 + uLayerT * 4.0);
   float filamentDensity = smoothstep(0.54 - uChaos * 0.16, 1.0, filamentWave * 0.5 + 0.5);
-  float tearNoise = fbm3(vec3(angle * 0.8, radialT * 4.2, uLayerT * 2.7) + vec3(warpA * 2.0, warpB, uSeed * 0.01));
-  float tornMask = smoothstep(0.34 - uChaos * 0.1, 0.88, tearNoise + filamentDensity * 0.18);
-  float clumpMask = smoothstep(0.38 - uClumpiness * 0.12, 0.94, fogNoise + warpB * 0.42);
 
   float radialMask = pow(max(sin(clamp(radialT, 0.0, 1.0) * 3.14159), 0.0), 0.6);
   radialMask *= radialEdgeFade(radialT);
@@ -114,9 +108,24 @@ void main() {
   float viewMask = 1.0;
 
   float chaoticDensity = mix(cloudDensity, max(cloudDensity, filamentDensity), clamp(uChaos * 0.72, 0.0, 1.0));
+
+  // Lossless early-out before the final two fbm3 stacks (same upper bound as the
+  // shell path): voidMask and the torn*clump mix are both in [0,1] and the
+  // clumpiness gain is reused verbatim, so this product bounds the final density.
+  // Fog gaps (low chaoticDensity) and faded edges bail here, skipping voidNoise
+  // and tearNoise with byte-identical output.
+  float clumpinessGain = mix(0.62, 1.18, uClumpiness);
+  if (radialMask * layerMask * viewMask * chaoticDensity * clumpinessGain < 0.01) discard;
+
+  float voidNoise = fbm3(noisePos * (3.7 + uChaos * 1.2) - warpB * 2.2);
+  float voidMask = smoothstep(0.16 + uChaos * 0.16, 0.98, voidNoise + cloudDensity * 0.22);
+  float tearNoise = fbm3(vec3(angle * 0.8, radialT * 4.2, uLayerT * 2.7) + vec3(warpA * 2.0, warpB, uSeed * 0.01));
+  float tornMask = smoothstep(0.34 - uChaos * 0.1, 0.88, tearNoise + filamentDensity * 0.18);
+  float clumpMask = smoothstep(0.38 - uClumpiness * 0.12, 0.94, fogNoise + warpB * 0.42);
+
   float density = radialMask * layerMask * viewMask * chaoticDensity * voidMask;
   density *= mix(1.0, tornMask * clumpMask, clamp(uChaos * 0.88, 0.0, 1.0));
-  density *= mix(0.62, 1.18, uClumpiness);
+  density *= clumpinessGain;
   if (density < 0.01) discard;
 
   vec3 col = mix(uColorInner, uColorOuter, clamp(radialT, 0.0, 1.0));
