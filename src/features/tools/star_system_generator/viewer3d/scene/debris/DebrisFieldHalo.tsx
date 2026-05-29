@@ -70,7 +70,7 @@ export function DebrisFieldHalo(props: DebrisFieldHaloProps) {
       kind: 'chunk',
     }).map((sample) => ({
       position: sample.position,
-      scale: sample.sizeMul * Math.max(0.3, meanRadius * 0.045),
+      scale: sample.sizeMul * Math.min(0.42, Math.max(0.28, meanRadius * 0.045)),
       rotation: sample.rotation,
       brightness: sample.brightness,
       stretch: sample.stretch,

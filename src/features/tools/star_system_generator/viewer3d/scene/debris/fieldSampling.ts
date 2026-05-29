@@ -197,12 +197,15 @@ function dustSprite(fieldId: string, index: number, profile: DebrisVisualProfile
 }
 
 function chunkSize(fieldId: string, index: number, profile: DebrisVisualProfile, tag: string, inKnot: boolean): number {
+  // "Hero" chunks are the largest boulders in a field, but kept well below planet
+  // scale — combined with the absolute world-size cap in each field component, even
+  // these read as rubble, never as a body. See DebrisField*.tsx scale clamps.
   const hero = index < Math.max(1, Math.round(knotCount(profile) * 0.18))
   const base = hero
-    ? 1.95 + hashToUnit(`${tag}-hero-size#${fieldId}#${index}`) * (1.8 + profile.chaos)
-    : 0.52
-      + hashToUnit(`${tag}-chunk-fill-size#${fieldId}#${index}`) * 0.58
-      + heavyTail(`${tag}-chunk-size#${fieldId}#${index}`, 2.2) * (1.4 + profile.chaos * 1.2)
+    ? 1.05 + hashToUnit(`${tag}-hero-size#${fieldId}#${index}`) * (0.65 + profile.chaos * 0.4)
+    : 0.3
+      + hashToUnit(`${tag}-chunk-fill-size#${fieldId}#${index}`) * 0.35
+      + heavyTail(`${tag}-chunk-size#${fieldId}#${index}`, 2.2) * (0.6 + profile.chaos * 0.5)
   return base * profile.chunkScale * (inKnot ? 1.18 : 1)
 }
 
