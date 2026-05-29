@@ -89,14 +89,17 @@ export function Body({ body }: BodyProps) {
     return (0.055 + jitter * 0.11) * direction
   }, [body.id])
   const hitScale = Math.max(body.visualSize * 1.38, Math.min(1.1, body.visualSize + 0.55))
+  // The highlight mesh below only mounts while hovered, so the material is always
+  // rendered at its visible opacity — create it once instead of reallocating (and
+  // disposing) a new material on every hover enter/leave.
   const highlightMaterial = useMemo(() => new THREE.MeshBasicMaterial({
     color: '#8fd6ff',
     transparent: true,
-    opacity: isHovered ? 0.24 : 0,
+    opacity: 0.24,
     wireframe: true,
     depthWrite: false,
     toneMapped: false,
-  }), [isHovered])
+  }), [])
 
   useEffect(() => {
     const dict = window as Window & {
