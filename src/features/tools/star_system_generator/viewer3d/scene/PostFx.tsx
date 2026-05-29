@@ -1,6 +1,6 @@
 'use client'
 
-import { EffectComposer, Bloom } from '@react-three/postprocessing'
+import { EffectComposer, Bloom, Vignette } from '@react-three/postprocessing'
 
 export interface PostFxProps {
   /**
@@ -27,6 +27,7 @@ export function PostFx({ qualityScale }: PostFxProps) {
         radius={0.72}
         mipmapBlur
       />
+      <Vignette offset={0.28} darkness={0.62} eskil={false} />
     </EffectComposer>
   )
 }

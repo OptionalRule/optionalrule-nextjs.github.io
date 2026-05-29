@@ -14,6 +14,7 @@ import { Body } from './Body'
 import { Belt } from './Belt'
 import { BeltSettlements } from './BeltSettlements'
 import { Starfield } from './Starfield'
+import { Nebula } from './Nebula'
 import { HazardVolume } from './HazardVolume'
 import { GuBleedVolume } from './GuBleedVolume'
 import { RuinPins } from './MarkerInstances'
@@ -66,6 +67,7 @@ export function Scene({ graph, system }: SceneProps) {
           'radial-gradient(ellipse at center, #142036 0%, #0a1426 45%, #060a18 100%)',
       }}
     >
+      <color attach="background" args={['#05080f']} />
       <PerformanceMonitor
         onDecline={() => setQualityScale(0.68)}
         onIncline={() => setQualityScale(1)}
@@ -81,6 +83,7 @@ export function Scene({ graph, system }: SceneProps) {
         distance={graph.sceneRadius * 4}
         decay={0.6}
       />
+      <Nebula sceneRadius={graph.sceneRadius} />
       <Starfield
         radius={graph.sceneRadius * 5}
         count={Math.round(8500 * qualityScale)}
