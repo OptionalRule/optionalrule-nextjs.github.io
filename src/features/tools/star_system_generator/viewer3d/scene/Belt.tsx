@@ -157,6 +157,8 @@ export function Belt({ belt }: BeltProps) {
       } else {
         object.material.dispose()
       }
+      object.instanceMatrix.dispose()
+      object.instanceColor?.dispose()
     })
   }, [instancedGroup])
 

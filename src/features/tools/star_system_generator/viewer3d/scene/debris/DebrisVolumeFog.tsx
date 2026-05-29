@@ -44,7 +44,9 @@ export function volumeFogLayerCount(profile: DebrisVisualProfile, qualityScale: 
   const base = mode === 'disk'
     ? 6 + profile.chaos * 14 + profile.clumpiness * 4
     : 5 + profile.chaos * 10 + profile.clumpiness * 3
-  const min = mode === 'disk' ? 6 : 5
+  const min = mode === 'disk'
+    ? Math.max(2, Math.round(6 * quality))
+    : Math.max(2, Math.round(5 * quality))
   const max = mode === 'disk' ? 24 : 18
   return Math.max(min, Math.min(max, Math.round(base * quality)))
 }

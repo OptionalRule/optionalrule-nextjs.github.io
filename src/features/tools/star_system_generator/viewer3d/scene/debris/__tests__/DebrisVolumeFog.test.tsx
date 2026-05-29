@@ -60,6 +60,14 @@ describe('DebrisVolumeFog', () => {
     expect(volumeFogLayerCount(profile, 1, 'disk')).toBe(0)
   })
 
+  it('lets a low qualityScale drop fog layers below the full-quality floor for weak GPUs', () => {
+    const profile = { ...defaultDebrisVisualProfile('exocomet-swarm'), chaos: 0.55, clumpiness: 0 }
+    const full = volumeFogLayerCount(profile, 1, 'disk')
+    const low = volumeFogLayerCount(profile, 0.35, 'disk')
+    expect(low).toBeLessThan(full)
+    expect(low).toBeLessThan(6)
+  })
+
   it('renders layered annular slices for chaotic disks', () => {
     const profile = defaultDebrisVisualProfile('exocomet-swarm')
     const { container } = render(

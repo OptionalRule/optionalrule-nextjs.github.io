@@ -29,12 +29,18 @@ describe('markdown export with companions', () => {
     expect(md).toContain(sys.companions[0].star.name.value)
   })
 
-  it('emits a Linked System line with the derived seed for linked-independent', () => {
+  it('emits a Linked System line whose URL carries the derived seed and non-default options', () => {
     const seed = findSeedForMode('linked-independent')
     const sys = generateSystem({ ...baseOptions, seed })
     const md = exportSystemMarkdown(sys)
-    expect(md).toMatch(/Linked system:\s+`/i)
-    expect(md).toContain(sys.companions[0].linkedSeed!.value)
+
+    const match = md.match(/Linked system:\s+`\?([^`]+)`/i)
+    expect(match).not.toBeNull()
+
+    const params = new URLSearchParams(match![1])
+    expect(params.get('seed')).toBe(sys.companions[0].linkedSeed!.value)
+    expect(params.get('settlements')).toBe('crowded')
+    expect(params.has('distribution')).toBe(false)
   })
 
   it('emits sub-system settlements in the Companion System section for orbital-sibling', () => {

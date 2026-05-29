@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { render, screen } from '@testing-library/react'
+import { render, screen, fireEvent } from '@testing-library/react'
 import { CompanionSubSystem } from '../components/CompanionSubSystem'
 import { generateSystem } from '../lib/generator'
 import type { GenerationOptions } from '../types'
@@ -35,5 +35,16 @@ describe('CompanionSubSystem', () => {
     render(<CompanionSubSystem system={sys} companion={sys.companions[0]} />)
     const bodyCount = sys.companions[0].subSystem!.bodies.length
     expect(screen.getByText(new RegExp(`${bodyCount}\\s+(bod(?:y|ies))`, 'i'))).toBeTruthy()
+  })
+
+  it('associates the toggle button with the collapsible region via aria-controls/id', () => {
+    const seed = findOrbitalSiblingSeed()
+    const sys = generateSystem({ ...baseOptions, seed })
+    render(<CompanionSubSystem system={sys} companion={sys.companions[0]} />)
+    const button = screen.getByRole('button')
+    const controlsId = `companion-${sys.companions[0].id}-detail`
+    expect(button.getAttribute('aria-controls')).toBe(controlsId)
+    fireEvent.click(button)
+    expect(document.getElementById(controlsId)).not.toBeNull()
   })
 })

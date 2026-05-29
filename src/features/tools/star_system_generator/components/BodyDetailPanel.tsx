@@ -67,7 +67,7 @@ export function BodyDetailContent({
         { label: 'Gravity', value: body.physical.gravityLabel.value },
       ]
 
-  const fields: Array<{ label: string; value: ReactNode }> = [
+  const fields: Array<{ label: string; value: ReactNode; key?: string }> = [
     ...physicalFields,
     {
       label: 'Orbit',
@@ -87,6 +87,7 @@ export function BodyDetailContent({
     { label: 'Climate', value: body.detail.climate.map((tag) => tag.value).join(', ') },
     ...regions.map((region) => ({
       label: 'Region',
+      key: `region-${region.id}`,
       value: <span className="text-[var(--text-primary)]">{region.archetypeName}</span>,
     })),
   ]
@@ -128,7 +129,7 @@ export function BodyDetailContent({
 
       <dl className={`${showHeader ? 'mt-4' : 'mt-3'} grid gap-2 text-sm sm:grid-cols-2 lg:grid-cols-3`}>
         {fields.map((field) => (
-          <FieldRow key={field.label} label={field.label} layer="physical">
+          <FieldRow key={field.key ?? field.label} label={field.label} layer="physical">
             {field.value}
           </FieldRow>
         ))}
