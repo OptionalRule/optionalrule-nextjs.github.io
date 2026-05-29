@@ -1,6 +1,7 @@
 'use client'
 
 import { Fragment, useState } from 'react'
+import * as THREE from 'three'
 import { Canvas } from '@react-three/fiber'
 import { AdaptiveDpr, AdaptiveEvents, Html, PerformanceMonitor } from '@react-three/drei'
 import type { GeneratedSystem } from '../../types'
@@ -24,6 +25,7 @@ import { WebGLFallback } from '../chrome/WebGLFallback'
 import { invisibleHitMaterial, starSphereGeometry } from './renderAssets'
 import { buildSeedHref } from '../../lib/seedUrl'
 import { DebrisFields } from './debris/DebrisFields'
+import { PostFx } from './PostFx'
 
 function detectWebGL(): boolean {
   try {
@@ -56,7 +58,7 @@ export function Scene({ graph, system }: SceneProps) {
       frameloop={prefersReducedMotion ? 'demand' : 'always'}
       performance={{ min: 0.5, max: 1, debounce: 300 }}
       camera={{ fov: 45, near: 0.1, far: graph.sceneRadius * 12, position: [0, graph.sceneRadius * 0.35, graph.sceneRadius * 0.95] }}
-      gl={{ antialias: true, alpha: false }}
+      gl={{ antialias: true, alpha: false, toneMapping: THREE.ACESFilmicToneMapping, toneMappingExposure: 1.1 }}
       style={{
         background:
           'radial-gradient(ellipse at 30% 20%, rgba(60, 40, 90, 0.18) 0%, transparent 55%),' +
@@ -192,6 +194,7 @@ export function Scene({ graph, system }: SceneProps) {
       ))}
       <HoverTooltip graph={graph} system={system} />
       <BodyDetailCard graph={graph} system={system} />
+      {qualityScale > 0.55 ? <PostFx qualityScale={qualityScale} /> : null}
     </Canvas>
   )
 }
