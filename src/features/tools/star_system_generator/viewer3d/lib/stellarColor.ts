@@ -20,17 +20,28 @@ const LETTER_RAMP: Record<string, { core: string; corona: string }> = {
   D: { core: '#f4fbff', corona: '#b5ddff' },
 }
 
+// The smallest star core that ever reaches the screen is the smallest coronaRadius
+// here multiplied by STAR_CORE_RATIO (see Star.tsx). Compact stars (white/brown
+// dwarfs) are floored so even they stay larger than the biggest planet visual
+// (gas-giant clamp max 1.55 in scale.ts) — they read as small + intense, never tiny.
 const CLASS_RADIUS: Record<string, number> = {
-  D: 2.5,
+  D: 3.6,
   V: 4,
   IV: 5.5,
   III: 8,
   II: 11,
   I: 15,
-  L: 3.1,
-  T: 2.8,
-  Y: 2.6,
+  L: 3.6,
+  T: 3.6,
+  Y: 3.6,
 }
+
+/**
+ * Smallest coronaRadius any star can take. Paired with STAR_CORE_RATIO in Star.tsx,
+ * this guarantees the minimum visible star core (3.6 * 0.56 ≈ 2.0) exceeds the
+ * largest planet visual radius, so planets never out-size their host star.
+ */
+export const STAR_MIN_CORONA_RADIUS = 3.6
 
 const CLASS_PATTERN = /(Ia|Ib|II|III|IV|V)/
 

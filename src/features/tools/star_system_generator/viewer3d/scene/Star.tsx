@@ -10,6 +10,14 @@ export interface StarProps {
   star: StarVisual
 }
 
+/**
+ * Visible star-core radius as a fraction of coronaRadius. Paired with
+ * STAR_MIN_CORONA_RADIUS (stellarColor.ts): the smallest core (3.6 * 0.56 ≈ 2.0)
+ * stays larger than the biggest planet visual (1.55), so planets never out-size
+ * their host star.
+ */
+export const STAR_CORE_RATIO = 0.56
+
 const surfaceVertexShader = `
   varying vec3 vNormal;
   varying vec3 vObjectNormal;
@@ -170,7 +178,7 @@ export function Star({ star }: StarProps) {
   const billboardRef = useRef<THREE.Group | null>(null)
   const surfaceRef = useRef<THREE.Mesh | null>(null)
   const coronaRef = useRef<THREE.Mesh | null>(null)
-  const coreSize = star.coronaRadius * 0.48
+  const coreSize = star.coronaRadius * STAR_CORE_RATIO
   const activity = clamp(star.bloomStrength / 1.2, 0.12, 1.35)
   const flickerPhase = useMemo(() => hashToUnit(`${star.id}#glow-flicker`) * Math.PI * 2, [star.id])
   const surfaceMaterial = useMemo(

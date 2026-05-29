@@ -1,5 +1,7 @@
 import { describe, it, expect } from 'vitest'
 import { auToScene, bodyVisualSize, SCENE_UNIT, ORBIT_MIN_OFFSET, schematicOrbitRadius } from '../scale'
+import { STAR_MIN_CORONA_RADIUS } from '../stellarColor'
+import { STAR_CORE_RATIO } from '../../scene/Star'
 
 describe('auToScene', () => {
   it('places 0 AU at the origin', () => {
@@ -54,8 +56,13 @@ describe('bodyVisualSize', () => {
   })
 
   it('keeps physically scaled body sizes within readable category bounds', () => {
-    expect(bodyVisualSize('rocky-planet', 0.1)).toBeGreaterThanOrEqual(0.38)
-    expect(bodyVisualSize('rocky-planet', 3)).toBeLessThanOrEqual(0.98)
-    expect(bodyVisualSize('gas-giant', 13)).toBeLessThanOrEqual(3)
+    expect(bodyVisualSize('rocky-planet', 0.1)).toBeGreaterThanOrEqual(0.34)
+    expect(bodyVisualSize('rocky-planet', 3)).toBeLessThanOrEqual(0.72)
+    expect(bodyVisualSize('gas-giant', 13)).toBeLessThanOrEqual(1.55)
+  })
+
+  it('keeps the largest planet visual smaller than the smallest possible star core', () => {
+    const smallestStarCore = STAR_MIN_CORONA_RADIUS * STAR_CORE_RATIO
+    expect(bodyVisualSize('gas-giant', 100)).toBeLessThan(smallestStarCore)
   })
 })
