@@ -1,25 +1,25 @@
 'use client'
 
-import { EffectComposer, Bloom, Vignette } from '@react-three/postprocessing'
-
-export interface PostFxProps {
-  /**
-   * Adaptive quality from the scene's PerformanceMonitor. Bloom multisampling is
-   * scaled down as quality drops; the caller skips this component entirely on the
-   * weakest GPUs (fallback tier) so post-processing never tanks the frame rate.
-   */
-  qualityScale: number
-}
+import { EffectComposer, Bloom, Vignette, SMAA } from '@react-three/postprocessing'
 
 /**
- * Cinematic bloom pass. The star surface/corona render with `toneMapped: false`,
- * so their additive output stays above the luminance threshold and blooms into a
- * soft glow, while planets and orbits stay crisp. ACES tone mapping is configured
- * on the renderer (see Scene.tsx) so bright highlights roll off filmically.
+ * Cinematic bloom + vignette pass. The star surface/corona render with
+ * `toneMapped: false`, so their additive output stays above the luminance
+ * threshold and blooms into a soft glow while planets and orbits stay crisp.
+ * ACES tone mapping is configured on the renderer (see Scene.tsx).
+ *
+ * Everything here is constant — there is no `multisampling` prop that changes at
+ * runtime, so the composer never rebuilds its render targets. The caller mounts
+ * this once and only ever unmounts it permanently (sticky `richFx`), so there is
+ * no per-quality-change rebuild/teardown that would cause flicker or stutter.
+ *
+ * Anti-aliasing is done with SMAA (a cheap shader pass) rather than MSAA render
+ * targets, which keeps thin orbit lines from shimmering without the memory-bandwidth
+ * cost of multisampled HDR buffers.
  */
-export function PostFx({ qualityScale }: PostFxProps) {
+export function PostFx() {
   return (
-    <EffectComposer multisampling={qualityScale > 0.9 ? 2 : 0}>
+    <EffectComposer multisampling={0}>
       <Bloom
         intensity={0.95}
         luminanceThreshold={0.5}
@@ -28,6 +28,7 @@ export function PostFx({ qualityScale }: PostFxProps) {
         mipmapBlur
       />
       <Vignette offset={0.28} darkness={0.62} eskil={false} />
+      <SMAA />
     </EffectComposer>
   )
 }

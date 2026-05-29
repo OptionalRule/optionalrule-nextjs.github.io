@@ -48,6 +48,11 @@ export function Scene({ graph, system }: SceneProps) {
   const prefersReducedMotion = usePrefersReducedMotion()
   const [supported] = useState<boolean>(() => typeof document === 'undefined' ? true : detectWebGL())
   const [qualityScale, setQualityScale] = useState(1)
+  // Rich post-processing (bloom + nebula) starts on and degrades ONE-WAY: the first
+  // time PerformanceMonitor reports a hard fallback we shed it permanently for the
+  // session. This avoids the flicker/stutter that came from mounting, unmounting, or
+  // rebuilding the EffectComposer every time the monitor hunts the framerate target.
+  const [richFx, setRichFx] = useState(true)
   if (!supported) {
     return <WebGLFallback onClose={() => window.dispatchEvent(new CustomEvent('viewer3d:close'))} />
   }
@@ -71,7 +76,7 @@ export function Scene({ graph, system }: SceneProps) {
       <PerformanceMonitor
         onDecline={() => setQualityScale(0.68)}
         onIncline={() => setQualityScale(1)}
-        onFallback={() => setQualityScale(0.5)}
+        onFallback={() => { setQualityScale(0.5); setRichFx(false) }}
       />
       <AdaptiveDpr />
       <AdaptiveEvents />
@@ -83,7 +88,7 @@ export function Scene({ graph, system }: SceneProps) {
         distance={graph.sceneRadius * 4}
         decay={0.6}
       />
-      <Nebula sceneRadius={graph.sceneRadius} />
+      {richFx ? <Nebula sceneRadius={graph.sceneRadius} /> : null}
       <Starfield
         radius={graph.sceneRadius * 5}
         count={Math.round(8500 * qualityScale)}
@@ -197,7 +202,7 @@ export function Scene({ graph, system }: SceneProps) {
       ))}
       <HoverTooltip graph={graph} system={system} />
       <BodyDetailCard graph={graph} system={system} />
-      {qualityScale > 0.55 ? <PostFx qualityScale={qualityScale} /> : null}
+      {richFx ? <PostFx /> : null}
     </Canvas>
   )
 }
