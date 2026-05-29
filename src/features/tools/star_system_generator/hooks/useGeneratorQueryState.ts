@@ -3,13 +3,7 @@
 import { useCallback, useEffect, useState } from 'react'
 import type { GenerationOptions, GeneratorDistribution, GeneratorTone, GuPreference, SettlementDensity } from '../types'
 import { createRandomSeed, normalizeSeed } from '../lib/generator/rng'
-
-const defaultOptions: Omit<GenerationOptions, 'seed'> = {
-  distribution: 'frontier',
-  tone: 'balanced',
-  gu: 'normal',
-  settlements: 'normal',
-}
+import { OPTION_DEFAULTS, buildSeedParams } from '../lib/seedUrl'
 
 function parseDistribution(value: string | null): GeneratorDistribution {
   return value === 'realistic' ? 'realistic' : 'frontier'
@@ -32,7 +26,7 @@ function parseSettlements(value: string | null): SettlementDensity {
 
 function readOptionsFromLocation(): GenerationOptions {
   if (typeof window === 'undefined') {
-    return { seed: '0000000000000000', ...defaultOptions }
+    return { seed: '0000000000000000', ...OPTION_DEFAULTS }
   }
 
   const params = new URLSearchParams(window.location.search)
@@ -48,12 +42,7 @@ function readOptionsFromLocation(): GenerationOptions {
 function writeOptionsToUrl(options: GenerationOptions): void {
   if (typeof window === 'undefined') return
 
-  const params = new URLSearchParams()
-  params.set('seed', options.seed)
-  if (options.distribution !== defaultOptions.distribution) params.set('distribution', options.distribution)
-  if (options.tone !== defaultOptions.tone) params.set('tone', options.tone)
-  if (options.gu !== defaultOptions.gu) params.set('gu', options.gu)
-  if (options.settlements !== defaultOptions.settlements) params.set('settlements', options.settlements)
+  const params = buildSeedParams(options)
 
   const query = params.toString()
   const pathname = window.location.pathname.endsWith('/') ? window.location.pathname : `${window.location.pathname}/`
