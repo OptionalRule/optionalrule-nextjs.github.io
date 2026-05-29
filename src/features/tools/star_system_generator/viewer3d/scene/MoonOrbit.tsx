@@ -1,10 +1,10 @@
 'use client'
 
 import * as THREE from 'three'
-import { useEffect, useMemo } from 'react'
+import { memo, useEffect, useMemo } from 'react'
 import type { MoonVisual } from '../types'
 
-export function MoonOrbit({ moon, parentSize }: { moon: MoonVisual; parentSize: number }) {
+export const MoonOrbit = memo(function MoonOrbit({ moon, parentSize }: { moon: MoonVisual; parentSize: number }) {
   const line = useMemo(() => {
     const points: THREE.Vector3[] = []
     const segments = 96
@@ -34,4 +34,4 @@ export function MoonOrbit({ moon, parentSize }: { moon: MoonVisual; parentSize: 
   }, [line])
 
   return <primitive object={line} />
-}
+})

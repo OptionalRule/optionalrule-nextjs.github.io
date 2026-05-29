@@ -1,7 +1,7 @@
 'use client'
 
 import * as THREE from 'three'
-import { useEffect, useMemo, useRef } from 'react'
+import { memo, useEffect, useMemo, useRef } from 'react'
 import { useFrame } from '@react-three/fiber'
 import type { BodyVisual } from '../types'
 import { usePrefersReducedMotion } from '../chrome/ViewerContext'
@@ -79,7 +79,7 @@ void main() {
 }
 `
 
-export function AtmosphereShell({ body }: { body: BodyVisual }) {
+export const AtmosphereShell = memo(function AtmosphereShell({ body }: { body: BodyVisual }) {
   const haloBoost = body.surface.refractionHaloBoost
   const effectiveStrength = body.surface.atmospherePressureMultiplier >= 0
     ? Math.max(body.surface.atmosphereStrength, body.surface.atmospherePressureMultiplier)
@@ -105,9 +105,9 @@ export function AtmosphereShell({ body }: { body: BodyVisual }) {
       dispose={null}
     />
   )
-}
+})
 
-export function CloudShell({ body }: { body: BodyVisual }) {
+export const CloudShell = memo(function CloudShell({ body }: { body: BodyVisual }) {
   const ref = useRef<THREE.Mesh | null>(null)
   const matRef = useRef<THREE.ShaderMaterial | null>(null)
   const prefersReducedMotion = usePrefersReducedMotion()
@@ -154,4 +154,4 @@ export function CloudShell({ body }: { body: BodyVisual }) {
       dispose={null}
     />
   )
-}
+})
