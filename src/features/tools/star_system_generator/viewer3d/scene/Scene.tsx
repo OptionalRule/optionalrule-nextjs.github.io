@@ -23,7 +23,7 @@ import { StellarBadge } from './StellarBadge'
 import { BodyDetailCard } from './BodyDetailCard'
 import { useLayers, usePrefersReducedMotion, useSelectionActions } from '../chrome/ViewerContext'
 import { WebGLFallback } from '../chrome/WebGLFallback'
-import { invisibleHitMaterial, starSphereGeometry } from './renderAssets'
+import { invisibleHitMaterial, moonSphereGeometry, starSphereGeometry } from './renderAssets'
 import { buildSeedHref } from '../../lib/seedUrl'
 import { DebrisFields } from './debris/DebrisFields'
 import { PostFx } from './PostFx'
@@ -125,6 +125,9 @@ export function Scene({ graph, system }: SceneProps) {
           {graph.distantMarkers.map((m) => (
             <group key={m.id} position={m.visual.position}>
               <mesh
+                geometry={moonSphereGeometry}
+                scale={0.3}
+                dispose={null}
                 onClick={(e) => {
                   e.stopPropagation()
                   if (typeof window !== 'undefined' && m.linkedSeed) {
@@ -134,7 +137,6 @@ export function Scene({ graph, system }: SceneProps) {
                   }
                 }}
               >
-                <sphereGeometry args={[0.3, 16, 16]} />
                 <meshBasicMaterial color={m.visual.coreColor} />
               </mesh>
               <Html center sprite>
