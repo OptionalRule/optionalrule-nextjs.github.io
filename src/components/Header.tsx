@@ -50,6 +50,7 @@ const navigationItems: NavigationGroup[] = [
     label: 'Tools',
     items: [
       { href: urlPaths.tool('kcd2_alchemy'), label: 'KCD2 Alchemy Scholar' },
+      { href: urlPaths.tool('star_system_generator'), label: 'Star System Generator' },
       { href: urlPaths.tool('torch_tracker'), label: 'Torch Tracker' }
     ]
   }
