@@ -186,6 +186,12 @@ export function Scene({ graph, system }: SceneProps) {
         <Fragment key={sub.star.id}>
           {layers.physical ? <Star star={sub.star} /> : null}
           <group position={sub.star.position}>
+            {layers.physical ? (
+              <Zones
+                habitableInner={sub.zones.habitableInner}
+                habitableOuter={sub.zones.habitableOuter}
+              />
+            ) : null}
             {layers.physical ? sub.bodies.map((body) => (
               <Orbit key={`sub-orbit-${body.id}`} radius={body.orbitRadius} tiltY={body.orbitTiltY} color="#a07eff" />
             )) : null}

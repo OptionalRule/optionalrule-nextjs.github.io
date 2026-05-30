@@ -232,6 +232,7 @@ export interface DistantStarMarker {
 
 export interface SubSystemVisual {
   star: StarVisual
+  zones: { habitableInner: number; habitable: number; habitableOuter: number; snowLine: number }
   bodies: BodyVisual[]
   belts: BeltVisual[]
   ruins: RuinMarker[]
