@@ -582,6 +582,15 @@ export function buildSceneGraph(system: GeneratedSystem, options: BuildSceneGrap
       ? c.subSystem.zones.habitableCenterAu.value
       : 1
 
+    // Scale the companion's habitable band with the same subHzCenter/scaleMode used
+    // for its bodies below, so the band lines up with the companion's own planets.
+    const subZones = {
+      habitableInner: auToScene(c.subSystem.zones.habitableInnerAu.value, subHzCenter, scaleMode),
+      habitable: auToScene(c.subSystem.zones.habitableCenterAu.value, subHzCenter, scaleMode),
+      habitableOuter: auToScene(c.subSystem.zones.habitableOuterAu.value, subHzCenter, scaleMode),
+      snowLine: auToScene(c.subSystem.zones.snowLineAu.value, subHzCenter, scaleMode),
+    }
+
     const subSystemShim: GeneratedSystem = {
       ...system,
       zones: c.subSystem.zones,
@@ -642,6 +651,7 @@ export function buildSceneGraph(system: GeneratedSystem, options: BuildSceneGrap
 
     subSystems.push({
       star: companionStar,
+      zones: subZones,
       bodies: subBodies,
       belts: subBelts,
       ruins: subRuins,
