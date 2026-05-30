@@ -49,6 +49,15 @@ const BELT_SHAPES: ReadonlyArray<{ geometry: THREE.BufferGeometry; share: number
   { geometry: beltChunkGeometry, share: 0.22, salt: 'chunk' },
 ]
 
+// The asteroid material carries no per-belt uniforms — color is supplied per
+// instance via instanceColor — so every belt and every shape can share one
+// module-level material instead of allocating 3×N identical ShaderMaterials.
+const SHARED_BELT_MATERIAL = new THREE.ShaderMaterial({
+  vertexShader: asteroidVertexShader,
+  fragmentShader: asteroidFragmentShader,
+  toneMapped: false,
+})
+
 export interface BeltProps {
   belt: BeltVisual
 }
@@ -75,12 +84,7 @@ export function Belt({ belt }: BeltProps) {
       const count = shapeIndex === BELT_SHAPES.length - 1
         ? totalCount - globalIndex
         : Math.max(1, Math.round(totalCount * shape.share))
-      const material = new THREE.ShaderMaterial({
-        vertexShader: asteroidVertexShader,
-        fragmentShader: asteroidFragmentShader,
-        toneMapped: false,
-      })
-      const mesh = new THREE.InstancedMesh(shape.geometry, material, Math.max(0, count))
+      const mesh = new THREE.InstancedMesh(shape.geometry, SHARED_BELT_MATERIAL, Math.max(0, count))
       for (let localIndex = 0; localIndex < count; localIndex++) {
         const i = globalIndex + localIndex
         const clusterRoll = hashToUnit(`cluster-roll#${shape.salt}#${belt.id}#${i}`)
@@ -152,11 +156,8 @@ export function Belt({ belt }: BeltProps) {
   useEffect(() => () => {
     instancedGroup.traverse((object) => {
       if (!(object instanceof THREE.InstancedMesh)) return
-      if (Array.isArray(object.material)) {
-        object.material.forEach((material) => material.dispose())
-      } else {
-        object.material.dispose()
-      }
+      // SHARED_BELT_MATERIAL is module-level and reused across belts — never
+      // dispose it here; only the per-instance buffers are owned by this group.
       object.instanceMatrix.dispose()
       object.instanceColor?.dispose()
     })

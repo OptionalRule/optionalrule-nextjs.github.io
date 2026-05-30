@@ -1,10 +1,10 @@
 'use client'
 
 import * as THREE from 'three'
-import { useEffect, useMemo } from 'react'
+import { memo, useEffect, useMemo } from 'react'
 import type { RingVisual } from '../types'
 
-export function Ring({ ring }: { ring: RingVisual }) {
+export const Ring = memo(function Ring({ ring }: { ring: RingVisual }) {
   const mesh = useMemo(() => {
     const geo = new THREE.RingGeometry(ring.innerRadius, ring.outerRadius, 64, 1)
     const colors: number[] = []
@@ -51,7 +51,7 @@ export function Ring({ ring }: { ring: RingVisual }) {
   }, [mesh])
 
   return <primitive object={mesh} />
-}
+})
 
 function smoothstep(edge0: number, edge1: number, x: number): number {
   const t = Math.min(1, Math.max(0, (x - edge0) / (edge1 - edge0)))

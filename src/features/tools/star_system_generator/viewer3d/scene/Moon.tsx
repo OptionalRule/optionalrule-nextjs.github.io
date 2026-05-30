@@ -1,7 +1,7 @@
 'use client'
 
 import * as THREE from 'three'
-import { useEffect, useMemo, useRef } from 'react'
+import { memo, useEffect, useMemo, useRef } from 'react'
 import { useFrame } from '@react-three/fiber'
 import type { MoonVisual } from '../types'
 import { usePrefersReducedMotion } from '../chrome/ViewerContext'
@@ -9,7 +9,7 @@ import { moonSphereGeometry } from './renderAssets'
 import { makeMoonMaterial } from './moonShader'
 import { MoonSettlements } from './MoonSettlements'
 
-export function Moon({ moon }: { moon: MoonVisual }) {
+export const Moon = memo(function Moon({ moon }: { moon: MoonVisual }) {
   const groupRef = useRef<THREE.Group | null>(null)
   const prefersReducedMotion = usePrefersReducedMotion()
   const material = useMemo(() => makeMoonMaterial(moon), [moon])
@@ -36,4 +36,4 @@ export function Moon({ moon }: { moon: MoonVisual }) {
       </group>
     </group>
   )
-}
+})

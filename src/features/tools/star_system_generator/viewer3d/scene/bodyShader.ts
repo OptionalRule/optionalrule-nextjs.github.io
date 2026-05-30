@@ -154,17 +154,26 @@ void main() {
   );
   base = mix(base, vec3(0.82, 0.92, 0.96), iceMask * uIceCoverage);
 
-  float craterNoise = fbm(p * 4.2 + vec3(7.1, 2.3, 5.9));
-  float craterMask = smoothstep(0.68, 0.93, craterNoise) * uCraterStrength;
-  base = mix(base, base * 0.45, craterMask);
+  if (uCraterStrength > 0.001) {
+    float craterNoise = fbm(p * 4.2 + vec3(7.1, 2.3, 5.9));
+    float craterMask = smoothstep(0.68, 0.93, craterNoise) * uCraterStrength;
+    base = mix(base, base * 0.45, craterMask);
+  }
 
-  float volcanicNoise = fbm(p * 3.6 + vec3(2.5, 9.1, 4.7));
-  float volcanicMask = smoothstep(0.72, 0.94, volcanicNoise) * uVolcanicStrength;
-  base = mix(base, vec3(1.0, 0.26, 0.08), volcanicMask);
+  if (uVolcanicStrength > 0.001) {
+    float volcanicNoise = fbm(p * 3.6 + vec3(2.5, 9.1, 4.7));
+    float volcanicMask = smoothstep(0.72, 0.94, volcanicNoise) * uVolcanicStrength;
+    base = mix(base, vec3(1.0, 0.26, 0.08), volcanicMask);
+  }
 
-  float stormNoise = fbm(vec3(unitPos.x * 1.8, unitPos.y * 8.0, unitPos.z * 1.8) + seedOffset.zxy);
-  float stormMask = smoothstep(0.56, 0.84, stormNoise) * uStormStrength;
-  base = mix(base, base + vec3(0.22, 0.18, 0.12), stormMask);
+  // stormMask must live at outer scope: cloudMask below reads it. Default 0.0 so a
+  // disabled storm contributes exactly nothing (matches mix(x, y, 0) == x).
+  float stormMask = 0.0;
+  if (uStormStrength > 0.001) {
+    float stormNoise = fbm(vec3(unitPos.x * 1.8, unitPos.y * 8.0, unitPos.z * 1.8) + seedOffset.zxy);
+    stormMask = smoothstep(0.56, 0.84, stormNoise) * uStormStrength;
+    base = mix(base, base + vec3(0.22, 0.18, 0.12), stormMask);
+  }
 
   vec3 hazardTinted = base * uHazardTint;
   base = mix(base, hazardTinted, uHazardBlend);
@@ -182,18 +191,22 @@ void main() {
   float light = clamp(dot(normalize(vNormal + unitPos * relief), lightDir), 0.0, 1.0);
   vec3 lit = base * (0.25 + 0.85 * light) * uAmbientLevel;
 
-  float night = smoothstep(0.48, 0.08, light);
-  float cityNoise = fbm(p * 7.5 + vec3(19.0, 5.0, 13.0));
-  float cityMask = smoothstep(0.74, 0.93, cityNoise + detail * 0.12) * night * uNightLightStrength;
-  lit += uCityLightColor * cityMask;
+  if (uNightLightStrength > 0.001) {
+    float night = smoothstep(0.48, 0.08, light);
+    float cityNoise = fbm(p * 7.5 + vec3(19.0, 5.0, 13.0));
+    float cityMask = smoothstep(0.74, 0.93, cityNoise + detail * 0.12) * night * uNightLightStrength;
+    lit += uCityLightColor * cityMask;
+  }
 
   float fresnel = pow(1.0 - clamp(dot(vNormal, vec3(0.0, 0.0, 1.0)), 0.0, 1.0), 2.0);
   vec3 atmo = mix(vec3(0.6, 0.8, 1.0), vec3(0.6, 0.4, 1.0), uGuAccent);
   lit = mix(lit, lit + atmo, fresnel * uAtmosphere * 0.6);
 
-  float cloudNoise = fbm(p * 1.5 + vec3(11.0, 17.0, 23.0));
-  float cloudMask = smoothstep(0.48, 0.78, cloudNoise + stormMask * 0.18) * uCloudStrength;
-  lit = mix(lit, vec3(0.86, 0.88, 0.84), cloudMask);
+  if (uCloudStrength > 0.001) {
+    float cloudNoise = fbm(p * 1.5 + vec3(11.0, 17.0, 23.0));
+    float cloudMask = smoothstep(0.48, 0.78, cloudNoise + stormMask * 0.18) * uCloudStrength;
+    lit = mix(lit, vec3(0.86, 0.88, 0.84), cloudMask);
+  }
 
   if (uGuAccent > 0.5) {
     lit = mix(lit, lit + vec3(0.4, 0.2, 0.7), fresnel * 0.6);

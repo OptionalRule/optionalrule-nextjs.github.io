@@ -1,7 +1,7 @@
 'use client'
 
 import * as THREE from 'three'
-import { useEffect, useMemo, useRef } from 'react'
+import { memo, useEffect, useMemo, useRef } from 'react'
 import { useFrame } from '@react-three/fiber'
 import type { BodyVisual } from '../types'
 import { usePrefersReducedMotion } from '../chrome/ViewerContext'
@@ -97,7 +97,7 @@ void main() {
 }
 `
 
-export function AuroraShell({ body }: { body: BodyVisual }) {
+export const AuroraShell = memo(function AuroraShell({ body }: { body: BodyVisual }) {
   const ref = useRef<THREE.Mesh | null>(null)
   const matRef = useRef<THREE.ShaderMaterial | null>(null)
   const prefersReducedMotion = usePrefersReducedMotion()
@@ -142,4 +142,4 @@ export function AuroraShell({ body }: { body: BodyVisual }) {
       dispose={null}
     />
   )
-}
+})

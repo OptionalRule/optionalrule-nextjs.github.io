@@ -56,6 +56,7 @@ export function BodyDetailCard({ graph, system }: BodyDetailCardProps) {
   const { select } = useSelectionActions()
   const [livePosition, setLivePosition] = useState<SceneVec3 | null>(null)
   const cardRef = useRef<HTMLDivElement | null>(null)
+  const lastUpdateRef = useRef(0)
 
   const resolved = resolveSelection(graph, system, selection)
   const bodyId = resolved?.bodyId ?? null
@@ -68,8 +69,10 @@ export function BodyDetailCard({ graph, system }: BodyDetailCardProps) {
     setLivePosition(fallbackOrbitPosition(graph, bodyId))
   }, [bodyId, graph])
 
-  useFrame(() => {
+  useFrame((state) => {
     if (!bodyId) return
+    if (state.clock.elapsedTime - lastUpdateRef.current < 0.08) return
+    lastUpdateRef.current = state.clock.elapsedTime
     const dict = (window as Window & { __viewer3dBodyPositions?: Record<string, SceneVec3> }).__viewer3dBodyPositions
     const live = dict?.[bodyId]
     if (!live) return

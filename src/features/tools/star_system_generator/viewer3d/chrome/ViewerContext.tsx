@@ -1,6 +1,16 @@
 'use client'
 
-import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from 'react'
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  useSyncExternalStore,
+  type ReactNode,
+} from 'react'
 import type { LayerVisibility, OrbitScaleMode } from '../types'
 import { ALL_LAYERS_ON } from '../types'
 
@@ -21,6 +31,11 @@ interface SelectionStateContextValue {
   hovered: SelectionTarget | null
 }
 
+export interface SelectionSlice {
+  isSelected: boolean
+  isHovered: boolean
+}
+
 interface SelectionActionsContextValue {
   select: (target: SelectionTarget | null) => void
   hover: (target: SelectionTarget | null) => void
@@ -31,8 +46,48 @@ interface ScaleModeContextValue {
   setScaleMode: (mode: OrbitScaleMode) => void
 }
 
+// Selection/hover live in a tiny external store rather than React state so that a
+// hover or selection change does NOT re-render the provider or every subscriber.
+// Full-state consumers (one each: HoverTooltip, BodyDetailCard, CameraRig, the
+// chrome panels) read the whole snapshot via useSelectionState; the many-instance
+// consumers (Body, OverlayMarker) read only their own slice via useSelectionSlice
+// and re-render solely when their own selected/hovered booleans flip.
+interface SelectionStore {
+  getSnapshot: () => SelectionStateContextValue
+  subscribe: (listener: () => void) => () => void
+  setSelection: (target: SelectionTarget | null) => void
+  setHovered: (target: SelectionTarget | null) => void
+}
+
+function createSelectionStore(): SelectionStore {
+  let snapshot: SelectionStateContextValue = { selection: null, hovered: null }
+  const listeners = new Set<() => void>()
+  const emit = () => {
+    for (const listener of listeners) listener()
+  }
+  return {
+    getSnapshot: () => snapshot,
+    subscribe: (listener) => {
+      listeners.add(listener)
+      return () => {
+        listeners.delete(listener)
+      }
+    },
+    setSelection: (target) => {
+      if (snapshot.selection === target) return
+      snapshot = { ...snapshot, selection: target }
+      emit()
+    },
+    setHovered: (target) => {
+      if (snapshot.hovered === target) return
+      snapshot = { ...snapshot, hovered: target }
+      emit()
+    },
+  }
+}
+
 const LayersContext = createContext<LayersContextValue | null>(null)
-const SelectionStateContext = createContext<SelectionStateContextValue | null>(null)
+const SelectionStoreContext = createContext<SelectionStore | null>(null)
 const SelectionActionsContext = createContext<SelectionActionsContextValue | null>(null)
 const MotionContext = createContext<boolean | null>(null)
 const ScaleModeContext = createContext<ScaleModeContextValue | null>(null)
@@ -40,9 +95,10 @@ const ScaleModeContext = createContext<ScaleModeContextValue | null>(null)
 export function ViewerContextProvider({ children }: { children: ReactNode }) {
   const [layers, setLayers] = useState<LayerVisibility>(ALL_LAYERS_ON)
   const [scaleMode, setScaleMode] = useState<OrbitScaleMode>('readable-log')
-  const [selection, setSelection] = useState<SelectionTarget | null>(null)
-  const [hovered, setHovered] = useState<SelectionTarget | null>(null)
   const [prefersReducedMotion, setPrefersReducedMotion] = useState(false)
+  // Lazy useState initializer creates the store exactly once and keeps a stable
+  // reference for the provider's lifetime (no re-render on selection changes).
+  const [selectionStore] = useState(createSelectionStore)
 
   useEffect(() => {
     const mq = window.matchMedia('(prefers-reduced-motion: reduce)')
@@ -56,13 +112,9 @@ export function ViewerContextProvider({ children }: { children: ReactNode }) {
     () => ({ layers, toggleLayer: (k) => setLayers((prev) => ({ ...prev, [k]: !prev[k] })) }),
     [layers],
   )
-  const selectionStateValue = useMemo<SelectionStateContextValue>(
-    () => ({ selection, hovered }),
-    [selection, hovered],
-  )
   const selectionActionsValue = useMemo<SelectionActionsContextValue>(
-    () => ({ select: setSelection, hover: setHovered }),
-    [],
+    () => ({ select: selectionStore.setSelection, hover: selectionStore.setHovered }),
+    [selectionStore],
   )
   const scaleModeValue = useMemo<ScaleModeContextValue>(
     () => ({ scaleMode, setScaleMode }),
@@ -73,11 +125,11 @@ export function ViewerContextProvider({ children }: { children: ReactNode }) {
     <LayersContext.Provider value={layersValue}>
       <MotionContext.Provider value={prefersReducedMotion}>
         <ScaleModeContext.Provider value={scaleModeValue}>
-          <SelectionStateContext.Provider value={selectionStateValue}>
+          <SelectionStoreContext.Provider value={selectionStore}>
             <SelectionActionsContext.Provider value={selectionActionsValue}>
               {children}
             </SelectionActionsContext.Provider>
-          </SelectionStateContext.Provider>
+          </SelectionStoreContext.Provider>
         </ScaleModeContext.Provider>
       </MotionContext.Provider>
     </LayersContext.Provider>
@@ -90,10 +142,36 @@ export function useLayers(): LayersContextValue {
   return ctx
 }
 
+function useSelectionStore(): SelectionStore {
+  const store = useContext(SelectionStoreContext)
+  if (!store) throw new Error('selection hooks used outside ViewerContextProvider')
+  return store
+}
+
 export function useSelectionState(): SelectionStateContextValue {
-  const ctx = useContext(SelectionStateContext)
-  if (!ctx) throw new Error('useSelectionState used outside ViewerContextProvider')
-  return ctx
+  const store = useSelectionStore()
+  return useSyncExternalStore(store.subscribe, store.getSnapshot, store.getSnapshot)
+}
+
+// Subscribes only to whether (kind, id) is the selected and/or hovered target.
+// The cached slice keeps a stable reference while those two booleans are unchanged,
+// so useSyncExternalStore skips re-rendering this consumer on unrelated hovers.
+export function useSelectionSlice(kind: NonNullable<SelectionKind>, id: string): SelectionSlice {
+  const store = useSelectionStore()
+  const cacheRef = useRef<SelectionSlice | null>(null)
+  const getSlice = useCallback(() => {
+    const snap = store.getSnapshot()
+    const isSelected = snap.selection?.kind === kind && snap.selection.id === id
+    const isHovered = snap.hovered?.kind === kind && snap.hovered.id === id
+    const cached = cacheRef.current
+    if (cached && cached.isSelected === isSelected && cached.isHovered === isHovered) {
+      return cached
+    }
+    const next: SelectionSlice = { isSelected, isHovered }
+    cacheRef.current = next
+    return next
+  }, [store, kind, id])
+  return useSyncExternalStore(store.subscribe, getSlice, getSlice)
 }
 
 export function useSelectionActions(): SelectionActionsContextValue {

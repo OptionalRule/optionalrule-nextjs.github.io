@@ -4,7 +4,7 @@ import * as THREE from 'three'
 import { useEffect, useMemo, useRef } from 'react'
 import { useFrame } from '@react-three/fiber'
 import type { BodyVisual } from '../types'
-import { useLayers, usePrefersReducedMotion, useSelectionActions, useSelectionState } from '../chrome/ViewerContext'
+import { useLayers, usePrefersReducedMotion, useSelectionActions, useSelectionSlice } from '../chrome/ViewerContext'
 import { makeBodyMaterial } from './bodyShader'
 import { shaderUniforms } from '../lib/bodyShading'
 import { useGeneratedBodyLookup } from './bodyLookup'
@@ -35,7 +35,7 @@ export function Body({ body }: BodyProps) {
   const { layers } = useLayers()
   const prefersReducedMotion = usePrefersReducedMotion()
   const { hover, select } = useSelectionActions()
-  const { selection, hovered } = useSelectionState()
+  const { isSelected: isInspected, isHovered } = useSelectionSlice('body', body.id)
   const lookup = useGeneratedBodyLookup()
   const orbitingBody = lookup(body.id)
   const material = useMemo(() => {
@@ -80,8 +80,6 @@ export function Body({ body }: BodyProps) {
 
   const worldPos = useMemo(() => new THREE.Vector3(), [])
   const posTuple = useRef<[number, number, number]>([0, 0, 0])
-  const isInspected = selection?.kind === 'body' && selection.id === body.id
-  const isHovered = hovered?.kind === 'body' && hovered.id === body.id
   const showMoonOrbits = layers.moonOrbits || isInspected || isHovered
   const spinRate = useMemo(() => {
     const jitter = hashToUnit(`${body.id}#spin-rate`)
@@ -89,14 +87,17 @@ export function Body({ body }: BodyProps) {
     return (0.055 + jitter * 0.11) * direction
   }, [body.id])
   const hitScale = Math.max(body.visualSize * 1.38, Math.min(1.1, body.visualSize + 0.55))
+  // The highlight mesh below only mounts while hovered, so the material is always
+  // rendered at its visible opacity — create it once instead of reallocating (and
+  // disposing) a new material on every hover enter/leave.
   const highlightMaterial = useMemo(() => new THREE.MeshBasicMaterial({
     color: '#8fd6ff',
     transparent: true,
-    opacity: isHovered ? 0.24 : 0,
+    opacity: 0.24,
     wireframe: true,
     depthWrite: false,
     toneMapped: false,
-  }), [isHovered])
+  }), [])
 
   useEffect(() => {
     const dict = window as Window & {

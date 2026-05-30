@@ -95,7 +95,7 @@ export function shaderUniforms(body: OrbitingBody): ShaderUniformSet {
   const iceAsym = iceAsymmetryFor(body)
   return {
     ...base,
-    ...colorsFor(body, key),
+    ...colorsFor(body, key, text),
     atmosphereStrength: Math.min(1, Math.max(base.atmosphereStrength, atmosphereBoost) + volatileBoost),
     heatTint: base.heatTint + heatBoost,
     bandStrength: Math.min(1, base.bandStrength + (stormStrength * 0.22)),
@@ -201,8 +201,7 @@ function stormStrengthFor(text: string, key: BodyShadingKey): number {
   return Math.min(1, strength)
 }
 
-function colorsFor(body: OrbitingBody, key: BodyShadingKey): Pick<ShaderUniformSet, 'baseColor' | 'secondaryColor' | 'accentColor'> {
-  const text = bodyText(body)
+function colorsFor(body: OrbitingBody, key: BodyShadingKey, text: string): Pick<ShaderUniformSet, 'baseColor' | 'secondaryColor' | 'accentColor'> {
   if (key === 'earthlike') {
     if (hasAny(text, ['global ocean', 'waterworld', 'hycean'])) {
       return { baseColor: '#2f6f7f', secondaryColor: '#325d3e', accentColor: '#184f86' }

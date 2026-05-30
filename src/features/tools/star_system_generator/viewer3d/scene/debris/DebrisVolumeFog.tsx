@@ -6,6 +6,13 @@ import { hashToUnit } from '../../lib/motion'
 import { type DebrisVisualProfile } from './debrisVisualProfile'
 import { makeVolumeFogMaterial, type VolumeFogMode } from './volumeFogMaterial'
 
+// Every shell layer uses an identical unit sphere — per-layer radius/offset live
+// in the mesh model matrix (scale/position), and the shell shader path is
+// scale-invariant — so all shell fog across all fields can share one geometry.
+// Kept local rather than in renderAssets so this focused module doesn't pull in
+// (and instantiate) every shared asset just for one sphere.
+const SHELL_FOG_GEOMETRY = new THREE.SphereGeometry(1, 48, 24)
+
 interface DebrisVolumeFogProps {
   fieldId: string
   mode: VolumeFogMode
@@ -60,6 +67,17 @@ function layerOpacity(totalOpacity: number, layerCount: number, profile: DebrisV
 function buildDiskLayers(props: DebrisVolumeFogProps, count: number): VolumeFogLayer[] {
   const verticalThickness = props.verticalThickness ?? Math.max(0.2, (props.outerRadius - props.innerRadius) * 0.6)
   const baseOpacity = layerOpacity(props.opacity, count, props.profile)
+  // The ring geometry is identical for every layer of this field (same radii and
+  // theta) — only z-offset and stretch differ, and those live on the mesh — so
+  // build it once per field and share it across all of this field's layers.
+  const diskGeometry = new THREE.RingGeometry(
+    props.innerRadius,
+    props.outerRadius,
+    128,
+    2,
+    props.thetaStart ?? 0,
+    props.thetaLength ?? Math.PI * 2,
+  )
   return Array.from({ length: count }, (_, i) => {
     const t = count === 1 ? 0.5 : i / (count - 1)
     const layerCenter = 1 - Math.abs(t * 2 - 1)
@@ -71,14 +89,7 @@ function buildDiskLayers(props: DebrisVolumeFogProps, count: number): VolumeFogL
 
     return {
       key: `${props.fieldId}-volume-disk-${i}`,
-      geometry: new THREE.RingGeometry(
-        props.innerRadius,
-        props.outerRadius,
-        128,
-        2,
-        props.thetaStart ?? 0,
-        props.thetaLength ?? Math.PI * 2,
-      ),
+      geometry: diskGeometry,
       material: makeVolumeFogMaterial({
         color: props.color,
         opacity,
@@ -117,7 +128,7 @@ function buildShellLayers(props: DebrisVolumeFogProps, count: number): VolumeFog
 
     return {
       key: `${props.fieldId}-volume-shell-${i}`,
-      geometry: new THREE.SphereGeometry(1, 48, 24),
+      geometry: SHELL_FOG_GEOMETRY,
       material: makeVolumeFogMaterial({
         color: props.color,
         opacity: baseOpacity,
@@ -156,9 +167,15 @@ export function DebrisVolumeFog(props: DebrisVolumeFogProps) {
       thetaStart, thetaLength, verticalThickness, flattenY])
 
   useEffect(() => () => {
+    const disposedGeometries = new Set<THREE.BufferGeometry>()
     layers.forEach((layer) => {
-      layer.geometry.dispose()
       layer.material.dispose()
+      // The shared module-level shell sphere is never disposed; the per-field
+      // disk ring is shared across that field's layers, so dispose it once.
+      if (layer.geometry !== SHELL_FOG_GEOMETRY && !disposedGeometries.has(layer.geometry)) {
+        disposedGeometries.add(layer.geometry)
+        layer.geometry.dispose()
+      }
     })
   }, [layers])
 

@@ -1,7 +1,7 @@
 'use client'
 
 import { Html } from '@react-three/drei'
-import { useSelectionActions, useSelectionState, type SelectionKind } from '../../chrome/ViewerContext'
+import { useSelectionActions, useSelectionSlice, type SelectionKind } from '../../chrome/ViewerContext'
 import { GLYPH_COMPONENTS, GLYPH_META } from './glyphRegistry'
 import { visualForRegister } from './statusPalette'
 import type { GlyphId, GlyphStatus } from './types'
@@ -30,9 +30,7 @@ export function OverlayMarker({
   leaderOffset = 22,
 }: OverlayMarkerProps) {
   const { hover, select } = useSelectionActions()
-  const { hovered, selection } = useSelectionState()
-  const isHovered = hovered?.kind === kind && hovered.id === id
-  const isSelected = selection?.kind === kind && selection.id === id
+  const { isHovered, isSelected } = useSelectionSlice(kind, id)
 
   const meta = GLYPH_META[glyphId]
   const Glyph = GLYPH_COMPONENTS[glyphId]
