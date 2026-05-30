@@ -1,6 +1,8 @@
 'use client'
 
-import { Building2, Orbit } from 'lucide-react'
+import Link from 'next/link'
+import { BookOpen, Building2, Orbit, Shapes } from 'lucide-react'
+import { urlPaths } from '@/lib/urls'
 import { CompanionSubSystem } from './components/CompanionSubSystem'
 import { ExportPanel } from './components/ExportPanel'
 import { GeneratorControls } from './components/GeneratorControls'
@@ -19,6 +21,11 @@ import { useGeneratorQueryState } from './hooks/useGeneratorQueryState'
 import { aggregatedCounts, formatSplitCount } from './lib/companionAggregations'
 import { formatStellarClass } from './lib/stellarLabels'
 import type { GeneratedSystem } from './types'
+
+const TOOL_HOME = urlPaths.tool('star_system_generator')
+
+const referenceLinkClasses =
+  'inline-flex items-center gap-1.5 rounded-md border border-[var(--border)] bg-[var(--card)] px-2.5 py-1.5 text-sm font-medium text-[var(--text-tertiary)] transition-colors hover:border-[var(--accent)]/40 hover:text-[var(--text-primary)]'
 
 export interface StarSystemGeneratorProps {
   className?: string
@@ -40,21 +47,43 @@ export default function StarSystemGenerator({ className }: StarSystemGeneratorPr
           }}
         />
         <div className="container relative mx-auto px-4">
-          <div className="flex items-center gap-3">
-            <div
-              className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-[var(--accent-light)] text-[var(--accent)] ring-1 ring-inset ring-[var(--accent)]/20"
-              aria-hidden="true"
-            >
-              <Orbit className="h-5 w-5" />
+          <div className="flex items-center justify-between gap-3">
+            <div className="flex min-w-0 items-center gap-3">
+              <div
+                className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-[var(--accent-light)] text-[var(--accent)] ring-1 ring-inset ring-[var(--accent)]/20"
+                aria-hidden="true"
+              >
+                <Orbit className="h-5 w-5" />
+              </div>
+              <div className="min-w-0">
+                <h1 className="text-xl font-bold tracking-tight text-[var(--text-primary)] sm:text-2xl">
+                  Sci-Fi TTRPG Star System Generator
+                </h1>
+                <p className="text-sm text-[var(--text-tertiary)]">
+                  Seeded MASS-GU system profiles for Geometric Unity Era play.
+                </p>
+              </div>
             </div>
-            <div className="min-w-0">
-              <h1 className="text-xl font-bold tracking-tight text-[var(--text-primary)] sm:text-2xl">
-                Sci-Fi TTRPG Star System Generator
-              </h1>
-              <p className="text-sm text-[var(--text-tertiary)]">
-                Seeded MASS-GU system profiles for Geometric Unity Era play.
-              </p>
-            </div>
+            <nav aria-label="Reference" className="flex shrink-0 items-center gap-2">
+              <Link
+                href={`${TOOL_HOME}glossary/`}
+                className={referenceLinkClasses}
+                aria-label="Setting Glossary"
+                title="Setting Glossary"
+              >
+                <BookOpen className="h-4 w-4 shrink-0" aria-hidden="true" />
+                <span className="hidden sm:inline">Glossary</span>
+              </Link>
+              <Link
+                href={`${TOOL_HOME}glyphs/`}
+                className={referenceLinkClasses}
+                aria-label="Symbol Guide"
+                title="Symbol Guide"
+              >
+                <Shapes className="h-4 w-4 shrink-0" aria-hidden="true" />
+                <span className="hidden sm:inline">Symbol Guide</span>
+              </Link>
+            </nav>
           </div>
         </div>
       </header>
