@@ -7,6 +7,7 @@ export const metadata: Metadata = generateMetadata({
   title: 'Sci-Fi TTRPG Star System Generator',
   description:
     'Generate seeded, astronomy-grounded star systems with Geometric Unity hazards, resources, and settlements for sci-fi tabletop RPG play.',
+  image: '/images/star_system_generator.webp',
   canonical: urlPaths.tool('star_system_generator'),
 })
 
