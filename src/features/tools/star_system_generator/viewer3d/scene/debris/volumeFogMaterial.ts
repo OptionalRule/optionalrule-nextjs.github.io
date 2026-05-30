@@ -83,6 +83,49 @@ float radialEdgeFade(float t) {
 }
 `
 
+// The noise stack is identical for both modes. It needs radialT/angle/noisePos from
+// the mode-specific prologue and defines warp/cloud/filament terms the tail consumes.
+const fogNoiseBlock = /* glsl */ `
+  float warpA = fbm3(noisePos * 0.72);
+  float warpB = fbm3(noisePos * (1.45 + uChaos * 0.65) + vec3(warpA * 2.4, -warpA * 1.7, warpA));
+  float fogNoise = fbm3(noisePos * (2.2 + uChaos) + warpB * 3.0);
+  float cloudDensity = smoothstep(0.28 - uChaos * 0.12, 0.9, warpB * 0.65 + fogNoise * 0.55);
+
+  float filamentWave = sin(angle * max(1.0, uFilamentCount) + radialT * (8.0 + uChaos * 9.0) + warpA * 6.0 + uLayerT * 4.0);
+  float filamentDensity = smoothstep(0.54 - uChaos * 0.16, 1.0, filamentWave * 0.5 + 0.5);
+`
+
+// The density assembly + colour output is also identical for both modes. It consumes
+// radialMask/layerMask/viewMask from the mode-specific prologue above. Kept in one
+// place so the load-bearing early-out and the void/tear stacks can never desync.
+const fogDensityTail = /* glsl */ `
+  float chaoticDensity = mix(cloudDensity, max(cloudDensity, filamentDensity), clamp(uChaos * 0.72, 0.0, 1.0));
+
+  // Lossless early-out before the final two fbm3 stacks: voidMask and the torn*clump
+  // mix are both in [0,1] and the clumpiness gain is reused verbatim, so this product
+  // is a true upper bound on the final density. Fog gaps (low chaoticDensity) and
+  // faded edges bail here, skipping voidNoise and tearNoise with byte-identical output.
+  float clumpinessGain = mix(0.62, 1.18, uClumpiness);
+  if (radialMask * layerMask * viewMask * chaoticDensity * clumpinessGain < 0.01) discard;
+
+  float voidNoise = fbm3(noisePos * (3.7 + uChaos * 1.2) - warpB * 2.2);
+  float voidMask = smoothstep(0.16 + uChaos * 0.16, 0.98, voidNoise + cloudDensity * 0.22);
+  float tearNoise = fbm3(vec3(angle * 0.8, radialT * 4.2, uLayerT * 2.7) + vec3(warpA * 2.0, warpB, uSeed * 0.01));
+  float tornMask = smoothstep(0.34 - uChaos * 0.1, 0.88, tearNoise + filamentDensity * 0.18);
+  float clumpMask = smoothstep(0.38 - uClumpiness * 0.12, 0.94, fogNoise + warpB * 0.42);
+
+  float density = radialMask * layerMask * viewMask * chaoticDensity * voidMask;
+  density *= mix(1.0, tornMask * clumpMask, clamp(uChaos * 0.88, 0.0, 1.0));
+  density *= clumpinessGain;
+  if (density < 0.01) discard;
+
+  vec3 col = mix(uColorInner, uColorOuter, clamp(radialT, 0.0, 1.0));
+  col *= 0.58 + cloudDensity * 0.55 + filamentDensity * 0.16;
+  gl_FragColor = vec4(col, density * uOpacity);
+`
+
+// Disk: radialT from the in-plane radius (hard ring clip + edge fade) with a
+// depth-falloff layerMask and no view/rim term.
 const diskFragmentShader = /* glsl */ `
 ${fragmentHeader}
 void main() {
@@ -93,47 +136,17 @@ void main() {
   float layerDistance = abs(uLayerT * 2.0 - 1.0);
   float angle = atan(vLocalPos.y, vLocalPos.x);
   vec3 noisePos = vWorldPos * uNoiseScale + vec3(uSeed * 0.013, uSeed * 0.021, uSeed * 0.034);
-
-  float warpA = fbm3(noisePos * 0.72);
-  float warpB = fbm3(noisePos * (1.45 + uChaos * 0.65) + vec3(warpA * 2.4, -warpA * 1.7, warpA));
-  float fogNoise = fbm3(noisePos * (2.2 + uChaos) + warpB * 3.0);
-  float cloudDensity = smoothstep(0.28 - uChaos * 0.12, 0.9, warpB * 0.65 + fogNoise * 0.55);
-
-  float filamentWave = sin(angle * max(1.0, uFilamentCount) + radialT * (8.0 + uChaos * 9.0) + warpA * 6.0 + uLayerT * 4.0);
-  float filamentDensity = smoothstep(0.54 - uChaos * 0.16, 1.0, filamentWave * 0.5 + 0.5);
-
+${fogNoiseBlock}
   float radialMask = pow(max(sin(clamp(radialT, 0.0, 1.0) * 3.14159), 0.0), 0.6);
   radialMask *= radialEdgeFade(radialT);
   float layerMask = 0.34 + pow(max(1.0 - layerDistance, 0.0), 0.55) * 0.86;
   float viewMask = 1.0;
-
-  float chaoticDensity = mix(cloudDensity, max(cloudDensity, filamentDensity), clamp(uChaos * 0.72, 0.0, 1.0));
-
-  // Lossless early-out before the final two fbm3 stacks (same upper bound as the
-  // shell path): voidMask and the torn*clump mix are both in [0,1] and the
-  // clumpiness gain is reused verbatim, so this product bounds the final density.
-  // Fog gaps (low chaoticDensity) and faded edges bail here, skipping voidNoise
-  // and tearNoise with byte-identical output.
-  float clumpinessGain = mix(0.62, 1.18, uClumpiness);
-  if (radialMask * layerMask * viewMask * chaoticDensity * clumpinessGain < 0.01) discard;
-
-  float voidNoise = fbm3(noisePos * (3.7 + uChaos * 1.2) - warpB * 2.2);
-  float voidMask = smoothstep(0.16 + uChaos * 0.16, 0.98, voidNoise + cloudDensity * 0.22);
-  float tearNoise = fbm3(vec3(angle * 0.8, radialT * 4.2, uLayerT * 2.7) + vec3(warpA * 2.0, warpB, uSeed * 0.01));
-  float tornMask = smoothstep(0.34 - uChaos * 0.1, 0.88, tearNoise + filamentDensity * 0.18);
-  float clumpMask = smoothstep(0.38 - uClumpiness * 0.12, 0.94, fogNoise + warpB * 0.42);
-
-  float density = radialMask * layerMask * viewMask * chaoticDensity * voidMask;
-  density *= mix(1.0, tornMask * clumpMask, clamp(uChaos * 0.88, 0.0, 1.0));
-  density *= clumpinessGain;
-  if (density < 0.01) discard;
-
-  vec3 col = mix(uColorInner, uColorOuter, clamp(radialT, 0.0, 1.0));
-  col *= 0.58 + cloudDensity * 0.55 + filamentDensity * 0.16;
-  gl_FragColor = vec4(col, density * uOpacity);
+${fogDensityTail}
 }
 `
 
+// Shell: radialT is the layer position (no radial clip/edge fade), full layerMask,
+// and a view/rim term so the spherical shell reads from grazing angles.
 const shellFragmentShader = /* glsl */ `
 ${fragmentHeader}
 void main() {
@@ -141,46 +154,14 @@ void main() {
 
   float angle = atan(vLocalPos.y, vLocalPos.x);
   vec3 noisePos = vWorldPos * uNoiseScale + vec3(uSeed * 0.013, uSeed * 0.021, uSeed * 0.034);
-
-  float warpA = fbm3(noisePos * 0.72);
-  float warpB = fbm3(noisePos * (1.45 + uChaos * 0.65) + vec3(warpA * 2.4, -warpA * 1.7, warpA));
-  float fogNoise = fbm3(noisePos * (2.2 + uChaos) + warpB * 3.0);
-  float cloudDensity = smoothstep(0.28 - uChaos * 0.12, 0.9, warpB * 0.65 + fogNoise * 0.55);
-
-  float filamentWave = sin(angle * max(1.0, uFilamentCount) + radialT * (8.0 + uChaos * 9.0) + warpA * 6.0 + uLayerT * 4.0);
-  float filamentDensity = smoothstep(0.54 - uChaos * 0.16, 1.0, filamentWave * 0.5 + 0.5);
-
+${fogNoiseBlock}
   float radialMask = pow(max(sin(clamp(radialT, 0.0, 1.0) * 3.14159), 0.0), 0.42);
   float layerMask = 1.0;
 
   vec3 viewDir = normalize(cameraPosition - vWorldPos);
   float rimDensity = pow(1.0 - abs(dot(normalize(vWorldNormal), viewDir)), 0.72);
   float viewMask = 0.24 + rimDensity * 0.82;
-
-  float chaoticDensity = mix(cloudDensity, max(cloudDensity, filamentDensity), clamp(uChaos * 0.72, 0.0, 1.0));
-
-  // Lossless early-out before the final two fbm3 stacks. The remaining density
-  // factors not yet applied are voidMask and the torn*clump mix, both in [0,1], so
-  // this product (with the same clumpiness factor the final density uses) is a true
-  // upper bound on the final density. If even the upper bound can't clear the
-  // cutoff the fragment is discarded regardless, so skip voidNoise and tearNoise.
-  float clumpinessGain = mix(0.62, 1.18, uClumpiness);
-  if (radialMask * layerMask * viewMask * chaoticDensity * clumpinessGain < 0.01) discard;
-
-  float voidNoise = fbm3(noisePos * (3.7 + uChaos * 1.2) - warpB * 2.2);
-  float voidMask = smoothstep(0.16 + uChaos * 0.16, 0.98, voidNoise + cloudDensity * 0.22);
-  float tearNoise = fbm3(vec3(angle * 0.8, radialT * 4.2, uLayerT * 2.7) + vec3(warpA * 2.0, warpB, uSeed * 0.01));
-  float tornMask = smoothstep(0.34 - uChaos * 0.1, 0.88, tearNoise + filamentDensity * 0.18);
-  float clumpMask = smoothstep(0.38 - uClumpiness * 0.12, 0.94, fogNoise + warpB * 0.42);
-
-  float density = radialMask * layerMask * viewMask * chaoticDensity * voidMask;
-  density *= mix(1.0, tornMask * clumpMask, clamp(uChaos * 0.88, 0.0, 1.0));
-  density *= clumpinessGain;
-  if (density < 0.01) discard;
-
-  vec3 col = mix(uColorInner, uColorOuter, clamp(radialT, 0.0, 1.0));
-  col *= 0.58 + cloudDensity * 0.55 + filamentDensity * 0.16;
-  gl_FragColor = vec4(col, density * uOpacity);
+${fogDensityTail}
 }
 `
 

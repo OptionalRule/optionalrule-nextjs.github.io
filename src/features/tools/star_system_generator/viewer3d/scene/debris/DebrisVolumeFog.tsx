@@ -9,6 +9,8 @@ import { makeVolumeFogMaterial, type VolumeFogMode } from './volumeFogMaterial'
 // Every shell layer uses an identical unit sphere — per-layer radius/offset live
 // in the mesh model matrix (scale/position), and the shell shader path is
 // scale-invariant — so all shell fog across all fields can share one geometry.
+// Kept local rather than in renderAssets so this focused module doesn't pull in
+// (and instantiate) every shared asset just for one sphere.
 const SHELL_FOG_GEOMETRY = new THREE.SphereGeometry(1, 48, 24)
 
 interface DebrisVolumeFogProps {

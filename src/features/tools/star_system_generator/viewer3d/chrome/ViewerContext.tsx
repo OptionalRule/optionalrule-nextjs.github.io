@@ -75,12 +75,12 @@ function createSelectionStore(): SelectionStore {
     },
     setSelection: (target) => {
       if (snapshot.selection === target) return
-      snapshot = { selection: target, hovered: snapshot.hovered }
+      snapshot = { ...snapshot, selection: target }
       emit()
     },
     setHovered: (target) => {
       if (snapshot.hovered === target) return
-      snapshot = { selection: snapshot.selection, hovered: target }
+      snapshot = { ...snapshot, hovered: target }
       emit()
     },
   }
