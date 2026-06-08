@@ -48,7 +48,7 @@
     "@react-three/postprocessing": "^3.0.4",
     "@tailwindcss/typography": "^0.5.19",
     "@types/mdx": "^2.0.13",
-    "fuse.js": "^7.4.1",
+    "fuse.js": "^7.4.2",
     "globby": "^16.2.0",
     "gray-matter": "^4.0.3",
     "lucide-react": "^1.17.0",
