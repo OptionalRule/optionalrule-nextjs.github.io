@@ -47,7 +47,7 @@
     "@react-three/fiber": "^9.6.1",
     "@react-three/postprocessing": "^3.0.4",
     "@tailwindcss/typography": "^0.5.19",
-    "@types/mdx": "^2.0.13",
+    "@types/mdx": "^2.0.14",
     "fuse.js": "^7.4.1",
     "globby": "^16.2.0",
     "gray-matter": "^4.0.3",
