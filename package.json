@@ -81,7 +81,7 @@
     "baseline-browser-mapping": "^2.10.34",
     "eslint": "9.39.3",
     "eslint-config-next": "^16.2.7",
-    "happy-dom": "^20.10.1",
+    "happy-dom": "^20.10.2",
     "jest-axe": "^10.0.0",
     "playwright": "^1.60.0",
     "tailwindcss": "^4.3.0",
