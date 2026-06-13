@@ -184,6 +184,7 @@ describe('CONTRADICTS:ruinHook-vs-settlementAuthority', () => {
     expect(matches).toHaveLength(1)
     expect(matches[0].subject.id).toBe('ruin-1')
     expect(matches[0].object.id).toBe('settlement-1')
+    expect(matches[0].qualifier).toBeUndefined()
   })
 
   it('does not match when ruin and settlement are on different bodies', () => {

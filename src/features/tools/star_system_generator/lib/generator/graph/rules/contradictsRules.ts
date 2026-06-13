@@ -43,7 +43,7 @@ export const contradictsRuinHookAuthorityRule: EdgeRule = {
         matches.push({
           subject: ruinRef,
           object: settlementRef,
-          qualifier: concretizeDomain(overlap[0]),
+          qualifier: overlap.length > 0 ? concretizeDomain(overlap[0]) : undefined,
           groundingFactIds: [ruinFact.id, authFact.id],
         })
       }
