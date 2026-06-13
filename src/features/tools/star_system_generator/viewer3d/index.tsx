@@ -23,6 +23,17 @@ import { DebrisFieldCard } from './chrome/DebrisFieldCard'
 import { useScaleMode, useSelectionState } from './chrome/ViewerContext'
 import type { OrbitScaleMode } from './types'
 
+let clockWarnFilterInstalled = false
+function installThreeClockWarnFilter(): void {
+  if (clockWarnFilterInstalled) return
+  clockWarnFilterInstalled = true
+  const original = console.warn
+  console.warn = (...args: unknown[]) => {
+    if (typeof args[0] === 'string' && args[0].startsWith('THREE.Clock')) return
+    original.apply(console, args)
+  }
+}
+
 export interface SystemViewer3DModalProps {
   system: GeneratedSystem
   onClose: () => void
@@ -80,12 +91,7 @@ function SystemViewer3DModalContent({ system, onClose, title }: SystemViewer3DMo
     return () => window.removeEventListener('viewer3d:close', handler)
   }, [onClose])
   useEffect(() => {
-    const original = console.warn
-    console.warn = (...args: unknown[]) => {
-      if (typeof args[0] === 'string' && args[0].startsWith('THREE.Clock')) return
-      original.apply(console, args)
-    }
-    return () => { console.warn = original }
+    installThreeClockWarnFilter()
   }, [])
   return (
     <ViewerModal
