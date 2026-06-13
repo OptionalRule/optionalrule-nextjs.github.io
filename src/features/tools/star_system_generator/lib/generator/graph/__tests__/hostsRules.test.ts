@@ -161,7 +161,7 @@ describe('HOSTS:body-ruin location matching', () => {
         settlements: [],
         guOverlay: { resource: { value: 'r' }, hazard: { value: 'h' } },
         phenomena: [],
-        ruins: [{ id: 'remnant-1', location: { value: 'Kerrigan IV surface' } }],
+        ruins: [{ id: 'remnant-1', remnantType: { value: 'Colony shell' }, location: { value: 'Kerrigan IV surface' } }],
         narrativeFacts: [],
       },
       entities: [
@@ -186,7 +186,7 @@ describe('HOSTS:body-ruin location matching', () => {
         settlements: [],
         guOverlay: { resource: { value: 'r' }, hazard: { value: 'h' } },
         phenomena: [],
-        ruins: [{ id: 'remnant-1', location: { value: 'Kerrigan Reach orbital band' } }],
+        ruins: [{ id: 'remnant-1', remnantType: { value: 'Colony shell' }, location: { value: 'Kerrigan Reach orbital band' } }],
         narrativeFacts: [],
       },
       entities: [
