@@ -65,7 +65,7 @@ export function spatialExtentForShape(shape: DebrisFieldShape, inputs: SpatialIn
         centerAngleDeg: f(0, 'symmetric'),
       }
     case 'trojan-camp': {
-      const side = (inputs.separationAu * 1000) % 2 < 1 ? 60 : -60
+      const side = Math.round(inputs.separationAu * 1000) % 2 === 0 ? 60 : -60
       return {
         innerAu: f(inputs.separationAu * 0.9, 'co-orbital with companion'),
         outerAu: f(inputs.separationAu * 1.1, 'co-orbital'),
