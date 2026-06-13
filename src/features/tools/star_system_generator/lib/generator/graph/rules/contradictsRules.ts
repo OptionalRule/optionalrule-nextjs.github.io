@@ -1,28 +1,9 @@
-import type { EdgeRule, RuleMatch, BuildCtx } from './ruleTypes'
+import type { EdgeRule, RuleMatch } from './ruleTypes'
 import { mintEdgeId } from './ruleTypes'
 import {
   containsWord, sharedDomains, matchesAny, CONTRADICTION_KEYWORDS, concretizeDomain,
 } from './settingPatterns'
-import type { EntityRef } from '../types'
-import { buildFactionMetadataByName } from '../../factions'
-
-function findControllingFaction(settlement: EntityRef, ctx: BuildCtx): EntityRef | undefined {
-  const authorityFacts = (ctx.factsBySubjectId.get(settlement.id) ?? [])
-    .filter(f => f.kind === 'settlement.authority')
-  if (authorityFacts.length === 0) return undefined
-  const authorityText = authorityFacts[0].value.value
-  const factionMeta = buildFactionMetadataByName(ctx.factsByKind)
-  const factionEntities = ctx.entities.filter(e => e.kind === 'namedFaction')
-  const matched: EntityRef[] = []
-  for (const factionEntity of factionEntities) {
-    const faction = factionMeta.get(factionEntity.displayName)
-    if (!faction) continue
-    if (faction.domains.some(d => containsWord(authorityText, d))) {
-      matched.push(factionEntity)
-    }
-  }
-  return matched.length === 1 ? matched[0] : undefined
-}
+import { findControllingFaction } from './factionHelpers'
 
 export const contradictsRuinHookAuthorityRule: EdgeRule = {
   id: 'CONTRADICTS:ruinHook-vs-settlementAuthority',

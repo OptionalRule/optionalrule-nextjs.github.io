@@ -1,25 +1,8 @@
-import type { NarrativeFact } from '../../../../types'
 import type { EdgeRule, RuleMatch } from './ruleTypes'
 import { mintEdgeId } from './ruleTypes'
 import { sharedDomains, containsWord, concretizeDomain } from './settingPatterns'
-import type { EntityRef } from '../types'
 import { buildFactionMetadataByName } from '../../factions'
-
-function getFactionEntities(entities: ReadonlyArray<EntityRef>): EntityRef[] {
-  return entities.filter(e => e.kind === 'namedFaction')
-}
-
-function factionFactIdsForName(
-  factsByKind: ReadonlyMap<string, ReadonlyArray<NarrativeFact>>,
-  name: string,
-): string[] {
-  const facts = factsByKind.get('namedFaction') ?? []
-  const ids: string[] = []
-  for (const fact of facts) {
-    if (fact.value.value === name) ids.push(fact.id)
-  }
-  return ids
-}
+import { getFactionEntities, factionFactIdsForName } from './factionHelpers'
 
 export const contestsSharedDomainRule: EdgeRule = {
   id: 'CONTESTS:namedFaction-namedFaction-sharedDomain',
