@@ -4419,11 +4419,17 @@ export function generateSystem(options: GenerationOptions, knownSystem?: Partial
     debrisFields,
     bodyOrbitAuById,
   )
+  const bodyOrbitAuByName = new Map(bodies.map(b => [b.name.value, b.orbitAu.value]))
+  const ruinBodyOrbitById = new Map<string, number>()
+  for (const ruin of ruins) {
+    const ruinOrbitAu = bodyOrbitAuByName.get(ruin.location.value)
+    if (ruinOrbitAu !== undefined) ruinBodyOrbitById.set(ruin.id, ruinOrbitAu)
+  }
   const ruinsWithDebris = attachRuinsToDebrisFields(
     rootRng.fork('debris-ruin-anchor'),
     ruins,
     debrisFields,
-    new Map(),
+    ruinBodyOrbitById,
   )
 
   const companionsWithSubSystems: StellarCompanion[] = companions.map((companion, idx) => {

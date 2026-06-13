@@ -19,16 +19,30 @@ describe('settlement and ruin attachment to debris fields', () => {
     }
   })
 
-  it('ruins do not gain debrisFieldId in v1 (HumanRemnant has no body-id reference for orbit lookup)', () => {
-    let scanned = 0
-    for (let i = 0; i < 50; i++) {
-      const sys = generateSystem({ ...baseOptions, settlements: 'crowded' as const, seed: `attach-ruin-${i}` })
+  it('ruins attached to debris fields lie within the field spatial extent', () => {
+    for (let i = 0; i < 200; i++) {
+      const sys = generateSystem({ ...baseOptions, gu: 'fracture' as const, settlements: 'crowded' as const, seed: `attach-ruin-extent-${i}` })
+      const orbitByName = new Map(sys.bodies.map(b => [b.name.value, b.orbitAu.value]))
       for (const r of sys.ruins) {
-        scanned++
-        expect(r.debrisFieldId, `ruin ${r.id} unexpectedly carries debrisFieldId — ruin attachment was deferred (spec §Pipeline)`).toBeUndefined()
+        if (!r.debrisFieldId) continue
+        const field = sys.debrisFields.find(d => d.id === r.debrisFieldId)
+        expect(field, `ruin ${r.id} references missing field ${r.debrisFieldId}`).toBeTruthy()
+        const orbit = orbitByName.get(r.location.value)
+        expect(orbit, `ruin ${r.id} location ${r.location.value} matches no body`).toBeDefined()
+        expect(orbit!).toBeGreaterThanOrEqual(field!.spatialExtent.innerAu.value)
+        expect(orbit!).toBeLessThanOrEqual(field!.spatialExtent.outerAu.value)
+        expect(field!.anchorMode.value, `ruin on unanchorable field ${field!.id}`).not.toBe('unanchorable')
       }
     }
-    expect(scanned, 'sweep generated no ruins to scan').toBeGreaterThan(0)
+  })
+
+  it('at least one ruin attaches to a debris field somewhere in the sweep', () => {
+    let totalAttached = 0
+    for (let i = 0; i < 200; i++) {
+      const sys = generateSystem({ ...baseOptions, gu: 'fracture' as const, settlements: 'crowded' as const, seed: `attach-ruin-sweep-${i}` })
+      totalAttached += sys.ruins.filter(r => r.debrisFieldId).length
+    }
+    expect(totalAttached, 'no ruin attached across 200 fracture-gu seeds').toBeGreaterThan(0)
   })
 
   it('transient-only fields only attract mobile habitation patterns', () => {
