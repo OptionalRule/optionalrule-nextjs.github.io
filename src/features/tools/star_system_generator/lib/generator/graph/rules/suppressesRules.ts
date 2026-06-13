@@ -79,6 +79,8 @@ export const suppressesAuthorityHiddenTruthRule: EdgeRule = {
 
       const authorityFacts = (ctx.factsBySubjectId.get(hiddenFact.subjectId) ?? [])
         .filter(f => f.kind === 'settlement.authority')
+        .slice()
+        .sort((a, b) => (a.id < b.id ? -1 : a.id > b.id ? 1 : 0))
       if (authorityFacts.length === 0) continue
 
       const authorityFact = authorityFacts[0]
