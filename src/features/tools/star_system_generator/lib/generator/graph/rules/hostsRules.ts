@@ -1,5 +1,6 @@
 import { mintEdgeId, type EdgeRule, type RuleMatch } from './ruleTypes'
 import type { EntityRef } from '../types'
+import { containsWord } from './settingPatterns'
 
 export const hostsBodySettlementRule: EdgeRule = {
   id: 'HOSTS:body-settlement',
@@ -53,14 +54,19 @@ export const hostsBodyRuinRule: EdgeRule = {
   defaultVisibility: 'public',
   match(ctx) {
     const matches: RuleMatch[] = []
+    const bodyRefs = ctx.entities.filter(e => e.kind === 'body')
     const bodyByName = new Map<string, EntityRef>()
-    for (const e of ctx.entities) {
-      if (e.kind === 'body') bodyByName.set(e.displayName, e)
-    }
+    for (const e of bodyRefs) bodyByName.set(e.displayName, e)
     for (const ruin of ctx.input.ruins) {
       const locName = ruin.location?.value
       if (!locName) continue
-      const bodyRef = bodyByName.get(locName)
+      let bodyRef = bodyByName.get(locName)
+      if (!bodyRef) {
+        const candidates = bodyRefs
+          .filter(b => containsWord(locName, b.displayName))
+          .sort((a, b) => b.displayName.length - a.displayName.length || (a.id < b.id ? -1 : 1))
+        bodyRef = candidates[0]
+      }
       if (!bodyRef) continue
       const ruinRef = ctx.entitiesById.get(ruin.id)
       if (!ruinRef) continue

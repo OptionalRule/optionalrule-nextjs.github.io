@@ -151,3 +151,52 @@ describe('HOSTS:body-ruin', () => {
     expect(hostsBodyRuinRule.match(ctx)).toHaveLength(0)
   })
 })
+
+describe('HOSTS:body-ruin location matching', () => {
+  it('matches a ruin whose location embeds the body name in a longer phrase', () => {
+    const ctx = makeCtx({
+      input: {
+        systemName: 't', primary: { spectralType: { value: 'G' } }, companions: [],
+        bodies: [{ id: 'body-1', name: { value: 'Kerrigan IV' } }],
+        settlements: [],
+        guOverlay: { resource: { value: 'r' }, hazard: { value: 'h' } },
+        phenomena: [],
+        ruins: [{ id: 'remnant-1', location: { value: 'Kerrigan IV surface' } }],
+        narrativeFacts: [],
+      },
+      entities: [
+        { kind: 'body', id: 'body-1', displayName: 'Kerrigan IV', layer: 'physical' },
+        { kind: 'ruin', id: 'remnant-1', displayName: 'Remnant', layer: 'human' },
+      ],
+    })
+    const matches = hostsBodyRuinRule.match(ctx)
+    expect(matches).toHaveLength(1)
+    expect(matches[0].subject.id).toBe('body-1')
+    expect(matches[0].object.id).toBe('remnant-1')
+  })
+
+  it('prefers the longest matching body name when several names appear in the location', () => {
+    const ctx = makeCtx({
+      input: {
+        systemName: 't', primary: { spectralType: { value: 'G' } }, companions: [],
+        bodies: [
+          { id: 'body-1', name: { value: 'Kerrigan' } },
+          { id: 'body-2', name: { value: 'Kerrigan Reach' } },
+        ],
+        settlements: [],
+        guOverlay: { resource: { value: 'r' }, hazard: { value: 'h' } },
+        phenomena: [],
+        ruins: [{ id: 'remnant-1', location: { value: 'Kerrigan Reach orbital band' } }],
+        narrativeFacts: [],
+      },
+      entities: [
+        { kind: 'body', id: 'body-1', displayName: 'Kerrigan', layer: 'physical' },
+        { kind: 'body', id: 'body-2', displayName: 'Kerrigan Reach', layer: 'physical' },
+        { kind: 'ruin', id: 'remnant-1', displayName: 'Remnant', layer: 'human' },
+      ],
+    })
+    const matches = hostsBodyRuinRule.match(ctx)
+    expect(matches).toHaveLength(1)
+    expect(matches[0].subject.id).toBe('body-2')
+  })
+})
