@@ -62,10 +62,10 @@ export function SystemOverview({ system }: { system: GeneratedSystem }) {
           Stellar Zones
         </h3>
         <dl className="mt-2 grid gap-3 text-sm sm:grid-cols-2 lg:grid-cols-4">
-          <ZoneStat label="HZ inner" value={`${system.zones.habitableInnerAu.value} AU`} accent="emerald" />
-          <ZoneStat label="HZ center" value={`${system.zones.habitableCenterAu.value} AU`} accent="emerald" emphasized />
-          <ZoneStat label="HZ outer" value={`${system.zones.habitableOuterAu.value} AU`} accent="emerald" />
-          <ZoneStat label="Snow line" value={`${system.zones.snowLineAu.value} AU`} accent="sky" />
+          <ZoneStat label="HZ inner" value={`${formatSignificant(system.zones.habitableInnerAu.value)} AU`} accent="emerald" />
+          <ZoneStat label="HZ center" value={`${formatSignificant(system.zones.habitableCenterAu.value)} AU`} accent="emerald" emphasized />
+          <ZoneStat label="HZ outer" value={`${formatSignificant(system.zones.habitableOuterAu.value)} AU`} accent="emerald" />
+          <ZoneStat label="Snow line" value={`${formatSignificant(system.zones.snowLineAu.value)} AU`} accent="sky" />
         </dl>
       </div>
 
@@ -246,4 +246,10 @@ function formatCompactNumber(value: number): string {
   if (value >= 1) return value.toFixed(2)
   if (value >= 0.01) return value.toFixed(3)
   return value.toFixed(4)
+}
+
+function formatSignificant(value: number, sig = 3): string {
+  if (!Number.isFinite(value)) return String(value)
+  if (value === 0) return '0'
+  return String(Number(value.toPrecision(sig)))
 }
