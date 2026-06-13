@@ -1254,6 +1254,10 @@ function applyModernExoplanetFilters(
 ): FilteredWorldClass {
   let current: FilteredWorldClass = { bodyClass, physical, filterNotes: [] }
   const preservePlannedGiant = architectureName === 'Giant-rich or chaotic' && (bodyClass.category === 'gas-giant' || bodyClass.category === 'ice-giant')
+  // Pass order and count are part of the seed contract: each filter conditionally
+  // consumes RNG draws based on the category produced by earlier passes, so
+  // reordering, adding, or removing a pass shifts the RNG stream for every
+  // subsequent draw in this body's generation.
   if (!preservePlannedGiant) current = applyHotNeptuneDesertFilter(rng, thermalZone, current)
   current = applyRadiusValleyFilter(rng, current)
   current = applyPeasInPodFilter(rng, architectureName, thermalZone, previous, current)
