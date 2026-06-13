@@ -46,7 +46,7 @@ export function Scene({ graph, system }: SceneProps) {
   const { layers } = useLayers()
   const { select, hover } = useSelectionActions()
   const prefersReducedMotion = usePrefersReducedMotion()
-  const [supported] = useState<boolean>(() => typeof document === 'undefined' ? true : detectWebGL())
+  const [supported] = useState<boolean>(() => typeof document === 'undefined' ? false : detectWebGL())
   const [qualityScale, setQualityScale] = useState(1)
   // Rich post-processing (bloom + nebula) starts on and degrades ONE-WAY: the first
   // time PerformanceMonitor reports a hard fallback we shed it permanently for the
