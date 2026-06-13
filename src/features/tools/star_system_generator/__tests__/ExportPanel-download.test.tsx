@@ -15,11 +15,11 @@ const system = generateSystem({
 
 describe('ExportPanel download', () => {
   beforeEach(() => {
-    vi.stubGlobal('URL', {
-      ...URL,
-      createObjectURL: vi.fn(() => 'blob:test'),
-      revokeObjectURL: vi.fn(),
-    })
+    class URLStub extends URL {
+      static createObjectURL = vi.fn(() => 'blob:test')
+      static revokeObjectURL = vi.fn()
+    }
+    vi.stubGlobal('URL', URLStub)
   })
 
   afterEach(() => {
