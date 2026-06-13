@@ -134,8 +134,8 @@ function CompanionCard({ companion }: { companion: GeneratedSystem['companions']
     </dl>
   )
 
-  if (companion.mode === 'linked-independent') {
-    const url = buildSeedHref(companion.linkedSeed!.value)
+  if (companion.mode === 'linked-independent' && companion.linkedSeed) {
+    const url = buildSeedHref(companion.linkedSeed.value)
     return (
       <div className="rounded-md border border-[var(--border-light)] bg-[var(--card-elevated)] p-3 text-sm">
         <h3 className="text-[0.68rem] font-semibold uppercase tracking-[0.08em] text-[var(--text-tertiary)]">
