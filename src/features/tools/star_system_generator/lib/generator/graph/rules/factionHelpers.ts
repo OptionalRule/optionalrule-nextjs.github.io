@@ -23,6 +23,8 @@ export function factionFactIdsForName(
 export function findControllingFaction(settlement: EntityRef, ctx: BuildCtx): EntityRef | undefined {
   const authorityFacts = (ctx.factsBySubjectId.get(settlement.id) ?? [])
     .filter(f => f.kind === 'settlement.authority')
+    .slice()
+    .sort((a, b) => (a.id < b.id ? -1 : a.id > b.id ? 1 : 0))
   if (authorityFacts.length === 0) return undefined
   const authorityText = authorityFacts[0].value.value
   const factionMeta = buildFactionMetadataByName(ctx.factsByKind)
