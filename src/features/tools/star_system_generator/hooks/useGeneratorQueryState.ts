@@ -68,11 +68,22 @@ export function useGeneratorQueryState(): [GenerationOptions, (next: Partial<Gen
 
   const setQueryState = useCallback((next: Partial<GenerationOptions>) => {
     setOptions((current) => {
-      return {
+      const candidate: GenerationOptions = {
         ...current,
         ...next,
         seed: next.seed !== undefined ? normalizeSeed(next.seed) : current.seed,
       }
+      if (
+        candidate.seed === current.seed
+        && candidate.distribution === current.distribution
+        && candidate.tone === current.tone
+        && candidate.gu === current.gu
+        && candidate.settlements === current.settlements
+        && candidate.graphAware === current.graphAware
+      ) {
+        return current
+      }
+      return candidate
     })
   }, [])
 

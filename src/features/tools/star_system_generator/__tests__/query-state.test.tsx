@@ -4,6 +4,7 @@ import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { describe, expect, it } from 'vitest'
 import { useGeneratorQueryState } from '../hooks/useGeneratorQueryState'
+import type { GenerationOptions } from '../types'
 
 function Harness() {
   const [state, setState] = useGeneratorQueryState()
@@ -32,6 +33,29 @@ describe('useGeneratorQueryState', () => {
       expect(window.location.search).toContain('seed=abc123')
       expect(window.location.search).toContain('distribution=realistic')
     })
+  })
+
+  it('returns the same state object for a no-op update', async () => {
+    const capturedStates: GenerationOptions[] = []
+    function StableHarness() {
+      const [state, setState] = useGeneratorQueryState()
+      React.useEffect(() => {
+        capturedStates.push(state)
+      })
+      return (
+        <div>
+          <button onClick={() => setState({ tone: state.tone, seed: state.seed })}>noop</button>
+        </div>
+      )
+    }
+    window.history.replaceState(null, '', '/tools/star_system_generator/?seed=7f3a9c2e')
+    render(<StableHarness />)
+    await waitFor(() => expect(capturedStates.length).toBeGreaterThan(0))
+    const refBefore = capturedStates[capturedStates.length - 1]
+    const countBefore = capturedStates.length
+    await userEvent.click(screen.getByText('noop'))
+    expect(capturedStates.length).toBe(countBefore)
+    expect(capturedStates[capturedStates.length - 1]).toBe(refBefore)
   })
 
 })

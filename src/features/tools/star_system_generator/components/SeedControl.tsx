@@ -13,6 +13,24 @@ interface SeedControlProps {
 export function SeedControl({ options, onChange }: SeedControlProps) {
   const [copyStatus, setCopyStatus] = useState<'idle' | 'copied' | 'failed'>('idle')
   const timeoutRef = useRef<number | null>(null)
+  const [draft, setDraft] = useState(options.seed)
+  const commitTimeoutRef = useRef<number | null>(null)
+
+  useEffect(() => {
+    setDraft(options.seed)
+    if (commitTimeoutRef.current) {
+      window.clearTimeout(commitTimeoutRef.current)
+      commitTimeoutRef.current = null
+    }
+  }, [options.seed])
+
+  useEffect(() => {
+    return () => {
+      if (commitTimeoutRef.current) {
+        window.clearTimeout(commitTimeoutRef.current)
+      }
+    }
+  }, [])
 
   useEffect(() => {
     return () => {
@@ -21,6 +39,17 @@ export function SeedControl({ options, onChange }: SeedControlProps) {
       }
     }
   }, [])
+
+  function handleSeedInput(value: string) {
+    setDraft(value)
+    if (commitTimeoutRef.current) {
+      window.clearTimeout(commitTimeoutRef.current)
+    }
+    commitTimeoutRef.current = window.setTimeout(() => {
+      commitTimeoutRef.current = null
+      onChange({ seed: value })
+    }, 300)
+  }
 
   async function copyLink() {
     try {
@@ -41,8 +70,8 @@ export function SeedControl({ options, onChange }: SeedControlProps) {
       <label className="flex min-w-0 flex-1 flex-col gap-1 text-sm font-medium text-[var(--text-secondary)]">
         Seed
         <input
-          value={options.seed}
-          onChange={(event) => onChange({ seed: event.target.value })}
+          value={draft}
+          onChange={(event) => handleSeedInput(event.target.value)}
           className="h-10 rounded-md border border-[var(--border)] bg-[var(--background)] px-3 font-mono text-sm text-[var(--text-primary)] outline-none focus-visible:ring-2 focus-visible:ring-[var(--focus-ring)]"
           spellCheck={false}
         />
