@@ -18,6 +18,8 @@ interface Cloud {
 // Hand-placed so the backdrop reads as a few deliberate gas clouds rather than
 // random noise. Directions are unit-ish vectors; positions are derived from
 // sceneRadius so the nebula always sits behind the system at any zoom.
+const NEBULA_PLANE_GEOMETRY = new THREE.PlaneGeometry(1, 1)
+
 const CLOUDS: ReadonlyArray<Cloud> = [
   { dir: [-0.8, 0.35, -0.5], color: '#5a2f8a', scale: 3.4, opacity: 0.1 },
   { dir: [0.7, -0.25, -0.6], color: '#1f4f8a', scale: 3.0, opacity: 0.09 },
@@ -94,11 +96,12 @@ export function Nebula({ sceneRadius }: NebulaProps) {
         <mesh
           key={index}
           position={plane.position}
+          scale={plane.size}
           material={plane.material}
+          geometry={NEBULA_PLANE_GEOMETRY}
+          dispose={null}
           renderOrder={-5}
-        >
-          <planeGeometry args={[plane.size, plane.size]} />
-        </mesh>
+        />
       ))}
     </group>
   )
