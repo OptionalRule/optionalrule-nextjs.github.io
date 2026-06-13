@@ -13,7 +13,7 @@ export function GeneratorControls({ options, onChange }: GeneratorControlsProps)
       <SelectControl
         label="Distribution"
         value={options.distribution}
-        onChange={(distribution) => onChange({ distribution: distribution as GenerationOptions['distribution'] })}
+        onChange={(distribution) => onChange({ distribution })}
         options={[
           ['frontier', 'Reachable frontier'],
           ['realistic', 'Realistic local-ish'],
@@ -22,7 +22,7 @@ export function GeneratorControls({ options, onChange }: GeneratorControlsProps)
       <SelectControl
         label="Tone"
         value={options.tone}
-        onChange={(tone) => onChange({ tone: tone as GenerationOptions['tone'] })}
+        onChange={(tone) => onChange({ tone })}
         options={[
           ['balanced', 'Balanced'],
           ['astronomy', 'Astronomy-forward'],
@@ -32,7 +32,7 @@ export function GeneratorControls({ options, onChange }: GeneratorControlsProps)
       <SelectControl
         label="GU Intensity"
         value={options.gu}
-        onChange={(gu) => onChange({ gu: gu as GenerationOptions['gu'] })}
+        onChange={(gu) => onChange({ gu })}
         options={[
           ['normal', 'Normal'],
           ['low', 'Low'],
@@ -43,7 +43,7 @@ export function GeneratorControls({ options, onChange }: GeneratorControlsProps)
       <SelectControl
         label="Settlements"
         value={options.settlements}
-        onChange={(settlements) => onChange({ settlements: settlements as GenerationOptions['settlements'] })}
+        onChange={(settlements) => onChange({ settlements })}
         options={[
           ['normal', 'Normal'],
           ['sparse', 'Sparse'],
@@ -55,23 +55,23 @@ export function GeneratorControls({ options, onChange }: GeneratorControlsProps)
   )
 }
 
-function SelectControl({
+function SelectControl<T extends string>({
   label,
   value,
   options,
   onChange,
 }: {
   label: string
-  value: string
-  options: Array<[string, string]>
-  onChange: (value: string) => void
+  value: T
+  options: Array<[T, string]>
+  onChange: (value: T) => void
 }) {
   return (
     <label className="flex flex-col gap-1 text-sm font-medium text-[var(--text-secondary)]">
       {label}
       <select
         value={value}
-        onChange={(event) => onChange(event.target.value)}
+        onChange={(event) => onChange(event.target.value as T)}
         className="h-10 rounded-md border border-[var(--border)] bg-[var(--background)] px-3 text-sm text-[var(--text-primary)] outline-none focus-visible:ring-2 focus-visible:ring-[var(--focus-ring)]"
       >
         {options.map(([optionValue, optionLabel]) => (
