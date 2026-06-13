@@ -1,6 +1,6 @@
 'use client'
 
-import { forwardRef, useEffect, useRef, useState } from 'react'
+import { forwardRef, useEffect, useMemo, useRef, useState } from 'react'
 import { Html } from '@react-three/drei'
 import { useFrame } from '@react-three/fiber'
 import * as THREE from 'three'
@@ -58,7 +58,7 @@ export function BodyDetailCard({ graph, system }: BodyDetailCardProps) {
   const cardRef = useRef<HTMLDivElement | null>(null)
   const lastUpdateRef = useRef(0)
 
-  const resolved = resolveSelection(graph, system, selection)
+  const resolved = useMemo(() => resolveSelection(graph, system, selection), [graph, system, selection])
   const bodyId = resolved?.bodyId ?? null
 
   useEffect(() => {

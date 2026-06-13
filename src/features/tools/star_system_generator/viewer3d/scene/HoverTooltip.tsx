@@ -2,7 +2,7 @@
 
 import { Html } from '@react-three/drei'
 import { useFrame } from '@react-three/fiber'
-import { useRef, useState } from 'react'
+import { useMemo, useRef, useState } from 'react'
 import type { GeneratedSystem } from '../../types'
 import type { SystemSceneGraph } from '../types'
 import { useSelectionState, type SelectionTarget } from '../chrome/ViewerContext'
@@ -161,7 +161,10 @@ export function HoverTooltip({ graph, system }: { graph: SystemSceneGraph; syste
     })
   })
 
-  const tip = resolveTooltip(hovered, graph, system, liveBodyPosition)
+  const tip = useMemo(
+    () => resolveTooltip(hovered, graph, system, liveBodyPosition),
+    [hovered, graph, system, liveBodyPosition],
+  )
   if (!tip) return null
   if (tip.withLeader) {
     const leaderDx = 28
