@@ -21,18 +21,17 @@ interface DustBillboardsProps {
   billboards: DustBillboard[]
 }
 
-const QUAD_GEOMETRY = new THREE.PlaneGeometry(1, 1)
-
 export function DustBillboards({ fieldId, color, opacity, billboards }: DustBillboardsProps) {
   const material = useMemo(() => getDustBillboardMaterial({ color, opacity }), [color, opacity])
 
   const instanced = useMemo(() => {
     if (billboards.length === 0) return null
+    const quad = new THREE.PlaneGeometry(1, 1)
     const geometry = new THREE.InstancedBufferGeometry()
-    geometry.index = QUAD_GEOMETRY.index
-    geometry.attributes.position = QUAD_GEOMETRY.attributes.position
-    geometry.attributes.uv = QUAD_GEOMETRY.attributes.uv
-    geometry.attributes.normal = QUAD_GEOMETRY.attributes.normal
+    geometry.index = quad.index
+    geometry.attributes.position = quad.attributes.position
+    geometry.attributes.uv = quad.attributes.uv
+    geometry.attributes.normal = quad.attributes.normal
 
     const offsets = new Float32Array(billboards.length * 3)
     const scales = new Float32Array(billboards.length)
@@ -67,11 +66,14 @@ export function DustBillboards({ fieldId, color, opacity, billboards }: DustBill
     const mesh = new THREE.Mesh(geometry, material)
     mesh.name = `dust-billboards-${fieldId}`
     mesh.frustumCulled = false
-    return { geometry, mesh }
+    return { geometry, quad, mesh }
   }, [billboards, fieldId, material])
 
   useEffect(() => () => {
-    if (instanced) instanced.geometry.dispose()
+    if (instanced) {
+      instanced.geometry.dispose()
+      instanced.quad.dispose()
+    }
   }, [instanced])
 
   if (!instanced) return null

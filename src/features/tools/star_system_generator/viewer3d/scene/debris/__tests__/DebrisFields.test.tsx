@@ -11,6 +11,7 @@ vi.mock('three', () => {
   class PlaneGeometry {
     attributes = { position: {}, uv: {}, normal: {} }
     index = {}
+    dispose() {}
   }
   class DodecahedronGeometry {}
   class IcosahedronGeometry {}
