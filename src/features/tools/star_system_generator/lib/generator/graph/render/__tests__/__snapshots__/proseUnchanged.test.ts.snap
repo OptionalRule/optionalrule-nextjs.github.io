@@ -8,12 +8,12 @@ exports[`Phase 3 existing prose remains byte-identical > seed phase3-prose-1 pro
     "A swarm of long-period comets pumped by binary resonance returns on a predictable multi-millennial cycle.",
   ],
   "settlementTagHooks": [
-    "The public tag is Free Captain Nest; the private trouble is Flare Refuge, because survival protocols double as social control. A failed terraforming release makes the GU work impossible to treat as routine. Privately, the site is an illegal AI lab. Control of the route weather bureau decides who has leverage.",
-    "AI Whisper Cult is the surface story, but Spare Parts Monarchy shows who benefits from the tension: control of replacement parts has hardened into hereditary or cartel power. The cluster's tether-bridges are fraying, and civilian shelter overflow is the chokepoint for everyone trying to cross. Privately, the founders committed a crime. Whatever the system fights over next, the ice-chirality sorting plant is where it lands.",
+    "The public tag is Free Captain Nest; the private trouble is Flare Refuge, because survival protocols double as social control. A failed terraforming release makes the GU work impossible to treat as routine. Privately, the miracle is illegal terraforming tech. Control of the route weather bureau decides who has leverage.",
+    "AI Whisper Cult is the surface story, but Spare Parts Monarchy shows who benefits from the tension: control of replacement parts has hardened into hereditary or cartel power. Ring-rotation politics — outer-rim labor against axis governance — tip into open conflict at insurance assessor's office. Privately, the supposed unknown signal is human encryption. Whatever the system fights over next, the archive court is where it lands.",
   ],
   "settlementWhyHere": [
-    "Irena-61 III route geometry keeps a footprint on Irena-61 III only because of Phase-stable superconductive lattice. Irena-61 III route geometry stays because the yield outweighs everything that wants it gone.",
-    "Irena-61 Belt V maintains its footprint on the body it occupies. The reading here is high enough that Irena-61 Belt V accepts the risk and the silence.",
+    "Irena-61 III route geometry is built into this orbital and works the surface from there. Irena-61 III route geometry stays because the yield outweighs everything that wants it gone.",
+    "Irena-61 Belt V route geometry maintains its footprint on the body it occupies. The reading here is high enough that Irena-61 Belt V route geometry accepts the risk and the silence.",
   ],
   "systemName": "Irena-61",
 }
@@ -26,10 +26,12 @@ exports[`Phase 3 existing prose remains byte-identical > seed phase3-prose-2 pro
     "Transit: Radiation belts force looping transfers, hardened shelters, and costly orbital delays. Question: Which supposedly safe corridor shifted, and who knew before the convoy entered? Hook: Port authorities, insurers, and smugglers fight over legal and lethal corridor maps. Image: A navigation vault shows a convoy bending toward an uncharted hot belt.",
   ],
   "settlementTagHooks": [
-    "Outsiders call it Deep Ice, but the local pressure is sharper: travel, debt, and risk all orbit the next moving bleed opportunity. A corporate security crackdown makes the GU work impossible to treat as routine. Privately, the settlement has an evacuation ark nobody knows about. Whoever runs the quarantine station sets the terms here.",
+    "Outsiders call it Deep Ice, but the local pressure is sharper: travel, debt, and risk all orbit the next moving bleed opportunity. A corporate security crackdown makes the GU work impossible to treat as routine. Privately, corporate records were altered. Whoever runs the quarantine station sets the terms here.",
+    "The public tag is Anti-Corporate Commune; the private trouble is Clinic Black Market, because treatment, exposure data, and medical chirality stock all move off-book. When AI witness testimony becomes publicly accessible, the situation makes the GU work impossible to treat as routine. Privately, the leader is a proxy for a distant faction. Whoever runs the ship repair yard sets the terms here.",
   ],
   "settlementWhyHere": [
     "Meissa's Forge V minor-body complex is built into this orbital and works the surface from there. The reading here is high enough that Meissa's Forge V minor-body complex accepts the risk and the silence.",
+    "Meissa's Forge Belt VI orbital space is anchored to Meissa's Forge Belt VI, with Snow-line organochemical feedstock keeping it viable. Meissa's Forge Belt VI orbital space stays because the yield outweighs everything that wants it gone.",
   ],
   "systemName": "Meissa's Forge",
 }
@@ -43,7 +45,7 @@ exports[`Phase 3 existing prose remains byte-identical > seed phase3-prose-3 pro
     "Transit: Radiation belts force looping transfers, hardened shelters, and costly orbital delays. Question: Which supposedly safe corridor shifted, and who knew before the convoy entered? Hook: Port authorities, insurers, and smugglers fight over legal and lethal corridor maps. Image: A navigation vault shows a convoy bending toward an uncharted hot belt.",
   ],
   "settlementTagHooks": [
-    "The public tag is Flare Refuge; the private trouble is Moving Node Rush, because short-lived opportunity is pushing people into unsafe choices. Coordination drift across the swarm makes single-room briefing cell the choke point everyone fights over. Privately, the settlement has an evacuation ark nobody knows about. Whoever runs the civilian colony sets the terms here.",
+    "The public tag is Flare Refuge; the private trouble is Moving Node Rush, because short-lived opportunity is pushing people into unsafe choices. Coordination drift across the swarm makes single-room briefing cell the choke point everyone fights over. Privately, the archive court knows both claimants are using forged records. Whoever runs the civilian colony sets the terms here.",
   ],
   "settlementWhyHere": [
     "Shengong-Prism III - Moon I occupies Shengong-Prism III and is held in place by Medical chirality stock. Shengong-Prism III - Moon I stays because the yield outweighs everything that wants it gone.",

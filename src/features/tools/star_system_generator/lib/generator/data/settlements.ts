@@ -80,6 +80,8 @@ interface SettlementsData {
   tagPairHooks: Record<string, string>
   crises: readonly string[]
   hiddenTruths: readonly string[]
+  crisisTruthPairs: ReadonlyArray<{ crisis: string; truths: readonly string[] }>
+
   encounterSites: readonly string[]
   encounterSitesByFunctionKeyword: readonly KeywordSitePool[]
   populationTable: readonly SettlementPopulation[]
@@ -126,6 +128,7 @@ export const settlementTagPressures = Object.fromEntries(
 export const settlementTagPairHooks = typedSettlementsData.tagPairHooks
 export const settlementCrises = typedSettlementsData.crises
 export const hiddenTruths = typedSettlementsData.hiddenTruths
+export const crisisTruthPairs = typedSettlementsData.crisisTruthPairs
 export const encounterSites = typedSettlementsData.encounterSites
 export const encounterSitesByFunctionKeyword = typedSettlementsData.encounterSitesByFunctionKeyword
 export const settlementPopulationTable = typedSettlementsData.populationTable

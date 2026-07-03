@@ -118,7 +118,6 @@ import {
   guFractureFunctionsBySiteCategory,
   habitationPatternDefaults,
   hiddenTruthByHabitationPattern,
-  hiddenTruths,
   mobileFunctions,
   moonBaseFunctions,
   orbitalFunctions,
@@ -157,6 +156,7 @@ import { buildConflicts } from './conflicts'
 import { graphAwareReshape } from './prose'
 import { selectSystemHooks } from './hooks'
 import { derivePopulationLayer } from './population'
+import { selectCoherentHiddenTruth } from './settlementCoherence'
 
 export const GENERATOR_VERSION = 2 as const
 import { createSeededRng, normalizeSeed, type SeededRng } from './rng'
@@ -3295,11 +3295,11 @@ function chooseSettlementCrisis(
   return pickOne(rng, settlementCrises)
 }
 
-function chooseHiddenTruth(rng: SeededRng, habitationPattern: SettlementHabitationPattern): string {
+function chooseHiddenTruth(rng: SeededRng, habitationPattern: SettlementHabitationPattern, crisis: string): string {
   if (hiddenTruthByHabitationPattern[habitationPattern]) {
     return pickOne(rng, hiddenTruthByHabitationPattern[habitationPattern])
   }
-  return pickOne(rng, hiddenTruths)
+  return selectCoherentHiddenTruth(crisis, rng)
 }
 
 function chooseEncounterSites(
@@ -3617,7 +3617,7 @@ function generateSettlements(
     const authority = chooseSettlementAuthority(rng, habitationPattern)
     const condition = chooseSettlementCondition(rng, habitationPattern)
     const crisis = chooseSettlementCrisis(rng, habitationPattern, population)
-    const hiddenTruth = chooseHiddenTruth(rng, habitationPattern)
+    const hiddenTruth = chooseHiddenTruth(rng, habitationPattern, crisis)
     const encounterSiteValues = chooseEncounterSites(rng.fork(`encounter-sites-${index + 1}`), habitationPattern, population, settlementFunction)
     const tagHook = settlementHookSynthesis(rng.fork(`tag-hook-${index + 1}`), tags[0], tags[1], {
       habitationPattern,
