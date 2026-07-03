@@ -1,3 +1,6 @@
+import type { EntityKind } from '../types'
+import type { BuildCtx } from './ruleTypes'
+
 export const RESOURCE_KEYWORDS = [
   'chiral', 'volatile', 'bleed', 'plasma', 'ice', 'pinchdrive',
   'iggygate', 'metric', 'organism', 'spore',
@@ -67,31 +70,21 @@ export function sharedDomains(
   return out
 }
 
-const DOMAIN_TO_PHRASE: Record<string, string> = {
-  'war': 'conflict record',
-  'trade': 'trade ledger',
-  'science': 'survey data',
-  'ecology': 'biosphere dispute',
-  'crime': 'criminal record',
-  'governance': 'chain of authority',
-  'route-weather': 'safe-window forecast',
-  'medicine': 'medical findings',
-  'religion': 'doctrinal record',
-  'law': 'legal ruling',
-  'labor': 'labor agreement',
-  'archaeology': 'recovered-relic record',
-  'exploration': 'exploration log',
-  'stellar-events': 'flare record',
-  'disaster': 'casualty register',
-  'daily-life': 'daily record',
-  'public-life': 'public record',
-  'espionage': 'intelligence report',
-  'gardener-interdiction': 'Gardener interdiction notice',
-  'ai': 'AI testimony',
-  'information-integrity': 'audit trail',
-}
+const GROUNDABLE_KINDS: ReadonlySet<EntityKind> = new Set([
+  'guResource', 'phenomenon', 'route', 'gate', 'settlement', 'body',
+])
 
-export function concretizeDomain(domain: string | undefined): string {
-  if (!domain) return 'record'
-  return DOMAIN_TO_PHRASE[domain] ?? `${domain.replace(/-/g, ' ')} record`
+export function groundQualifierInEntities(
+  domain: string | undefined,
+  ctx: Pick<BuildCtx, 'entities' | 'factsBySubjectId'>,
+  excludeIds: ReadonlySet<string>,
+): string | undefined {
+  if (!domain) return undefined
+  for (const entity of ctx.entities) {
+    if (excludeIds.has(entity.id)) continue
+    if (!GROUNDABLE_KINDS.has(entity.kind)) continue
+    const facts = ctx.factsBySubjectId.get(entity.id) ?? []
+    if (facts.some(f => f.domains.includes(domain))) return entity.displayName
+  }
+  return undefined
 }

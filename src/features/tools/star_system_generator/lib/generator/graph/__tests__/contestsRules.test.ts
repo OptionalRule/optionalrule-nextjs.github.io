@@ -3,7 +3,6 @@ import {
   contestsSharedDomainRule,
   contestsAuthorityRule,
 } from '../rules/contestsRules'
-import { concretizeDomain } from '../rules/settingPatterns'
 import { buildFactIndexes } from '../rules/ruleTypes'
 import type { BuildCtx } from '../rules/ruleTypes'
 import type { EntityRef } from '../types'
@@ -113,7 +112,7 @@ describe('CONTESTS:namedFaction-namedFaction-sharedDomain', () => {
     const orderedIds = [factionAId, factionBId].sort()
     expect(match.subject.id).toBe(orderedIds[0])
     expect(match.object.id).toBe(orderedIds[1])
-    expect(match.qualifier).toBe(concretizeDomain(sharedDomain))
+    expect(match.qualifier).toBe('Hold')
     expect(match.groundingFactIds).toContain('f-auth-1')
     expect(match.groundingFactIds).toContain('f-fac-a')
     expect(match.groundingFactIds).toContain('f-fac-b')
@@ -276,7 +275,7 @@ describe('CONTESTS:namedFaction-authority', () => {
     expect(matches).toHaveLength(1)
     expect(matches[0].subject.id).toBe('faction-a')
     expect(matches[0].object.id).toBe('settlement-1')
-    expect(matches[0].qualifier).toBe(concretizeDomain(factionDomain))
+    expect(matches[0].qualifier).toBeUndefined()
     expect(matches[0].groundingFactIds).toContain('f-auth-1')
     expect(matches[0].groundingFactIds).toContain('f-fac-a')
 

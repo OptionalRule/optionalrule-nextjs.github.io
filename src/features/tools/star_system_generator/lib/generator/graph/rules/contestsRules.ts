@@ -1,6 +1,6 @@
 import type { EdgeRule, RuleMatch } from './ruleTypes'
 import { mintEdgeId } from './ruleTypes'
-import { sharedDomains, containsWord, concretizeDomain } from './settingPatterns'
+import { sharedDomains, containsWord, groundQualifierInEntities } from './settingPatterns'
 import { buildFactionMetadataByName } from '../../factions'
 import { getFactionEntities, factionFactIdsForName } from './factionHelpers'
 
@@ -49,7 +49,7 @@ export const contestsSharedDomainRule: EdgeRule = {
         matches.push({
           subject: a,
           object: b,
-          qualifier: concretizeDomain(overlap[0]),
+          qualifier: groundQualifierInEntities(overlap[0], ctx, new Set([a.id, b.id])),
           groundingFactIds: [...factionAFactIds, ...factionBFactIds, authFact.id],
         })
       }
@@ -105,7 +105,7 @@ export const contestsAuthorityRule: EdgeRule = {
         matches.push({
           subject: factionEntity,
           object: settlementRef,
-          qualifier: concretizeDomain(matchedDomain),
+          qualifier: groundQualifierInEntities(matchedDomain, ctx, new Set([factionEntity.id, settlementRef.id])),
           groundingFactIds: [...factionFactIds, fact.id],
         })
       }

@@ -1,7 +1,7 @@
 import type { EdgeRule, RuleMatch } from './ruleTypes'
 import { mintEdgeId } from './ruleTypes'
 import {
-  containsWord, sharedDomains, matchesAny, CONTRADICTION_KEYWORDS, concretizeDomain,
+  containsWord, sharedDomains, matchesAny, CONTRADICTION_KEYWORDS, groundQualifierInEntities,
 } from './settingPatterns'
 import { findControllingFaction } from './factionHelpers'
 
@@ -43,7 +43,9 @@ export const contradictsRuinHookAuthorityRule: EdgeRule = {
         matches.push({
           subject: ruinRef,
           object: settlementRef,
-          qualifier: overlap.length > 0 ? concretizeDomain(overlap[0]) : undefined,
+          qualifier: overlap.length > 0
+            ? groundQualifierInEntities(overlap[0], ctx, new Set([ruinRef.id, settlementRef.id]))
+            : undefined,
           groundingFactIds: [ruinFact.id, authFact.id],
         })
       }
@@ -101,7 +103,9 @@ export const contradictsHiddenPublicRule: EdgeRule = {
       matches.push({
         subject: settlementRef,
         object: objectRef,
-        qualifier: concretizeDomain(matchingTagHooks[0].domains[0]),
+        qualifier: groundQualifierInEntities(
+          matchingTagHooks[0].domains[0], ctx, new Set([settlementRef.id, objectRef.id]),
+        ),
         groundingFactIds: [hiddenFact.id, matchingTagHooks[0].id],
       })
     }

@@ -13,23 +13,23 @@ exports[`spine full axis matrix (16 representative cells) > baseline-frontier-as
 
 exports[`spine full axis matrix (16 representative cells) > baseline-frontier-balanced: stable spine + body[0] structural fields 1`] = `
 {
-  "body0": "Ash Meridian Navy and Helion Debt Synod both want the chain of authority. Helion Debt Synod refuses to recognize Ninth Ledger Office's authority. The compact between Glasshouse Biosafety Compact and Ninth Ledger Office has gone bad.",
+  "body0": "Helion Debt Synod and Ninth Ledger Office both want the Mothallah Corridor-631 II. Glasshouse Biosafety Compact refuses to recognize Ninth Ledger Office's authority. The compact between Ash Meridian Navy and Glasshouse Biosafety Compact has gone bad.",
   "spineEdgeType": "CONTESTS",
   "spineObjectKind": "namedFaction",
   "spineSubjectKind": "namedFaction",
-  "spineSummary": "The compact between Ash Meridian Navy and Helion Debt Synod broke before the gate cooled, Ash Meridian Navy and Helion Debt Synod can't both set the rules — and the rest of the system knows it.",
+  "spineSummary": "Helion Debt Synod and Ninth Ledger Office can't both set the rules — and the rest of the system knows it.",
   "spineVisibility": "contested",
 }
 `;
 
 exports[`spine full axis matrix (16 representative cells) > baseline-frontier-cinematic: stable spine + body[0] structural fields 1`] = `
 {
-  "body0": "Ceibo's Breach VII has been watching the moving bleed-node river eat its margins for a generation. Something is wrong under Ceibo's Breach IV, and debt-fleet anchor graveyard is the name people whisper for it. The debt-fleet anchor graveyard is closing on Ceibo's Breach VII like a tide. Ceibo's Breach VII carries Ceibo's Breach VII Station on its surface. Ceibo's Breach IV Redoubt is the only major foothold on Ceibo's Breach IV.",
-  "spineEdgeType": "DESTABILIZES",
-  "spineObjectKind": "body",
-  "spineSubjectKind": "phenomenon",
-  "spineSummary": "Everything Ceibo's Breach VII was built to outlast is being unmade by the moving bleed-node river.",
-  "spineVisibility": "public",
+  "body0": "Brothers of Choir keeps the receipts. Carrion Wake keeps the witnesses. Between Brothers of Choir and Vow-Breaker Wake the knife is already drawn. Brothers of Choir wants Pale Saint Pact to bleed first.",
+  "spineEdgeType": "CONTESTS",
+  "spineObjectKind": "namedFaction",
+  "spineSubjectKind": "namedFaction",
+  "spineSummary": "Between Brothers of Choir and Carrion Wake the war is already lost; only the funerals remain.",
+  "spineVisibility": "contested",
 }
 `;
 
@@ -57,22 +57,22 @@ exports[`spine full axis matrix (16 representative cells) > baseline-realistic-b
 
 exports[`spine full axis matrix (16 representative cells) > baseline-realistic-cinematic: stable spine + body[0] structural fields 1`] = `
 {
-  "body0": "Carrion Synod keeps the receipts. Last Ledger Brotherhood keeps the witnesses. And then, the metric shear damages hulls is hollowing Tarandus Route-211 Belt IV Freeport 56 from underneath. Something is wrong under Tarandus Route-211 Belt IV, and flare-amplified bleed season is the name people whisper for it. Tarandus Route-211 Belt IV hosts Tarandus Route-211 Belt IV Freeport 56. There, Tarandus Route-211 Belt IV Freeport 56 draws everything it consumes from Narrow-AI stabilizer substrate.",
+  "body0": "Carrion Synod keeps the receipts. Salt Wound Cabal keeps the witnesses. And then, the metric shear damages hulls is hollowing Tarandus Route-211 Belt IV Freeport 56 from underneath. Something is wrong under Tarandus Route-211 Belt IV, and flare-amplified bleed season is the name people whisper for it. Tarandus Route-211 Belt IV hosts Tarandus Route-211 Belt IV Freeport 56. There, Tarandus Route-211 Belt IV Freeport 56 draws everything it consumes from Narrow-AI stabilizer substrate.",
   "spineEdgeType": "CONTESTS",
   "spineObjectKind": "namedFaction",
   "spineSubjectKind": "namedFaction",
-  "spineSummary": "The compact between Carrion Synod and Last Ledger Brotherhood broke after the keep was sealed, Between Carrion Synod and Last Ledger Brotherhood the war is already lost; only the funerals remain.",
+  "spineSummary": "The compact between Carrion Synod and Salt Wound Cabal broke after the keep was sealed, Between Carrion Synod and Salt Wound Cabal the war is already lost; only the funerals remain.",
   "spineVisibility": "contested",
 }
 `;
 
 exports[`spine full axis matrix (16 representative cells) > corner-frontier-cinematic-fracture-hub: stable spine + body[0] structural fields 1`] = `
 {
-  "body0": "Last Ledger Cabal keeps the receipts. Long Knife Run keeps the witnesses. Between Bone Lantern Wake and Last Ledger Synod the knife is already drawn. Last Ledger Synod swore the pact would hold; Sisters of Synod swore otherwise. Pipit's Delta II Freeport draws everything it consumes from Illegal Sol-prohibited geometry sample. Pipit's Delta I Watch depends on Illegal Sol-prohibited geometry sample for everything.",
+  "body0": "Bone Lantern Wake keeps the receipts. Long Knife Run keeps the witnesses. Between Last Ledger Cabal and Widow Star Synod the knife is already drawn. Red Wake Pact swore the pact would hold; Sisters of Synod swore otherwise. Pipit's Delta II Freeport draws everything it consumes from Illegal Sol-prohibited geometry sample. Pipit's Delta I Watch depends on Illegal Sol-prohibited geometry sample for everything.",
   "spineEdgeType": "CONTESTS",
   "spineObjectKind": "namedFaction",
   "spineSubjectKind": "namedFaction",
-  "spineSummary": "The compact between Last Ledger Cabal and Long Knife Run broke in the silent decade, Between Last Ledger Cabal and Long Knife Run the war is already lost; only the funerals remain.",
+  "spineSummary": "The compact between Bone Lantern Wake and Long Knife Run broke in the silent decade, Between Bone Lantern Wake and Long Knife Run the war is already lost; only the funerals remain.",
   "spineVisibility": "contested",
 }
 `;
@@ -134,22 +134,22 @@ exports[`spine full axis matrix (16 representative cells) > density-sparse: stab
 
 exports[`spine full axis matrix (16 representative cells) > gu-axis-fracture: stable spine + body[0] structural fields 1`] = `
 {
-  "body0": "Helion Debt Synod refuses to recognize Kestrel Free Compact's authority. Kestrel Free Compact disputes Veyra-Locke Concession's claim. The compact between Helion Debt Synod and Red Vane Labor Combine has gone bad.",
+  "body0": "Kestrel Free Compact refuses to recognize Orison Route Authority's authority. Red Vane Labor Combine disputes Veyra-Locke Concession's claim. The compact between Kestrel Free Compact and Red Vane Labor Combine has gone bad.",
   "spineEdgeType": "CONTESTS",
   "spineObjectKind": "namedFaction",
   "spineSubjectKind": "namedFaction",
-  "spineSummary": "The compact between Helion Debt Synod and Kestrel Free Compact broke in the second wave, Helion Debt Synod and Kestrel Free Compact can't both set the rules — and the rest of the system knows it.",
+  "spineSummary": "The compact between Kestrel Free Compact and Orison Route Authority broke in the second wave, Kestrel Free Compact and Orison Route Authority can't both set the rules — and the rest of the system knows it.",
   "spineVisibility": "contested",
 }
 `;
 
 exports[`spine full axis matrix (16 representative cells) > gu-axis-high: stable spine + body[0] structural fields 1`] = `
 {
-  "body0": "Kestrel Free Compact disputes Sepulcher Archive Court's claim. The compact between Sepulcher Archive Court and Veyra-Locke Concession has gone bad. Orison Route Authority refuses to recognize Veyra-Locke Concession's authority.",
+  "body0": "Sepulcher Archive Court disputes Veyra-Locke Concession's claim. The compact between Orison Route Authority and Veyra-Locke Concession has gone bad. Ninth Ledger Office refuses to recognize Pale Choir Communion's authority.",
   "spineEdgeType": "CONTESTS",
   "spineObjectKind": "namedFaction",
   "spineSubjectKind": "namedFaction",
-  "spineSummary": "The compact between Kestrel Free Compact and Sepulcher Archive Court broke in the manifest wars, Kestrel Free Compact and Sepulcher Archive Court can't both set the rules — and the rest of the system knows it.",
+  "spineSummary": "Sepulcher Archive Court and Veyra-Locke Concession can't both set the rules — and the rest of the system knows it.",
   "spineVisibility": "contested",
 }
 `;
@@ -167,11 +167,11 @@ exports[`spine full axis matrix (16 representative cells) > gu-axis-low: stable 
 
 exports[`spine full axis matrix (16 representative cells) > gu-axis-normal: stable spine + body[0] structural fields 1`] = `
 {
-  "body0": "Orison Route Authority refuses to recognize Pale Choir Communion's authority. The compact between Red Vane Labor Combine and Veyra-Locke Concession has gone bad. Orison Route Authority and Veyra-Locke Concession both want the trade ledger.",
+  "body0": "Helion Debt Synod refuses to recognize Orison Route Authority's authority. The compact between Helion Debt Synod and Sepulcher Archive Court has gone bad. Helion Debt Synod and Red Vane Labor Combine both want the Sheratan Trace-756 I.",
   "spineEdgeType": "CONTESTS",
   "spineObjectKind": "namedFaction",
   "spineSubjectKind": "namedFaction",
-  "spineSummary": "Orison Route Authority and Pale Choir Communion can't both set the rules — and the rest of the system knows it.",
+  "spineSummary": "The compact between Helion Debt Synod and Orison Route Authority broke during the convoy decade, Helion Debt Synod and Orison Route Authority can't both set the rules — and the rest of the system knows it.",
   "spineVisibility": "contested",
 }
 `;
