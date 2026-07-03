@@ -130,6 +130,19 @@ One-shot session jobs that pay — and don't fully explain what the buyer wants.
 - [Bleed] Plant a recording buoy inside {phenomenon} and pull it out nine days later; the buyer will not say what they expect it to have heard.
 - [Dark sector] Move a sealed lot off {party}'s books before the audit can date it; the manifest lists ballast and the mass says otherwise.
 - [Iggygate] Certify that {stake} passed an inspection nobody actually ran; the consortium is paying for the signature, not the look.
+- [Bleed] Walk a green harvest crew through their first bloom and certify that every one of them comes back out; the co-op pays by the head, and the foreman's count has run high two seasons running.
+- [Bleed] Keep the night watch over {phenomenon} for one harvest and log the intensity by hand every hour; the last gauge went out of calibration in the co-op's favor, and an auditor is due before the next flare.
+- [Chirality] Shadow a handedness inspector on her week of rounds and note every refinery that offers to buy an hour of her time; the co-op that hired you wants that list more than it wants the inspection.
+- [Chirality] Sweep every bonded warehouse on {place} for handedness between shifts and give the client the tally before the day crew signs on; whatever it shows, they already suspect it and only want to be the one holding the paper.
+- [First-wave] Authenticate the first-wave charter {party} is using to take {stake}, and put your name to the finding whichever way it falls; the last archivist who signed one of these caught the next outbound and hasn't filed since.
+- [First-wave] Book the only in-system translator who can read pre-Silence charter script for a full week, whether or not you have a line for her to read; the family paying just needs the other side arguing from a copy.
+- [First-wave] Dig a colony's founding cache out of a ruin the sitting council swears was cleared decades ago; you have until the council's amended survey is filed, after which the cache legally never existed.
+- [Dark sector] Weigh {party}'s whole anchor-mass consignment in front of a buyer who thinks he is paying for {stake}, and keep a straight face when the scale disagrees with the receipt.
+- [Dark sector] Sit a doped-ore lot in a low-gravity yard until the long night makes it weigh right on the buyer's scale, then close the sale before dawn; the yard bills by the shift and the buyer bills by the gram.
+- [Iggygate] Delay the vote that would hand {stake} to {party} by exactly one throat cycle; the heir who sets the gate schedule owes the other side money, and one late crossing is deniable.
+- [Iggygate] Hold a berth at a working gate for a buyer who won't give his name until his crossing is confirmed, and turn away the three earlier bids the consortium already promised the slot to.
+- [Metric storm] Run a fixed loop through {phenomenon} on the harbor's published schedule so your clock and the port's can be set side by side each shift; the client wants the drift on the record before a berth-fee dispute reaches arbitration.
+- [Metric storm] Let a competitor's survey team photograph your hull as the "before" on a slow pass through a shear lane, and don't ask which ship they take the "after" from.
 
 ## Encounters in transit
 
@@ -170,6 +183,20 @@ What happens en route or in-system. Not the destination — the trip. These get 
 - [Metric storm] Your clocks and the port's disagree by an hour the moment you clear {phenomenon}, and the port is billing you for berth time you never used.
 - [GU] A customs officer holds your manifest over a name it does not contain, then waves you through the moment you mention {party}.
 - [Chirality] A survey drone comes back from {phenomenon} reading every sample as its own mirror image, and the lab that certified the drone has stopped taking calls.
+- [Bleed] The relief crew sent to a supposedly worked-out node comes back up asking who signed the closure, because the harvest is still hanging and the site log skips a week nobody will account for.
+- [Bleed] Everyone booked to harvest {phenomenon} this flare has quietly sold their berths to one buyer, and that buyer's crew is already inside wearing another outfit's rig tags.
+- [Bleed] A harvest medic pulls two workers off the line for over-exposure and the co-op puts them straight back, because the quota is short and the bonus for hitting it is the only thing feeding the port this month.
+- [First-wave] The archive you came to {place} to copy is being deaccessioned a crate at a time, and the clerk carrying out the order can't read a word of the pre-Silence script she has been told to shred.
+- [First-wave] Two people step off the same inbound holding the same first-wave charter, each with a clean chain of custody, and the claim clerk who has to choose between them is related to one.
+- [First-wave] The moon the survey calls empty has a colony on it older than the survey, still keeping a founders' rota nobody off-world has updated in ninety years, and they want to know why a ship finally came.
+- [Dark sector] A consignment {party} swears is inert anchor mass keeps tripping the gravimetric gate at customs, the inspector won't release it until the dispute over {stake} is settled on paper, and someone has already offered him a year's pay to lose the reading.
+- [Dark sector] The bonded yard has quietly restacked its anchor-mass lots overnight, the night crew swears nothing moved, and the only proof anything did is that the whole stack now weighs different than its receipts.
+- [Dark sector] An isotope broker pays your crew in advance to haul a lot she never lets you weigh, and the buyer at the far end has brought his own scale, his own certifier, and a second crew waiting to reweigh the lot if his numbers and yours diverge.
+- [Iggygate] The gate that serves {place} has slipped its throat schedule by half a shift, the heir who runs the calendar isn't answering, and a queue of anchor-mass freighters is quietly agreeing on a price for whoever crosses first.
+- [Iggygate] An inspector boards at the gate to check the anchor mass and finds the seals intact, the paperwork perfect, and the mass reading a fraction light — which is either his instrument, the consortium's fraud, or the throat itself, and only one of those lets him go home.
+- [Iggygate] The gate-town's whole economy runs on a crossing schedule the heir inherited but was never taught to read, and this cycle he has cleared two freighters into the same throat window.
+- [Metric storm] A convoy ahead of you into {phenomenon} reports the lane clear, then reports it clear again in a voice traffic control logged an hour ago, and control keeps waving ships in on the strength of a message that has started repeating itself.
+- [Metric storm] The insurer's weather desk has denied your route as a shear risk and cleared a competitor's identical route the same morning, and the only difference the adjuster will name is the size of the two policies.
 
 ## People you meet
 
@@ -270,6 +297,21 @@ Revelations that change the shape of a session in progress. The thing isn't what
 - [Chirality] The clinic's doubled saline order wasn't fraud; it was triage for a patient count the port's official ledger says doesn't exist.
 - [Pinchdrive] The refit yard's clean calibration record turns out to be a second ship's log, filed under the wrong hull number for three years running.
 - [Gardener] The warning beacon everyone credits with saving the last convoy was decrypted a full day after the convoy already turned; something else called the warning first.
+- [Bleed] The harvest logs from {phenomenon} balance perfectly for the season, right up until you count the ration cards against them; the difference is eleven workers the co-op has been feeding and never once put on a roster.
+- [Bleed] The tremor everyone reads as long exposure in the old harvesters is showing up now in dock clerks who never left the office, and the one thing the sick all share is the water the co-op pipes in from the node.
+- [Bleed] The three workers the harvest insurer lists as "never exposed" are the only three who can still read a node by hand, and keeping the payout alive means keeping them officially healthy, so their names have started falling off the medical roll.
+- [GU] The arbitration nobody thought to question has been running on charts {party} corrects; every "independent" waypoint the ruling on {stake} leans on was moved by that one office, once, the week before the vote.
+- [Chirality] The clean-handedness certificate that lets {place} export at all was issued by an assay office that has since burned its own records, and every lot it ever cleared now carries a stamp no one can verify.
+- [Chirality] The refinery never recalls a bad batch because it never admits to one; every wrong-handed lot it ships gets quietly bought back by a single broker, who resells it into systems that own no instrument to catch it.
+- [First-wave] The ruin the survey lists as sealed has been lived in for years by a single diver who can recite the first landing's passenger manifest from memory and sells exactly one named relic a year, always to the same buyer, who never asks for a second.
+- [First-wave] The colony that has no first-wave charter isn't lying; it had one, filed it with a bonded off-world archive for safekeeping three generations back, and the archive has been charging storage ever since on a document it quietly sold to the neighbors.
+- [Dark sector] The doped-ore lot at the center of the fight over {stake} was salted before either side filed a word; it reads rich on {party}'s certified scale and worthless on every honest one, and that was always the point.
+- [Iggygate] The heir who sets the throat schedule has been crossing {party}'s freighters ahead of the queue for years, and the fee {party} never quite pays is the real reason the vote on {stake} keeps getting deferred.
+- [Iggygate] Every "repair" that takes the gate offline is really a crew counting how many crossings the throat has left; it has been decaying on a timetable the consortium has held for a decade, and calling it maintenance keeps the fees coming in.
+- [Iggygate] The second gate the competing house has funded for years was never meant to open; its whole purpose is the throat-fee cap the first house signed the day construction started, and the concrete hasn't moved since.
+- [Metric storm] The lane past {phenomenon} runs a full minute long on every crossing, always the same minute, and the port has spent years billing that minute to inbound crews while booking it to no one on the way out.
+- [Metric storm] The two ports have feuded over an hour of berth fees for a decade, each certain the other's clock is the liar; the shear between them takes exactly that hour off every ship, and neither ledger has ever been wrong.
+- [Metric storm] The hull-slice photographs a competitor filed to deny your claim are real, but they are last year's; the same shear cuts the same signature every storm, and the adjuster approving them keeps an identical set going back nine years in a drawer he has never declared.
 
 ## Using these tables
 

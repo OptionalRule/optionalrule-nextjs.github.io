@@ -264,6 +264,23 @@ describe('hook pool sizes meet Task 18 floors', () => {
   }
 })
 
+describe('thin tag×category cells meet the >=5 floor (Follow-up B)', () => {
+  const targetTags = ['Bleed', 'GU', 'Chirality', 'First-wave', 'Dark sector', 'Iggygate', 'Metric storm'] as const
+  const targetPools = {
+    contracts: contractPool,
+    encounters: encounterPool,
+    twists: twistPool,
+  } as const
+  for (const [category, pool] of Object.entries(targetPools)) {
+    for (const tag of targetTags) {
+      it(`${category} x ${tag} has at least 5 entries`, () => {
+        const count = pool.filter(entry => entry.tags.includes(tag)).length
+        expect(count, `${category} x ${tag}`).toBeGreaterThanOrEqual(5)
+      })
+    }
+  }
+})
+
 describe('slotted hook entries declare exactly the placeholders they use', () => {
   const pools = {
     rumors: rumorPool,
