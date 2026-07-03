@@ -30,3 +30,15 @@ export class VariantDeck<T> {
     return item
   }
 }
+
+export function getOrCreateDeck<T>(
+  pool: ReadonlyArray<T>,
+  decks: Map<ReadonlyArray<T>, VariantDeck<T>>,
+  rng: SeededRng,
+): VariantDeck<T> {
+  const existing = decks.get(pool)
+  if (existing) return existing
+  const deck = new VariantDeck(pool, rng)
+  decks.set(pool, deck)
+  return deck
+}

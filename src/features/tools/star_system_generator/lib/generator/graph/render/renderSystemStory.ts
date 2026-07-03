@@ -12,19 +12,11 @@ import {
 import { connectiveFor } from './connectives'
 import { clusterEdges } from './clusters'
 import { templateFor, type EdgeTemplate } from './templates'
-import { VariantDeck } from './variantDeck'
-import { renderConflictNarrative } from './conflictNarrative'
+import { getOrCreateDeck, type VariantDeck } from './variantDeck'
+import { renderConflictNarrative, type ConflictDeckMap } from './conflictNarrative'
 import type { Conflict } from '../../conflicts/types'
 
 type DeckMap = Map<ReadonlyArray<EdgeTemplate>, VariantDeck<EdgeTemplate>>
-
-function deckFor(pool: ReadonlyArray<EdgeTemplate>, decks: DeckMap, rng: SeededRng): VariantDeck<EdgeTemplate> {
-  const existing = decks.get(pool)
-  if (existing) return existing
-  const deck = new VariantDeck(pool, rng)
-  decks.set(pool, deck)
-  return deck
-}
 
 export function renderSystemStory(
   graph: SystemRelationshipGraph,
@@ -36,15 +28,16 @@ export function renderSystemStory(
   const clusters = clusterEdges(graph, { settlements: options?.settlements ?? 'normal' })
   const bodyRng = rng.fork('body')
   const decks: DeckMap = new Map()
+  const conflictDecks: ConflictDeckMap = new Map()
   const conflictByEdgeId = new Map<string, Conflict>()
   for (const conflict of conflicts ?? []) conflictByEdgeId.set(conflict.edgeId, conflict)
 
   const body: string[] = []
-  const para1 = renderParagraph(clusters.spineCluster, bodyRng, tone, decks, conflictByEdgeId)
+  const para1 = renderParagraph(clusters.spineCluster, bodyRng, tone, decks, conflictByEdgeId, conflictDecks)
   if (para1.length > 0) body.push(para1)
-  const para2 = renderParagraph(clusters.activeCluster, bodyRng, tone, decks, conflictByEdgeId)
+  const para2 = renderParagraph(clusters.activeCluster, bodyRng, tone, decks, conflictByEdgeId, conflictDecks)
   if (para2.length > 0) body.push(para2)
-  const para3 = renderParagraph(clusters.epistemicCluster, bodyRng, tone, decks, conflictByEdgeId)
+  const para3 = renderParagraph(clusters.epistemicCluster, bodyRng, tone, decks, conflictByEdgeId, conflictDecks)
   if (para3.length > 0) body.push(para3)
 
   const spineSummary = renderSpineSummary(graph, rng.fork('spine-summary'), tone)
@@ -208,6 +201,7 @@ function renderParagraph(
   tone: GeneratorTone,
   decks: DeckMap,
   conflictByEdgeId: ReadonlyMap<string, Conflict>,
+  conflictDecks: ConflictDeckMap,
 ): string {
   if (edges.length === 0) return ''
   const sentences: string[] = []
@@ -215,7 +209,7 @@ function renderParagraph(
   for (const edge of edges) {
     const conflict = conflictByEdgeId.get(edge.id)
     if (conflict) {
-      const narrative = renderConflictNarrative(conflict, tone, rng.fork(edge.id))
+      const narrative = renderConflictNarrative(conflict, tone, rng.fork(edge.id), conflictDecks)
       if (narrative.length > 0) {
         sentences.push(narrative.join(' '))
         prev = edge.type
@@ -240,7 +234,7 @@ function renderEdgeSentence(
   const family = templateFor(edge.type)
   const tonedBody = family.bodyByTone?.[tone] ?? family.body
   if (tonedBody.length === 0 || tonedBody[0].text === '') return ''
-  const variant = deckFor(tonedBody, decks, rng).draw()
+  const variant = getOrCreateDeck(tonedBody, decks, rng).draw()
   const ctx: EdgeRenderContext = {
     subject: edge.subject,
     object: edge.object,

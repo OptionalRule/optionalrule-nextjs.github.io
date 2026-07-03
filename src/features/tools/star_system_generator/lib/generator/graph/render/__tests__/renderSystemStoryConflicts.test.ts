@@ -50,6 +50,23 @@ function makeConflict(edgeId: string): Conflict {
   }
 }
 
+function makeSharedContentConflict(edgeId: string, i: number): Conflict {
+  return {
+    id: `conflict-${edgeId}`,
+    edgeId,
+    edgeType: 'CONTESTS',
+    pressure: 'there is only one stable route chart, and two charters that each name it',
+    parties: [
+      { ref: factionA, role: 'aggressor', stake: 'first claim on the next harvest window' },
+      { ref: factionB, role: 'defender', stake: 'the margin that keeps the lights on' },
+      { ref: settlement, role: 'bystander', stake: 'rationed air while the principals negotiate' },
+    ],
+    stakeRef: null,
+    temperature: 'open',
+    visibleSign: `Recruiters from both sides work the same ration queue, table ${i}.`,
+  }
+}
+
 describe('renderSystemStory with conflicts', () => {
   it('renders a conflict-backed spine edge as a multi-sentence narrative naming the parties', () => {
     const contested = edge({ id: 'e1', type: 'CONTESTS', subject: factionA, object: factionB, visibility: 'contested' })
@@ -104,5 +121,33 @@ describe('renderSystemStory with conflicts', () => {
     const story = renderSystemStory(graph, createSeededRng('no-conflicts'), OPTIONS)
     expect(story.spineSummary.length).toBeGreaterThan(0)
     expect(story.conflicts ?? []).toEqual([])
+  })
+
+  it('never repeats a beat template across multiple conflicts within the same system body', () => {
+    const edges = ['c0', 'c1', 'c2'].map((id) =>
+      edge({ id, type: 'CONTESTS', subject: factionA, object: factionB, visibility: 'contested' }),
+    )
+    const conflicts = edges.map((e, i) => makeSharedContentConflict(e.id, i))
+    const graph = graphWith(edges, edges.map((e) => e.id))
+    for (let s = 0; s < 20; s++) {
+      const story = renderSystemStory(graph, createSeededRng(`beat-deck-${s}`), OPTIONS, conflicts)
+      const sentences = story.body.join(' ').split(/(?<=[.?!])\s+/)
+      const seen = new Set<string>()
+      for (const sentence of sentences) {
+        expect(seen.has(sentence), `seed sweep-${s}: repeated beat template "${sentence}"`).toBe(false)
+        seen.add(sentence)
+      }
+    }
+  })
+
+  it('produces deterministic body output across two runs with multiple conflicts sharing beat decks', () => {
+    const edges = ['c0', 'c1', 'c2'].map((id) =>
+      edge({ id, type: 'CONTESTS', subject: factionA, object: factionB, visibility: 'contested' }),
+    )
+    const conflicts = edges.map((e, i) => makeSharedContentConflict(e.id, i))
+    const graph = graphWith(edges, edges.map((e) => e.id))
+    const a = renderSystemStory(graph, createSeededRng('multi-conflict-det'), OPTIONS, conflicts)
+    const b = renderSystemStory(graph, createSeededRng('multi-conflict-det'), OPTIONS, conflicts)
+    expect(a).toEqual(b)
   })
 })

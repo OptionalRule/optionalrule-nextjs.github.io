@@ -3,8 +3,11 @@ import type { SeededRng } from '../../rng'
 import type { EntityKind, EntityRef } from '../types'
 import type { Conflict, ConflictTemperature } from '../../conflicts/types'
 import { articleizeNounPhrase } from './slotResolver'
+import { VariantDeck, getOrCreateDeck } from './variantDeck'
 
 export type Beat = 'pressure' | 'parties' | 'temperature' | 'complication' | 'sign'
+
+export type ConflictDeckMap = Map<ReadonlyArray<string>, VariantDeck<string>>
 
 export const GRAMMARS: Record<GeneratorTone, readonly (readonly Beat[])[]> = {
   balanced: [
@@ -215,8 +218,8 @@ function capitalize(sentence: string): string {
   return sentence[0].toUpperCase() + sentence.slice(1)
 }
 
-function pick(pool: readonly string[], rng: SeededRng): string {
-  return pool[rng.int(0, pool.length - 1)]
+function drawFromPool(pool: readonly string[], decks: ConflictDeckMap, rng: SeededRng): string {
+  return getOrCreateDeck(pool, decks, rng).draw()
 }
 
 function renderBeat(
@@ -224,19 +227,20 @@ function renderBeat(
   conflict: Conflict,
   pools: TonePools,
   rng: SeededRng,
+  decks: ConflictDeckMap,
 ): string | null {
   switch (beat) {
     case 'pressure':
-      return pick(pools.pressure, rng)
+      return drawFromPool(pools.pressure, decks, rng)
     case 'parties':
       return partyName(conflict, 'bystander') !== ''
-        ? pick(pools.parties3, rng)
-        : pick(pools.parties2, rng)
+        ? drawFromPool(pools.parties3, decks, rng)
+        : drawFromPool(pools.parties2, decks, rng)
     case 'temperature':
-      return pick(pools.temperature[conflict.temperature], rng)
+      return drawFromPool(pools.temperature[conflict.temperature], decks, rng)
     case 'complication':
       if (!conflict.complication) return null
-      return pick(pools.complication, rng)
+      return drawFromPool(pools.complication, decks, rng)
     case 'sign':
       return conflict.visibleSign
   }
@@ -246,13 +250,14 @@ export function renderConflictNarrative(
   conflict: Conflict,
   tone: GeneratorTone,
   rng: SeededRng,
+  decks: ConflictDeckMap = new Map(),
 ): string[] {
   const grammars = GRAMMARS[tone]
   const grammar = grammars[Math.floor(rng.next() * grammars.length)]
   const pools = BEAT_POOLS[tone]
   const sentences: string[] = []
   for (const beat of grammar) {
-    const template = renderBeat(beat, conflict, pools, rng)
+    const template = renderBeat(beat, conflict, pools, rng, decks)
     if (template === null) continue
     sentences.push(capitalize(bindConflictSlots(template, conflict)))
   }

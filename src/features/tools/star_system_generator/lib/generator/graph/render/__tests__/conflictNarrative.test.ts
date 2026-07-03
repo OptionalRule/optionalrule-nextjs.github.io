@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { renderConflictNarrative, BEAT_POOLS, GRAMMARS } from '../conflictNarrative'
+import { VariantDeck } from '../variantDeck'
 import { createSeededRng } from '../../../rng'
 import type { SeededRng } from '../../../rng'
 import type { Conflict } from '../../../conflicts/types'
@@ -168,5 +169,60 @@ describe('renderConflictNarrative', () => {
     const a = renderConflictNarrative(makeConflict(), 'cinematic', createSeededRng('det'))
     const b = renderConflictNarrative(makeConflict(), 'cinematic', createSeededRng('det'))
     expect(a).toEqual(b)
+  })
+})
+
+describe('per-system beat template decks', () => {
+  function conflictAt(i: number): Conflict {
+    return makeConflict({
+      id: `conflict-e${i}`,
+      edgeId: `e${i}`,
+      visibleSign: `sign text ${i}`,
+      complication: { kind: 'secret', text: 'a shared secret text', sourceRef: settlement },
+    })
+  }
+
+  it('does not repeat a beat template across conflicts sharing a deck while the pool covers the conflict count', () => {
+    const decks = new Map<readonly string[], VariantDeck<string>>()
+    const seen = new Set<string>()
+    for (let i = 0; i < 3; i++) {
+      const rng = stubRng([0.3, 0.1, 0.1, 0.1, 0.1, 0.1])
+      const sentences = renderConflictNarrative(conflictAt(i), 'balanced', rng, decks)
+      for (const sentence of sentences) {
+        expect(seen.has(sentence), `repeated beat template output: "${sentence}"`).toBe(false)
+        seen.add(sentence)
+      }
+    }
+  })
+
+  it('gracefully reuses templates once a beat pool is exhausted, without throwing or leaving empty beats', () => {
+    const decks = new Map<readonly string[], VariantDeck<string>>()
+    const results: string[][] = []
+    for (let i = 0; i < 5; i++) {
+      const rng = stubRng([0.3, 0.1, 0.1, 0.1, 0.1, 0.1])
+      expect(() => {
+        results.push(renderConflictNarrative(conflictAt(i), 'balanced', rng, decks))
+      }).not.toThrow()
+    }
+    expect(results).toHaveLength(5)
+    for (const sentences of results) {
+      expect(sentences.length).toBeGreaterThan(0)
+      for (const sentence of sentences) {
+        expect(sentence).not.toContain('{')
+        expect(sentence.length).toBeGreaterThan(0)
+      }
+    }
+  })
+
+  it('is deterministic across two runs when conflicts share a beat-template deck', () => {
+    function renderFive(): string[][] {
+      const decks = new Map<readonly string[], VariantDeck<string>>()
+      const out: string[][] = []
+      for (let i = 0; i < 5; i++) {
+        out.push(renderConflictNarrative(conflictAt(i), 'balanced', createSeededRng(`shared-${i}`), decks))
+      }
+      return out
+    }
+    expect(renderFive()).toEqual(renderFive())
   })
 })
