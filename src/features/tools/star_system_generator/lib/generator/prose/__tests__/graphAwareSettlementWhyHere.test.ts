@@ -50,7 +50,7 @@ function makeGraph(edges: RelationshipEdge[], entityEdgeIds: Record<string, stri
 function makeSettlement(id: string, anchorName: string, name?: string): Settlement {
   return {
     id,
-    name: { value: name ?? id, confidence: 'confirmed' },
+    name: { value: name ?? anchorName, confidence: 'confirmed' },
     anchorName: { value: anchorName, confidence: 'confirmed' },
     presence: {
       score: { value: 5, confidence: 'human-layer', source: 'test' },
@@ -147,16 +147,16 @@ describe('graphAwareSettlementWhyHere', () => {
     expect(result).not.toContain('{')
   })
 
-  it('uses anchorName.value, not name.value or id', () => {
+  it('uses name.value as the sentence actor, never the raw id', () => {
     const settlement = makeSettlement('s1', 'Orison Hold', 'Settlement-1')
     const sRef = makeEntityRef('s1', 'Settlement-1', 'settlement')
     const guRef = makeEntityRef('gu1', 'chiral ice belt', 'guResource')
     const edge = makeEdge('edge-1', 'DEPENDS_ON', sRef, guRef)
     const graph = makeGraph([edge], { s1: ['edge-1'] })
     const result = graphAwareSettlementWhyHere(settlement, graph, rng(), tone)
-    expect(result).toContain('Orison Hold')
-    expect(result).not.toContain('Settlement-1')
-    expect(result).not.toContain('s1')
+    expect(result).toContain('Settlement-1')
+    expect(result).toContain('chiral ice belt')
+    expect(result).not.toMatch(/\bs1\b/)
   })
 
   it('cinematic tone selects from cinematic template register', () => {

@@ -20,6 +20,7 @@ function emptyGraph(): SystemRelationshipGraph {
 function minimalSettlement(id: string): Settlement {
   return {
     id,
+    name: { value: `Anchor-${id}`, confidence: 'confirmed', source: 'test' },
     anchorName: { value: `Anchor-${id}`, confidence: 'confirmed', source: 'test' },
     whyHere: { value: 'original whyHere', confidence: 'confirmed', source: 'test' },
     tagHook: { value: 'original tagHook', confidence: 'human-layer', source: 'test' },
@@ -197,6 +198,7 @@ function graphWithEdges(edges: RelationshipEdge[]): SystemRelationshipGraph {
 function settlementWithAnchor(id: string, anchorName: string): Settlement {
   return {
     id,
+    name: { value: anchorName, confidence: 'confirmed', source: 'test' },
     anchorName: { value: anchorName, confidence: 'confirmed', source: 'test' },
     whyHere: { value: 'original whyHere', confidence: 'confirmed', source: 'test' },
     presence: {
@@ -348,6 +350,7 @@ function makeContestsEdge(subjectId: string, objectId: string, objectDisplayName
 function settlementWithTagHook(id: string, anchorName: string, tagHookValue: string): Settlement {
   return {
     id,
+    name: { value: anchorName, confidence: 'confirmed', source: 'test' },
     anchorName: { value: anchorName, confidence: 'confirmed', source: 'test' },
     whyHere: { value: 'original whyHere', confidence: 'confirmed', source: 'test' },
     tagHook: { value: tagHookValue, confidence: 'human-layer', source: 'test' },
@@ -403,6 +406,7 @@ describe('graphAwareReshape — settlementHookSynthesis integration', () => {
     const tagHookValue = 'Sentence one. Pressure sentence. Privately, secret. Control of the function decides who has leverage.'
     const settlement = {
       id: 's1',
+      name: { value: 'Orison Hold', confidence: 'confirmed' },
       anchorName: { value: 'Orison Hold', confidence: 'confirmed' },
       whyHere: { value: 'original whyHere', confidence: 'confirmed' },
       tagHook: { value: tagHookValue, confidence: 'human-layer' },
