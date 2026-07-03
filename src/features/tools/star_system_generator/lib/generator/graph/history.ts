@@ -124,10 +124,16 @@ function mintHistoricalEdge(
   }
 }
 
+// CONTRADICTS present edges run record-holder -> authority; the historical
+// BETRAYED reading is authority-broke-faith-with-record-holder, so the
+// endpoints swap. Every other mapping already reads actor-first.
 function pickHistoricalEndpoints(
   presentEdge: RelationshipEdge,
   _histType: EdgeType,
 ): { subject: EntityRef; object: EntityRef } {
+  if (presentEdge.type === 'CONTRADICTS') {
+    return { subject: presentEdge.object, object: presentEdge.subject }
+  }
   return { subject: presentEdge.subject, object: presentEdge.object }
 }
 

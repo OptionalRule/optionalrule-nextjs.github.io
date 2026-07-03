@@ -1,6 +1,8 @@
 import type { GeneratorTone } from '../../../../types'
 import type { SeededRng } from '../../rng'
+import type { EntityKind, EntityRef } from '../types'
 import type { Conflict, ConflictTemperature } from '../../conflicts/types'
+import { articleizeNounPhrase } from './slotResolver'
 
 export type Beat = 'pressure' | 'parties' | 'temperature' | 'complication' | 'sign'
 
@@ -178,8 +180,16 @@ export const BEAT_POOLS: Record<GeneratorTone, TonePools> = {
   },
 }
 
+const NOUN_PHRASE_KINDS: ReadonlySet<EntityKind> = new Set(['phenomenon', 'guHazard', 'guResource'])
+
+function formatEntityName(ref: EntityRef): string {
+  if (NOUN_PHRASE_KINDS.has(ref.kind)) return articleizeNounPhrase(ref.displayName)
+  return ref.displayName
+}
+
 function partyName(conflict: Conflict, role: 'aggressor' | 'defender' | 'bystander'): string {
-  return conflict.parties.find(p => p.role === role)?.ref.displayName ?? ''
+  const ref = conflict.parties.find(p => p.role === role)?.ref
+  return ref ? formatEntityName(ref) : ''
 }
 
 function partyStake(conflict: Conflict, role: 'aggressor' | 'defender' | 'bystander'): string {
@@ -194,9 +204,9 @@ function bindConflictSlots(text: string, conflict: Conflict): string {
     .replaceAll('{aggressorStake}', partyStake(conflict, 'aggressor'))
     .replaceAll('{defenderStake}', partyStake(conflict, 'defender'))
     .replaceAll('{bystanderStake}', partyStake(conflict, 'bystander'))
-    .replaceAll('{stake}', conflict.stakeRef?.displayName ?? 'the prize')
+    .replaceAll('{stake}', conflict.stakeRef ? formatEntityName(conflict.stakeRef) : 'the prize')
     .replaceAll('{pressure}', conflict.pressure)
-    .replaceAll('{secret}', conflict.complication?.text ?? '')
+    .replaceAll('{secret}', (conflict.complication?.text ?? '').replace(/\.$/, ''))
     .replaceAll('{frozenReason}', conflict.frozenReason ?? '')
 }
 

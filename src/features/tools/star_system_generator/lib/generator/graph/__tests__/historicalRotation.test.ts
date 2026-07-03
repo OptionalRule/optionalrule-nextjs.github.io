@@ -140,3 +140,21 @@ describe('historical body variant rotation (Phase 7 Task 4)', () => {
     expect(resultA.historicalEdges[0].summary).not.toBe(resultC.historicalEdges[0].summary)
   })
 })
+
+describe('historical endpoint orientation', () => {
+  it('keeps founder-first endpoints for CONTROLS-sourced FOUNDED_BY', () => {
+    const present = makeEdge({ id: 'orient-a', type: 'CONTROLS', subject: faction1, object: settlementA })
+    const result = attachHistoricalEvents({ spineEdges: [present], rng: createSeededRng('orientation') })
+    expect(result.historicalEdges[0].subject).toEqual(faction1)
+    expect(result.historicalEdges[0].object).toEqual(settlementA)
+  })
+
+  it('inverts endpoints for CONTRADICTS-sourced BETRAYED so the authority is the betrayer', () => {
+    const present = makeEdge({ id: 'orient-b', type: 'CONTRADICTS', subject: settlementA, object: faction1 })
+    const result = attachHistoricalEvents({ spineEdges: [present], rng: createSeededRng('orientation') })
+    expect(result.historicalEdges).toHaveLength(1)
+    expect(result.historicalEdges[0].type).toBe('BETRAYED')
+    expect(result.historicalEdges[0].subject).toEqual(faction1)
+    expect(result.historicalEdges[0].object).toEqual(settlementA)
+  })
+})

@@ -136,6 +136,34 @@ describe('renderConflictNarrative', () => {
     expect(withComplication.join(' ')).toContain('the quarantine is political')
   })
 
+  it('articleizes phenomenon and gu-resource names instead of dropping them in bare', () => {
+    const phenomenon: EntityRef = { kind: 'phenomenon', id: 'ph-1', displayName: 'Metric shear condensates', layer: 'gu' }
+    const conflict = makeConflict({
+      parties: [
+        { ref: phenomenon, role: 'aggressor', stake: 'x' },
+        { ref: factionB, role: 'defender', stake: 'y' },
+      ],
+      stakeRef: phenomenon,
+    })
+    for (let s = 0; s < 10; s++) {
+      const joined = renderConflictNarrative(conflict, 'balanced', createSeededRng(`article-${s}`)).join(' ')
+      expect(joined).not.toMatch(/[a-z,;] Metric shear/)
+      if (joined.includes('etric shear')) {
+        expect(joined).toMatch(/the metric shear condensates|The metric shear condensates/)
+      }
+    }
+  })
+
+  it('strips trailing periods from complication text before embedding', () => {
+    const conflict = makeConflict({
+      complication: { kind: 'third-party', text: 'The compact broke before the gate cooled.' },
+    })
+    for (let s = 0; s < 10; s++) {
+      const joined = renderConflictNarrative(conflict, 'balanced', createSeededRng(`period-${s}`)).join(' ')
+      expect(joined).not.toContain('..')
+    }
+  })
+
   it('is deterministic for the same seed', () => {
     const a = renderConflictNarrative(makeConflict(), 'cinematic', createSeededRng('det'))
     const b = renderConflictNarrative(makeConflict(), 'cinematic', createSeededRng('det'))

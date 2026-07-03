@@ -91,7 +91,7 @@ const SETTING_PROPER_FIRST_WORDS = new Set([
   'Sol', 'Gardener', 'Iggygate', 'Pinchdrive',
 ])
 
-function articleizeNounPhrase(value: string): string {
+export function articleizeNounPhrase(value: string): string {
   if (value.length === 0) return 'the'
   const firstSpace = value.indexOf(' ')
   const firstWord = firstSpace > 0 ? value.slice(0, firstSpace) : value
