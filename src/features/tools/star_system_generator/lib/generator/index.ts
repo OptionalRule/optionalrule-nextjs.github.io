@@ -153,9 +153,12 @@ import { lowerFirst, sentenceFragment } from './prose/helpers'
 import { settlementHookSynthesis } from './prose/settlementProse'
 import { phenomenonNote } from './prose/phenomenonProse'
 import { buildRelationshipGraph, renderSystemStory } from './graph'
+import { buildConflicts } from './conflicts'
 import { graphAwareReshape } from './prose'
 import { selectSystemHooks } from './hooks'
 import { derivePopulationLayer } from './population'
+
+export const GENERATOR_VERSION = 2 as const
 import { createSeededRng, normalizeSeed, type SeededRng } from './rng'
 import { separationToMode } from './companionMode'
 import { generateCompanionStar } from './companionStar'
@@ -4385,6 +4388,14 @@ export function generateSystem(options: GenerationOptions, knownSystem?: Partial
     narrativeFacts,
     rootRng.fork('graph'),
   )
+  const conflicts = buildConflicts(
+    {
+      graph: relationshipGraph,
+      settlements,
+      options: { tone: options.tone, gu: options.gu, distribution: options.distribution, settlements: options.settlements },
+    },
+    rootRng.fork('conflicts'),
+  )
   const reshaped = graphAwareReshape({
     settlements,
     phenomena,
@@ -4403,6 +4414,7 @@ export function generateSystem(options: GenerationOptions, knownSystem?: Partial
       distribution: options.distribution,
       settlements: options.settlements,
     },
+    conflicts,
   )
   const hooks = selectSystemHooks({
     rng: rootRng.fork('hooks'),
@@ -4520,6 +4532,7 @@ export function generateSystem(options: GenerationOptions, knownSystem?: Partial
   return derivePopulationLayer(runNoAlienGuard({
     id: knownSystem?.id ?? `system-${options.seed}`,
     seed: options.seed,
+    generatorVersion: GENERATOR_VERSION,
     options,
     name,
     dataBasis: mergeLockedFact(

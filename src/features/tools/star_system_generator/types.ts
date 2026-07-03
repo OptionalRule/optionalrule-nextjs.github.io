@@ -472,6 +472,7 @@ export interface SystemHooks {
 export interface GeneratedSystem {
   id: string
   seed: string
+  generatorVersion: number
   options: GenerationOptions
   name: Fact<string>
   dataBasis: Fact<string>
