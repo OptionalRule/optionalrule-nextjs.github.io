@@ -359,7 +359,7 @@ function validateGuAndNarrative(): void {
     if (livelihoods.length < 2) addError(`${path}.livelihoods`, `Expected at least 2 livelihoods; got ${livelihoods.length}.`)
     livelihoods.forEach((livelihood, livelihoodIndex) => {
       ;(['actor', 'dependence', 'friction'] as const).forEach((field) => {
-        if (!livelihood[field].trim()) addError(`${path}.livelihoods.${livelihoodIndex}.${field}`, 'Required livelihood field is empty.')
+        if (!livelihood[field]?.trim()) addError(`${path}.livelihoods.${livelihoodIndex}.${field}`, 'Required livelihood field is empty.')
       })
     })
 

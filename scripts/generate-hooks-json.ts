@@ -13,12 +13,27 @@ const SECTION_MAP: Record<string, string> = {
   'Mid-session twists': 'twists',
 }
 
+const SLOT_NAMES = ['party', 'place', 'stake', 'phenomenon'] as const
+type HookBindSlot = (typeof SLOT_NAMES)[number]
+
+const SLOT_PATTERN = new RegExp(`\\{(${SLOT_NAMES.join('|')})\\}`, 'g')
+
 interface HookEntry {
   tags: string[]
+  binds?: HookBindSlot[]
   text: string
 }
 
 type HooksData = Record<string, HookEntry[]>
+
+function deriveBinds(text: string): HookBindSlot[] | undefined {
+  const binds: HookBindSlot[] = []
+  for (const match of text.matchAll(SLOT_PATTERN)) {
+    const slot = match[1] as HookBindSlot
+    if (!binds.includes(slot)) binds.push(slot)
+  }
+  return binds.length > 0 ? binds : undefined
+}
 
 function parseHooks(md: string): HooksData {
   const result: HooksData = { rumors: [], contracts: [], encounters: [], npcs: [], twists: [] }
@@ -39,7 +54,8 @@ function parseHooks(md: string): HooksData {
 
     const tag = bulletMatch[1].trim()
     const text = bulletMatch[2].trim()
-    result[currentCategory].push({ tags: [tag], text })
+    const binds = deriveBinds(text)
+    result[currentCategory].push(binds ? { tags: [tag], binds, text } : { tags: [tag], text })
   }
 
   return result
