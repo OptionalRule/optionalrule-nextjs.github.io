@@ -4,3 +4,4 @@ export type {
 } from './types'
 export { resolveStakeRef } from './stakes'
 export { buildParties } from './parties'
+export { selectTemperature } from './temperature'
