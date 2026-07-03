@@ -1,5 +1,17 @@
 # Narrative Conflict Refactor Implementation Plan
 
+> **STATUS (2026-07-03, end of session):** Tasks 1–15 complete and pushed to
+> `origin/develop` (through "feat(star-system): phenomenon livelihoods and full
+> variant coverage"). Remaining: Task 16 (composed phenomenon conflictHook —
+> create `prose/phenomenonConflict.ts`, wire into `generatePhenomena` at
+> `lib/generator/index.ts:~3749`; livelihood data is already in
+> `data/narrative.json`), Task 17 (hook skeleton slots + binder), Task 18
+> (hook pool growth), Task 19 (faction banks + spine dominance cap), Task 20
+> (dead-data removal + repetition metrics gate; also still owed from Task 15
+> scope: `scripts/audit-star-system-data.ts` validation for the new
+> `livelihoods` shape). All tests green on Node 20 at handoff (1230+).
+> Reminder: run vitest with `PATH="$HOME/.nvm/versions/node/v20.20.2/bin:$PATH"`.
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Replace single-sentence edge rendering with a structured conflict-synthesis layer (parties, stakes, temperature, complications, visible signs) rendered through beat grammars, plus grounded stakes, load-bearing secrets, phenomenon livelihoods, slotted hooks, and expanded faction banks.
