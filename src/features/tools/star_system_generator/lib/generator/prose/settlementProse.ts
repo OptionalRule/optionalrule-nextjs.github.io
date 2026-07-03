@@ -1,8 +1,35 @@
 import type { SeededRng } from '../rng'
-import type { SettlementHabitationPattern } from '../../../types'
+import type { GeneratorTone, SettlementHabitationPattern } from '../../../types'
 import { sentenceStart, sentenceFragment, definiteNounPhrase, siteLeadNoun } from './helpers'
 import { crisisPressureSentence } from './crisisShaping'
 import { settlementTagPairHooks, settlementTagPressures } from '../data/settlements'
+
+export const CLOSING_POOLS: Record<GeneratorTone, readonly string[]> = {
+  balanced: [
+    'Control of {function} decides who has leverage.',
+    'Whoever runs {function} sets the terms here.',
+    'Every dispute here ends at {function}.',
+    'Whatever the system fights over next, {function} is where it lands.',
+    'The ledgers all balance except where {function} is concerned.',
+    'Newcomers learn fast that {function} is the only vote that counts.',
+  ],
+  cinematic: [
+    'Hold {function} and you hold every throat on the site.',
+    'People here pray in two directions: home, and {function}.',
+    'The knives stay folded only as long as {function} keeps running.',
+    'Everything else is theater; {function} is the crown.',
+    'Cross whoever keeps {function} and learn how small this place really is.',
+    'When it finally breaks, it will break at {function}.',
+  ],
+  astronomy: [
+    'Every operational dependency on the site resolves through {function}.',
+    'The single point of failure — administrative and physical — is {function}.',
+    'Site telemetry, staffing, and politics all key on {function}.',
+    'Remove {function} from the model and nothing else about the site closes.',
+    'The utilization curves make it plain: {function} is the binding constraint.',
+    'Every audit finding, sooner or later, cites {function}.',
+  ],
+}
 
 export function settlementTagHook(rng: SeededRng, obviousTag: string, deeperTag: string): string {
   const exactPair = `${obviousTag} + ${deeperTag}`
@@ -31,6 +58,7 @@ export function settlementHookSynthesis(
     hiddenTruth: string
     encounterSites: string[]
     guIntensity: string
+    tone?: GeneratorTone
   }
 ): string {
   const base = settlementTagHook(rng, obviousTag, deeperTag)
@@ -76,13 +104,8 @@ export function settlementHookSynthesis(
   })()
   const secret = sentenceFragment(context.hiddenTruth)
   const functionPressure = definiteNounPhrase(context.settlementFunction)
-  const closing = (() => {
-    const choice = rng.int(1, 4)
-    if (choice === 1) return `Control of ${functionPressure} decides who has leverage.`
-    if (choice === 2) return `Whoever runs ${functionPressure} sets the terms here.`
-    if (choice === 3) return `Every dispute here ends at ${functionPressure}.`
-    return `Whatever the system fights over next, ${functionPressure} is where it lands.`
-  })()
+  const pool = CLOSING_POOLS[context.tone ?? 'balanced']
+  const closing = pool[rng.int(0, pool.length - 1)].replaceAll('{function}', functionPressure)
 
   return `${sentenceStart(base)} ${pressure} Privately, ${secret}. ${closing}`
 }

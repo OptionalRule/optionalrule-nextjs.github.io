@@ -50,7 +50,7 @@ function reshapeSettlement(
     }
   }
   if (flags.settlementHookSynthesis) {
-    const replacement = graphAwareSettlementHook(updated, graph)
+    const replacement = graphAwareSettlementHook(updated, graph, rng.fork(`hook-${settlement.id}`))
     if (replacement !== null) {
       const newHook = rewriteFourthSentence(updated.tagHook.value, replacement)
       if (newHook !== updated.tagHook.value) {

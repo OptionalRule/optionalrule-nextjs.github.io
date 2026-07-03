@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest'
-import { graphAwareSettlementHook, rewriteFourthSentence } from '../graphAwareSettlementHook'
+import { HOOK_REWRITE_POOLS, graphAwareSettlementHook, rewriteFourthSentence } from '../graphAwareSettlementHook'
+import { createSeededRng } from '../../rng'
 import type { Settlement } from '../../../../types'
 import type { SystemRelationshipGraph, RelationshipEdge, EntityRef } from '../../graph'
 
@@ -55,7 +56,7 @@ describe('graphAwareSettlementHook', () => {
   it('returns null when no incident edges exist', () => {
     const settlement = makeSettlement('s1')
     const graph = makeGraph([], {}, [])
-    expect(graphAwareSettlementHook(settlement, graph)).toBeNull()
+    expect(graphAwareSettlementHook(settlement, graph, createSeededRng('hook-test'))).toBeNull()
   })
 
   it('returns null when only non-eligible incident edges exist (CONTROLS, HOSTS)', () => {
@@ -70,7 +71,7 @@ describe('graphAwareSettlementHook', () => {
       { s1: ['edge-1', 'edge-2'] },
       ['edge-1', 'edge-2'],
     )
-    expect(graphAwareSettlementHook(settlement, graph)).toBeNull()
+    expect(graphAwareSettlementHook(settlement, graph, createSeededRng('hook-test'))).toBeNull()
   })
 
   it('returns null when CONTESTS edge exists but is not in spine', () => {
@@ -79,7 +80,7 @@ describe('graphAwareSettlementHook', () => {
     const fRef = makeEntityRef('f1', 'Route Authority', 'namedFaction')
     const edge = makeEdge('edge-1', 'CONTESTS', sRef, fRef)
     const graph = makeGraph([edge], { s1: ['edge-1'] }, [])
-    expect(graphAwareSettlementHook(settlement, graph)).toBeNull()
+    expect(graphAwareSettlementHook(settlement, graph, createSeededRng('hook-test'))).toBeNull()
   })
 
   it('returns CONTESTS prose when settlement is in an incident CONTESTS spine edge', () => {
@@ -88,10 +89,11 @@ describe('graphAwareSettlementHook', () => {
     const fRef = makeEntityRef('f1', 'Route Authority', 'namedFaction')
     const edge = makeEdge('edge-1', 'CONTESTS', sRef, fRef)
     const graph = makeGraph([edge], { s1: ['edge-1'] }, ['edge-1'])
-    const result = graphAwareSettlementHook(settlement, graph)
+    const result = graphAwareSettlementHook(settlement, graph, createSeededRng('hook-test'))
     expect(result).not.toBeNull()
-    expect(result).toContain('standoff with Route Authority')
-    expect(result).toBe('The standoff with Route Authority is the political reality of this site.')
+    expect(result).toContain('Route Authority')
+    const rendered = HOOK_REWRITE_POOLS.CONTESTS.map(t => t.replaceAll('{other}', 'Route Authority'))
+    expect(rendered).toContain(result)
   })
 
   it('returns CONTESTS prose when settlement is the object of a CONTESTS spine edge', () => {
@@ -100,8 +102,8 @@ describe('graphAwareSettlementHook', () => {
     const sRef = makeEntityRef('s1', 'Orison Hold', 'settlement')
     const edge = makeEdge('edge-1', 'CONTESTS', fRef, sRef)
     const graph = makeGraph([edge], { s1: ['edge-1'] }, ['edge-1'])
-    const result = graphAwareSettlementHook(settlement, graph)
-    expect(result).toContain('standoff with Iron Compact')
+    const result = graphAwareSettlementHook(settlement, graph, createSeededRng('hook-test'))
+    expect(result).toContain('Iron Compact')
   })
 
   it('returns DEPENDS_ON prose for incident DEPENDS_ON spine edge', () => {
@@ -110,9 +112,9 @@ describe('graphAwareSettlementHook', () => {
     const rRef = makeEntityRef('r1', 'chiral ice belt', 'guResource')
     const edge = makeEdge('edge-1', 'DEPENDS_ON', sRef, rRef)
     const graph = makeGraph([edge], { s1: ['edge-1'] }, ['edge-1'])
-    const result = graphAwareSettlementHook(settlement, graph)
+    const result = graphAwareSettlementHook(settlement, graph, createSeededRng('hook-test'))
     expect(result).not.toBeNull()
-    expect(result).toContain('turns on access to chiral ice belt')
+    expect(result).toContain('chiral ice belt')
   })
 
   it('returns SUPPRESSES prose for incident SUPPRESSES spine edge', () => {
@@ -121,9 +123,9 @@ describe('graphAwareSettlementHook', () => {
     const sRef = makeEntityRef('s1', 'Orison Hold', 'settlement')
     const edge = makeEdge('edge-1', 'SUPPRESSES', fRef, sRef)
     const graph = makeGraph([edge], { s1: ['edge-1'] }, ['edge-1'])
-    const result = graphAwareSettlementHook(settlement, graph)
+    const result = graphAwareSettlementHook(settlement, graph, createSeededRng('hook-test'))
     expect(result).not.toBeNull()
-    expect(result).toContain('Whoever controls Iron Compact')
+    expect(result).toContain('Iron Compact')
   })
 
   it('picks the highest-spine-rank edge when multiple eligible spine edges exist', () => {
@@ -138,7 +140,7 @@ describe('graphAwareSettlementHook', () => {
       { s1: ['edge-a', 'edge-b'] },
       ['edge-a', 'edge-b'],
     )
-    const result = graphAwareSettlementHook(settlement, graph)
+    const result = graphAwareSettlementHook(settlement, graph, createSeededRng('hook-test'))
     expect(result).toContain('First Authority')
     expect(result).not.toContain('Second Authority')
   })
@@ -149,7 +151,7 @@ describe('graphAwareSettlementHook', () => {
     const rRef = makeEntityRef('r1', 'chiral ice belt', 'guResource')
     const edge = makeEdge('edge-1', 'DEPENDS_ON', sRef, rRef)
     const graph = makeGraph([edge], { s1: ['edge-1'] }, ['edge-1'])
-    const result = graphAwareSettlementHook(settlement, graph)
+    const result = graphAwareSettlementHook(settlement, graph, createSeededRng('hook-test'))
     expect(result).not.toBeNull()
     expect(result).not.toContain('{')
   })
@@ -160,7 +162,7 @@ describe('graphAwareSettlementHook', () => {
     const rRef = makeEntityRef('r1', 'chiral ice belt', 'guResource')
     const edge = makeEdge('edge-1', 'DEPENDS_ON', sRef, rRef)
     const graph = makeGraph([edge], { s1: ['edge-1'] }, ['edge-1'])
-    const result = graphAwareSettlementHook(settlement, graph)
+    const result = graphAwareSettlementHook(settlement, graph, createSeededRng('hook-test'))
     expect(result).not.toBeNull()
     expect(/[.!?]$/.test(result!)).toBe(true)
   })

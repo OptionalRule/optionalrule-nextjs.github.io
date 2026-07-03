@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { settlementHookSynthesis, settlementTagHook } from '../settlementProse'
+import { CLOSING_POOLS, settlementHookSynthesis, settlementTagHook } from '../settlementProse'
 import { createSeededRng } from '../../rng'
 import type { SettlementHabitationPattern } from '../../../../types'
 
@@ -19,9 +19,8 @@ describe('settlementHookSynthesis', () => {
     const sentences = result.split(/(?<=[.])\s+/)
     expect(sentences.length).toBeGreaterThanOrEqual(3)
     expect(sentences.length).toBeLessThanOrEqual(4)
-    expect(result).toMatch(
-      /(Control of the Iggygate control station decides who has leverage|Whoever runs the Iggygate control station sets the terms here|Every dispute here ends at the Iggygate control station|Whatever the system fights over next, the Iggygate control station is where it lands)\.$/
-    )
+    const closers = CLOSING_POOLS.balanced.map(c => c.replaceAll('{function}', 'the Iggygate control station'))
+    expect(closers.some(c => result.endsWith(c))).toBe(true)
     expect(result).toMatch(/Privately, the route weather board sells safe windows twice\./)
   })
 

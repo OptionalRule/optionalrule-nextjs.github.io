@@ -394,7 +394,7 @@ describe('graphAwareReshape — settlementHookSynthesis integration', () => {
       options: { ...baseOptions, graphAware: { settlementHookSynthesis: true } },
       rng: createSeededRng('hook-test'),
     })
-    expect(result.settlements[0].tagHook.value).toContain('standoff with Route Authority')
+    expect(result.settlements[0].tagHook.value).toContain('Route Authority')
     expect(result.settlements[0].tagHook.value).not.toContain('decides who has leverage')
     expect(result.settlements[0].tagHook.confidence).toBe('inferred')
   })
@@ -421,7 +421,7 @@ describe('graphAwareReshape — settlementHookSynthesis integration', () => {
     })
     expect(result.settlements[0].whyHere.value).toContain('Orison Hold')
     expect(result.settlements[0].whyHere.value).toContain('chiral ice belt')
-    expect(result.settlements[0].tagHook.value).toContain('standoff with Route Authority')
+    expect(result.settlements[0].tagHook.value).toContain('Route Authority')
     expect(result.settlements[0].tagHook.value).not.toContain('decides who has leverage')
   })
 

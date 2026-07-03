@@ -3628,6 +3628,7 @@ function generateSettlements(
       hiddenTruth,
       encounterSites: encounterSiteValues,
       guIntensity: guOverlay.intensity.value,
+      tone: options.tone,
     })
     const baseSettlementName = generateSettlementName(
       rng.fork(`settlement-name-${index + 1}`),
