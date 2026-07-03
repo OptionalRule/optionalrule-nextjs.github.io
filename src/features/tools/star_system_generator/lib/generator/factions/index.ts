@@ -20,5 +20,5 @@ export interface GeneratedFaction {
   publicFace: string
 }
 
-export { generateFactions } from './generateFactions'
+export { generateFactions, getSeedFactionNames } from './generateFactions'
 export { buildFactionMetadataByName, type FactionMetadata } from './factionLookup'

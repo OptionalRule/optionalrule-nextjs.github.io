@@ -8,6 +8,7 @@ import { scoreCandidates, selectEdges } from './score'
 import { buildEdgeIndexes } from './buildIndexes'
 import { attachHistoricalEvents } from './history'
 import { selectSettlementSpineEdgeIds } from './settlementSpineEligibility'
+import { getSeedFactionNames } from '../factions'
 
 function emptyEdgesByType(): Record<EdgeType, string[]> {
   const result = {} as Record<EdgeType, string[]>
@@ -46,10 +47,11 @@ export function buildRelationshipGraph(
 
   const seedSalt = String(rng.fork('score').next())
   const scored = scoreCandidates(candidates, options.tone, options.gu, options.distribution, seedSalt)
+  const seedFactionNames = getSeedFactionNames(options.tone)
   const selection = selectEdges(scored, {
     numSettlements: input.settlements.length,
     numPhenomena: input.phenomena.length,
-  }, options.gu)
+  }, options.gu, seedFactionNames)
   const edges = [...selection.spine, ...selection.peripheral]
 
   const { historicalEdges } = attachHistoricalEvents({

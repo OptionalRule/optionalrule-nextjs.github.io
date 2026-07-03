@@ -11,6 +11,11 @@ const BANK_BY_TONE: Record<GeneratorTone, FactionBank> = {
   cinematic: cinematicBank,
 }
 
+export function getSeedFactionNames(tone: GeneratorTone): ReadonlySet<string> {
+  const bank = BANK_BY_TONE[tone] ?? balancedBank
+  return new Set(bank.seedFactions.map(seed => seed.name))
+}
+
 export function generateFactions(
   rng: SeededRng,
   tone: GeneratorTone,

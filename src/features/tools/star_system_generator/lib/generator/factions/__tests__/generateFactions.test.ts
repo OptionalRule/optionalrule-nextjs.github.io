@@ -31,8 +31,8 @@ describe('generateFactions', () => {
   })
 
   it('extends past seedFactions with generated names when count > seedFactions.length', () => {
-    const balanced = generateFactions(createSeededRng('seed-z'), 'balanced', 15)
-    expect(balanced).toHaveLength(15)
+    const balanced = generateFactions(createSeededRng('seed-z'), 'balanced', 30)
+    expect(balanced).toHaveLength(30)
     const seedNames = new Set(balancedBank.seedFactions.map((f) => f.name))
     const generated = balanced.filter((f) => !seedNames.has(f.name))
     expect(generated.length).toBeGreaterThanOrEqual(5)
@@ -97,5 +97,18 @@ describe('generateFactions', () => {
       const matchedStem = astronomyBank.stems.find((stem) => faction.name.startsWith(stem))
       expect(matchedStem).toBeDefined()
     }
+  })
+
+  it('balanced bank has grown to at least 24 unique seed factions (Task 19)', () => {
+    expect(balancedBank.seedFactions.length).toBeGreaterThanOrEqual(24)
+    const names = balancedBank.seedFactions.map((f) => f.name)
+    expect(new Set(names).size).toBe(names.length)
+  })
+
+  it('balanced bank stems and suffixes grew alongside the seed factions (Task 19)', () => {
+    expect(balancedBank.stems.length).toBeGreaterThanOrEqual(20)
+    expect(balancedBank.suffixes.length).toBeGreaterThanOrEqual(14)
+    expect(new Set(balancedBank.stems).size).toBe(balancedBank.stems.length)
+    expect(new Set(balancedBank.suffixes).size).toBe(balancedBank.suffixes.length)
   })
 })

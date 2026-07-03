@@ -158,11 +158,18 @@ export function isSpineEligibleForGu(
 const SPINE_MAX = 3
 const PERIPHERAL_PER_TYPE_CAP = 2
 const TOTAL_HARD_CEILING = 12
+const SEED_FACTION_SPINE_CAP = 1
+
+function hasSeedFactionEndpoint(edge: RelationshipEdge, seedFactionNames: ReadonlySet<string>): boolean {
+  return (edge.subject.kind === 'namedFaction' && seedFactionNames.has(edge.subject.displayName))
+    || (edge.object.kind === 'namedFaction' && seedFactionNames.has(edge.object.displayName))
+}
 
 export function selectEdges(
   scored: ReadonlyArray<ScoredCandidate>,
   options: SelectionOptions,
   gu: GuPreference = 'normal',
+  seedFactionNames?: ReadonlySet<string>,
 ): SelectionResult {
   const totalCap = Math.min(
     TOTAL_HARD_CEILING,
@@ -172,9 +179,13 @@ export function selectEdges(
   const spineCandidates = scored.filter(c => isSpineEligibleForGu(c.edge, gu))
 
   const spine: RelationshipEdge[] = []
+  let seedFactionSpineCount = 0
   for (const cand of spineCandidates) {
     if (spine.length >= SPINE_MAX) break
+    const seedTouched = seedFactionNames !== undefined && hasSeedFactionEndpoint(cand.edge, seedFactionNames)
+    if (seedTouched && seedFactionSpineCount >= SEED_FACTION_SPINE_CAP) continue
     spine.push(cand.edge)
+    if (seedTouched) seedFactionSpineCount += 1
   }
 
   const usedIds = new Set(spine.map(e => e.id))
