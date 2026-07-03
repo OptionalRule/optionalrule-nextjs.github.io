@@ -151,6 +151,34 @@
         "First-wave"
       ],
       "text": "A retired surveyor is selling the location of a ruin she found and never reported; the percentage to her grandchildren is high."
+    },
+    {
+      "tags": [
+        "GU"
+      ],
+      "binds": [
+        "party",
+        "place"
+      ],
+      "text": "{party} is quietly buying up debt on {place}, and nobody there has been told why."
+    },
+    {
+      "tags": [
+        "GU"
+      ],
+      "binds": [
+        "stake"
+      ],
+      "text": "A courier swears the fight over {stake} was settled in a back room three weeks before the public vote ever happened."
+    },
+    {
+      "tags": [
+        "Bleed"
+      ],
+      "binds": [
+        "phenomenon"
+      ],
+      "text": "Every survey crew that gets near {phenomenon} comes back with a different account of what they saw, and none of the reports match."
     }
   ],
   "contracts": [
@@ -291,6 +319,34 @@
         "First-wave"
       ],
       "text": "Recover a first-wave archive cached on a moon nobody charted; the cache key is in a song the heirs still teach their children."
+    },
+    {
+      "tags": [
+        "GU"
+      ],
+      "binds": [
+        "place",
+        "party"
+      ],
+      "text": "Escort a negotiator to {place} before {party} finds out the meeting is happening at all."
+    },
+    {
+      "tags": [
+        "GU"
+      ],
+      "binds": [
+        "stake"
+      ],
+      "text": "Recover paperwork proving who actually controls {stake}; the client won't say why they need it before the vote."
+    },
+    {
+      "tags": [
+        "Metric storm"
+      ],
+      "binds": [
+        "phenomenon"
+      ],
+      "text": "Chart a safe approach through {phenomenon} for a survey team that isn't cleared to be there."
     }
   ],
   "encounters": [
@@ -425,6 +481,34 @@
         "First-wave"
       ],
       "text": "A first-wave plumbing layout in a working colony hides a pre-Silence weapons cache; the council has known thirty years, a new councilor didn't get the briefing."
+    },
+    {
+      "tags": [
+        "GU"
+      ],
+      "binds": [
+        "party",
+        "place"
+      ],
+      "text": "{party} has posted a checkpoint on the approach to {place} that isn't on any published chart."
+    },
+    {
+      "tags": [
+        "GU"
+      ],
+      "binds": [
+        "stake"
+      ],
+      "text": "A dockworker corners you asking what you know about {stake} — he's already been asked twice by people who weren't dockworkers."
+    },
+    {
+      "tags": [
+        "Chirality"
+      ],
+      "binds": [
+        "phenomenon"
+      ],
+      "text": "Sensor ghosts near {phenomenon} keep resolving into the same shape, and the crew swears it moved first."
     }
   ],
   "npcs": [
@@ -583,6 +667,34 @@
         "First-wave"
       ],
       "text": "The ruin-diver who keeps a list of names found etched into bulkheads and will not sell anything with a name on it, no matter the price."
+    },
+    {
+      "tags": [
+        "GU"
+      ],
+      "binds": [
+        "party"
+      ],
+      "text": "The negotiator for {party} who has been sober for exactly one meeting in the last six and remembers all of them anyway."
+    },
+    {
+      "tags": [
+        "GU"
+      ],
+      "binds": [
+        "place",
+        "stake"
+      ],
+      "text": "The clerk on {place} who logs every claim against {stake} in a ledger that isn't the official one."
+    },
+    {
+      "tags": [
+        "Iggygate"
+      ],
+      "binds": [
+        "phenomenon"
+      ],
+      "text": "The surveyor who mapped {phenomenon} twice and filed two different reports, neither of them under her own name."
     }
   ],
   "twists": [
@@ -687,6 +799,36 @@
         "First-wave"
       ],
       "text": "A salvage court has been quietly issuing rulings to the same family syndicate for forty years; the magistrate's children attend a school nobody can afford on a magistrate's salary."
+    },
+    {
+      "tags": [
+        "GU"
+      ],
+      "binds": [
+        "party",
+        "stake"
+      ],
+      "text": "{party}'s claim on {stake} turns out to rest on a survey that was faked the year the founders arrived."
+    },
+    {
+      "tags": [
+        "Dark sector"
+      ],
+      "binds": [
+        "phenomenon"
+      ],
+      "text": "The readings from {phenomenon} that everyone dismissed as instrument drift turn out to be the only honest data in the system."
+    },
+    {
+      "tags": [
+        "GU"
+      ],
+      "binds": [
+        "party",
+        "stake",
+        "place"
+      ],
+      "text": "The magistrate who ruled in {party}'s favor over {stake} turns out to be renting a room on {place} from the losing side."
     }
   ]
 }

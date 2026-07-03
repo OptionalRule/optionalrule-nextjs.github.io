@@ -10,6 +10,8 @@ import type {
   SystemHooks,
   SystemPhenomenon,
 } from '../../types'
+import type { Conflict } from './conflicts'
+import type { EntityRef } from './graph/types'
 import {
   contractPool,
   encounterPool,
@@ -17,6 +19,7 @@ import {
   npcPool,
   rumorPool,
   twistPool,
+  type HookBindSlot,
   type HookEntry,
 } from './data/hooks'
 import type { SeededRng } from './rng'
@@ -28,6 +31,63 @@ export interface HookContext {
   phenomena: readonly SystemPhenomenon[]
   architecture: SystemArchitecture
   reachability: Reachability
+  conflicts: readonly Conflict[]
+  entities: readonly EntityRef[]
+}
+
+export interface HookBindContext {
+  conflicts: readonly Conflict[]
+  entities: readonly EntityRef[]
+}
+
+function partyCandidates(ctx: HookBindContext): readonly EntityRef[] {
+  const refs = ctx.conflicts.flatMap((conflict) => conflict.parties.map((party) => party.ref))
+  const preferred = refs.filter((ref) => ref.kind === 'namedFaction' || ref.kind === 'settlement')
+  return preferred.length > 0 ? preferred : refs
+}
+
+function placeCandidates(ctx: HookBindContext): readonly EntityRef[] {
+  return ctx.entities.filter((entity) => entity.kind === 'settlement' || entity.kind === 'body')
+}
+
+function stakeCandidates(ctx: HookBindContext): readonly EntityRef[] {
+  const refs: EntityRef[] = []
+  for (const conflict of ctx.conflicts) {
+    if (conflict.stakeRef) refs.push(conflict.stakeRef)
+  }
+  return refs
+}
+
+function phenomenonCandidates(ctx: HookBindContext): readonly EntityRef[] {
+  return ctx.entities.filter((entity) => entity.kind === 'phenomenon')
+}
+
+const SLOT_CANDIDATES: Record<HookBindSlot, (ctx: HookBindContext) => readonly EntityRef[]> = {
+  party: partyCandidates,
+  place: placeCandidates,
+  stake: stakeCandidates,
+  phenomenon: phenomenonCandidates,
+}
+
+function distinctBinds(entry: HookEntry): readonly HookBindSlot[] {
+  if (!entry.binds || entry.binds.length === 0) return []
+  return Array.from(new Set(entry.binds))
+}
+
+export function canBindEntry(entry: HookEntry, ctx: HookBindContext): boolean {
+  return distinctBinds(entry).every((slot) => SLOT_CANDIDATES[slot](ctx).length > 0)
+}
+
+export function bindEntryText(entry: HookEntry, ctx: HookBindContext, rng: SeededRng): string {
+  const slots = distinctBinds(entry)
+  if (slots.length === 0) return entry.text
+  let text = entry.text
+  for (const slot of slots) {
+    const candidates = SLOT_CANDIDATES[slot](ctx)
+    const chosen = candidates[rng.int(0, candidates.length - 1)]
+    text = text.split(`{${slot}}`).join(chosen.displayName)
+  }
+  return text
 }
 
 export interface SelectHooksArgs {
@@ -109,15 +169,16 @@ interface PickArgs {
   bias: number
   seenIds: Set<string>
   category: HookCategory
+  bindContext: HookBindContext
 }
 
 function entryId(entry: HookEntry): string {
   return entry.text
 }
 
-function toSystemHook(entry: HookEntry, category: HookCategory): SystemHook {
+function toSystemHook(entry: HookEntry, category: HookCategory, bindContext: HookBindContext, bindRng: SeededRng): SystemHook {
   const text: Fact<string> = {
-    value: entry.text,
+    value: bindEntryText(entry, bindContext, bindRng),
     confidence: 'human-layer',
     source: `Procedural ${category} hook (${entry.tags.join('/')})`,
   }
@@ -128,22 +189,24 @@ function toSystemHook(entry: HookEntry, category: HookCategory): SystemHook {
   }
 }
 
-function pickHooks({ rng, pool, preferredTerms, count, bias, seenIds, category }: PickArgs): SystemHook[] {
+function pickHooks({ rng, pool, preferredTerms, count, bias, seenIds, category, bindContext }: PickArgs): SystemHook[] {
+  const eligiblePool = pool.filter((entry) => canBindEntry(entry, bindContext))
+  const bindRng = rng.fork('binds')
   const picks: SystemHook[] = []
   for (let i = 0; i < count; i += 1) {
     const useBias = preferredTerms.size > 0 && rng.chance(bias)
     let candidates: readonly HookEntry[]
     if (useBias) {
-      candidates = pool.filter((entry) => !seenIds.has(entryId(entry)) && entry.tags.some((tag) => preferredTerms.has(tag)))
+      candidates = eligiblePool.filter((entry) => !seenIds.has(entryId(entry)) && entry.tags.some((tag) => preferredTerms.has(tag)))
       if (candidates.length === 0) {
-        candidates = pool.filter((entry) => !seenIds.has(entryId(entry)))
+        candidates = eligiblePool.filter((entry) => !seenIds.has(entryId(entry)))
       }
     } else {
-      candidates = pool.filter((entry) => !seenIds.has(entryId(entry)))
+      candidates = eligiblePool.filter((entry) => !seenIds.has(entryId(entry)))
     }
     if (candidates.length === 0) break
     const chosen = candidates[rng.int(0, candidates.length - 1)]
-    picks.push(toSystemHook(chosen, category))
+    picks.push(toSystemHook(chosen, category, bindContext, bindRng))
     seenIds.add(entryId(chosen))
   }
   return picks
@@ -162,6 +225,7 @@ function addResonance(target: Set<string>, hooks: readonly SystemHook[]): void {
 export function selectSystemHooks({ rng, context }: SelectHooksArgs): SystemHooks {
   const activeTerms = deriveActiveTerms(context)
   const seenIds = new Set<string>()
+  const bindContext: HookBindContext = { conflicts: context.conflicts, entities: context.entities }
 
   const contracts = pickHooks({
     rng: rng.fork('contracts'),
@@ -171,6 +235,7 @@ export function selectSystemHooks({ rng, context }: SelectHooksArgs): SystemHook
     bias: 0.7,
     seenIds,
     category: 'contract',
+    bindContext,
   })
 
   const resonantTerms = new Set(activeTerms)
@@ -184,6 +249,7 @@ export function selectSystemHooks({ rng, context }: SelectHooksArgs): SystemHook
     bias: 0.7,
     seenIds,
     category: 'npc',
+    bindContext,
   })
   addResonance(resonantTerms, npcs)
 
@@ -195,6 +261,7 @@ export function selectSystemHooks({ rng, context }: SelectHooksArgs): SystemHook
     bias: 0.7,
     seenIds,
     category: 'encounter',
+    bindContext,
   })
 
   const rumors = pickHooks({
@@ -205,6 +272,7 @@ export function selectSystemHooks({ rng, context }: SelectHooksArgs): SystemHook
     bias: 0.6,
     seenIds,
     category: 'rumor',
+    bindContext,
   })
 
   const twists = pickHooks({
@@ -215,6 +283,7 @@ export function selectSystemHooks({ rng, context }: SelectHooksArgs): SystemHook
     bias: 0.8,
     seenIds,
     category: 'twist',
+    bindContext,
   })
 
   return { rumors, contracts, encounters, npcs, twists }

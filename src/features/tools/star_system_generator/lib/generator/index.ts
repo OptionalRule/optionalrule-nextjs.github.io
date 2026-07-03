@@ -4427,6 +4427,8 @@ export function generateSystem(options: GenerationOptions, knownSystem?: Partial
       phenomena: reshapedPhenomena,
       architecture: architectureResult.architecture,
       reachability,
+      conflicts,
+      entities: relationshipGraph.entities,
     },
   })
 

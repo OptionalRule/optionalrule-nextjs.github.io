@@ -1,8 +1,11 @@
 import hooksData from '../../../data/hooks.json'
 
+export type HookBindSlot = 'party' | 'place' | 'stake' | 'phenomenon'
+
 export interface HookEntry {
   text: string
   tags: readonly string[]
+  binds?: readonly HookBindSlot[]
 }
 
 interface HooksFile {

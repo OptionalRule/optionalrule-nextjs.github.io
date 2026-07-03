@@ -36,6 +36,9 @@ What gets overheard, half-confirmed, retold in dockside bars. Some are true; som
 - [Narrow AI] A stabilizer-substrate vein has been found on a moon with no chiral signature, which should be impossible.
 - [First-wave] A first-wave probe launched pre-Silence is due back this year on its original return arc.
 - [First-wave] A retired surveyor is selling the location of a ruin she found and never reported; the percentage to her grandchildren is high.
+- [GU] {party} is quietly buying up debt on {place}, and nobody there has been told why.
+- [GU] A courier swears the fight over {stake} was settled in a back room three weeks before the public vote ever happened.
+- [Bleed] Every survey crew that gets near {phenomenon} comes back with a different account of what they saw, and none of the reports match.
 
 ## Contracts on offer
 
@@ -64,6 +67,9 @@ One-shot session jobs that pay — and don't fully explain what the buyer wants.
 - [Narrow AI] Recover a stabilizer substrate convoy from a "salvage dispute" — whoever controls it controls eighteen months of every AI in the sector.
 - [First-wave] Retrieve a colony charter intact from inside an outpost being slowly rebuilt by self-ordering regolith; the contract is for the paperwork, not the people.
 - [First-wave] Recover a first-wave archive cached on a moon nobody charted; the cache key is in a song the heirs still teach their children.
+- [GU] Escort a negotiator to {place} before {party} finds out the meeting is happening at all.
+- [GU] Recover paperwork proving who actually controls {stake}; the client won't say why they need it before the vote.
+- [Metric storm] Chart a safe approach through {phenomenon} for a survey team that isn't cleared to be there.
 
 ## Encounters in transit
 
@@ -91,6 +97,9 @@ What happens en route or in-system. Not the destination — the trip. These get 
 - [Narrow AI] A fragmenting AI is being argued over in three venues at once — regulatory shutdown, religious sanctuary, contractual continuance — while the crew has to keep flying.
 - [First-wave] An heir produces a chiral assay that proves a "clean ice" moon is first-wave volatiles locked into the wrong handedness; the mining concession can't sell it, dump it, or let the assay leave-system.
 - [First-wave] A first-wave plumbing layout in a working colony hides a pre-Silence weapons cache; the council has known thirty years, a new councilor didn't get the briefing.
+- [GU] {party} has posted a checkpoint on the approach to {place} that isn't on any published chart.
+- [GU] A dockworker corners you asking what you know about {stake} — he's already been asked twice by people who weren't dockworkers.
+- [Chirality] Sensor ghosts near {phenomenon} keep resolving into the same shape, and the crew swears it moved first.
 
 ## People you meet
 
@@ -122,6 +131,9 @@ One-line NPC seeds with implied stakes. These get pulled when the GM needs a fac
 - [Narrow AI] The pilot whose AI fragmented mid-jump — confused friend phase six hours, stranger phase ten minutes — and she's been single-crewing ever since with the witness core in her bunk.
 - [First-wave] The heir who's never seen his planet, walking into a port council meeting with paperwork older than the council itself.
 - [First-wave] The ruin-diver who keeps a list of names found etched into bulkheads and will not sell anything with a name on it, no matter the price.
+- [GU] The negotiator for {party} who has been sober for exactly one meeting in the last six and remembers all of them anyway.
+- [GU] The clerk on {place} who logs every claim against {stake} in a ledger that isn't the official one.
+- [Iggygate] The surveyor who mapped {phenomenon} twice and filed two different reports, neither of them under her own name.
 
 ## Mid-session twists
 
@@ -144,6 +156,9 @@ Revelations that change the shape of a session in progress. The thing isn't what
 - [Narrow AI] A perception error sold a corporate convoy a "clear corridor" with a pirate wing in it; the pirate wing paid the AI's stabilizer supplier in advance.
 - [First-wave] An heir is a forgery — flawless paperwork, real DNA, planted decades ago by a trade house that wanted leverage on a future claim, and the heir herself doesn't know.
 - [First-wave] A salvage court has been quietly issuing rulings to the same family syndicate for forty years; the magistrate's children attend a school nobody can afford on a magistrate's salary.
+- [GU] {party}'s claim on {stake} turns out to rest on a survey that was faked the year the founders arrived.
+- [Dark sector] The readings from {phenomenon} that everyone dismissed as instrument drift turn out to be the only honest data in the system.
+- [GU] The magistrate who ruled in {party}'s favor over {stake} turns out to be renting a room on {place} from the losing side.
 
 ## Using these tables
 
