@@ -1,17 +1,5 @@
 import narrativeData from '../../../data/narrative.json'
 
-export interface NarrativeStructure {
-  id: string
-  label: string
-  domains?: readonly string[]
-  motif?: string
-  requiredLayers?: readonly string[]
-  baseWeight?: number
-  template: string
-  slots: Record<string, string>
-  distinctSlots?: readonly (readonly [string, string])[]
-}
-
 export interface NamedFaction {
   id: string
   name: string
@@ -23,7 +11,6 @@ export interface NamedFaction {
 export interface PhenomenonVariants {
   travelEffect?: readonly string[]
   surveyQuestion?: readonly string[]
-  conflictHook?: readonly string[]
   sceneAnchor?: readonly string[]
 }
 
@@ -57,8 +44,6 @@ interface NarrativeData {
     secrets?: readonly string[]
     sceneAnchors?: readonly string[]
   }>
-  narrativeVariablePools: Record<string, readonly string[]>
-  narrativeStructures: readonly NarrativeStructure[]
 }
 
 const typedNarrativeData = narrativeData as unknown as NarrativeData
@@ -77,5 +62,3 @@ export const phenomena = typedNarrativeData.phenomena
  */
 export const namedFactions = typedNarrativeData.namedFactions ?? []
 export const narrativeDomains = typedNarrativeData.narrativeDomains ?? {}
-export const narrativeVariablePools = typedNarrativeData.narrativeVariablePools
-export const narrativeStructures = typedNarrativeData.narrativeStructures

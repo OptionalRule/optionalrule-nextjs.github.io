@@ -45,8 +45,6 @@ import {
   humanRemnants,
   namedFactions,
   narrativeDomains,
-  narrativeStructures,
-  narrativeVariablePools,
   phenomena,
   remnantHooks,
 } from '../src/features/tools/star_system_generator/lib/generator/data/narrative'
@@ -325,7 +323,6 @@ function validateGuAndNarrative(): void {
   assertNonEmpty('narrative.remnantHooks', remnantHooks)
   assertNonEmpty('narrative.phenomena', phenomena)
   assertNonEmpty('narrative.namedFactions', namedFactions)
-  assertNonEmpty('narrative.narrativeStructures', narrativeStructures)
   assertNonEmpty('narrative.narrativeDomains', Object.keys(narrativeDomains))
 
   if (guIntensityTable.at(-1)?.max !== Number.POSITIVE_INFINITY) {
@@ -345,7 +342,6 @@ function validateGuAndNarrative(): void {
   assertNoDuplicates('narrative.phenomena.label', phenomena.map((phenomenon) => phenomenon.label))
   assertNoDuplicates('narrative.namedFactions.id', namedFactions.map((faction) => faction.id))
   assertNoDuplicates('narrative.namedFactions.name', namedFactions.map((faction) => faction.name))
-  assertNoDuplicates('narrative.narrativeStructures.id', narrativeStructures.map((structure) => structure.id))
 
   phenomena.forEach((phenomenon, index) => {
     const path = `narrative.phenomena.${index}`
@@ -357,6 +353,19 @@ function validateGuAndNarrative(): void {
       if (!value.trim()) addError(`${path}.${field}`, 'Required phenomenon consequence field is empty.')
       if (/shapes travel|survey priorities|local conflict|mystery surrounds/i.test(value)) addError(`${path}.${field}`, 'Field uses generic fallback language.')
       if (/\b(?:alien|nonhuman|native civilization|ancient cities|artifact|relic|megastructure)\b/i.test(value)) addError(`${path}.${field}`, 'Field violates no-alien/no-artifact wording policy.')
+    })
+
+    const livelihoods = phenomenon.livelihoods ?? []
+    if (livelihoods.length < 2) addError(`${path}.livelihoods`, `Expected at least 2 livelihoods; got ${livelihoods.length}.`)
+    livelihoods.forEach((livelihood, livelihoodIndex) => {
+      ;(['actor', 'dependence', 'friction'] as const).forEach((field) => {
+        if (!livelihood[field].trim()) addError(`${path}.livelihoods.${livelihoodIndex}.${field}`, 'Required livelihood field is empty.')
+      })
+    })
+
+    ;(['travelEffect', 'surveyQuestion', 'sceneAnchor'] as const).forEach((field) => {
+      const variantCount = phenomenon.variants?.[field]?.length ?? 0
+      if (variantCount < 3) addError(`${path}.variants.${field}`, `Expected at least 3 variants; got ${variantCount}.`)
     })
   })
 
@@ -395,8 +404,6 @@ function validateGuAndNarrative(): void {
       phenomenon.conflictHook,
       phenomenon.sceneAnchor,
     ]),
-    ...Object.values(narrativeVariablePools).flat(),
-    ...narrativeStructures.flatMap((structure) => [structure.label, structure.template]),
   ]
   rawNarrativeValues.forEach((value) => {
     if (/\balien\b|\bnonhuman\b|\bnative\s+civilization\b|\bancient\s+cities\b/i.test(value)) {
@@ -412,29 +419,9 @@ function validateGuAndNarrative(): void {
     if (!faction.publicFace.trim()) addError('narrative.namedFactions', `Named faction "${faction.name}" has no publicFace.`)
   })
 
-  for (const structure of narrativeStructures) {
-    validateDefinedDomains(`narrative.narrativeStructures.${structure.id}.domains`, structure.domains ?? [], knownDomains)
-    const templateSlots = [...structure.template.matchAll(/\{([A-Za-z0-9_]+)\}/g)].map((match) => match[1])
-    assertNonEmpty(`narrative.narrativeStructures.${structure.id}.templateSlots`, templateSlots)
-    const declaredSlots = Object.keys(structure.slots)
-    const missingDeclaredSlots = templateSlots.filter((slot) => !declaredSlots.includes(slot))
-    const unusedDeclaredSlots = declaredSlots.filter((slot) => !templateSlots.includes(slot))
-    if (missingDeclaredSlots.length) {
-      addError(`narrative.narrativeStructures.${structure.id}.slots`, `Missing slot declarations: ${missingDeclaredSlots.join(', ')}`)
-    }
-    if (unusedDeclaredSlots.length) {
-      addError(`narrative.narrativeStructures.${structure.id}.slots`, `Declared slots not used in template: ${unusedDeclaredSlots.join(', ')}`)
-    }
-
-    for (const [slot, poolName] of Object.entries(structure.slots)) {
-      assertNonEmpty(`narrative.narrativeVariablePools.${poolName} for ${structure.id}.${slot}`, narrativeVariablePools[poolName])
-    }
-  }
-
   warnIfThin('narrative.remnantHooks', remnantHooks.length, 20)
   warnIfThin('narrative.humanRemnants', humanRemnants.length, 20)
   warnIfThin('narrative.phenomena', phenomena.length, 30)
-  warnIfThin('narrative.narrativeStructures', narrativeStructures.length, 16)
 }
 
 function validateMechanicalTables(): void {
@@ -558,10 +545,9 @@ function printReport(): void {
     ['remnantHooks', remnantHooks.length],
     ['phenomena', phenomena.length],
     ['structured phenomenon fields', `${phenomena.filter((phenomenon) => phenomenon.travelEffect && phenomenon.surveyQuestion && phenomenon.conflictHook && phenomenon.sceneAnchor).length}/${phenomena.length}`],
+    ['phenomena with >=2 livelihoods', `${phenomena.filter((phenomenon) => (phenomenon.livelihoods?.length ?? 0) >= 2).length}/${phenomena.length}`],
     ['namedFactions', namedFactions.length],
     ['narrativeDomains', Object.keys(narrativeDomains).length],
-    ['narrativeVariablePools', Object.keys(narrativeVariablePools).length],
-    ['narrativeStructures', narrativeStructures.length],
   ])
 
   printSection('Stellar And Route Tables', [

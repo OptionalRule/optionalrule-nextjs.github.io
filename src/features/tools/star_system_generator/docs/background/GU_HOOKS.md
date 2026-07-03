@@ -54,6 +54,41 @@ What gets overheard, half-confirmed, retold in dockside bars. Some are true; som
 - [GU] Every claim filed on {place} against {stake} this year has been withdrawn within a shift, and nobody will say who is buying the quiet.
 - [Bleed] Harvest crews working {phenomenon} have started coming back a shift older than their logs, and the co-op is paying the difference before anyone asks.
 - [Pinchdrive] A refit yard swears the hull {party} brought in carries a calibration scar nobody on the crew will admit to cutting.
+- [GU] A chart correction quietly moved three waypoints last week, and the pilots who filed complaints about the old ones have stopped filing anything at all.
+- [GU] A gate authority audit keeps closing three days early, and the same auditor has signed off every single time.
+- [GU] A calibration dispute between two chart offices has quietly rerouted half the merchant traffic through the slower lane.
+- [GU] A route survey contract keeps getting re-let to the same bidder at a lower price each round, and nobody else is allowed to see the numbers.
+- [GU] A gate authority auditor was quietly reassigned the same week his last three sign-offs got flagged for review by someone above him.
+- [GU] A vote on route priority was certified before two of the districts entitled to cast one had finished counting.
+- [GU] A debt collector has started buying up unpaid gate tolls at a discount, and nobody can say why the tolls are suddenly worth collecting.
+- [Bleed] A harvester co-op is buying back its own rigs at scrap price rather than let the assay office see this quarter's yield curve.
+- [Bleed] A bloom's public assay and its insurance assay disagree by a full grade, and both offices insist the other office made the error.
+- [Bleed] A harvest crew filed the same node twice under two different names, and the co-op paid out both times before anyone noticed.
+- [Bleed] A seep that closed two years ago is showing fresh readings on one meter and nothing at all on the other three.
+- [Bleed] A route captain is paying premium fares to avoid a bleed corridor the public charts still list as quiet.
+- [Bleed] A harvest co-op's insurance rate tripled the same week a rival co-op's rate quietly dropped, and the underwriter is the same office both times.
+- [Bleed] A bloom forecast that's been wrong three cycles running is still the only one the exchange will license.
+- [Bleed] A meter reading two adjacent seeps as one has been left uncorrected for a year because fixing it would change whose land the yield counts against.
+- [Bleed] A retired auditor is offering, for a fee, to explain why her old seep survey never matched the co-op's public numbers.
+- [Bleed] A filing clerk double-booked one node's yield under two co-op names and has been quietly splitting the difference for a year.
+- [Bleed] A harvest rig's black-box logs were replaced mid-quarter with a clean copy, and the original hasn't turned up in any office that admits to holding it.
+- [Chirality] A dockside clinic's left-handed saline order tripled overnight, and the manifest blames a flu that nobody else in the port has reported.
+- [Chirality] A customs scanner keeps flagging the same crate of "inert" salt as wrong-handed, and three different inspectors have signed off on it anyway.
+- [Chirality] A refinery's handedness ratio has drifted for three straight quarters and the quality office keeps recertifying it anyway.
+- [Chirality] A courier is charging double to carry chiral samples across the terminal by hand rather than through the scanner everyone else uses.
+- [Chirality] A shipment cleared as right-handed twice on paper and once wrong-handed on the manifest nobody thought to double-check.
+- [Chirality] A private lab is buying up every wrong-handed sample the port confiscates, no questions, cash on the dock.
+- [Chirality] A chiral-medicine broker keeps undercutting the licensed clinics by a margin nobody can explain without a second, quieter supplier.
+- [Dark sector] An anchor-mass broker is quoting delivery windows nobody else can match, and won't say which yard is cutting them the mass.
+- [Dark sector] A Shadow Lance test corridor was supposed to be sealed two years ago, and freight is still filing routes straight through it.
+- [Programmable matter] A habitat's self-ordering regolith has started refusing certain repair patterns, and the crew doing the patching won't say which ones.
+- [Programmable matter] A microseed batch shipped as inert keeps arriving pre-templated, and no manifest lists who did the templating.
+- [Metric storm] A convoy's clocks disagreed by four minutes on arrival, and the harbor office billed both readings as if neither were wrong.
+- [Metric storm] A shear-lane insurer is quietly paying out early on any claim that mentions phantom sensor returns, no questions asked.
+- [Gardener] A route captain swears the interdiction line moved a full parsec last cycle, and the chart office insists it has always been exactly there.
+- [Gardener] A cargo manifest survived a surgical strike intact while the hull around it didn't, and the underwriters won't say why that isn't suspicious.
+- [Gardener] A warning-beacon repair contract keeps getting cancelled the week before the crew ships out, three times running now.
+- [Gardener] A merchant swears the interdiction zone shifted overnight, and the chart office is charging a fee for the correction.
 
 ## Contracts on offer
 
@@ -179,6 +214,24 @@ One-line NPC seeds with implied stakes. These get pulled when the GM needs a fac
 - [Iggygate] The wake-reader who has charted {phenomenon} more times than anyone alive and will not tell you which of the charts she believes.
 - [GU] The retired magistrate on {place} who ruled on {stake} thirty years back and keeps the losing brief framed above her desk.
 - [GU] The auditor {party} keeps on retainer to lose the paperwork on {stake} every time a rival asks to see it.
+- [GU] The claims clerk who reads every filing twice — once for the words on the page, once for what got left off it.
+- [GU] The gate clerk who re-stamps every transit form twice, once for the office and once for a private ledger she keeps under the counter.
+- [GU] The route auditor who has flagged the same three lanes for five years running and been overruled every single time.
+- [Bleed] The bleed-tender who won't harvest a node until she's walked its perimeter herself, rig crews or no rig crews backing her up.
+- [Bleed] The dockhand who keeps a private ledger of which crews came home a shift short, and has never once said why he started keeping it.
+- [Bleed] The node surveyor who logs every reading twice, by hand, because she doesn't trust the instrument that pays her wage.
+- [Bleed] The co-op accountant who pays out on assays she privately doesn't believe, because the alternative is nobody eats this month.
+- [Bleed] The seep-watch volunteer who walks the same dead perimeter every week, waiting for a reading that used to be there.
+- [Chirality] The assay tech who double-checks every "clean" reading by hand, because the instruments have been wrong before and someone paid for it.
+- [Chirality] The refinery quality officer who keeps recertifying a drifting ratio because shutting the line down would cost more than she's allowed to say.
+- [Chirality] The scanner tech who charges double for chiral samples off the books and swears it's for the extra care, not the risk.
+- [Chirality] The customs runner who carries wrong-handed cargo across the terminal by hand because the scanner line runs three hours long.
+- [Dark sector] The anchor-mass broker who quotes delivery windows nobody else can match and changes the subject whenever someone asks why.
+- [Dark sector] The corridor inspector who signed off on a supposedly sealed test lane and won't answer questions about the second signature.
+- [Gardener] The chapel keeper who logs every surgical strike by date on a wall nobody else is allowed to read, and won't say which pattern she's tracking.
+- [Gardener] The freight broker who reschedules every run around the strike calendar and won't book cargo that can't sit a shift in port if the timing goes wrong.
+- [Gardener] The beacon repair contractor whose job has been cancelled three times running and still keeps his crew on standby, unpaid, waiting for the fourth call.
+- [Gardener] The chart clerk who bills every interdiction correction to a different department so no one downstream notices the pattern.
 
 ## Mid-session twists
 
@@ -212,6 +265,11 @@ Revelations that change the shape of a session in progress. The thing isn't what
 - [Dark sector] The instrument drift the whole port blamed on {phenomenon} was a second set of books; the readings are honest and the ledger is not.
 - [GU] The neutral broker holding the deal open turns out to owe {party} more than the deal is worth, and the debt is registered on {place}.
 - [Narrow AI] The witness core that settles who owns {stake} has begun answering in a voice its previous owner never recorded, and it has started answering before the question is asked.
+- [Bleed] The seep everyone wrote off as dead has started producing again, on a schedule that matches a route the co-op swore it never surveyed.
+- [Chirality] The wrong-handed cargo everyone assumed was smuggled turns out to be legitimate — and the legitimate paperwork is what's forged.
+- [Chirality] The clinic's doubled saline order wasn't fraud; it was triage for a patient count the port's official ledger says doesn't exist.
+- [Pinchdrive] The refit yard's clean calibration record turns out to be a second ship's log, filed under the wrong hull number for three years running.
+- [Gardener] The warning beacon everyone credits with saving the last convoy was decrypted a full day after the convoy already turned; something else called the warning first.
 
 ## Using these tables
 
