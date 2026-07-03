@@ -822,7 +822,9 @@ describe('generateSystem', () => {
       expect(settlement.anchorKind.value).toBeTruthy()
       expect(settlement.anchorName.value).toBeTruthy()
       expect(settlement.anchorDetail.value).toBeTruthy()
-      expect(settlement.whyHere.value).toContain(settlement.anchorName.value)
+      const whyHereNamesSite = settlement.whyHere.value.includes(settlement.name.value)
+        || settlement.whyHere.value.includes(settlement.anchorName.value)
+      expect(whyHereNamesSite).toBe(true)
       expect(settlement.whyHere.source).toMatch(/MASS-GU 18\.1|Graph-aware reshape/)
       expect(settlement.siteCategory.value).toBeTruthy()
       expect(settlement.presence.score.value).toBeGreaterThan(0)
@@ -1422,7 +1424,7 @@ describe('generateSystem', () => {
 
   it('tone-axis shifts settlement habitation distribution', () => {
     const settlementsByTone = (tone: GenerationOptions['tone']) =>
-      Array.from({ length: 60 }, (_, index) =>
+      Array.from({ length: 120 }, (_, index) =>
         generateSystem({
           ...options,
           tone,

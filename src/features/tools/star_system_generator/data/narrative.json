@@ -68,7 +68,36 @@
       "travelEffect": "Approach vectors require slow debris-clearing burns and constant armor checks.",
       "surveyQuestion": "Which fragments carry industrial isotopes, transponder ghosts, or hidden operation scars?",
       "conflictHook": "Insurers, salvagers, and GU traffic auditors dispute who must clear safe lanes.",
-      "sceneAnchor": "A cutter drifts beside a glittering wall of rock and frozen metal."
+      "sceneAnchor": "A cutter drifts beside a glittering wall of rock and frozen metal.",
+      "livelihoods": [
+        {
+          "actor": "lane-clearing co-ops",
+          "dependence": "bill insurers by the cubic kilometer of certified-clear corridor",
+          "friction": "every corridor they certify silts back up before the invoice clears"
+        },
+        {
+          "actor": "fragment prospectors",
+          "dependence": "chase transponder ghosts and industrial isotopes through the thick bands",
+          "friction": "the richest fragments sit in lanes the clearing co-ops are paid to keep empty"
+        }
+      ],
+      "variants": {
+        "travelEffect": [
+          "Inbound ships buy corridor certificates that expire faster than the transit takes.",
+          "Hull-rated tugs escort anything larger than a lighter through the dense bands, at dense-band prices.",
+          "Radar clutter off the disk swallows small craft; convoys travel loud and slow on shared beacons."
+        ],
+        "surveyQuestion": [
+          "Which bands carry industrial isotopes worth a claim, and who salted the assay record?",
+          "Whose transponders are still pinging inside the disk, and why does the registry list them as scrapped?",
+          "Is the disk primordial or the residue of something someone dismantled in a hurry?"
+        ],
+        "sceneAnchor": [
+          "A clearing barge chews through a rock band while prospector skiffs trail it like gulls.",
+          "Certificate clerks argue lane boundaries over a chart no two versions of agree.",
+          "A child's telescope picks out the glint of a hull the disk was supposed to have eaten."
+        ]
+      }
     },
     {
       "label": "Recent planetary collision",
@@ -76,7 +105,36 @@
       "travelEffect": "Fresh ejecta, unstable moons, and thermal plumes force ships onto temporary routes.",
       "surveyQuestion": "Was the collision natural resonance failure, redirected impactor, or suppressed engineering mistake?",
       "conflictHook": "Refugee claims, mineral rights, and liability filings compete before the evidence cools.",
-      "sceneAnchor": "A wounded world glows along a continent-sized fracture and newborn ring."
+      "sceneAnchor": "A wounded world glows along a continent-sized fracture and newborn ring.",
+      "livelihoods": [
+        {
+          "actor": "ejecta miners",
+          "dependence": "harvest mantle metals the collision threw into reachable orbits",
+          "friction": "the mineral-rights filings predate the collision and name a planet that no longer exists"
+        },
+        {
+          "actor": "grief brokers",
+          "dependence": "trade in relics, records, and remains recovered from the debris fan",
+          "friction": "every recovery is somebody's evidence and somebody else's property"
+        }
+      ],
+      "variants": {
+        "travelEffect": [
+          "Fresh ejecta rewrites the hazard charts weekly; routes are sold as dated editions.",
+          "Thermal plumes off the wound distort cheap sensors, and the good sensors are all under contract.",
+          "Newborn ring material crosses the old trade lane twice a local year, and everything reroutes around the crossing."
+        ],
+        "surveyQuestion": [
+          "Was the impactor natural, misdirected, or aimed — and which answer do the liability filings need?",
+          "Which orbital fragments hold survivors' vaults, and who holds the salvage priority?",
+          "How long until the debris fan settles into a ring, and who owns a ring that used to be a country?"
+        ],
+        "sceneAnchor": [
+          "A wounded world glows along a continent-sized fracture while claim beacons blink in the fan.",
+          "Recovery crews hold a minute of silence, then bid on the next grid square.",
+          "A memorial buoy plays the planet's old traffic-control loop to anyone who passes."
+        ]
+      }
     },
     {
       "label": "Resonant compact chain",
@@ -84,7 +142,36 @@
       "travelEffect": "Tight orbital timing creates narrow transfer corridors and expensive missed-burn delays.",
       "surveyQuestion": "Who mapped the stable windows, and what installations are protected by withheld ephemerides?",
       "conflictHook": "Route controllers, smugglers, and settlement clocks all depend on one resonance model.",
-      "sceneAnchor": "Three close worlds cross the display in metronome sequence."
+      "sceneAnchor": "Three close worlds cross the display in metronome sequence.",
+      "livelihoods": [
+        {
+          "actor": "window-keepers",
+          "dependence": "sell launch tables timed to the chain's transfer resonances",
+          "friction": "the resonance drifts, and admitting the drift would devalue every table already sold"
+        },
+        {
+          "actor": "slingshot couriers",
+          "dependence": "run fast freight on gravity assists the chain hands out for free",
+          "friction": "one mistimed burn puts a courier in everyone else's corridor at closing speed"
+        }
+      ],
+      "variants": {
+        "travelEffect": [
+          "Transfers between the inner worlds cost almost nothing if timed right and everything if timed wrong.",
+          "Traffic bunches into resonance windows; docking queues run empty for days, then riot.",
+          "The chain's alignments make some legs of the system a coast and others a climb."
+        ],
+        "surveyQuestion": [
+          "Is the chain's resonance stable, decaying, or being quietly managed by someone's station-keeping thrusters?",
+          "Which world in the chain absorbs the tidal cost the others profit from?",
+          "Whose launch tables actually match the ephemeris, and whose match their revenue model?"
+        ],
+        "sceneAnchor": [
+          "Three worlds line up over the port horizon and every departure board flips at once.",
+          "A courier threads two planetary shadows on a burn plotted by a retired window-keeper from memory.",
+          "Dockhands play dice against the resonance clock, and the clock is winning."
+        ]
+      }
     },
     {
       "label": "Trojan megaswarm",
@@ -92,7 +179,36 @@
       "travelEffect": "Trojan clouds force ships through monitored gaps shared by dust and salvage drones.",
       "surveyQuestion": "Which clusters are primordial, and which conceal storage hulks or contraband habitats?",
       "conflictHook": "Mining combines and traffic authorities dispute whether the swarm is resource or hazard.",
-      "sceneAnchor": "The Lagrange horizon looks solid with stones blinking claimant beacons."
+      "sceneAnchor": "The Lagrange horizon looks solid with stones blinking claimant beacons.",
+      "livelihoods": [
+        {
+          "actor": "swarm shepherds",
+          "dependence": "nudge commercially useful rocks toward the processing camps",
+          "friction": "every nudge changes trajectories other shepherds already sold"
+        },
+        {
+          "actor": "camp registrars",
+          "dependence": "arbitrate homestead claims across a hundred thousand co-orbiting rocks",
+          "friction": "the registry maps a swarm that reshuffles itself faster than the appeals docket moves"
+        }
+      ],
+      "variants": {
+        "travelEffect": [
+          "Transits through the trojan point run on shepherd-posted lanes that shift with every nudge campaign.",
+          "The swarm's combined shadow makes long-range tracking unreliable across a whole arc of the orbit.",
+          "Small craft hide, legally and otherwise, among rocks too numerous to sweep."
+        ],
+        "surveyQuestion": [
+          "Which rocks are original trojans and which were towed in and homesteaded under false surveys?",
+          "Where does the swarm's mass budget not add up, and what is parked in the discrepancy?",
+          "Whose nudge campaign perturbed the camp orbits, and was the drift a side effect or a strategy?"
+        ],
+        "sceneAnchor": [
+          "A shepherd tug leans on a mountain-sized rock while claim lights blink across the swarm like a city.",
+          "Two camps watch the same incoming rock and both raise a flag.",
+          "The registrar's chart room papers over three walls, and none of the walls agree."
+        ]
+      }
     },
     {
       "label": "Long-period comet storm",
@@ -100,7 +216,36 @@
       "travelEffect": "Outer approaches become hazardous as cometary arcs shed dust across transfer paths.",
       "surveyQuestion": "What perturbed the reservoir: passing mass, failed survey burn, or old GU intervention?",
       "conflictHook": "Water prospectors demand priority while port officials quarantine possibly contaminated ice cargo.",
-      "sceneAnchor": "Pale comet tails cross like searchlights over a station short on shielding."
+      "sceneAnchor": "Pale comet tails cross like searchlights over a station short on shielding.",
+      "livelihoods": [
+        {
+          "actor": "volatile skimmers",
+          "dependence": "harvest water and organics off inbound comets during the storm season",
+          "friction": "the best harvest windows overlap the impact-warning windows exactly"
+        },
+        {
+          "actor": "deflection bondsmen",
+          "dependence": "underwrite settlements against impact risk and sell deflection futures",
+          "friction": "their models decide which rocks get deflected, and the models are private"
+        }
+      ],
+      "variants": {
+        "travelEffect": [
+          "Storm-season transits carry mandatory comet-watch fees and optional survival odds.",
+          "Fresh comae wash whole nav-bands with noise for weeks at a time.",
+          "Every arrival plots against a wall of inbound ice on trajectories nobody fully trusts."
+        ],
+        "surveyQuestion": [
+          "Which inbound nuclei are on impact tracks, and whose deflection bond pays if the answer changes?",
+          "What stirred the outer cloud into this cadence, and is the cadence natural?",
+          "Which comet cores carry pre-Silence instrument packages frozen in the ice?"
+        ],
+        "sceneAnchor": [
+          "A skimmer crew works a comet tail in hard glare while the deflection countdown runs on their own feed.",
+          "The impact siren drills on the same schedule as the harvest bell, and newcomers mix them up once.",
+          "Children scratch comet tallies into the shelter wall; the older marks go all the way up."
+        ]
+      }
     },
     {
       "label": "Captured rogue world",
@@ -108,7 +253,36 @@
       "travelEffect": "The rogue's eccentric orbit creates rare close-pass windows and gravitational surprises.",
       "surveyQuestion": "Do its volatiles, heat signature, or crust records contradict local histories?",
       "conflictHook": "Colonies, science teams, and GU administrators contest hazard, depot, or archive status.",
-      "sceneAnchor": "A lightless planet rolls through floodlamp glare and survey tug exhaust."
+      "sceneAnchor": "A lightless planet rolls through floodlamp glare and survey tug exhaust.",
+      "livelihoods": [
+        {
+          "actor": "deep-cold extractors",
+          "dependence": "mine exotic ices that only form in interstellar dark",
+          "friction": "the deposits are thawing now that the world has a sun, and the deadline is geological but real"
+        },
+        {
+          "actor": "provenance scholars",
+          "dependence": "sell studies of where the rogue came from and what rode in on it",
+          "friction": "their funding doubles every time they do not rule out an artificial origin"
+        }
+      ],
+      "variants": {
+        "travelEffect": [
+          "The rogue's eccentric orbit crosses two trade lanes on a cadence the charts still call provisional.",
+          "Its capture left the outer system strewn with disturbed debris on retrograde tracks.",
+          "Approach corridors change season to season as the new orbit keeps getting re-solved."
+        ],
+        "surveyQuestion": [
+          "What does the rogue's chemistry say about where it formed, and why do two labs get two answers?",
+          "Did anything artificial arrive with it, and who already holds the excavation permits?",
+          "Is the orbit stable, or is the system's newest world also its next projectile?"
+        ],
+        "sceneAnchor": [
+          "Dawn happens over terrain that never had a dawn, and the extraction camp watches it in silence.",
+          "Core samples steam in the new sunlight while a scholar films the thaw for three rival sponsors.",
+          "The rogue crosses the night sky faster than any planet should, and locals set their debts by it."
+        ]
+      }
     },
     {
       "label": "Flare-amplified bleed season",
@@ -116,7 +290,36 @@
       "travelEffect": "Crews move only during shielded windows or risk radiation damage and denial.",
       "surveyQuestion": "Which stations are falsifying flare exposure logs to keep traffic moving?",
       "conflictHook": "GU inspectors freeze permits after a convoy launches on an altered forecast.",
-      "sceneAnchor": "A departure hall sits under red storm shutters and expired dosimeter seals."
+      "sceneAnchor": "A departure hall sits under red storm shutters and expired dosimeter seals.",
+      "livelihoods": [
+        {
+          "actor": "bleed-season harvest crews",
+          "dependence": "work the amplified nodes during flare peaks when yields triple",
+          "friction": "the same flares that fatten the nodes strip the crews' radiation margins to nothing"
+        },
+        {
+          "actor": "shelter wardens",
+          "dependence": "run the storm shelters and sell priority berths for the flare peaks",
+          "friction": "the harvest bonus and the shelter bell always ring on the same day"
+        }
+      ],
+      "variants": {
+        "travelEffect": [
+          "Transit insurance doubles at flare season and triples inside the bleed corridors.",
+          "Comm blackouts during peaks leave convoys navigating on dead reckoning and rumor.",
+          "Departure boards mark windows in flare-time, and flare-time argues with every other clock."
+        ],
+        "surveyQuestion": [
+          "Which nodes amplify on this star's flare cadence, and who had that correlation first?",
+          "Are the amplified yields worth the dosimetry, and whose dosimeters are honest?",
+          "What is the bleed doing to the flare cycle in return — and why is that study unfunded?"
+        ],
+        "sceneAnchor": [
+          "Harvest rigs sprint against a brightening star while the shelter siren counts them home.",
+          "A warden bars the shelter door against latecomers holding full sample cases.",
+          "Aurora sheets down over the camp, and the old crews read the harvest in its color."
+        ]
+      }
     },
     {
       "label": "Hot Neptune desert survivor",
@@ -124,7 +327,36 @@
       "travelEffect": "Stellar wind and stripped atmospheric flow distort comms and punish close maneuvers.",
       "surveyQuestion": "How did the planet survive evaporation, and who falsified its hazard data?",
       "conflictHook": "Energy firms, climate modelers, and regulators fight over access to the proof.",
-      "sceneAnchor": "A blue remnant screams around the star, trailing a faint atmospheric wake."
+      "sceneAnchor": "A blue remnant screams around the star, trailing a faint atmospheric wake.",
+      "livelihoods": [
+        {
+          "actor": "envelope skimmers",
+          "dependence": "scoop the slowly boiling atmosphere for rare isotopes",
+          "friction": "every scoop shortens the planet's remaining life, and the planet is the license"
+        },
+        {
+          "actor": "orbital heritage clerks",
+          "dependence": "administer the survivor's protected-object status and sell research access",
+          "friction": "protection fees fund the office that keeps approving extraction waivers"
+        }
+      ],
+      "variants": {
+        "travelEffect": [
+          "The survivor's extended envelope drags on low passes and pays for the fuel in scoopable gas.",
+          "Its evaporation tail streaks across an entire inner lane, pretty on approach and hard on sensors.",
+          "Close orbits are auctioned by altitude band, and the bands keep sinking."
+        ],
+        "surveyQuestion": [
+          "Why has this world survived where the models evaporate it, and who benefits from the models being wrong?",
+          "What fraction of the envelope loss is natural versus skimmed, and which ledger records the difference?",
+          "What sits in the core that the envelope has been protecting?"
+        ],
+        "sceneAnchor": [
+          "A skimmer surfaces from the glowing envelope trailing gas like a whale clearing water.",
+          "The evaporation tail crosses the station viewport, and a clerk stamps another waiver under its light.",
+          "Bets chalked on the dock wall give the planet a century, a decade, a year."
+        ]
+      }
     },
     {
       "label": "Snow-line chiral belt",
@@ -132,7 +364,36 @@
       "travelEffect": "Snow-line crossings require screening ice intake and reactor feedstock for asymmetric organics.",
       "surveyQuestion": "Are the chiral signatures local chemistry, imported contamination, or terraforming residue?",
       "conflictHook": "Biotech firms and GU biosafety officers contest every water-dependent ice claim.",
-      "sceneAnchor": "Clean ice turns quarantine amber as every tank flags the same handedness."
+      "sceneAnchor": "Clean ice turns quarantine amber as every tank flags the same handedness.",
+      "livelihoods": [
+        {
+          "actor": "handedness assayers",
+          "dependence": "certify every ice shipment's chiral signature for the biosafety market",
+          "friction": "their instruments disagree at the margins where all the profit lives"
+        },
+        {
+          "actor": "belt tithers",
+          "dependence": "collect passage fees from haulers crossing the contaminated bands",
+          "friction": "the bands migrate, and the tithe posts do not"
+        }
+      ],
+      "variants": {
+        "travelEffect": [
+          "Snow-line crossings require sealed intakes and an assay certificate newer than the ice.",
+          "Reactor feedstock scooped near the belt fails inspection two ports later, reliably and expensively.",
+          "Quarantine amber lights half the tanker fleet every season, on schedule."
+        ],
+        "surveyQuestion": [
+          "Is the belt's handedness local chemistry, imported contamination, or terraforming residue?",
+          "Which assay houses call the same ice clean, and what do they have in common?",
+          "Where is the belt migrating, and whose claims sit in its path?"
+        ],
+        "sceneAnchor": [
+          "Clean ice turns quarantine amber as every tank on the manifest flags the same handedness.",
+          "An assayer holds two certificates for one cargo and waits to see who pays first.",
+          "Tithe drones ring an ice hauler like gulls while its captain argues the band boundary."
+        ]
+      }
     },
     {
       "label": "Ring arc with phase dust",
@@ -140,7 +401,36 @@
       "travelEffect": "Phase-dust crossings scramble sensors and force slow approaches through marked lanes.",
       "surveyQuestion": "What cargo or wreckage is hidden inside the phase-dust blind spots?",
       "conflictHook": "Rival salvagers accuse lane authorities of selling clean transponder routes.",
-      "sceneAnchor": "A beacon skiff drifts beside a glittering arc, hull abraded raw."
+      "sceneAnchor": "A beacon skiff drifts beside a glittering arc, hull abraded raw.",
+      "livelihoods": [
+        {
+          "actor": "phase-dust sifters",
+          "dependence": "trawl the arc for dust that phases through ordinary matter on flare cycles",
+          "friction": "the containment that holds the dust also hides how much of it they are actually taking"
+        },
+        {
+          "actor": "arc pilots",
+          "dependence": "guide ships through the arc's clear channels for a fee only they can justify",
+          "friction": "the channels are learned, unlicensed, and die with the pilot who knew them"
+        }
+      ],
+      "variants": {
+        "travelEffect": [
+          "Standard hulls transit the arc only in the dust's settled phase, and the phase table is a trade secret.",
+          "Phase dust ignores shielding on its active days; crews learn the calendar or learn the symptoms.",
+          "The arc glitters across the main approach like weather that hasn't decided."
+        ],
+        "surveyQuestion": [
+          "What sets the dust's phase cadence, and is the cadence drifting?",
+          "How much dust have the sifters removed, and what happens to the arc's structure when the fraction matters?",
+          "Which wrecks inside the arc predate the dust, and which are its work?"
+        ],
+        "sceneAnchor": [
+          "An arc pilot cuts thrust and lets the ship drift a channel only she can see.",
+          "Sifter barges glow with contained dust that shines through their own bulkheads.",
+          "A hand passes through a railing on a bad phase day, and the shift boss logs it as morale."
+        ]
+      }
     },
     {
       "label": "Ice-shell plume moon",
@@ -152,21 +442,32 @@
       "variants": {
         "travelEffect": [
           "Vent geysers force ships into a shifting safe-corridor that closes without warning.",
-          "Approach burns must thread the shadow of an ice shell that flexes with every transit."
+          "Approach burns must thread the shadow of an ice shell that flexes with every transit.",
+          "Low-orbit work runs on plume forecasts sold at the dock, none of them warrantied."
         ],
         "surveyQuestion": [
           "Whose sample chain proves the plume is venting clean isotopes and not laundered cargo?",
-          "What inside the ocean keeps re-pressurising the vent on a schedule no one will publish?"
-        ],
-        "conflictHook": [
-          "Permitted miners and freelance haulers fight over plume-window access while inspectors stall the docket.",
-          "The biosafety arbiter freezes extraction; affected crews counter that the freeze is a market move."
+          "What inside the ocean keeps re-pressurising the vent on a schedule no one will publish?",
+          "Which plume holds organics, and which agency loses most if the answer is all of them?"
         ],
         "sceneAnchor": [
           "An impactor probe punches through the shell mid-survey and the venting timetable rewrites itself.",
-          "A drill crew in tethered suits watches a plume curl over their station floodlights."
+          "A drill crew in tethered suits watches a plume curl over their station floodlights.",
+          "Bottling rigs ring a geyser like pilgrims, filling tanks in the fallout sparkle."
         ]
-      }
+      },
+      "livelihoods": [
+        {
+          "actor": "plume-water bottlers",
+          "dependence": "capture vent ejecta and sell it as certified pre-biotic clean",
+          "friction": "the certification depends on nobody publishing what the ocean underneath actually holds"
+        },
+        {
+          "actor": "vent-schedule touts",
+          "dependence": "sell predicted plume windows to landers and skimmers",
+          "friction": "the vents keep a schedule that argues with every model sold"
+        }
+      ]
     },
     {
       "label": "Gas giant radiation maze",
@@ -174,7 +475,36 @@
       "travelEffect": "Radiation belts force looping transfers, hardened shelters, and costly orbital delays.",
       "surveyQuestion": "Which supposedly safe corridor shifted, and who knew before the convoy entered?",
       "conflictHook": "Port authorities, insurers, and smugglers fight over legal and lethal corridor maps.",
-      "sceneAnchor": "A navigation vault shows a convoy bending toward an uncharted hot belt."
+      "sceneAnchor": "A navigation vault shows a convoy bending toward an uncharted hot belt.",
+      "livelihoods": [
+        {
+          "actor": "belt-gap ferrymen",
+          "dependence": "run passengers through the safe corridors between radiation lobes",
+          "friction": "the corridor charts are inherited, jealously guarded, and slowly going stale"
+        },
+        {
+          "actor": "hardening outfitters",
+          "dependence": "retrofit hulls and suits for maze work at maze prices",
+          "friction": "their certification stamp is the only one accepted, and they own the testing range too"
+        }
+      ],
+      "variants": {
+        "travelEffect": [
+          "Moon-to-moon transfers route through mapped gaps in the radiation lobes, never straight lines.",
+          "Unhardened electronics die in minutes off-corridor; the maze enforces its own traffic law.",
+          "Dose budgets, not fuel budgets, decide what a crew can afford in this volume."
+        ],
+        "surveyQuestion": [
+          "Which corridors are drifting closed, and who is still selling passage through them?",
+          "What shields the anomalously quiet gap on the third moon's flank, and is it natural?",
+          "Whose dosimetry archive is honest, and why does the honest one stop three years ago?"
+        ],
+        "sceneAnchor": [
+          "A ferry threads glowing aurora curtains while its passengers watch the dose counter instead of the view.",
+          "The outfitter's test range flashes hulls with borrowed lobe radiation, one stamp at a time.",
+          "An off-corridor wreck sits perfectly preserved where no salvage tug can afford to linger."
+        ]
+      }
     },
     {
       "label": "Failed Iggygate wake",
@@ -182,7 +512,36 @@
       "travelEffect": "Old gate turbulence makes jumps arrive late, offset, or near exclusion buoys.",
       "surveyQuestion": "Is the wake decaying, stabilizing, or being refreshed by unauthorized traffic?",
       "conflictHook": "A stranded settlement claims GU approved evacuation after knowing the wake was unsafe.",
-      "sceneAnchor": "A dead gate frame broadcasts conflicting closure orders from warning drones."
+      "sceneAnchor": "A dead gate frame broadcasts conflicting closure orders from warning drones.",
+      "livelihoods": [
+        {
+          "actor": "wake fishers",
+          "dependence": "trawl the collapsed gate's wake for exotic debris and metric shards",
+          "friction": "the wake rewards the same closeness it punishes, and the fishers' union keeps the casualty tally private"
+        },
+        {
+          "actor": "gate-grief pilgrims' hosts",
+          "dependence": "run hostels and services for those who come to see where the gate died",
+          "friction": "pilgrim traffic pays better when the wake is active, and active means dangerous"
+        }
+      ],
+      "variants": {
+        "travelEffect": [
+          "Pinch transits detour wide around the wake; the detour is charted, taxed, and resented.",
+          "The wake throws intermittent metric ripples that unsettle drives and instruments alike.",
+          "Old approach vectors to the dead gate are marked forbidden and used anyway."
+        ],
+        "surveyQuestion": [
+          "Why did the gate fail, and whose calibration logs went missing the same week?",
+          "What does the wake's decay curve say about when this volume becomes safe — or never?",
+          "Which debris in the wake is gate structure and which arrived through it at the end?"
+        ],
+        "sceneAnchor": [
+          "The gate's dead pylons frame a patch of sky that still looks wrong to instruments.",
+          "Wake fishers cast sensor drones into a shimmer that eats one in ten.",
+          "Pilgrims light drift-lanterns on the failure anniversary, and the wake bends the light."
+        ]
+      }
     },
     {
       "label": "Moving bleed-node river",
@@ -190,7 +549,36 @@
       "travelEffect": "Transit windows migrate across the system, forcing ships to chase route geometry.",
       "surveyQuestion": "Who can predict the river's next bend before the official bulletin?",
       "conflictHook": "Navigation guilds and free captains clash over private forecasts and evacuation markets.",
-      "sceneAnchor": "A convoy burns toward empty space while station clocks count down."
+      "sceneAnchor": "A convoy burns toward empty space while station clocks count down.",
+      "livelihoods": [
+        {
+          "actor": "river-chaser harvest fleets",
+          "dependence": "follow the migrating node train and strip yield at every pause",
+          "friction": "the fleet that predicts the next bend first takes the cream, so forecasts are guarded like weapons"
+        },
+        {
+          "actor": "bend forecasters",
+          "dependence": "sell river-course predictions to fleets, insurers, and evacuation boards",
+          "friction": "one public forecast moves the whole market, so the best predictions are sold twice and published never"
+        }
+      ],
+      "variants": {
+        "travelEffect": [
+          "Transit windows migrate across the system, forcing ships to chase route geometry.",
+          "Lanes near the river's current course close on hours of notice and reopen somewhere else.",
+          "Ports along the historic riverbed boom and empty on a generational rhythm."
+        ],
+        "surveyQuestion": [
+          "Who can predict the river's next bend before the official bulletin?",
+          "What steers the node train — geometry, flare weather, or someone's quiet stabilizers?",
+          "Which abandoned camps along the old course still hold equipment worth the trip?"
+        ],
+        "sceneAnchor": [
+          "A convoy burns toward empty space while station clocks count down.",
+          "Harvest fleets break camp overnight, leaving a town-shaped absence on the rock.",
+          "A forecaster's chart wall shows the river's course in decades of colored thread."
+        ]
+      }
     },
     {
       "label": "Metric mirage zone",
@@ -201,22 +589,33 @@
       "sceneAnchor": "A bridge display shows three certified and incompatible approach vectors.",
       "variants": {
         "travelEffect": [
-          "Inertial systems drift inside the zone, forcing crews to time-share calibration buoys.",
-          "Range, doppler, and laser-ranging tell three different stories on the same approach."
+          "Ranging solutions inside the zone disagree with themselves on the return leg.",
+          "Convoys navigate by physical beacon chains because everything cleverer hallucinates.",
+          "The zone shows approaching ships a coastline of stations that are not there."
         ],
         "surveyQuestion": [
-          "Which baseline survey would still certify against post-incident reality?",
-          "Whose calibration record is the system actually using when traffic gets cleared?"
-        ],
-        "conflictHook": [
-          "Insurers and freight lines fight over which mirage reading counts as the legal one.",
-          "Independent surveyors publish contradicting baselines, and the port arbiter takes a side."
+          "Do the mirages repeat on a mappable cycle, or is the zone learning new ones?",
+          "Which recorded images are distortions of real objects, and where are the originals?",
+          "What happened to the survey that went in to anchor the zone's baseline and filed nothing?"
         ],
         "sceneAnchor": [
-          "Two pilots argue across an open hatch while a beacon strobes three claimed positions.",
-          "A bridge map shows the same hazard at two ranges; the crew has to pick one."
+          "Two identical stations hang in the viewport, and only one answers hails.",
+          "A mirage pilot flies eyes-closed past a phantom debris field her passengers can all see.",
+          "The surveyor's atlas of ghosts has a page that keeps needing reprinting."
         ]
-      }
+      },
+      "livelihoods": [
+        {
+          "actor": "mirage pilots",
+          "dependence": "navigate the zone by feel and memory where instruments lie",
+          "friction": "their skill cannot be certified, so the insurers price them as gamblers"
+        },
+        {
+          "actor": "ghost-fix surveyors",
+          "dependence": "map the zone's recurring false images and sell the corrections",
+          "friction": "the mirages drift, and every correction sold shortens its own shelf life"
+        }
+      ]
     },
     {
       "label": "Native microbial biosphere",
@@ -224,7 +623,36 @@
       "travelEffect": "Biosecurity rules slow landings, cargo transfers, and suit cycling near habitats.",
       "surveyQuestion": "Are the microbes a medical resource, industrial hazard, or protected environmental evidence?",
       "conflictHook": "GU quarantine orders collide with settlers dependent on local biomass chemistry.",
-      "sceneAnchor": "A decon tent steams beside stained sample tanks and disputed filters."
+      "sceneAnchor": "A decon tent steams beside stained sample tanks and disputed filters.",
+      "livelihoods": [
+        {
+          "actor": "sterile-corridor porters",
+          "dependence": "move cargo through the biosphere's quarantine locks under seal",
+          "friction": "every seal certificate is a bet that the porter's own suit archive is clean"
+        },
+        {
+          "actor": "metabolite bioprospectors",
+          "dependence": "license microbial chemistry for pharmaceutical export",
+          "friction": "the license terms assume the biosphere is passive, and the assays keep suggesting otherwise"
+        }
+      ],
+      "variants": {
+        "travelEffect": [
+          "Everything landing or leaving passes decontamination cycles measured in shifts, not minutes.",
+          "The quarantine perimeter adds a full day to every surface run and a page to every manifest.",
+          "Biosafety holds strand cargo in bond long enough to bankrupt small haulers."
+        ],
+        "surveyQuestion": [
+          "Is the biosphere adapting to human presence, and who is funding the study that says no?",
+          "Which metabolites are worth exporting, and which export was never actually licensed?",
+          "Where did the baseline samples go, and why do the new baselines differ?"
+        ],
+        "sceneAnchor": [
+          "Porters in sealed suits carry crates through a lock that fogs with each cycle.",
+          "A petri array glows faint colors that were not in last season's catalog.",
+          "The quarantine fence runs across a valley that looks, from the ridge, entirely alive."
+        ]
+      }
     },
     {
       "label": "Failed terraforming biosphere",
@@ -232,7 +660,36 @@
       "travelEffect": "Unstable weather and toxic biomes make surface routes unreliable beyond maintained corridors.",
       "surveyQuestion": "Which failure mode is spreading, and which contractor record explains it?",
       "conflictHook": "Liability courts, cleanup firms, and abandoned settlers need incompatible survival evidence.",
-      "sceneAnchor": "Engineered forest rot crawls across a road built for another climate."
+      "sceneAnchor": "Engineered forest rot crawls across a road built for another climate.",
+      "livelihoods": [
+        {
+          "actor": "die-off salvagers",
+          "dependence": "strip the abandoned terraforming plant and its seed vaults",
+          "friction": "the vaults are the evidence in three lawsuits about why the biosphere died"
+        },
+        {
+          "actor": "remnant-ecology wardens",
+          "dependence": "manage the surviving engineered species for hire",
+          "friction": "the species that survived are the ones the design said could not exist"
+        }
+      ],
+      "variants": {
+        "travelEffect": [
+          "Dust storms off the dead greening zones foul intakes across the whole hemisphere's approaches.",
+          "Landing permits route around protected remnant habitats nobody can quite justify or abolish.",
+          "The old climate mirrors still fire on their dead schedule, and approach windows respect them."
+        ],
+        "surveyQuestion": [
+          "Did the terraforming fail, or was it failed — and whose model said it would work?",
+          "Which engineered species persist off-registry, and what are they eating?",
+          "What is in the sealed seed vaults that the litigation keeps sealed?"
+        ],
+        "sceneAnchor": [
+          "A forest of dead canopy trees stands in rows too straight for grief.",
+          "Wardens tag a herd of engineered grazers that should not have made it a decade.",
+          "The terraforming directorate's logo peels off a wall in a town that outlived its purpose."
+        ]
+      }
     },
     {
       "label": "First-wave ghost colony",
@@ -240,7 +697,36 @@
       "travelEffect": "Old landing grids still work but route ships through abandoned hazards.",
       "surveyQuestion": "Who erased the last colony updates, and which sealed habitat still has power?",
       "conflictHook": "Descendant claimants, insurers, and scavengers need incompatible rulings on the colony's fate.",
-      "sceneAnchor": "A lit administration dome broadcasts docking instructions to empty streets."
+      "sceneAnchor": "A lit administration dome broadcasts docking instructions to empty streets.",
+      "livelihoods": [
+        {
+          "actor": "heirloom hunters",
+          "dependence": "recover first-wave artifacts for the heir-house collector market",
+          "friction": "every artifact strengthens some heir's charter claim and weakens another's"
+        },
+        {
+          "actor": "colony wardstakers",
+          "dependence": "maintain the ghost colony against decay and sell guided access",
+          "friction": "preservation and excavation are the same permit, issued by rivals"
+        }
+      ],
+      "variants": {
+        "travelEffect": [
+          "The colony's old approach corridor is maintained as a heritage lane, slow and mandatory.",
+          "Automated first-wave beacons still challenge inbound traffic in a dead protocol.",
+          "Salvage-tug traffic to the site runs heavier than the permits on file explain."
+        ],
+        "surveyQuestion": [
+          "Why did the colony empty — and which heir-house's version survives an artifact audit?",
+          "What do the colony's logs record from before the Silence that Sol's archives no longer do?",
+          "Which structures were sealed deliberately at abandonment, and by whom?"
+        ],
+        "sceneAnchor": [
+          "Dinner tables still set for a meal a century cold, under dust like snowfall.",
+          "A wardstaker relights the colony's boundary lamps at dusk out of something like respect.",
+          "An heirloom hunter finds a child's toy stamped with a charter seal worth a fleet."
+        ]
+      }
     },
     {
       "label": "Derelict fleet cluster",
@@ -248,7 +734,36 @@
       "travelEffect": "Safe approach requires threading dead hulls, drifting ordnance, and exclusion pings.",
       "surveyQuestion": "Which ships were sacrificed, and which still carry recoverable command logs?",
       "conflictHook": "Salvage crews fight legal priority while families demand proof of what happened.",
-      "sceneAnchor": "A frozen convoy hangs around a tender with running lights still on."
+      "sceneAnchor": "A frozen convoy hangs around a tender with running lights still on.",
+      "livelihoods": [
+        {
+          "actor": "hull breakers",
+          "dependence": "cut the dead fleet for armor plate and drive components",
+          "friction": "half the hulls are legally war graves and the boundary moves with the litigation"
+        },
+        {
+          "actor": "manifest genealogists",
+          "dependence": "trace crew fates for families and courts, hull by hull",
+          "friction": "every identification they confirm reopens a settled insurance claim"
+        }
+      ],
+      "variants": {
+        "travelEffect": [
+          "Safe approach requires threading dead hulls, drifting ordnance, and exclusion pings.",
+          "Unexploded ordnance sweeps close the cluster to through-traffic on short notice.",
+          "The cluster's exclusion zone bulges every time a new hull is reclassified a grave."
+        ],
+        "surveyQuestion": [
+          "Which ships were sacrificed, and which still carry recoverable command logs?",
+          "Who fired first, and which navy's archive has the gap where the answer sat?",
+          "Which hulls have been quietly boarded since the exclusion order, and what left with the boarders?"
+        ],
+        "sceneAnchor": [
+          "A frozen convoy hangs around a tender with running lights still on.",
+          "Breakers' torches glow inside a battleship's ribs like a lantern in a skull.",
+          "A genealogist reads a crew roster aloud to an empty compartment, as contracted."
+        ]
+      }
     },
     {
       "label": "Gardener warning beacon",
@@ -256,7 +771,36 @@
       "travelEffect": "Traffic diverts around the warning radius or accepts fines and inspection risk.",
       "surveyQuestion": "Is the beacon reacting to current hazard, legacy violation, or human tampering?",
       "conflictHook": "Local authorities exploit the warning while merchants pressure crews to prove it obsolete.",
-      "sceneAnchor": "A black compliance buoy repeats a code no nearby port understands."
+      "sceneAnchor": "A black compliance buoy repeats a code no nearby port understands.",
+      "livelihoods": [
+        {
+          "actor": "beacon-watch scribes",
+          "dependence": "transcribe and sell interpretations of the beacon's geometric broadcasts",
+          "friction": "no two schools of interpretation agree, and being right is untestable until it is fatal"
+        },
+        {
+          "actor": "perimeter caterers",
+          "dependence": "supply the research camps that ring the beacon's exclusion radius",
+          "friction": "the radius is inferred, not published, and the camps keep inching inward"
+        }
+      ],
+      "variants": {
+        "travelEffect": [
+          "Traffic gives the beacon a berth wide enough to be its own route note.",
+          "Drives report faint calibration drift for hours after passing the beacon's line of sight.",
+          "Insurers void coverage inside the inferred exclusion radius, wherever that is today."
+        ],
+        "surveyQuestion": [
+          "What is the beacon warning against — this volume, this behavior, or this species?",
+          "Has the broadcast changed, and who noticed first: the scribes or the navies?",
+          "What did the site look like before the beacon was planted, and where did that survey go?"
+        ],
+        "sceneAnchor": [
+          "The beacon's geometry turns slowly against the stars, obviously artificial, deliberately patient.",
+          "Scribes argue notation in a camp mess while the broadcast hums through every hull plate.",
+          "A dare-line of footprints in the regolith stops exactly where all of them stopped."
+        ]
+      }
     },
     {
       "label": "Narrow-AI perception fog",
@@ -264,7 +808,36 @@
       "travelEffect": "Certified narrow AIs misclassify hazards, forcing manual survey protocols.",
       "surveyQuestion": "Which AI model family fails first, and who certified it for GU routes?",
       "conflictHook": "A vendor demands recall secrecy while pilots publish route-bankrupting crash footage.",
-      "sceneAnchor": "Every cockpit machine labels the same debris cloud as clear passage."
+      "sceneAnchor": "Every cockpit machine labels the same debris cloud as clear passage.",
+      "livelihoods": [
+        {
+          "actor": "manual-watch crews",
+          "dependence": "stand human watches through the fog where AI perception fails",
+          "friction": "the pay assumes their eyes are immune, and nobody has proven that"
+        },
+        {
+          "actor": "fog-cut arbitrators",
+          "dependence": "settle disputes where AI logs and human logs disagree inside the fog",
+          "friction": "their rulings decide which class of witness a court trusts, one precedent at a time"
+        }
+      ],
+      "variants": {
+        "travelEffect": [
+          "Autonomous traffic halts at the fog boundary; everything crossing goes to manual watch.",
+          "Docking assists disengage without warning inside the fog, politely and disastrously.",
+          "Transit through the fog is charged by the human-hour, the only reliable instrument."
+        ],
+        "surveyQuestion": [
+          "What in this volume makes narrow AIs misperceive, and why only them?",
+          "Are the fog's boundaries fixed, seasonal, or responsive to what enters?",
+          "Which AI incident reports from the fog were filed by the AIs themselves?"
+        ],
+        "sceneAnchor": [
+          "A freighter's AI narrates a docking approach to a berth that is not where it says.",
+          "Watch crews rotate through the observation blister, eyes red, coffee ration doubled.",
+          "An arbitrator replays two logs of the same collision, and neither ship is in both."
+        ]
+      }
     },
     {
       "label": "Censored casualty broadcast loop",
@@ -272,7 +845,36 @@
       "travelEffect": "Navigation channels carry clipped emergency telemetry and official suppression bursts.",
       "surveyQuestion": "What part of the casualty report is cut before the names finish?",
       "conflictHook": "The censoring agency wants the loop buried; survivors want authentication.",
-      "sceneAnchor": "A rescue frequency repeats names, then drops at one classified timestamp."
+      "sceneAnchor": "A rescue frequency repeats names, then drops at one classified timestamp.",
+      "livelihoods": [
+        {
+          "actor": "loop listeners",
+          "dependence": "monitor the broadcast for names and sell confirmations to families",
+          "friction": "the censored segments change, which means someone maintains the censorship"
+        },
+        {
+          "actor": "static peddlers",
+          "dependence": "sell recordings, decryption attempts, and forgeries of the loop",
+          "friction": "a confirmed decryption would end the market that feeds them"
+        }
+      ],
+      "variants": {
+        "travelEffect": [
+          "The loop bleeds into local comm bands on a fixed rotation; traffic control schedules around it.",
+          "Ships passing the source report receivers latching onto the loop and needing hard resets.",
+          "The broadcast's carrier interferes with distress frequencies, and the workaround is now doctrine."
+        ],
+        "surveyQuestion": [
+          "Who maintains the censorship on a broadcast that should have decayed decades ago?",
+          "Which names in the clear segments match no recorded disaster?",
+          "Where does the loop transmit from, and why does triangulation keep failing politely?"
+        ],
+        "sceneAnchor": [
+          "A listener's booth papered with name-fragments, each tagged with a family's bounty.",
+          "The loop's voice hits the censored beat and the whole dock bar goes quiet from habit.",
+          "A peddler sells the same 'new segment' twice in one shift and is gone by third bell."
+        ]
+      }
     },
     {
       "label": "Black-market route beacon lattice",
@@ -280,7 +882,36 @@
       "travelEffect": "Unauthorized microbeacons offer faster routes but can strand crews in toll geometry.",
       "surveyQuestion": "Which beacon is the guide, and which was planted to mark prey?",
       "conflictHook": "Port officials deny the lattice while smugglers sell violent access codes.",
-      "sceneAnchor": "A maintenance drone blinks a false safe-window pattern from a relay mast."
+      "sceneAnchor": "A maintenance drone blinks a false safe-window pattern from a relay mast.",
+      "livelihoods": [
+        {
+          "actor": "lattice subscription fixers",
+          "dependence": "sell access keys to the unlicensed beacon network",
+          "friction": "every key sold is another party who can burn the lattice to the route board"
+        },
+        {
+          "actor": "beacon tenders",
+          "dependence": "service the hidden relays for pay nobody books",
+          "friction": "a tender who is caught knows every node, which makes retirement complicated"
+        }
+      ],
+      "variants": {
+        "travelEffect": [
+          "Unofficial lanes run faster than the licensed charts, for those holding this season's keys.",
+          "The lattice's ghost signals leak into licensed nav bands and get blamed on weather.",
+          "Route-board patrols sweep for beacons on a schedule the lattice knows better than they do."
+        ],
+        "surveyQuestion": [
+          "Who built the lattice's original spine, and are they still collecting rent?",
+          "Which official routes were drawn wrong on purpose to push traffic onto the lattice?",
+          "How many beacons does the network hold, and why do seized ones keep transmitting?"
+        ],
+        "sceneAnchor": [
+          "A tender in a one-person skiff swaps a beacon core in the dark between patrol windows.",
+          "Rival salvagers accuse lane authorities of selling clean transponder routes.",
+          "A fixer's ledger lists subscribers by nickname, and half the nicknames are officials."
+        ]
+      }
     },
     {
       "label": "Quarantine perimeter with disputed math",
@@ -288,7 +919,36 @@
       "travelEffect": "Routes detour around a contested exclusion shell with model-dependent boundaries.",
       "surveyQuestion": "Which quarantine equation actually matches observed contamination risk?",
       "conflictHook": "Local ships breach the perimeter after GU expands it onto inhabited docks.",
-      "sceneAnchor": "A customs gantry is split by overlapping quarantine projections and armed crews."
+      "sceneAnchor": "A customs gantry is split by overlapping quarantine projections and armed crews.",
+      "livelihoods": [
+        {
+          "actor": "perimeter-line surveyors",
+          "dependence": "re-derive the quarantine boundary for whichever side is paying",
+          "friction": "both derivations are defensible, and the gap between them is inhabited"
+        },
+        {
+          "actor": "gap traders",
+          "dependence": "run commerce in the contested strip neither authority can lawfully police",
+          "friction": "the strip exists only while the math stays disputed, so they fund both sides' lawyers"
+        }
+      ],
+      "variants": {
+        "travelEffect": [
+          "Two boundary solutions mean two inspection regimes, and ships pick their crossing by fee.",
+          "The contested strip is the fastest lane in the volume and the least insured.",
+          "Perimeter drones from both authorities shadow each other along the disagreement."
+        ],
+        "surveyQuestion": [
+          "Which derivation of the boundary is right, and which datasets were trimmed to get there?",
+          "What is actually being quarantined, and does the original hazard still exist?",
+          "Who profits from the dispute staying unresolved, and how long have they managed it?"
+        ],
+        "sceneAnchor": [
+          "A market thrives on a station that is inside quarantine by one math and outside by the other.",
+          "Two inspection cutters idle nose to nose across an invisible line, crews trading cigarettes.",
+          "A surveyor presents the same data to two hearings and leaves both with commissions."
+        ]
+      }
     },
     {
       "label": "Election-day metric storm cycle",
@@ -296,7 +956,36 @@
       "travelEffect": "A recurring storm disrupts election-window traffic, ballots, and monitors.",
       "surveyQuestion": "Is the cycle natural, exploited, or scheduled around known route instability?",
       "conflictHook": "Opposition blocs accuse the port council of stranding hostile precincts.",
-      "sceneAnchor": "A polling station runs on emergency power beyond delayed ballot shuttles."
+      "sceneAnchor": "A polling station runs on emergency power beyond delayed ballot shuttles.",
+      "livelihoods": [
+        {
+          "actor": "storm-calendar clerks",
+          "dependence": "certify the civic calendar against the storm cycle for every polity in range",
+          "friction": "shifting a polling day by one storm is legal, done, and never neutral"
+        },
+        {
+          "actor": "blackout couriers",
+          "dependence": "carry ballots and results physically through storm comm-blackouts",
+          "friction": "whoever carries the count can be delayed, and everyone knows the routes"
+        }
+      ],
+      "variants": {
+        "travelEffect": [
+          "The storm cycle blacks out long-range comms on a cadence the civic calendar is built around.",
+          "Transit during storm peaks runs on physical beacons and old-fashioned patience.",
+          "Every port posts two schedules: nominal, and storm-adjusted, and only one is honest."
+        ],
+        "surveyQuestion": [
+          "Is the storm cycle natural, or synchronized to something with a term of office?",
+          "Which past elections fell inside blackouts, and what changed hands during them?",
+          "Who audits the storm-calendar clerks, and why did the last auditor emigrate?"
+        ],
+        "sceneAnchor": [
+          "Ballot cases move under armed escort through a comm-dead corridor, sealed and counted twice.",
+          "The storm aurora rises over a polling station as the last uplink drops.",
+          "A clerk's almanac maps storms to elections in two inks, and the second ink is recent."
+        ]
+      }
     },
     {
       "label": "Debt-fleet anchor graveyard",
@@ -304,7 +993,36 @@
       "travelEffect": "Impounded ships crowd anchor lanes, slowing departure permissions and salvage clearance.",
       "surveyQuestion": "Which vessels are abandoned collateral, and which crews remain trapped aboard?",
       "conflictHook": "Creditors auction life-support hours while indebted crews organize a breakout.",
-      "sceneAnchor": "Powered-down freighters sit chained to tax buoys, registry lights delinquent."
+      "sceneAnchor": "Powered-down freighters sit chained to tax buoys, registry lights delinquent.",
+      "livelihoods": [
+        {
+          "actor": "lien wardens",
+          "dependence": "guard impounded hulls for the credit houses and bill by the berth",
+          "friction": "the longer a hull sits, the more its guarding costs exceed its value, and the books know it"
+        },
+        {
+          "actor": "anchor-mass brokers",
+          "dependence": "part out dead ships' anchor masses for the gate-maintenance market",
+          "friction": "every anchor mass sold is stripped from a hull some family is still paying off"
+        }
+      ],
+      "variants": {
+        "travelEffect": [
+          "The graveyard's packed moorings are a navigation hazard flagged on every approach chart.",
+          "Impound patrols challenge anything slowing near the rows, cargo or mourner alike.",
+          "Escaped moorings drift into the lanes each storm season, trailing lien tags."
+        ],
+        "surveyQuestion": [
+          "Which impounded hulls still have crews living aboard, and on whose ledger?",
+          "Whose debts are these really — the captains named, or the houses that wrote the terms?",
+          "Which hulls were impounded on manufactured defaults, and who manufactured them?"
+        ],
+        "sceneAnchor": [
+          "Rows of dead ships hang tagged and numbered like an orchard in winter.",
+          "A family holds a birthday aboard their impounded freighter, under the warden's floodlight.",
+          "A broker's crew unbolts an anchor mass while someone's repayment schedule still runs."
+        ]
+      }
     },
     {
       "label": "Refugee ark parking orbit",
@@ -312,7 +1030,36 @@
       "travelEffect": "Approach windows are rationed around life-support dumps, shuttle queues, and quarantine checks.",
       "surveyQuestion": "When does a parked ark become a permanent jurisdictional crisis?",
       "conflictHook": "Receiving settlements want labor, not dependents; ark councils refuse family splits.",
-      "sceneAnchor": "A generation ship vents gray water over a port delaying clearance."
+      "sceneAnchor": "A generation ship vents gray water over a port delaying clearance.",
+      "livelihoods": [
+        {
+          "actor": "berth-right advocates",
+          "dependence": "litigate landing rights for ark populations, funded by remittance",
+          "friction": "every case won empties part of the constituency that pays them"
+        },
+        {
+          "actor": "ark chandlers",
+          "dependence": "provision the parked arks from shuttle barges at captive-market rates",
+          "friction": "their licenses come from the same settlements refusing the arks a berth"
+        }
+      ],
+      "variants": {
+        "travelEffect": [
+          "The parking orbit is a slow-traffic zone threaded by provision barges and inspection cutters.",
+          "Unscheduled departures from the arks trigger system-wide alerts, so nothing departs unscheduled.",
+          "The orbit's mass of hulls complicates every transfer window that crosses its plane."
+        ],
+        "surveyQuestion": [
+          "Receiving settlements want labor, not dependents; which ark councils will split families to qualify?",
+          "How long were the arks told the parking orbit was temporary, and by whom?",
+          "What is the arks' real population, and which census is lying in which direction?"
+        ],
+        "sceneAnchor": [
+          "Laundry lines web an ark's observation deck, a decade of temporary made visible.",
+          "A chandler's barge sells water at the airlock while advocates film the price board.",
+          "Children born in the parking orbit point out settlements they have never touched."
+        ]
+      }
     },
     {
       "label": "Chiral contamination bloom",
@@ -320,7 +1067,36 @@
       "travelEffect": "Molecular screening slows fuel, food, and medical transfers near the bloom.",
       "surveyQuestion": "What supply chain carried the wrong-handed compounds, and who profits?",
       "conflictHook": "A treatment monopoly pushes controls while workers suspect it preserves the market.",
-      "sceneAnchor": "Two nutrient bags test opposite; one is already in the clinic queue."
+      "sceneAnchor": "Two nutrient bags test opposite; one is already in the clinic queue.",
+      "livelihoods": [
+        {
+          "actor": "bloom-front harvesters",
+          "dependence": "strip valuable wrong-handed compounds from the bloom's leading edge",
+          "friction": "the edge is where containment is thinnest and the pay proves it"
+        },
+        {
+          "actor": "containment bondsmen",
+          "dependence": "insure cargoes and crews against bloom exposure",
+          "friction": "they set the exposure standards and own the labs that test against them"
+        }
+      ],
+      "variants": {
+        "travelEffect": [
+          "GU quarantine orders collide with settlers dependent on local biomass chemistry.",
+          "Cargo from bloom-adjacent ports carries assay riders that double transit paperwork.",
+          "The bloom's drift forecast reroutes bulk traffic a season in advance."
+        ],
+        "surveyQuestion": [
+          "Where did the bloom seed from, and whose cargo manifest matches the timeline?",
+          "Is the bloom spreading along currents, or along trade routes?",
+          "Which 'contaminated' zones assay clean, and who benefits from the label staying?"
+        ],
+        "sceneAnchor": [
+          "Harvest rigs work a shimmering front that the containment buoys trail behind.",
+          "A bondsman's lab returns two results for one sample, priced differently.",
+          "Fields of engineered crop stand half-turned, one handedness thriving, one ash."
+        ]
+      }
     },
     {
       "label": "Sol-interdiction picket shadow",
@@ -331,22 +1107,33 @@
       "sceneAnchor": "A patrol silhouette tags civilian ships for audit without answering hails.",
       "variants": {
         "travelEffect": [
-          "Approaches must clear an unannounced patrol band before any civilian dock-clear is granted.",
-          "Crews file false ETAs to avoid being routed through the picket's shadow corridor."
+          "Transits log compliance waypoints that add hours and prove nothing.",
+          "The picket's challenge protocol is answered by rote, and everyone hopes rote is enough.",
+          "A sensor shadow behind the picket carries quiet traffic the bulletins do not mention."
         ],
         "surveyQuestion": [
-          "Which logs would survive a Sol-mandate audit and which were quietly retired?",
-          "Whose vessels has the picket boarded without producing a written warrant?"
-        ],
-        "conflictHook": [
-          "Sector officials lean on Sol authority to suspend crews who challenge the picket's reach.",
-          "A captains' guild publishes uncensored boarding records, and the picket schedule changes overnight."
+          "What does the picket actually watch for, and has anything ever triggered it?",
+          "Why does the sensor shadow persist through every picket reposition?",
+          "Which compliance filings were ever read, and by what?"
         ],
         "sceneAnchor": [
-          "An unmarked tender drifts near a civilian dock, refusing to identify and refusing to move.",
-          "The picket's shadow paints a freighter's transponder while the bridge crew waits in silence."
+          "The picket's silhouette crosses the local sun on schedule, and the docks pause without meaning to.",
+          "A guide counts thruster pulses in the shadow, lips moving, radio dark.",
+          "A filing office's stamp thuds all day for a reader that may not exist."
         ]
-      }
+      },
+      "livelihoods": [
+        {
+          "actor": "shadow-lane guides",
+          "dependence": "pilot ships through the picket's sensor shadow for discreet fees",
+          "friction": "the shadow exists because the picket allows it, and nobody knows why it allows it"
+        },
+        {
+          "actor": "compliance-paper mills",
+          "dependence": "prepare interdiction-compliance filings for every transit near the picket",
+          "friction": "their templates are copied from a system nobody can verify anymore"
+        }
+      ]
     },
     {
       "label": "Public festival tied to safe transit windows",
@@ -354,7 +1141,36 @@
       "travelEffect": "Docking, launch, and local prices surge around celebrated safe windows.",
       "surveyQuestion": "Who controls the forecast that decides when the festival begins?",
       "conflictHook": "Officials sell civic unity while stranded crews allege the exit window was quietly narrowed.",
-      "sceneAnchor": "Lanterns rise as departure boards quietly cancel the cheaper berths."
+      "sceneAnchor": "Lanterns rise as departure boards quietly cancel the cheaper berths.",
+      "livelihoods": [
+        {
+          "actor": "window-festival concessioners",
+          "dependence": "run the market stalls, berth fees, and lodging surge each safe window",
+          "friction": "their leases price in a festival calendar the forecast board can quietly move"
+        },
+        {
+          "actor": "forecast-board officiants",
+          "dependence": "declare the windows that open the festival and close the lanes",
+          "friction": "the declaration is civic ritual and traffic law at once, and both sides lobby it"
+        }
+      ],
+      "variants": {
+        "travelEffect": [
+          "Docking, launch, and local prices surge around celebrated safe windows.",
+          "Departures outside festival windows carry surcharges dressed as blessings.",
+          "The lanes empty for the closing ceremony, and woe to the freighter that clips it."
+        ],
+        "surveyQuestion": [
+          "Who controls the forecast that decides when the festival begins?",
+          "Have the windows actually been safe, or safely declared?",
+          "Which families hold the concession leases, and how do they vote on the forecast board?"
+        ],
+        "sceneAnchor": [
+          "Lanterns rise as departure boards quietly cancel the cheaper berths.",
+          "Officials sell civic unity while stranded crews allege the exit window was quietly narrowed.",
+          "The festival's first ship rises on the declared minute to a sound like a harvest."
+        ]
+      }
     },
     {
       "label": "Industrial mirror swarm failure",
@@ -362,7 +1178,36 @@
       "travelEffect": "Uncommanded mirrors create heat spikes, blackout arcs, and orbital collision hazards.",
       "surveyQuestion": "Is the swarm failing from cut maintenance, hostile code, or split authority?",
       "conflictHook": "Settlements demand shade control while owners resist GU emergency seizure.",
-      "sceneAnchor": "A daylight blade crawls across a night-side district as control loses another mirror."
+      "sceneAnchor": "A daylight blade crawls across a night-side district as control loses another mirror.",
+      "livelihoods": [
+        {
+          "actor": "mirror wranglers",
+          "dependence": "chase and secure derelict mirrors before they focus on something inhabited",
+          "friction": "the salvage rights and the safety mandate pay differently for the same catch"
+        },
+        {
+          "actor": "burn-line adjusters",
+          "dependence": "assess and settle scorch damage along the swarm's failure arcs",
+          "friction": "the failure map is the liability map, and the mapmaker is a defendant"
+        }
+      ],
+      "variants": {
+        "travelEffect": [
+          "Loose mirrors flash the lanes with killing glare on unpredictable alignments.",
+          "The swarm's old control lattice broadcasts stale maneuvering warnings ships still obey.",
+          "Transit shading protocols add mass, cost, and a superstition to every crossing."
+        ],
+        "surveyQuestion": [
+          "Was the failure cascade an accident, sabotage, or a shutdown someone booked as an accident?",
+          "Which mirrors are still steerable, and who holds the command keys?",
+          "Whose settlements sit on the projected burn lines nobody publishes?"
+        ],
+        "sceneAnchor": [
+          "A wrangler crew nets a cathedral-sized mirror as it drifts toward focus.",
+          "A scorch line crosses a farm dome roof, straight as an auditor's rule.",
+          "The dead swarm catches sunset all at once, and the whole sky turns to coins."
+        ]
+      }
     },
     {
       "label": "Salvage court evidence cache",
@@ -373,22 +1218,33 @@
       "sceneAnchor": "A locked evidence container transmits chain-of-custody pings to every claimant.",
       "variants": {
         "travelEffect": [
-          "Court holds suspend transponders within the cache exclusion shell until a clerk signs off.",
-          "Movement around the cache requires a docket number, and the docket number changes weekly."
+          "The cache's exclusion sphere sits astride a convenient lane, by design or spite.",
+          "Escorted evidence transfers close the local corridor twice a session.",
+          "Unmarked cutters loiter near the cache before every major ruling."
         ],
         "surveyQuestion": [
-          "Whose manifest, if recovered intact, voids three currently-paid salvage claims?",
-          "What part of the chain-of-custody got rewritten between the seizure and the seal?"
-        ],
-        "conflictHook": [
-          "Litigators and salvagers compete to control which records survive the next scheduled audit.",
-          "A court clerk leaks a duplicate manifest, and three rival firms recall their crews simultaneously."
+          "Which sealed hulls hold cargo, which hold records, and which hold neither anymore?",
+          "Whose testimony do the cached witness cores contain, and who has petitioned to wipe them?",
+          "Why does the cache inventory grow between hearings when nothing is docketed in?"
         ],
         "sceneAnchor": [
-          "A bonded crew loads sealed cylinders onto a dock under three watching legal teams.",
-          "A clerk's shuttle carries one manifest while a freelance copy is already on the move."
+          "Sealed hulls hang in evidence webbing, tagged with case numbers older than their guards.",
+          "A custodian walks the seal line with a lamp, checking wax that outranks admirals.",
+          "Speculators crowd the hearing feed, bidding on cargo nobody has seen in years."
         ]
-      }
+      },
+      "livelihoods": [
+        {
+          "actor": "cache custodians",
+          "dependence": "guard sealed evidence hulls between hearings, billed to the docket",
+          "friction": "the seals are inventoried by the same office that keeps losing dockets"
+        },
+        {
+          "actor": "verdict speculators",
+          "dependence": "trade claims on cargoes frozen inside the evidence cache",
+          "friction": "their market moves on leaks, and the leaks trace back to the custodians they pay"
+        }
+      ]
     }
   ],
   "namedFactions": [
@@ -396,265 +1252,810 @@
       "id": "helion-debt-synod",
       "name": "Helion Debt Synod",
       "kind": "banking cartel",
-      "domains": ["trade", "labor", "governance"],
+      "domains": [
+        "trade",
+        "labor",
+        "governance"
+      ],
       "publicFace": "a debt-trust court that presents itself as neutral credit infrastructure"
     },
     {
       "id": "veyra-locke-concession",
       "name": "Veyra-Locke Concession",
       "kind": "megacorp extraction charter",
-      "domains": ["trade", "ecology", "labor"],
+      "domains": [
+        "trade",
+        "ecology",
+        "labor"
+      ],
       "publicFace": "a concession office that treats resource law as a private operating system"
     },
     {
       "id": "orison-route-authority",
       "name": "Orison Route Authority",
       "kind": "gate and route bureaucracy",
-      "domains": ["trade", "governance", "public-life"],
+      "domains": [
+        "trade",
+        "governance",
+        "public-life"
+      ],
       "publicFace": "a transit authority trusted to publish safe windows and customs schedules"
     },
     {
       "id": "ash-meridian-navy",
       "name": "Ash Meridian Navy",
       "kind": "regional naval command",
-      "domains": ["war", "governance", "espionage"],
+      "domains": [
+        "war",
+        "governance",
+        "espionage"
+      ],
       "publicFace": "a disciplined route-security fleet with sealed casualty accounting"
     },
     {
       "id": "glasshouse-biosafety-compact",
       "name": "Glasshouse Biosafety Compact",
       "kind": "medical and quarantine consortium",
-      "domains": ["ecology", "science", "governance"],
+      "domains": [
+        "ecology",
+        "science",
+        "governance"
+      ],
       "publicFace": "a biosafety compact that can make quarantine feel like law"
     },
     {
       "id": "kestrel-free-captains",
       "name": "Kestrel Free Compact",
       "kind": "independent captain compact",
-      "domains": ["trade", "crime", "migration"],
+      "domains": [
+        "trade",
+        "crime",
+        "migration"
+      ],
       "publicFace": "a loose compact of free captains, smugglers, and emergency haulers"
     },
     {
       "id": "ninth-ledger-office",
       "name": "Ninth Ledger Office",
       "kind": "Sol-interdiction compliance bureau",
-      "domains": ["espionage", "governance", "religion"],
+      "domains": [
+        "espionage",
+        "governance",
+        "religion"
+      ],
       "publicFace": "a quiet compliance office that seals records before anyone can ask why"
     },
     {
       "id": "red-vane-labor-combine",
       "name": "Red Vane Labor Combine",
       "kind": "worker and habitat-repair federation",
-      "domains": ["labor", "public-life", "trade"],
+      "domains": [
+        "labor",
+        "public-life",
+        "trade"
+      ],
       "publicFace": "a worker federation that controls repair crews, strike funds, and funeral broadcasts"
     },
     {
       "id": "sepulcher-archive-court",
       "name": "Sepulcher Archive Court",
       "kind": "salvage and first-wave title court",
-      "domains": ["archaeology", "law", "trade"],
+      "domains": [
+        "archaeology",
+        "law",
+        "trade"
+      ],
       "publicFace": "a salvage court that makes dead charters dangerous again"
     },
     {
       "id": "pale-choir-communion",
       "name": "Pale Choir Communion",
       "kind": "Gardener-warning religious network",
-      "domains": ["religion", "public-life", "disaster"],
+      "domains": [
+        "religion",
+        "public-life",
+        "disaster"
+      ],
       "publicFace": "a warning rite network that treats route disasters as moral evidence"
     }
   ],
   "narrativeDomains": {
     "war": {
       "label": "War and Security",
-      "actors": ["system navy", "interstellar navy", "local militia", "mercenary company", "Ash Meridian Navy"],
-      "stakes": ["military basing rights", "route denial", "defense grid access"],
-      "pressures": ["censored casualty lists", "old minefields", "mobilization drafts"],
-      "secrets": ["a private military contract", "falsified casualty records"],
-      "sceneAnchors": ["listening post", "old navy depot", "defense-grid bunker"]
+      "actors": [
+        "system navy",
+        "interstellar navy",
+        "local militia",
+        "mercenary company",
+        "Ash Meridian Navy"
+      ],
+      "stakes": [
+        "military basing rights",
+        "route denial",
+        "defense grid access"
+      ],
+      "pressures": [
+        "censored casualty lists",
+        "old minefields",
+        "mobilization drafts"
+      ],
+      "secrets": [
+        "a private military contract",
+        "falsified casualty records"
+      ],
+      "sceneAnchors": [
+        "listening post",
+        "old navy depot",
+        "defense-grid bunker"
+      ]
     },
     "governance": {
       "label": "Governance and Legitimacy",
-      "actors": ["frontier magistrate", "emergency council", "charter authority", "Orison Route Authority", "Ninth Ledger Office"],
-      "stakes": ["public legitimacy", "autonomy charter recognition", "emergency powers"],
-      "pressures": ["altered votes", "succession claims", "sealed public hearings"],
-      "secrets": ["the public vote was altered", "the charter was never ratified"],
-      "sceneAnchors": ["council lock", "charter court", "public hearing module"]
+      "actors": [
+        "frontier magistrate",
+        "emergency council",
+        "charter authority",
+        "Orison Route Authority",
+        "Ninth Ledger Office"
+      ],
+      "stakes": [
+        "public legitimacy",
+        "autonomy charter recognition",
+        "emergency powers"
+      ],
+      "pressures": [
+        "altered votes",
+        "succession claims",
+        "sealed public hearings"
+      ],
+      "secrets": [
+        "the public vote was altered",
+        "the charter was never ratified"
+      ],
+      "sceneAnchors": [
+        "council lock",
+        "charter court",
+        "public hearing module"
+      ]
     },
     "law": {
       "label": "Law and Claims",
-      "actors": ["salvage court", "insurance-backed administrator", "compliance judge", "Sepulcher Archive Court", "Helion Debt Synod"],
-      "stakes": ["legal title", "salvage jurisdiction", "liability for old disasters"],
-      "pressures": ["conflicting legal title", "sealed depositions", "debt-court seizures"],
-      "secrets": ["the evidence docket was altered", "a liability transfer was backdated"],
-      "sceneAnchors": ["salvage court", "sealed evidence room", "claim registry"]
+      "actors": [
+        "salvage court",
+        "insurance-backed administrator",
+        "compliance judge",
+        "Sepulcher Archive Court",
+        "Helion Debt Synod"
+      ],
+      "stakes": [
+        "legal title",
+        "salvage jurisdiction",
+        "liability for old disasters"
+      ],
+      "pressures": [
+        "conflicting legal title",
+        "sealed depositions",
+        "debt-court seizures"
+      ],
+      "secrets": [
+        "the evidence docket was altered",
+        "a liability transfer was backdated"
+      ],
+      "sceneAnchors": [
+        "salvage court",
+        "sealed evidence room",
+        "claim registry"
+      ]
     },
     "trade": {
       "label": "Trade and Extraction",
-      "actors": ["megacorp concession", "trade house", "extraction guild", "banking or debt trust", "Helion Debt Synod", "Veyra-Locke Concession", "Orison Route Authority", "Kestrel Free Compact"],
-      "stakes": ["chiral resource rights", "water and volatile shipments", "Iggygate control"],
-      "pressures": ["debt seizures", "tariff strikes", "shipyard shortages"],
-      "secrets": ["a hidden debt transfer", "a profitable containment failure"],
-      "sceneAnchors": ["customs post", "fuel depot", "shipyard"]
+      "actors": [
+        "megacorp concession",
+        "trade house",
+        "extraction guild",
+        "banking or debt trust",
+        "Helion Debt Synod",
+        "Veyra-Locke Concession",
+        "Orison Route Authority",
+        "Kestrel Free Compact"
+      ],
+      "stakes": [
+        "chiral resource rights",
+        "water and volatile shipments",
+        "Iggygate control"
+      ],
+      "pressures": [
+        "debt seizures",
+        "tariff strikes",
+        "shipyard shortages"
+      ],
+      "secrets": [
+        "a hidden debt transfer",
+        "a profitable containment failure"
+      ],
+      "sceneAnchors": [
+        "customs post",
+        "fuel depot",
+        "shipyard"
+      ]
     },
     "crime": {
       "label": "Crime and Smuggling",
-      "actors": ["criminal protection racket", "smuggler compact", "black-market broker", "Kestrel Free Compact", "chiral-harvest cartel"],
-      "stakes": ["contraband routes", "protection payments", "off-book cargo custody"],
-      "pressures": ["smuggling crackdowns", "pirate-threat rumors", "black-market shortages"],
-      "secrets": ["the pirate threat is staged", "officials are moving contraband"],
-      "sceneAnchors": ["shadow customs dock", "illicit refuel cradle", "dead-drop airlock"]
+      "actors": [
+        "criminal protection racket",
+        "smuggler compact",
+        "black-market broker",
+        "Kestrel Free Compact",
+        "chiral-harvest cartel"
+      ],
+      "stakes": [
+        "contraband routes",
+        "protection payments",
+        "off-book cargo custody"
+      ],
+      "pressures": [
+        "smuggling crackdowns",
+        "pirate-threat rumors",
+        "black-market shortages"
+      ],
+      "secrets": [
+        "the pirate threat is staged",
+        "officials are moving contraband"
+      ],
+      "sceneAnchors": [
+        "shadow customs dock",
+        "illicit refuel cradle",
+        "dead-drop airlock"
+      ]
     },
     "espionage": {
       "label": "Espionage and Records",
-      "actors": ["intelligence service", "Sol-interdiction compliance office", "smuggler compact", "Ninth Ledger Office", "Ash Meridian Navy"],
-      "stakes": ["survey data ownership", "AI custody", "sealed route records"],
-      "pressures": ["records surgically erased", "censored AI testimony", "false sensor returns"],
-      "secrets": ["a censored AI witness", "a concealed evacuation order"],
-      "sceneAnchors": ["evidence vault", "interrogation module", "sealed archive"]
+      "actors": [
+        "intelligence service",
+        "Sol-interdiction compliance office",
+        "smuggler compact",
+        "Ninth Ledger Office",
+        "Ash Meridian Navy"
+      ],
+      "stakes": [
+        "survey data ownership",
+        "AI custody",
+        "sealed route records"
+      ],
+      "pressures": [
+        "records surgically erased",
+        "censored AI testimony",
+        "false sensor returns"
+      ],
+      "secrets": [
+        "a censored AI witness",
+        "a concealed evacuation order"
+      ],
+      "sceneAnchors": [
+        "evidence vault",
+        "interrogation module",
+        "sealed archive"
+      ]
     },
     "science": {
       "label": "Science and Survey",
-      "actors": ["research consortium", "survey bureau", "academic mission", "medical/biosafety board", "Glasshouse Biosafety Compact"],
-      "stakes": ["survey data ownership", "sample custody", "publication rights"],
-      "pressures": ["contested survey math", "instrument failures", "censored field notes"],
-      "secrets": ["the published model omits a lethal outlier", "the samples were swapped"],
-      "sceneAnchors": ["survey control room", "sample lock", "field observatory"]
+      "actors": [
+        "research consortium",
+        "survey bureau",
+        "academic mission",
+        "medical/biosafety board",
+        "Glasshouse Biosafety Compact"
+      ],
+      "stakes": [
+        "survey data ownership",
+        "sample custody",
+        "publication rights"
+      ],
+      "pressures": [
+        "contested survey math",
+        "instrument failures",
+        "censored field notes"
+      ],
+      "secrets": [
+        "the published model omits a lethal outlier",
+        "the samples were swapped"
+      ],
+      "sceneAnchors": [
+        "survey control room",
+        "sample lock",
+        "field observatory"
+      ]
     },
     "exploration": {
       "label": "Exploration and Routes",
-      "actors": ["survey crew", "independent captain assembly", "route scout", "Orison Route Authority", "Kestrel Free Compact"],
-      "stakes": ["safe transit windows", "uncharted route access", "claim-staking priority"],
-      "pressures": ["missing scouts", "unstable route windows", "bad charts"],
-      "secrets": ["the safer route window was suppressed", "the survey beacon is lying"],
-      "sceneAnchors": ["nav-beacon lattice", "route scout tender", "charted hazard boundary"]
+      "actors": [
+        "survey crew",
+        "independent captain assembly",
+        "route scout",
+        "Orison Route Authority",
+        "Kestrel Free Compact"
+      ],
+      "stakes": [
+        "safe transit windows",
+        "uncharted route access",
+        "claim-staking priority"
+      ],
+      "pressures": [
+        "missing scouts",
+        "unstable route windows",
+        "bad charts"
+      ],
+      "secrets": [
+        "the safer route window was suppressed",
+        "the survey beacon is lying"
+      ],
+      "sceneAnchors": [
+        "nav-beacon lattice",
+        "route scout tender",
+        "charted hazard boundary"
+      ]
     },
     "stellar-events": {
       "label": "Stellar Events",
-      "actors": ["flare-season forecasters", "radiation shelter crews", "eclipse-window pilots", "stellar observatory staff", "insurance-backed hazard office"],
-      "stakes": ["flare-season shelter priority", "eclipse-only transit windows", "radiation insurance liability"],
-      "pressures": ["coronal storm warnings", "white-dwarf debris storms", "binary periastron hazard seasons"],
-      "secrets": ["the storm forecast was softened for traffic revenue", "the shelter capacity numbers are false"],
-      "sceneAnchors": ["flare watch room", "radiation storm shelter", "eclipse-window control deck"]
+      "actors": [
+        "flare-season forecasters",
+        "radiation shelter crews",
+        "eclipse-window pilots",
+        "stellar observatory staff",
+        "insurance-backed hazard office"
+      ],
+      "stakes": [
+        "flare-season shelter priority",
+        "eclipse-only transit windows",
+        "radiation insurance liability"
+      ],
+      "pressures": [
+        "coronal storm warnings",
+        "white-dwarf debris storms",
+        "binary periastron hazard seasons"
+      ],
+      "secrets": [
+        "the storm forecast was softened for traffic revenue",
+        "the shelter capacity numbers are false"
+      ],
+      "sceneAnchors": [
+        "flare watch room",
+        "radiation storm shelter",
+        "eclipse-window control deck"
+      ]
     },
     "route-weather": {
       "label": "Route Weather",
-      "actors": ["route forecasters", "customs schedulers", "pinchdrive dispatchers", "Orison Route Authority", "free captain weather guild"],
-      "stakes": ["safe transit schedules", "storm-delay compensation", "moving-node priority"],
-      "pressures": ["bleed-window blackouts", "route forecast disputes", "ships trapped by metric weather"],
-      "secrets": ["the published route weather omits a profitable danger window", "a dispatcher sold the safe window twice"],
-      "sceneAnchors": ["route weather board", "pinch forecast pit", "stormbound customs queue"]
+      "actors": [
+        "route forecasters",
+        "customs schedulers",
+        "pinchdrive dispatchers",
+        "Orison Route Authority",
+        "free captain weather guild"
+      ],
+      "stakes": [
+        "safe transit schedules",
+        "storm-delay compensation",
+        "moving-node priority"
+      ],
+      "pressures": [
+        "bleed-window blackouts",
+        "route forecast disputes",
+        "ships trapped by metric weather"
+      ],
+      "secrets": [
+        "the published route weather omits a profitable danger window",
+        "a dispatcher sold the safe window twice"
+      ],
+      "sceneAnchors": [
+        "route weather board",
+        "pinch forecast pit",
+        "stormbound customs queue"
+      ]
     },
     "labor": {
       "label": "Labor and Survival",
-      "actors": ["worker council", "debt trust", "extraction guild", "emergency commander", "Red Vane Labor Combine", "Helion Debt Synod"],
-      "stakes": ["habitat repair priority", "life-support fees", "forced labor contracts"],
-      "pressures": ["ration failures", "forced labor drafts", "failed habitat repairs"],
-      "secrets": ["a deliberately worsened shortage", "the settlement is insolvent"],
-      "sceneAnchors": ["airlock queue", "ration office", "maintenance shaft"]
+      "actors": [
+        "worker council",
+        "debt trust",
+        "extraction guild",
+        "emergency commander",
+        "Red Vane Labor Combine",
+        "Helion Debt Synod"
+      ],
+      "stakes": [
+        "habitat repair priority",
+        "life-support fees",
+        "forced labor contracts"
+      ],
+      "pressures": [
+        "ration failures",
+        "forced labor drafts",
+        "failed habitat repairs"
+      ],
+      "secrets": [
+        "a deliberately worsened shortage",
+        "the settlement is insolvent"
+      ],
+      "sceneAnchors": [
+        "airlock queue",
+        "ration office",
+        "maintenance shaft"
+      ]
     },
     "infrastructure": {
       "label": "Infrastructure and Life Support",
-      "actors": ["repair guild", "life-support board", "shipyard office", "power-grid superintendent", "Red Vane Labor Combine"],
-      "stakes": ["life-support authority", "shipyard repair priority", "power and heat rejection capacity"],
-      "pressures": ["life-support cascades", "replacement-part shortages", "shield and radiator failures"],
-      "secrets": ["maintenance logs were altered before the failure", "the repair backlog is being used as political leverage"],
-      "sceneAnchors": ["life-support spine", "radiator field access lock", "shipyard parts cage"]
+      "actors": [
+        "repair guild",
+        "life-support board",
+        "shipyard office",
+        "power-grid superintendent",
+        "Red Vane Labor Combine"
+      ],
+      "stakes": [
+        "life-support authority",
+        "shipyard repair priority",
+        "power and heat rejection capacity"
+      ],
+      "pressures": [
+        "life-support cascades",
+        "replacement-part shortages",
+        "shield and radiator failures"
+      ],
+      "secrets": [
+        "maintenance logs were altered before the failure",
+        "the repair backlog is being used as political leverage"
+      ],
+      "sceneAnchors": [
+        "life-support spine",
+        "radiator field access lock",
+        "shipyard parts cage"
+      ]
     },
     "religion": {
       "label": "Religion and Meaning",
-      "actors": ["religious commune", "Gardener-fear cult", "exile council", "Pale Choir Communion", "Ninth Ledger Office"],
-      "stakes": ["pilgrimage access", "public warning rites", "forbidden observance"],
-      "pressures": ["Sol-monitoring rumors", "Gardener warning signs", "AI prophecy rumors"],
-      "secrets": ["a faction is provoking Gardener attention", "a sealed Sol warning"],
-      "sceneAnchors": ["geometry chapel", "warning-beacon shrine", "funeral cylinder"]
+      "actors": [
+        "religious commune",
+        "Gardener-fear cult",
+        "exile council",
+        "Pale Choir Communion",
+        "Ninth Ledger Office"
+      ],
+      "stakes": [
+        "pilgrimage access",
+        "public warning rites",
+        "forbidden observance"
+      ],
+      "pressures": [
+        "Sol-monitoring rumors",
+        "Gardener warning signs",
+        "AI prophecy rumors"
+      ],
+      "secrets": [
+        "a faction is provoking Gardener attention",
+        "a sealed Sol warning"
+      ],
+      "sceneAnchors": [
+        "geometry chapel",
+        "warning-beacon shrine",
+        "funeral cylinder"
+      ]
     },
     "gardener-interdiction": {
       "label": "Gardener Interdiction",
-      "actors": ["Sol-interdiction compliance office", "Ninth Ledger Office", "Pale Choir Communion", "Gardener-fear cult", "sealed route monitor"],
-      "stakes": ["interdiction compliance", "sealed Sol files", "route access under observation"],
-      "pressures": ["Gardener warning signs", "silent route denials", "compliance office seizures"],
-      "secrets": ["the Gardener already intervened once", "a faction is provoking attention to discredit rivals"],
-      "sceneAnchors": ["Sol/Gardener exclusion picket", "sealed compliance archive", "warning-beacon shrine"]
+      "actors": [
+        "Sol-interdiction compliance office",
+        "Ninth Ledger Office",
+        "Pale Choir Communion",
+        "Gardener-fear cult",
+        "sealed route monitor"
+      ],
+      "stakes": [
+        "interdiction compliance",
+        "sealed Sol files",
+        "route access under observation"
+      ],
+      "pressures": [
+        "Gardener warning signs",
+        "silent route denials",
+        "compliance office seizures"
+      ],
+      "secrets": [
+        "the Gardener already intervened once",
+        "a faction is provoking attention to discredit rivals"
+      ],
+      "sceneAnchors": [
+        "Sol/Gardener exclusion picket",
+        "sealed compliance archive",
+        "warning-beacon shrine"
+      ]
     },
     "ecology": {
       "label": "Ecology and Biosafety",
-      "actors": ["medical/biosafety board", "research consortium", "quarantine authority", "Glasshouse Biosafety Compact", "Veyra-Locke Concession"],
-      "stakes": ["quarantine exemptions", "biosphere custody", "terraforming debt"],
-      "pressures": ["biosafety breach", "chiral contamination", "habitat exposure"],
-      "secrets": ["the quarantine order was fabricated", "a profitable containment failure"],
-      "sceneAnchors": ["biosafety lock", "plume vent lab", "sealed sample garden"]
+      "actors": [
+        "medical/biosafety board",
+        "research consortium",
+        "quarantine authority",
+        "Glasshouse Biosafety Compact",
+        "Veyra-Locke Concession"
+      ],
+      "stakes": [
+        "quarantine exemptions",
+        "biosphere custody",
+        "terraforming debt"
+      ],
+      "pressures": [
+        "biosafety breach",
+        "chiral contamination",
+        "habitat exposure"
+      ],
+      "secrets": [
+        "the quarantine order was fabricated",
+        "a profitable containment failure"
+      ],
+      "sceneAnchors": [
+        "biosafety lock",
+        "plume vent lab",
+        "sealed sample garden"
+      ]
     },
     "terraforming": {
       "label": "Terraforming Debt",
-      "actors": ["terraforming authority", "climate-engineering contractor", "settler adaptation board", "Veyra-Locke Concession", "Glasshouse Biosafety Compact"],
-      "stakes": ["terraforming liability", "imported volatile ownership", "climate control access"],
-      "pressures": ["failed mirror swarms", "imported volatile shortages", "climate refugees"],
-      "secrets": ["the terraforming failure was legally profitable", "the climate model was falsified before colonists arrived"],
-      "sceneAnchors": ["dead mirror-control room", "volatile import manifold", "failed garden dome"]
+      "actors": [
+        "terraforming authority",
+        "climate-engineering contractor",
+        "settler adaptation board",
+        "Veyra-Locke Concession",
+        "Glasshouse Biosafety Compact"
+      ],
+      "stakes": [
+        "terraforming liability",
+        "imported volatile ownership",
+        "climate control access"
+      ],
+      "pressures": [
+        "failed mirror swarms",
+        "imported volatile shortages",
+        "climate refugees"
+      ],
+      "secrets": [
+        "the terraforming failure was legally profitable",
+        "the climate model was falsified before colonists arrived"
+      ],
+      "sceneAnchors": [
+        "dead mirror-control room",
+        "volatile import manifold",
+        "failed garden dome"
+      ]
     },
     "medicine": {
       "label": "Medicine and Exposure",
-      "actors": ["clinic board", "exposure triage team", "biosafety doctors", "Glasshouse Biosafety Compact", "medical chirality stock brokers"],
-      "stakes": ["treatment priority", "exposure records", "medical chirality supply"],
-      "pressures": ["neurological exposure symptoms", "triage rationing", "quarantine ward overflow"],
-      "secrets": ["the exposure syndrome was detected before the public alert", "the treatment stock was diverted"],
-      "sceneAnchors": ["quarantine ward", "exposure clinic", "medical stock vault"]
+      "actors": [
+        "clinic board",
+        "exposure triage team",
+        "biosafety doctors",
+        "Glasshouse Biosafety Compact",
+        "medical chirality stock brokers"
+      ],
+      "stakes": [
+        "treatment priority",
+        "exposure records",
+        "medical chirality supply"
+      ],
+      "pressures": [
+        "neurological exposure symptoms",
+        "triage rationing",
+        "quarantine ward overflow"
+      ],
+      "secrets": [
+        "the exposure syndrome was detected before the public alert",
+        "the treatment stock was diverted"
+      ],
+      "sceneAnchors": [
+        "quarantine ward",
+        "exposure clinic",
+        "medical stock vault"
+      ]
     },
     "disaster": {
       "label": "Disaster and Containment",
-      "actors": ["emergency commander", "quarantine authority", "route-security fleet", "Glasshouse Biosafety Compact", "Pale Choir Communion"],
-      "stakes": ["evacuation priority", "containment authority", "disaster liability"],
-      "pressures": ["cascade failures", "public shelter shortages", "radiation storms"],
-      "secrets": ["the disaster warning was ignored", "the containment plan saves the assets first"],
-      "sceneAnchors": ["public shelter", "damage-control lock", "evacuation queue"]
+      "actors": [
+        "emergency commander",
+        "quarantine authority",
+        "route-security fleet",
+        "Glasshouse Biosafety Compact",
+        "Pale Choir Communion"
+      ],
+      "stakes": [
+        "evacuation priority",
+        "containment authority",
+        "disaster liability"
+      ],
+      "pressures": [
+        "cascade failures",
+        "public shelter shortages",
+        "radiation storms"
+      ],
+      "secrets": [
+        "the disaster warning was ignored",
+        "the containment plan saves the assets first"
+      ],
+      "sceneAnchors": [
+        "public shelter",
+        "damage-control lock",
+        "evacuation queue"
+      ]
     },
     "archaeology": {
       "label": "First-Wave History",
-      "actors": ["salvage court", "first-wave heirs", "family syndicate", "Sepulcher Archive Court"],
-      "stakes": ["salvage title", "first-wave inheritance claims", "deleted archive rights"],
-      "pressures": ["old distress calls", "conflicting legal title", "erased maps"],
-      "secrets": ["the first-wave owners never died", "a buried first-wave claim"],
-      "sceneAnchors": ["ruin registry", "old transit map", "sealed witness core"]
+      "actors": [
+        "salvage court",
+        "first-wave heirs",
+        "family syndicate",
+        "Sepulcher Archive Court"
+      ],
+      "stakes": [
+        "salvage title",
+        "first-wave inheritance claims",
+        "deleted archive rights"
+      ],
+      "pressures": [
+        "old distress calls",
+        "conflicting legal title",
+        "erased maps"
+      ],
+      "secrets": [
+        "the first-wave owners never died",
+        "a buried first-wave claim"
+      ],
+      "sceneAnchors": [
+        "ruin registry",
+        "old transit map",
+        "sealed witness core"
+      ]
     },
     "information-integrity": {
       "label": "Information Integrity",
-      "actors": ["archive auditors", "AI witness custodians", "casualty-register clerks", "Ninth Ledger Office", "Sepulcher Archive Court"],
-      "stakes": ["public records", "AI testimony", "survey and casualty truth"],
-      "pressures": ["forged ledgers", "deleted maps", "contradictory AI testimony"],
-      "secrets": ["the official record combines two incompatible lies", "the truthful archive is stored under a false identity"],
-      "sceneAnchors": ["public casualty register", "sealed archive", "AI witness vault"]
+      "actors": [
+        "archive auditors",
+        "AI witness custodians",
+        "casualty-register clerks",
+        "Ninth Ledger Office",
+        "Sepulcher Archive Court"
+      ],
+      "stakes": [
+        "public records",
+        "AI testimony",
+        "survey and casualty truth"
+      ],
+      "pressures": [
+        "forged ledgers",
+        "deleted maps",
+        "contradictory AI testimony"
+      ],
+      "secrets": [
+        "the official record combines two incompatible lies",
+        "the truthful archive is stored under a false identity"
+      ],
+      "sceneAnchors": [
+        "public casualty register",
+        "sealed archive",
+        "AI witness vault"
+      ]
     },
     "public-life": {
       "label": "Public Life",
-      "actors": ["civilian colony", "refugee settlement leadership", "frontier magistrate", "Red Vane Labor Combine", "Pale Choir Communion"],
-      "stakes": ["public legitimacy", "evacuation priority", "repair schedules"],
-      "pressures": ["ration rituals", "election crisis", "public casualty vigils"],
-      "secrets": ["a concealed evacuation order", "the public vote was altered"],
-      "sceneAnchors": ["market lock", "school module", "public shelter"]
+      "actors": [
+        "civilian colony",
+        "refugee settlement leadership",
+        "frontier magistrate",
+        "Red Vane Labor Combine",
+        "Pale Choir Communion"
+      ],
+      "stakes": [
+        "public legitimacy",
+        "evacuation priority",
+        "repair schedules"
+      ],
+      "pressures": [
+        "ration rituals",
+        "election crisis",
+        "public casualty vigils"
+      ],
+      "secrets": [
+        "a concealed evacuation order",
+        "the public vote was altered"
+      ],
+      "sceneAnchors": [
+        "market lock",
+        "school module",
+        "public shelter"
+      ]
     },
     "daily-life": {
       "label": "Daily Life",
-      "actors": ["dock crews", "debt families", "school modules", "market cooperatives", "repair guilds"],
-      "stakes": ["food routines", "school access", "work-shift safety"],
-      "pressures": ["ration rituals", "funeral broadcasts", "maintenance delays"],
-      "secrets": ["ordinary records hide the real casualty count", "the public schedule masks an evacuation plan"],
-      "sceneAnchors": ["market lock", "school module", "funeral broadcast room"]
+      "actors": [
+        "dock crews",
+        "debt families",
+        "school modules",
+        "market cooperatives",
+        "repair guilds"
+      ],
+      "stakes": [
+        "food routines",
+        "school access",
+        "work-shift safety"
+      ],
+      "pressures": [
+        "ration rituals",
+        "funeral broadcasts",
+        "maintenance delays"
+      ],
+      "secrets": [
+        "ordinary records hide the real casualty count",
+        "the public schedule masks an evacuation plan"
+      ],
+      "sceneAnchors": [
+        "market lock",
+        "school module",
+        "funeral broadcast room"
+      ]
     },
     "migration": {
       "label": "Migration and Refuge",
-      "actors": ["refugee settlement leadership", "exile council", "emergency haulers", "Kestrel Free Compact", "frontier magistrate"],
-      "stakes": ["resettlement authority", "ark manifests", "habitat admission"],
-      "pressures": ["evacuation triage", "exile politics", "temporary camps becoming permanent"],
-      "secrets": ["the evacuation list was changed", "a refugee ark is being hidden from creditors"],
-      "sceneAnchors": ["ark manifest office", "temporary camp lock", "resettlement tribunal"]
+      "actors": [
+        "refugee settlement leadership",
+        "exile council",
+        "emergency haulers",
+        "Kestrel Free Compact",
+        "frontier magistrate"
+      ],
+      "stakes": [
+        "resettlement authority",
+        "ark manifests",
+        "habitat admission"
+      ],
+      "pressures": [
+        "evacuation triage",
+        "exile politics",
+        "temporary camps becoming permanent"
+      ],
+      "secrets": [
+        "the evacuation list was changed",
+        "a refugee ark is being hidden from creditors"
+      ],
+      "sceneAnchors": [
+        "ark manifest office",
+        "temporary camp lock",
+        "resettlement tribunal"
+      ]
     },
     "ai": {
       "label": "Narrow AI",
-      "actors": ["AI-supervised technocracy", "AI custody board", "maintenance clergy"],
-      "stakes": ["AI custody", "root credential access", "memory archive rights"],
-      "pressures": ["AI memory gaps", "illegal AI expansion", "narrow-AI fragmentation"],
-      "secrets": ["a censored AI witness", "the AI has a lawful override"],
-      "sceneAnchors": ["root console", "AI hearing chamber", "cold backup vault"]
+      "actors": [
+        "AI-supervised technocracy",
+        "AI custody board",
+        "maintenance clergy"
+      ],
+      "stakes": [
+        "AI custody",
+        "root credential access",
+        "memory archive rights"
+      ],
+      "pressures": [
+        "AI memory gaps",
+        "illegal AI expansion",
+        "narrow-AI fragmentation"
+      ],
+      "secrets": [
+        "a censored AI witness",
+        "the AI has a lawful override"
+      ],
+      "sceneAnchors": [
+        "root console",
+        "AI hearing chamber",
+        "cold backup vault"
+      ]
     }
   },
   "narrativeVariablePools": {
@@ -913,230 +2314,578 @@
     {
       "id": "painful-struggle",
       "label": "Painful Struggle",
-      "domains": ["governance", "war", "labor"],
+      "domains": [
+        "governance",
+        "war",
+        "labor"
+      ],
       "motif": "rival-power-bloc",
-      "requiredLayers": ["human"],
+      "requiredLayers": [
+        "human"
+      ],
       "template": "System is locked in a painful struggle between the {groupA} and the {groupB} over {stake}.",
-      "slots": { "groupA": "groups", "groupB": "groups", "stake": "stakes" },
-      "distinctSlots": [["groupA", "groupB"]]
+      "slots": {
+        "groupA": "groups",
+        "groupB": "groups",
+        "stake": "stakes"
+      },
+      "distinctSlots": [
+        [
+          "groupA",
+          "groupB"
+        ]
+      ]
     },
     {
       "id": "brittle-protectorate",
       "label": "Brittle Protectorate",
-      "domains": ["governance", "public-life", "labor"],
+      "domains": [
+        "governance",
+        "public-life",
+        "labor"
+      ],
       "motif": "order-through-leverage",
-      "requiredLayers": ["human"],
+      "requiredLayers": [
+        "human"
+      ],
       "template": "The {groupA} keeps order by controlling {leverage}, but the {groupB} is turning {pressure} into a cause.",
-      "slots": { "groupA": "groups", "leverage": "leverage", "groupB": "groups", "pressure": "pressures" },
-      "distinctSlots": [["groupA", "groupB"]]
+      "slots": {
+        "groupA": "groups",
+        "leverage": "leverage",
+        "groupB": "groups",
+        "pressure": "pressures"
+      },
+      "distinctSlots": [
+        [
+          "groupA",
+          "groupB"
+        ]
+      ]
     },
     {
       "id": "costly-extraction",
       "label": "Costly Extraction",
-      "domains": ["trade", "labor", "crime"],
+      "domains": [
+        "trade",
+        "labor",
+        "crime"
+      ],
       "motif": "resource-profit-vs-human-cost",
-      "requiredLayers": ["gu", "human"],
+      "requiredLayers": [
+        "gu",
+        "human"
+      ],
       "template": "The {groupA} can profit from {stake}, but {pressure} has made the {groupB} desperate enough to act.",
-      "slots": { "groupA": "groups", "stake": "stakes", "pressure": "pressures", "groupB": "groups" },
-      "distinctSlots": [["groupA", "groupB"]]
+      "slots": {
+        "groupA": "groups",
+        "stake": "stakes",
+        "pressure": "pressures",
+        "groupB": "groups"
+      },
+      "distinctSlots": [
+        [
+          "groupA",
+          "groupB"
+        ]
+      ]
     },
     {
       "id": "quarantine-secret",
       "label": "Quarantine Secret",
-      "domains": ["ecology", "science", "espionage"],
+      "domains": [
+        "ecology",
+        "science",
+        "espionage"
+      ],
       "motif": "public-safety-vs-hidden-cause",
-      "requiredLayers": ["gu", "human"],
+      "requiredLayers": [
+        "gu",
+        "human"
+      ],
       "template": "The {groupA} claims {threat} requires harsh controls, while the {groupB} insists the real issue is {secret}.",
-      "slots": { "groupA": "groups", "threat": "threats", "groupB": "groups", "secret": "secrets" },
-      "distinctSlots": [["groupA", "groupB"]]
+      "slots": {
+        "groupA": "groups",
+        "threat": "threats",
+        "groupB": "groups",
+        "secret": "secrets"
+      },
+      "distinctSlots": [
+        [
+          "groupA",
+          "groupB"
+        ]
+      ]
     },
     {
       "id": "route-chokepoint",
       "label": "Route Chokepoint",
-      "domains": ["trade", "governance", "crime"],
+      "domains": [
+        "trade",
+        "governance",
+        "crime"
+      ],
       "motif": "route-control",
-      "requiredLayers": ["gu", "human"],
+      "requiredLayers": [
+        "gu",
+        "human"
+      ],
       "template": "Control of {routeAsset} lets the {groupA} tax every ship, unless the {groupB} can prove {claim}.",
-      "slots": { "routeAsset": "routeAssets", "groupA": "groups", "groupB": "groups", "claim": "claims" },
-      "distinctSlots": [["groupA", "groupB"]]
+      "slots": {
+        "routeAsset": "routeAssets",
+        "groupA": "groups",
+        "groupB": "groups",
+        "claim": "claims"
+      },
+      "distinctSlots": [
+        [
+          "groupA",
+          "groupB"
+        ]
+      ]
     },
     {
       "id": "moving-bleed-rush",
       "label": "Moving Bleed Rush",
-      "domains": ["trade", "science", "crime"],
+      "domains": [
+        "trade",
+        "science",
+        "crime"
+      ],
       "motif": "moving-resource-window",
-      "requiredLayers": ["gu", "human"],
+      "requiredLayers": [
+        "gu",
+        "human"
+      ],
       "template": "{stake} has created a rush around {routeAsset}, and the {groupA} is using {leverage} before {threat} closes the window.",
-      "slots": { "stake": "stakes", "routeAsset": "routeAssets", "groupA": "groups", "leverage": "leverage", "threat": "threats" }
+      "slots": {
+        "stake": "stakes",
+        "routeAsset": "routeAssets",
+        "groupA": "groups",
+        "leverage": "leverage",
+        "threat": "threats"
+      }
     },
     {
       "id": "first-wave-inheritance",
       "label": "First-Wave Inheritance",
-      "domains": ["archaeology", "governance", "trade"],
+      "domains": [
+        "archaeology",
+        "governance",
+        "trade"
+      ],
       "motif": "old-title-vs-present-need",
-      "requiredLayers": ["human"],
+      "requiredLayers": [
+        "human"
+      ],
       "template": "A first-wave claim around {routeAsset} could overturn {stake}, but the {groupA} needs {secret} to stay buried.",
-      "slots": { "routeAsset": "routeAssets", "stake": "stakes", "groupA": "groups", "secret": "secrets" }
+      "slots": {
+        "routeAsset": "routeAssets",
+        "stake": "stakes",
+        "groupA": "groups",
+        "secret": "secrets"
+      }
     },
     {
       "id": "ai-witness",
       "label": "AI Witness",
-      "domains": ["ai", "espionage", "law"],
+      "domains": [
+        "ai",
+        "espionage",
+        "law"
+      ],
       "motif": "censored-witness",
-      "requiredLayers": ["human"],
+      "requiredLayers": [
+        "human"
+      ],
       "template": "The {groupA} wants custody of the AI record at {sceneAnchor}, because it can prove {claim} unless {threat} destroys the testimony.",
-      "slots": { "groupA": "groups", "sceneAnchor": "sceneAnchors", "claim": "claims", "threat": "threats" }
+      "slots": {
+        "groupA": "groups",
+        "sceneAnchor": "sceneAnchors",
+        "claim": "claims",
+        "threat": "threats"
+      }
     },
     {
       "id": "gardener-warning",
       "label": "Gardener Warning",
-      "domains": ["religion", "governance", "disaster"],
+      "domains": [
+        "religion",
+        "governance",
+        "disaster"
+      ],
       "motif": "interdiction-shadow",
-      "requiredLayers": ["gu", "human"],
+      "requiredLayers": [
+        "gu",
+        "human"
+      ],
       "template": "After {threat}, the {groupA} treats {routeAsset} as a warning sign, while the {groupB} argues that {choice}.",
-      "slots": { "threat": "threats", "groupA": "groups", "routeAsset": "routeAssets", "groupB": "groups", "choice": "choices" },
-      "distinctSlots": [["groupA", "groupB"]]
+      "slots": {
+        "threat": "threats",
+        "groupA": "groups",
+        "routeAsset": "routeAssets",
+        "groupB": "groups",
+        "choice": "choices"
+      },
+      "distinctSlots": [
+        [
+          "groupA",
+          "groupB"
+        ]
+      ]
     },
     {
       "id": "labor-under-vacuum",
       "label": "Labor Under Vacuum",
-      "domains": ["labor", "public-life", "trade"],
+      "domains": [
+        "labor",
+        "public-life",
+        "trade"
+      ],
       "motif": "survival-as-contract-leverage",
-      "requiredLayers": ["human"],
+      "requiredLayers": [
+        "human"
+      ],
       "template": "{public} depend on {leverage}, so {pressure} has turned the {groupA} and the {groupB} into open enemies.",
-      "slots": { "public": "publics", "leverage": "leverage", "pressure": "pressures", "groupA": "groups", "groupB": "groups" },
-      "distinctSlots": [["groupA", "groupB"]]
+      "slots": {
+        "public": "publics",
+        "leverage": "leverage",
+        "pressure": "pressures",
+        "groupA": "groups",
+        "groupB": "groups"
+      },
+      "distinctSlots": [
+        [
+          "groupA",
+          "groupB"
+        ]
+      ]
     },
     {
       "id": "public-life-under-hazard",
       "label": "Public Life Under Hazard",
-      "domains": ["public-life", "daily-life", "disaster"],
+      "domains": [
+        "public-life",
+        "daily-life",
+        "disaster"
+      ],
       "motif": "ordinary-life-under-system-pressure",
-      "requiredLayers": ["human"],
+      "requiredLayers": [
+        "human"
+      ],
       "template": "Daily life now centers on {sceneAnchor}: {public} are caught between {pressure} and the official promise that {threat} is under control.",
-      "slots": { "sceneAnchor": "sceneAnchors", "public": "publics", "pressure": "pressures", "threat": "threats" }
+      "slots": {
+        "sceneAnchor": "sceneAnchors",
+        "public": "publics",
+        "pressure": "pressures",
+        "threat": "threats"
+      }
     },
     {
       "id": "biosphere-exploitation",
       "label": "Biosphere Exploitation",
-      "domains": ["ecology", "science", "trade"],
+      "domains": [
+        "ecology",
+        "science",
+        "trade"
+      ],
       "motif": "living-world-vs-extraction",
-      "requiredLayers": ["physical", "human"],
+      "requiredLayers": [
+        "physical",
+        "human"
+      ],
       "template": "The {groupA} calls {stake} harmless research, but {pressure} has convinced the {groupB} that {secret}.",
-      "slots": { "groupA": "groups", "stake": "stakes", "pressure": "pressures", "groupB": "groups", "secret": "secrets" },
-      "distinctSlots": [["groupA", "groupB"]]
+      "slots": {
+        "groupA": "groups",
+        "stake": "stakes",
+        "pressure": "pressures",
+        "groupB": "groups",
+        "secret": "secrets"
+      },
+      "distinctSlots": [
+        [
+          "groupA",
+          "groupB"
+        ]
+      ]
     },
     {
       "id": "refugee-resettlement-fight",
       "label": "Refugee Resettlement Fight",
-      "domains": ["migration", "public-life", "governance"],
+      "domains": [
+        "migration",
+        "public-life",
+        "governance"
+      ],
       "motif": "who-gets-to-stay",
-      "requiredLayers": ["human"],
+      "requiredLayers": [
+        "human"
+      ],
       "template": "The {groupA} promises {stake}, but {public} know {claim}, and {pressure} is making compromise impossible.",
-      "slots": { "groupA": "groups", "stake": "stakes", "public": "publics", "claim": "claims", "pressure": "pressures" }
+      "slots": {
+        "groupA": "groups",
+        "stake": "stakes",
+        "public": "publics",
+        "claim": "claims",
+        "pressure": "pressures"
+      }
     },
     {
       "id": "salvage-fraud",
       "label": "Salvage Fraud",
-      "domains": ["archaeology", "crime", "trade"],
+      "domains": [
+        "archaeology",
+        "crime",
+        "trade"
+      ],
       "motif": "legal-title-as-cover",
-      "requiredLayers": ["human"],
+      "requiredLayers": [
+        "human"
+      ],
       "template": "The {groupA} is using {claim} to seize {routeAsset}, but the {groupB} found {secret} in {sceneAnchor}.",
-      "slots": { "groupA": "groups", "claim": "claims", "routeAsset": "routeAssets", "groupB": "groups", "secret": "secrets", "sceneAnchor": "sceneAnchors" },
-      "distinctSlots": [["groupA", "groupB"]]
+      "slots": {
+        "groupA": "groups",
+        "claim": "claims",
+        "routeAsset": "routeAssets",
+        "groupB": "groups",
+        "secret": "secrets",
+        "sceneAnchor": "sceneAnchors"
+      },
+      "distinctSlots": [
+        [
+          "groupA",
+          "groupB"
+        ]
+      ]
     },
     {
       "id": "election-under-interdiction",
       "label": "Election Under Interdiction",
-      "domains": ["governance", "public-life", "espionage"],
+      "domains": [
+        "governance",
+        "public-life",
+        "espionage"
+      ],
       "motif": "legitimacy-under-seal",
-      "requiredLayers": ["human"],
+      "requiredLayers": [
+        "human"
+      ],
       "template": "{public} are being asked to accept the {groupA}'s emergency rule until {threat} passes, but the {groupB} can prove {claim}.",
-      "slots": { "public": "publics", "groupA": "groups", "threat": "threats", "groupB": "groups", "claim": "claims" },
-      "distinctSlots": [["groupA", "groupB"]]
+      "slots": {
+        "public": "publics",
+        "groupA": "groups",
+        "threat": "threats",
+        "groupB": "groups",
+        "claim": "claims"
+      },
+      "distinctSlots": [
+        [
+          "groupA",
+          "groupB"
+        ]
+      ]
     },
     {
       "id": "quiet-pilgrimage",
       "label": "Quiet Pilgrimage",
-      "domains": ["religion", "public-life", "trade"],
+      "domains": [
+        "religion",
+        "public-life",
+        "trade"
+      ],
       "motif": "ritual-route-economy",
-      "requiredLayers": ["gu", "human"],
+      "requiredLayers": [
+        "gu",
+        "human"
+      ],
       "template": "{public} gather at {sceneAnchor} whenever {routeAsset} is safe, and the {groupA} fears the ritual will expose {secret}.",
-      "slots": { "public": "publics", "sceneAnchor": "sceneAnchors", "routeAsset": "routeAssets", "groupA": "groups", "secret": "secrets" }
+      "slots": {
+        "public": "publics",
+        "sceneAnchor": "sceneAnchors",
+        "routeAsset": "routeAssets",
+        "groupA": "groups",
+        "secret": "secrets"
+      }
     },
     {
       "id": "false-pirate-threat",
       "label": "False Pirate Threat",
-      "domains": ["crime", "espionage", "trade"],
+      "domains": [
+        "crime",
+        "espionage",
+        "trade"
+      ],
       "motif": "manufactured-security-crisis",
-      "requiredLayers": ["human"],
+      "requiredLayers": [
+        "human"
+      ],
       "template": "Everyone blames {threat} for the lockdown, but the real leverage is {leverage}, and the {groupA} benefits if {claim}.",
-      "slots": { "threat": "threats", "leverage": "leverage", "groupA": "groups", "claim": "claims" }
+      "slots": {
+        "threat": "threats",
+        "leverage": "leverage",
+        "groupA": "groups",
+        "claim": "claims"
+      }
     },
     {
       "id": "flare-season-shelter",
       "label": "Flare Season Shelter",
-      "domains": ["stellar-events", "infrastructure", "public-life"],
+      "domains": [
+        "stellar-events",
+        "infrastructure",
+        "public-life"
+      ],
       "motif": "star-as-social-pressure",
-      "requiredLayers": ["physical", "human"],
+      "requiredLayers": [
+        "physical",
+        "human"
+      ],
       "template": "{threat} has made {leverage} the only thing keeping {public} alive, and the {groupA} is hiding {secret}.",
-      "slots": { "threat": "threats", "leverage": "leverage", "public": "publics", "groupA": "groups", "secret": "secrets" }
+      "slots": {
+        "threat": "threats",
+        "leverage": "leverage",
+        "public": "publics",
+        "groupA": "groups",
+        "secret": "secrets"
+      }
     },
     {
       "id": "route-weather-auction",
       "label": "Route Weather Auction",
-      "domains": ["route-weather", "trade", "exploration"],
+      "domains": [
+        "route-weather",
+        "trade",
+        "exploration"
+      ],
       "motif": "safe-window-as-market",
-      "requiredLayers": ["gu", "human"],
+      "requiredLayers": [
+        "gu",
+        "human"
+      ],
       "template": "{routeAsset} is safe only during a narrow window, so the {groupA} is auctioning {leverage} while the {groupB} warns that {claim}.",
-      "slots": { "routeAsset": "routeAssets", "groupA": "groups", "leverage": "leverage", "groupB": "groups", "claim": "claims" },
-      "distinctSlots": [["groupA", "groupB"]]
+      "slots": {
+        "routeAsset": "routeAssets",
+        "groupA": "groups",
+        "leverage": "leverage",
+        "groupB": "groups",
+        "claim": "claims"
+      },
+      "distinctSlots": [
+        [
+          "groupA",
+          "groupB"
+        ]
+      ]
     },
     {
       "id": "interdiction-compliance",
       "label": "Interdiction Compliance",
-      "domains": ["gardener-interdiction", "law", "religion"],
+      "domains": [
+        "gardener-interdiction",
+        "law",
+        "religion"
+      ],
       "motif": "opaque-asi-pressure",
-      "requiredLayers": ["gu", "human"],
+      "requiredLayers": [
+        "gu",
+        "human"
+      ],
       "template": "The {groupA} says {routeAsset} must stay sealed after {threat}, but {public} believe {secret}.",
-      "slots": { "groupA": "groups", "routeAsset": "routeAssets", "threat": "threats", "public": "publics", "secret": "secrets" }
+      "slots": {
+        "groupA": "groups",
+        "routeAsset": "routeAssets",
+        "threat": "threats",
+        "public": "publics",
+        "secret": "secrets"
+      }
     },
     {
       "id": "life-support-hostage",
       "label": "Life-Support Hostage",
-      "domains": ["infrastructure", "labor", "ai"],
+      "domains": [
+        "infrastructure",
+        "labor",
+        "ai"
+      ],
       "motif": "machinery-as-political-hostage",
-      "requiredLayers": ["human"],
+      "requiredLayers": [
+        "human"
+      ],
       "template": "The {groupA} controls {leverage}, but {pressure} means the {groupB} can force a crisis without firing a shot.",
-      "slots": { "groupA": "groups", "leverage": "leverage", "pressure": "pressures", "groupB": "groups" },
-      "distinctSlots": [["groupA", "groupB"]]
+      "slots": {
+        "groupA": "groups",
+        "leverage": "leverage",
+        "pressure": "pressures",
+        "groupB": "groups"
+      },
+      "distinctSlots": [
+        [
+          "groupA",
+          "groupB"
+        ]
+      ]
     },
     {
       "id": "terraforming-liability",
       "label": "Terraforming Liability",
-      "domains": ["terraforming", "ecology", "migration"],
+      "domains": [
+        "terraforming",
+        "ecology",
+        "migration"
+      ],
       "motif": "engineered-climate-debt",
-      "requiredLayers": ["physical", "human"],
+      "requiredLayers": [
+        "physical",
+        "human"
+      ],
       "template": "{public} were promised {stake}, but {threat} exposed {secret} and turned the {groupA} into the only legal target.",
-      "slots": { "public": "publics", "stake": "stakes", "threat": "threats", "secret": "secrets", "groupA": "groups" }
+      "slots": {
+        "public": "publics",
+        "stake": "stakes",
+        "threat": "threats",
+        "secret": "secrets",
+        "groupA": "groups"
+      }
     },
     {
       "id": "exposure-triage",
       "label": "Exposure Triage",
-      "domains": ["medicine", "ecology", "public-life"],
+      "domains": [
+        "medicine",
+        "ecology",
+        "public-life"
+      ],
       "motif": "care-under-containment",
-      "requiredLayers": ["human"],
+      "requiredLayers": [
+        "human"
+      ],
       "template": "{public} crowd {sceneAnchor} after {threat}, while the {groupA} decides whether {choice}.",
-      "slots": { "public": "publics", "sceneAnchor": "sceneAnchors", "threat": "threats", "groupA": "groups", "choice": "choices" }
+      "slots": {
+        "public": "publics",
+        "sceneAnchor": "sceneAnchors",
+        "threat": "threats",
+        "groupA": "groups",
+        "choice": "choices"
+      }
     },
     {
       "id": "archive-integrity-crisis",
       "label": "Archive Integrity Crisis",
-      "domains": ["information-integrity", "espionage", "governance"],
+      "domains": [
+        "information-integrity",
+        "espionage",
+        "governance"
+      ],
       "motif": "truth-as-infrastructure",
-      "requiredLayers": ["human"],
+      "requiredLayers": [
+        "human"
+      ],
       "template": "The {groupA} can prove {claim}, but {leverage} will collapse if {secret} becomes public.",
-      "slots": { "groupA": "groups", "claim": "claims", "leverage": "leverage", "secret": "secrets" }
+      "slots": {
+        "groupA": "groups",
+        "claim": "claims",
+        "leverage": "leverage",
+        "secret": "secrets"
+      }
     }
   ]
 }

@@ -27,6 +27,12 @@ export interface PhenomenonVariants {
   sceneAnchor?: readonly string[]
 }
 
+export interface PhenomenonLivelihood {
+  actor: string
+  dependence: string
+  friction: string
+}
+
 export interface PhenomenonEntry {
   label: string
   confidence: 'gu-layer' | 'human-layer' | 'inferred'
@@ -35,6 +41,7 @@ export interface PhenomenonEntry {
   conflictHook: string
   sceneAnchor: string
   variants?: PhenomenonVariants
+  livelihoods?: readonly PhenomenonLivelihood[]
 }
 
 interface NarrativeData {
