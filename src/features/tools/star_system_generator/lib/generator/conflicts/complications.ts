@@ -1,6 +1,6 @@
 import type { SeededRng } from '../rng'
 import type { RelationshipEdge, SystemRelationshipGraph } from '../graph/types'
-import type { Settlement } from '../../types'
+import type { Settlement } from '../../../types'
 import { lowerFirst } from '../prose/helpers'
 import type { ConflictComplication, ConflictParty } from './types'
 
