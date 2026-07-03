@@ -9,10 +9,13 @@
 > 1.0 (≥0.85), phenomenon conflictHooks 0.892 (≥0.60), max hook repeat 4 (≤4).
 >
 > **Follow-ups filed (not blocking):**
-> - Beat-opener phrase repeats within a single system in ~40% of sampled
->   systems (pre-existing Tasks 1–9 surface; next authoring pass).
-> - Max hook-repeat gate passes at the exact ceiling (8 entries at 4/4) —
->   add ~10 entries of headroom before the next hooks change.
+> - ~~Beat-opener phrase repeats within a single system~~ FIXED `0cbad0b`:
+>   per-system beat-template decks; within-system repeats 62% → 0% of systems.
+> - ~~Thin hook tag×category cells~~ IMPROVED `1395704`: all 21 cells of
+>   {contracts, encounters, twists} × 7 high-traffic tags now ≥5 entries
+>   (+42). Max hook-repeat still exactly 4 (ceiling entries 8 → 7, now
+>   almost all in rumor/npc tag-subcells) — gate unchanged at ≤4; reaching
+>   ≤3 would need a rumor/npc subcell pass (diminishing returns).
 > - Rumor/npc resonant-term bias halved in Task 20; thematic hook↔system
 >   coherence pinned only by the metrics corpus — spot-read after next
 >   content change.
