@@ -169,6 +169,78 @@ describe('hook slot binder (pure functions)', () => {
   })
 })
 
+describe('hook slot binder correlation', () => {
+  const factionB: EntityRef = { kind: 'namedFaction', id: 'fac-b', displayName: 'Red Vane Labor Combine', layer: 'human' }
+  const settlementB: EntityRef = { kind: 'settlement', id: 'set-2', displayName: 'Gantry Row', layer: 'human' }
+  const stakeRefB: EntityRef = { kind: 'localInstitution', id: 'inst-1', displayName: 'the tug monopoly', layer: 'human' }
+  const conflictB = makeConflict({
+    id: 'conflict-2',
+    edgeId: 'edge-2',
+    parties: [
+      { ref: factionB, role: 'aggressor', stake: 'stake text' },
+      { ref: settlementB, role: 'defender', stake: 'stake text' },
+    ],
+    stakeRef: stakeRefB,
+  })
+  const aPartyNames = [faction.displayName, settlement.displayName]
+  const bPartyNames = [factionB.displayName, settlementB.displayName]
+
+  it('binds party and stake from the same conflict in multi-conflict systems', () => {
+    const entry: HookEntry = { text: '{party} claims {stake}.', tags: ['GU'], binds: ['party', 'stake'] }
+    const ctx: HookBindContext = { conflicts: [makeConflict(), conflictB], entities: [] }
+    let sawA = false
+    let sawB = false
+    for (let i = 0; i < 60; i += 1) {
+      const bound = bindEntryText(entry, ctx, createSeededRng(`pair-${i}`))
+      if (bound.includes(stakeRef.displayName)) {
+        expect(aPartyNames.some(n => bound.includes(n)), bound).toBe(true)
+        expect(bPartyNames.some(n => bound.includes(n)), bound).toBe(false)
+        sawA = true
+      } else {
+        expect(bound).toContain(stakeRefB.displayName)
+        expect(bPartyNames.some(n => bound.includes(n)), bound).toBe(true)
+        expect(aPartyNames.some(n => bound.includes(n)), bound).toBe(false)
+        sawB = true
+      }
+    }
+    expect(sawA && sawB).toBe(true)
+  })
+
+  it('ignores conflicts without a stakeRef when pairing party and stake', () => {
+    const noStakeConflict = makeConflict({
+      id: 'conflict-3',
+      edgeId: 'edge-3',
+      parties: [
+        { ref: factionB, role: 'aggressor', stake: 'stake text' },
+        { ref: settlementB, role: 'defender', stake: 'stake text' },
+      ],
+      stakeRef: null,
+    })
+    const entry: HookEntry = { text: '{party} claims {stake}.', tags: ['GU'], binds: ['party', 'stake'] }
+    const ctx: HookBindContext = { conflicts: [noStakeConflict, makeConflict()], entities: [] }
+    for (let i = 0; i < 20; i += 1) {
+      const bound = bindEntryText(entry, ctx, createSeededRng(`nostake-${i}`))
+      expect(bound).toContain(stakeRef.displayName)
+      expect(bPartyNames.some(n => bound.includes(n)), bound).toBe(false)
+    }
+  })
+
+  it('never binds place to the displayName already bound to party', () => {
+    const entry: HookEntry = { text: '{party}::{place}', tags: ['GU'], binds: ['party', 'place'] }
+    const ctx: HookBindContext = { conflicts: [makeConflict()], entities: [settlement, body] }
+    for (let i = 0; i < 40; i += 1) {
+      const [boundParty, boundPlace] = bindEntryText(entry, ctx, createSeededRng(`noself-${i}`)).split('::')
+      expect(boundPlace, `seed noself-${i}`).not.toBe(boundParty)
+    }
+  })
+
+  it('canBindEntry is false when party exclusion could empty the place pool', () => {
+    const entry: HookEntry = { text: '{party} eyes {place}.', tags: ['GU'], binds: ['party', 'place'] }
+    const ctx: HookBindContext = { conflicts: [makeConflict()], entities: [settlement] }
+    expect(canBindEntry(entry, ctx)).toBe(false)
+  })
+})
+
 describe('selectSystemHooks with binding context', () => {
   it('never selects a slotted entry whose binds cannot be satisfied (no unresolved braces)', () => {
     for (let i = 0; i < 40; i += 1) {
