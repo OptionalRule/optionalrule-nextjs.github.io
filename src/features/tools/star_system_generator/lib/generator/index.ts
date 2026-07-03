@@ -151,6 +151,7 @@ import { NameRegistry } from './nameRegistry'
 import { lowerFirst, sentenceFragment } from './prose/helpers'
 import { settlementHookSynthesis } from './prose/settlementProse'
 import { phenomenonNote } from './prose/phenomenonProse'
+import { composePhenomenonConflict } from './prose/phenomenonConflict'
 import { buildRelationshipGraph, renderSystemStory } from './graph'
 import { buildConflicts } from './conflicts'
 import { graphAwareReshape } from './prose'
@@ -3756,7 +3757,7 @@ function generatePhenomena(rng: SeededRng, architectureName: string, guOverlay: 
     used.add(phenomenon.label)
     const travelEffect = pickPhenomenonField(rng, phenomenon.travelEffect, phenomenon.variants?.travelEffect)
     const surveyQuestion = pickPhenomenonField(rng, phenomenon.surveyQuestion, phenomenon.variants?.surveyQuestion)
-    const conflictHook = pickPhenomenonField(rng, phenomenon.conflictHook, phenomenon.variants?.conflictHook)
+    const conflictHook = composePhenomenonConflict(phenomenon, rng.fork(`conflict-${index}`))
     const sceneAnchor = pickPhenomenonField(rng, phenomenon.sceneAnchor, phenomenon.variants?.sceneAnchor)
     const resolved = { ...phenomenon, travelEffect, surveyQuestion, conflictHook, sceneAnchor }
     const note = phenomenonNote(resolved)
