@@ -181,11 +181,10 @@ describe('renderSystemStory', () => {
     const graph = graphWith([controlsEdge], ['c1'])
     const story = renderSystemStory(graph, createSeededRng('no-history-test'))
 
-    expect(story.spineSummary).toContain('writes the rules')
     expect(story.spineSummary).toContain('Helion Debt Synod')
     expect(story.spineSummary).toContain('Orison Hold')
     expect(story.spineSummary).not.toContain('the second wave')
-    expect(story.spineSummary).not.toContain(',')
+    expect(story.spineSummary).not.toContain('broke')
     expect(story.spineSummary).not.toContain('{')
   })
 
@@ -239,7 +238,7 @@ describe('renderSystemStory', () => {
     const graph = graphWith([contestsEdge, historicalEdge], ['c1'])
     const story = renderSystemStory(graph, createSeededRng('proper-noun-head'))
 
-    expect(story.spineSummary).not.toMatch(/, [a-z]/)
+    expect(story.spineSummary).not.toMatch(/kestrel free compact/)
     expect(story.spineSummary).toMatch(/Kestrel Free Compact/)
     expect(story.spineSummary).not.toContain('{')
   })

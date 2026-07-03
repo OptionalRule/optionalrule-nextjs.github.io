@@ -20,6 +20,18 @@ export const displacedTemplates: EdgeTemplateFamily = {
       text: '{subject} settled on {object:article} when migration came {qualifier|in the long quiet}.',
       expects: { subject: 'properNoun', object: 'nounPhrase', qualifier: 'era' },
     },
+    {
+      text: '{subject} lost its first home {qualifier|in the great compaction} and has held {object:article} like a grudge ever since.',
+      expects: { subject: 'properNoun', object: 'nounPhrase', qualifier: 'era' },
+    },
+    {
+      text: 'The relocation of {subject} onto {object:article} {qualifier|in the first wave} was recorded as voluntary by the office that ordered it.',
+      expects: { subject: 'properNoun', object: 'nounPhrase', qualifier: 'era' },
+    },
+    {
+      text: '{subject} keeps its old claim registered {qualifier|since the bleed years}, while {object:article} keeps it alive and resentful.',
+      expects: { subject: 'properNoun', object: 'nounPhrase', qualifier: 'era' },
+    },
   ],
   spineSummary: { text: '', expects: {} },
   historicalBridge: { text: '', expects: {} },

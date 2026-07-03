@@ -22,6 +22,18 @@ export const foundedByTemplates: EdgeTemplateFamily = {
       text: '{subject} chartered {object} {qualifier|in the formative years}.',
       expects: { subject: 'properNoun', object: 'properNoun', qualifier: 'era' },
     },
+    {
+      text: '{subject} raised {object} out of nothing {qualifier|in the early charters}, on terms the founders never wrote down.',
+      expects: { subject: 'properNoun', object: 'properNoun', qualifier: 'era' },
+    },
+    {
+      text: '{object} still runs on the bylaws {subject} drafted {qualifier|in the formative years}, including the clauses nobody reads aloud.',
+      expects: { subject: 'properNoun', object: 'properNoun', qualifier: 'era' },
+    },
+    {
+      text: 'The founding of {object} by {subject} {qualifier|in an earlier era} gets retold every anniversary, with one fewer inconvenient name each time.',
+      expects: { subject: 'properNoun', object: 'properNoun', qualifier: 'era' },
+    },
   ],
   spineSummary: { text: '', expects: {} },
   historicalBridge: { text: '', expects: {} },

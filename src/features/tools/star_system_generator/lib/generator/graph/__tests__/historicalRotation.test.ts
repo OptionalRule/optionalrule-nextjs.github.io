@@ -69,6 +69,9 @@ describe('historical body variant rotation (Phase 7 Task 4)', () => {
       0: 'founded',
       1: 'traces its origin to',
       2: 'chartered',
+      3: 'raised',
+      4: 'bylaws',
+      5: 'retold every anniversary',
     }
     expect(summary).toContain(variantSignatures[expectedIndex])
     expect(expectedVariant.text).not.toBe('')

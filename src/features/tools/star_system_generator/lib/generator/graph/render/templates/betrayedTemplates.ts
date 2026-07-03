@@ -20,6 +20,18 @@ export const betrayedTemplates: EdgeTemplateFamily = {
       text: '{subject} turned on {object} {qualifier|in the bleed years}.',
       expects: { subject: 'properNoun', object: 'properNoun', qualifier: 'era' },
     },
+    {
+      text: '{subject} sold {object} out {qualifier|in the long quiet}, and kept the proceeds close ever since.',
+      expects: { subject: 'properNoun', object: 'properNoun', qualifier: 'era' },
+    },
+    {
+      text: 'The debt {subject} owes {object} dates {qualifier|to an earlier reckoning}, and neither successor signed it.',
+      expects: { subject: 'properNoun', object: 'properNoun', qualifier: 'era' },
+    },
+    {
+      text: '{subject} walked away from {object} {qualifier|in the first wave}, taking the charts and leaving the blame.',
+      expects: { subject: 'properNoun', object: 'properNoun', qualifier: 'era' },
+    },
   ],
   spineSummary: { text: '', expects: {} },
   historicalBridge: { text: '', expects: {} },

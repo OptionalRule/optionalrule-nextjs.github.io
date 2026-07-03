@@ -2,7 +2,7 @@
 
 exports[`spine tone × edge type voice matrix > tone=astronomy: spine prose reads in tone voice 1`] = `
 {
-  "body0": "The amplitude of the captured rogue world exceeds the operating envelope of Tau Reticuli Cohort. The amplitude of the refugee ark parking orbit exceeds the operating envelope of Custos Echo-58 Belt VI. The captured rogue world introduces a measurable perturbation in Custos Echo-58 Belt IV. Custos Echo-58 Belt IV Charter is the only major foothold on Custos Echo-58 Belt IV.",
+  "body0": "Tau Reticuli Cohort records a phase shift each time the captured rogue world passes through. The refugee ark parking orbit drifts the baselines Custos Echo-58 Belt VI relies on. The captured rogue world introduces a measurable perturbation in Custos Echo-58 Belt IV. Custos Echo-58 Belt IV Charter maintains the only continuous instrument record of conditions on Custos Echo-58 Belt IV.",
   "spineEdgeType": "DESTABILIZES",
   "spineSummary": "Captured rogue world took shape in the third pulse cycle, the perturbation from the captured rogue world now exceeds Tau Reticuli Cohort's tolerance margin.",
 }
@@ -10,15 +10,15 @@ exports[`spine tone × edge type voice matrix > tone=astronomy: spine prose read
 
 exports[`spine tone × edge type voice matrix > tone=balanced: spine prose reads in tone voice 1`] = `
 {
-  "body0": "The compact between Red Vane Labor Combine and Veyra-Locke Concession has gone bad. Helion Debt Synod disputes Ninth Ledger Office's claim. Kestrel Free Compact disputes Veyra-Locke Concession's claim.",
+  "body0": "Every neutral broker between Red Vane Labor Combine and Veyra-Locke Concession has recused, relocated, or stopped answering. The compact between Helion Debt Synod and Ninth Ledger Office has gone bad. The compact between Kestrel Free Compact and Veyra-Locke Concession has gone bad.",
   "spineEdgeType": "CONTESTS",
-  "spineSummary": "Red Vane Labor Combine and Veyra-Locke Concession can't both set the rules — and the rest of the system knows it.",
+  "spineSummary": "Everything else in this system is priced against the quarrel between Red Vane Labor Combine and Veyra-Locke Concession.",
 }
 `;
 
 exports[`spine tone × edge type voice matrix > tone=cinematic: spine prose reads in tone voice 1`] = `
 {
-  "body0": "Between Pale Saint Wake and Salt Wound Wake the knife is already drawn. Bone Lantern Order keeps the receipts. Salt Wound Wake keeps the witnesses. Carrion Synod swore the pact would hold; Crown of Dust Pact swore otherwise.",
+  "body0": "Pale Saint Wake swore the pact would hold; Salt Wound Wake swore otherwise. What Bone Lantern Order calls justice, Salt Wound Wake prices as war. Carrion Synod counts Crown of Dust Pact's ships the way widows count storms.",
   "spineEdgeType": "CONTESTS",
   "spineSummary": "The compact between Pale Saint Wake and Salt Wound Wake broke in the silent decade, Pale Saint Wake and Salt Wound Wake are bleeding each other dry, and the system cheers them on.",
 }

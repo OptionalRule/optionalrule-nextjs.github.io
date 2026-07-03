@@ -2,40 +2,40 @@
 
 exports[`spine full axis matrix (16 representative cells) > baseline-frontier-astronomy: stable spine + body[0] structural fields 1`] = `
 {
-  "body0": "Atlas-Bridge II records a phase shift each time the failed terraforming biosphere passes through. The industrial mirror swarm failure drifts the baselines Atlas-Bridge III relies on. The industrial mirror swarm failure introduces a measurable perturbation in Atlas-Bridge II.",
+  "body0": "Atlas-Bridge II has re-baselined its instruments twice this cycle; the failed terraforming biosphere moved both baselines. The recurrence interval of the industrial mirror swarm failure has shortened past the maintenance cycle Atlas-Bridge III was budgeted for. The industrial mirror swarm failure introduces a measurable perturbation in Atlas-Bridge II.",
   "spineEdgeType": "DESTABILIZES",
   "spineObjectKind": "body",
   "spineSubjectKind": "phenomenon",
-  "spineSummary": "Failed terraforming biosphere took shape in the third pulse cycle, the failed terraforming biosphere is drifting the baselines on which Atlas-Bridge II was sited.",
+  "spineSummary": "Failed terraforming biosphere took shape in the third pulse cycle, the dominant term in every forecast for this system is the failed terraforming biosphere, and the error bars on it keep widening.",
   "spineVisibility": "public",
 }
 `;
 
 exports[`spine full axis matrix (16 representative cells) > baseline-frontier-balanced: stable spine + body[0] structural fields 1`] = `
 {
-  "body0": "Helion Debt Synod and Ninth Ledger Office both want the Mothallah Corridor-631 II. Glasshouse Biosafety Compact refuses to recognize Ninth Ledger Office's authority. The compact between Ash Meridian Navy and Glasshouse Biosafety Compact has gone bad.",
+  "body0": "Helion Debt Synod refuses to recognize Ninth Ledger Office's authority. Every neutral broker between Glasshouse Biosafety Compact and Ninth Ledger Office has recused, relocated, or stopped answering. Ash Meridian Navy hires from the same ration queue Glasshouse Biosafety Compact polices.",
   "spineEdgeType": "CONTESTS",
   "spineObjectKind": "namedFaction",
   "spineSubjectKind": "namedFaction",
-  "spineSummary": "Helion Debt Synod and Ninth Ledger Office can't both set the rules — and the rest of the system knows it.",
+  "spineSummary": "Everything else in this system is priced against the quarrel between Helion Debt Synod and Ninth Ledger Office.",
   "spineVisibility": "contested",
 }
 `;
 
 exports[`spine full axis matrix (16 representative cells) > baseline-frontier-cinematic: stable spine + body[0] structural fields 1`] = `
 {
-  "body0": "Brothers of Choir keeps the receipts. Carrion Wake keeps the witnesses. Between Brothers of Choir and Vow-Breaker Wake the knife is already drawn. Brothers of Choir wants Pale Saint Pact to bleed first.",
+  "body0": "What Brothers of Choir calls justice, Carrion Wake prices as war. Brothers of Choir keeps the receipts. Vow-Breaker Wake keeps the witnesses. Between Brothers of Choir and Pale Saint Pact the knife is already drawn.",
   "spineEdgeType": "CONTESTS",
   "spineObjectKind": "namedFaction",
   "spineSubjectKind": "namedFaction",
-  "spineSummary": "Between Brothers of Choir and Carrion Wake the war is already lost; only the funerals remain.",
+  "spineSummary": "Brothers of Choir wants Carrion Wake broken before the next thaw.",
   "spineVisibility": "contested",
 }
 `;
 
 exports[`spine full axis matrix (16 representative cells) > baseline-realistic-astronomy: stable spine + body[0] structural fields 1`] = `
 {
-  "body0": "The black-market route beacon lattice drifts the baselines Aperture Trust relies on. The black-market route beacon lattice drifts the baselines Suhail-37 Belt VI relies on. The amplitude of the public festival tied to safe transit windows exceeds the operating envelope of Suhail-37 Belt VI. Suhail-37 Belt VI Reach is the only major foothold on Suhail-37 Belt VI.",
+  "body0": "Structural telemetry from Aperture Trust shows secular degradation correlated with the black-market route beacon lattice at high confidence. Structural telemetry from Suhail-37 Belt VI shows secular degradation correlated with the black-market route beacon lattice at high confidence. Suhail-37 Belt VI records a phase shift each time the public festival tied to safe transit windows passes through. Suhail-37 Belt VI Reach maintains the only continuous instrument record of conditions on Suhail-37 Belt VI.",
   "spineEdgeType": "DESTABILIZES",
   "spineObjectKind": "namedFaction",
   "spineSubjectKind": "phenomenon",
@@ -46,29 +46,29 @@ exports[`spine full axis matrix (16 representative cells) > baseline-realistic-a
 
 exports[`spine full axis matrix (16 representative cells) > baseline-realistic-balanced: stable spine + body[0] structural fields 1`] = `
 {
-  "body0": "The moving bleed-node river keeps shifting under Veyra-Locke Concession. Each pass of the tilted crown costs Veyra-Locke Concession a margin it doesn't have. Veyra-Locke Concession can't plan around the narrow-AI perception fog anymore.",
+  "body0": "Veyra-Locke Concession can't plan around the moving bleed-node river anymore. The safety margins around the tilted crown were written for what it used to be, and Veyra-Locke Concession operates inside them anyway. Every mitigation contract Veyra-Locke Concession has written against the narrow-AI perception fog has lapsed, failed, or been bought out.",
   "spineEdgeType": "DESTABILIZES",
   "spineObjectKind": "namedFaction",
   "spineSubjectKind": "phenomenon",
-  "spineSummary": "The moving bleed-node river is rewriting the constants Veyra-Locke Concession was built around.",
+  "spineSummary": "Every schedule in this system bends around the moving bleed-node river, and Veyra-Locke Concession bends furthest.",
   "spineVisibility": "public",
 }
 `;
 
 exports[`spine full axis matrix (16 representative cells) > baseline-realistic-cinematic: stable spine + body[0] structural fields 1`] = `
 {
-  "body0": "Carrion Synod keeps the receipts. Salt Wound Cabal keeps the witnesses. And then, the metric shear damages hulls is hollowing Tarandus Route-211 Belt IV Freeport 56 from underneath. Something is wrong under Tarandus Route-211 Belt IV, and flare-amplified bleed season is the name people whisper for it. Tarandus Route-211 Belt IV hosts Tarandus Route-211 Belt IV Freeport 56. There, Tarandus Route-211 Belt IV Freeport 56 draws everything it consumes from Narrow-AI stabilizer substrate.",
+  "body0": "Carrion Synod buries its dead facing Salt Wound Cabal's docks. And then, the metric shear damages hulls took the buffer zones first. Tarandus Route-211 Belt IV Freeport 56 is what comes after the buffer zones. Tarandus Route-211 Belt IV has been watching the flare-amplified bleed season eat its margins for a generation. At night the lights of Tarandus Route-211 Belt IV Freeport 56 are the only argument that Tarandus Route-211 Belt IV belongs to anyone. There, Tarandus Route-211 Belt IV Freeport 56 was built on the promise of Narrow-AI stabilizer substrate, and promises out here have interest rates.",
   "spineEdgeType": "CONTESTS",
   "spineObjectKind": "namedFaction",
   "spineSubjectKind": "namedFaction",
-  "spineSummary": "The compact between Carrion Synod and Salt Wound Cabal broke after the keep was sealed, Between Carrion Synod and Salt Wound Cabal the war is already lost; only the funerals remain.",
+  "spineSummary": "The compact between Carrion Synod and Salt Wound Cabal broke after the keep was sealed, Carrion Synod wants Salt Wound Cabal broken before the next thaw.",
   "spineVisibility": "contested",
 }
 `;
 
 exports[`spine full axis matrix (16 representative cells) > corner-frontier-cinematic-fracture-hub: stable spine + body[0] structural fields 1`] = `
 {
-  "body0": "Bone Lantern Wake keeps the receipts. Long Knife Run keeps the witnesses. Between Last Ledger Cabal and Widow Star Synod the knife is already drawn. Red Wake Pact swore the pact would hold; Sisters of Synod swore otherwise. Pipit's Delta II Freeport draws everything it consumes from Illegal Sol-prohibited geometry sample. Pipit's Delta I Watch depends on Illegal Sol-prohibited geometry sample for everything.",
+  "body0": "What Bone Lantern Wake calls justice, Long Knife Run prices as war. Last Ledger Cabal keeps the receipts. Widow Star Synod keeps the witnesses. One chair sits at the head of this table, and Red Wake Pact and Sisters of Synod have stopped pretending they'd share it. Pipit's Delta II Freeport was built on the promise of Illegal Sol-prohibited geometry sample, and promises out here have interest rates. Pipit's Delta I Watch lives one shipment of Illegal Sol-prohibited geometry sample from the dark.",
   "spineEdgeType": "CONTESTS",
   "spineObjectKind": "namedFaction",
   "spineSubjectKind": "namedFaction",
@@ -79,7 +79,7 @@ exports[`spine full axis matrix (16 representative cells) > corner-frontier-cine
 
 exports[`spine full axis matrix (16 representative cells) > corner-realistic-astronomy-low-sparse: stable spine + body[0] structural fields 1`] = `
 {
-  "body0": "The amplitude of the debt-fleet anchor graveyard exceeds the operating envelope of Watch-Order Working Group. The narrow-AI perception fog drifts the baselines Guniibuu-Apdu Minor VII relies on. The debt-fleet anchor graveyard drifts the baselines Guniibuu-Apdu Minor VII relies on. Guniibuu-Apdu Minor VII carries Guniibuu-Apdu Minor VII - Moon I Hold on its surface.",
+  "body0": "Watch-Order Working Group records a phase shift each time the debt-fleet anchor graveyard passes through. The recurrence interval of the narrow-AI perception fog has shortened past the maintenance cycle Guniibuu-Apdu Minor VII was budgeted for. The recurrence interval of the debt-fleet anchor graveyard has shortened past the maintenance cycle Guniibuu-Apdu Minor VII was budgeted for. Guniibuu-Apdu Minor VII - Moon I Hold's foundation survey on Guniibuu-Apdu Minor VII is overdue by two inspection cycles.",
   "spineEdgeType": "DESTABILIZES",
   "spineObjectKind": "namedFaction",
   "spineSubjectKind": "phenomenon",
@@ -90,29 +90,29 @@ exports[`spine full axis matrix (16 representative cells) > corner-realistic-ast
 
 exports[`spine full axis matrix (16 representative cells) > density-crowded: stable spine + body[0] structural fields 1`] = `
 {
-  "body0": "The debt-fleet anchor graveyard drifts the baselines Yuyu's Field II relies on. The debt-fleet anchor graveyard drifts the baselines Yuyu's Field VIII relies on. Yuyu's Field II records a phase shift each time the Gardener warning beacon passes through.",
+  "body0": "Structural telemetry from Yuyu's Field II shows secular degradation correlated with the debt-fleet anchor graveyard at high confidence. Structural telemetry from Yuyu's Field VIII shows secular degradation correlated with the debt-fleet anchor graveyard at high confidence. Models fitted to the Gardener warning beacon five years ago now underpredict its reach by an order of magnitude at Yuyu's Field II.",
   "spineEdgeType": "DESTABILIZES",
   "spineObjectKind": "body",
   "spineSubjectKind": "phenomenon",
-  "spineSummary": "The debt-fleet anchor graveyard is drifting the baselines on which Yuyu's Field II was sited.",
+  "spineSummary": "The dominant term in every forecast for this system is the debt-fleet anchor graveyard, and the error bars on it keep widening.",
   "spineVisibility": "public",
 }
 `;
 
 exports[`spine full axis matrix (16 representative cells) > density-hub: stable spine + body[0] structural fields 1`] = `
 {
-  "body0": "Intan's Crown Belt IX records a phase shift each time the moving bleed-node river passes through. Intan's Crown V records a phase shift each time the refugee ark parking orbit passes through. The moving bleed-node river introduces a measurable perturbation in Intan's Crown II. Intan's Crown Belt IX Station is the only major foothold on Intan's Crown Belt IX.",
+  "body0": "Models fitted to the moving bleed-node river five years ago now underpredict its reach by an order of magnitude at Intan's Crown Belt IX. Intan's Crown V has re-baselined its instruments twice this cycle; the refugee ark parking orbit moved both baselines. The amplitude of the moving bleed-node river exceeds the operating envelope of Intan's Crown II. Seismic and thermal baselines for Intan's Crown Belt IX are extrapolated from Intan's Crown Belt IX Station's single-point coverage.",
   "spineEdgeType": "DESTABILIZES",
   "spineObjectKind": "body",
   "spineSubjectKind": "phenomenon",
-  "spineSummary": "The moving bleed-node river is drifting the baselines on which Intan's Crown Belt IX was sited.",
+  "spineSummary": "The dominant term in every forecast for this system is the moving bleed-node river, and the error bars on it keep widening.",
   "spineVisibility": "public",
 }
 `;
 
 exports[`spine full axis matrix (16 representative cells) > density-normal: stable spine + body[0] structural fields 1`] = `
 {
-  "body0": "The tilted crown drifts the baselines Vey Picket-265 Belt I relies on. The amplitude of the tilted crown exceeds the operating envelope of Vey Picket-265 Belt II. The long-period comet storm introduces a measurable perturbation in Vey Picket-265 Belt II. Pinchdrive accident scar sits on Vey Picket-265 Belt I. Vey Picket-265 Belt I hosts Vey Picket-265 Belt I Platform.",
+  "body0": "Structural telemetry from Vey Picket-265 Belt I shows secular degradation correlated with the tilted crown at high confidence. The tilted crown drifts the baselines Vey Picket-265 Belt II relies on. The amplitude of the long-period comet storm exceeds the operating envelope of Vey Picket-265 Belt II. Pinchdrive accident scar occupies the only long-term habitable site surveyed on Vey Picket-265 Belt I. The environmental envelope of Vey Picket-265 Belt I constrains every expansion plan Vey Picket-265 Belt I Platform files.",
   "spineEdgeType": "DESTABILIZES",
   "spineObjectKind": "body",
   "spineSubjectKind": "phenomenon",
@@ -123,7 +123,7 @@ exports[`spine full axis matrix (16 representative cells) > density-normal: stab
 
 exports[`spine full axis matrix (16 representative cells) > density-sparse: stable spine + body[0] structural fields 1`] = `
 {
-  "body0": "The chiral contamination bloom drifts the baselines Arneb Trace-209 IV relies on. Arneb Trace-209 IV records a phase shift each time the debt-fleet anchor graveyard passes through. The human vestibular/neurological effects drifts the baselines Arneb Trace-209 IV Station 85 relies on. Arneb Trace-209 IV hosts Arneb Trace-209 IV Station 85.",
+  "body0": "The recurrence interval of the chiral contamination bloom has shortened past the maintenance cycle Arneb Trace-209 IV was budgeted for. Arneb Trace-209 IV has re-baselined its instruments twice this cycle; the debt-fleet anchor graveyard moved both baselines. Structural telemetry from Arneb Trace-209 IV Station 85 shows secular degradation correlated with the human vestibular/neurological effects at high confidence. Site selection for Arneb Trace-209 IV Station 85 optimized for access, not stability; Arneb Trace-209 IV has been reminding them since.",
   "spineEdgeType": "DESTABILIZES",
   "spineObjectKind": "body",
   "spineSubjectKind": "phenomenon",
@@ -134,7 +134,7 @@ exports[`spine full axis matrix (16 representative cells) > density-sparse: stab
 
 exports[`spine full axis matrix (16 representative cells) > gu-axis-fracture: stable spine + body[0] structural fields 1`] = `
 {
-  "body0": "Kestrel Free Compact refuses to recognize Orison Route Authority's authority. Red Vane Labor Combine disputes Veyra-Locke Concession's claim. The compact between Kestrel Free Compact and Red Vane Labor Combine has gone bad.",
+  "body0": "Kestrel Free Compact files claims faster than Orison Route Authority can contest them, and both sides know the docket is the battlefield. Red Vane Labor Combine refuses to recognize Veyra-Locke Concession's authority. Kestrel Free Compact hires from the same ration queue Red Vane Labor Combine polices.",
   "spineEdgeType": "CONTESTS",
   "spineObjectKind": "namedFaction",
   "spineSubjectKind": "namedFaction",
@@ -145,18 +145,18 @@ exports[`spine full axis matrix (16 representative cells) > gu-axis-fracture: st
 
 exports[`spine full axis matrix (16 representative cells) > gu-axis-high: stable spine + body[0] structural fields 1`] = `
 {
-  "body0": "Sepulcher Archive Court disputes Veyra-Locke Concession's claim. The compact between Orison Route Authority and Veyra-Locke Concession has gone bad. Ninth Ledger Office refuses to recognize Pale Choir Communion's authority.",
+  "body0": "The compact between Sepulcher Archive Court and Veyra-Locke Concession has gone bad. Arbitration between Orison Route Authority and Veyra-Locke Concession is still scheduled, quarterly, in a hall neither attends. Every neutral broker between Ninth Ledger Office and Pale Choir Communion has recused, relocated, or stopped answering.",
   "spineEdgeType": "CONTESTS",
   "spineObjectKind": "namedFaction",
   "spineSubjectKind": "namedFaction",
-  "spineSummary": "Sepulcher Archive Court and Veyra-Locke Concession can't both set the rules — and the rest of the system knows it.",
+  "spineSummary": "Ask at any dock who runs this system and you'll get two answers — Sepulcher Archive Court or Veyra-Locke Concession — depending on who's in earshot.",
   "spineVisibility": "contested",
 }
 `;
 
 exports[`spine full axis matrix (16 representative cells) > gu-axis-low: stable spine + body[0] structural fields 1`] = `
 {
-  "body0": "The public festival tied to safe transit windows is corroding Glasshouse Biosafety Compact. The tilted crown is corroding Glasshouse Biosafety Compact. Each pass of the failed Iggygate wake costs Glasshouse Biosafety Compact a margin it doesn't have.",
+  "body0": "The public festival tied to safe transit windows keeps shifting under Glasshouse Biosafety Compact. The tilted crown is corroding Glasshouse Biosafety Compact. Insurance on Glasshouse Biosafety Compact now carries an exclusion clause that names the failed Iggygate wake without naming it.",
   "spineEdgeType": "DESTABILIZES",
   "spineObjectKind": "namedFaction",
   "spineSubjectKind": "phenomenon",
@@ -167,11 +167,11 @@ exports[`spine full axis matrix (16 representative cells) > gu-axis-low: stable 
 
 exports[`spine full axis matrix (16 representative cells) > gu-axis-normal: stable spine + body[0] structural fields 1`] = `
 {
-  "body0": "Helion Debt Synod refuses to recognize Orison Route Authority's authority. The compact between Helion Debt Synod and Sepulcher Archive Court has gone bad. Helion Debt Synod and Red Vane Labor Combine both want the Sheratan Trace-756 I.",
+  "body0": "The ledger says one thing, the manifests say another, and Helion Debt Synod bills Orison Route Authority for the difference. Arbitration between Helion Debt Synod and Sepulcher Archive Court is still scheduled, quarterly, in a hall neither attends. Helion Debt Synod and Red Vane Labor Combine both want Sheratan Trace-756 I.",
   "spineEdgeType": "CONTESTS",
   "spineObjectKind": "namedFaction",
   "spineSubjectKind": "namedFaction",
-  "spineSummary": "The compact between Helion Debt Synod and Orison Route Authority broke during the convoy decade, Helion Debt Synod and Orison Route Authority can't both set the rules — and the rest of the system knows it.",
+  "spineSummary": "The compact between Helion Debt Synod and Orison Route Authority broke during the convoy decade, Ask at any dock who runs this system and you'll get two answers — Helion Debt Synod or Orison Route Authority — depending on who's in earshot.",
   "spineVisibility": "contested",
 }
 `;
