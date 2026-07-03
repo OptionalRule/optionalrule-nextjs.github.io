@@ -1,7 +1,7 @@
 import type { GeneratorTone } from '../../../../types'
 import type { SeededRng } from '../../rng'
 import type {
-  BuildGraphOptions, EdgeType, RelationshipEdge, SystemRelationshipGraph,
+  BuildGraphOptions, EdgeType, EntityRef, RelationshipEdge, SystemRelationshipGraph,
   SystemStoryOutput,
 } from '../types'
 import { resolveSlots, type EdgeRenderContext } from './slotResolver'
@@ -12,30 +12,49 @@ import {
 import { connectiveFor } from './connectives'
 import { clusterEdges } from './clusters'
 import { templateFor, type EdgeTemplate } from './templates'
+import { VariantDeck } from './variantDeck'
+import { renderConflictNarrative } from './conflictNarrative'
+import type { Conflict } from '../../conflicts/types'
+
+type DeckMap = Map<ReadonlyArray<EdgeTemplate>, VariantDeck<EdgeTemplate>>
+
+function deckFor(pool: ReadonlyArray<EdgeTemplate>, decks: DeckMap, rng: SeededRng): VariantDeck<EdgeTemplate> {
+  const existing = decks.get(pool)
+  if (existing) return existing
+  const deck = new VariantDeck(pool, rng)
+  decks.set(pool, deck)
+  return deck
+}
 
 export function renderSystemStory(
   graph: SystemRelationshipGraph,
   rng: SeededRng,
   options?: BuildGraphOptions,
+  conflicts?: readonly Conflict[],
 ): SystemStoryOutput {
   const tone: GeneratorTone = options?.tone ?? 'balanced'
   const clusters = clusterEdges(graph, { settlements: options?.settlements ?? 'normal' })
   const bodyRng = rng.fork('body')
+  const decks: DeckMap = new Map()
+  const conflictByEdgeId = new Map<string, Conflict>()
+  for (const conflict of conflicts ?? []) conflictByEdgeId.set(conflict.edgeId, conflict)
 
   const body: string[] = []
-  const para1 = renderParagraph(clusters.spineCluster, bodyRng, tone)
+  const para1 = renderParagraph(clusters.spineCluster, bodyRng, tone, decks, conflictByEdgeId)
   if (para1.length > 0) body.push(para1)
-  const para2 = renderParagraph(clusters.activeCluster, bodyRng, tone)
+  const para2 = renderParagraph(clusters.activeCluster, bodyRng, tone, decks, conflictByEdgeId)
   if (para2.length > 0) body.push(para2)
-  const para3 = renderParagraph(clusters.epistemicCluster, bodyRng, tone)
+  const para3 = renderParagraph(clusters.epistemicCluster, bodyRng, tone, decks, conflictByEdgeId)
   if (para3.length > 0) body.push(para3)
 
   const spineSummary = renderSpineSummary(graph, rng.fork('spine-summary'), tone)
-  return {
+  const output: SystemStoryOutput = {
     spineSummary,
     body,
     hooks: renderHooks(graph, rng.fork('hooks'), tone),
   }
+  if (conflicts !== undefined) output.conflicts = [...conflicts]
+  return output
 }
 
 function renderHooks(
@@ -131,7 +150,24 @@ function renderSpineSummary(
   const summaryText = renderClause(summaryTemplate, ctx)
 
   if (bridgeText === '') return summaryText
-  return composeSpineSummary(bridgeText, summaryText)
+  const composed = composeSpineSummary(bridgeText, summaryText)
+  const pair = `${edge.subject.displayName} and ${edge.object.displayName}`
+  const paired = replaceSecond(composed, pair, 'the two of them')
+  if (paired !== composed) return paired
+  return pronominalizeSecondMention(composed, edge.subject)
+}
+
+function replaceSecond(text: string, needle: string, replacement: string): string {
+  if (needle.length === 0) return text
+  const first = text.indexOf(needle)
+  if (first < 0) return text
+  const second = text.indexOf(needle, first + needle.length)
+  if (second < 0) return text
+  return text.slice(0, second) + replacement + text.slice(second + needle.length)
+}
+
+export function pronominalizeSecondMention(text: string, ref: EntityRef): string {
+  return replaceSecond(text, ref.displayName, 'it')
 }
 
 function findLinkedHistoricalEdge(
@@ -170,12 +206,23 @@ function renderParagraph(
   edges: ReadonlyArray<RelationshipEdge>,
   rng: SeededRng,
   tone: GeneratorTone,
+  decks: DeckMap,
+  conflictByEdgeId: ReadonlyMap<string, Conflict>,
 ): string {
   if (edges.length === 0) return ''
   const sentences: string[] = []
   let prev: EdgeType | undefined
   for (const edge of edges) {
-    const sentence = renderEdgeSentence(edge, prev, rng, tone)
+    const conflict = conflictByEdgeId.get(edge.id)
+    if (conflict) {
+      const narrative = renderConflictNarrative(conflict, tone, rng.fork(edge.id))
+      if (narrative.length > 0) {
+        sentences.push(narrative.join(' '))
+        prev = edge.type
+      }
+      continue
+    }
+    const sentence = renderEdgeSentence(edge, prev, rng, tone, decks)
     if (sentence.length === 0) continue
     sentences.push(sentence)
     prev = edge.type
@@ -188,11 +235,12 @@ function renderEdgeSentence(
   prev: EdgeType | undefined,
   rng: SeededRng,
   tone: GeneratorTone,
+  decks: DeckMap,
 ): string {
   const family = templateFor(edge.type)
   const tonedBody = family.bodyByTone?.[tone] ?? family.body
   if (tonedBody.length === 0 || tonedBody[0].text === '') return ''
-  const variant = pickVariant(tonedBody, rng)
+  const variant = deckFor(tonedBody, decks, rng).draw()
   const ctx: EdgeRenderContext = {
     subject: edge.subject,
     object: edge.object,

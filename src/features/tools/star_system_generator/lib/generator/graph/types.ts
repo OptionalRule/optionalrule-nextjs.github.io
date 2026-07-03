@@ -1,4 +1,5 @@
 import type { Confidence, GeneratorTone, GuPreference, GeneratorDistribution, SettlementDensity } from '../../../types'
+import type { Conflict } from '../conflicts/types'
 
 export interface BuildGraphOptions {
   tone: GeneratorTone
@@ -74,4 +75,5 @@ export interface SystemStoryOutput {
   spineSummary: string
   body: string[]
   hooks: string[]
+  conflicts?: Conflict[]
 }
