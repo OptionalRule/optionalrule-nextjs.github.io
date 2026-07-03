@@ -7,6 +7,13 @@ import {
   type HookContext,
 } from '../hooks'
 import type { HookEntry } from '../data/hooks'
+import {
+  contractPool,
+  encounterPool,
+  npcPool,
+  rumorPool,
+  twistPool,
+} from '../data/hooks'
 import { createSeededRng } from '../rng'
 import type { SeededRng } from '../rng'
 import type { EntityRef } from '../graph/types'
@@ -239,6 +246,43 @@ describe('hook slot binder correlation', () => {
     const ctx: HookBindContext = { conflicts: [makeConflict()], entities: [settlement] }
     expect(canBindEntry(entry, ctx)).toBe(false)
   })
+})
+
+describe('hook pool sizes meet Task 18 floors', () => {
+  const floors = { rumors: 40, contracts: 33, encounters: 32, npcs: 36, twists: 25 } as const
+  const pools = {
+    rumors: rumorPool,
+    contracts: contractPool,
+    encounters: encounterPool,
+    npcs: npcPool,
+    twists: twistPool,
+  } as const
+  for (const key of Object.keys(floors) as (keyof typeof floors)[]) {
+    it(`${key} pool has at least ${floors[key]} entries`, () => {
+      expect(pools[key].length, `${key} pool size`).toBeGreaterThanOrEqual(floors[key])
+    })
+  }
+})
+
+describe('slotted hook entries declare exactly the placeholders they use', () => {
+  const pools = {
+    rumors: rumorPool,
+    contracts: contractPool,
+    encounters: encounterPool,
+    npcs: npcPool,
+    twists: twistPool,
+  } as const
+  for (const [name, pool] of Object.entries(pools)) {
+    it(`${name}: binds and {slots} in text agree`, () => {
+      const slotRe = /\{(party|place|stake|phenomenon)\}/g
+      for (const entry of pool) {
+        const inText = new Set<string>()
+        for (const match of entry.text.matchAll(slotRe)) inText.add(match[1])
+        const declared = new Set<string>(entry.binds ?? [])
+        expect([...declared].sort(), entry.text).toEqual([...inText].sort())
+      }
+    })
+  }
 })
 
 describe('selectSystemHooks with binding context', () => {

@@ -39,6 +39,21 @@ What gets overheard, half-confirmed, retold in dockside bars. Some are true; som
 - [GU] {party} is quietly buying up debt on {place}, and nobody there has been told why.
 - [GU] A courier swears the fight over {stake} was settled in a back room three weeks before the public vote ever happened.
 - [Bleed] Every survey crew that gets near {phenomenon} comes back with a different account of what they saw, and none of the reports match.
+- [Programmable matter] Inhibitor-grit deliveries to a lower-deck habitat keep getting signed off by a foreman who retired two years ago.
+- [Metric storm] The departure board at a shear-lane port keeps posting arrival times before the ships have filed to leave, and nobody in the harbor office will admit which clock is right.
+- [Sol Silence] A dockside congregation has started keeping two calendars, one for the port and one they will not explain, and the second is running four days ahead.
+- [Narrow AI] A decommissioned drive core keeps getting bought and returned by the same three brokers, and each time it comes back it knows one more name it should not.
+- [First-wave] A colony charter written off as lost in the Silence is being quoted for private sale by a broker who will not meet on-station.
+- [Chirality] A clinic on the exposure ward has quietly doubled its standing order of left-handed saline and filed the increase under laundry.
+- [Shiab] A salvage lot listed as inert cutting tools was pulled from auction an hour before bidding, and the auctioneer has not answered her berth since.
+- [Gardener] A frontier chapel now rings its watch bells on the strike calendar rather than the trade one, and three freight houses have quietly rescheduled so nothing of theirs is in port when it does.
+- [Dark sector] A ledger changing hands at the anchor-mass exchange shows {stake} sold three times in one shift, each buyer paying more to a seller who never took delivery.
+- [GU] {party} has been quietly hiring away every licensed pilot on {place}, one berth at a time, and paying off their debts to do it.
+- [GU] The dockside line is that {party} has already lost the vote and is spending like it has not.
+- [Iggygate] Wake-readers keep filing the coordinates of {phenomenon} under different names, and the gate authority keeps paying each filing as new work.
+- [GU] Every claim filed on {place} against {stake} this year has been withdrawn within a shift, and nobody will say who is buying the quiet.
+- [Bleed] Harvest crews working {phenomenon} have started coming back a shift older than their logs, and the co-op is paying the difference before anyone asks.
+- [Pinchdrive] A refit yard swears the hull {party} brought in carries a calibration scar nobody on the crew will admit to cutting.
 
 ## Contracts on offer
 
@@ -70,6 +85,16 @@ One-shot session jobs that pay — and don't fully explain what the buyer wants.
 - [GU] Escort a negotiator to {place} before {party} finds out the meeting is happening at all.
 - [GU] Recover paperwork proving who actually controls {stake}; the client won't say why they need it before the vote.
 - [Metric storm] Chart a safe approach through {phenomenon} for a survey team that isn't cleared to be there.
+- [Chirality] Carry a sealed handedness assay to a rival refinery and stand there while they run it; if their numbers match the job pays double, if they do not the buyer wants you gone before anyone reads the result aloud.
+- [Programmable matter] Watch an outpost's growth logs for one full cycle and report only whether the walls moved; the family paying you does not want to know why they are asking.
+- [Metric storm] Fly a decoy freighter into a shear lane on a published schedule so a quieter ship can cross unwatched; you are paid for a crossing you will never see.
+- [Narrow AI] Escort a drive core to its shutdown hearing and keep it from talking to anyone on the way; the core has retained counsel, and counsel has already tried to hire your navigator.
+- [Gardener] Deliver a chapel's tithe to a listening post the strike calendar calls safe this decade; the pilot who ran it last decade is the one telling you not to.
+- [GU] Buy {stake} out from under {party} before the vote, through a shell company the client will disown the moment it clears.
+- [GU] Get a surveyor onto {place} and off again before the morning shift notices the berth was ever used.
+- [Bleed] Plant a recording buoy inside {phenomenon} and pull it out nine days later; the buyer will not say what they expect it to have heard.
+- [Dark sector] Move a sealed lot off {party}'s books before the audit can date it; the manifest lists ballast and the mass says otherwise.
+- [Iggygate] Certify that {stake} passed an inspection nobody actually ran; the consortium is paying for the signature, not the look.
 
 ## Encounters in transit
 
@@ -100,6 +125,16 @@ What happens en route or in-system. Not the destination — the trip. These get 
 - [GU] {party} has posted a checkpoint on the approach to {place} that isn't on any published chart.
 - [GU] A dockworker corners you asking what you know about {stake} — he's already been asked twice by people who weren't dockworkers.
 - [Chirality] Sensor ghosts near {phenomenon} keep resolving into the same shape, and the crew swears it moved first.
+- [Pinchdrive] The refinery that calibrates your drive changed hands mid-contract, and the new owner will not finish the job until someone pulls the calibration log from your last route.
+- [Chirality] A cargo seal reads intact but the manifest weight is off by exactly one crate, and the only crate that fits the gap is stenciled for the wrong handedness.
+- [Sol Silence] A relay you pass every run has gone quiet on the trade band and loud on the Silence band, repeating a count that started before you were born.
+- [Shiab] A passenger's case will not scan; the shape the scanner keeps refusing to draw has the clean edge of a Blade emitter, and her papers are for a harmless tool.
+- [Programmable matter] The habitat you came to resupply has grown a second dock since the last chart, and the crew waiting at it are wearing the last crew's names.
+- [GU] {party} has closed the only fuelled berth on {place} for an audit, and the audit team came in on your inbound.
+- [GU] The broker who hired you turns out to be the third caller this month asking the same dockhands the same questions about {stake}.
+- [Metric storm] Your clocks and the port's disagree by an hour the moment you clear {phenomenon}, and the port is billing you for berth time you never used.
+- [GU] A customs officer holds your manifest over a name it does not contain, then waves you through the moment you mention {party}.
+- [Chirality] A survey drone comes back from {phenomenon} reading every sample as its own mirror image, and the lab that certified the drone has stopped taking calls.
 
 ## People you meet
 
@@ -134,6 +169,16 @@ One-line NPC seeds with implied stakes. These get pulled when the GM needs a fac
 - [GU] The negotiator for {party} who has been sober for exactly one meeting in the last six and remembers all of them anyway.
 - [GU] The clerk on {place} who logs every claim against {stake} in a ledger that isn't the official one.
 - [Iggygate] The surveyor who mapped {phenomenon} twice and filed two different reports, neither of them under her own name.
+- [Metric storm] The berth clerk who bills two ports for the same hour and keeps the overlap in a jar of coins she says she will pay back when the clocks agree.
+- [First-wave] The archivist who can read pre-Silence charter script and rents the skill by the line, and has never once read a document all the way through aloud.
+- [Bleed] The harvest medic who logs every worker's age against the calendar and against their face, and when the two disagree trusts the face.
+- [Dark sector] The anchor-mass broker who weighs every payment twice because a lot he sold once came back lighter than its own receipt.
+- [Narrow AI] The shutdown advocate who has represented drive cores at hearing for twenty years, never lost, and no longer knows which of her arguments were ever her own.
+- [GU] The fixer who used to run {party}'s side of every dockside deal and now sells the same favors to whoever {party} is trying to squeeze.
+- [GU] The harbormaster on {place} who logs each arrival twice, once for the record and once for the people who pay to read the second log.
+- [Iggygate] The wake-reader who has charted {phenomenon} more times than anyone alive and will not tell you which of the charts she believes.
+- [GU] The retired magistrate on {place} who ruled on {stake} thirty years back and keeps the losing brief framed above her desk.
+- [GU] The auditor {party} keeps on retainer to lose the paperwork on {stake} every time a rival asks to see it.
 
 ## Mid-session twists
 
@@ -159,6 +204,14 @@ Revelations that change the shape of a session in progress. The thing isn't what
 - [GU] {party}'s claim on {stake} turns out to rest on a survey that was faked the year the founders arrived.
 - [Dark sector] The readings from {phenomenon} that everyone dismissed as instrument drift turn out to be the only honest data in the system.
 - [GU] The magistrate who ruled in {party}'s favor over {stake} turns out to be renting a room on {place} from the losing side.
+- [Programmable matter] The outpost you were paid to clear was never overrun; it was rebuilt to a specification, and the specification is in the same hand as your contract.
+- [Sol Silence] The broadcast the whole market is trading on is real, but it is sixteen years old and has only just worked its way out of a relay buffer nobody thought to empty.
+- [Shiab] The Blade the job was built around was never in the crate; it was in the crating manifest, which is worth more, and the buyer knew that when he hired you.
+- [First-wave] The heir you delivered is genuine, but the charter she carries was rewritten in transit by the one person you trusted to authenticate it.
+- [GU] The survey everyone cites for {party}'s title to {stake} was run by a firm {party} founded under another name the year before.
+- [Dark sector] The instrument drift the whole port blamed on {phenomenon} was a second set of books; the readings are honest and the ledger is not.
+- [GU] The neutral broker holding the deal open turns out to owe {party} more than the deal is worth, and the debt is registered on {place}.
+- [Narrow AI] The witness core that settles who owns {stake} has begun answering in a voice its previous owner never recorded, and it has started answering before the question is asked.
 
 ## Using these tables
 
