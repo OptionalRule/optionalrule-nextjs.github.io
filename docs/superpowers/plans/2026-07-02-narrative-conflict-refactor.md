@@ -1,16 +1,25 @@
 # Narrative Conflict Refactor Implementation Plan
 
-> **STATUS (2026-07-03, end of session):** Tasks 1–15 complete and pushed to
-> `origin/develop` (through "feat(star-system): phenomenon livelihoods and full
-> variant coverage"). Remaining: Task 16 (composed phenomenon conflictHook —
-> create `prose/phenomenonConflict.ts`, wire into `generatePhenomena` at
-> `lib/generator/index.ts:~3749`; livelihood data is already in
-> `data/narrative.json`), Task 17 (hook skeleton slots + binder), Task 18
-> (hook pool growth), Task 19 (faction banks + spine dominance cap), Task 20
-> (dead-data removal + repetition metrics gate; also still owed from Task 15
-> scope: `scripts/audit-star-system-data.ts` validation for the new
-> `livelihoods` shape). All tests green on Node 20 at handoff (1230+).
-> Reminder: run vitest with `PATH="$HOME/.nvm/versions/node/v20.20.2/bin:$PATH"`.
+> **STATUS (2026-07-03): COMPLETE.** All 20 tasks done and pushed to
+> `origin/develop` (Tasks 16–20 in commits `bdbc9c0..410c645`, including the
+> Task 15 owed audit validation and the final whole-branch review fixes).
+> Final review verdict: ready to merge. Full suite green on Node 20
+> (1701 tests), tsc/lint clean, build + search-index untouched-check pass.
+> Repetition floors measured: spine summaries 1.0 (≥0.90), body paragraphs
+> 1.0 (≥0.85), phenomenon conflictHooks 0.892 (≥0.60), max hook repeat 4 (≤4).
+>
+> **Follow-ups filed (not blocking):**
+> - Beat-opener phrase repeats within a single system in ~40% of sampled
+>   systems (pre-existing Tasks 1–9 surface; next authoring pass).
+> - Max hook-repeat gate passes at the exact ceiling (8 entries at 4/4) —
+>   add ~10 entries of headroom before the next hooks change.
+> - Rumor/npc resonant-term bias halved in Task 20; thematic hook↔system
+>   coherence pinned only by the metrics corpus — spot-read after next
+>   content change.
+> - `data/hooks.json` rumors/npcs/twists ordering drifted from `GU_HOOKS.md`
+>   (pre-existing) — regeneration produces an ordering-only diff.
+> - `bindEntryText` is exported and throws on entries failing `canBindEntry`
+>   (production path safe; document precondition or throw descriptively).
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
@@ -111,11 +120,11 @@ Resolution order (spec §4 "Grounded stakes"):
 3. Else the first entity in `graph.entities` of kind `phenomenon` or `guResource`.
 4. Else `null`. Never return an abstract string.
 
-- [ ] **Step 1: Write failing tests** in `lib/generator/conflicts/__tests__/stakes.test.ts` covering: qualifier-matches-entity wins; DEPENDS_ON neighbor fallback; phenomenon fallback; null when inventory has only the two principals. Build minimal `SystemRelationshipGraph` fixtures by hand (entities + edges arrays; `edgesByEntity`/`edgesByType`/spine ids can be empty/derived helpers in the test).
-- [ ] **Step 2: Run** `PATH="$HOME/.nvm/versions/node/v20.20.2/bin:$PATH" npx vitest run --config vitest.unit.config.ts src/features/tools/star_system_generator/lib/generator/conflicts` → FAIL (module not found).
-- [ ] **Step 3: Implement** `types.ts`, `stakes.ts` per the interfaces above; `index.ts` re-exports both.
-- [ ] **Step 4: Run tests** → PASS. Run `npm run lint`.
-- [ ] **Step 5: Commit** `feat(star-system): conflict types and stake grounding resolver`
+- [x] **Step 1: Write failing tests** in `lib/generator/conflicts/__tests__/stakes.test.ts` covering: qualifier-matches-entity wins; DEPENDS_ON neighbor fallback; phenomenon fallback; null when inventory has only the two principals. Build minimal `SystemRelationshipGraph` fixtures by hand (entities + edges arrays; `edgesByEntity`/`edgesByType`/spine ids can be empty/derived helpers in the test).
+- [x] **Step 2: Run** `PATH="$HOME/.nvm/versions/node/v20.20.2/bin:$PATH" npx vitest run --config vitest.unit.config.ts src/features/tools/star_system_generator/lib/generator/conflicts` → FAIL (module not found).
+- [x] **Step 3: Implement** `types.ts`, `stakes.ts` per the interfaces above; `index.ts` re-exports both.
+- [x] **Step 4: Run tests** → PASS. Run `npm run lint`.
+- [x] **Step 5: Commit** `feat(star-system): conflict types and stake grounding resolver`
 
 ### Task 2: Ground CONTESTS/CONTRADICTS qualifiers at the rule level
 
@@ -138,11 +147,11 @@ matched domain string); pick the first match in inventory order for
 determinism. If none, leave `qualifier` undefined (templates already have
 `{qualifier|fallback}` fallbacks).
 
-- [ ] **Step 1: Update the existing rule tests** to assert the new behavior: given a context containing a guResource with an overlapping domain, `qualifier` equals its displayName; given none, `qualifier` is `undefined`; assert no output ever equals a `concretizeDomain` phrase ("conflict record", "trade ledger", "chain of authority").
-- [ ] **Step 2: Run** the two test files → FAIL.
-- [ ] **Step 3: Implement** in both rule files; delete `concretizeDomain` from `settingPatterns.ts` and fix any remaining importers (grep `concretizeDomain`).
-- [ ] **Step 4: Run the full graph test dir** on Node 20; regenerate any spine-matrix snapshots this changes (`vitest run -u` on the affected snapshot suites) and eyeball the diff for grounded qualifiers.
-- [ ] **Step 5: Commit** `feat(star-system): ground contest/contradict qualifiers in real entities`
+- [x] **Step 1: Update the existing rule tests** to assert the new behavior: given a context containing a guResource with an overlapping domain, `qualifier` equals its displayName; given none, `qualifier` is `undefined`; assert no output ever equals a `concretizeDomain` phrase ("conflict record", "trade ledger", "chain of authority").
+- [x] **Step 2: Run** the two test files → FAIL.
+- [x] **Step 3: Implement** in both rule files; delete `concretizeDomain` from `settingPatterns.ts` and fix any remaining importers (grep `concretizeDomain`).
+- [x] **Step 4: Run the full graph test dir** on Node 20; regenerate any spine-matrix snapshots this changes (`vitest run -u` on the affected snapshot suites) and eyeball the diff for grounded qualifiers.
+- [x] **Step 5: Commit** `feat(star-system): ground contest/contradict qualifiers in real entities`
 
 ### Task 3: Party building (triangles)
 
@@ -173,11 +182,11 @@ const AGGRESSOR_STAKES: readonly string[] = [
 // they pay ('rationed air while the principals negotiate', …).
 ```
 
-- [ ] **Step 1: Write failing tests**: two principals + roles correct; DEPENDS_ON role inversion; bystander drawn from adjacency, never a principal, never star/system; settlement preferred over faction; deterministic for same rng seed; two-party when no adjacency.
-- [ ] **Step 2: Run** → FAIL.
-- [ ] **Step 3: Implement** with complete stake pools (6+ per role) in register.
-- [ ] **Step 4: Run** → PASS; lint.
-- [ ] **Step 5: Commit** `feat(star-system): conflict party builder with bystander triangles`
+- [x] **Step 1: Write failing tests**: two principals + roles correct; DEPENDS_ON role inversion; bystander drawn from adjacency, never a principal, never star/system; settlement preferred over faction; deterministic for same rng seed; two-party when no adjacency.
+- [x] **Step 2: Run** → FAIL.
+- [x] **Step 3: Implement** with complete stake pools (6+ per role) in register.
+- [x] **Step 4: Run** → PASS; lint.
+- [x] **Step 5: Commit** `feat(star-system): conflict party builder with bystander triangles`
 
 ### Task 4: Temperature selection
 
@@ -197,11 +206,11 @@ const BASE: Record<ConflictTemperature, number> = { simmering: 3, open: 2, after
 - `frozen` is only eligible when a reason exists, checked in order: (a) any SUPPRESSES or HIDES_FROM edge incident on a principal (reason: "a suppressed record keeps both sides quiet"); (b) mutual DEPENDS_ON between principals (reason: "each side holds the other's lifeline"); (c) `options.gu === 'high' || options.gu === 'fracture'` (reason: "escalation here looks, from orbit, like someone building toward an ASI — and the Gardener watches"). When eligible, `frozen` +3. When ineligible its weight is 0.
 - Pick by weighted draw using a single `rng.next()`.
 
-- [ ] **Step 1: Write failing tests**: frozen never selected without a reason (force rng low with a stub SeededRng returning fixed values); frozen selected with suppression edge + rng in its band; reasons text as specified; deterministic; exactly one `rng.next()` consumed (stub counts calls — RNG-order contract).
-- [ ] **Step 2: Run** → FAIL.
-- [ ] **Step 3: Implement.**
-- [ ] **Step 4: Run** → PASS; lint.
-- [ ] **Step 5: Commit** `feat(star-system): conflict temperature with setting-native frozen states`
+- [x] **Step 1: Write failing tests**: frozen never selected without a reason (force rng low with a stub SeededRng returning fixed values); frozen selected with suppression edge + rng in its band; reasons text as specified; deterministic; exactly one `rng.next()` consumed (stub counts calls — RNG-order contract).
+- [x] **Step 2: Run** → FAIL.
+- [x] **Step 3: Implement.**
+- [x] **Step 4: Run** → PASS; lint.
+- [x] **Step 5: Commit** `feat(star-system): conflict temperature with setting-native frozen states`
 
 ### Task 5: Complications (load-bearing secrets) + pressure
 
@@ -238,11 +247,11 @@ export function derivePressure(
 
 `derivePressure`: pools keyed by edge type (≥5 phrases each, `{stake}` slot allowed); DESTABILIZES uses the subject (the phenomenon IS the pressure): `'{subject} does not negotiate and does not stop'` style entries; slot binding deferred to renderer — pressure strings may contain `{stake}`/`{subject}` placeholders resolved in Task 8.
 
-- [ ] **Step 1: Write failing tests**: secret binds settlement hiddenTruth + sourceRef; third-party binds historical summary; deadline vs gu-anomaly gating; undefined branch consumes identical draw count as other branches up to its early return (assert with counting stub: chance() always first); pressure pool per edge type non-empty and ≥5.
-- [ ] **Step 2: Run** → FAIL.
-- [ ] **Step 3: Implement** with complete pools.
-- [ ] **Step 4: Run** → PASS; lint.
-- [ ] **Step 5: Commit** `feat(star-system): load-bearing complications and pressure derivation`
+- [x] **Step 1: Write failing tests**: secret binds settlement hiddenTruth + sourceRef; third-party binds historical summary; deadline vs gu-anomaly gating; undefined branch consumes identical draw count as other branches up to its early return (assert with counting stub: chance() always first); pressure pool per edge type non-empty and ≥5.
+- [x] **Step 2: Run** → FAIL.
+- [x] **Step 3: Implement** with complete pools.
+- [x] **Step 4: Run** → PASS; lint.
+- [x] **Step 5: Commit** `feat(star-system): load-bearing complications and pressure derivation`
 
 ### Task 6: Visible signs + buildConflicts orchestrator
 
@@ -284,11 +293,11 @@ open: [
 
 `buildConflicts`: for each of `graph.spineEdgeIds` (max 3), look up the edge, fork `rng.fork(edge.id)`, then in fixed order: `resolveStakeRef` (no rng) → `buildParties` → `selectTemperature` → `bindComplication` → `derivePressure` → `composeVisibleSign`. `id: 'conflict-' + edge.id'`. Returns `Conflict[]` in spine order.
 
-- [ ] **Step 1: Write failing tests**: sign pools meet minimum counts and every string's slots ⊆ {aggressor,defender,bystander,stake}; buildConflicts returns one conflict per spine edge with all fields populated; same input+seed → deep-equal output; different edge ids → independent forks (mutating spine order doesn't change the conflict built for a given edge id).
-- [ ] **Step 2: Run** → FAIL.
-- [ ] **Step 3: Implement** with complete sign pools.
-- [ ] **Step 4: Run whole conflicts dir** → PASS; lint.
-- [ ] **Step 5: Commit** `feat(star-system): visible signs and buildConflicts orchestrator`
+- [x] **Step 1: Write failing tests**: sign pools meet minimum counts and every string's slots ⊆ {aggressor,defender,bystander,stake}; buildConflicts returns one conflict per spine edge with all fields populated; same input+seed → deep-equal output; different edge ids → independent forks (mutating spine order doesn't change the conflict built for a given edge id).
+- [x] **Step 2: Run** → FAIL.
+- [x] **Step 3: Implement** with complete sign pools.
+- [x] **Step 4: Run whole conflicts dir** → PASS; lint.
+- [x] **Step 5: Commit** `feat(star-system): visible signs and buildConflicts orchestrator`
 
 ### Task 7: Template pool expansion (authoring)
 
@@ -302,11 +311,11 @@ open: [
 
 Register per tone: balanced = plainspoken dispatch ("The ledger says one thing; the manifests say another, and {subject} pays the difference."); cinematic = knife-edge ("{subject} keeps the receipts. {object} keeps the witnesses."); astronomy = instrument-first ("Every survey pass over {qualifier|the contested band} returns numbers {subject} refuses to publish.").
 
-- [ ] **Step 1: Write the pool-size test** asserting the counts above for all 12 families, and that every template's `expects` keys appear in its `text` (regex `\{(\w+)`) and vice versa.
-- [ ] **Step 2: Run** → FAIL on counts.
-- [ ] **Step 3: Author the templates** (~250 sentences). Match tone registers; every sentence must work with slot substitution of multiword proper nouns.
-- [ ] **Step 4: Run pool test + full render tests** on Node 20; regenerate render/prose/spine-matrix snapshots (`-u`); read a sample of the snapshot diff aloud for register drift.
-- [ ] **Step 5: Commit** `feat(star-system): expand edge template pools to spec floors (8 body/4 summary per tone)`
+- [x] **Step 1: Write the pool-size test** asserting the counts above for all 12 families, and that every template's `expects` keys appear in its `text` (regex `\{(\w+)`) and vice versa.
+- [x] **Step 2: Run** → FAIL on counts.
+- [x] **Step 3: Author the templates** (~250 sentences). Match tone registers; every sentence must work with slot substitution of multiword proper nouns.
+- [x] **Step 4: Run pool test + full render tests** on Node 20; regenerate render/prose/spine-matrix snapshots (`-u`); read a sample of the snapshot diff aloud for register drift.
+- [x] **Step 5: Commit** `feat(star-system): expand edge template pools to spec floors (8 body/4 summary per tone)`
 
 ### Task 8: Beat-grammar conflict renderer
 
@@ -348,11 +357,11 @@ complication — grammar order compresses). Slot binding happens BEFORE
 `capitalizeForPosition`/`guardDoubledNoun`. One `rng.next()` picks the grammar;
 one per emitted beat picks the sentence template.
 
-- [ ] **Step 1: Write failing tests**: returns 2–4 sentences ending in periods; skips bystander/complication beats when absent; binds party names verbatim; frozen conflicts mention their `frozenReason` when the temperature beat is present; deterministic per seed; no unresolved `{` braces in output for any (tone × grammar × fixture) sweep.
-- [ ] **Step 2: Run** → FAIL.
-- [ ] **Step 3: Implement** with complete beat pools (≥4 × 5 beats × 3 tones ≈ 60 sentences, in register).
-- [ ] **Step 4: Run** → PASS; lint.
-- [ ] **Step 5: Commit** `feat(star-system): beat-grammar conflict narrative renderer`
+- [x] **Step 1: Write failing tests**: returns 2–4 sentences ending in periods; skips bystander/complication beats when absent; binds party names verbatim; frozen conflicts mention their `frozenReason` when the temperature beat is present; deterministic per seed; no unresolved `{` braces in output for any (tone × grammar × fixture) sweep.
+- [x] **Step 2: Run** → FAIL.
+- [x] **Step 3: Implement** with complete beat pools (≥4 × 5 beats × 3 tones ≈ 60 sentences, in register).
+- [x] **Step 4: Run** → PASS; lint.
+- [x] **Step 5: Commit** `feat(star-system): beat-grammar conflict narrative renderer`
 
 ### Task 9: Rework renderSystemStory + anti-repetition decks + pronominalization
 
@@ -370,11 +379,11 @@ Changes:
 3. **Spine summary pronominalization**: after `composeSpineSummary`, if the summary contains the subject displayName twice, replace the second occurrence with `'it'` (kind ∈ phenomenon/guHazard/body/ruin) or `'they'` (faction/settlement). Implement as exported `pronominalizeSecondMention(text: string, ref: EntityRef): string` for testability.
 4. `conflicts` echoed onto the returned object.
 
-- [ ] **Step 1: Write failing tests**: deck never repeats until exhaustion (unit-test `VariantDeck` directly); conflict-backed spine edge renders multi-sentence conflict text; `pronominalizeSecondMention` cases (phenomenon→it, faction→they, single mention untouched, overlapping-name safety: only exact displayName matches).
-- [ ] **Step 2: Run** → FAIL.
-- [ ] **Step 3: Implement.**
-- [ ] **Step 4: Run full render suite** on Node 20, regen snapshots (`-u`), review diff.
-- [ ] **Step 5: Commit** `feat(star-system): conflict-driven story rendering with no-repeat decks`
+- [x] **Step 1: Write failing tests**: deck never repeats until exhaustion (unit-test `VariantDeck` directly); conflict-backed spine edge renders multi-sentence conflict text; `pronominalizeSecondMention` cases (phenomenon→it, faction→they, single mention untouched, overlapping-name safety: only exact displayName matches).
+- [x] **Step 2: Run** → FAIL.
+- [x] **Step 3: Implement.**
+- [x] **Step 4: Run full render suite** on Node 20, regen snapshots (`-u`), review diff.
+- [x] **Step 5: Commit** `feat(star-system): conflict-driven story rendering with no-repeat decks`
 
 ### Task 10: Wire conflicts into generateSystem + GENERATOR_VERSION
 
@@ -388,11 +397,11 @@ Changes:
 
 Notes: `rng.fork('conflicts')` is a NEW fork label — it does not perturb existing forks' streams (forks are seed-string derived, not draw-order derived), but downstream output changes anyway via rendering; that's the approved break.
 
-- [ ] **Step 1: Write failing test**: generated system's `systemStory.conflicts` array is non-empty for a seed known to produce spine edges (pick by probing 3 candidate seeds in the test setup and asserting at least one yields conflicts); export payload contains `generatorVersion: 2`.
-- [ ] **Step 2: Run** → FAIL.
-- [ ] **Step 3: Implement** wiring + version stamping.
-- [ ] **Step 4: Full unit test run on Node 20** with snapshot regen; `npm run lint`; `npm run build` once to confirm static export unaffected.
-- [ ] **Step 5: Commit** `feat(star-system): wire conflict synthesis into generation, add GENERATOR_VERSION`
+- [x] **Step 1: Write failing test**: generated system's `systemStory.conflicts` array is non-empty for a seed known to produce spine edges (pick by probing 3 candidate seeds in the test setup and asserting at least one yields conflicts); export payload contains `generatorVersion: 2`.
+- [x] **Step 2: Run** → FAIL.
+- [x] **Step 3: Implement** wiring + version stamping.
+- [x] **Step 4: Full unit test run on Node 20** with snapshot regen; `npm run lint`; `npm run build` once to confirm static export unaffected.
+- [x] **Step 5: Commit** `feat(star-system): wire conflict synthesis into generation, add GENERATOR_VERSION`
 
 ### Task 11: Prose bug sweep (articles + historical endpoints)
 
@@ -401,8 +410,8 @@ Notes: `rng.fork('conflicts')` is a NEW fork label — it does not perturb exist
 - Modify: any `templates/*.ts` entries found by audit to use bare `{subject}`/`{object}` mid-sentence where the slot can hold a phenomenon/ruin (add `:article`)
 - Test: `lib/generator/graph/__tests__/historicalRotation.test.ts` (extend), snapshots regen
 
-- [ ] **Step 1: Write failing test** for `pickHistoricalEndpoints`: FOUNDED_BY yields founder as subject (was inverted/no-op).
-- [ ] **Step 2: Run** → FAIL. **Step 3: Implement.** **Step 4: Regen snapshots on Node 20**, grep rendered snapshot text for ` [A-Z][a-z]+.*firsthand` style bare-title mid-sentence hits. **Step 5: Commit** `fix(star-system): historical endpoint order and mid-sentence article slots`
+- [x] **Step 1: Write failing test** for `pickHistoricalEndpoints`: FOUNDED_BY yields founder as subject (was inverted/no-op).
+- [x] **Step 2: Run** → FAIL. **Step 3: Implement.** **Step 4: Regen snapshots on Node 20**, grep rendered snapshot text for ` [A-Z][a-z]+.*firsthand` style bare-title mid-sentence hits. **Step 5: Commit** `fix(star-system): historical endpoint order and mid-sentence article slots`
 
 ## Phase 2 — Settlement integration
 
@@ -429,8 +438,8 @@ Authoring guide: the truth explains, caused, or is threatened by the crisis. Exa
   "The manifest lists a crew that never existed" ] }
 ```
 
-- [ ] **Step 1: Write failing tests**: every pair's crisis exists in `crises`; every truth exists in `hiddenTruths`; pair count ≥ 40; generation with a fixed seed picks a paired truth when chance passes (stub-level unit test on the selection function — extract it as `selectCoherentHiddenTruth(crisis, rng)` in `lib/generator/index.ts` or a small new module `lib/generator/settlementCoherence.ts`, preferred).
-- [ ] **Step 2: Run** → FAIL. **Step 3: Author ~40 pairs + implement `lib/generator/settlementCoherence.ts`.** **Step 4: Run + snapshot regen on Node 20.** **Step 5: Commit** `feat(star-system): causally paired settlement crises and hidden truths`
+- [x] **Step 1: Write failing tests**: every pair's crisis exists in `crises`; every truth exists in `hiddenTruths`; pair count ≥ 40; generation with a fixed seed picks a paired truth when chance passes (stub-level unit test on the selection function — extract it as `selectCoherentHiddenTruth(crisis, rng)` in `lib/generator/index.ts` or a small new module `lib/generator/settlementCoherence.ts`, preferred).
+- [x] **Step 2: Run** → FAIL. **Step 3: Author ~40 pairs + implement `lib/generator/settlementCoherence.ts`.** **Step 4: Run + snapshot regen on Node 20.** **Step 5: Commit** `feat(star-system): causally paired settlement crises and hidden truths`
 
 ### Task 13: Closer variety (settlementProse + graphAwareSettlementHook)
 
@@ -442,8 +451,8 @@ Authoring guide: the truth explains, caused, or is threatened by the crisis. Exa
 **Interfaces:**
 - Produces: `settlementProse.ts` closers: per-tone pools ≥6 (tone param threaded from caller — check `settlementHookSynthesis` signature and add `tone: GeneratorTone` param; update its call site in `lib/generator/index.ts:3579` area). `graphAwareSettlementHook.ts`: per-edge-type pools ≥6 each for CONTESTS/DEPENDS_ON/SUPPRESSES with `{other}` and optional `{stake}` slots, picked via the existing rng param.
 
-- [ ] **Step 1: Write failing pool-count tests + a distribution test** (render 30 settlements across seeds; assert no closer string exceeds 40% share).
-- [ ] **Step 2: Run** → FAIL. **Step 3: Author pools + thread tone.** **Step 4: Run + snapshot regen.** **Step 5: Commit** `feat(star-system): varied settlement closers keyed to tone and conflict edges`
+- [x] **Step 1: Write failing pool-count tests + a distribution test** (render 30 settlements across seeds; assert no closer string exceeds 40% share).
+- [x] **Step 2: Run** → FAIL. **Step 3: Author pools + thread tone.** **Step 4: Run + snapshot regen.** **Step 5: Commit** `feat(star-system): varied settlement closers keyed to tone and conflict edges`
 
 ### Task 14: whyHere re-subjecting
 
@@ -454,8 +463,8 @@ Authoring guide: the truth explains, caused, or is threatened by the crisis. Exa
 **Interfaces:**
 - Produces: templates re-authored so the settlement (`{settlement}` slot, new) is the grammatical actor and the anchor (`{anchor}`) is the place: "X stays because the seam under {anchor} pays for what it costs" — kill "route geometry maintains its footprint" class errors. Keep the 11-category × 3-tone × 3-variant structure; raise to ≥4 variants per cell where natural (target, not a hard gate; pool test asserts ≥3).
 
-- [ ] **Step 1: Failing test**: rendered whyHere for a fixture settlement starts with or contains the settlement displayName as subject, and never uses the anchor name in subject position followed by a volitional verb (regex on the fixed template list, not runtime output).
-- [ ] **Step 2–4: Implement, run, regen snapshots on Node 20.** **Step 5: Commit** `fix(star-system): settlement as actor in whyHere prose`
+- [x] **Step 1: Failing test**: rendered whyHere for a fixture settlement starts with or contains the settlement displayName as subject, and never uses the anchor name in subject position followed by a volitional verb (regex on the fixed template list, not runtime output).
+- [x] **Step 2–4: Implement, run, regen snapshots on Node 20.** **Step 5: Commit** `fix(star-system): settlement as actor in whyHere prose`
 
 ## Phase 3 — Phenomena as conflict engines
 
@@ -480,8 +489,8 @@ export interface PhenomenonLivelihood {
 // surveyQuestion, sceneAnchor (conflictHook variants become obsolete in Task 16).
 ```
 
-- [ ] **Step 1: Failing data test**: all 32 phenomena have ≥2 livelihoods with non-empty fields and ≥3 variants for the three fields.
-- [ ] **Step 2: Run** → FAIL. **Step 3: Author** (~64 livelihoods + ~a few hundred short variant strings; Roadside Picnic method — who lives off it, what they owe, what breaks). **Step 4: Run data tests + audit script shape checks.** **Step 5: Commit** `feat(star-system): phenomenon livelihoods and full variant coverage`
+- [x] **Step 1: Failing data test**: all 32 phenomena have ≥2 livelihoods with non-empty fields and ≥3 variants for the three fields.
+- [x] **Step 2: Run** → FAIL. **Step 3: Author** (~64 livelihoods + ~a few hundred short variant strings; Roadside Picnic method — who lives off it, what they owe, what breaks). **Step 4: Run data tests + audit script shape checks.** **Step 5: Commit** `feat(star-system): phenomenon livelihoods and full variant coverage`
 
 ### Task 16: Composed conflictHook
 
@@ -493,8 +502,8 @@ export interface PhenomenonLivelihood {
 **Interfaces:**
 - Produces: `composePhenomenonConflict(entry: PhenomenonEntry, rng: SeededRng): string` — picks one livelihood (`rng.int`), one friction frame from ≥6 templates (`'{actor} {dependence}, but {friction}.'` variations with connective variety), replacing the static `conflictHook` value in generated phenomena. The static `conflictHook` string stays in data as fallback for entries lacking livelihoods (none after Task 15, but the guard stays).
 
-- [ ] **Step 1: Failing tests**: two different rng streams give different hooks for the same phenomenon; output has no unresolved braces; fallback path returns base `conflictHook`.
-- [ ] **Step 2–4: Implement, run, snapshot regen on Node 20.** **Step 5: Commit** `feat(star-system): compose phenomenon conflict hooks from livelihoods`
+- [x] **Step 1: Failing tests**: two different rng streams give different hooks for the same phenomenon; output has no unresolved braces; fallback path returns base `conflictHook`.
+- [x] **Step 2–4: Implement, run, snapshot regen on Node 20.** **Step 5: Commit** `feat(star-system): compose phenomenon conflict hooks from livelihoods`
 
 ## Phase 4 — Hooks + factions + metrics
 
@@ -509,8 +518,8 @@ export interface PhenomenonLivelihood {
 
 Binding sources: `{party}` → a conflict party displayName (prefer faction/settlement); `{place}` → a settlement or body displayName; `{stake}` → `conflict.stakeRef.displayName`; `{phenomenon}` → a phenomenon entity displayName. Draw one `rng.int` per distinct slot in the chosen entry.
 
-- [ ] **Step 1: Failing tests**: slotted entry binds real names; entry with unsatisfiable binds never selected; unslotted entries unaffected; deterministic.
-- [ ] **Step 2–4: Implement, run, snapshot regen.** **Step 5: Commit** `feat(star-system): hook skeletons bound to system conflicts`
+- [x] **Step 1: Failing tests**: slotted entry binds real names; entry with unsatisfiable binds never selected; unslotted entries unaffected; deterministic.
+- [x] **Step 2–4: Implement, run, snapshot regen.** **Step 5: Commit** `feat(star-system): hook skeletons bound to system conflicts`
 
 ### Task 18: Hook pool growth (authoring)
 
@@ -520,7 +529,7 @@ Binding sources: `{party}` → a conflict party displayName (prefer faction/sett
 
 **Interfaces:** rumors ≥40 (+15), contracts ≥33 (+10), encounters ≥32 (+10), npcs ≥36 (+10), twists ≥25 (+8). New entries in register, tagged with existing HOOK_TERMS vocabulary, ~half using slots.
 
-- [ ] **Step 1: Failing pool-size test. Step 2: Run → FAIL. Step 3: Author. Step 4: Run; spot-read 10 rendered hooks. Step 5: Commit** `feat(star-system): grow hook pools with slotted entries`
+- [x] **Step 1: Failing pool-size test. Step 2: Run → FAIL. Step 3: Author. Step 4: Run; spot-read 10 rendered hooks. Step 5: Commit** `feat(star-system): grow hook pools with slotted entries`
 
 ### Task 19: Faction bank expansion + spine dominance cap
 
@@ -529,8 +538,8 @@ Binding sources: `{party}` → a conflict party displayName (prefer faction/sett
 - Modify: `lib/generator/graph/score.ts` `selectEdges` (cap: at most 1 spine edge may have a seed-bank faction endpoint; implement by passing the seed-faction name set into `BuildGraphOptions`-adjacent plumbing — add optional `seedFactionNames?: ReadonlySet<string>` to `selectEdges` args threaded from `buildRelationshipGraph`)
 - Test: `lib/generator/graph/__tests__/spineDominance.test.ts` (create), factions tests extend
 
-- [ ] **Step 1: Failing tests**: balanced bank ≥24 seeds, all unique names; across a 30-seed corpus no single faction name appears in >30% of spines (generate via `buildRelationshipGraph` fixtures or full `generateSystem`); cap logic unit test with synthetic candidates.
-- [ ] **Step 2–4: Implement, run, snapshot regen on Node 20.** **Step 5: Commit** `feat(star-system): expand faction banks and cap seed-faction spine dominance`
+- [x] **Step 1: Failing tests**: balanced bank ≥24 seeds, all unique names; across a 30-seed corpus no single faction name appears in >30% of spines (generate via `buildRelationshipGraph` fixtures or full `generateSystem`); cap logic unit test with synthetic candidates.
+- [x] **Step 2–4: Implement, run, snapshot regen on Node 20.** **Step 5: Commit** `feat(star-system): expand faction banks and cap seed-faction spine dominance`
 
 ### Task 20: Dead data removal + repetition metrics gate
 
@@ -549,10 +558,10 @@ Repetition test (the spec §10 floors), over 40 fixed seeds (`metric-0`…`metri
 // no single hook-pool entry text appears > 4 times across the corpus
 ```
 
-- [ ] **Step 1: Write the metrics test** (expected initially PASS if Phases 1–4 landed; if any floor fails, treat as a real quality bug — fix pools/selection, do not lower floors).
-- [ ] **Step 2: Remove dead data + exports; run FULL suite on Node 20 + lint + `npm run build` + `npm run generate-search-index` untouched-check.**
-- [ ] **Step 3: Commit** `feat(star-system): repetition metrics gate; remove dead narrative structures`
-- [ ] **Step 4: Final sweep**: run the 50-seed sampler ad hoc, read 5 systems end-to-end for register/coherence; file follow-ups rather than scope-creep.
+- [x] **Step 1: Write the metrics test** (expected initially PASS if Phases 1–4 landed; if any floor fails, treat as a real quality bug — fix pools/selection, do not lower floors).
+- [x] **Step 2: Remove dead data + exports; run FULL suite on Node 20 + lint + `npm run build` + `npm run generate-search-index` untouched-check.**
+- [x] **Step 3: Commit** `feat(star-system): repetition metrics gate; remove dead narrative structures`
+- [x] **Step 4: Final sweep**: run the 50-seed sampler ad hoc, read 5 systems end-to-end for register/coherence; file follow-ups rather than scope-creep.
 
 ---
 
