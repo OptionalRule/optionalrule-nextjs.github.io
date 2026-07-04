@@ -63,7 +63,7 @@ export const hidesFromTemplates: EdgeTemplateFamily = {
       { text: 'Somewhere in {subject}\'s clean returns to {object} is a term that absorbs everything unexplained.', expects: { subject: 'properNoun', object: 'properNoun' } },
     ],
   },
-  historicalBridge: { text: '', expects: {} },
+  historicalBridge: [],
   hook: [
     { text: 'What does {subject} need to keep from {object}?', expects: { subject: 'properNoun', object: 'properNoun' } },
     { text: "Who could broker an exchange of what {subject} has for {object}'s silence?", expects: { subject: 'properNoun', object: 'properNoun' } },

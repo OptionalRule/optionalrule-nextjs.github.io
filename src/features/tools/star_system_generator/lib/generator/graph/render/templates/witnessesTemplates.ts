@@ -60,7 +60,7 @@ export const witnessesTemplates: EdgeTemplateFamily = {
       { text: '{subject} is simultaneously the system\'s oldest instrument and its only witness to {object:article}; both facts appear in no maintenance budget.', expects: { subject: 'properNoun', object: 'nounPhrase' } },
     ],
   },
-  historicalBridge: { text: '', expects: {} },
+  historicalBridge: [],
   hook: [
     { text: 'Who would pay to read what {subject} actually saw?', expects: { subject: 'properNoun' } },
     { text: 'Who would pay to make sure {subject} forgets?', expects: { subject: 'properNoun' } },

@@ -39,7 +39,7 @@ exports[`spine full axis matrix (16 representative cells) > baseline-realistic-a
   "spineEdgeType": "DESTABILIZES",
   "spineObjectKind": "body",
   "spineSubjectKind": "phenomenon",
-  "spineSummary": "Black-market route beacon lattice took shape in the first ephemeris pass, the black-market route beacon lattice is shifting the operating envelope Suhail-37 Belt VI was calibrated against.",
+  "spineSummary": "The black-market route beacon lattice is shifting the operating envelope Suhail-37 Belt VI was calibrated against. Nobody logged when the black-market route beacon lattice began; the first complaints came in the first ephemeris pass.",
   "spineVisibility": "public",
 }
 `;
@@ -72,7 +72,7 @@ exports[`spine full axis matrix (16 representative cells) > corner-frontier-cine
   "spineEdgeType": "CONTESTS",
   "spineObjectKind": "namedFaction",
   "spineSubjectKind": "namedFaction",
-  "spineSummary": "The compact between Bone Lantern Wake and Sisters of Synod broke before the salt-debt, Between the two of them the war is already lost; only the funerals remain.",
+  "spineSummary": "The grievance between Bone Lantern Wake and Sisters of Synod was already old before the salt-debt, Between the two of them the war is already lost; only the funerals remain.",
   "spineVisibility": "contested",
 }
 `;
@@ -94,7 +94,7 @@ exports[`spine full axis matrix (16 representative cells) > density-crowded: sta
   "spineEdgeType": "DESTABILIZES",
   "spineObjectKind": "namedFaction",
   "spineSubjectKind": "phenomenon",
-  "spineSummary": "Resonant compact chain took shape after Cycle 7, the dominant term in every forecast for this system is the resonant compact chain, and the error bars on it keep widening.",
+  "spineSummary": "The dominant term in every forecast for this system is the resonant compact chain, and the error bars on it keep widening. Nobody logged when the resonant compact chain began; the first complaints came after Cycle 7.",
   "spineVisibility": "public",
 }
 `;
@@ -105,7 +105,7 @@ exports[`spine full axis matrix (16 representative cells) > density-hub: stable 
   "spineEdgeType": "DESTABILIZES",
   "spineObjectKind": "namedFaction",
   "spineSubjectKind": "phenomenon",
-  "spineSummary": "Sol-interdiction picket shadow took shape after the eighth pulse, the dominant term in every forecast for this system is the it, and the error bars on it keep widening.",
+  "spineSummary": "The earliest records of the Sol-interdiction picket shadow were filed after the eighth pulse, the dominant term in every forecast for this system is the it, and the error bars on it keep widening.",
   "spineVisibility": "public",
 }
 `;
@@ -116,7 +116,7 @@ exports[`spine full axis matrix (16 representative cells) > density-normal: stab
   "spineEdgeType": "DEPENDS_ON",
   "spineObjectKind": "guResource",
   "spineSubjectKind": "settlement",
-  "spineSummary": "Vey Picket-265 Belt I Bore ended up on the programmable-matter microseeds before the catalog was sealed, it's viability curve tracks Programmable-matter microseeds availability with no independent term.",
+  "spineSummary": "The dependency was declared temporary before the catalog was sealed, Vey Picket-265 Belt I Bore's viability curve tracks Programmable-matter microseeds availability with no independent term.",
   "spineVisibility": "public",
 }
 `;

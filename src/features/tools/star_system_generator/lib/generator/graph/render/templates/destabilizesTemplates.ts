@@ -67,10 +67,28 @@ export const destabilizesTemplates: EdgeTemplateFamily = {
       { text: 'The dominant term in every forecast for this system is {subject:article}, and the error bars on it keep widening.', expects: { subject: 'nounPhrase' } },
     ],
   },
-  historicalBridge: {
-    text: '{subject} took shape {historical:era|after a flawed founding},',
-    expects: { subject: 'nounPhrase' },
-  },
+  historicalBridge: [
+    {
+      text: '{subject} took shape {historical:era|after a flawed founding},',
+      expects: { subject: 'nounPhrase' },
+    },
+    {
+      text: '{subject:article} first showed up in the surveys {historical:era|before anyone thought to worry},',
+      expects: { subject: 'nounPhrase' },
+    },
+    {
+      text: 'The earliest records of {subject:article} were filed {historical:era|in the first survey pass},',
+      expects: { subject: 'nounPhrase' },
+    },
+    {
+      text: '{subject:article} was already growing {historical:era|before the earliest instrument logs},',
+      expects: { subject: 'nounPhrase' },
+    },
+    {
+      text: 'Nobody logged when {subject:article} began; the first complaints came {historical:era|generations back},',
+      expects: { subject: 'nounPhrase' },
+    },
+  ],
   hook: [
     { text: 'Whose models predicted {subject:article} would behave?', expects: { subject: 'nounPhrase' } },
     { text: "Who profits from {object}'s loss of cushion?", expects: { object: 'properNoun' } },

@@ -61,10 +61,28 @@ export const controlsTemplates: EdgeTemplateFamily = {
       { text: '{subject}\'s license over {object} predates current standards and is grandfathered past all of them.', expects: { subject: 'properNoun', object: 'properNoun' } },
     ],
   },
-  historicalBridge: {
-    text: '{subject} founded {object} {historical:era|in the early charters},',
-    expects: { subject: 'properNoun', object: 'properNoun' },
-  },
+  historicalBridge: [
+    {
+      text: '{subject} founded {object} {historical:era|in the early charters},',
+      expects: { subject: 'properNoun', object: 'properNoun' },
+    },
+    {
+      text: '{object} was built under the seal of {subject} {historical:era|in the first survey years},',
+      expects: { subject: 'properNoun', object: 'properNoun' },
+    },
+    {
+      text: 'The charter binding {object} to {subject} was signed {historical:era|before the routes were mapped},',
+      expects: { subject: 'properNoun', object: 'properNoun' },
+    },
+    {
+      text: '{subject} planted its flag over {object} {historical:era|before most residents arrived},',
+      expects: { subject: 'properNoun', object: 'properNoun' },
+    },
+    {
+      text: 'The writ that put {subject} over {object} was sealed {historical:era|in an older administration},',
+      expects: { subject: 'properNoun', object: 'properNoun' },
+    },
+  ],
   hook: [
     { text: 'What did {subject} pay to lock down {object}?', expects: { subject: 'properNoun', object: 'properNoun' } },
     { text: 'Who in {object} wants {subject} gone?', expects: { subject: 'properNoun', object: 'properNoun' } },

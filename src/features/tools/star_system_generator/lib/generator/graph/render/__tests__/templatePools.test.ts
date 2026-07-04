@@ -22,7 +22,7 @@ function allTemplates(type: EdgeType): EdgeTemplate[] {
     ...Object.values(family.bodyByTone ?? {}).flat(),
     family.spineSummary,
     ...Object.values(family.spineSummaryByTone ?? {}).flat(),
-    family.historicalBridge,
+    ...family.historicalBridge,
     ...family.hook,
   ]
 }

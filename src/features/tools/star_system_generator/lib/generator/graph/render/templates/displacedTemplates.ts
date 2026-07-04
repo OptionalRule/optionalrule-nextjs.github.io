@@ -34,6 +34,6 @@ export const displacedTemplates: EdgeTemplateFamily = {
     },
   ],
   spineSummary: { text: '', expects: {} },
-  historicalBridge: { text: '', expects: {} },
+  historicalBridge: [],
   hook: [],
 }

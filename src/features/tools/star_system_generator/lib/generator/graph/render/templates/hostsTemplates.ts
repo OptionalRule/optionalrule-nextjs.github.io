@@ -60,7 +60,7 @@ export const hostsTemplates: EdgeTemplateFamily = {
       { text: 'Population, industry, and records for this system concentrate at one coordinates block: {object}, {subject}.', expects: { subject: 'properNoun', object: 'properNoun' } },
     ],
   },
-  historicalBridge: { text: '', expects: {} },
+  historicalBridge: [],
   hook: [
     { text: 'What gave {object} its claim to {subject} in the first place?', expects: { subject: 'properNoun', object: 'properNoun' } },
     { text: 'Who else has tried to settle {subject} since {object} arrived?', expects: { subject: 'properNoun', object: 'properNoun' } },

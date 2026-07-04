@@ -14,6 +14,6 @@ export interface EdgeTemplateFamily {
   bodyByTone?: Partial<Record<GeneratorTone, EdgeTemplate[]>>
   spineSummary: EdgeTemplate
   spineSummaryByTone?: Partial<Record<GeneratorTone, EdgeTemplate[]>>
-  historicalBridge: EdgeTemplate
+  historicalBridge: EdgeTemplate[]
   hook: EdgeTemplate[]
 }

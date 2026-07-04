@@ -367,11 +367,13 @@ describe('historicalBridge templates: era preposition collision (Phase 7 Task 2)
 
   it('historicalBridge templates do not have a hanging preposition before {historical:era}', () => {
     for (const family of HISTORICAL_BRIDGE_FAMILIES) {
-      const bridge = family.historicalBridge.text
-      expect(
-        bridge,
-        `${family.edgeType} bridge text contains a hanging preposition before {historical:era}: ${bridge}`,
-      ).not.toMatch(/\b(during|in|on|at|to)\s+\{historical:era/)
+      for (const variant of family.historicalBridge) {
+        const bridge = variant.text
+        expect(
+          bridge,
+          `${family.edgeType} bridge text contains a hanging preposition before {historical:era}: ${bridge}`,
+        ).not.toMatch(/\b(during|in|on|at|to)\s+\{historical:era/)
+      }
     }
   })
 
@@ -391,13 +393,11 @@ describe('historicalBridge templates: era preposition collision (Phase 7 Task 2)
         visibility: 'public',
         historical: { era },
       }
-      const text = resolveSlots(
-        controlsTemplates.historicalBridge.text,
-        ctx,
-        controlsTemplates.historicalBridge.expects,
-      )
-      expect(text, `era="${era}" produced doubled preposition: ${text}`)
-        .not.toMatch(/\b(during|in|on|at|to)\s+(in|on|at|to|before|after)\b/)
+      for (const variant of controlsTemplates.historicalBridge) {
+        const text = resolveSlots(variant.text, ctx, variant.expects)
+        expect(text, `era="${era}" produced doubled preposition: ${text}`)
+          .not.toMatch(/\b(during|in|on|at|to)\s+(in|on|at|to|before|after)\b/)
+      }
     }
   })
 
@@ -428,17 +428,15 @@ describe('historicalBridge templates: era preposition collision (Phase 7 Task 2)
           visibility: 'public',
           historical: { era },
         }
-        const text = resolveSlots(
-          family.historicalBridge.text,
-          ctx,
-          family.historicalBridge.expects,
-        )
-        expect(
-          text,
-          `${family.edgeType} bridge with era="${era}" produced doubled preposition: ${text}`,
-        ).not.toMatch(/\b(during|in|on|at|to)\s+(in|on|at|to|before|after)\b/)
-        expect(text, `${family.edgeType} bridge with era="${era}" left an unresolved slot: ${text}`)
-          .not.toContain('{')
+        for (const variant of family.historicalBridge) {
+          const text = resolveSlots(variant.text, ctx, variant.expects)
+          expect(
+            text,
+            `${family.edgeType} bridge with era="${era}" produced doubled preposition: ${text}`,
+          ).not.toMatch(/\b(during|in|on|at|to)\s+(in|on|at|to|before|after)\b/)
+          expect(text, `${family.edgeType} bridge with era="${era}" left an unresolved slot: ${text}`)
+            .not.toContain('{')
+        }
       }
     }
   })

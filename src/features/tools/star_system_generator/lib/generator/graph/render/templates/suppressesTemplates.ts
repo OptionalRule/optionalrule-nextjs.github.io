@@ -63,10 +63,28 @@ export const suppressesTemplates: EdgeTemplateFamily = {
       { text: 'The record of this system has a custodian and a blind spot, and {subject} maintains both.', expects: { subject: 'properNoun' } },
     ],
   },
-  historicalBridge: {
-    text: '{subject} took control {historical:era|in a broken compact},',
-    expects: { subject: 'properNoun' },
-  },
+  historicalBridge: [
+    {
+      text: '{subject} took control {historical:era|in a broken compact},',
+      expects: { subject: 'properNoun' },
+    },
+    {
+      text: '{subject} assumed emergency powers {historical:era|after an incident the record keeps vague},',
+      expects: { subject: 'properNoun' },
+    },
+    {
+      text: 'The suppression order was first issued {historical:era|in a panic long since renamed prudence},',
+      expects: {},
+    },
+    {
+      text: '{subject} started sealing the record {historical:era|before most residents arrived},',
+      expects: { subject: 'properNoun' },
+    },
+    {
+      text: 'The first cover-up happened {historical:era|in a quieter emergency},',
+      expects: {},
+    },
+  ],
   hook: [
     { text: 'What does {subject} stand to lose if {object} stops being a secret?', expects: { subject: 'properNoun', object: 'properNoun' } },
     { text: 'Who already knows about {object} and is waiting to use it?', expects: { object: 'properNoun' } },

@@ -34,6 +34,6 @@ export const betrayedTemplates: EdgeTemplateFamily = {
     },
   ],
   spineSummary: { text: '', expects: {} },
-  historicalBridge: { text: '', expects: {} },
+  historicalBridge: [],
   hook: [],
 }

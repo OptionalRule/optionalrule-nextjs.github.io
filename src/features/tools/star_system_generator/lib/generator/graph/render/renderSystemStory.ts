@@ -137,17 +137,42 @@ function renderSpineSummary(
       : undefined,
   }
 
-  const bridgeText = (linkedHistorical && family.historicalBridge.text !== '')
-    ? renderClause(family.historicalBridge, ctx)
-    : ''
+  let bridgeText = ''
+  if (linkedHistorical && family.historicalBridge.length > 0) {
+    const bridgeTemplate = pickVariant(family.historicalBridge, rng)
+    if (bridgeTemplate.text !== '') bridgeText = renderClause(bridgeTemplate, ctx)
+  }
   const summaryText = renderClause(summaryTemplate, ctx)
 
   if (bridgeText === '') return summaryText
+
+  const mode = pickBridgeMode(rng)
+  if (mode === 'none') return summaryText
+  if (mode === 'summary-first') {
+    return `${summaryText} ${bridgeClauseToSentence(bridgeText)}`
+  }
   const composed = composeSpineSummary(bridgeText, summaryText)
   const pair = `${edge.subject.displayName} and ${edge.object.displayName}`
   const paired = replaceSecond(composed, pair, 'the two of them')
   if (paired !== composed) return paired
   return pronominalizeSecondMention(composed, edge.subject)
+}
+
+type BridgeMode = 'bridge-first' | 'summary-first' | 'none'
+
+// Even a rolled-and-varied bridge reads as a tic if it always leads the
+// summary; rotate where the backstory lands, including dropping it from the
+// opener entirely (the historical edge still renders in the body).
+function pickBridgeMode(rng: SeededRng): BridgeMode {
+  const roll = rng.next()
+  if (roll < 0.4) return 'bridge-first'
+  if (roll < 0.7) return 'summary-first'
+  return 'none'
+}
+
+function bridgeClauseToSentence(bridge: string): string {
+  const trimmed = bridge.replace(/,\s*$/, '')
+  return `${trimmed}.`
 }
 
 function replaceSecond(text: string, needle: string, replacement: string): string {

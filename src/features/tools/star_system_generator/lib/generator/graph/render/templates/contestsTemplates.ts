@@ -67,10 +67,28 @@ export const contestsTemplates: EdgeTemplateFamily = {
       { text: 'The defining variable in this system is institutional: {subject} and {object} cannot agree on who certifies the numbers.', expects: { subject: 'properNoun', object: 'properNoun' } },
     ],
   },
-  historicalBridge: {
-    text: 'The compact between {subject} and {object} broke {historical:era|in an earlier reckoning},',
-    expects: { subject: 'properNoun', object: 'properNoun' },
-  },
+  historicalBridge: [
+    {
+      text: 'The compact between {subject} and {object} broke {historical:era|in an earlier reckoning},',
+      expects: { subject: 'properNoun', object: 'properNoun' },
+    },
+    {
+      text: '{subject} and {object} were partners once — the split came {historical:era|before anyone now living kept the ledgers},',
+      expects: { subject: 'properNoun', object: 'properNoun' },
+    },
+    {
+      text: 'The grievance between {subject} and {object} was already old {historical:era|before the current charts were drawn},',
+      expects: { subject: 'properNoun', object: 'properNoun' },
+    },
+    {
+      text: 'What began as a working arrangement between {subject} and {object} curdled {historical:era|generations back},',
+      expects: { subject: 'properNoun', object: 'properNoun' },
+    },
+    {
+      text: 'The first blood between {subject} and {object} was drawn {historical:era|in a season nobody agrees on},',
+      expects: { subject: 'properNoun', object: 'properNoun' },
+    },
+  ],
   hook: [
     { text: 'Who profits if {subject} and {object} stay locked in this fight?', expects: { subject: 'properNoun', object: 'properNoun' } },
     { text: 'A neutral broker between {subject} and {object} would have leverage.', expects: { subject: 'properNoun', object: 'properNoun' } },

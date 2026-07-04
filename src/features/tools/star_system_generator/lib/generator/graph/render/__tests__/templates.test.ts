@@ -14,7 +14,7 @@ describe('templateFor', () => {
       expect(Array.isArray(family.body)).toBe(true)
       expect(family.body.length).toBeGreaterThanOrEqual(1)
       expect(family.spineSummary).toBeDefined()
-      expect(family.historicalBridge).toBeDefined()
+      expect(Array.isArray(family.historicalBridge)).toBe(true)
       expect(Array.isArray(family.hook)).toBe(true)
     }
   })
@@ -320,7 +320,7 @@ describe('historicalBridge templates', () => {
       const ctx: EdgeRenderContext = {
         subject: faction, object: settlement, edgeType: 'CONTROLS', visibility: 'public', historical,
       }
-      const text = resolveSlots(family.historicalBridge.text, ctx, family.historicalBridge.expects)
+      const text = resolveSlots(family.historicalBridge[0].text, ctx, family.historicalBridge[0].expects)
       expect(text).toContain('Helion Debt Synod')
       expect(text).toContain('Orison Hold')
       expect(text).toContain('the second wave')
@@ -332,7 +332,7 @@ describe('historicalBridge templates', () => {
       const ctx: EdgeRenderContext = {
         subject: faction, object: settlement, edgeType: 'CONTROLS', visibility: 'public',
       }
-      const text = resolveSlots(family.historicalBridge.text, ctx, family.historicalBridge.expects)
+      const text = resolveSlots(family.historicalBridge[0].text, ctx, family.historicalBridge[0].expects)
       expect(text).toContain('the early charters')
       expect(text).not.toContain('{')
       expect(text).toMatch(/,$/)
@@ -345,7 +345,7 @@ describe('historicalBridge templates', () => {
       const ctx: EdgeRenderContext = {
         subject: faction, object: otherFaction, edgeType: 'CONTESTS', visibility: 'public', historical,
       }
-      const text = resolveSlots(family.historicalBridge.text, ctx, family.historicalBridge.expects)
+      const text = resolveSlots(family.historicalBridge[0].text, ctx, family.historicalBridge[0].expects)
       expect(text).toContain('Helion Debt Synod')
       expect(text).toContain('Kestrel Free Compact')
       expect(text).toContain('the second wave')
@@ -357,7 +357,7 @@ describe('historicalBridge templates', () => {
       const ctx: EdgeRenderContext = {
         subject: faction, object: otherFaction, edgeType: 'CONTESTS', visibility: 'public',
       }
-      const text = resolveSlots(family.historicalBridge.text, ctx, family.historicalBridge.expects)
+      const text = resolveSlots(family.historicalBridge[0].text, ctx, family.historicalBridge[0].expects)
       expect(text).toContain('an earlier reckoning')
       expect(text).not.toContain('{')
       expect(text).toMatch(/,$/)
@@ -370,7 +370,7 @@ describe('historicalBridge templates', () => {
       const ctx: EdgeRenderContext = {
         subject: settlement, object: guResource, edgeType: 'DEPENDS_ON', visibility: 'public', historical,
       }
-      const text = resolveSlots(family.historicalBridge.text, ctx, family.historicalBridge.expects)
+      const text = resolveSlots(family.historicalBridge[0].text, ctx, family.historicalBridge[0].expects)
       expect(text).toContain('Orison Hold')
       expect(text).toContain('the chiral ice belt')
       expect(text).toContain('the second wave')
@@ -382,7 +382,7 @@ describe('historicalBridge templates', () => {
       const ctx: EdgeRenderContext = {
         subject: settlement, object: guResource, edgeType: 'DEPENDS_ON', visibility: 'public',
       }
-      const text = resolveSlots(family.historicalBridge.text, ctx, family.historicalBridge.expects)
+      const text = resolveSlots(family.historicalBridge[0].text, ctx, family.historicalBridge[0].expects)
       expect(text).toContain('the chiral ice belt')
       expect(text).toContain('the great compaction')
       expect(text).not.toContain('{')
@@ -396,7 +396,7 @@ describe('historicalBridge templates', () => {
       const ctx: EdgeRenderContext = {
         subject: phenomenon, object: settlement, edgeType: 'DESTABILIZES', visibility: 'public', historical,
       }
-      const text = resolveSlots(family.historicalBridge.text, ctx, family.historicalBridge.expects)
+      const text = resolveSlots(family.historicalBridge[0].text, ctx, family.historicalBridge[0].expects)
       expect(text).toContain('flare-amplified bleed season')
       expect(text).toContain('the second wave')
       expect(text).not.toContain('{')
@@ -407,7 +407,7 @@ describe('historicalBridge templates', () => {
       const ctx: EdgeRenderContext = {
         subject: phenomenon, object: settlement, edgeType: 'DESTABILIZES', visibility: 'public',
       }
-      const text = resolveSlots(family.historicalBridge.text, ctx, family.historicalBridge.expects)
+      const text = resolveSlots(family.historicalBridge[0].text, ctx, family.historicalBridge[0].expects)
       expect(text).toContain('a flawed founding')
       expect(text).not.toContain('{')
       expect(text).toMatch(/,$/)
@@ -424,7 +424,7 @@ describe('historicalBridge templates', () => {
         visibility: 'public',
         historical: { summary: 'the first wave', era: 'in the first wave' },
       }
-      const text = resolveSlots(family.historicalBridge.text, ctx, family.historicalBridge.expects)
+      const text = resolveSlots(family.historicalBridge[0].text, ctx, family.historicalBridge[0].expects)
       expect(text.toLowerCase()).toContain('bleed season')
       expect(text).not.toContain('The bleed season')
       expect(text).not.toContain('the bleed season')
@@ -439,7 +439,7 @@ describe('historicalBridge templates', () => {
       const ctx: EdgeRenderContext = {
         subject: faction, object: phenomenon, edgeType: 'SUPPRESSES', visibility: 'contested', historical,
       }
-      const text = resolveSlots(family.historicalBridge.text, ctx, family.historicalBridge.expects)
+      const text = resolveSlots(family.historicalBridge[0].text, ctx, family.historicalBridge[0].expects)
       expect(text).toContain('Helion Debt Synod')
       expect(text).toContain('the second wave')
       expect(text).not.toContain('{')
@@ -450,7 +450,7 @@ describe('historicalBridge templates', () => {
       const ctx: EdgeRenderContext = {
         subject: faction, object: phenomenon, edgeType: 'SUPPRESSES', visibility: 'contested',
       }
-      const text = resolveSlots(family.historicalBridge.text, ctx, family.historicalBridge.expects)
+      const text = resolveSlots(family.historicalBridge[0].text, ctx, family.historicalBridge[0].expects)
       expect(text).toContain('a broken compact')
       expect(text).not.toContain('{')
       expect(text).toMatch(/,$/)
@@ -463,7 +463,7 @@ describe('historicalBridge templates', () => {
       const ctx: EdgeRenderContext = {
         subject: ruin, object: settlement, edgeType: 'CONTRADICTS', visibility: 'contested', historical,
       }
-      const text = resolveSlots(family.historicalBridge.text, ctx, family.historicalBridge.expects)
+      const text = resolveSlots(family.historicalBridge[0].text, ctx, family.historicalBridge[0].expects)
       expect(text).toContain('the second wave')
       expect(text).not.toContain('{')
       expect(text).toMatch(/,$/)
@@ -473,10 +473,39 @@ describe('historicalBridge templates', () => {
       const ctx: EdgeRenderContext = {
         subject: ruin, object: settlement, edgeType: 'CONTRADICTS', visibility: 'contested',
       }
-      const text = resolveSlots(family.historicalBridge.text, ctx, family.historicalBridge.expects)
+      const text = resolveSlots(family.historicalBridge[0].text, ctx, family.historicalBridge[0].expects)
       expect(text).toContain('a public-trust breach')
       expect(text).not.toContain('{')
       expect(text).toMatch(/,$/)
     })
+  })
+
+  describe('all bridge variants render cleanly', () => {
+    const casesByType = [
+      { edgeType: 'CONTROLS' as const, subject: faction, object: settlement },
+      { edgeType: 'CONTESTS' as const, subject: faction, object: otherFaction },
+      { edgeType: 'DEPENDS_ON' as const, subject: settlement, object: guResource },
+      { edgeType: 'DESTABILIZES' as const, subject: phenomenon, object: settlement },
+      { edgeType: 'SUPPRESSES' as const, subject: faction, object: phenomenon },
+      { edgeType: 'CONTRADICTS' as const, subject: ruin, object: settlement },
+    ]
+    for (const { edgeType, subject, object } of casesByType) {
+      it(`${edgeType}: every variant resolves with and without historical context`, () => {
+        const family = templateFor(edgeType)
+        expect(family.historicalBridge.length).toBeGreaterThanOrEqual(4)
+        for (const variant of family.historicalBridge) {
+          for (const hist of [historical, undefined]) {
+            const ctx: EdgeRenderContext = {
+              subject, object, edgeType, visibility: 'public',
+              ...(hist ? { historical: hist } : {}),
+            }
+            const text = resolveSlots(variant.text, ctx, variant.expects)
+            expect(text, `${edgeType} "${variant.text}"`).not.toContain('{')
+            expect(text, `${edgeType} "${variant.text}"`).toMatch(/,$/)
+            expect(text, `${edgeType} "${variant.text}"`).not.toMatch(/\b(during|in|on|at|to)\s+(in|on|at|to|before|after)\b/)
+          }
+        }
+      })
+    }
   })
 })

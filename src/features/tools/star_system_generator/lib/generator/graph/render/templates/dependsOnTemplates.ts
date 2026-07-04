@@ -60,10 +60,28 @@ export const dependsOnTemplates: EdgeTemplateFamily = {
       { text: 'Remove {object} from the model and {subject}\'s projections terminate inside a quarter.', expects: { subject: 'properNoun', object: 'nounPhrase' } },
     ],
   },
-  historicalBridge: {
-    text: '{subject} ended up on {object:article} {historical:era|in the great compaction},',
-    expects: { subject: 'properNoun', object: 'nounPhrase' },
-  },
+  historicalBridge: [
+    {
+      text: '{subject} ended up on {object:article} {historical:era|in the great compaction},',
+      expects: { subject: 'properNoun', object: 'nounPhrase' },
+    },
+    {
+      text: '{subject} tied itself to {object:article} {historical:era|when the alternatives failed},',
+      expects: { subject: 'properNoun', object: 'nounPhrase' },
+    },
+    {
+      text: 'The first supply contract for {object:article} was signed {historical:era|before the settlement had a name},',
+      expects: { object: 'nounPhrase' },
+    },
+    {
+      text: '{subject} lost its second source {historical:era|in a bad decade},',
+      expects: { subject: 'properNoun' },
+    },
+    {
+      text: 'The dependency was declared temporary {historical:era|before the current ledgers opened},',
+      expects: {},
+    },
+  ],
   hook: [
     { text: 'What does {subject} owe to keep {object} flowing?', expects: { subject: 'properNoun', object: 'nounPhrase' } },
     { text: 'How long can {subject} last if {object} dries up?', expects: { subject: 'properNoun', object: 'nounPhrase' } },

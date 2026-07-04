@@ -151,7 +151,7 @@ describe('renderSystemStory', () => {
     expect(story.hooks.length).toBeLessThanOrEqual(5)
   })
 
-  it('weaves linked historical bridge clause into spineSummary', () => {
+  it('weaves linked historical bridge clause into spineSummary on bridge-bearing seeds', () => {
     const faction: EntityRef = { kind: 'namedFaction', id: 'f1', displayName: 'Helion Debt Synod', layer: 'human' }
     const controlsEdge = makeEdge({
       id: 'c1', type: 'CONTROLS', subject: faction, object: settlement,
@@ -164,13 +164,73 @@ describe('renderSystemStory', () => {
       consequenceEdgeIds: ['c1'],
     })
     const graph = graphWith([controlsEdge, foundedByEdge], ['c1'])
-    const story = renderSystemStory(graph, createSeededRng('weave-test'))
 
-    expect(story.spineSummary).toContain('the second wave')
-    expect(story.spineSummary).toContain('Orison Hold')
-    expect(story.spineSummary).toContain('writes the rules')
-    expect(story.spineSummary).not.toContain('{')
-    expect(story.spineSummary).toMatch(/[.!?]$/)
+    let sawBridge = false
+    for (let i = 0; i < 30; i++) {
+      const story = renderSystemStory(graph, createSeededRng(`weave-test-${i}`))
+      expect(story.spineSummary).toContain('Orison Hold')
+      expect(story.spineSummary).not.toContain('{')
+      expect(story.spineSummary).toMatch(/[.!?]$/)
+      if (story.spineSummary.includes('the second wave')) sawBridge = true
+    }
+    expect(sawBridge).toBe(true)
+  })
+
+  it('rotates bridge composition across seeds: bridge-first, summary-first, and no-bridge all occur', () => {
+    const faction: EntityRef = { kind: 'namedFaction', id: 'f1', displayName: 'Helion Debt Synod', layer: 'human' }
+    const controlsEdge = makeEdge({
+      id: 'c1', type: 'CONTROLS', subject: faction, object: settlement,
+    })
+    const foundedByEdge = makeEdge({
+      id: 'h1', type: 'FOUNDED_BY', subject: faction, object: settlement,
+      era: 'historical',
+      approxEra: 'in the second wave',
+      summary: 'Helion Debt Synod founded Orison Hold in the second wave.',
+      consequenceEdgeIds: ['c1'],
+    })
+    const graph = graphWith([controlsEdge, foundedByEdge], ['c1'])
+
+    let bridgeFirst = 0
+    let bridgeLater = 0
+    let noBridge = 0
+    for (let i = 0; i < 60; i++) {
+      const story = renderSystemStory(graph, createSeededRng(`mode-dist-${i}`))
+      const summary = story.spineSummary
+      const eraIndex = summary.indexOf('the second wave')
+      if (eraIndex < 0) noBridge++
+      else if (eraIndex < summary.length / 2) bridgeFirst++
+      else bridgeLater++
+    }
+    expect(bridgeFirst).toBeGreaterThan(0)
+    expect(bridgeLater).toBeGreaterThan(0)
+    expect(noBridge).toBeGreaterThan(0)
+  })
+
+  it('varies the bridge template across seeds instead of always leading with the same clause', () => {
+    const factionA: EntityRef = { kind: 'namedFaction', id: 'f1', displayName: 'Helion Debt Synod', layer: 'human' }
+    const factionB: EntityRef = { kind: 'namedFaction', id: 'f2', displayName: 'Kestrel Free Compact', layer: 'human' }
+    const contestsEdge = makeEdge({
+      id: 'c1', type: 'CONTESTS', subject: factionA, object: factionB,
+    })
+    const betrayedEdge = makeEdge({
+      id: 'h1', type: 'BETRAYED', subject: factionA, object: factionB,
+      era: 'historical',
+      approxEra: 'in the second wave',
+      summary: 'Helion Debt Synod betrayed Kestrel Free Compact in the second wave.',
+      consequenceEdgeIds: ['c1'],
+    })
+    const graph = graphWith([contestsEdge, betrayedEdge], ['c1'])
+
+    let compactOpeners = 0
+    let bridgeBearing = 0
+    for (let i = 0; i < 60; i++) {
+      const story = renderSystemStory(graph, createSeededRng(`bridge-variant-${i}`))
+      if (!story.spineSummary.includes('the second wave')) continue
+      bridgeBearing++
+      if (story.spineSummary.startsWith('The compact between')) compactOpeners++
+    }
+    expect(bridgeBearing).toBeGreaterThan(5)
+    expect(compactOpeners).toBeLessThan(bridgeBearing)
   })
 
   it('falls back to Phase 4 spineSummary when no historical edge is linked', () => {

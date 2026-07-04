@@ -62,10 +62,28 @@ export const contradictsTemplates: EdgeTemplateFamily = {
       { text: 'The reconciliation study between {subject}\'s record and {object}\'s has been "in progress" for longer than either archive existed.', expects: { subject: 'properNoun', object: 'properNoun' } },
     ],
   },
-  historicalBridge: {
-    text: 'The records were edited {historical:era|after a public-trust breach},',
-    expects: {},
-  },
+  historicalBridge: [
+    {
+      text: 'The records were edited {historical:era|after a public-trust breach},',
+      expects: {},
+    },
+    {
+      text: 'The official account was rewritten {historical:era|after a quiet settlement},',
+      expects: {},
+    },
+    {
+      text: 'Somebody amended the archive {historical:era|before the current custodians took over},',
+      expects: {},
+    },
+    {
+      text: 'The original filings went missing {historical:era|in an administrative purge},',
+      expects: {},
+    },
+    {
+      text: 'The version everyone cites was certified {historical:era|after a hearing nobody attended},',
+      expects: {},
+    },
+  ],
   hook: [
     { text: 'Whose version of {qualifier:article|the record} would survive a third-party audit?', expects: { qualifier: 'properNoun' } },
     { text: 'Who edited the version everyone reads?', expects: {} },
