@@ -11,14 +11,14 @@
 ## Global Constraints
 
 - Root: `src/features/tools/star_system_generator/` — all paths below relative to it.
-- **Run all tests on Node 20**: `PATH="$HOME/.nvm/versions/node/v20.20.2/bin:$PATH" npm run test` (Node 24 diverges on spineFullAxisMatrix snapshots; CI uses Node 20).
+- **Run all tests on Node 24** (plain `npm run test`; CI moved to Node 24 in `52daa54`, and `spineFullAxisMatrix` snapshots diverge between Node majors — generate them on 24, never 20; `.nvmrc` pins 24).
 - Never use `any`; use `unknown` or precise types. Prefix unused params with `_`.
 - No code comments unless stating a non-obvious constraint.
 - The post-pass is a PURE FUNCTION of the assembled string + entity refs. It must not consume `SeededRng` — any RNG use would reshuffle unrelated variant-deck draws.
-- Old-seed output WILL change (approved). Snapshot suites regenerated with `vitest -u` on Node 20 in the same commit as the wiring task.
+- Old-seed output WILL change (approved). Snapshot suites regenerated with `vitest -u` on Node 24 in the same commit as the wiring task.
 - The pronoun is always `it`/`its` (`It`/`Its` at sentence start), for every `EntityKind` — matching the existing spine-summary behavior (`pronominalizeSecondMention` in `renderSystemStory.ts`; line numbers drifted after the 2026-07-03 spine-diversity session, which also added bridge-variant picks and three summary composition modes to `renderSpineSummary` — body-paragraph rendering is unaffected) and avoiding verb-agreement breakage ("they presses") that textual substitution cannot repair.
 - Commit per task on `develop`, Conventional Commits scope `star-system`, trailer `Co-Authored-By: Claude Fable 5 <noreply@anthropic.com>`.
-- Gates per task: `npx tsc --noEmit`, `npm run lint`, unit tests on Node 20.
+- Gates per task: `npx tsc --noEmit`, `npm run lint`, unit tests on Node 24.
 - `scripts/audit-star-system-generator.ts` reports **723** errors with `STAR_SYSTEM_AUDIT_FINDING_LIMIT=100000` (re-measured 2026-07-03 after the spine-diversity session `add75eb..e75cc86`; was 768). After the wiring task, re-run and require: no NEW error categories and total count ≤ 723, with 0 tolerance on `prose.*` categories (`prose.lowercaseFactionMidSentence` is now 0 — keep it there). Known non-prose stragglers: `story.hiddenLeak` 2.
 
 ### Why the matching must be boundary-aware and longest-first (measured hazard)
@@ -350,7 +350,7 @@ Co-Authored-By: Claude Fable 5 <noreply@anthropic.com>"
 - Modify: `lib/generator/graph/render/renderSystemStory.ts` (`renderParagraph`, currently lines ~198–225)
 - Test: `lib/generator/graph/render/__tests__/renderSystemStoryConflicts.test.ts` (extend)
 - Test: `__tests__/narrative-repetition.test.ts` (extend with a density assertion)
-- Regenerate: `lib/generator/graph/__tests__/__snapshots__/spineFullAxisMatrix.test.ts.snap`, `spineToneVoiceMatrix.test.ts.snap`, and any other suite that fails on Node 20 after the change (check `spineToneGuMatrix` — it snapshots edge-type metadata and may be untouched).
+- Regenerate: `lib/generator/graph/__tests__/__snapshots__/spineFullAxisMatrix.test.ts.snap`, `spineToneVoiceMatrix.test.ts.snap`, and any other suite that fails on Node 24 after the change (check `spineToneGuMatrix` — it snapshots edge-type metadata and may be untouched).
 
 **Interfaces:**
 - Consumes: `reduceProperNounDensity(paragraph, refs)` from Task 2; `Conflict` (has `parties: ConflictParty[]` each with `.ref: EntityRef`, and `stakeRef: EntityRef | null`).
@@ -409,7 +409,7 @@ it('no entity is fully named more than 3 times in a single body paragraph', () =
 
 - [ ] **Step 2: Run to verify failure**
 
-Run the two test files on Node 20. Expected: the new integration test FAILS on `mentions <= 2` (current output has 3–4), and the corpus gate FAILS on at least one paragraph (the ×4 pathology is pinned in current snapshots).
+Run the two test files on Node 24. Expected: the new integration test FAILS on `mentions <= 2` (current output has 3–4), and the corpus gate FAILS on at least one paragraph (the ×4 pathology is pinned in current snapshots).
 
 - [ ] **Step 3: Implement the wiring** in `renderSystemStory.ts`:
 
@@ -449,7 +449,7 @@ Read every changed `.snap` hunk: pronoun substitutions must read grammatically (
 ```bash
 PATH="$HOME/.nvm/versions/node/v20.20.2/bin:$PATH" npm run test
 npm run lint && npx tsc --noEmit
-STAR_SYSTEM_AUDIT_FINDING_LIMIT=100000 PATH="$HOME/.nvm/versions/node/v20.20.2/bin:$PATH" npx tsx scripts/audit-star-system-generator.ts 2>&1 | grep -c '^\[error\]'
+STAR_SYSTEM_AUDIT_FINDING_LIMIT=100000 npx tsx scripts/audit-star-system-generator.ts 2>&1 | grep -c '^\[error\]'
 ```
 
 Expected: full suite green; audit error count ≤ 768 with no new categories (compare category census via `sed -E 's/^\[error\] \S+ //; s/"[^"]*"/"X"/g; s/[0-9]+(\.[0-9]+)?/N/g' | sort | uniq -c` against the baseline in the audit burn-down plan). The `prose.doublePreposition` / `prose.lowercaseFactionMidSentence` counts must not increase — pronoun substitution touching those surfaces would be a regression.

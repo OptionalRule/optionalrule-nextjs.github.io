@@ -4,7 +4,8 @@
 > `origin/develop` (Tasks 16–20 in commits `bdbc9c0..410c645`, including the
 > Task 15 owed audit validation and the final whole-branch review fixes).
 > Final review verdict: ready to merge. Full suite green on Node 20
-> (1701 tests), tsc/lint clean, build + search-index untouched-check pass.
+> (1701 tests — historical; CI has since moved to Node 24), tsc/lint clean,
+> build + search-index untouched-check pass.
 > Repetition floors measured: spine summaries 1.0 (≥0.90), body paragraphs
 > 1.0 (≥0.85), phenomenon conflictHooks 0.892 (≥0.60), max hook repeat 4 (≤4).
 >
@@ -50,15 +51,15 @@
 ## Global Constraints
 
 - Root: `src/features/tools/star_system_generator/` — all paths below relative to it unless starting with `docs/` or `scripts/`.
-- **Run all tests on Node 20**: `PATH="$HOME/.nvm/versions/node/v20.20.2/bin:$PATH" npm run test` (Node 24 diverges on spineFullAxisMatrix snapshots; CI uses Node 20).
+- **Run all tests on Node 24** (plain `npm run test`; CI moved to Node 24 in `52daa54`, and `spineFullAxisMatrix` snapshots diverge between Node majors — generate them on 24, never 20; `.nvmrc` pins 24).
 - Never use `any`; use `unknown` or precise types. Prefix unused params with `_`.
 - No code comments unless stating a non-obvious constraint.
 - Determinism: every random draw comes from a `SeededRng` passed in; no `Math.random`, no `Date`. New draw sites use dedicated forks so streams are isolated.
-- Old-seed output WILL change (approved). Snapshot suites are regenerated with `vitest -u` on Node 20 as part of the task that changes output, and the diff is committed with that task.
+- Old-seed output WILL change (approved). Snapshot suites are regenerated with `vitest -u` on Node 24 as part of the task that changes output, and the diff is committed with that task.
 - `SystemStoryOutput { spineSummary, body, hooks }` fields keep their existing names/types; new fields are additive optional.
 - Narrative strings stored on generator output remain wrapped as `Fact<string>` (`{value, confidence, source}`).
 - Commit per task on `develop`, Conventional Commits with scope `star-system`, trailer `Co-Authored-By: Claude Fable 5 <noreply@anthropic.com>`.
-- Gates per task: `npx tsc --noEmit` (via `npm run lint` + typecheck), `npm run lint`, unit tests on Node 20.
+- Gates per task: `npx tsc --noEmit` (via `npm run lint` + typecheck), `npm run lint`, unit tests on Node 24.
 - `scripts/audit-star-system-generator.ts` exits 1 with ~50 pre-existing content errors — baseline, not a gate.
 
 ### Register guide for all authored text (from the setting primer + strongest existing material)
@@ -166,7 +167,7 @@ determinism. If none, leave `qualifier` undefined (templates already have
 - [x] **Step 1: Update the existing rule tests** to assert the new behavior: given a context containing a guResource with an overlapping domain, `qualifier` equals its displayName; given none, `qualifier` is `undefined`; assert no output ever equals a `concretizeDomain` phrase ("conflict record", "trade ledger", "chain of authority").
 - [x] **Step 2: Run** the two test files → FAIL.
 - [x] **Step 3: Implement** in both rule files; delete `concretizeDomain` from `settingPatterns.ts` and fix any remaining importers (grep `concretizeDomain`).
-- [x] **Step 4: Run the full graph test dir** on Node 20; regenerate any spine-matrix snapshots this changes (`vitest run -u` on the affected snapshot suites) and eyeball the diff for grounded qualifiers.
+- [x] **Step 4: Run the full graph test dir** on Node 24; regenerate any spine-matrix snapshots this changes (`vitest run -u` on the affected snapshot suites) and eyeball the diff for grounded qualifiers.
 - [x] **Step 5: Commit** `feat(star-system): ground contest/contradict qualifiers in real entities`
 
 ### Task 3: Party building (triangles)
@@ -330,7 +331,7 @@ Register per tone: balanced = plainspoken dispatch ("The ledger says one thing; 
 - [x] **Step 1: Write the pool-size test** asserting the counts above for all 12 families, and that every template's `expects` keys appear in its `text` (regex `\{(\w+)`) and vice versa.
 - [x] **Step 2: Run** → FAIL on counts.
 - [x] **Step 3: Author the templates** (~250 sentences). Match tone registers; every sentence must work with slot substitution of multiword proper nouns.
-- [x] **Step 4: Run pool test + full render tests** on Node 20; regenerate render/prose/spine-matrix snapshots (`-u`); read a sample of the snapshot diff aloud for register drift.
+- [x] **Step 4: Run pool test + full render tests** on Node 24; regenerate render/prose/spine-matrix snapshots (`-u`); read a sample of the snapshot diff aloud for register drift.
 - [x] **Step 5: Commit** `feat(star-system): expand edge template pools to spec floors (8 body/4 summary per tone)`
 
 ### Task 8: Beat-grammar conflict renderer
@@ -398,7 +399,7 @@ Changes:
 - [x] **Step 1: Write failing tests**: deck never repeats until exhaustion (unit-test `VariantDeck` directly); conflict-backed spine edge renders multi-sentence conflict text; `pronominalizeSecondMention` cases (phenomenon→it, faction→they, single mention untouched, overlapping-name safety: only exact displayName matches).
 - [x] **Step 2: Run** → FAIL.
 - [x] **Step 3: Implement.**
-- [x] **Step 4: Run full render suite** on Node 20, regen snapshots (`-u`), review diff.
+- [x] **Step 4: Run full render suite** on Node 24, regen snapshots (`-u`), review diff.
 - [x] **Step 5: Commit** `feat(star-system): conflict-driven story rendering with no-repeat decks`
 
 ### Task 10: Wire conflicts into generateSystem + GENERATOR_VERSION
@@ -416,7 +417,7 @@ Notes: `rng.fork('conflicts')` is a NEW fork label — it does not perturb exist
 - [x] **Step 1: Write failing test**: generated system's `systemStory.conflicts` array is non-empty for a seed known to produce spine edges (pick by probing 3 candidate seeds in the test setup and asserting at least one yields conflicts); export payload contains `generatorVersion: 2`.
 - [x] **Step 2: Run** → FAIL.
 - [x] **Step 3: Implement** wiring + version stamping.
-- [x] **Step 4: Full unit test run on Node 20** with snapshot regen; `npm run lint`; `npm run build` once to confirm static export unaffected.
+- [x] **Step 4: Full unit test run on Node 24** with snapshot regen; `npm run lint`; `npm run build` once to confirm static export unaffected.
 - [x] **Step 5: Commit** `feat(star-system): wire conflict synthesis into generation, add GENERATOR_VERSION`
 
 ### Task 11: Prose bug sweep (articles + historical endpoints)
@@ -427,7 +428,7 @@ Notes: `rng.fork('conflicts')` is a NEW fork label — it does not perturb exist
 - Test: `lib/generator/graph/__tests__/historicalRotation.test.ts` (extend), snapshots regen
 
 - [x] **Step 1: Write failing test** for `pickHistoricalEndpoints`: FOUNDED_BY yields founder as subject (was inverted/no-op).
-- [x] **Step 2: Run** → FAIL. **Step 3: Implement.** **Step 4: Regen snapshots on Node 20**, grep rendered snapshot text for ` [A-Z][a-z]+.*firsthand` style bare-title mid-sentence hits. **Step 5: Commit** `fix(star-system): historical endpoint order and mid-sentence article slots`
+- [x] **Step 2: Run** → FAIL. **Step 3: Implement.** **Step 4: Regen snapshots on Node 24**, grep rendered snapshot text for ` [A-Z][a-z]+.*firsthand` style bare-title mid-sentence hits. **Step 5: Commit** `fix(star-system): historical endpoint order and mid-sentence article slots`
 
 ## Phase 2 — Settlement integration
 
@@ -455,7 +456,7 @@ Authoring guide: the truth explains, caused, or is threatened by the crisis. Exa
 ```
 
 - [x] **Step 1: Write failing tests**: every pair's crisis exists in `crises`; every truth exists in `hiddenTruths`; pair count ≥ 40; generation with a fixed seed picks a paired truth when chance passes (stub-level unit test on the selection function — extract it as `selectCoherentHiddenTruth(crisis, rng)` in `lib/generator/index.ts` or a small new module `lib/generator/settlementCoherence.ts`, preferred).
-- [x] **Step 2: Run** → FAIL. **Step 3: Author ~40 pairs + implement `lib/generator/settlementCoherence.ts`.** **Step 4: Run + snapshot regen on Node 20.** **Step 5: Commit** `feat(star-system): causally paired settlement crises and hidden truths`
+- [x] **Step 2: Run** → FAIL. **Step 3: Author ~40 pairs + implement `lib/generator/settlementCoherence.ts`.** **Step 4: Run + snapshot regen on Node 24.** **Step 5: Commit** `feat(star-system): causally paired settlement crises and hidden truths`
 
 ### Task 13: Closer variety (settlementProse + graphAwareSettlementHook)
 
@@ -480,7 +481,7 @@ Authoring guide: the truth explains, caused, or is threatened by the crisis. Exa
 - Produces: templates re-authored so the settlement (`{settlement}` slot, new) is the grammatical actor and the anchor (`{anchor}`) is the place: "X stays because the seam under {anchor} pays for what it costs" — kill "route geometry maintains its footprint" class errors. Keep the 11-category × 3-tone × 3-variant structure; raise to ≥4 variants per cell where natural (target, not a hard gate; pool test asserts ≥3).
 
 - [x] **Step 1: Failing test**: rendered whyHere for a fixture settlement starts with or contains the settlement displayName as subject, and never uses the anchor name in subject position followed by a volitional verb (regex on the fixed template list, not runtime output).
-- [x] **Step 2–4: Implement, run, regen snapshots on Node 20.** **Step 5: Commit** `fix(star-system): settlement as actor in whyHere prose`
+- [x] **Step 2–4: Implement, run, regen snapshots on Node 24.** **Step 5: Commit** `fix(star-system): settlement as actor in whyHere prose`
 
 ## Phase 3 — Phenomena as conflict engines
 
@@ -519,7 +520,7 @@ export interface PhenomenonLivelihood {
 - Produces: `composePhenomenonConflict(entry: PhenomenonEntry, rng: SeededRng): string` — picks one livelihood (`rng.int`), one friction frame from ≥6 templates (`'{actor} {dependence}, but {friction}.'` variations with connective variety), replacing the static `conflictHook` value in generated phenomena. The static `conflictHook` string stays in data as fallback for entries lacking livelihoods (none after Task 15, but the guard stays).
 
 - [x] **Step 1: Failing tests**: two different rng streams give different hooks for the same phenomenon; output has no unresolved braces; fallback path returns base `conflictHook`.
-- [x] **Step 2–4: Implement, run, snapshot regen on Node 20.** **Step 5: Commit** `feat(star-system): compose phenomenon conflict hooks from livelihoods`
+- [x] **Step 2–4: Implement, run, snapshot regen on Node 24.** **Step 5: Commit** `feat(star-system): compose phenomenon conflict hooks from livelihoods`
 
 ## Phase 4 — Hooks + factions + metrics
 
@@ -555,7 +556,7 @@ Binding sources: `{party}` → a conflict party displayName (prefer faction/sett
 - Test: `lib/generator/graph/__tests__/spineDominance.test.ts` (create), factions tests extend
 
 - [x] **Step 1: Failing tests**: balanced bank ≥24 seeds, all unique names; across a 30-seed corpus no single faction name appears in >30% of spines (generate via `buildRelationshipGraph` fixtures or full `generateSystem`); cap logic unit test with synthetic candidates.
-- [x] **Step 2–4: Implement, run, snapshot regen on Node 20.** **Step 5: Commit** `feat(star-system): expand faction banks and cap seed-faction spine dominance`
+- [x] **Step 2–4: Implement, run, snapshot regen on Node 24.** **Step 5: Commit** `feat(star-system): expand faction banks and cap seed-faction spine dominance`
 
 ### Task 20: Dead data removal + repetition metrics gate
 
@@ -575,7 +576,7 @@ Repetition test (the spec §10 floors), over 40 fixed seeds (`metric-0`…`metri
 ```
 
 - [x] **Step 1: Write the metrics test** (expected initially PASS if Phases 1–4 landed; if any floor fails, treat as a real quality bug — fix pools/selection, do not lower floors).
-- [x] **Step 2: Remove dead data + exports; run FULL suite on Node 20 + lint + `npm run build` + `npm run generate-search-index` untouched-check.**
+- [x] **Step 2: Remove dead data + exports; run FULL suite on Node 24 + lint + `npm run build` + `npm run generate-search-index` untouched-check.**
 - [x] **Step 3: Commit** `feat(star-system): repetition metrics gate; remove dead narrative structures`
 - [x] **Step 4: Final sweep**: run the 50-seed sampler ad hoc, read 5 systems end-to-end for register/coherence; file follow-ups rather than scope-creep.
 

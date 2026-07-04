@@ -34,13 +34,13 @@
 ## Global Constraints
 
 - Root: `src/features/tools/star_system_generator/` — paths relative to it unless starting with `scripts/` or `docs/`.
-- **Run all tests on Node 20**: `PATH="$HOME/.nvm/versions/node/v20.20.2/bin:$PATH" npm run test`.
+- **Run all tests on Node 24** (plain `npm run test`; CI moved to Node 24 in `52daa54`, and `spineFullAxisMatrix` snapshots diverge between Node majors — generate them on 24, never 20; `.nvmrc` pins 24).
 - Never use `any`; use `unknown` or precise types. Prefix unused params with `_`. No code comments unless stating a non-obvious constraint.
-- Determinism: every random draw comes from a `SeededRng`; any NEW draw site uses a dedicated fork (`rng.fork('<label>')`) so existing streams don't shift more than the task's own change implies. Old-seed output WILL change on generator-side tasks (approved); regenerate snapshots with `vitest -u` on Node 20 in the same commit.
-- Audit iteration loop (fast): `STAR_SYSTEM_AUDIT_PROFILE=quick STAR_SYSTEM_AUDIT_FINDING_LIMIT=100000 PATH="$HOME/.nvm/versions/node/v20.20.2/bin:$PATH" npx tsx scripts/audit-star-system-generator.ts` (288 systems). Task acceptance always re-measured on the DEFAULT profile (960 systems, drop the PROFILE var).
+- Determinism: every random draw comes from a `SeededRng`; any NEW draw site uses a dedicated fork (`rng.fork('<label>')`) so existing streams don't shift more than the task's own change implies. Old-seed output WILL change on generator-side tasks (approved); regenerate snapshots with `vitest -u` on Node 24 in the same commit.
+- Audit iteration loop (fast): `STAR_SYSTEM_AUDIT_PROFILE=quick STAR_SYSTEM_AUDIT_FINDING_LIMIT=100000 npx tsx scripts/audit-star-system-generator.ts` (288 systems). Task acceptance always re-measured on the DEFAULT profile (960 systems, drop the PROFILE var).
 - Census command (used in every task's acceptance):
   ```bash
-  STAR_SYSTEM_AUDIT_FINDING_LIMIT=100000 PATH="$HOME/.nvm/versions/node/v20.20.2/bin:$PATH" npx tsx scripts/audit-star-system-generator.ts 2>&1 \
+  STAR_SYSTEM_AUDIT_FINDING_LIMIT=100000 npx tsx scripts/audit-star-system-generator.ts 2>&1 \
     | grep '^\[error\]' \
     | sed -E 's/^\[error\] \S+ //; s/"[^"]*"/"X"/g; s/[0-9]+(\.[0-9]+)?/N/g' | sort | uniq -c | sort -rn
   ```
@@ -48,7 +48,7 @@
 - **Re-measured census (post spine-diversity, 2026-07-03, 723 errors total):** hot-hydrosphere 205 uncoded + 77 coded, empty-systems 72, settlement-missing-body 51+51, ARCH_MINIMUM_UNSATISFIED 104, cold-climate 38+38, sub-neptune geology 16+16, belt gravity/geology 7+7 ×2, hot-atmosphere 7+7, debris keep-out 5, story.hiddenLeak 2, prose.lowercaseFactionMidSentence 0. Use THIS as the comparison baseline for Tasks 1–5, 7.
 - The audit's exit-1 stops being "baseline" at Task 7. Until then, each task's gate is: its own category reaches 0 AND no category count increases.
 - Commit per task on `develop`, Conventional Commits scope `star-system`, trailer `Co-Authored-By: Claude Fable 5 <noreply@anthropic.com>`.
-- Gates per task: `npx tsc --noEmit`, `npm run lint`, unit tests on Node 20, census comparison.
+- Gates per task: `npx tsc --noEmit`, `npm run lint`, unit tests on Node 24, census comparison.
 
 ### Key research facts (verified 2026-07-03; line numbers may drift a few lines)
 
@@ -80,7 +80,7 @@
 
 - [ ] **Step 3: Run the census** (quick profile for iteration, then default). Expected: uncoded twins disappear — hot-hydrosphere drops from 205+77 to exactly the coded 77 (the 128 magma-seas-only findings vanish per the canonical allowed-set), settlement drops 102→51, cold-climate 76→38, geology/gravity/atmosphere pairs halve. Total ≈ 437. Record the exact new census in the commit message body — Tasks 2-6 measure against it.
 
-- [ ] **Step 4: Full suite on Node 20 + lint + tsc** (no generator change → zero snapshot churn expected; verify `git status` shows only the script).
+- [ ] **Step 4: Full suite on Node 24 + lint + tsc** (no generator change → zero snapshot churn expected; verify `git status` shows only the script).
 
 - [ ] **Step 5: Commit** `refactor(star-system): single-source audit checks through validateSystem`
 
@@ -157,7 +157,7 @@ return applyFinalDesignations(systemName, reconciled)
 ```
 (If `body.id` is assigned only inside `applyFinalDesignations`, fork on the body's index or pre-designation identifier instead — inspect first; the fork label must be stable per body.)
 
-- [ ] **Step 4: Run tests → PASS. Regenerate snapshots on Node 20** (`vitest -u`; the 5 exposed prose suites may drift because entity inventories can change). **Census (default): hot-hydrosphere 77 → 0, hot-atmosphere 7 → 0, cold-climate 38 → 0, sub-neptune geology 16 → 0, belt gravity 7 → 0, belt geology 7 → 0.** Full suite + lint + tsc.
+- [ ] **Step 4: Run tests → PASS. Regenerate snapshots on Node 24** (`vitest -u`; the 5 exposed prose suites may drift because entity inventories can change). **Census (default): hot-hydrosphere 77 → 0, hot-atmosphere 7 → 0, cold-climate 38 → 0, sub-neptune geology 16 → 0, belt gravity 7 → 0, belt geology 7 → 0.** Full suite + lint + tsc.
 - [ ] **Step 5: Commit** `fix(star-system): reconcile body details with final thermal zone and category`
 
 ---
@@ -191,7 +191,7 @@ return applyFinalDesignations(systemName, survivors.map((body) => reconcileBodyD
 ```
 `replacementOrbitAu` gains `minOrbitAu`/`maxOrbitAu` params and intersects its band with the window instead of returning `undefined` whenever bandMin > maxOrbitAu. Keep all draws on the same `rng` fork discipline the function already uses. The midpoint formula above is a placeholder shape — pick something deterministic inside the window; if `maxOrbitAu` is `Infinity`, use the architecture band's own midpoint clamped ≥ `minOrbitAu`.
 
-- [ ] **Step 4: Run tests → PASS. Snapshot regen on Node 20. Census (default): ARCH_MINIMUM_UNSATISFIED 110 → 0 errors** (warnings for orbit-constrained systems are fine and expected), **empty-systems 72 → 0 errors** (tight-binary warnings fine). Full suite + lint + tsc.
+- [ ] **Step 4: Run tests → PASS. Snapshot regen on Node 24. Census (default): ARCH_MINIMUM_UNSATISFIED 110 → 0 errors** (warnings for orbit-constrained systems are fine and expected), **empty-systems 72 → 0 errors** (tight-binary warnings fine). Full suite + lint + tsc.
 - [ ] **Step 5: Commit** `fix(star-system): enforce architecture minimums inside the binary stability window`
 
 ---
@@ -279,7 +279,7 @@ function composeSpineSummary(bridge: string, summary: string): string {
 }
 ```
 
-- [ ] **Step 4: Run → PASS. Snapshot regen on Node 20** (spine summaries change wherever a bridge met a capitalized summary — read the diff; the new period-joined sentences must read cleanly). **Census: prose.lowercaseFactionMidSentence 47 → 0.** Also confirm `prose.bridgeSubjectArticle` (audit `:948`) didn't increase. Full suite + lint + tsc.
+- [ ] **Step 4: Run → PASS. Snapshot regen on Node 24** (spine summaries change wherever a bridge met a capitalized summary — read the diff; the new period-joined sentences must read cleanly). **Census: prose.lowercaseFactionMidSentence 47 → 0.** Also confirm `prose.bridgeSubjectArticle` (audit `:948`) didn't increase. Full suite + lint + tsc.
 - [ ] **Step 5: Commit** `fix(star-system): period-join spine bridge before capitalized summary variants`
 
 ---
@@ -292,7 +292,7 @@ function composeSpineSummary(bridge: string, summary: string): string {
 - Test: the audit itself.
 
 - [ ] **Step 1: Run the default-profile audit → expect exit 0, zero `[error]` lines.** If any error remains, it belongs to one of Tasks 1-6 — fix there, do not special-case here. Run the deep profile once (`STAR_SYSTEM_AUDIT_PROFILE=deep`, 4800 systems, slow) and record its census in the commit body; deep-only stragglers get filed as follow-ups in the commit message, not fixed here.
-- [ ] **Step 2: Update the two docs.** Verify `npm run test:star-system-generator` (vitest + audit) passes end-to-end on Node 20.
+- [ ] **Step 2: Update the two docs.** Verify `npm run test:star-system-generator` (vitest + audit) passes end-to-end on Node 24.
 - [ ] **Step 3: Full gates one last time: `npm run test`, lint, tsc, `npm run build`.**
 - [ ] **Step 4: Commit** `chore(star-system): promote generator audit to a hard gate`
 
