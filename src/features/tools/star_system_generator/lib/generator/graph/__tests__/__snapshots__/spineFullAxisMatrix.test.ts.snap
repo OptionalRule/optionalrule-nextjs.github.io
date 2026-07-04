@@ -72,7 +72,7 @@ exports[`spine full axis matrix (16 representative cells) > corner-frontier-cine
   "spineEdgeType": "CONTESTS",
   "spineObjectKind": "namedFaction",
   "spineSubjectKind": "namedFaction",
-  "spineSummary": "The grievance between Bone Lantern Wake and Sisters of Synod was already old before the salt-debt, Between the two of them the war is already lost; only the funerals remain.",
+  "spineSummary": "Between Bone Lantern Wake and Sisters of Synod the war is already lost; only the funerals remain. The grievance between Bone Lantern Wake and Sisters of Synod was already old before the salt-debt.",
   "spineVisibility": "contested",
 }
 `;
@@ -83,7 +83,7 @@ exports[`spine full axis matrix (16 representative cells) > corner-realistic-ast
   "spineEdgeType": "CONTROLS",
   "spineObjectKind": "body",
   "spineSubjectKind": "namedFaction",
-  "spineSummary": "Calibration Council founded Guniibuu-Apdu Minor VII before the catalog was sealed, Every dataset from this system passes through Guniibuu-Apdu Minor VII under it's custody chain.",
+  "spineSummary": "Every dataset from this system passes through Guniibuu-Apdu Minor VII under Calibration Council's custody chain. Calibration Council founded Guniibuu-Apdu Minor VII before the catalog was sealed.",
   "spineVisibility": "public",
 }
 `;
@@ -105,7 +105,7 @@ exports[`spine full axis matrix (16 representative cells) > density-hub: stable 
   "spineEdgeType": "CONTROLS",
   "spineObjectKind": "body",
   "spineSubjectKind": "namedFaction",
-  "spineSummary": "The charter binding Intan's Crown V to Ephemeris Council was signed after the eighth pulse, it's license over Intan's Crown V predates current standards and is grandfathered past all of them.",
+  "spineSummary": "Ephemeris Council's license over Intan's Crown V predates current standards and is grandfathered past all of them. The charter binding Intan's Crown V to Ephemeris Council was signed after the eighth pulse.",
   "spineVisibility": "public",
 }
 `;
@@ -116,7 +116,7 @@ exports[`spine full axis matrix (16 representative cells) > density-normal: stab
   "spineEdgeType": "DEPENDS_ON",
   "spineObjectKind": "guResource",
   "spineSubjectKind": "settlement",
-  "spineSummary": "The dependency was declared temporary in the third pulse cycle, Vey Picket-265 Belt I Bore's viability curve tracks Programmable-matter microseeds availability with no independent term.",
+  "spineSummary": "Vey Picket-265 Belt I Bore's viability curve tracks Programmable-matter microseeds availability with no independent term. The dependency was declared temporary in the third pulse cycle.",
   "spineVisibility": "public",
 }
 `;

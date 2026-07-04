@@ -148,7 +148,12 @@ function renderSpineSummary(
 
   const mode = pickBridgeMode(rng)
   if (mode === 'none') return summaryText
-  if (mode === 'summary-first') {
+  // Bridge-first splices the summary onto the bridge clause after a comma,
+  // which only reads correctly when the summary head is an article it can
+  // lowercase ("..., the dispute..."). Any other head would keep its capital
+  // mid-sentence ("..., Access to..."), so those summaries take the
+  // two-sentence composition instead.
+  if (mode === 'summary-first' || !LEADING_ARTICLE_PATTERN.test(summaryText)) {
     return `${summaryText} ${bridgeClauseToSentence(bridgeText)}`
   }
   const composed = composeSpineSummary(bridgeText, summaryText)

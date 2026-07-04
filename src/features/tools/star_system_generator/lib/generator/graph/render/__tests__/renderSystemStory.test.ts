@@ -206,6 +206,25 @@ describe('renderSystemStory', () => {
     expect(noBridge).toBeGreaterThan(0)
   })
 
+  it('never splices a capitalized summary head onto a bridge clause mid-sentence', () => {
+    const faction: EntityRef = { kind: 'namedFaction', id: 'f1', displayName: 'Helion Debt Synod', layer: 'human' }
+    const controlsEdge = makeEdge({
+      id: 'c1', type: 'CONTROLS', subject: faction, object: settlement,
+    })
+    const foundedByEdge = makeEdge({
+      id: 'h1', type: 'FOUNDED_BY', subject: faction, object: settlement,
+      era: 'historical',
+      approxEra: 'in the second wave',
+      summary: 'Helion Debt Synod founded Orison Hold in the second wave.',
+      consequenceEdgeIds: ['c1'],
+    })
+    const graph = graphWith([controlsEdge, foundedByEdge], ['c1'])
+    for (let i = 0; i < 60; i++) {
+      const story = renderSystemStory(graph, createSeededRng(`splice-${i}`), { tone: 'astronomy', gu: 'normal', distribution: 'realistic', settlements: 'normal' })
+      expect(story.spineSummary).not.toMatch(/the second wave, [A-Z]/)
+    }
+  })
+
   it('varies the bridge template across seeds instead of always leading with the same clause', () => {
     const factionA: EntityRef = { kind: 'namedFaction', id: 'f1', displayName: 'Helion Debt Synod', layer: 'human' }
     const factionB: EntityRef = { kind: 'namedFaction', id: 'f2', displayName: 'Kestrel Free Compact', layer: 'human' }
