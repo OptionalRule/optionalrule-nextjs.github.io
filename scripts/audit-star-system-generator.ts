@@ -153,8 +153,10 @@ const UNSTRIPPED_ARTICLE_BRIDGE_PATTERN = /\bThe [a-z]+(?:\s[a-z]+)? took shape\
 // space) and a "lowercaseWord SpaceUppercaseWord" pair. The negative
 // lookahead excludes leading English articles ("the"/"a"/"an") which
 // composeSpineSummary deliberately lowercases as part of the article
-// narrowing rule — those are correct, not regressions.
-const LOWERCASE_FACTION_MID_SENTENCE_PATTERN = /[,—] (?!(?:the|a|an) )[a-z][a-zA-Z]+ [A-Z]/
+// narrowing rule, and coordinating conjunctions (", and Bosona-10 IV bends
+// furthest" is legitimate template text, not a lowercased head) — those are
+// correct, not regressions.
+const LOWERCASE_FACTION_MID_SENTENCE_PATTERN = /[,—] (?!(?:the|a|an|and|but|or|nor|yet|so|while|which|whose) )[a-z][a-zA-Z]+ [A-Z]/
 
 const forbiddenAlienPatterns = [
   /\balien\b/i,
@@ -847,7 +849,11 @@ function auditSystem(system: GeneratedSystem, findings: Finding[], stats: Corpus
         `Spine edge id ${spineId} not found in edges array`)
       continue
     }
-    if (!isNamedEntity(edge.subject) || !isNamedEntity(edge.object)) {
+    const dependsOnResource = edge.type === 'DEPENDS_ON' && edge.object.kind === 'guResource'
+    const namedOk = dependsOnResource
+      ? isNamedEntity(edge.subject)
+      : isNamedEntity(edge.subject) && isNamedEntity(edge.object)
+    if (!namedOk) {
       addFinding(findings, 'error', seed, 'graph.spine.unnamed',
         `Spine edge ${edge.id} has un-named endpoint(s)`)
     }
