@@ -1,4 +1,5 @@
 import type { GeneratorTone, GuPreference, GeneratorDistribution } from '../../../types'
+import type { SeededRng } from '../rng'
 import type { EdgeType, EdgeVisibility, EntityRef, RelationshipEdge } from './types'
 import { stableHashString } from './rules/ruleTypes'
 
@@ -145,6 +146,12 @@ export function isSpineEligibleForGu(
   gu: GuPreference,
 ): boolean {
   if (!SPINE_ELIGIBLE_TYPES.has(edge.type)) return false
+  // DEPENDS_ON runs settlement -> guResource by construction, and its template
+  // family renders the object as a bare nounPhrase; requiring a named object
+  // would leave the type permanently spine-ineligible.
+  if (edge.type === 'DEPENDS_ON' && edge.object.kind === 'guResource') {
+    return isNamedEntity(edge.subject)
+  }
   const baselineEligible = isNamedEntity(edge.subject) && isNamedEntity(edge.object)
   if (gu === 'fracture') {
     const phenomenonAnchored =
@@ -159,6 +166,9 @@ const SPINE_MAX = 3
 const PERIPHERAL_PER_TYPE_CAP = 2
 const TOTAL_HARD_CEILING = 12
 const SEED_FACTION_SPINE_CAP = 1
+const SPINE_TYPE_FLOOR = 0.35
+const SPINE_WITHIN_TYPE_FLOOR = 0.6
+const REPEAT_TYPE_DAMPENER = 0.4
 
 function hasSeedFactionEndpoint(edge: RelationshipEdge, seedFactionNames: ReadonlySet<string>): boolean {
   return (edge.subject.kind === 'namedFaction' && seedFactionNames.has(edge.subject.displayName))
@@ -170,6 +180,7 @@ export function selectEdges(
   options: SelectionOptions,
   gu: GuPreference = 'normal',
   seedFactionNames?: ReadonlySet<string>,
+  rng?: SeededRng,
 ): SelectionResult {
   const totalCap = Math.min(
     TOTAL_HARD_CEILING,
@@ -178,15 +189,9 @@ export function selectEdges(
 
   const spineCandidates = scored.filter(c => isSpineEligibleForGu(c.edge, gu))
 
-  const spine: RelationshipEdge[] = []
-  let seedFactionSpineCount = 0
-  for (const cand of spineCandidates) {
-    if (spine.length >= SPINE_MAX) break
-    const seedTouched = seedFactionNames !== undefined && hasSeedFactionEndpoint(cand.edge, seedFactionNames)
-    if (seedTouched && seedFactionSpineCount >= SEED_FACTION_SPINE_CAP) continue
-    spine.push(cand.edge)
-    if (seedTouched) seedFactionSpineCount += 1
-  }
+  const spine: RelationshipEdge[] = rng !== undefined
+    ? sampleSpine(spineCandidates, seedFactionNames, rng)
+    : selectSpineGreedy(spineCandidates, seedFactionNames)
 
   const usedIds = new Set(spine.map(e => e.id))
 
@@ -205,6 +210,92 @@ export function selectEdges(
   }
 
   return { spine, peripheral, spineIds: spine.map(e => e.id) }
+}
+
+function selectSpineGreedy(
+  spineCandidates: ReadonlyArray<ScoredCandidate>,
+  seedFactionNames?: ReadonlySet<string>,
+): RelationshipEdge[] {
+  const spine: RelationshipEdge[] = []
+  let seedFactionSpineCount = 0
+  for (const cand of spineCandidates) {
+    if (spine.length >= SPINE_MAX) break
+    const seedTouched = seedFactionNames !== undefined && hasSeedFactionEndpoint(cand.edge, seedFactionNames)
+    if (seedTouched && seedFactionSpineCount >= SEED_FACTION_SPINE_CAP) continue
+    spine.push(cand.edge)
+    if (seedTouched) seedFactionSpineCount += 1
+  }
+  return spine
+}
+
+// Weighted sampling instead of argmax: for a fixed tone/distribution the
+// multiplicative score adjustments always rank the same edge type first, so a
+// greedy pick collapses every seed onto one story shape. Types whose best
+// candidate clears a floor relative to the global top are sampled with
+// sqrt-flattened weights (the raw multipliers would still hand ~90% of seeds
+// to the favored type), then a candidate is sampled within the type.
+function sampleSpine(
+  spineCandidates: ReadonlyArray<ScoredCandidate>,
+  seedFactionNames: ReadonlySet<string> | undefined,
+  rng: SeededRng,
+): RelationshipEdge[] {
+  if (spineCandidates.length === 0) return []
+  const topScore = spineCandidates[0].score
+
+  const remaining: ScoredCandidate[] = []
+  const bestByType = new Map<EdgeType, number>()
+  for (const cand of spineCandidates) {
+    const best = bestByType.get(cand.edge.type)
+    if (best === undefined || cand.score > best) bestByType.set(cand.edge.type, cand.score)
+  }
+  for (const cand of spineCandidates) {
+    const typeBest = bestByType.get(cand.edge.type) ?? 0
+    if (typeBest < topScore * SPINE_TYPE_FLOOR) continue
+    if (cand.score < typeBest * SPINE_WITHIN_TYPE_FLOOR) continue
+    remaining.push(cand)
+  }
+
+  const spine: RelationshipEdge[] = []
+  const pickedTypes = new Set<EdgeType>()
+  let seedFactionSpineCount = 0
+
+  while (spine.length < SPINE_MAX && remaining.length > 0) {
+    const byType = new Map<EdgeType, ScoredCandidate[]>()
+    for (const cand of remaining) {
+      const group = byType.get(cand.edge.type) ?? []
+      group.push(cand)
+      byType.set(cand.edge.type, group)
+    }
+    const typeEntries = [...byType.entries()].map(([type, group]) => {
+      const best = Math.max(...group.map(c => c.score))
+      const dampener = pickedTypes.has(type) ? REPEAT_TYPE_DAMPENER : 1
+      return { type, group, weight: Math.sqrt(best) * dampener }
+    })
+    const chosenType = weightedPick(typeEntries, e => e.weight, rng)
+    const chosen = weightedPick(chosenType.group, c => c.score, rng)
+
+    const index = remaining.indexOf(chosen)
+    remaining.splice(index, 1)
+
+    const seedTouched = seedFactionNames !== undefined && hasSeedFactionEndpoint(chosen.edge, seedFactionNames)
+    if (seedTouched && seedFactionSpineCount >= SEED_FACTION_SPINE_CAP) continue
+    spine.push(chosen.edge)
+    pickedTypes.add(chosen.edge.type)
+    if (seedTouched) seedFactionSpineCount += 1
+  }
+  return spine
+}
+
+function weightedPick<T>(items: ReadonlyArray<T>, weightOf: (item: T) => number, rng: SeededRng): T {
+  if (items.length === 1) return items[0]
+  const total = items.reduce((sum, item) => sum + weightOf(item), 0)
+  if (total <= 0) return items[0]
+  let roll = rng.next() * total
+  for (const item of items) {
+    roll -= weightOf(item)
+    if (roll <= 0) return item
+  }
+  return items[items.length - 1]
 }
 
 function collapseDuplicates(candidates: ReadonlyArray<RelationshipEdge>): RelationshipEdge[] {

@@ -51,7 +51,7 @@ export function buildRelationshipGraph(
   const selection = selectEdges(scored, {
     numSettlements: input.settlements.length,
     numPhenomena: input.phenomena.length,
-  }, options.gu, seedFactionNames)
+  }, options.gu, seedFactionNames, rng.fork('spine-sample'))
   const edges = [...selection.spine, ...selection.peripheral]
 
   const { historicalEdges } = attachHistoricalEvents({

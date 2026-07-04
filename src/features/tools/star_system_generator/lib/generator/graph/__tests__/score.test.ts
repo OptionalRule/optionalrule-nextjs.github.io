@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { scoreCandidates, isNamedEntity, selectEdges, isSpineEligibleForGu } from '../score'
 import type { EntityRef, RelationshipEdge } from '../types'
+import { createSeededRng } from '../../rng'
 
 const settlementRef: EntityRef = { kind: 'settlement', id: 's1', displayName: 'Orison Hold', layer: 'human' }
 const bodyRef: EntityRef = { kind: 'body', id: 'b1', displayName: 'Nosaxa IV-b', layer: 'physical' }
@@ -205,6 +206,109 @@ describe('selectEdges (budget selection)', () => {
   })
 })
 
+describe('selectEdges stochastic spine sampling', () => {
+  function makeSpinePool(): RelationshipEdge[] {
+    const factionA: EntityRef = { kind: 'namedFaction', id: 'fa', displayName: 'Kestrel Compact', layer: 'human' }
+    const factionB: EntityRef = { kind: 'namedFaction', id: 'fb', displayName: 'Red Vane Guild', layer: 'human' }
+    const factionC: EntityRef = { kind: 'namedFaction', id: 'fc', displayName: 'Helion Debt Synod', layer: 'human' }
+    const settlement: EntityRef = { kind: 'settlement', id: 's1', displayName: 'Orison Hold', layer: 'human' }
+    const body: EntityRef = { kind: 'body', id: 'b1', displayName: 'Nosaxa IV-b', layer: 'physical' }
+    const phenomenon: EntityRef = { kind: 'phenomenon', id: 'p1', displayName: 'Bonn-Tycho aurora', layer: 'gu' }
+    return [
+      makeEdge({ id: 'c1', type: 'CONTESTS', subject: factionA, object: factionB, weight: 0.6 }),
+      makeEdge({ id: 'c2', type: 'CONTESTS', subject: factionB, object: factionC, weight: 0.58 }),
+      makeEdge({ id: 'd1', type: 'DESTABILIZES', subject: phenomenon, object: factionA, weight: 0.58 }),
+      makeEdge({ id: 'k1', type: 'CONTROLS', subject: factionC, object: settlement, weight: 0.56 }),
+      makeEdge({ id: 'p2', type: 'DEPENDS_ON', subject: settlement, object: body, weight: 0.55 }),
+    ]
+  }
+
+  it('varies the top spine edge type across rng seeds when eligible types score closely', () => {
+    const scored = scoreCandidates(makeSpinePool())
+    const topTypes = new Set<string>()
+    for (let i = 0; i < 40; i++) {
+      const result = selectEdges(scored, { numSettlements: 2, numPhenomena: 2 }, 'normal', undefined, createSeededRng(`spine-sample-${i}`))
+      if (result.spine.length > 0) topTypes.add(result.spine[0].type)
+    }
+    expect(topTypes.size).toBeGreaterThanOrEqual(3)
+  })
+
+  it('is deterministic for the same rng seed', () => {
+    const scored = scoreCandidates(makeSpinePool())
+    const a = selectEdges(scored, { numSettlements: 2, numPhenomena: 2 }, 'normal', undefined, createSeededRng('spine-det'))
+    const b = selectEdges(scored, { numSettlements: 2, numPhenomena: 2 }, 'normal', undefined, createSeededRng('spine-det'))
+    expect(a.spineIds).toEqual(b.spineIds)
+  })
+
+  it('never samples a spine candidate scoring below the quality floor', () => {
+    const factionA: EntityRef = { kind: 'namedFaction', id: 'fa', displayName: 'Kestrel Compact', layer: 'human' }
+    const factionB: EntityRef = { kind: 'namedFaction', id: 'fb', displayName: 'Red Vane Guild', layer: 'human' }
+    const strong = makeEdge({ id: 'strong', type: 'CONTESTS', subject: factionA, object: factionB, weight: 1.0 })
+    const weak = makeEdge({ id: 'weak', type: 'CONTROLS', subject: factionA, object: factionB, weight: 0.1 })
+    const scored = scoreCandidates([strong, weak])
+    for (let i = 0; i < 30; i++) {
+      const result = selectEdges(scored, { numSettlements: 1, numPhenomena: 1 }, 'normal', undefined, createSeededRng(`floor-${i}`))
+      expect(result.spine[0]?.id).toBe('strong')
+    }
+  })
+
+  it('mixes spine edge types within a single system when close alternatives exist', () => {
+    const scored = scoreCandidates(makeSpinePool())
+    let multiTypeSpines = 0
+    let fullSpines = 0
+    for (let i = 0; i < 30; i++) {
+      const result = selectEdges(scored, { numSettlements: 2, numPhenomena: 2 }, 'normal', undefined, createSeededRng(`mix-${i}`))
+      if (result.spine.length < 3) continue
+      fullSpines++
+      if (new Set(result.spine.map(e => e.type)).size >= 2) multiTypeSpines++
+    }
+    expect(fullSpines).toBeGreaterThan(0)
+    expect(multiTypeSpines / fullSpines).toBeGreaterThan(0.5)
+  })
+
+  it('respects the seed-faction spine cap under sampling', () => {
+    const seedFaction: EntityRef = { kind: 'namedFaction', id: 'sf', displayName: 'Route Authority', layer: 'human' }
+    const factionB: EntityRef = { kind: 'namedFaction', id: 'fb', displayName: 'Red Vane Guild', layer: 'human' }
+    const factionC: EntityRef = { kind: 'namedFaction', id: 'fc', displayName: 'Helion Debt Synod', layer: 'human' }
+    const scored = scoreCandidates([
+      makeEdge({ id: 'c1', type: 'CONTESTS', subject: seedFaction, object: factionB, weight: 0.6 }),
+      makeEdge({ id: 'c2', type: 'CONTESTS', subject: seedFaction, object: factionC, weight: 0.59 }),
+      makeEdge({ id: 'c3', type: 'CONTESTS', subject: factionB, object: factionC, weight: 0.58 }),
+    ])
+    const seedNames = new Set(['Route Authority'])
+    for (let i = 0; i < 30; i++) {
+      const result = selectEdges(scored, { numSettlements: 1, numPhenomena: 1 }, 'normal', seedNames, createSeededRng(`cap-${i}`))
+      const seedTouched = result.spine.filter(e => e.subject.displayName === 'Route Authority' || e.object.displayName === 'Route Authority')
+      expect(seedTouched.length).toBeLessThanOrEqual(1)
+    }
+  })
+
+  it('lets a runner-up type top the spine on a meaningful share of seeds despite tone multipliers', () => {
+    const factionA: EntityRef = { kind: 'namedFaction', id: 'fa', displayName: 'Kestrel Compact', layer: 'human' }
+    const factionB: EntityRef = { kind: 'namedFaction', id: 'fb', displayName: 'Red Vane Guild', layer: 'human' }
+    const phenomenon: EntityRef = { kind: 'phenomenon', id: 'p1', displayName: 'Bonn-Tycho aurora', layer: 'gu' }
+    const scored = scoreCandidates([
+      makeEdge({ id: 'c1', type: 'CONTESTS', subject: factionA, object: factionB, weight: 0.6 }),
+      makeEdge({ id: 'd1', type: 'DESTABILIZES', subject: phenomenon, object: factionA, weight: 0.6 }),
+    ], 'cinematic')
+    let runnerUpTops = 0
+    for (let i = 0; i < 60; i++) {
+      const result = selectEdges(scored, { numSettlements: 2, numPhenomena: 2 }, 'normal', undefined, createSeededRng(`runner-${i}`))
+      if (result.spine[0]?.type === 'DESTABILIZES') runnerUpTops++
+    }
+    expect(runnerUpTops).toBeGreaterThanOrEqual(10)
+    expect(runnerUpTops).toBeLessThanOrEqual(50)
+  })
+
+  it('falls back to deterministic greedy selection when rng is omitted', () => {
+    const scored = scoreCandidates(makeSpinePool())
+    const a = selectEdges(scored, { numSettlements: 2, numPhenomena: 2 })
+    const b = selectEdges(scored, { numSettlements: 2, numPhenomena: 2 })
+    expect(a.spineIds).toEqual(b.spineIds)
+    expect(a.spine[0].id).toBe(scored.filter(c => isSpineEligibleForGu(c.edge, 'normal'))[0].edge.id)
+  })
+})
+
 describe('isNamedEntity post-Phase-A widening', () => {
   it('admits a phenomenon with proper-noun displayName', () => {
     const ref: EntityRef = {
@@ -296,6 +400,22 @@ describe('isSpineEligibleForGu', () => {
     const haz: EntityRef = { kind: 'guHazard', id: 'h1', displayName: 'lowercase storm', layer: 'gu' }
     const edge = makeEdge({ id: 'd1', type: 'DESTABILIZES', subject: phenA, object: haz })
     expect(isSpineEligibleForGu(edge, 'fracture')).toBe(true)
+    expect(isSpineEligibleForGu(edge, 'normal')).toBe(false)
+  })
+
+  it('admits DEPENDS_ON with a named settlement subject and a guResource object', () => {
+    const settlement: EntityRef = { kind: 'settlement', id: 's1', displayName: 'Orison Hold', layer: 'human' }
+    const resource: EntityRef = { kind: 'guResource', id: 'gr1', displayName: 'chiral ice belt', layer: 'gu' }
+    const edge = makeEdge({ id: 'd1', type: 'DEPENDS_ON', subject: settlement, object: resource })
+    for (const gu of ['low', 'normal', 'high', 'fracture'] as const) {
+      expect(isSpineEligibleForGu(edge, gu)).toBe(true)
+    }
+  })
+
+  it('rejects DEPENDS_ON when the subject is not a named entity', () => {
+    const anonSettlement: EntityRef = { kind: 'settlement', id: 's1', displayName: 'drift camp', layer: 'human' }
+    const resource: EntityRef = { kind: 'guResource', id: 'gr1', displayName: 'chiral ice belt', layer: 'gu' }
+    const edge = makeEdge({ id: 'd1', type: 'DEPENDS_ON', subject: anonSettlement, object: resource })
     expect(isSpineEligibleForGu(edge, 'normal')).toBe(false)
   })
 

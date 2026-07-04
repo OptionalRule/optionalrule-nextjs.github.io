@@ -110,28 +110,33 @@ describe('buildRelationshipGraph', () => {
   })
 
   it('attaches historical edges for CONTROLS spine edges', () => {
-    const rng = createSeededRng('graph-test-history-1')
-    const graph = buildRelationshipGraph(inputWithControlsFixture(), { tone: 'balanced', gu: 'normal', distribution: 'realistic', settlements: 'normal' }, controlsFacts(), rng)
+    let verifiedControlsSpine = false
+    for (let i = 0; i < 20 && !verifiedControlsSpine; i++) {
+      const rng = createSeededRng(`graph-test-history-1-${i}`)
+      const graph = buildRelationshipGraph(inputWithControlsFixture(), { tone: 'balanced', gu: 'normal', distribution: 'realistic', settlements: 'normal' }, controlsFacts(), rng)
 
-    const controlsSpineEdges = graph.edges.filter(
-      e => e.type === 'CONTROLS' && graph.spineEdgeIds.includes(e.id),
-    )
-    expect(controlsSpineEdges.length).toBeGreaterThanOrEqual(1)
+      const controlsSpineEdges = graph.edges.filter(
+        e => e.type === 'CONTROLS' && graph.spineEdgeIds.includes(e.id),
+      )
+      if (controlsSpineEdges.length === 0) continue
+      verifiedControlsSpine = true
 
-    const historicalEdges = graph.edges.filter(e => e.era === 'historical')
-    expect(historicalEdges.length).toBeGreaterThanOrEqual(1)
-    expect(graph.historicalEdgeIds.length).toBe(historicalEdges.length)
-    for (const histEdge of historicalEdges) {
-      expect(graph.historicalEdgeIds).toContain(histEdge.id)
-      expect(histEdge.consequenceEdgeIds).toBeDefined()
-      expect(histEdge.consequenceEdgeIds?.length).toBeGreaterThanOrEqual(1)
+      const historicalEdges = graph.edges.filter(e => e.era === 'historical')
+      expect(historicalEdges.length).toBeGreaterThanOrEqual(1)
+      expect(graph.historicalEdgeIds.length).toBe(historicalEdges.length)
+      for (const histEdge of historicalEdges) {
+        expect(graph.historicalEdgeIds).toContain(histEdge.id)
+        expect(histEdge.consequenceEdgeIds).toBeDefined()
+        expect(histEdge.consequenceEdgeIds?.length).toBeGreaterThanOrEqual(1)
+      }
+
+      const controlsSpineId = controlsSpineEdges[0].id
+      const histForControls = historicalEdges.find(
+        e => e.consequenceEdgeIds?.[0] === controlsSpineId,
+      )
+      expect(histForControls).toBeDefined()
     }
-
-    const controlsSpineId = controlsSpineEdges[0].id
-    const histForControls = historicalEdges.find(
-      e => e.consequenceEdgeIds?.[0] === controlsSpineId,
-    )
-    expect(histForControls).toBeDefined()
+    expect(verifiedControlsSpine).toBe(true)
   })
 
   it('produces no historical edges when no spine edges qualify for backstory', () => {
