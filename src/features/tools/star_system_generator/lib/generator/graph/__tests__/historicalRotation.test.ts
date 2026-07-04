@@ -60,7 +60,7 @@ describe('historical body variant rotation (Phase 7 Task 4)', () => {
       subject: faction1,
       object: settlementA,
     })
-    const result = attachHistoricalEvents({ spineEdges: [present], rng })
+    const result = attachHistoricalEvents({ spineEdges: [present], rng, attachChance: 1 })
     expect(result.historicalEdges).toHaveLength(1)
     const summary = result.historicalEdges[0].summary ?? ''
     const expectedIndex = stableHashString('rot-a') % foundedByTemplates.body.length
@@ -85,7 +85,7 @@ describe('historical body variant rotation (Phase 7 Task 4)', () => {
       makeEdge({ id: 'rot-b', type: 'CONTROLS', subject: faction2, object: settlementA }),
       makeEdge({ id: 'rot-c', type: 'CONTROLS', subject: faction1, object: settlementB }),
     ]
-    const result = attachHistoricalEvents({ spineEdges: spine, rng })
+    const result = attachHistoricalEvents({ spineEdges: spine, rng, attachChance: 1 })
     // attachHistoricalEvents caps at MAX_HISTORICAL_EDGES = 2.
     expect(result.historicalEdges).toHaveLength(2)
     const summaries = result.historicalEdges.map((e) => e.summary ?? '')
@@ -105,10 +105,12 @@ describe('historical body variant rotation (Phase 7 Task 4)', () => {
     const a = attachHistoricalEvents({
       spineEdges: [present],
       rng: createSeededRng('rotation-determinism'),
+      attachChance: 1,
     })
     const b = attachHistoricalEvents({
       spineEdges: [present],
       rng: createSeededRng('rotation-determinism'),
+      attachChance: 1,
     })
     expect(a.historicalEdges).toHaveLength(1)
     expect(b.historicalEdges).toHaveLength(1)
@@ -132,10 +134,12 @@ describe('historical body variant rotation (Phase 7 Task 4)', () => {
     const resultA = attachHistoricalEvents({
       spineEdges: [presentA],
       rng: createSeededRng('rotation-id-sensitivity'),
+      attachChance: 1,
     })
     const resultC = attachHistoricalEvents({
       spineEdges: [presentC],
       rng: createSeededRng('rotation-id-sensitivity'),
+      attachChance: 1,
     })
     expect(resultA.historicalEdges[0].summary).not.toBe(resultC.historicalEdges[0].summary)
   })

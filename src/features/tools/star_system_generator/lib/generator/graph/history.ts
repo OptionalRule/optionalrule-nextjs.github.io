@@ -42,11 +42,15 @@ export const HISTORICAL_ELIGIBLE_TYPES: ReadonlySet<EdgeType> = new Set(
 )
 
 const MAX_HISTORICAL_EDGES = 2
+// Backstory is flavor, not a required beat: attaching it to every eligible
+// spine edge made history-first openers the default story shape.
+const DEFAULT_ATTACH_CHANCE = 0.55
 
 export interface AttachInput {
   spineEdges: RelationshipEdge[]
   rng: SeededRng
   tone?: GeneratorTone
+  attachChance?: number
 }
 
 export interface AttachResult {
@@ -58,12 +62,14 @@ export function attachHistoricalEvents(input: AttachInput): AttachResult {
   if (candidates.length === 0) return { historicalEdges: [] }
 
   const tone: GeneratorTone = input.tone ?? 'balanced'
+  const attachChance = input.attachChance ?? DEFAULT_ATTACH_CHANCE
   const historyRng = input.rng.fork('history')
   const out: RelationshipEdge[] = []
   for (const candidate of candidates) {
     if (out.length >= MAX_HISTORICAL_EDGES) break
     const histType = PRESENT_TO_HISTORICAL[candidate.edge.type]
     if (!histType) continue
+    if (!historyRng.chance(attachChance)) continue
 
     const era = pickEra(historyRng, tone)
     const histEdge = mintHistoricalEdge(candidate.edge, histType, era)

@@ -83,6 +83,60 @@ describe('HISTORICAL_ELIGIBLE_TYPES', () => {
   })
 })
 
+describe('attachHistoricalEvents attach chance', () => {
+  it('skips backstory for some seeds and attaches it for others at the default chance', () => {
+    const present = makeEdge({
+      id: 'present-contests-chance',
+      type: 'CONTESTS',
+      subject: faction1,
+      object: faction2,
+    })
+    let attached = 0
+    const runs = 40
+    for (let i = 0; i < runs; i++) {
+      const result = attachHistoricalEvents({
+        spineEdges: [present],
+        rng: createSeededRng(`attach-chance-${i}`),
+      })
+      if (result.historicalEdges.length > 0) attached++
+    }
+    expect(attached).toBeGreaterThanOrEqual(runs * 0.25)
+    expect(attached).toBeLessThanOrEqual(runs * 0.85)
+  })
+
+  it('always attaches when attachChance is 1', () => {
+    const present = makeEdge({
+      id: 'present-contests-always',
+      type: 'CONTESTS',
+      subject: faction1,
+      object: faction2,
+    })
+    for (let i = 0; i < 10; i++) {
+      const result = attachHistoricalEvents({
+        spineEdges: [present],
+        rng: createSeededRng(`attach-always-${i}`),
+        attachChance: 1,
+      })
+      expect(result.historicalEdges).toHaveLength(1)
+    }
+  })
+
+  it('never attaches when attachChance is 0', () => {
+    const present = makeEdge({
+      id: 'present-contests-never',
+      type: 'CONTESTS',
+      subject: faction1,
+      object: faction2,
+    })
+    const result = attachHistoricalEvents({
+      spineEdges: [present],
+      rng: createSeededRng('attach-never'),
+      attachChance: 0,
+    })
+    expect(result.historicalEdges).toEqual([])
+  })
+})
+
 describe('attachHistoricalEvents', () => {
   it('returns no historical edges when the spine is empty', () => {
     const rng = createSeededRng('history-test-empty')
@@ -110,7 +164,7 @@ describe('attachHistoricalEvents', () => {
       subject: faction1,
       object: settlement,
     })
-    const result = attachHistoricalEvents({ spineEdges: [present], rng })
+    const result = attachHistoricalEvents({ spineEdges: [present], rng, attachChance: 1 })
     expect(result.historicalEdges).toHaveLength(1)
     const hist = result.historicalEdges[0]
     expect(hist.type).toBe('FOUNDED_BY')
@@ -129,7 +183,7 @@ describe('attachHistoricalEvents', () => {
       subject: faction1,
       object: faction2,
     })
-    const result = attachHistoricalEvents({ spineEdges: [present], rng })
+    const result = attachHistoricalEvents({ spineEdges: [present], rng, attachChance: 1 })
     expect(result.historicalEdges).toHaveLength(1)
     expect(result.historicalEdges[0].type).toBe('BETRAYED')
   })
@@ -142,7 +196,7 @@ describe('attachHistoricalEvents', () => {
       subject: settlement,
       object: guResource,
     })
-    const result = attachHistoricalEvents({ spineEdges: [present], rng })
+    const result = attachHistoricalEvents({ spineEdges: [present], rng, attachChance: 1 })
     expect(result.historicalEdges).toHaveLength(1)
     expect(result.historicalEdges[0].type).toBe('DISPLACED')
     expect(result.historicalEdges[0].subject.id).toBe(settlement.id)
@@ -163,7 +217,7 @@ describe('attachHistoricalEvents', () => {
       subject,
       object,
     })
-    const result = attachHistoricalEvents({ spineEdges: [present], rng })
+    const result = attachHistoricalEvents({ spineEdges: [present], rng, attachChance: 1 })
     expect(result.historicalEdges).toHaveLength(1)
     expect(result.historicalEdges[0].type).toBe(expected)
   })
@@ -175,7 +229,7 @@ describe('attachHistoricalEvents', () => {
       makeEdge({ id: 'present-controls-b', type: 'CONTROLS', subject: faction2, object: settlement }),
       makeEdge({ id: 'present-controls-c', type: 'CONTROLS', subject: faction1, object: { ...settlement, id: 's2', displayName: 'Cinder March' } }),
     ]
-    const result = attachHistoricalEvents({ spineEdges: spine, rng })
+    const result = attachHistoricalEvents({ spineEdges: spine, rng, attachChance: 1 })
     expect(result.historicalEdges).toHaveLength(2)
   })
 
@@ -189,10 +243,12 @@ describe('attachHistoricalEvents', () => {
     const a = attachHistoricalEvents({
       spineEdges: [present],
       rng: createSeededRng('history-test-determinism'),
+      attachChance: 1,
     })
     const b = attachHistoricalEvents({
       spineEdges: [present],
       rng: createSeededRng('history-test-determinism'),
+      attachChance: 1,
     })
     expect(a).toEqual(b)
     expect(a.historicalEdges[0].id).toBe(b.historicalEdges[0].id)
@@ -213,6 +269,7 @@ describe('attachHistoricalEvents', () => {
       const result = attachHistoricalEvents({
         spineEdges: [present],
         rng: createSeededRng(seed),
+        attachChance: 1,
       })
       eras.add(result.historicalEdges[0]?.approxEra)
     }
@@ -242,6 +299,7 @@ describe('attachHistoricalEvents', () => {
     const result = attachHistoricalEvents({
       spineEdges: [destabilizesEdge, hostsEdge, controlsEdge],
       rng,
+      attachChance: 1,
     })
     expect(result.historicalEdges).toHaveLength(2)
     expect(result.historicalEdges[0].consequenceEdgeIds).toEqual([controlsEdge.id])
@@ -259,7 +317,7 @@ describe('attachHistoricalEvents', () => {
       object: settlement,
       weight: 0.8,
     })
-    const result = attachHistoricalEvents({ spineEdges: [present], rng })
+    const result = attachHistoricalEvents({ spineEdges: [present], rng, attachChance: 1 })
     expect(result.historicalEdges).toHaveLength(1)
     expect(result.historicalEdges[0].weight).toBeCloseTo(0.8 * 0.7, 10)
   })
@@ -273,7 +331,7 @@ describe('attachHistoricalEvents', () => {
       object: settlement,
       groundingFactIds: ['fact-A', 'fact-B'],
     })
-    const result = attachHistoricalEvents({ spineEdges: [present], rng })
+    const result = attachHistoricalEvents({ spineEdges: [present], rng, attachChance: 1 })
     expect(result.historicalEdges).toHaveLength(1)
     expect(result.historicalEdges[0].groundingFactIds).toEqual(['fact-A', 'fact-B'])
     expect(result.historicalEdges[0].groundingFactIds).not.toBe(present.groundingFactIds)
@@ -287,7 +345,7 @@ describe('attachHistoricalEvents', () => {
       subject: faction1,
       object: settlement,
     })
-    const result = attachHistoricalEvents({ spineEdges: [present], rng })
+    const result = attachHistoricalEvents({ spineEdges: [present], rng, attachChance: 1 })
     const summary = result.historicalEdges[0].summary ?? ''
     expect(summary).not.toContain('{')
     expect(summary).not.toContain('}')
