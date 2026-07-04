@@ -72,6 +72,13 @@ describe('CONTROL_DOMAINS', () => {
     expect(CONTROL_DOMAINS).toContain('compliance')
     expect(CONTROL_DOMAINS).toContain('gardener-interdiction')
   })
+
+  it('overlaps the faction-bank domain vocabulary so CONTROLS rules can actually match generated factions', () => {
+    expect(CONTROL_DOMAINS).toContain('governance')
+    expect(CONTROL_DOMAINS).toContain('law')
+    expect(CONTROL_DOMAINS).toContain('war')
+    expect(CONTROL_DOMAINS).toContain('trade')
+  })
 })
 
 describe('matchesAny', () => {

@@ -13,7 +13,7 @@ exports[`Phase 6 graph-aware prose surfaces (all flags on) > seed phase6-on-1 pr
   ],
   "settlementWhyHere": [
     "There is something rare in this volume, and Gomeisa Waypoint-895 III Habitat 55 is the answer to it.",
-    "Gomeisa Waypoint-895 Hub occupies Gomeisa Waypoint-895 VI and is held in place by Snow-line organochemical feedstock. Gomeisa Waypoint-895 Hub stays because the yield outweighs everything that wants it gone.",
+    "Gomeisa Waypoint-895 Hub keeps its footing only because of Snow-line organochemical feedstock. Gomeisa Waypoint-895 Hub stays because the yield outweighs everything that wants it gone.",
   ],
 }
 `;
@@ -21,17 +21,17 @@ exports[`Phase 6 graph-aware prose surfaces (all flags on) > seed phase6-on-1 pr
 exports[`Phase 6 graph-aware prose surfaces (all flags on) > seed phase6-on-2 produces stable graph-aware output 1`] = `
 {
   "phenomenonNotes": [
-    "Trojan clouds force ships through monitored gaps shared by dust and salvage drones. The open question is which rocks are original trojans and which were towed in and homesteaded under false surveys. The destabilization centers on Noquisi Transit-948 VII: Camp registrars arbitrate homestead claims across a hundred thousand co-orbiting rocks, and the trouble is that the registry maps a swarm that reshuffles itself faster than the appeals docket moves. Two camps watch the same incoming rock and both raise a flag.",
+    "Trojan clouds force ships through monitored gaps shared by dust and salvage drones. The open question is which rocks are original trojans and which were towed in and homesteaded under false surveys. The destabilization centers on Noquisi Transit-948 Belt IV: Camp registrars arbitrate homestead claims across a hundred thousand co-orbiting rocks, and the trouble is that the registry maps a swarm that reshuffles itself faster than the appeals docket moves. Two camps watch the same incoming rock and both raise a flag.",
     "Stellar wind and stripped atmospheric flow distort comms and punish close maneuvers. The open question is what fraction of the envelope loss is natural versus skimmed, and which ledger records the difference. The destabilization centers on Noquisi Transit-948 VII: Orbital heritage clerks administer the survivor's protected-object status and sell research access, though protection fees fund the office that keeps approving extraction waivers. A skimmer surfaces from the glowing envelope trailing gas like a whale clearing water.",
-    "Salvage-tug traffic to the site runs heavier than the permits on file explain. No one has settled which structures were sealed deliberately at abandonment, and by whom. Colony wardstakers maintain the ghost colony against decay and sell guided access, and the trouble is that preservation and excavation are the same permit, issued by rivals. Dinner tables still set for a meal a century cold, under dust like snowfall.",
+    "Salvage-tug traffic to the site runs heavier than the permits on file explain. No one has settled which structures were sealed deliberately at abandonment, and by whom. The destabilization centers on Noquisi Transit-948 VII: Colony wardstakers maintain the ghost colony against decay and sell guided access, and the trouble is that preservation and excavation are the same permit, issued by rivals. Dinner tables still set for a meal a century cold, under dust like snowfall.",
   ],
   "settlementTagHooks": [
-    "Migrant Swarm is what visitors notice first; whoever controls the records controls legal truth, casualty counts, and property claims. Coordination drift across the swarm makes single-bay clinic the choke point everyone fights over. Privately, the route weather board sells safe windows twice. Everything here turns on access to the phase-stable superconductive lattice.",
+    "Migrant Swarm is what visitors notice first; whoever controls the records controls legal truth, casualty counts, and property claims. Coordination drift across the swarm makes single-bay clinic the choke point everyone fights over. Privately, the route weather board sells safe windows twice. Control of the exposure clinic decides who has leverage.",
     "Route Weather Board is what visitors notice first; survival priority was assigned by a list nobody trusts. Coordination drift across the swarm makes bleed-harvest control room the choke point everyone fights over. Privately, Sol interdiction files are sealed here. Every contingency plan on file assumes the phase-stable superconductive lattice keeps flowing.",
     "The public tag is AI Witness Custody; the private trouble is Aristocratic Dome, because elite protection and outside deprivation are tied together. When safe transit window sold to too many ships, the situation keeps surface settlement politics under stress. Privately, the site is an illegal AI lab. Every dispute here ends at the civilian colony.",
   ],
   "settlementWhyHere": [
-    "Noquisi Transit-948 Fleet keeps a footprint on Noquisi Transit-948 VII only because of Phase-stable superconductive lattice. Noquisi Transit-948 Fleet stays because the yield outweighs everything that wants it gone.",
+    "Noquisi Transit-948 Fleet took root on Noquisi Transit-948 VII and has not moved since. Noquisi Transit-948 Fleet stays because the yield outweighs everything that wants it gone.",
     "Noquisi Transit-948 Belt IV Works is anchored to Noquisi Transit-948 Belt IV, with Phase-stable superconductive lattice keeping it viable. There is enough of value under Noquisi Transit-948 Belt IV to justify both the danger and the secrecy.",
     "Noquisi Transit-948 V Charter grew here because the ground underneath asks less of its people than most.",
   ],
@@ -42,14 +42,14 @@ exports[`Phase 6 graph-aware prose surfaces (all flags on) > seed phase6-on-3 pr
 {
   "phenomenonNotes": [
     "Unmarked cutters loiter near the cache before every major ruling. Contested: Why does the cache inventory grow between hearings when nothing is docketed in? The destabilization centers on Nosaxa-Array IV: Cache custodians guard sealed evidence hulls between hearings, billed to the docket; the catch is that the seals are inventoried by the same office that keeps losing dockets. Sealed hulls hang in evidence webbing, tagged with case numbers older than their guards.",
-    "Standard hulls transit the arc only in the dust's settled phase, and the phase table is a trade secret. The open question is how much dust have the sifters removed, and what happens to the arc's structure when the fraction matters. The destabilization centers on Granite Reach Water Concession: Phase-dust sifters trawl the arc for dust that phases through ordinary matter on flare cycles. The catch: the containment that holds the dust also hides how much of it they are actually taking. An arc pilot cuts thrust and lets the ship drift a channel only she can see.",
+    "Standard hulls transit the arc only in the dust's settled phase, and the phase table is a trade secret. The open question is how much dust have the sifters removed, and what happens to the arc's structure when the fraction matters. The destabilization centers on Nosaxa-Array IV: Phase-dust sifters trawl the arc for dust that phases through ordinary matter on flare cycles. The catch: the containment that holds the dust also hides how much of it they are actually taking. An arc pilot cuts thrust and lets the ship drift a channel only she can see.",
   ],
   "settlementTagHooks": [
     "Debt Labor binds the workforce to fees; Chiral Monopoly controls the medicine and materials that keep those debts growing. Coordination drift across the swarm makes debt court queue the choke point everyone fights over. Privately, the curse is chiral neurochemistry. Every dispute here ends at the smuggler port.",
     "Storm Shelter Politics is what visitors notice first; a failed environmental project is still shaping the crisis. When transit grid failure during storm, the situation keeps deep-space platform politics under stress. Privately, the base is built on unstable ground/orbit. Whoever runs the ship repair yard sets the terms here.",
   ],
   "settlementWhyHere": [
-    "Nosaxa-Array Freeport is built into Nosaxa-Array IV and works the surface from there.",
+    "Nosaxa-Array Freeport exists because the local extraction numbers still close on paper.",
     "The yields under Nosaxa-Array Belt V route geometry are concrete enough to keep crews on station year over year.",
   ],
 }

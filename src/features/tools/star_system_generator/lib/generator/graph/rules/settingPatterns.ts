@@ -38,9 +38,13 @@ export const CONTRADICTION_KEYWORDS = [
   'unofficial', 'unrecorded',
 ] as const
 
+// Must overlap the faction-bank domain vocabulary (generateFactions banks use
+// governance/law/war/trade/...); the original list shared no terms with it,
+// which left the CONTROLS rules unable to match any generated faction.
 export const CONTROL_DOMAINS = [
   'route', 'transit', 'compliance', 'gardener-interdiction', 'authority',
   'enforcement', 'customs', 'patrol',
+  'governance', 'law', 'war', 'trade',
 ] as const
 
 export function matchesAny(text: string, keywords: ReadonlyArray<string>): boolean {
