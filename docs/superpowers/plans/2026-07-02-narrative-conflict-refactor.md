@@ -23,6 +23,19 @@
 >   (pre-existing) — regeneration produces an ordering-only diff.
 > - `bindEntryText` is exported and throws on entries failing `canBindEntry`
 >   (production path safe; document precondition or throw descriptively).
+> - ~~Story-shape monoculture~~ FIXED 2026-07-03 (`add75eb..e75cc86`), from
+>   user report "every System story starts with 'The compact between X and Y
+>   broke…'": spine selection was argmax (same edge type won every seed per
+>   tone/distribution), backstory attached 100%, one bridge template per
+>   family, and CONTROLS/DEPENDS_ON were structurally dead (CONTROL_DOMAINS
+>   shared zero terms with faction-bank domains; DEPENDS_ON eligibility
+>   contradicted its own nounPhrase templates). Now: seeded type-diverse
+>   spine sampling, 0.55 backstory roll, 5-variant bridge pools with rotating
+>   composition, vocabulary aligned. Measured: "compact broke" openers
+>   62/120 → 4/120; all four spine types win seeds in every cell (max ~45%).
+>   Audit census 768 → 723; see the status block in
+>   `2026-07-03-audit-baseline-burn-down.md` (Task 6 done there,
+>   `story.hiddenLeak` 2 filed).
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 

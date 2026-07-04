@@ -16,10 +16,10 @@
 - No code comments unless stating a non-obvious constraint.
 - The post-pass is a PURE FUNCTION of the assembled string + entity refs. It must not consume `SeededRng` — any RNG use would reshuffle unrelated variant-deck draws.
 - Old-seed output WILL change (approved). Snapshot suites regenerated with `vitest -u` on Node 20 in the same commit as the wiring task.
-- The pronoun is always `it`/`its` (`It`/`Its` at sentence start), for every `EntityKind` — matching the existing spine-summary behavior at `renderSystemStory.ts:163` and avoiding verb-agreement breakage ("they presses") that textual substitution cannot repair.
+- The pronoun is always `it`/`its` (`It`/`Its` at sentence start), for every `EntityKind` — matching the existing spine-summary behavior (`pronominalizeSecondMention` in `renderSystemStory.ts`; line numbers drifted after the 2026-07-03 spine-diversity session, which also added bridge-variant picks and three summary composition modes to `renderSpineSummary` — body-paragraph rendering is unaffected) and avoiding verb-agreement breakage ("they presses") that textual substitution cannot repair.
 - Commit per task on `develop`, Conventional Commits scope `star-system`, trailer `Co-Authored-By: Claude Fable 5 <noreply@anthropic.com>`.
 - Gates per task: `npx tsc --noEmit`, `npm run lint`, unit tests on Node 20.
-- `scripts/audit-star-system-generator.ts` currently reports 768 errors with `STAR_SYSTEM_AUDIT_FINDING_LIMIT=100000` — baseline. After the wiring task, re-run and require: no NEW error categories and total count ≤ 768 + 0 tolerance on `prose.*` categories.
+- `scripts/audit-star-system-generator.ts` reports **723** errors with `STAR_SYSTEM_AUDIT_FINDING_LIMIT=100000` (re-measured 2026-07-03 after the spine-diversity session `add75eb..e75cc86`; was 768). After the wiring task, re-run and require: no NEW error categories and total count ≤ 723, with 0 tolerance on `prose.*` categories (`prose.lowercaseFactionMidSentence` is now 0 — keep it there). Known non-prose stragglers: `story.hiddenLeak` 2.
 
 ### Why the matching must be boundary-aware and longest-first (measured hazard)
 

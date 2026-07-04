@@ -1,5 +1,28 @@
 # Generator Audit Baseline Burn-Down Implementation Plan
 
+> **STATUS UPDATE (2026-07-03, spine-diversity session `add75eb..e75cc86`):**
+> The narrative spine-diversity work re-measured the census: **768 → 723**.
+> - **Task 6 is DONE** (delivered in `e75cc86` by a different mechanism than
+>   Step 3's sketch: `renderSpineSummary` routes non-article summary heads to
+>   the two-sentence composition mode instead of changing
+>   `composeSpineSummary` itself, and `LOWERCASE_FACTION_MID_SENTENCE_PATTERN`
+>   now excludes coordinating conjunctions). Census:
+>   `prose.lowercaseFactionMidSentence` 47 → **0**.
+> - **Contract change** (`50518be`): `graph.spine.unnamed` exempts
+>   DEPENDS_ON settlement→guResource spine edges (named subject only) —
+>   these are now deliberately spine-eligible.
+> - **NEW category to burn down:** `story.hiddenLeak` 0 → **2** (frontier-
+>   astronomy seeds). The co-occurrence heuristic (hidden edge's subject and
+>   object named in one body sentence) collides with re-seeded spine/conflict
+>   selection — the rendered sentences name the endpoints in mundane dispute
+>   context, they do not reveal the hidden truth text. Fold into Task 7's
+>   accounting, or teach conflict/witness sentence rendering to avoid pairing
+>   a hidden edge's endpoints in one sentence.
+> - Several "Key research facts" line numbers below have drifted
+>   (`score.ts`, `renderSystemStory.ts`, audit script); re-grep before use.
+> - Task ordering note: the five prose snapshot suites were regenerated in
+>   this session; generator-side tasks will regenerate them again.
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Drive `scripts/audit-star-system-generator.ts` from 768 baseline errors to 0 on the default profile so it becomes a real quality gate instead of "exits 1, ignore it".
@@ -22,6 +45,7 @@
     | sed -E 's/^\[error\] \S+ //; s/"[^"]*"/"X"/g; s/[0-9]+(\.[0-9]+)?/N/g' | sort | uniq -c | sort -rn
   ```
 - Baseline census (default profile, 2026-07-03, 768 errors total): hot-hydrosphere 205 uncoded + 77 coded, empty-systems 72, settlement-missing-body 51+51, prose.lowercaseFactionMidSentence 47, ARCH_MINIMUM_UNSATISFIED 110, cold-climate 38+38, sub-neptune geology 16+16, belt gravity/geology 7+7 each ×2, hot-atmosphere 7+7, debris keep-out 5.
+- **Re-measured census (post spine-diversity, 2026-07-03, 723 errors total):** hot-hydrosphere 205 uncoded + 77 coded, empty-systems 72, settlement-missing-body 51+51, ARCH_MINIMUM_UNSATISFIED 104, cold-climate 38+38, sub-neptune geology 16+16, belt gravity/geology 7+7 ×2, hot-atmosphere 7+7, debris keep-out 5, story.hiddenLeak 2, prose.lowercaseFactionMidSentence 0. Use THIS as the comparison baseline for Tasks 1–5, 7.
 - The audit's exit-1 stops being "baseline" at Task 7. Until then, each task's gate is: its own category reaches 0 AND no category count increases.
 - Commit per task on `develop`, Conventional Commits scope `star-system`, trailer `Co-Authored-By: Claude Fable 5 <noreply@anthropic.com>`.
 - Gates per task: `npx tsc --noEmit`, `npm run lint`, unit tests on Node 20, census comparison.
@@ -201,6 +225,15 @@ function clampToKeepOut(extent: SpatialExtent, shape: DebrisFieldShape, hwInner:
 ---
 
 ### Task 6: Spine-summary bridge join — stop emitting ", Capitalized …"
+
+> **DONE 2026-07-03 in `e75cc86`** (spine-diversity session), via mode-level
+> guard in `renderSpineSummary` rather than the `composeSpineSummary` change
+> sketched below: non-article summary heads always take the summary-first
+> two-sentence composition (summary sentence, then the bridge clause as its
+> own sentence), so the comma-splice case cannot arise.
+> Census target met: `prose.lowercaseFactionMidSentence` 47 → 0. Regression
+> test: `renderSystemStory.test.ts` "never splices a capitalized summary head
+> onto a bridge clause mid-sentence". Steps below kept for history only.
 
 **Files:**
 - Modify: `lib/generator/graph/render/renderSystemStory.ts` (`composeSpineSummary`, `:~180-196`)
