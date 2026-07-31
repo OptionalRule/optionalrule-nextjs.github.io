@@ -195,3 +195,91 @@ direct dependencies:
 
 `npm audit fix` cannot resolve these without a `--force` major downgrade/upgrade of `next`, which
 would be a larger change than this pass intends.
+
+---
+
+## Follow-up pass — transitive vulnerabilities
+
+Most of the "unreachable" transitive vulns above turned out to be reachable after all. The patched
+versions already satisfied the existing semver ranges — they simply had not been pulled into the
+lockfile. Plain `npm update` moved four of them with no override needed:
+
+- `brace-expansion` 1.1.14 → 1.1.18
+- `js-yaml` 3.14.2 → 3.15.0 (gray-matter's copy; the 4.x copy was already patched)
+- `esbuild` 0.28.0 → 0.28.1
+- `@babel/core` 7.29.0 → 7.29.7
+
+One override was added:
+
+- `sharp` → `0.35.3`. `next` pins `^0.34.5` and npm's only offered fix was downgrading next to
+  14.2.35 (two majors). The override is safe here because `output: 'export'` plus
+  `images.unoptimized: true` means sharp is never invoked in this build.
+
+Also corrected in this pass: `eslint` 9.39.3 → **9.39.5**. The 9.x maintenance line was invisible to
+`npm outdated` — because `eslint` is pinned exact, `wanted` reported 9.39.3 and `latest` reported
+10.8.0, so the maintenance line fell in the gap. ESLint publishes it under the `maintenance`
+dist-tag. 9.39.4 carried security content (minimatch → ^3.1.5 plus `ajv`/`@eslint/eslintrc`
+advisory updates); 9.39.5 backports a v10.3.0 crash fix.
+
+**General lesson: exact-pinned dependencies hide their own maintenance line from `npm outdated`.**
+Check `npm view <pkg> dist-tags` for any pinned dependency.
+
+### Reading `npm audit` counts correctly
+
+npm's headline number counts **graph nodes**, not advisories. Measured across commits:
+
+| State | npm headline | distinct advisories |
+|---|---|---|
+| `4420c3f` (before) | 9 | **17** |
+| `fb45343` (after upgrades) | 6 | **7** |
+| `ea4575e` (after this pass) | 9 | **1** |
+
+The headline rose 6 → 9 while actual security exposure fell, because `npm update` moved `minimatch`
+into a flagged range, so eight additional parent packages became "depends on vulnerable minimatch" —
+all tracing to the same single advisory. The commit message on `ea4575e` says "6 → 1", which mixes
+the two metrics; the accurate figure is **17 → 1 distinct advisories**. Not amended, since `develop`
+history is not rewritten.
+
+### The one remaining advisory
+
+`brace-expansion` — GHSA-mh99-v99m-4gvg (high). **Unfixable on this branch.** The advisory range is
+`<=5.0.7` with no lower bound, so every 1.x release matches it permanently; there is no patched 1.x.
+Escaping requires `minimatch` 10 (which depends on brace-expansion 5.x), and that arrives with
+`eslint` 10 — blocked by `eslint-config-next`. Same wall as the ESLint 10 upgrade above.
+
+It is reached only through the ESLint toolchain, so it is dev-time only and never ships in the
+static export.
+
+### ESLint 10 — ecosystem status (checked 2026-07-31)
+
+The blockage is not ecosystem-wide. ESLint 10-ready already:
+
+| Package | ESLint 10 |
+|---|---|
+| `typescript-eslint` 8.65.0 | yes (`^10`) |
+| `eslint-plugin-react-hooks` 7.1.1 | yes (`^10`) |
+| `eslint-plugin-import-x` 4.17.1 | yes (`^10`) |
+| `@next/eslint-plugin-next` 16.2.12 | yes (no eslint peer constraint) |
+
+The stall is concentrated in the jsx-eslint org, and reads as drift rather than "not yet":
+
+- `eslint-plugin-react` 7.37.5 — last published **2025-04-03**. ESLint 10 issue
+  [#3977](https://github.com/jsx-eslint/eslint-plugin-react/issues/3977) open since Feb 2026, no
+  assignee, no linked PR, no milestone, no v8 branch or prerelease.
+- `eslint-plugin-jsx-a11y` 6.10.2 — last published **2024-10-26**.
+- `eslint-plugin-import` 2.32.0 — superseded in practice by the maintained `eslint-plugin-import-x`
+  fork, which is ESLint 10-ready.
+
+`eslint-config-next` bundles all of these, so it inherits the weakest link. Tracking issue:
+[vercel/next.js#91702](https://github.com/vercel/next.js/issues/91702), open since March 2026.
+
+**Escape hatch if this becomes urgent:** drop `eslint-config-next` and compose the flat config
+directly from `@next/eslint-plugin-next` + `typescript-eslint` + `eslint-plugin-react-hooks` +
+`eslint-plugin-import-x`. That unblocks ESLint 10 today and would also clear the brace-expansion
+advisory. Cost: loses `eslint-plugin-react`'s React rules and `jsx-a11y`'s static a11y rules — the
+latter partly redundant here given the jest-axe a11y tests. Not measured yet whether the lost
+`eslint-plugin-react` rules actually fire on this codebase; measure before deciding.
+
+**Revisit trigger:** if #91702 is still open at the next dependency pass, or if `eslint-plugin-react`
+stays silent much longer — depending on two apparently-unmaintained plugins is a bigger risk than
+which ESLint major we run.
