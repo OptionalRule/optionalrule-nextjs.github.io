@@ -65,3 +65,7 @@ next-env.d.ts
 
 # Superpowers brainstorm session artifacts
 .superpowers/
+
+# Local Graphify outputs and extraction cache
+/graphify-out/
+/src/graphify-out/

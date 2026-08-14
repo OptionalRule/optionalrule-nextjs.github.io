@@ -1,0 +1,24 @@
+# Keep the canonical graph at the repository root while indexing only src/.
+/*
+!/src/
+
+# Keep extraction deterministic and code-only.
+**/docs/
+/src/features/tools/star_system_generator/data/*.json
+*.md
+*.mdx
+*.txt
+*.pdf
+*.doc
+*.docx
+*.png
+*.jpg
+*.jpeg
+*.gif
+*.webp
+*.avif
+*.mp3
+*.wav
+*.ogg
+*.mp4
+*.webm

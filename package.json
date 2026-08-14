@@ -8,6 +8,8 @@
   },
   "scripts": {
     "dev": "next dev",
+    "graph:hooks": "bash scripts/install-graphify-hooks.sh",
+    "graph:update": "bash scripts/update-code-graph.sh",
     "build": "npm run generate-search-index && npm run generate-rss && next build",
     "start": "next start",
     "enhance-post": "node scripts/enhance-post.mjs",

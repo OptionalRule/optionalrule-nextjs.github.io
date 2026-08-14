@@ -192,6 +192,18 @@ All scripts use ESM loader pattern and are located in `scripts/` directory:
 
 Remember: These guidelines should enhance development velocity while maintaining code quality. Leverage TypeScript's type system and Next.js optimizations to build robust, scalable applications.
 
+## Graphify
+
+This project keeps a local, code-only knowledge graph in `graphify-out/` (gitignored). The repository root is the canonical Graphify root, and `.graphifyignore` limits the indexed corpus to source code under `src/`.
+
+- Before answering a codebase, architecture, dependency, or impact question, query the graph first when `graphify-out/graph.json` exists. Use `graphify query "<question>"` for broad context, `graphify path "<A>" "<B>" --undirected` for relationships (the graph is undirected; a bare `path` searches directed and reports no path), `graphify explain "<symbol>"` for a focused symbol, and `graphify affected "<file-or-symbol>"` for change impact.
+- Expand query wording only with vocabulary found in the graph. `query` defaults to BFS depth 2 with a ~2000-token budget and truncates on this repo — narrow with a specific symbol as the start term, or pass `--budget`.
+- Treat graph results as navigation evidence, then verify exact behavior and edit locations in source files before changing code.
+- If the graph is missing or code under `src/` changed after the last refresh, run `npm run graph:update` (~10s) before relying on graph results. After modifying code, run it again before the final response so uncommitted work is included.
+- Post-commit and post-checkout Git hooks refresh committed code automatically, but they do not replace the manual refresh required during an uncommitted agent turn. Run `npm run graph:hooks` once after cloning or reinstalling Graphify.
+- Keep Graphify deterministic and code-only. Do not run semantic extraction, add documentation or media to the corpus, or generate `graph.html` or other visualizations.
+- `AGENTS.md` carries the same guidance for other agents; keep the two in sync. Project-local Codex command rules in `.codex/rules/graphify.rules` pre-approve the non-destructive query/update workflow and intentionally do not approve destructive commands such as Graphify uninstall or purge operations.
+
 # important-instruction-reminders
 Do what has been asked; nothing more, nothing less.
 NEVER create files unless they're absolutely necessary for achieving your goal.
