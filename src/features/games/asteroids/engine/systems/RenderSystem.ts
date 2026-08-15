@@ -27,41 +27,37 @@ export class RenderSystem {
     this.setupCanvas()
   }
 
+  // The context is scaled by the device pixel ratio, so everything drawn works in
+  // game units. Only setupCanvas()/resize() may touch the backing-store dimensions.
+  private get viewWidth(): number {
+    return GAME_CONFIG.canvas.width
+  }
+
+  private get viewHeight(): number {
+    return GAME_CONFIG.canvas.height
+  }
+
   private setupCanvas(): void {
-    // Enable hardware acceleration hints
-    this.ctx.imageSmoothingEnabled = false
-    
-    // Set up pixel ratio for high DPI displays
-    const pixelRatio = window.devicePixelRatio || 1
-    
-    // Use game config dimensions for internal canvas size
-    this.canvas.width = GAME_CONFIG.canvas.width * pixelRatio
-    this.canvas.height = GAME_CONFIG.canvas.height * pixelRatio
-    
-    this.ctx.scale(pixelRatio, pixelRatio)
-    
-    // Set canvas display size to match game dimensions
-    this.canvas.style.width = GAME_CONFIG.canvas.width + 'px'
-    this.canvas.style.height = GAME_CONFIG.canvas.height + 'px'
+    this.resize()
   }
 
   clear(): void {
-    this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height)
+    this.ctx.clearRect(0, 0, this.viewWidth, this.viewHeight)
     this.drawBackground()
   }
 
   private drawBackground(): void {
     // Create starfield background gradient
     const gradient = this.ctx.createRadialGradient(
-      this.canvas.width / 2, this.canvas.height / 2, 0,
-      this.canvas.width / 2, this.canvas.height / 2, this.canvas.width / 2
+      this.viewWidth / 2, this.viewHeight / 2, 0,
+      this.viewWidth / 2, this.viewHeight / 2, this.viewWidth / 2
     )
     gradient.addColorStop(0, COLORS.background)
     gradient.addColorStop(1, COLORS.backgroundGradient)
-    
+
     this.ctx.fillStyle = gradient
-    this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height)
-    
+    this.ctx.fillRect(0, 0, this.viewWidth, this.viewHeight)
+
     // Add subtle stars
     this.drawStarfield()
   }
@@ -74,8 +70,8 @@ export class RenderSystem {
     
     for (let i = 0; i < starCount; i++) {
       // Use deterministic random based on star index
-      const x = (Math.sin(i * 43.758) * 0.5 + 0.5) * this.canvas.width
-      const y = (Math.sin(i * 67.293) * 0.5 + 0.5) * this.canvas.height
+      const x = (Math.sin(i * 43.758) * 0.5 + 0.5) * this.viewWidth
+      const y = (Math.sin(i * 67.293) * 0.5 + 0.5) * this.viewHeight
       
       // Twinkling effect
       const twinkle = Math.sin(time * RENDERING.starTwinkleSpeed + i) * 0.5 + 0.5
@@ -116,7 +112,7 @@ export class RenderSystem {
   }
 
   private sortEntitiesByRenderPriority(entities: Entity[]): Entity[] {
-    return entities.sort((a, b) => {
+    return [...entities].sort((a, b) => {
       const priorityA = this.getRenderPriority(a)
       const priorityB = this.getRenderPriority(b)
       return priorityA - priorityB
@@ -124,8 +120,9 @@ export class RenderSystem {
   }
 
   private getRenderPriority(entity: Entity): number {
-    const type = entity.constructor.name.toLowerCase()
-    
+    // getEntityType() rather than constructor.name, which the production build mangles
+    const type = entity.getEntityType()
+
     // Lower numbers render first (background)
     switch (type) {
       case 'asteroid': return 1
@@ -179,7 +176,7 @@ export class RenderSystem {
     const counts: Record<string, number> = {}
     
     for (const entity of entities) {
-      const type = entity.constructor.name
+      const type = entity.getEntityType()
       counts[type] = (counts[type] || 0) + 1
     }
     
@@ -194,7 +191,7 @@ export class RenderSystem {
     this.ctx.font = `${RENDERING.debugFontSize}px ${RENDERING.defaultFont}`
     this.ctx.textAlign = 'right'
     
-    this.ctx.fillText(`FPS: ${this.lastFPS}`, this.canvas.width - 10, 20)
+    this.ctx.fillText(`FPS: ${this.lastFPS}`, this.viewWidth - 10, 20)
     
     this.ctx.restore()
   }
@@ -258,23 +255,23 @@ export class RenderSystem {
     
     // Lives (top right)
     this.ctx.textAlign = 'right'
-    this.ctx.fillText(`LIVES: ${lives}`, this.canvas.width - padding, padding + fontSize)
-    
+    this.ctx.fillText(`LIVES: ${lives}`, this.viewWidth - padding, padding + fontSize)
+
     // Level (top center)
     this.ctx.textAlign = 'center'
-    this.ctx.fillText(`LEVEL: ${level}`, this.canvas.width / 2, padding + fontSize)
+    this.ctx.fillText(`LEVEL: ${level}`, this.viewWidth / 2, padding + fontSize)
     
     this.ctx.restore()
   }
 
   drawGameOver(finalScore: number, highScore: number): void {
-    const centerX = this.canvas.width / 2
-    const centerY = this.canvas.height / 2
-    
+    const centerX = this.viewWidth / 2
+    const centerY = this.viewHeight / 2
+
     // Semi-transparent overlay
     this.ctx.save()
     this.ctx.fillStyle = `rgba(0, 0, 0, ${RENDERING.gameOverOverlayAlpha})`
-    this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height)
+    this.ctx.fillRect(0, 0, this.viewWidth, this.viewHeight)
     
     // Game Over text
     this.drawText('GAME OVER', { x: centerX, y: centerY - 60 }, {
@@ -303,13 +300,13 @@ export class RenderSystem {
   }
 
   drawPauseScreen(): void {
-    const centerX = this.canvas.width / 2
-    const centerY = this.canvas.height / 2
-    
+    const centerX = this.viewWidth / 2
+    const centerY = this.viewHeight / 2
+
     // Semi-transparent overlay
     this.ctx.save()
     this.ctx.fillStyle = `rgba(0, 0, 0, ${RENDERING.pauseOverlayAlpha})`
-    this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height)
+    this.ctx.fillRect(0, 0, this.viewWidth, this.viewHeight)
     
     this.drawText('PAUSED', { x: centerX, y: centerY }, {
       font: `${RENDERING.pauseTitleSize}px ${RENDERING.defaultFont}`,
@@ -325,13 +322,13 @@ export class RenderSystem {
   }
 
   drawLevelLoading(level: number, levelBonus?: number, extraLifeAwarded?: boolean): void {
-    const centerX = this.canvas.width / 2
-    const centerY = this.canvas.height / 2
-    
+    const centerX = this.viewWidth / 2
+    const centerY = this.viewHeight / 2
+
     // Semi-transparent overlay
     this.ctx.save()
     this.ctx.fillStyle = `rgba(0, 0, 0, ${RENDERING.pauseOverlayAlpha})`
-    this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height)
+    this.ctx.fillRect(0, 0, this.viewWidth, this.viewHeight)
     
     // Blinking effect based on time
     const time = Date.now()
