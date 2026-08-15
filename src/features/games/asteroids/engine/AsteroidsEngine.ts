@@ -271,11 +271,12 @@ export class AsteroidsEngine {
   }
 
   private checkCollisions(): void {
-    const collisions = this.collisionSystem.checkCollisions(this.entities)
-    this.collisionSystem.resolveCollisions(collisions)
+    // Resolve each pair and apply its effects immediately, so a pair whose entity
+    // was already destroyed by an earlier pair this frame is skipped entirely
+    for (const collision of this.collisionSystem.checkCollisions(this.entities)) {
+      if (!collision.entityA.getActive() || !collision.entityB.getActive()) continue
 
-    // Handle post-collision effects
-    for (const collision of collisions) {
+      this.collisionSystem.resolveCollision(collision)
       this.handleCollisionEffects(collision.entityA, collision.entityB)
     }
   }
@@ -374,13 +375,19 @@ export class AsteroidsEngine {
     if (this.gameState.lives <= 0) {
       this.gameOver()
     } else {
-      // Respawn ship after delay
-      setTimeout(() => {
-        if (this.gameState.gameStatus === 'playing') {
+      // Respawn ship after delay. The run may have moved on to a level transition or
+      // a pause in the meantime - only a finished game should skip the respawn, or the
+      // ship stays inactive forever and no level can ever be completed.
+      this.clearRespawnTimer()
+      this.respawnTimer = setTimeout(() => {
+        this.respawnTimer = undefined
+
+        const gameEnded = this.gameState.gameStatus === 'gameOver' || this.gameState.gameStatus === 'menu'
+        if (!gameEnded) {
           const centerX = GAME_CONFIG.canvas.width / 2
           const centerY = GAME_CONFIG.canvas.height / 2
           this.ship.respawn({ x: centerX, y: centerY })
-          
+
           // Play ship respawn sound
           this.soundSystem.playSound('shipRespawn')
         }
@@ -716,6 +723,9 @@ export class AsteroidsEngine {
       pendingExtraLife: false,
       extraLifeJustAwarded: false,
     }
+
+    // Drop any respawn pending from the run being replaced
+    this.clearRespawnTimer()
 
     // Clear all entities and reset ship
     this.entities = []

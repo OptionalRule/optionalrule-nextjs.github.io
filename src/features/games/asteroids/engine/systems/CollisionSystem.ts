@@ -100,8 +100,13 @@ export class CollisionSystem {
     }
   }
 
-  private resolveCollision(collision: CollisionPair): void {
+  resolveCollision(collision: CollisionPair): void {
     const { entityA, entityB } = collision
+
+    // An entity destroyed earlier in this frame must not be processed again -
+    // two bullets reaching one asteroid produce two pairs for the same asteroid
+    if (!entityA.getActive() || !entityB.getActive()) return
+
     const typeA = this.getEntityType(entityA)
     const typeB = this.getEntityType(entityB)
 
