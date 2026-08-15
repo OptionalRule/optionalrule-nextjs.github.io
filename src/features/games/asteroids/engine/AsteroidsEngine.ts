@@ -1,6 +1,6 @@
 import type { GameState, ScoreEvent } from '../types'
 import { SaucerSize } from '../types'
-import { GAME_CONFIG, GAMEPLAY, COLORS } from '../constants'
+import { GAME_CONFIG, GAMEPLAY, COLORS, CONTROLS } from '../constants'
 import { Vector2DUtils } from './utils/Vector2D'
 import { GameMath } from './utils/GameMath'
 import { Entity } from './entities/Entity'
@@ -12,6 +12,13 @@ import { Saucer } from './entities/Saucer'
 import { CollisionSystem } from './systems/CollisionSystem'
 import { RenderSystem } from './systems/RenderSystem'
 import { SoundSystem } from './systems/SoundSystem'
+
+// Keys the game consumes; the browser default is suppressed only for these so the
+// rest of the page (and the rest of the site) keeps working normally.
+const PREVENTED_KEYS = new Set<string>([...Object.keys(CONTROLS), 'ArrowDown'])
+
+// Modifier and navigation keys that must not count as "press any key to start".
+const MENU_IGNORED_KEYS = new Set<string>(['Tab', 'Shift', 'Control', 'Alt', 'Meta'])
 
 export interface AsteroidsEngineEvents {
   onGameStateChange: (gameState: GameState) => void
@@ -41,6 +48,36 @@ export class AsteroidsEngine {
   private isProcessingShipDeath = false
   private isFirstSaucerSpawnForLevel = true
   private hasCalculatedFirstSpawn = false
+  private respawnTimer: ReturnType<typeof setTimeout> | undefined
+
+  private handleKeyDown = (event: KeyboardEvent): void => {
+    if (PREVENTED_KEYS.has(event.code)) {
+      event.preventDefault()
+    }
+
+    if (this.gameState.gameStatus === 'menu') {
+      if (!MENU_IGNORED_KEYS.has(event.key)) {
+        this.start()
+      }
+      return
+    }
+
+    this.keys.add(event.code)
+
+    if (event.code === 'Enter' && this.gameState.gameStatus === 'gameOver') {
+      this.restart()
+    } else if (event.code === 'Escape') {
+      this.togglePause()
+    }
+  }
+
+  private handleKeyUp = (event: KeyboardEvent): void => {
+    this.keys.delete(event.code)
+
+    if (PREVENTED_KEYS.has(event.code)) {
+      event.preventDefault()
+    }
+  }
 
   constructor(canvas: HTMLCanvasElement, events: AsteroidsEngineEvents) {
     this.canvas = canvas
@@ -76,32 +113,28 @@ export class AsteroidsEngine {
   }
 
   private setupInputHandling(): void {
-    const handleKeyDown = (event: KeyboardEvent) => {
-      this.keys.add(event.code)
-      
-      // Handle special keys
-      if (event.code === 'Enter' && this.gameState.gameStatus === 'gameOver') {
-        this.restart()
-      } else if (event.code === 'Escape') {
-        this.togglePause()
-      }
-      
-      event.preventDefault()
+    document.addEventListener('keydown', this.handleKeyDown)
+    document.addEventListener('keyup', this.handleKeyUp)
+  }
+
+  private clearRespawnTimer(): void {
+    if (this.respawnTimer !== undefined) {
+      clearTimeout(this.respawnTimer)
+      this.respawnTimer = undefined
     }
+  }
 
-    const handleKeyUp = (event: KeyboardEvent) => {
-      this.keys.delete(event.code)
-      event.preventDefault()
+  private stopGameLoop(): void {
+    if (this.gameLoop) {
+      cancelAnimationFrame(this.gameLoop)
+      this.gameLoop = 0
     }
-
-    document.addEventListener('keydown', handleKeyDown)
-    document.addEventListener('keyup', handleKeyUp)
-
-    // Store references for cleanup
-    this.canvas.setAttribute('data-keydown-handler', 'true')
   }
 
   start(): void {
+    // Never leave a previous loop running - a second one would double the simulation rate
+    this.stopGameLoop()
+
     if (this.gameState.gameStatus === 'menu') {
       this.initializeLevel()
       this.gameState.gameStatus = 'playing'
@@ -382,7 +415,6 @@ export class AsteroidsEngine {
       const randomizedFirstDelay = Math.max(5000, this.getRandomizedSaucerDelay(GAME_CONFIG.saucer.firstSpawnDelay))
       this.nextSaucerSpawn = now + randomizedFirstDelay
       this.hasCalculatedFirstSpawn = true
-      console.log(`First saucer spawn scheduled for level ${this.gameState.level} in ${randomizedFirstDelay}ms`)
       return
     }
 
@@ -403,7 +435,6 @@ export class AsteroidsEngine {
       // Schedule next spawn with regular interval
       const randomizedInterval = Math.max(10000, this.getRandomizedSaucerDelay(GAME_CONFIG.saucer.spawnInterval))
       this.nextSaucerSpawn = now + randomizedInterval
-      console.log(`Next saucer spawn scheduled in ${randomizedInterval}ms`)
     }
   }
 
@@ -739,29 +770,21 @@ export class AsteroidsEngine {
       // Resume paused effects and ambient sounds
       this.soundSystem.resumeCategory('effects')
       this.soundSystem.resumeCategory('ambient')
-      
-      // DEBUG: Also try to directly play saucer sound if there are active saucers
-      const activeSaucers = this.entities.filter(e => e instanceof Saucer && e.getActive())
-      console.log('Resume - Active saucers found:', activeSaucers.length)
-      if (activeSaucers.length > 0) {
-        console.log('Directly playing saucer arrival sound')
-        this.soundSystem.playSound('saucerArrival')
-      }
-      
+
       this.notifyStateChange()
     }
   }
 
   destroy(): void {
-    if (this.gameLoop) {
-      cancelAnimationFrame(this.gameLoop)
-    }
-    
+    this.stopGameLoop()
+    this.clearRespawnTimer()
+
     // Clean up sound system
     this.soundSystem.destroy()
-    
+
     // Clean up event listeners
-    // Note: In a real implementation, we'd store and remove the actual listeners
+    document.removeEventListener('keydown', this.handleKeyDown)
+    document.removeEventListener('keyup', this.handleKeyUp)
     this.keys.clear()
   }
 
