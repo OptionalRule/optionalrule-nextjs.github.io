@@ -1,0 +1,32 @@
+# Read-only graph navigation commands.
+prefix_rule(
+    pattern = ["graphify", ["query", "path", "explain", "affected", "god-nodes", "reflect"]],
+    decision = "allow",
+    justification = "Allow agents to inspect the project-local code graph without prompting.",
+)
+
+# Deterministic code-only graph maintenance used by this repository.
+prefix_rule(
+    pattern = ["graphify", "update", "."],
+    decision = "allow",
+    justification = "Allow refreshing the repository code graph without semantic extraction.",
+)
+
+prefix_rule(
+    pattern = ["graphify", "extract", ".", "--code-only"],
+    decision = "allow",
+    justification = "Allow bootstrapping the missing repository code graph without semantic extraction.",
+)
+
+prefix_rule(
+    pattern = ["graphify", "hook", ["install", "status"]],
+    decision = "allow",
+    justification = "Allow installing or checking the approved Graphify freshness hooks.",
+)
+
+# Project wrappers enforce the repository root, code-only scope, and no-viz policy.
+prefix_rule(
+    pattern = ["npm", "run", ["graph:update", "graph:hooks"]],
+    decision = "allow",
+    justification = "Allow the repository's reviewed Graphify maintenance wrappers.",
+)

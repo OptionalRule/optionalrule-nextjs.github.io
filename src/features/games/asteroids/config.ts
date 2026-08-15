@@ -1,4 +1,13 @@
-import type { GameConfig } from './types'
+import type {
+  AudioConfig,
+  ColorsConfig,
+  ControlsConfig,
+  DebugConfig,
+  GameConfig,
+  GameplayConfig,
+  PhysicsConfig,
+  RenderingConfig,
+} from './types'
 
 // Main game configuration - all values should be adjusted here
 export const ASTEROIDS_CONFIG: GameConfig = {
@@ -63,7 +72,7 @@ export const CONTROLS = {
   Space: 'shoot',
   Enter: 'restart',
   Escape: 'pause',
-} as const
+} as const satisfies ControlsConfig
 
 // Visual styling configuration
 export const COLORS = {
@@ -83,7 +92,7 @@ export const COLORS = {
   ui: '#00ff00',
   background: '#000011',
   backgroundGradient: '#001122',
-} as const
+} as const satisfies ColorsConfig
 
 // Physics and collision configuration
 export const PHYSICS = {
@@ -101,7 +110,7 @@ export const PHYSICS = {
       small: 12,
     },
   },
-} as const
+} as const satisfies PhysicsConfig
 
 // Gameplay configuration
 export const GAMEPLAY = {
@@ -133,8 +142,9 @@ export const GAMEPLAY = {
   extraLifeThreshold: 10000,
   
   // Performance settings
-  assumedFramerate: 60, // For time-independent calculations
-} as const
+  assumedFramerate: 60, // Reference framerate the tuning values are expressed against
+  maxFrameDelta: 50, // Cap on a single frame's delta so a throttled tab can't teleport entities
+} as const satisfies GameplayConfig
 
 // Rendering configuration
 export const RENDERING = {
@@ -208,7 +218,7 @@ export const RENDERING = {
   
   // FPS monitoring
   fpsUpdateInterval: 1000,
-} as const
+} as const satisfies RenderingConfig
 
 // Audio configuration (for future implementation)
 export const AUDIO = {
@@ -216,7 +226,7 @@ export const AUDIO = {
   masterVolume: 0.7,
   sfxVolume: 0.8,
   musicVolume: 0.5,
-} as const
+} as const satisfies AudioConfig
 
 // Development and debug configuration
 export const DEBUG = {
@@ -225,7 +235,7 @@ export const DEBUG = {
   showFPS: false,
   showEntityCount: false,
   logPerformance: false,
-} as const
+} as const satisfies DebugConfig
 
 // Consolidated export for backwards compatibility
 export const GAME_CONFIG = ASTEROIDS_CONFIG

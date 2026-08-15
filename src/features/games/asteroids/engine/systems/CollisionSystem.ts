@@ -100,8 +100,13 @@ export class CollisionSystem {
     }
   }
 
-  private resolveCollision(collision: CollisionPair): void {
+  resolveCollision(collision: CollisionPair): void {
     const { entityA, entityB } = collision
+
+    // An entity destroyed earlier in this frame must not be processed again -
+    // two bullets reaching one asteroid produce two pairs for the same asteroid
+    if (!entityA.getActive() || !entityB.getActive()) return
+
     const typeA = this.getEntityType(entityA)
     const typeB = this.getEntityType(entityB)
 
@@ -228,82 +233,5 @@ export class CollisionSystem {
 
   clearEvents(): void {
     this.gameEvents = []
-  }
-
-  // Spatial partitioning optimization for large numbers of entities
-  private spatialPartition(entities: Entity[], cellSize: number): Map<string, Entity[]> {
-    const grid = new Map<string, Entity[]>()
-
-    for (const entity of entities) {
-      if (!entity.getActive()) continue
-
-      const position = entity.getPosition()
-      const cellX = Math.floor(position.x / cellSize)
-      const cellY = Math.floor(position.y / cellSize)
-      const key = `${cellX},${cellY}`
-
-      if (!grid.has(key)) {
-        grid.set(key, [])
-      }
-      grid.get(key)!.push(entity)
-    }
-
-    return grid
-  }
-
-  // Optimized collision detection for large entity counts
-  checkCollisionsOptimized(entities: Entity[], cellSize = 100): CollisionPair[] {
-    if (entities.length < 50) {
-      // Use simple O(n²) for small entity counts
-      return this.checkCollisions(entities)
-    }
-
-    const collisions: CollisionPair[] = []
-    this.gameEvents = []
-    const grid = this.spatialPartition(entities, cellSize)
-
-    // Check collisions within each cell and adjacent cells
-    for (const [key, cellEntities] of grid) {
-      const [x, y] = key.split(',').map(Number)
-      
-      // Get entities from this cell and adjacent cells
-      const nearbyEntities = new Set(cellEntities)
-      
-      for (let dx = -1; dx <= 1; dx++) {
-        for (let dy = -1; dy <= 1; dy++) {
-          const adjKey = `${x + dx},${y + dy}`
-          const adjEntities = grid.get(adjKey) || []
-          adjEntities.forEach(entity => nearbyEntities.add(entity))
-        }
-      }
-
-      const entitiesArray = Array.from(nearbyEntities)
-      
-      // Check collisions within nearby entities
-      for (let i = 0; i < entitiesArray.length; i++) {
-        for (let j = i + 1; j < entitiesArray.length; j++) {
-          const entityA = entitiesArray[i]
-          const entityB = entitiesArray[j]
-
-          if (!entityA.getActive() || !entityB.getActive()) continue
-
-          const collision = this.checkEntityCollision(entityA, entityB)
-          if (collision) {
-            collisions.push(collision)
-            
-            this.gameEvents.push({
-              type: 'collision',
-              data: {
-                entityA: entityA.getId(),
-                entityB: entityB.getId(),
-                position: collision.collisionPoint,
-              }
-            })
-          }
-        }
-      }
-    }
-
-    return collisions
   }
 }

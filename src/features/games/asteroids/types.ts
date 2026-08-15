@@ -147,7 +147,9 @@ export interface GameplayConfig {
   thrustAnimationSpeed: number
   invulnerabilityFlashInterval: number
   invulnerabilityFlashSkip: number
+  extraLifeThreshold: number
   assumedFramerate: number
+  maxFrameDelta: number
 }
 
 export interface RenderingConfig {
@@ -170,13 +172,18 @@ export interface RenderingConfig {
   bulletRadius: number
   bulletGlow: number
   asteroidGlow: number
+  saucerGlow: number
   textShadowBlur: number
   gameOverOverlayAlpha: number
   pauseOverlayAlpha: number
   debugLineWidth: number
   debugAlpha: number
-  shipVertices: Vector2D[]
-  thrustVertices: Vector2D[]
+  shipVertices: readonly Vector2D[]
+  thrustVertices: readonly Vector2D[]
+  saucerVertices: {
+    large: readonly Vector2D[]
+    small: readonly Vector2D[]
+  }
   fpsUpdateInterval: number
 }
 
@@ -207,7 +214,10 @@ export interface ColorsConfig {
   }
   asteroidsFill: string
   bullets: string
-  thrust: string[]
+  saucerBullets: string
+  saucer: string
+  saucerFill: string
+  thrust: readonly string[]
   ui: string
   background: string
   backgroundGradient: string
