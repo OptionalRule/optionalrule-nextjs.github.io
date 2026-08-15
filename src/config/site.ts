@@ -1,7 +1,7 @@
 export const siteConfig = {
   name: 'Optional Rule',
   title: 'Optional Rule',
-  description: 'A modern blog about TTRPG and RPG design.',
+  description: 'A modern blog about TTRPGs, RPG design, game design, and game development.',
   url: 'https://www.optionalrule.com',
   // Default theme for first-time visitors (no saved preference)
   // Options: 'dark' | 'light' | 'system'
@@ -20,7 +20,7 @@ export const siteConfig = {
   language: 'en',
   locale: 'en_US',
   themeColor: '#3b82f6',
-  keywords: ['ttrpg', 'gaming', 'rpg', 'dungeons and dragons', 'shadowdark', 'role-playing', 'game design'] as string[],
+  keywords: ['ttrpg', 'gaming', 'rpg', 'dungeons and dragons', 'shadowdark', 'role-playing', 'game design', 'game development', 'indie games', 'devlog'] as string[],
   social: {
     twitter: '@optionalrule',
     github: 'streamweaver',

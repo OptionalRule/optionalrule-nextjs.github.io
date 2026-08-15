@@ -56,7 +56,7 @@ export function generatePageTitle(title: string, siteName: string = 'My Blog'): 
 }
 
 // Generate meta description
-export function generateMetaDescription(description?: string, excerpt?: string, defaultDescription: string = 'A modern blog about web development, best practices, and emerging technologies.'): string {
+export function generateMetaDescription(description?: string, excerpt?: string, defaultDescription: string = 'A modern blog about TTRPGs, RPG design, game design, and game development.'): string {
   return description || excerpt || defaultDescription;
 }
 
