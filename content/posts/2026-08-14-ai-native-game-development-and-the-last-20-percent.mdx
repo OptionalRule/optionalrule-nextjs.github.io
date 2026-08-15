@@ -1,0 +1,101 @@
+---
+slug: "ai-native-game-development-and-the-last-20-percent"
+title: "AI Native Game Development and the Last 20 percent"
+date: "2026-08-14"
+excerpt: "Why AI handles the first 80 percent of game development and stalls on engines, concurrency, and the feel of a game that only a human can verify."
+tags: ["Game Development","Philosophy","IBO"]
+featured_image: "/images/ai-native-game-development.webp"
+draft: false
+showToc: false
+---
+There's an argument going around X right now about AI native game engines. It started with a post telling people to delete Unity, delete Unreal, delete Godot, and write Three.js instead, because that's what the models are actually good at. Then an engine programmer pointed out that wrapping a pile of prompts around Three.js doesn't make you an engine developer. The replies went about how you'd expect.
+
+I've been a hobby game developer for about 30 years and spent the last year building games with heavy AI assistance. Some Three.js tools and arcade games, a full MUD engine written from scratch in Go, and now a top down tactical OSR style game in Godot. Unintentionally a good sample of scales and pradims.
+
+The best thing I realized is that game design still rules. AI isn't going to design your game for you, at least not one that isn't just a regression to the mean. However, failure modes, planning modes, testing, and much more are very different in an AI world.
+
+## Engines and platforms are not the same thing
+
+Almost everyone in this discussion is using "game engine" when they mean "the whole environment where I make a game." Those are different things and conflating them makes the conversation useless.
+
+An engine is the runtime. Rendering, physics, the scene or entity model, networking, the asset pipeline. A development platform is everything wrapped around that so a person can author, inspect, test, profile, and ship. Unity is both. Godot is both. Three.js is neither, honestly, it's a rendering library that people build the rest around themselves.
+
+When someone says an engine isn't AI native, they almost always mean the platform isn't. The runtime doesn't care who wrote the code. The authoring surface cares enormously. Keep those separate and half the argument evaporates.
+
+## Three.js was great right up until the GPU started screaming
+
+I built a [solar system generator](/tools/star_system_generator/) with Three.js, along with some [arcade style](/games/asteroids/) games and support tools. The speed is real. You get from idea to a link somebody can click faster than in anything else I've used, and the AI writes it well because there is a mountain of it in the training data.
+
+Then I tried to do something with atmosphere. Fog and volumetric fill rendered differently across platforms, and getting it consistent meant fighting the browser rather than fighting the design. Meanwhile my GPU was spinning up like I'd launched an Unreal title, to display a handful of spheres orbiting a light source.
+
+I want to be careful about what that proves. That wasn't the AI failing. The AI wrote roughly what I asked for. That was the platform's ceiling, and I hit it on a project that displays a solar system. Complex projects get out of hand fast there, and it has nothing to do with who's typing.
+
+So file that one under platform limits. It matters because the next two failures aren't that.
+
+## Text is king, and it still wasn't enough
+
+[Iron, Blood, and Omens MUD (IBO)](/2026/01/20/im-buiding-a-mud/) started partly as an experiment. Text is what these models are best at, so what happens if you point them at a game that is nothing but text? I wrote the PogoMUD engine and all the surrounding game systems in Go, and I had a functional, mature MUD in a few months of hobby time. It went well enough that it convinced me to keep going.
+
+A MUD is the friendliest case an AI assistant will ever get in game development. No renderer. No shaders. No assets. No frame budget. No visual validation problem. Nothing that requires the model to look at a picture and decide whether it looks right, because there are no pictures. Every single thing that makes game development hard for a language model was absent by construction.
+
+And it still strained at concurrent multiplayer state. Multiple players acting on shared world state, in real time, with systems that have to stay consistent while several things resolve at once. That's where I stopped being a guy reviewing code and started being the guy holding the whole model in my head so I could catch what got dropped.
+
+Nobody can tell me the engine was the problem. There wasn't one until I wrote it.
+
+## Why Godot in C# is the best bad fit right now
+
+IBO went well enough that I'm evolving it into a tactical top down game, and I picked Godot. It's the closest thing to an AI friendly platform we have, but not for the reason people usually give.
+
+The common argument is that Godot's scenes and resources are plain text, so a model can edit them directly instead of clicking through a GUI. True, and useful. But text is table stakes. The real advantage is what you get with the C# build, which is Roslyn. The compiler exposes the code as a queryable semantic graph. Symbol resolution, find every reference, type errors and analyzer output that arrive as structured machine readable feedback before anything runs. That's a different category of help than "the file is readable." It's a verification surface the assistant can actually use, and it's deeper than what the scripting side gives you.
+
+The other piece is that I can invoke and control the engine directly without going through a tool protocol. That sounds minor. It isn't. It's the difference between an iteration loop that takes seconds and one that takes a conversation.
+
+Which brings me to MCP, since everyone brings up MCP. I don't think it's hopeless, and the recent move to make it stateless genuinely helps when you're working across subsystems. But it's still a message based interface, which makes it a variation on the API pattern we already had. Game development doesn't want messages. It wants multiformat real time streams, because the useful signal is a running simulation producing frame times and state changes continuously. You can't request that. You have to watch it. That's an AI design problem, not a protocol design problem, and I think people are trying to solve it at the wrong layer.
+
+## The last twenty percent is the whole job
+
+Bevy comes up constantly in these threads as the promising answer. Data oriented, Rust, open source, composable, none of the legacy baggage. I like it in principle.
+
+But if AI were as capable of building engines as the loudest voices claim, Bevy should be pulling away by now. Not just moving fast, since fast movement is normal for a young project, but it's not clearly demonstrating the paradigms everyone says are coming. And I don't think that's about Bevy.
+
+Game engines need exactly the things current models are worst at. Performance under a hard frame budget. Thread safety. Race conditions. Determinism. These share an ugly property, which is that they don't fail visibly in the generated artifact. Code with a data race compiles and runs and looks identical to code without one, right up until it doesn't. The model has no signal that anything went wrong, because nothing did yet.
+
+AI is doing the 80 percent of the 80/20 rule in game development. Some days it feels like 90. But engines are a last 10 or 20 percent problem, and I think closing that gap is going to be harder and slower than people are predicting.
+
+## The Jaunty Little Bounce
+
+I write tests constantly. The AI writes most of them. It's decent at it, though I once had my machine crash because it didn't bound memory in a test suite and I ran myself out of RAM, which is the sort of thing you can solve with a container and a resource cap. Fine. Annoying, not structural.
+
+The structural problem is what tests can't reach. A large share of correctness in a game is established by a human looking at the thing and deciding it feels right. That's not a failure of discipline. That's the job. I'm designing the game, so I have to see it move before I can say whether it's correct.
+
+But that judgment produces no artifact. There's no test, no assertion, no line in a spec, nothing written down anywhere that an assistant can read later. So when that jaunty little bounce on the character move animation gets flattened three refactors down the line, nothing catches it. The AI can't catch it, because the property it would need to check was never externalized. It lives in my head and in one afternoon where I watched it and nodded.
+
+AI is boxed into snapshot testing and deterministic replay, not dynamic 'arrow in flight' kind of experience needed to really test a game. They detect change, not wrongness. A snapshot test would happily flag the bounce animation as a diff, but it can't tell me which version was right. And in a game under active development everything is diffing all the time, so the signal drowns. Golden tests work when the golden state is stable. Mine isn't, on purpose, because I'm still designing.
+
+That's the verification gap. Not that AI can't write tests. I'm drowning in tests. Over 50% of the code in any project now are tests. Sometimes they're even helpful.
+
+That a big chunk of the correctness surface in a game can't really be written down, because the way it got established in the first place was a person watching it. Games are nothing but experience and vibe at the end of the day, and 'Vibe Coding' can't produce a real vibe.
+
+## Where specs go from here
+
+I've been arguing for a while that the spec is becoming the real source of truth, not the language. That specs drift upward into requirements, and eventually into something closer to pure design documents, with the code as output rather than input.
+
+I know how that sounds. We've been promised this before, repeatedly. 4GLs, CASE tools, model driven architecture, round tripping UML. Every one of them died on the same rock, which is that a specification precise enough to generate a correct system turns out to be code wearing a costume.
+
+I think this time is different for one specific reason. Those systems used a deterministic translation layer, so every ambiguity in the spec became a defect in the output. There was no negotiation. Now the translator can ask a question, propose two readings, and check itself against tests. Ambiguity stops being fatal and becomes a conversation. That's a real change and I don't think it's hype.
+
+But it's bounded, and the bounce is where the boundary is. Specs will climb the abstraction ladder anywhere correctness can be expressed. That covers a lot of what I build. The Progressive Resolution System in IBO is fully specifiable, roll under percentile with Success Points accumulating into outcome tiers, and I can write assertions for every bit of it. Feel, timing, weight, the texture of a thing when it moves, none of that is going up the ladder anytime soon. A human stays in that loop permanently, not as a transitional stage until the models improve.
+
+The maximalists want to believe everything can be automated and the skeptics want to say none of it works. I've built three of these things now, and the honest answer is that the line falls in a specific and predictable place.
+
+## So what do we actually need
+
+Not a retrofit of Unity or Unreal but a whole new framework. The legacy assumptions in existing platforms are load bearing, and you can't bolt agent native behavior on top of tools that assume a human is watching without fighting the grain forever.
+
+Compile errors, profiler output, debugger state, all of it formatted for eyeballs at human reading speed. That's the abstraction I want gone, and I'd rather have that argument than the one about whether GDScript should exist.
+
+What I want is a platform designed from scratch for continuous observation and streaming, with a verification surface deep enough that an assistant can check its own work, and enough tolerance built in that it survives the AI side changing radically over the next two years. That's a lot to ask. It's also the only version of this that isn't a demo.
+
+In the meantime I'm still in Godot, still catching the things it drops, and still the only one who knows whether the bounce is right.
+
+Anyway, I'm curious whether other people building with these tools are seeing the same split I am. Have you found a way to capture the feel stuff in something an assistant can check later? Or are you also just watching your game move and hoping you notice when it stops being right?

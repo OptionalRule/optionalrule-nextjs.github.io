@@ -264,7 +264,7 @@ export function Header() {
                   Optional Rule
                 </h1>
                 <p className="text-xs font-medium text-[var(--text-tertiary)] leading-tight">
-                  TTRPGs, game design, and all that happy stuff!
+                  TTRPGs, game design, game development, and all that happy stuff!
                 </p>
               </div>
             </Link>
