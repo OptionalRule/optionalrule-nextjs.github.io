@@ -28,7 +28,7 @@ export class Saucer extends Entity {
     this.nextDirectionChange = GameMath.randomFloat(1000, 3000) // 1-3 seconds
     
     // Set speed based on size
-    this.speed = size === SaucerSize.LARGE ? 80 : 120
+    this.speed = GAME_CONFIG.saucer.speeds[size]
     
     // Set vertices based on size (create mutable copy)
     this.saucerVertices = [...(size === SaucerSize.LARGE 
