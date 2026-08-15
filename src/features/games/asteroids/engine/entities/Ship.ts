@@ -30,8 +30,10 @@ export class Ship extends Entity {
       }
     }
 
-    // Apply friction
-    this.velocity = Vector2DUtils.multiply(this.velocity, config.friction)
+    // Apply friction. The configured value is per frame at the reference framerate,
+    // so decay exponentially with elapsed time to keep the feel identical on any display.
+    const frictionDecay = Math.pow(config.friction, deltaSeconds * GAMEPLAY.assumedFramerate)
+    this.velocity = Vector2DUtils.multiply(this.velocity, frictionDecay)
 
     // Limit speed
     const speed = Vector2DUtils.magnitude(this.velocity)
@@ -94,19 +96,17 @@ export class Ship extends Entity {
     ctx.restore()
   }
 
-  rotate(direction: -1 | 1): void {
+  rotate(direction: -1 | 1, deltaTime: number): void {
     if (!this.isActive) return
-    const deltaTime = 1000 / GAMEPLAY.assumedFramerate // Assume configured framerate for rotation smoothness
     this.rotation += direction * GAME_CONFIG.ship.rotationSpeed * (deltaTime / 1000)
   }
 
-  thrust(): void {
+  thrust(deltaTime: number): void {
     if (!this.isActive) return
-    
+
     this.isThrusting = true
-    const deltaTime = 1000 / GAMEPLAY.assumedFramerate // Assume configured framerate
     const deltaSeconds = deltaTime / 1000
-    
+
     const thrustVector = Vector2DUtils.fromAngle(
       this.rotation, 
       GAME_CONFIG.ship.acceleration * deltaSeconds

@@ -149,11 +149,13 @@ export class AsteroidsEngine {
   }
 
   private update(currentTime: number): void {
-    const deltaTime = currentTime - this.lastFrameTime
+    // Clamp so a hidden or throttled tab doesn't hand the simulation a multi-second
+    // step, which would jump entities across the field and tunnel through collisions
+    const deltaTime = Math.min(currentTime - this.lastFrameTime, GAMEPLAY.maxFrameDelta)
     this.lastFrameTime = currentTime
 
     if (this.gameState.gameStatus === 'playing') {
-      this.handleInput()
+      this.handleInput(deltaTime)
       this.updateEntities(deltaTime)
       this.updateSaucerShooting()
       this.checkCollisions()
@@ -168,20 +170,20 @@ export class AsteroidsEngine {
     }
   }
 
-  private handleInput(): void {
+  private handleInput(deltaTime: number): void {
     if (!this.ship.getActive()) return
 
     // Ship rotation
     if (this.keys.has('ArrowLeft')) {
-      this.ship.rotate(-1)
+      this.ship.rotate(-1, deltaTime)
     }
     if (this.keys.has('ArrowRight')) {
-      this.ship.rotate(1)
+      this.ship.rotate(1, deltaTime)
     }
 
     // Ship thrust
     if (this.keys.has('ArrowUp')) {
-      this.ship.thrust()
+      this.ship.thrust(deltaTime)
       // Start thrust sound if not already playing
       if (!this.isThrusting) {
         this.soundSystem.playSound('shipThrust')

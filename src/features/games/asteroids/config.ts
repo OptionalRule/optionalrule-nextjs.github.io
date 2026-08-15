@@ -133,7 +133,8 @@ export const GAMEPLAY = {
   extraLifeThreshold: 10000,
   
   // Performance settings
-  assumedFramerate: 60, // For time-independent calculations
+  assumedFramerate: 60, // Reference framerate the tuning values are expressed against
+  maxFrameDelta: 50, // Cap on a single frame's delta so a throttled tab can't teleport entities
 } as const
 
 // Rendering configuration
