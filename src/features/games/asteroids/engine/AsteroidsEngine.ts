@@ -695,9 +695,9 @@ export class AsteroidsEngine {
       this.soundSystem.pauseCategory('effects')
       this.soundSystem.pauseCategory('ambient')
       this.soundSystem.playSound('pause')
-      
-      // Reset thrust state so it can restart when unpaused
-      this.isThrusting = false
+
+      // Keep isThrusting as-is: the paused loop resumes with the rest of the effects,
+      // and handleInput() stops it on the first frame back if the key was released
     } else if (this.gameState.gameStatus === 'paused') {
       this.gameState.gameStatus = 'playing'
       this.lastFrameTime = performance.now() // Reset frame timing
@@ -763,10 +763,10 @@ export class AsteroidsEngine {
       this.soundSystem.pauseCategory('effects')
       this.soundSystem.pauseCategory('ambient')
       this.soundSystem.playSound('pause')
-      
-      // Reset thrust state so it can restart when unpaused
-      this.isThrusting = false
-      
+
+      // Keep isThrusting as-is: the paused loop resumes with the rest of the effects,
+      // and handleInput() stops it on the first frame back if the key was released
+
       this.notifyStateChange()
     }
   }
