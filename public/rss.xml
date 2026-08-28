@@ -2,16 +2,32 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title><![CDATA[Optional Rule]]></title>
-    <description><![CDATA[A modern blog about TTRPG and RPG design.]]></description>
+    <description><![CDATA[A modern blog about TTRPGs, RPG design, game design, and game development.]]></description>
     <link>https://www.optionalrule.com</link>
     <atom:link href="https://www.optionalrule.com/rss.xml" rel="self" type="application/rss+xml" />
     <language>en</language>
     <managingEditor>scott@optionalrule.com (Scott Turnbull)</managingEditor>
     <webMaster>scott@optionalrule.com (Scott Turnbull)</webMaster>
     <copyright>Copyright 2026 Optional Rule Games</copyright>
-    <lastBuildDate>Wed, 03 Jun 2026 00:00:00 GMT</lastBuildDate>
+    <lastBuildDate>Fri, 28 Aug 2026 00:00:00 GMT</lastBuildDate>
     <ttl>60</ttl>
     
+    <item>
+      <title><![CDATA[Better Dungeon Design Part 1]]></title>
+      <description><![CDATA[How room spacing shapes dungeon pacing, exploration, and player decisions—and why layout should be a deliberate part of adventure design.]]></description>
+      <link>https://www.optionalrule.com/2026/08/28/better-dungeon-design-part-1/</link>
+      <guid isPermaLink="true">https://www.optionalrule.com/2026/08/28/better-dungeon-design-part-1/</guid>
+      <pubDate>Fri, 28 Aug 2026 00:00:00 GMT</pubDate>
+      <category><![CDATA[DM Advice, Analysis, Game Development, Philosophy]]></category>
+    </item>
+    <item>
+      <title><![CDATA[AI Native Game Development and the Last 20 percent]]></title>
+      <description><![CDATA[Why AI handles the first 80 percent of game development and stalls on engines, concurrency, and the feel of a game that only a human can verify.]]></description>
+      <link>https://www.optionalrule.com/2026/08/14/ai-native-game-development-and-the-last-20-percent/</link>
+      <guid isPermaLink="true">https://www.optionalrule.com/2026/08/14/ai-native-game-development-and-the-last-20-percent/</guid>
+      <pubDate>Fri, 14 Aug 2026 00:00:00 GMT</pubDate>
+      <category><![CDATA[Game Development, Philosophy, IBO]]></category>
+    </item>
     <item>
       <title><![CDATA[I blame the BECMI Thief class for all of DnD's problems]]></title>
       <description><![CDATA[How the BECMI Thief turned shared player ingenuity into one class's dice roll, and quietly traded D&D's player agency for character permissions.]]></description>
@@ -74,7 +90,7 @@
       <link>https://www.optionalrule.com/2025/09/12/kcd2-alchemy-tool/</link>
       <guid isPermaLink="true">https://www.optionalrule.com/2025/09/12/kcd2-alchemy-tool/</guid>
       <pubDate>Fri, 12 Sep 2025 00:00:00 GMT</pubDate>
-      <category><![CDATA[RPG Resources, Analysis, Philosophy]]></category>
+      <category><![CDATA[Game Development, RPG Resources, Analysis, Philosophy]]></category>
     </item>
     <item>
       <title><![CDATA[Ashlight Setting Primer]]></title>
@@ -90,7 +106,7 @@
       <link>https://www.optionalrule.com/2025/08/22/retro-classic-game-asteroids-available/</link>
       <guid isPermaLink="true">https://www.optionalrule.com/2025/08/22/retro-classic-game-asteroids-available/</guid>
       <pubDate>Fri, 22 Aug 2025 00:00:00 GMT</pubDate>
-      <category><![CDATA[Community, Philosophy]]></category>
+      <category><![CDATA[Game Development, Community, Philosophy]]></category>
     </item>
     <item>
       <title><![CDATA[Site Migration Complete]]></title>

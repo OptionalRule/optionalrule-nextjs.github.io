@@ -1,0 +1,69 @@
+---
+slug: "better-dungeon-design-part-1"
+title: "Better Dungeon Design Part 1"
+date: "2026-08-28"
+excerpt: "How room spacing shapes dungeon pacing, exploration, and player decisions—and why layout should be a deliberate part of adventure design."
+tags: ["DM Advice", "Analysis", "Game Development", "Philosophy"]
+featured_image: "/images/better-dungeon-design-p1.webp"
+draft: false
+showToc: false
+---
+This is the first in a series on designing better dungeon layouts and the tradeoffs different approaches offer. This is expressed in the random dungeon generation in my dungeon-crawling OSR game, but focuses on design theory and impact for any game, including TTRPGs. My hope is that this will help adventure creators think more deeply about how the layout and design of a dungeon affects the flow and pacing of their game.
+
+## Same rooms, four dungeons
+
+I've been building an old-school dungeon crawl on OSRIC 3.0 for a while now, the kind where the party moves as one formation instead of four separate pawns, your torch burns down by the turn, and every level gets generated fresh when you start a new delve. It's the game I've wanted to play for a long time and never quite found, so at some point I stopped waiting around and started writing it myself. The pitch, when people ask, is that the dungeon is the opponent. The monster list is just what happens to live there.
+
+Anyway, somewhere in the middle of building the map generator I ran into a small problem that sent me right back to sitting at a table with graph paper, and that's really what I want to talk about. It turns out I've been making one of the most important decisions in dungeon design by accident for most of my life.
+
+## The two-door problem
+
+The generator settles rooms into solid rock and then digs passages between the ones that ought to connect. One night it spat out a level where two rooms had ended up sitting maybe two squares apart, and because the passage between them crossed a wall at each end, it dutifully put a door at both ends. Two doors, ten feet apart, with a tiny stub of hallway in between them. An airlock. In a crypt.
+
+The fix was easy enough. If a passage is short and nothing else runs through it, it gets one door and the other end just opens as a five foot gap into a little one square vestibule. Fine. Problem solved, move on.
+
+Except I couldn't stop looking at that vestibule, because it was a shape the generator had never drawn before and I hadn't designed it. It showed up because two rooms happened to land close to each other. The spacing invented the architecture, and I was so busy thinking about rooms and corridors as separate things that I'd never noticed the gap between them was making decisions on my behalf.
+
+## We all learned this backwards
+
+Think about how most of us actually learned to draw a dungeon map. You get the graph paper, you draw a room, and then you draw a corridor going somewhere because the room needs to connect to something, and then you draw another room at the end of the corridor. Repeat until the page is full or you get bored, then go back and number everything.
+
+I did that for years and years. I still do it, honestly, when I'm sketching something for a session in a hurry.
+
+The old modules trained us into it too, or at least they trained me. You'd open up a Judges Guild map or one of the blue geomorph sheets and the thing you noticed was the rooms, because the rooms had numbers and the numbers had text. The corridors were just how you got from four to five. Nobody keys a hallway. So the hallway becomes the connective tissue you draw without thinking about it, and after a while you're not making a decision about it at all.
+
+Then years later somebody hands you a Dyson map and you notice that his corridors are doing something. They're short, they double back, they open into each other, and half the interest in the map is in the negative space between the chambers. That's not connective tissue. That's the drawing.
+
+So when I sat down to teach a computer to do this, I had to say out loud what I'd never said out loud, which is that arranging the rooms is its own decision and it happens before you connect anything.
+
+## What the gap actually costs
+
+The distance between two rooms is a decision about time, and once you see it that way you can't unsee it.
+
+Two rooms sharing a wall means a door, and a door means the party is in the next room the moment they decide to be. Two rooms forty feet apart means a corridor, and a corridor is where the torch burns, where marching order suddenly matters, where somebody has to be in front, and where the wandering monster check happens. Same two rooms, same contents, completely different amount of the players' evening spent getting between them.
+
+That's the whole thing. If you spread your rooms out you have made your dungeon slower without adding a single room to it, and if you pack them together you've made it faster and louder and harder to retreat through. Neither one is better. They're just different games, and I'd been picking between them based on how much space was left on the graph paper.
+
+Which, in the tradition of realizing obvious things far too late, is roughly how I've also been handling encounter balance for twenty years.
+
+![Four dungeon layouts generated from the same twenty-room set: dense interior, clustered, multi-cluster, and organic.](/images/dungeon-layouts.webp)
+
+## Four arrangements, one room list
+
+So the game builds each level in stages that are deliberately kept apart from each other, and the separation is the point.
+
+First it makes the actual rooms. Some come out of a hand-drawn shape library I built from old maps, things like octagonal halls and niche galleries and rows of little chapel cells, and some come out of a recipe that produces ordinary rectilinear chambers. At this stage nothing has any idea where it's going.
+
+Then a layout policy decides where those rooms settle, and this is the part I care about. There are four of them. Dense interior packs everything into one compact mass where rooms share walls. Clustered complex builds two loose neighborhoods. Multi-cluster builds three real districts that have to be bridged. Organic undercroft has no plan at all and wanders.
+
+Only after that does it work out which rooms should connect, and only then does it dig the passages, and because an already-dug passage is cheap to reuse, later corridors merge into earlier ones and you get trunks and T junctions and crossroads without anybody placing them.
+
+The reason I'm going through this is that the same twenty rooms run through those four layouts give you four dungeons that play differently, and I mean actually differently, not just differently shaped. The next four posts are one per layout, what it does, what it does to your session, and what it costs you, because every one of them costs you something. Same seed across the whole series, so you're looking at the same rooms rearranged four ways.
+
+## So where does that leave us
+
+I'm not trying to talk anybody into writing a dungeon generator. God knows I didn't intend to write one either. What I'd like is for the arrangement to be a thing you decide on purpose, the way you decide whether a dungeon is a tomb or a mine, because it does at least as much work as the room contents do and it's free.
+
+I keep thinking about all the maps I drew where I called the results organic. They weren't organic. They were unplanned, which is a completely different thing, and the difference is whether the shape came out of a process or out of nothing much.
+
+So how do you do it? When you sit down to make a dungeon map, do you decide the shape of the place first, or do you draw rooms until you have enough and let the arrangement be whatever the paper allowed? And has anybody else had the experience of looking at a map they drew years ago and realizing the layout was making arguments they never agreed to? I'd love to hear it, because I'm still not sure whether I've discovered something or just finally noticed something everybody else already knew.

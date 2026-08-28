@@ -1,5 +1,32 @@
 [
   {
+    "slug": "better-dungeon-design-part-1",
+    "title": "Better Dungeon Design Part 1",
+    "excerpt": "How room spacing shapes dungeon pacing, exploration, and player decisions—and why layout should be a deliberate part of adventure design.",
+    "tags": [
+      "DM Advice",
+      "Analysis",
+      "Game Development",
+      "Philosophy"
+    ],
+    "content": "",
+    "date": "2026-08-28",
+    "readingTime": 7
+  },
+  {
+    "slug": "ai-native-game-development-and-the-last-20-percent",
+    "title": "AI Native Game Development and the Last 20 percent",
+    "excerpt": "Why AI handles the first 80 percent of game development and stalls on engines, concurrency, and the feel of a game that only a human can verify.",
+    "tags": [
+      "Game Development",
+      "Philosophy",
+      "IBO"
+    ],
+    "content": "",
+    "date": "2026-08-14",
+    "readingTime": 11
+  },
+  {
     "slug": "i-blame-the-becmi-thief-class-for-all-of-dnds-problems",
     "title": "I blame the BECMI Thief class for all of DnD's problems",
     "excerpt": "How the BECMI Thief turned shared player ingenuity into one class's dice roll, and quietly traded D&D's player agency for character permissions.",
