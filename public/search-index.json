@@ -1,5 +1,19 @@
 [
   {
+    "slug": "better-dungeon-design-part-2",
+    "title": "Better Dungeon Design Part 2: Dense Interior",
+    "excerpt": "Corridors have been doing your party favors nobody asked for. Take them away and retreat becomes a gamble, noise carries three rooms over, and your torches last forever. Here's when that trade pays.",
+    "tags": [
+      "DM Advice",
+      "Analysis",
+      "Game Development",
+      "Philosophy"
+    ],
+    "content": "",
+    "date": "2026-08-31",
+    "readingTime": 9
+  },
+  {
     "slug": "better-dungeon-design-part-1",
     "title": "Better Dungeon Design Part 1",
     "excerpt": "How room spacing shapes dungeon pacing, exploration, and player decisions—and why layout should be a deliberate part of adventure design.",

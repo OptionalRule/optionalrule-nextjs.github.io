@@ -562,3 +562,44 @@ html {
   margin-top: 0.75em;
   font-style: italic;
 }
+
+.prose .float-image-right,
+.prose .float-image-left {
+  width: 100%;
+  max-width: 20rem;
+  margin-top: 0.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.prose .float-image-right img,
+.prose .float-image-left img {
+  width: 100%;
+  height: auto;
+  margin: 0;
+}
+
+.prose .float-image-right figcaption,
+.prose .float-image-left figcaption {
+  margin-top: 0.5em;
+}
+
+@media (min-width: 640px) {
+  .prose .float-image-right {
+    float: right;
+    max-width: 18rem;
+    margin-left: 1.75rem;
+  }
+
+  .prose .float-image-left {
+    float: left;
+    max-width: 18rem;
+    margin-right: 1.75rem;
+  }
+}
+
+.prose h1,
+.prose h2,
+.prose h3,
+.prose hr {
+  clear: both;
+}

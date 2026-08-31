@@ -1,0 +1,74 @@
+---
+slug: "better-dungeon-design-part-2"
+title: "Better Dungeon Design Part 2: Dense Interior"
+date: "2026-08-31"
+excerpt: "Corridors have been doing your party favors nobody asked for. Take them away and retreat becomes a gamble, noise carries three rooms over, and your torches last forever. Here's when that trade pays."
+tags: ["DM Advice", "Analysis", "Game Development", "Philosophy"]
+featured_image: "/images/dense-dungeon_1200x675.webp"
+draft: false
+showToc: false
+---
+This is the second in a series on designing better dungeon layouts and the tradeoffs different approaches offer. This is expressed in the random dungeon generation in my dungeon-crawling OSR game, but focuses on design theory and impact for any game, including TTRPGs. My hope is that this will help adventure creators think more deeply about how the layout and design of a dungeon affects the flow and pacing of their game.
+
+## The dungeon with nowhere to run
+
+The working example is the old-school dungeon crawl I've been building on OSRIC 3.0, where the party moves as a formation and the torch is a real resource, but everything here works just as well on graph paper.
+
+In [Part 1](2026/08/28/better-dungeon-design-part-1/) I argued that the gap between two rooms is a decision about time and pacing, and that most of us make it without noticing. This one is about what happens when you take that gap away entirely.
+
+## What the generator does
+
+Of the four layouts I built for my upcoming game, this one is by far the simplest, and it's slightly embarrassing how simple it is. Every room aims at the exact center of the level, not a spread or a scatter but the literal center point, and then takes the nearest legal open spot it can find. Extra separation between rooms is set to zero, so there's no polite buffer keeping them apart, and when two rooms end up flush against each other the generator notices the shared wall and cuts a door through it instead of digging a passage.
+
+What comes out is one compact mass of rooms with hardly any corridor in it. The passages that do survive are short, and since an already-dug passage is cheap for the router to reuse, the few that exist get walked over and over and merge into little shared spines.
+
+<figure className="float-image-right">
+  <img
+    src="/images/dense_interior_343x456.webp"
+    alt="Dense interior dungeon layout produced by the generator: rooms packed against each other with doors in shared walls and almost no corridor."
+    width="343"
+    height="456"
+    loading="lazy"
+  />
+  <figcaption>Dense interior generation view.</figcaption>
+</figure>
+
+If you're doing this programmatically, it's fairly straightforward. I drop an anchor room first, usually a large one at the center, though sometimes I shove it to the back instead. Every other room then aims at that center and stacks against whatever is already there until it finds a spot that doesn't overlap. Another pass cuts the doors, placed at random along the shared walls but weighted toward the middle. At the end I have an A\* pass pick opposite pairs of rooms, trace a few critical paths between them, and delete every door that isn't on one. That last step is the one that does the work. Without it you get a mass of rooms with doors everywhere and no shape to the traffic. With it you get subgroupings, and a flow you can build narration around.
+
+If that sounds like something you've seen before, it probably is. When I went through a pile of old maps looking for shapes worth stealing, I expected the rock-between-rooms style to dominate, and mostly it does, but *Beneath Barin's Stonehold* builds its first two levels almost entirely the other way. Rooms abut directly, doors go in the common walls, and there's barely a corridor on the page. Both idioms turn up in the corpus and often in the same map, which is why I bothered building a generator that can do more than one of them.
+
+## Corridors are a gift and I never noticed
+
+The thing that surprised me is how much work hallways had been doing that I never asked them to do. Think about what happens when a fight goes badly in a normal dungeon. The party breaks contact and backs into a corridor, and the corridor immediately starts helping them. It narrows the front so only one or two things can come at them, it buys a few feet of distance, and it gives the fighter somewhere to stand while everyone else sorts themselves out. Half of old-school combat tactics are really corridor tactics, and we teach them so early that most of us stopped seeing them as tactics at all.
+
+Take the corridor away and none of that is available. Backing up means backing into another room, and the room behind you might have something in it already, so retreat stops being a maneuver and starts being a gamble. I ran a level like this and watched a fight that would have been routine turn genuinely frightening, not because I'd made the monsters harder but because there was nowhere to go.
+
+Noise does something similar. In a dense interior there's no acoustic distance, so a fight in one room is heard in three, and kicking a door becomes a decision rather than a thing the fighter does because he's bored. That's a kind of pressure you normally have to manufacture with wandering monster rolls, and here the map produces it for free.
+
+The one thing you lose is the attrition clock. Torches burn by the turn and turns are mostly spent walking, so if nobody walks anywhere the torches last and the rations last and the whole resource game goes quiet. That's a real cost, and the pressure has to come from somewhere else. In a dense interior it comes from containment. You're inside the thing you're fighting, and there's no getting outside it.
+
+The best example of this in modern DnD is Cragmaw Castle from *Lost Mine of Phandelver*. People lament how that location goes wrong, and the answer is sitting right there in the map. Nobody is more than fifty feet from anyone else, so you can't fight anywhere without fighting the whole castle, and it almost always degrades into a furball. I've always thought that was bad encounter design. What I hadn't noticed until I built one of these on purpose is that the map is doing exactly what a dense interior does. The designers just didn't plan for it.
+
+## Where it falls down
+
+A dense interior can read as a floorplan rather than a dungeon, and once you notice that you can't stop noticing it. There's no mystery in a hallway you can see the end of, and when every room touches two or three others, nothing is hidden. You lose the moment where a player taps a blank part of the map and asks what's over there, because there isn't an over there. It's all here.
+
+There's a second problem that sounds like the opposite but isn't. Players in a dense interior don't get lost so much as they stop being able to say where they are, because twelve rooms all sit equally near the middle and there's nothing to navigate by. A warren confuses you because it's long and winding. This confuses you because it's uniform.
+
+So my honest recommendation is one level out of three. Put the dense interior up top where the garrison lives, then let the levels below it spread out and breathe. The contrast does more than either layout manages alone, and it also gives you a reason for the difference, since a place built all at once by people who wanted to move between rooms quickly should look different from whatever they dug afterward.
+
+## Drawing one by hand
+
+You don't need any of my code for this, and the technique is easy to describe and surprisingly hard to stick to.
+
+Draw the outer boundary of the occupied area first, a blob roughly the size you want the level to be, and then fill it with rooms until you run out of room to fill. Cut the doors into shared walls as you go. The discipline is that you refuse to draw a corridor unless two rooms genuinely cannot touch, and every time your hand wants to add a hallway you ask whether those two rooms could just share a wall instead. That refusal is the whole method, and I fail at it about a third of the time.
+
+The other thing that pays off immediately is letting the rooms be different shapes. A dense interior made entirely of rectangles reads like an office building, which is a real problem when the fiction says crypt. Put one octagonal hall in there, or a chamber with a stepped foot, or a gallery with niches cut down one wall, and the whole block starts reading as built rather than tiled. My generator pulls a heavy share of its rooms from a hand-drawn shape library for exactly this reason, and it does far more work than varying the dimensions ever did. Twenty rooms of wildly different sizes still read as twenty rectangles.
+
+## So is adjacency scarier than distance
+
+I've come around to thinking it is, and I'll admit that's not the received wisdom. We've all internalized that the long dark corridor is the frightening part of a dungeon, and it is, but it's frightening because of what might be waiting at the far end of it. A dense interior has no far end. The thing is in the next room and the next room is right there through that door.
+
+This isn't to say the spread-out dungeon is worse, and I'd be lying if I said I ran this layout enough to be sure of anything. It's three or four sessions of evidence and a lot of staring at generated maps, which is exactly the sort of sample size I'd give somebody grief about if they used it to argue with me.
+
+Still though, I keep coming back to it. I found that drawing tighter maps quietly removed an escape valve I hadn't realized I'd been handing out for free, and combat got a lot more serious afterward. So when your party breaks and runs in a dungeon you drew, is there actually anywhere for them to run to? Has anyone else run a map like this, and did your players hate it or love it?
