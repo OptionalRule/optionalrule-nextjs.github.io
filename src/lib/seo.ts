@@ -104,7 +104,7 @@ export function generatePostMetadata(post: Post): Metadata {
   
   return generateMetadata({
     title: post.title,
-    description: post.excerpt,
+    description: post.description || post.excerpt,
     image: post.featured_image || siteConfig.defaultImage,
     canonical: canonicalUrl,
     type: 'article',
@@ -163,7 +163,7 @@ export function generateBlogPostStructuredData(post: Post, siteUrl: string = sit
     '@context': 'https://schema.org',
     '@type': 'BlogPosting',
     headline: post.title,
-    description: post.excerpt,
+    description: post.description || post.excerpt,
     author: {
       '@type': 'Person',
       name: siteConfig.author.name,
@@ -219,7 +219,7 @@ export function generateBlogStructuredData(posts: PostMeta[], siteUrl: string = 
         item: {
           '@type': 'BlogPosting',
           headline: post.title,
-          description: post.excerpt,
+          description: post.description || post.excerpt,
           url: `${siteUrl}${urlPaths.post(post.date, post.slug)}`,
           datePublished: post.date,
           author: {
