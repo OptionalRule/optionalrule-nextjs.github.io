@@ -187,6 +187,14 @@ describe('seo.ts', () => {
       expect(metadata.openGraph?.tags).toEqual(['test', 'post']);
     });
 
+    it('should prefer description over excerpt for SEO', () => {
+      const metadata = generatePostMetadata({ ...mockPost, description: 'SEO description' });
+
+      expect(metadata.description).toBe('SEO description');
+      expect(metadata.openGraph?.description).toBe('SEO description');
+      expect(metadata.twitter?.description).toBe('SEO description');
+    });
+
     it('should generate correct canonical URL for post', () => {
       const metadata = generatePostMetadata(mockPost);
 
@@ -315,6 +323,12 @@ describe('seo.ts', () => {
       expect(structuredData['@type']).toBe('BlogPosting');
       expect(structuredData.headline).toBe('Test Post Title');
       expect(structuredData.description).toBe('Test post excerpt');
+    });
+
+    it('should prefer description over excerpt in structured data', () => {
+      const structuredData = generateBlogPostStructuredData({ ...mockPost, description: 'SEO description' });
+
+      expect(structuredData.description).toBe('SEO description');
     });
 
     it('should include author information', () => {

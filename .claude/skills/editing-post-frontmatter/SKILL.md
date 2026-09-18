@@ -23,7 +23,8 @@ slug: post-slug                    # Required. Kebab-case, matches filename.
 title: Post Title                  # Required. Sentence/title case.
 date: 'YYYY-MM-DD'                # Required. ISO date string.
 excerpt: >-                        # Required. See Excerpt Guidelines below.
-  One to two sentences...
+  Teaser paragraph for the post list...
+description: "SEO summary..."      # Optional. Meta/OG/Twitter/JSON-LD description; falls back to excerpt.
 tags:                              # Required. See Tag Guidelines below.
   - Tag Name
 featured_image: /images/file.webp  # Required. Used as OG image.
@@ -31,14 +32,18 @@ draft: false                       # Required. true hides from production builds
 showToc: false                     # Optional. Defaults to showing ToC.
 ```
 
-**No explicit OG fields needed.** The site auto-generates `og:title`, `og:description`, `og:image`, Twitter cards, and JSON-LD from these fields via `src/lib/seo.ts`.
+**No explicit OG fields needed.** The site auto-generates `og:title`, `og:description`, `og:image`, Twitter cards, and JSON-LD from these fields via `src/lib/seo.ts`. `og:description` uses `description` when set, otherwise `excerpt`.
 
-## Excerpt Guidelines
+## Excerpt and Description Guidelines
 
-The excerpt serves triple duty: OG description, search result preview, and on-page summary.
+The `excerpt` is the teaser in the post list, on-site search results, RSS, and the post header. The optional `description` is the SEO summary (meta description, OG/Twitter cards, JSON-LD). Without `description`, the excerpt is used for SEO too.
 
-**Rules:**
-- 1-2 sentences, under 160 characters ideal (search engine display limit)
+**Excerpt rules:**
+- A longer teaser (2-3 sentences) is fine when `description` is set; use a `>-` folded block for multiline
+- Tease the post's hook and payoff to pull readers in from the list
+
+**Description rules (or excerpt, when no description is set):**
+- 1-2 sentences, under 160 characters (search engine display limit)
 - Describe what the reader will learn or find, not what you did
 - Avoid starting with "In this post..." or "This article..."
 - Must make sense out of context (social media card, search result)
@@ -95,7 +100,7 @@ grep -rh "^  - " content/posts/*.mdx | sed 's/^[[:space:]]*- //' | sort | uniq -
 ## Pre-Publish Checklist
 
 1. **No placeholders** - excerpt is not template default, tags are not `["tag1","tag2","tag3"]`
-2. **Excerpt under 160 chars** - check with `echo -n "excerpt text" | wc -c`
+2. **SEO text under 160 chars** - `description` (or `excerpt` if no description); check with `echo -n "text" | wc -c`
 3. **Tags exist** - ran grep command, reused existing tags where possible
 4. **Tag casing matches** - Title Case, consistent with existing usage
 5. **featured_image set** - path exists in `/public/images/`
