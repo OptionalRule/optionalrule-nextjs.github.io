@@ -9,24 +9,25 @@ draft: false
 showToc: false
 ---
 
-Since the start of August I’ve been building a dungeon crawler, and I’ve reached the point where I can’t keep calling it “the game” with a straight face. It started as an itch I’ve had since I was a kid. I wanted the kind of dungeon crawl we played in the eighties, where the torches ran out, the treasure was heavy, and nobody at the table was safe. I also wanted the procedural tricks a modern computer game can pull off, so the story comes out of what happens to your party instead of out of a script.
+Since the start of August I’ve been building an old-school dungeon crawler, and I’ve reached the point where I can’t keep calling it “the game” with a straight face. It started as an itch I’ve had since for a long time now. I wanted the kind of dungeon crawl we played in the eighties, where the torches ran out, the treasure was heavy, and nobody at the table was safe. I also wanted the procedural tricks a modern computer game can pull off, so the story comes out of what happens to your party instead of out of a script.  I love Shadowdark but it's missing that gritty management I liked so much where preparing and planning paid off, and managing consequences was the game.
 
-I started with OSRIC 3.0 as the framework, since it keeps nearly everything I loved about first edition. It didn’t stay a straight adaptation for long. Some rules needed reworking before a computer could run them, some got borrowed from other old-school games, and some systems I had to build from nothing because the tabletop never needed them. Through all of that I’ve held onto one test. The game should still feel like that first trip into a dungeon with a bag of dice and a character sheet you weren’t sure would survive the night.
+I started with OSRIC 3.0 as the framework, since it keeps nearly everything I loved about first edition AD&D. It didn’t stay a straight adaptation for long. Some rules needed reworking before a computer could run them, some got borrowed from other old-school games, and some systems I had to build from nothing because the tabletop never needed them. Through all of that I’ve held onto one test. The game should still feel like that first trip into a dungeon with a bag of dice and a character sheet you weren’t sure would survive the night.  It's also a party management game.  You don't have a main character in the game, you recruit a party of adventurers, manage them over time, see them clash or get along, lose some and replace them over time, or just boot them becasue they keep stealing and getting the party in trouble.  
 
 That’s how Grimshaw was born, and today I’m officially pulling the sheet off it. Let me start with the moment the whole thing is built around.
+
 # Getting the treasure is the easy part
 
 The dungeon expedition I want to build a game around is the one where you find something worth taking home and then realize that getting it home is going to be a problem.
 
 The party is hurt and the treasure is heavy. There are unexplored rooms ahead, but you still have to get back through the ones behind you, and the torches aren't getting any longer. Leaving now might be the smartest decision you make all evening. It also means walking away from whatever is on the other side of that last door, and everybody in the party knows it.
 
-That moment is what I'm building Grimshaw around. It's a turn-based, party-based dungeon crawler about running an adventuring company out of a frontier town. You recruit adventurers, outfit them, pick an expedition, and take them down into procedurally generated dungeons. The short pitch I keep giving people is that the dungeon is the opponent. The longer one is that I want a company whose history comes out of where it went, who got along with whom, and who made it back.
+That moment is what I'm building Grimshaw around. It's a turn-based, party-based dungeon crawler about running an adventuring company out of a frontier town. You recruit adventurers, outfit them, pick an expedition, and take them down into procedurally generated dungeons. The short pitch I keep giving people is that the dungeon is itself is the monster and, as they say, the dungeon hates you. I also want a company whose history comes out of where it went, who got along with whom, and who made it back (or didn't).
 
-If you've been reading my dungeon design series, you've already met it. I've been calling it "the game" in those posts like it was in witness protection, mostly because I wanted them to be about dungeon design and not about my project. I've also been posting pieces of it on [X](https://x.com/optionalrule). It's overdue for a proper introduction, so this is that.
+If you've been reading my [dungeon design series](/2026/10/12/dungeon-design-pt5-organic-undercroft/), you've already met it. I've been calling it "the game" in those posts like it was in witness protection, mostly because I wanted them to be about dungeon design and not about my project. I've also been posting pieces of it on [X](https://x.com/optionalrule). It's overdue for a proper introduction, so this is that.
 
 ## The trip home is part of the adventure
 
-A lot of what I love about old-school dungeon crawling happens before anybody rolls to hit. Who walks in front. Whether a door is worth the time it takes to check. How much light to bring and who has room to carry it. Grimshaw tries to make those real decisions instead of things the computer quietly handles for you.
+A lot of what I love about old-school dungeon crawling happens before anybody rolls to hit. Who walks in front. Whether a door is worth the time it takes to check. How much light to bring and who has room to carry it. Grimshaw tries to make those real decisions instead of things the computer quietly handles for you. That means the game tracks time, not just days in the town or in a journey, but in the dungeon. We use old school 10 minute turns, slowly moving and exploring, turns passing as the torch ticks down, the acounter clock ticks up, and you have to question if you've delved too deep.
 
 Light comes from actual torches and lanterns that burn fuel. What an adventurer can carry depends on the adventurer, and a heavy load slows the whole party down. Searching and other careful work costs time. None of those rules is very interesting on its own, but put them next to each other and you get a very ordinary problem that stays tense every single time. The more you carry out, the slower you go, and the slower you go, the less light you have to do it with.
 
@@ -36,16 +37,6 @@ Treasure is experience, in the grand old tradition, with one catch. It only coun
 
 The feeling I'm chasing is the point where the party has done well enough to get nervous about losing it all. I want turning back at that point to feel like good judgment, the kind of call a veteran makes, and I want the game to reward it.
 
-## Some encounters should end without a fight
-
-One of the things I most want to keep from tabletop play is that a creature in a dungeon is a problem you can approach more than one way. Half the fun of a goblin warren at the table is finding out whether the goblins are willing to talk.
-
-Grimshaw lets you negotiate with groups that will listen, which right now includes goblins, kobolds, and orcs. You can offer coin as tribute, and you might get a deal, a counteroffer, or a situation that goes downhill fast. The coin comes out of what the party is actually carrying, so avoiding the fight has a real price you can weigh against the risk of taking it. There's something deeply old-school about paying a kobold toll with the gold you were counting on for experience.
-
-Not everything down there can be talked out of eating you. Still though, drawing a weapon shouldn't be the automatic first move every time you meet something underground.
-
-Morale gives a fight more than one way to end, too. Enemies that can break will run, and some will surrender. Beating a group doesn't have to mean killing every last member of it, and that changes both the decisions you make in the moment and the kind of story the fight leaves behind.
-
 ## Fighting on the map
 
 Combat is turn-based, with individual initiative and a turn order you can see. You decide what each adventurer does when their turn comes up, based on what's actually in front of them, rather than locking in everybody's plans at the top of the round.
@@ -54,9 +45,19 @@ Most turns start with a click on the map. Click a square to move, click an enemy
 
 The action bar covers the rest, like charging, guarding an approach, fighting with two weapons, throwing a weapon, or casting a prepared spell. You can also hold your turn and slot back in later in the round.
 
-Getting away is part of the same fight, and it's the part of combat I'd point to first. Each adventurer has to reach the stairs or the dungeon entrance on their own movement. Whoever gets there leaves the fight while everyone else keeps going, and enemies don't follow through those exits. So you might send the wounded thief ahead, keep pace with the slower dwarf, or leave the fighter behind to cover everyone else.
+Getting away is part of the same fight, and it's the part of combat I'd point to first. Each adventurer has to reach the stairs or the dungeon entrance if they want to live. Whoever gets there leaves the fight while everyone else keeps going, and enemies don't follow through those exits. So you might send the wounded thief ahead, keep pace with the slower dwarf, or leave the fighter behind to cover everyone else.
 
 You can also spend a turn picking up a fallen companion and carry them out at half speed. Anyone who escaped can carry on the expedition even if everybody still fighting goes down. That turns a desperate retreat into a set of real questions. Who can reach the exit, and who isn't getting there without help?
+
+## Some encounters should end without a fight
+
+One of the things I most want to keep from tabletop play is that a creature in a dungeon is a problem you can approach more than one way. Half the fun of a goblin warren at the table is finding out whether the goblins are willing to talk.
+
+Grimshaw lets you negotiate with groups that will listen, which right now includes goblins, kobolds, and orcs. You can offer coin as tribute, and you might get a deal, a counteroffer, or a situation that goes downhill fast. The coin comes out of what the party is actually carrying, so avoiding the fight has a real price you can weigh against the risk of taking it. There's something deeply old-school about paying a kobold toll with the gold you were counting on for experience.
+
+Not everything down there can be talked out of eating you, in fact, most can't. Still though, drawing a weapon shouldn't be the automatic first move every time you meet something underground.
+
+Morale gives a fight more than one way to end, too. Enemies that can break will run, and some will surrender. Beating a group doesn't have to mean killing every last member of it, and that changes both the decisions you make in the moment and the kind of story the fight leaves behind.
 
 ## The company is what carries on
 
@@ -76,23 +77,23 @@ That gives gear a life outside the inventory screen. A rope matters because ther
 
 Camp extends the same idea. Alongside resting and preparing spells, I want adventurers taking on jobs like standing watch, hunting, or tending the wounded. Work has a price, though. The cleric patching everyone up is a cleric who isn't resting herself, and in a small or battered party, deciding who can afford to help becomes part of getting ready for the next descent.
 
-There's a real risk this turns into a staffing chart you have to fill out before you're allowed to go adventuring, and I'm watching for it. What I want out of it is people and gear that matter in more places, including the times a job goes uncovered and you find out the hard way why somebody should have taken it.
+Nothing too complicated, just more opportunity and risk to manage how you want and more to build the company's story around. What I want out of it is people and gear that matter in more places, including the times a job goes uncovered and you find out the hard way why somebody should have taken it.
 
 ## Your adventurers will have a life together
 
-There's one more layer planned for the company, and it's the one most likely to go sideways on me, which is how its members get along with each other.
+There's one more layer planned for the company, and going to get interesting to actually implement, which is how its members get along with each other.
 
-RimWorld is the reference I keep coming back to. I want adventurers to build relationships out of the time they spend together and the things they live through, so that picking a company means thinking about who's traveling together and not only what they can do.
+RimWorld is the reference I keep coming back to. I want adventurers to build relationships out of the time they spend together and the things they live through, so that picking a company means thinking about who's traveling together and not only what they can do.  We're using old school alignment right now (at least for now) so friction was always built in, how the NE Theif feels about letting those Kobolds go, or how the LG Cleric feels about NOT letting them go, is going to matter.  
 
 A capable recruit might be a terrible fit. Someone who looks mediocre on paper might turn into the person you're most reluctant to lose because of where they sit in the group. I'd like those relationships to produce stories of their own, right alongside the ones that come out of fights and discoveries.
 
-You'll still command the party directly in the dungeon. What I'm borrowing from RimWorld is the social life that makes a group memorable, and the rest of the colony sim can stay where it is. The goal is for you to care who comes home and what they're coming home to.
+You'll still command the party directly in the dungeon. What I'm borrowing from games like RimWorld is the social life that makes a group memorable, and the rest of the colony sim can stay where it is. The goal is for you to care who comes home and what they're coming home to.
 
 ## A dungeon map should change how you play
 
-My [dungeon design series](https://www.optionalrule.com/2026/09/29/dungeon-design-pt-4-multi-cluster-dungeons/) was mostly me thinking out loud about this generator, so I'll keep this part short.
+My dungeon design series was mostly me thinking out loud about this generator, so I'll keep this part short.
 
-I've been looking at how the arrangement of rooms and the connections between them change exploration. A narrow passage gives a small party ground to hold. A second way around changes how you approach a threat. A long walk back makes "one more room" a very different decision than it is two rooms from the entrance.
+I've been looking at how the arrangement of rooms and the connections between them change exploration. A narrow passage gives a small party ground to hold. A second way around changes how you approach a threat. A long walk back makes "one more room" a very different decision than it is two rooms from the entrance. This should feed the proceedural generation behind Grimshaws dungeon, narratives drive it all, but dungeon geography also drives position and distribution.
 
 Grimshaw's generator treats where rooms sit and how they connect as two separate decisions, which is how it gets maps that ask different things of you instead of reshuffling the same encounters onto new coordinates. Current dungeon themes include ruined keeps sitting on top of crypts, abandoned garrisons, and sanctuaries.
 
@@ -110,13 +111,13 @@ You shouldn't need to have read OSRIC to enjoy Grimshaw, and making sure of that
 
 ## How it got here
 
-Grimshaw grew out of the same stretch of hobby development I've been writing about with [Iron, Blood & Omens](https://www.optionalrule.com/2026/01/20/im-buiding-a-mud/), my text-based RPG. That work pushed me toward a graphical, top-down game built around party tactics and dungeon expeditions. Grimshaw has its own rules foundation, so you shouldn't think of it as IBO with pictures.
+Grimshaw grew out of the same stretch of hobby development I've been writing about with [Iron, Blood & Omens](https://www.optionalrule.com/2026/01/20/im-buiding-a-mud/), my text-based RPG. That work pushed me toward a graphical, top-down game built around party tactics and dungeon expeditions. Grimshaw has its own rules foundation, so you shouldn't think of it as IBO with pictures, thought the setting I worked out there is being used.
 
 The first prototype was called *Dungeons of Grimshaw* and was built in Godot with GDScript. In August I started over in C#, shortened the name to Grimshaw, and carried forward the design and everything the prototype taught me.
 
 For the technically curious, it's C# and .NET, with Godot handling presentation and input. The rules, the dungeon generator, and the campaign state all live in a core library that doesn't know Godot exists. That means I can work on the simulation separately from the interface and check how its systems interact without launching the game every time I change a number.
 
-As I've [discussed elsewhere on the blog](https://www.optionalrule.com/2026/08/14/ai-native-game-development-and-the-last-20-percent/), this is AI-assisted development. The tools help me build and iterate. The design, and the call on whether any of it is actually fun, stays with me.
+As I've [discussed elsewhere on the blog](/2026/08/14/ai-native-game-development-and-the-last-20-percent/), this is AI-assisted development. The tools help me build and iterate. The design, and the call on whether any of it is actually fun, stays with me.
 
 ## A world worth coming back to
 
