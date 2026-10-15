@@ -9,9 +9,17 @@
     <managingEditor>scott@optionalrule.com (Scott Turnbull)</managingEditor>
     <webMaster>scott@optionalrule.com (Scott Turnbull)</webMaster>
     <copyright>Copyright 2026 Optional Rule Games</copyright>
-    <lastBuildDate>Mon, 12 Oct 2026 00:00:00 GMT</lastBuildDate>
+    <lastBuildDate>Thu, 15 Oct 2026 00:00:00 GMT</lastBuildDate>
     <ttl>60</ttl>
     
+    <item>
+      <title><![CDATA[Welcome to Grimshaw - the dungeon hates you]]></title>
+      <description><![CDATA[The torches are short, the treasure is heavy, and the dungeon hates you. Grimshaw is the old-school dungeon crawler I've been building since August, where you run an adventuring company, death sticks, and loot only counts as experience if you carry it home. Here's what's playable, what's planned, and why the walk back to town might be the best part.]]></description>
+      <link>https://www.optionalrule.com/2026/10/15/introducing-grimshaw/</link>
+      <guid isPermaLink="true">https://www.optionalrule.com/2026/10/15/introducing-grimshaw/</guid>
+      <pubDate>Thu, 15 Oct 2026 00:00:00 GMT</pubDate>
+      <category><![CDATA[Grimshaw, Game Development, Dev Log, Mechanics]]></category>
+    </item>
     <item>
       <title><![CDATA[Dungeon Design Pt5: Organic Undercroft]]></title>
       <description><![CDATA[An organic undercroft has no center, just a wandering course with rooms hung wherever it happens to stop. It draws the best-looking maps of the four layouts and runs the hardest at the table, since players can genuinely get lost and every room pushes them further from the exit. Left alone it turns into a railroad or a very atmospheric treadmill, so this last post in the series covers what it costs, when to use it, and the draw-the-path-first trick you can try tonight.]]></description>
