@@ -10,3 +10,8 @@ Facts as of `b18e4aa` (2026-11-21, explorer report). Paths are under `src/featur
 - Tests: `asteroidScoring.test.ts` casts to `EngineInternals` and uses Proxy mocks. No test covers saucer, ship death, or `update`.
 
 See [architecture-strong-items](architecture-strong-items.md).
+
+## 2026-11-21 Lane B progress
+- #6 landed on `develop` (`20d2f1c`..`fd147dc`): `collide(entities, playerShipId): CollisionOutcome[]` in `engine/systems/collisions.ts` is pure, and the engine applies the outcomes. `CollisionSystem` is deleted. `collisions.test.ts` (21 cases) replaces the cast/Proxy tests.
+- #7 is done on branch `worktree-agent-a1428180dc2f60369` (`ff6a0a4`..`10d5405`) and NOT merged. It adds `AsteroidsCore` (update(dt, controls), snapshot/subscribe), the engine becomes the browser adapter, and the hook uses `useSyncExternalStore`. The shot cooldown stays on wall-clock time through an injected `clock`. It waits on two user questions: live High Score updates, and timers pausing while the tab is hidden.
+- Environment: the worktree was created on an old `main` merge rather than `develop`, and the agent reset it. Future lane briefs must say "verify base == origin/develop".
