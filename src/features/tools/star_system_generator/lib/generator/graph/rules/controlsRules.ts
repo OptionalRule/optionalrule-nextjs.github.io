@@ -95,7 +95,7 @@ export const controlsSettlementUniqueDomainRule: EdgeRule = {
       const settlementRef = ctx.entitiesById.get(fact.subjectId)
       if (!settlementRef || settlementRef.kind !== 'settlement') continue
 
-      const matchingFactions: { faction: EntityRef; domain: string }[] = []
+      const matchingFactions: { faction: EntityRef; domain: NarrativeDomain }[] = []
       for (const factionEntity of factionEntities) {
         const faction = factionMeta.get(factionEntity.displayName)
         if (!faction) continue
