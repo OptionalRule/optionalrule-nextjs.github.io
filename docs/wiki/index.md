@@ -10,6 +10,9 @@ Chief-of-staff memory for long-running architecture work. Historical record: eve
 - [asteroids-engine](asteroids-engine.md) — Collision split, browser effects, pause, hook state.
 - [kcd2-filter-view](kcd2-filter-view.md) — URL/storage/migration state for filters.
 
+## Tooling
+- [graphify-tooling](graphify-tooling.md) — Code graph breakage and fix (2026-11-21).
+
 ## Decisions
 - [decision-log](decision-log.md) — Dated user decisions, newest last.
 
