@@ -5,6 +5,7 @@ import userEvent from '@testing-library/user-event'
 import { describe, expect, it } from 'vitest'
 import { useGeneratorQueryState } from '../hooks/useGeneratorQueryState'
 import type { GenerationOptions } from '../types'
+import { GENERATOR_VERSION } from '../lib/generator'
 
 function Harness() {
   const [state, setState] = useGeneratorQueryState()
@@ -58,4 +59,41 @@ describe('useGeneratorQueryState', () => {
     expect(capturedStates[capturedStates.length - 1]).toBe(refBefore)
   })
 
+  it('rewrites an unversioned link with v=2 and exposes the decoded version', async () => {
+    function VersionHarness() {
+      const [state, setState, version] = useGeneratorQueryState()
+      return (
+        <div>
+          <div data-testid="version">{version}</div>
+          <div data-testid="gu">{state.gu}</div>
+          <button onClick={() => setState({ gu: 'high' })}>edit</button>
+        </div>
+      )
+    }
+    window.history.replaceState(null, '', '/tools/star_system_generator/?seed=7f3a9c2e&gu=fracture')
+    render(<VersionHarness />)
+    expect(screen.getByTestId('version').textContent).toBe('2')
+    expect(screen.getByTestId('gu').textContent).toBe('fracture')
+    await waitFor(() => {
+      expect(window.location.search).toBe('?seed=7f3a9c2e&gu=fracture&v=2')
+    })
+    await userEvent.click(screen.getByText('edit'))
+    expect(screen.getByTestId('version').textContent).toBe(String(GENERATOR_VERSION))
+    await waitFor(() => {
+      expect(window.location.search).toBe(`?seed=7f3a9c2e&gu=high&v=${GENERATOR_VERSION}`)
+    })
+  })
+
+  it('resolves an unknown version to the current one without crashing', async () => {
+    function VersionHarness() {
+      const [, , version] = useGeneratorQueryState()
+      return <div data-testid="version">{version}</div>
+    }
+    window.history.replaceState(null, '', '/tools/star_system_generator/?seed=7f3a9c2e&v=99')
+    render(<VersionHarness />)
+    expect(screen.getByTestId('version').textContent).toBe(String(GENERATOR_VERSION))
+    await waitFor(() => {
+      expect(window.location.search).toBe(`?seed=7f3a9c2e&v=${GENERATOR_VERSION}`)
+    })
+  })
 })

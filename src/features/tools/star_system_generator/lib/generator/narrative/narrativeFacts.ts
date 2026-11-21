@@ -16,10 +16,12 @@ import { fact } from '../fact'
 import { generateFactions } from '../factions'
 import { lowerFirst, sentenceFragment } from '../prose/helpers'
 import type { SeededRng } from '../rng'
-import { classifyNarrativeDomains, type NarrativeDomain } from './domains'
+import type { NarrativeDomainClassifier } from './domainClassifier'
+import type { NarrativeDomain } from './domains'
 import { uniqueStrings } from './uniqueStrings'
 
 export interface NarrativeGenerationContext {
+  classifyDomains: NarrativeDomainClassifier
   options: GenerationOptions
   systemName: Fact<string>
   primary: Star
@@ -34,7 +36,7 @@ export interface NarrativeGenerationContext {
   factionRng: SeededRng
 }
 
-function narrativeFact(input: {
+interface NarrativeFactInput {
   id: string
   kind: string
   subjectType: NarrativeFact['subjectType']
@@ -46,7 +48,9 @@ function narrativeFact(input: {
   tags?: string[]
   status?: NarrativeFact['status']
   domains?: NarrativeDomain[]
-}): NarrativeFact {
+}
+
+function createNarrativeFact(input: NarrativeFactInput, classifyNarrativeDomains: NarrativeDomainClassifier): NarrativeFact {
   const tags = uniqueStrings([...(input.tags ?? []), input.kind, input.subjectType])
   const domains = uniqueStrings(input.domains ?? classifyNarrativeDomains(`${input.kind} ${input.value} ${tags.join(' ')}`))
 
@@ -68,6 +72,8 @@ function radiationCreatesNarrativeHazard(value: string): boolean {
 }
 
 export function buildNarrativeFacts(ctx: NarrativeGenerationContext): NarrativeFact[] {
+  const classifyNarrativeDomains = ctx.classifyDomains
+  const narrativeFact = (input: NarrativeFactInput): NarrativeFact => createNarrativeFact(input, classifyNarrativeDomains)
   const factions = generateFactions(ctx.factionRng, ctx.options.tone, 8)
   const facts: NarrativeFact[] = [
     narrativeFact({

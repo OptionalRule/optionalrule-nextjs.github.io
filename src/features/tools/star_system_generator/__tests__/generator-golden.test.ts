@@ -6,12 +6,16 @@ import type {
   GenerationOptions,
   GeneratorDistribution,
   GeneratorTone,
+  GeneratorVersion,
   GuPreference,
   SettlementDensity,
 } from '../types'
-import { generateSystem } from '../lib/generator'
+import { generateSystem, GENERATOR_VERSION } from '../lib/generator'
 
-const FIXTURE_PATH = path.resolve(__dirname, '__fixtures__/generator-golden-hashes.json')
+const FIXTURE_PATHS: Readonly<Record<GeneratorVersion, string>> = {
+  2: path.resolve(__dirname, '__fixtures__/generator-golden-hashes.json'),
+  3: path.resolve(__dirname, '__fixtures__/generator-golden-hashes-v3.json'),
+}
 const UPDATE = process.env.STAR_SYSTEM_GOLDEN_UPDATE === '1'
 
 const DISTRIBUTIONS: readonly GeneratorDistribution[] = ['frontier', 'realistic']
@@ -101,14 +105,16 @@ function stableSerialize(value: unknown): string {
   }
 }
 
-function hashSystem(options: GenerationOptions): string {
-  return createHash('sha256').update(stableSerialize(generateSystem(options))).digest('hex')
+function hashSystem(options: GenerationOptions, generatorVersion: GeneratorVersion): string {
+  return createHash('sha256').update(stableSerialize(generateSystem(options, { generatorVersion }))).digest('hex')
 }
 
-function readFixture(): Record<string, string> {
-  if (!existsSync(FIXTURE_PATH)) return {}
-  return JSON.parse(readFileSync(FIXTURE_PATH, 'utf8')) as Record<string, string>
+function readFixture(fixturePath: string): Record<string, string> {
+  if (!existsSync(fixturePath)) return {}
+  return JSON.parse(readFileSync(fixturePath, 'utf8')) as Record<string, string>
 }
+
+const VERSIONS = Object.keys(FIXTURE_PATHS).map(Number) as GeneratorVersion[]
 
 describe('generateSystem golden determinism guard', () => {
   const cases = buildCases()
@@ -121,16 +127,17 @@ describe('generateSystem golden determinism guard', () => {
     expect(new Set(cases.map((c) => c.id)).size).toBe(cases.length)
   })
 
-  it('produces the committed output hash for every golden case', () => {
+  it.each(VERSIONS)('produces the committed output hash for every golden case under version %i', (generatorVersion) => {
+    const fixturePath = FIXTURE_PATHS[generatorVersion]
     const actual: Record<string, string> = {}
-    for (const { id, ...options } of cases) actual[id] = hashSystem(options)
+    for (const { id, ...options } of cases) actual[id] = hashSystem(options, generatorVersion)
 
-    if (UPDATE) {
-      writeFileSync(FIXTURE_PATH, `${JSON.stringify(actual, null, 2)}\n`)
+    if (UPDATE && generatorVersion === GENERATOR_VERSION) {
+      writeFileSync(fixturePath, `${JSON.stringify(actual, null, 2)}\n`)
       return
     }
 
-    const expected = readFixture()
+    const expected = readFixture(fixturePath)
     const mismatched = cases
       .map((c) => c.id)
       .filter((id) => expected[id] !== actual[id])

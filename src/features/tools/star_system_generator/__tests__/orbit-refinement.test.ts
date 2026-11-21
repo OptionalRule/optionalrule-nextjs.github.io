@@ -154,7 +154,7 @@ describe('orbit refinement', () => {
       ],
     }
 
-    const system = generateSystem({ ...options, seed: 'locked-distant-orbit' }, knownSystem)
+    const system = generateSystem({ ...options, seed: 'locked-distant-orbit' }, { knownSystem })
     const known = system.bodies.find((body) => body.id === 'known-distant-body')
 
     expect(known?.orbitAu).toEqual(knownSystem.bodies?.[0].orbitAu)

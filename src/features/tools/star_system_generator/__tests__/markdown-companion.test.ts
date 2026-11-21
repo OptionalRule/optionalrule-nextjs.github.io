@@ -41,6 +41,7 @@ describe('markdown export with companions', () => {
     expect(params.get('seed')).toBe(sys.companions[0].linkedSeed!.value)
     expect(params.get('settlements')).toBe('crowded')
     expect(params.has('distribution')).toBe(false)
+    expect(params.get('v')).toBe(String(sys.generatorVersion))
   })
 
   it('emits sub-system settlements in the Companion System section for orbital-sibling', () => {

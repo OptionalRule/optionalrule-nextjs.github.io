@@ -13,7 +13,7 @@ describe('StarSystemGenerator', () => {
       tone: 'balanced',
       gu: 'normal',
       settlements: 'normal',
-    })
+    }, { generatorVersion: 2 })
 
     render(<StarSystemGenerator />)
 

@@ -88,8 +88,8 @@ describe('architecture slot contracts', () => {
       bodies: Array.from({ length: 10 }, (_, index) => lockedAnomaly(index + 1)),
     }
 
-    const system = generateSystem(options, knownSystem)
-    const repeated = generateSystem(options, knownSystem)
+    const system = generateSystem(options, { knownSystem })
+    const repeated = generateSystem(options, { knownSystem })
 
     expect(system).toEqual(repeated)
     expect(system.architecture.name.value).toBe('Compact inner system')

@@ -87,7 +87,7 @@ describe('generateSystem', () => {
       },
     }
 
-    const system = generateSystem({ ...options, seed: 'known-star-lock-test' }, knownSystem)
+    const system = generateSystem({ ...options, seed: 'known-star-lock-test' }, { knownSystem })
 
     expect(system.id).toBe('known-sol-analog')
     expect(system.name).toEqual(knownSystem.name)
@@ -98,7 +98,7 @@ describe('generateSystem', () => {
     expect(system.primary.luminositySolar).toEqual(knownSystem.primary?.luminositySolar)
     expect(system.zones.habitableCenterAu.value).toBeCloseTo(Math.sqrt(1.12), 3)
     expect(system.bodies.length).toBeGreaterThan(0)
-    expect(generateSystem({ ...options, seed: 'known-star-lock-test' }, knownSystem)).toEqual(system)
+    expect(generateSystem({ ...options, seed: 'known-star-lock-test' }, { knownSystem })).toEqual(system)
   })
 
   it('reserves orbital slots for locked known bodies and fills the rest', () => {
@@ -128,7 +128,7 @@ describe('generateSystem', () => {
       ],
     }
 
-    const system = generateSystem({ ...options, seed: 'known-body-lock-test' }, knownSystem)
+    const system = generateSystem({ ...options, seed: 'known-body-lock-test' }, { knownSystem })
     const knownBody = system.bodies.find((body) => body.id === 'known-b')
 
     expect(knownBody).toBeTruthy()
@@ -162,7 +162,7 @@ describe('generateSystem', () => {
       ],
     }
 
-    const system = generateSystem({ ...options, seed: 'known-body-designation-test' }, knownSystem)
+    const system = generateSystem({ ...options, seed: 'known-body-designation-test' }, { knownSystem })
     const bodyIndex = system.bodies.findIndex((body) => body.id === 'known-unnamed')
     const knownBody = system.bodies[bodyIndex]
 
@@ -195,7 +195,7 @@ describe('generateSystem', () => {
       ],
     }
 
-    const system = generateSystem({ ...options, seed: 'known-locked-conflict-test' }, knownSystem)
+    const system = generateSystem({ ...options, seed: 'known-locked-conflict-test' }, { knownSystem })
     const knownBody = system.bodies.find((body) => body.id === 'known-airless-conflict')
 
     expect(knownBody?.detail.atmosphere).toEqual(knownSystem.bodies?.[0].detail?.atmosphere)

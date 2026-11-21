@@ -33,6 +33,14 @@ _Avoid_: GU intensity (that is the result, not the option)
 The referee's requested lean for how much human presence a system carries: sparse, normal, crowded, or campaign hub.
 _Avoid_: settlements (as an option name)
 
+**Seed Link**:
+The shareable address of a Generated System: its Seed, any non-default Generation Options, and the Generator Version. It is the only way a system is saved or shared.
+_Avoid_: share link, seed URL, permalink
+
+**Generator Version**:
+The numbered revision of the generation rules a Generated System was produced under. A Seed Link names it so the same link keeps producing the same system after the rules change; older versions keep their rules so their links still reproduce.
+_Avoid_: schema version, app version
+
 **Layer**:
 One of the three strata every fact belongs to: physical (astronomy), GU (Geometric Unity), or human.
 _Avoid_: register, tier
@@ -349,6 +357,20 @@ _Avoid_: system hooks, adventure hooks, hooks (unqualified)
 
 **Hook Category**:
 The kind of a Stories at Port entry: rumor, contract, encounter, NPC, or twist.
+
+**Hook Term**:
+A setting term (GU, Bleed, Chirality, Gardener, and so on) that tags Stories at Port entries. GU is detected when the GU Intensity rises above Geometrically quiet; the others are detected in a system's generated text.
+_Avoid_: tag (unqualified), keyword
+
+**Active Terms**:
+The Hook Terms detected in a system, plus any the Hook Selection Profile always treats as active.
+
+**Resonant Terms**:
+The Active Terms plus the Hook Terms carried by entries already picked from categories that feed resonance, so later picks echo earlier ones.
+
+**Hook Selection Profile**:
+The configuration of Stories at Port selection (one per Generator Version: v2 always treats GU and Bleed as active, v3 treats nothing as always active): which Hook Terms are always active, and for each Hook Category in draw order, its count, its bias toward preferred terms, whether it prefers Active or Resonant Terms, and whether its picks feed resonance.
+_Avoid_: hook config, hook settings
 
 **Tag Hook**:
 The play-facing interpretation of a Settlement's or Gate's tag pair, crisis, and hidden truth.

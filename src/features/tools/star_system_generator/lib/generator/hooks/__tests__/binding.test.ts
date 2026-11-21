@@ -5,20 +5,20 @@ import {
   bindEntryText,
   type HookBindContext,
   type HookContext,
-} from '../hooks'
-import type { HookEntry } from '../data/hooks'
+} from '..'
+import type { HookEntry } from '../../data/hooks'
 import {
   contractPool,
   encounterPool,
   npcPool,
   rumorPool,
   twistPool,
-} from '../data/hooks'
-import { createSeededRng } from '../rng'
-import type { SeededRng } from '../rng'
-import type { EntityRef } from '../graph/types'
-import type { Conflict } from '../conflicts/types'
-import type { Fact, GuOverlay, SystemArchitecture, Reachability } from '../../../types'
+} from '../../data/hooks'
+import { createSeededRng } from '../../rng'
+import type { SeededRng } from '../../rng'
+import type { EntityRef } from '../../graph/types'
+import type { Conflict } from '../../conflicts/types'
+import type { Fact, GuOverlay, SystemArchitecture, Reachability } from '../../../../types'
 
 function fact<T>(value: T): Fact<T> {
   return { value, confidence: 'human-layer' }

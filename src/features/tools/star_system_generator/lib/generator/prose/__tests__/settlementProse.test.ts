@@ -1,5 +1,14 @@
 import { describe, expect, it } from 'vitest'
-import { CLOSING_POOLS, settlementHookSynthesis, settlementTagHook } from '../settlementProse'
+import {
+  CLOSING_POOLS,
+  SETTLEMENT_TAG_HOOK_TEMPLATES_V2,
+  SETTLEMENT_TAG_HOOK_TEMPLATES_V3,
+  fillSettlementTagHookTemplate,
+  settlementHookSynthesis,
+  settlementTagHook,
+} from '../settlementProse'
+import { settlementTagPairHooks, settlementTagPressures, settlementTags } from '../../data/settlements'
+import { generatorRules } from '../../rules'
 import { createSeededRng } from '../../rng'
 import type { SettlementHabitationPattern } from '../../../../types'
 
@@ -15,6 +24,7 @@ describe('settlementHookSynthesis', () => {
       hiddenTruth: 'The route weather board sells safe windows twice',
       encounterSites: ['cargo dock', 'maintenance bay'],
       guIntensity: 'normal',
+      tagHookTemplates: SETTLEMENT_TAG_HOOK_TEMPLATES_V2,
     })
     const sentences = result.split(/(?<=[.])\s+/)
     expect(sentences.length).toBeGreaterThanOrEqual(3)
@@ -35,6 +45,7 @@ describe('settlementHookSynthesis', () => {
       hiddenTruth: 'A debt ledger nobody wants audited',
       encounterSites: ['Maintenance airlock'],
       guIntensity: 'normal',
+      tagHookTemplates: SETTLEMENT_TAG_HOOK_TEMPLATES_V2,
     })
     expect(result).toMatch(/Automation failure turns maintenance airlock into the key scene\./)
   })
@@ -50,6 +61,7 @@ describe('settlementHookSynthesis', () => {
       hiddenTruth: 'A community funeral compact protects the site',
       encounterSites: ['Skeleton hab'],
       guIntensity: 'normal',
+      tagHookTemplates: SETTLEMENT_TAG_HOOK_TEMPLATES_V2,
     })
     expect(result).toMatch(/Salvage pressure centers on skeleton hab\./)
   })
@@ -65,6 +77,7 @@ describe('settlementHookSynthesis', () => {
       hiddenTruth: 'A debt ledger nobody wants audited',
       encounterSites: ['Cargo dock'],
       guIntensity: 'major fracture',
+      tagHookTemplates: SETTLEMENT_TAG_HOOK_TEMPLATES_V2,
     })
     expect(result).toContain('makes the GU work impossible to treat as routine')
   })
@@ -99,6 +112,7 @@ describe('settlementHookSynthesis — habitation-pattern variants', () => {
         hiddenTruth: 'A debt ledger nobody wants audited',
         encounterSites: ['Cargo dock', 'Maintenance airlock'],
         guIntensity: 'normal',
+        tagHookTemplates: SETTLEMENT_TAG_HOOK_TEMPLATES_V2,
       })
       expect(result).toContain(needle)
     })
@@ -108,7 +122,7 @@ describe('settlementHookSynthesis — habitation-pattern variants', () => {
 describe('settlementTagHook', () => {
   it('returns the authored hook for a known tag pair', () => {
     const rng = createSeededRng('tag-hook-1')
-    const result = settlementTagHook(rng, 'Gate Shadow', 'Archive War')
+    const result = settlementTagHook(rng, 'Gate Shadow', 'Archive War', SETTLEMENT_TAG_HOOK_TEMPLATES_V2)
     expect(result).toContain('Gate Shadow')
     expect(result).toContain('Archive War')
     expect(result).toContain('decides who can leave')
@@ -118,14 +132,72 @@ describe('settlementTagHook', () => {
 
   it('falls back to a deterministic template when no authored pair exists', () => {
     const rng = createSeededRng('tag-hook-2')
-    const result = settlementTagHook(rng, 'Synthetic Tag One', 'Synthetic Tag Two')
+    const result = settlementTagHook(rng, 'Synthetic Tag One', 'Synthetic Tag Two', SETTLEMENT_TAG_HOOK_TEMPLATES_V2)
     expect(result).toContain('Synthetic Tag One')
     expect(result).toContain('Synthetic Tag Two')
   })
 
   it('produces deterministic output for the same seed', () => {
-    const a = settlementTagHook(createSeededRng('tag-hook-3'), 'Gate Shadow', 'Archive War')
-    const b = settlementTagHook(createSeededRng('tag-hook-3'), 'Gate Shadow', 'Archive War')
+    const a = settlementTagHook(createSeededRng('tag-hook-3'), 'Gate Shadow', 'Archive War', SETTLEMENT_TAG_HOOK_TEMPLATES_V2)
+    const b = settlementTagHook(createSeededRng('tag-hook-3'), 'Gate Shadow', 'Archive War', SETTLEMENT_TAG_HOOK_TEMPLATES_V2)
     expect(a).toBe(b)
+  })
+})
+
+describe('settlement Tag Hook template pools', () => {
+  const hasPairHook = (a: string, b: string) =>
+    Boolean(settlementTagPairHooks[`${a} + ${b}`] ?? settlementTagPairHooks[`${b} + ${a}`])
+  const obviousTags = settlementTags.slice(0, 3)
+  const representativePairs = obviousTags.flatMap((obviousTag) =>
+    settlementTags
+      .filter((deeperTag) => deeperTag !== obviousTag && !hasPairHook(obviousTag, deeperTag))
+      .map((deeperTag) => [obviousTag, deeperTag] as const),
+  )
+
+  it('resolves the pool through the version rules', () => {
+    expect(generatorRules(2).settlementTagHookTemplates).toBe(SETTLEMENT_TAG_HOOK_TEMPLATES_V2)
+    expect(generatorRules(3).settlementTagHookTemplates).toBe(SETTLEMENT_TAG_HOOK_TEMPLATES_V3)
+    expect(SETTLEMENT_TAG_HOOK_TEMPLATES_V2).toHaveLength(4)
+    expect(SETTLEMENT_TAG_HOOK_TEMPLATES_V3).toHaveLength(16)
+    expect(new Set(SETTLEMENT_TAG_HOOK_TEMPLATES_V3).size).toBe(16)
+    expect(SETTLEMENT_TAG_HOOK_TEMPLATES_V3.slice(0, 4)).toEqual(SETTLEMENT_TAG_HOOK_TEMPLATES_V2)
+  })
+
+  it('renders every template as one sentence ending in exactly one period with all slots filled', () => {
+    expect(representativePairs.length).toBeGreaterThan(20)
+    for (const template of SETTLEMENT_TAG_HOOK_TEMPLATES_V3) {
+      expect(template).toContain('{obviousTag}')
+      expect(template).toContain('{deeperText}')
+      for (const [obviousTag, deeperTag] of representativePairs) {
+        const deeperText = settlementTagPressures[deeperTag]
+        expect(deeperText, deeperTag).toBeTruthy()
+        const hook = fillSettlementTagHookTemplate(template, { obviousTag, deeperTag, deeperText })
+        expect(hook, template).not.toMatch(/[{}]/)
+        expect(hook).toContain(obviousTag)
+        expect(hook).toContain(deeperText)
+        expect(hook.match(/\./g), hook).toHaveLength(1)
+        expect(hook.endsWith('.'), hook).toBe(true)
+        expect(hook[0], hook).toBe(hook[0].toUpperCase())
+      }
+    }
+  })
+
+  it('lets v3 produce each of its 16 templates and v2 only its 4', () => {
+    const [obviousTag, deeperTag] = representativePairs[0]
+    const deeperText = settlementTagPressures[deeperTag]
+    const render = (templates: readonly string[]) =>
+      new Set(templates.map((template) => fillSettlementTagHookTemplate(template, { obviousTag, deeperTag, deeperText })))
+    const seen = (templates: readonly string[]) => {
+      const outputs = new Set<string>()
+      for (let i = 0; i < 400; i++) outputs.add(settlementTagHook(createSeededRng(`pool-${i}`), obviousTag, deeperTag, templates))
+      return outputs
+    }
+    expect(seen(SETTLEMENT_TAG_HOOK_TEMPLATES_V3)).toEqual(render(SETTLEMENT_TAG_HOOK_TEMPLATES_V3))
+    expect(seen(SETTLEMENT_TAG_HOOK_TEMPLATES_V2)).toEqual(render(SETTLEMENT_TAG_HOOK_TEMPLATES_V2))
+  })
+
+  it('keeps hand-written pair hooks ahead of the templates', () => {
+    const v3 = settlementTagHook(createSeededRng('pair'), 'Gate Shadow', 'Archive War', SETTLEMENT_TAG_HOOK_TEMPLATES_V3)
+    expect(v3).toBe(settlementTagPairHooks['Gate Shadow + Archive War'] ?? settlementTagPairHooks['Archive War + Gate Shadow'])
   })
 })

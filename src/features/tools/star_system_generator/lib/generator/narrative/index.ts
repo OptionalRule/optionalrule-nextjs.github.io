@@ -19,9 +19,11 @@ import type { SystemRelationshipGraph, SystemStoryOutput } from '../graph'
 import { selectSystemHooks } from '../hooks'
 import { graphAwareReshape } from '../prose'
 import type { SeededRng } from '../rng'
+import type { GeneratorRules } from '../rules'
 import { buildNarrativeFacts } from './narrativeFacts'
 
 export interface NarrativeStageInput {
+  rules: GeneratorRules
   options: GenerationOptions
   systemName: Fact<string>
   primary: Star
@@ -47,6 +49,7 @@ export interface NarrativeStageOutput {
 export function runNarrativeStage(input: NarrativeStageInput, rootRng: SeededRng): NarrativeStageOutput {
   const { options, primary, companions, reachability, bodies, guOverlay, settlements, ruins, phenomena } = input
   const narrativeFacts = buildNarrativeFacts({
+    classifyDomains: input.rules.classifyNarrativeDomains,
     options,
     systemName: input.systemName,
     primary,
@@ -109,6 +112,7 @@ export function runNarrativeStage(input: NarrativeStageInput, rootRng: SeededRng
   )
   const hooks = selectSystemHooks({
     rng: rootRng.fork('hooks'),
+    profile: input.rules.hookSelectionProfile,
     context: {
       guOverlay,
       settlements: reshaped.settlements,
