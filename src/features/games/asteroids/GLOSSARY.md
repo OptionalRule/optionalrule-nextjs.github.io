@@ -23,6 +23,13 @@ _Avoid_: Loading, level loading
 **Game Over**:
 The end of a Game, reached when the last Life is lost.
 
+**Pause**:
+A hold on a Level being played, entered and left by the player; nothing moves and no Simulated Time passes until it ends.
+
+**Simulated Time**:
+Game time that advances only while a Level is played or in a Level Transition; it is frozen while paused and while the page is hidden. Saucer arrivals, Respawn and Level Transitions are timed in it.
+_Avoid_: Wall-clock time, real time
+
 ### Ship
 
 **Ship**:
