@@ -14,6 +14,7 @@ Chief-of-staff memory for long-running architecture work. Historical record: eve
 - [graphify-tooling](graphify-tooling.md) — Code graph breakage and fix (2026-11-21).
 
 ## Process
+- [ci](ci.md) — develop CI workflow and its first results.
 - [lane-brief-checklist](lane-brief-checklist.md) — Required lines for worktree agent briefs (retro 2026-11-21).
 
 ## Decisions
