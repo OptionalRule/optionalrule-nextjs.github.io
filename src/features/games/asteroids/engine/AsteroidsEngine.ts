@@ -1,6 +1,6 @@
 import type { GameState } from '../types'
 import { GAMEPLAY, CONTROLS } from '../constants'
-import { AsteroidsCore, type ShipControls } from './AsteroidsCore'
+import { AsteroidsCore, type AsteroidsCoreOptions, type ShipControls } from './AsteroidsCore'
 import { RenderSystem } from './systems/RenderSystem'
 import { SoundSystem } from './systems/SoundSystem'
 
@@ -46,11 +46,14 @@ export class AsteroidsEngine {
   private lastFrameTime = 0
   private destroyed = false
 
-  constructor(canvas: HTMLCanvasElement) {
+  constructor(
+    canvas: HTMLCanvasElement,
+    createCore: (options: AsteroidsCoreOptions) => AsteroidsCore = options => new AsteroidsCore(options)
+  ) {
     this.renderSystem = new RenderSystem(canvas)
     this.soundSystem = new SoundSystem()
     this.savedHighScore = loadHighScore()
-    this.core = new AsteroidsCore({
+    this.core = createCore({
       audio: this.soundSystem,
       highScore: this.savedHighScore,
       clock: () => performance.now(),

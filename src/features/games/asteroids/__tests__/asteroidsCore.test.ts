@@ -249,6 +249,38 @@ describe('AsteroidsCore', () => {
     expect(core.getSnapshot().gameStatus).toBe('paused')
   })
 
+  it('plays the Thrust sound while thrusting and stops it on release or Game Over', () => {
+    const { core, audio } = createCore()
+    core.start()
+    parkAsteroids(core)
+    audio.calls = []
+
+    step(core, 3 * FRAME, { ...IDLE, thrust: true })
+    step(core, FRAME)
+    expect(audio.calls).toEqual(['play:shipThrust', 'stop:shipThrust'])
+
+    audio.calls = []
+    for (let life = 0; life < 3; life++) {
+      waitUntilShipVulnerable(core)
+      core.update(FRAME, { ...IDLE, thrust: true })
+      crashShip(core)
+    }
+    expect(audio.calls.slice(-2)).toEqual(['stopAll', 'play:gameOver'])
+  })
+
+  it('stops the Saucer arrival sound when a Level is cleared with a Saucer on screen', () => {
+    const { core, audio } = createCore()
+    core.start()
+    clearLevel(core)
+    stepParked(core, GAMEPLAY.levelTransitionDelay)
+    while (!hasSaucer(core)) stepParked(core, FRAME)
+    audio.calls = []
+
+    clearLevel(core)
+
+    expect(audio.calls).toContain('stop:saucerArrival')
+  })
+
   it('fires Player Bullets no faster than the cooldown', () => {
     const { core, clock } = createCore()
     core.start()
