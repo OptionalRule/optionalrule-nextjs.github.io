@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import {
   HOOK_SELECTION_PROFILE_V2,
+  HOOK_SELECTION_PROFILE_V3,
   selectSystemHooks,
   type HookContext,
   type HookSelectionProfile,
@@ -98,6 +99,50 @@ describe('HOOK_SELECTION_PROFILE_V2', () => {
     const hooks = selectSystemHooks({ rng: createSeededRng('counts'), context: blandContext() })
     expect([hooks.contracts.length, hooks.npcs.length, hooks.encounters.length, hooks.rumors.length, hooks.twists.length])
       .toEqual([1, 2, 1, 3, 1])
+  })
+})
+
+describe('HOOK_SELECTION_PROFILE_V3', () => {
+  it('has no always-active terms, keeps v2 counts and bias, feeds resonance from encounters and points rumors at resonant terms', () => {
+    expect(HOOK_SELECTION_PROFILE_V3).toEqual({
+      alwaysActiveTerms: [],
+      steps: [
+        { category: 'contract', count: 1, bias: 0.7, preferredTerms: 'active', feedsResonance: true },
+        { category: 'npc', count: 2, bias: 0.4, preferredTerms: 'resonant', feedsResonance: true },
+        { category: 'encounter', count: 1, bias: 0.7, preferredTerms: 'resonant', feedsResonance: true },
+        { category: 'rumor', count: 3, bias: 0.35, preferredTerms: 'resonant', feedsResonance: false },
+        { category: 'twist', count: 1, bias: 0.8, preferredTerms: 'resonant', feedsResonance: false },
+      ],
+    })
+  })
+
+  it('fills every count without an active-term bias draw in a system with no Hook Terms', () => {
+    const log: string[] = []
+    const hooks = selectSystemHooks({
+      rng: recordingRng(createSeededRng('v3-bland'), log),
+      context: blandContext(),
+      profile: HOOK_SELECTION_PROFILE_V3,
+    })
+    expect([hooks.contracts.length, hooks.npcs.length, hooks.encounters.length, hooks.rumors.length, hooks.twists.length])
+      .toEqual([1, 2, 1, 3, 1])
+    expect(log).not.toContain('contracts:chance')
+  })
+
+  it('lets rumors echo the terms an encounter picked', () => {
+    for (let i = 0; i < 10; i += 1) {
+      const hooks = selectSystemHooks({
+        rng: createSeededRng(`v3-encounter-${i}`),
+        context: blandContext(),
+        profile: profile({
+          steps: [
+            HOOK_SELECTION_PROFILE_V3.steps[2],
+            { ...HOOK_SELECTION_PROFILE_V3.steps[3], count: 1, bias: 1 },
+          ],
+        }),
+      })
+      const encounterTags = new Set(hooks.encounters[0].tags)
+      expect(hooks.rumors.every((hook) => hook.tags.some((tag) => encounterTags.has(tag)))).toBe(true)
+    }
   })
 })
 

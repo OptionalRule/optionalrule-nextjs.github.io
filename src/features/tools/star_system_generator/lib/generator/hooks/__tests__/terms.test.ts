@@ -43,6 +43,25 @@ describe('detectHookTerms', () => {
     expect(terms.has('Bleed')).toBe(false)
   })
 
+  it('detects GU when the GU Intensity roll is above the Geometrically quiet band', () => {
+    const base = blandContext()
+    const terms = detectHookTerms({ ...base, guOverlay: { ...base.guOverlay, intensityRoll: fact(5) } })
+    expect(terms.has('GU')).toBe(true)
+  })
+
+  it('does not detect GU at the top of the Geometrically quiet band', () => {
+    const base = blandContext()
+    const terms = detectHookTerms({ ...base, guOverlay: { ...base.guOverlay, intensityRoll: fact(4) } })
+    expect(terms.has('GU')).toBe(false)
+  })
+
+  it('detects Bleed from bleed vocabulary even without GU', () => {
+    const base = blandContext()
+    const terms = detectHookTerms({ ...base, guOverlay: { ...base.guOverlay, bleedLocation: fact('Pinchdrive calibration scar') } })
+    expect(terms.has('Bleed')).toBe(true)
+    expect(terms.has('GU')).toBe(false)
+  })
+
   it('detects terms from the GU overlay', () => {
     const base = blandContext()
     const terms = detectHookTerms({

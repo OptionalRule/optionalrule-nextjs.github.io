@@ -6,6 +6,7 @@ import type {
   SystemArchitecture,
   SystemPhenomenon,
 } from '../../../types'
+import { guIntensityTable } from '../data/gu'
 import { HOOK_TERMS, type HookTerm } from '../data/hooks'
 
 export interface HookTermContext {
@@ -81,6 +82,7 @@ function collectHaystack(context: HookTermContext): string {
 export function detectHookTerms(context: HookTermContext): Set<HookTerm> {
   const haystack = collectHaystack(context)
   const detected = new Set<HookTerm>()
+  if (context.guOverlay.intensityRoll.value > guIntensityTable[0].max) detected.add('GU')
   for (const term of DETECTABLE_TERMS) {
     if (TERM_PATTERNS[term].some((re) => re.test(haystack))) detected.add(term)
   }

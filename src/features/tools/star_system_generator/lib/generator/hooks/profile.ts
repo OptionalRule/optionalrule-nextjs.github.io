@@ -24,3 +24,14 @@ export const HOOK_SELECTION_PROFILE_V2 = {
     { category: 'twist', count: 1, bias: 0.8, preferredTerms: 'resonant', feedsResonance: false },
   ],
 } as const satisfies HookSelectionProfile
+
+export const HOOK_SELECTION_PROFILE_V3 = {
+  alwaysActiveTerms: [],
+  steps: [
+    { category: 'contract', count: 1, bias: 0.7, preferredTerms: 'active', feedsResonance: true },
+    { category: 'npc', count: 2, bias: 0.4, preferredTerms: 'resonant', feedsResonance: true },
+    { category: 'encounter', count: 1, bias: 0.7, preferredTerms: 'resonant', feedsResonance: true },
+    { category: 'rumor', count: 3, bias: 0.35, preferredTerms: 'resonant', feedsResonance: false },
+    { category: 'twist', count: 1, bias: 0.8, preferredTerms: 'resonant', feedsResonance: false },
+  ],
+} as const satisfies HookSelectionProfile

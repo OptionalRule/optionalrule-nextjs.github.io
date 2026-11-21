@@ -112,6 +112,7 @@ export function runNarrativeStage(input: NarrativeStageInput, rootRng: SeededRng
   )
   const hooks = selectSystemHooks({
     rng: rootRng.fork('hooks'),
+    profile: input.rules.hookSelectionProfile,
     context: {
       guOverlay,
       settlements: reshaped.settlements,

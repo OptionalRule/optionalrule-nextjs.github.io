@@ -1,6 +1,8 @@
 import { describe, expect, it } from 'vitest'
 import { generateSystem, GENERATOR_VERSION, SUPPORTED_GENERATOR_VERSIONS } from '../index'
+import { HOOK_SELECTION_PROFILE_V2, HOOK_SELECTION_PROFILE_V3 } from '../hooks'
 import { classifyNarrativeDomainsV2, classifyNarrativeDomainsV3 } from '../narrative/domainClassifier'
+import { generatorRules } from '../rules'
 import type {
   GeneratedSystem,
   GenerationOptions,
@@ -35,6 +37,11 @@ describe('generator version dispatch', () => {
     expect([...SUPPORTED_GENERATOR_VERSIONS].sort()).toEqual([2, 3])
   })
 
+  it('keeps the v2 Hook Selection Profile for version 2 and uses the v3 profile for version 3', () => {
+    expect(generatorRules(2).hookSelectionProfile).toBe(HOOK_SELECTION_PROFILE_V2)
+    expect(generatorRules(3).hookSelectionProfile).toBe(HOOK_SELECTION_PROFILE_V3)
+  })
+
   it('runs the current version by default and stamps it', () => {
     expect(generateSystem({ ...base, seed: 'version-a' }).generatorVersion).toBe(GENERATOR_VERSION)
   })
@@ -57,7 +64,7 @@ describe('generator version dispatch', () => {
     expect(v3Leaks).toEqual([])
   })
 
-  it('changes nothing but narrative domains and what derives from them', () => {
+  it('changes nothing upstream of narrative domains and hook selection', () => {
     const v2 = generateSystem({ ...base, seed: 'version-b' }, { generatorVersion: 2 })
     const v3 = generateSystem({ ...base, seed: 'version-b' }, { generatorVersion: 3 })
     expect(v3.primary).toEqual(v2.primary)
