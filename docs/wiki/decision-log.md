@@ -36,3 +36,10 @@ See [architecture-strong-items](architecture-strong-items.md).
 - Q21: Add GitHub Actions CI running test and lint on pushes to `develop`, on Node 24.
 - Q22: Asteroids High Score updates live; the reset-high-score button is hidden while a game is in progress.
 - Q23: Level Transition and Respawn timers wait while the tab is hidden (part of Q15).
+
+## 2026-11-21 round 4 (user: "yes to all questions")
+- Q24: Asteroids ignores keys while the reset dialog is open, so Escape no longer starts a game.
+- Q25: Add project worktree setup so agent worktrees start from `origin/develop` with `node_modules` linked.
+- Follow-ups approved: the companionStar `./index` cycle; dead `settlementSpineEdgeIds`; the meaningless audit graph-aware metrics; graph rules matching domain words in prose (must stay byte-identical); `gu.json` domain drift; the KCD2 toast timer; a shared canvas fake for tests.
+- Approved to explore next: the review's "Worth exploring" items #4 (hook variety), #5 (Seed URL), #9 (Draft rule), plus the substring-bug fix. These get grilled before design. The substring fix still needs an explicit ADR-0001 version-break decision.
+- A weekly wiki lint schedule is approved.
