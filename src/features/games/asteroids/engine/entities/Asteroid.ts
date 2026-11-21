@@ -124,13 +124,6 @@ export class Asteroid extends Entity {
     }
   }
 
-  takeDamage(): void {
-    this.health--
-    if (this.health <= 0) {
-      this.destroy()
-    }
-  }
-
   getCollisionRadius(): number {
     return PHYSICS.collisionRadius.asteroid[this.size]
   }
