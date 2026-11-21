@@ -17,7 +17,8 @@ export function ScorePanel({ gameState, className, onResetHighScore }: ScorePane
     return score.toLocaleString().padStart(8, '0')
   }
 
-  const canResetHighScore = Boolean(onResetHighScore && gameState.highScore > 0)
+  const isGameInProgress = gameState.gameStatus === 'playing' || gameState.gameStatus === 'paused' || gameState.gameStatus === 'loading'
+  const canResetHighScore = Boolean(onResetHighScore && gameState.highScore > 0 && !isGameInProgress)
 
   const handleRequestReset = () => {
     if (!canResetHighScore) return
