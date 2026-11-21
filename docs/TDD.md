@@ -130,7 +130,7 @@ See PRD sections “Purpose & Overview”, “Goals & Non‑Goals”, “System 
   - `src/app/layout.tsx:1` sets site‑wide metadata template and icons, and computes theme CSS variables.
 - Feeds: `src/lib/feeds.ts:1` provides RSS and sitemap output from content models.
   - SSG route handlers: `src/app/sitemap.xml/route.ts:1` uses `generateSitemap()`.
-  - Build scripts: `scripts/generate-rss.ts:1` generates `public/rss.xml` and `public/sitemap.xml` for convenience.
+  - Build scripts: `scripts/generate-rss.ts:1` generates `public/rss.xml`; the sitemap comes only from the route handler.
 
 
 ## 9. Theming and Styles
