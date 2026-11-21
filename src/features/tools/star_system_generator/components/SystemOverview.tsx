@@ -1,7 +1,7 @@
 import { Sun, Telescope, Thermometer, Users } from 'lucide-react'
 import type { GeneratedSystem } from '../types'
 import { formatStellarClass, stellarClassNote } from '../lib/stellarLabels'
-import { buildSeedHref } from '../lib/seedUrl'
+import { seedLinkFrom } from '../lib/seedUrl'
 import { formatSystemPopulationLine } from '../lib/populationDisplay'
 import { FieldRow, SectionHeader, SpectralChip, sectionShellClasses } from './visual'
 
@@ -12,6 +12,7 @@ function extractParentSeed(seed: string): string | undefined {
 
 export function SystemOverview({ system }: { system: GeneratedSystem }) {
   const stellarRadius = formatEstimatedStellarRadius(system)
+  const linkToSeed = (seed: string) => seedLinkFrom(system, seed)
   const spectralValue = system.primary.spectralType.value
 
   const rows: Array<{ label: string; value: React.ReactNode }> = [
@@ -88,7 +89,7 @@ export function SystemOverview({ system }: { system: GeneratedSystem }) {
       {(() => {
         const parent = extractParentSeed(system.seed)
         if (!parent) return null
-        const url = buildSeedHref(parent)
+        const url = linkToSeed(parent)
         return (
           <div className="mt-4 rounded-md border border-[var(--border-light)] bg-[var(--card-elevated)] p-3 text-sm">
             <h3 className="text-[0.68rem] font-semibold uppercase tracking-[0.08em] text-[var(--text-tertiary)]">
@@ -105,7 +106,7 @@ export function SystemOverview({ system }: { system: GeneratedSystem }) {
       {system.companions.length ? (
         <div className="mt-4 space-y-2">
           {system.companions.map((c) => (
-            <CompanionCard key={c.id} companion={c} />
+            <CompanionCard key={c.id} companion={c} linkToSeed={linkToSeed} />
           ))}
         </div>
       ) : null}
@@ -113,7 +114,13 @@ export function SystemOverview({ system }: { system: GeneratedSystem }) {
   )
 }
 
-function CompanionCard({ companion }: { companion: GeneratedSystem['companions'][number] }) {
+function CompanionCard({
+  companion,
+  linkToSeed,
+}: {
+  companion: GeneratedSystem['companions'][number]
+  linkToSeed: (seed: string) => string
+}) {
   const shared = (
     <p className="mt-1 text-base font-semibold text-[var(--text-primary)]">
       {companion.companionType.value}{' '}
@@ -135,7 +142,7 @@ function CompanionCard({ companion }: { companion: GeneratedSystem['companions']
   )
 
   if (companion.mode === 'linked-independent' && companion.linkedSeed) {
-    const url = buildSeedHref(companion.linkedSeed.value)
+    const url = linkToSeed(companion.linkedSeed.value)
     return (
       <div className="rounded-md border border-[var(--border-light)] bg-[var(--card-elevated)] p-3 text-sm">
         <h3 className="text-[0.68rem] font-semibold uppercase tracking-[0.08em] text-[var(--text-tertiary)]">

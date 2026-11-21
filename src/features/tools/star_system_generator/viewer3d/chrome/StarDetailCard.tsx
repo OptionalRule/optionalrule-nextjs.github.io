@@ -3,7 +3,7 @@
 import type { GeneratedSystem } from '../../types'
 import { SpectralChip } from '../../components/visual'
 import { formatStellarClass } from '../../lib/stellarLabels'
-import { buildSeedHref } from '../../lib/seedUrl'
+import { seedLinkFrom } from '../../lib/seedUrl'
 
 export function StarDetailCard({ system }: { system: GeneratedSystem }) {
   const star = system.primary
@@ -32,7 +32,7 @@ export function StarDetailCard({ system }: { system: GeneratedSystem }) {
                 {c.mode === 'linked-independent' && c.linkedSeed ? (
                   <a
                     className="mt-1 inline-block text-[10px] text-[var(--accent)] underline"
-                    href={buildSeedHref(c.linkedSeed.value)}
+                    href={seedLinkFrom(system, c.linkedSeed.value)}
                   >
                     Open linked system →
                   </a>

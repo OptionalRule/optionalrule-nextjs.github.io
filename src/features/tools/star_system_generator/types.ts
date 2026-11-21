@@ -14,6 +14,7 @@ export type GeneratorDistribution = 'frontier' | 'realistic'
 export type GeneratorTone = 'balanced' | 'astronomy' | 'cinematic'
 export type GuPreference = 'normal' | 'low' | 'high' | 'fracture'
 export type SettlementDensity = 'normal' | 'sparse' | 'crowded' | 'hub'
+export type GeneratorVersion = 2
 
 export type SettlementPopulation =
   | 'Minimal (<5)'
@@ -469,7 +470,7 @@ export interface SystemHooks {
 export interface GeneratedSystem {
   id: string
   seed: string
-  generatorVersion: number
+  generatorVersion: GeneratorVersion
   options: GenerationOptions
   name: Fact<string>
   dataBasis: Fact<string>

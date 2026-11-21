@@ -6,6 +6,7 @@ import type {
   GeneratedSystem,
   GenerationOptions,
   GeneratorTone,
+  GeneratorVersion,
   GuPreference,
   HumanRemnant,
   Moon,
@@ -152,7 +153,7 @@ import { composePhenomenonConflict } from './prose/phenomenonConflict'
 import { derivePopulationLayer } from './population'
 import { selectCoherentHiddenTruth } from './settlementCoherence'
 
-export const GENERATOR_VERSION = 2 as const
+export const GENERATOR_VERSION: GeneratorVersion = 2
 import { createSeededRng, normalizeSeed, type SeededRng } from './rng'
 import { separationToMode } from './companionMode'
 import { generateCompanionStar } from './companionStar'

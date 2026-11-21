@@ -11,7 +11,7 @@ import {
   anchorModeLabel,
   formatDebrisExtentLine,
 } from '../debrisFieldDisplay'
-import { buildSeedParams } from '../seedUrl'
+import { seedLinkFrom } from '../seedUrl'
 
 export function exportSystemMarkdown(system: GeneratedSystem): string {
   const lines: string[] = [
@@ -145,8 +145,7 @@ export function exportSystemMarkdown(system: GeneratedSystem): string {
     } else if (companion.mode === 'linked-independent' && companion.linkedSeed) {
       lines.push('', '## Linked Companion System', '')
       lines.push(`${companion.companionType.value} · ${companion.separation.value}`, '')
-      const linkedParams = buildSeedParams({ ...system.options, seed: companion.linkedSeed.value })
-      lines.push(`Linked system: \`?${linkedParams.toString()}\``, '')
+      lines.push(`Linked system: \`${seedLinkFrom(system, companion.linkedSeed.value)}\``, '')
     }
   }
 

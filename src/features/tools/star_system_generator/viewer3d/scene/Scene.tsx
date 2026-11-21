@@ -24,7 +24,7 @@ import { BodyDetailCard } from './BodyDetailCard'
 import { useLayers, usePrefersReducedMotion, useSelectionActions } from '../chrome/ViewerContext'
 import { WebGLFallback } from '../chrome/WebGLFallback'
 import { invisibleHitMaterial, moonSphereGeometry, starSphereGeometry } from './renderAssets'
-import { buildSeedHref } from '../../lib/seedUrl'
+import { seedLinkFrom } from '../../lib/seedUrl'
 import { DebrisFields } from './debris/DebrisFields'
 import { PostFx } from './PostFx'
 
@@ -131,9 +131,7 @@ export function Scene({ graph, system }: SceneProps) {
                 onClick={(e) => {
                   e.stopPropagation()
                   if (typeof window !== 'undefined' && m.linkedSeed) {
-                    const url = new URL(window.location.href)
-                    url.searchParams.set('seed', m.linkedSeed)
-                    window.location.href = url.toString()
+                    window.location.href = seedLinkFrom(system, m.linkedSeed)
                   }
                 }}
               >
@@ -141,7 +139,7 @@ export function Scene({ graph, system }: SceneProps) {
               </mesh>
               <Html center sprite>
                 <a
-                  href={buildSeedHref(m.linkedSeed)}
+                  href={seedLinkFrom(system, m.linkedSeed)}
                   className="rounded bg-black/70 px-2 py-1 text-[10px] text-white underline"
                 >
                   {m.label}
