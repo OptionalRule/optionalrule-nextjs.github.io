@@ -12,13 +12,25 @@ const options: GenerationOptions = {
   settlements: 'crowded',
 }
 
-function recordingRng(rng: SeededRng, forks: string[]): SeededRng {
+function recordingRng(rng: SeededRng, forks: string[], draws: string[] = []): SeededRng {
   return {
     seed: rng.seed,
-    next: () => rng.next(),
-    int: (min, max) => rng.int(min, max),
-    float: (min, max) => rng.float(min, max),
-    chance: (probability) => rng.chance(probability),
+    next: () => {
+      draws.push('next')
+      return rng.next()
+    },
+    int: (min, max) => {
+      draws.push('int')
+      return rng.int(min, max)
+    },
+    float: (min, max) => {
+      draws.push('float')
+      return rng.float(min, max)
+    },
+    chance: (probability) => {
+      draws.push('chance')
+      return rng.chance(probability)
+    },
     fork: (label) => {
       forks.push(label)
       return rng.fork(label)
@@ -48,6 +60,12 @@ describe('runNarrativeStage', () => {
     const forks: string[] = []
     runNarrativeStage(stageInput(), recordingRng(createSeededRng(options.seed), forks))
     expect([...forks].sort()).toEqual(['conflicts', 'factions', 'graph', 'graph-prose', 'hooks', 'story'])
+  })
+
+  it('never draws directly from the root stream', () => {
+    const draws: string[] = []
+    runNarrativeStage(stageInput(), recordingRng(createSeededRng(options.seed), [], draws))
+    expect(draws).toEqual([])
   })
 
   it('keeps settlement and phenomenon identity and order', () => {
