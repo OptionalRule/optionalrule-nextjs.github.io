@@ -69,7 +69,7 @@ Invariants:
 ### Browser adapter (`engine/AsteroidsEngine.ts`, kept as the adapter's name to limit churn)
 
 - Owns `RenderSystem`, `SoundSystem`, key `Set`, `keydown`/`keyup` listeners, RAF loop and High Score storage.
-- Constructor: load High Score from `localStorage`, create the core, subscribe (save High Score when it rises above the last saved value), render once.
+- Constructor: load High Score from `localStorage`, create the core, subscribe (save High Score whenever the snapshot's `highScore` changes to a non-zero value, so a Score after a clear is saved as today), render once.
 - Keys: menu + non-modifier key → `start()`; `Enter` in `gameOver` → `restart()`; `Escape` → `togglePause()`; `PREVENTED_KEYS` unchanged. Held keys map to `ShipControls` each frame.
 - Loop: runs from `start()`/`restart()` until the snapshot is `gameOver` (as today); each frame `dt = min(now - last, maxFrameDelta)`, `core.update(dt, controls)`, render. `resume()` resets `last` as today. `restart()` clears held keys as today.
 - `destroy()` stops RAF, removes listeners, destroys `SoundSystem`. Exposes `getSnapshot`, `subscribe`, `start`, `pause`, `resume`, `restart`, `clearHighScore`, `destroy`.
@@ -96,7 +96,7 @@ Invariants:
 
 ### Task 2: Core, test-first
 
-**Files:** create `engine/AsteroidsCore.ts`, `__tests__/asteroidsCore.test.ts` (recording fake `GameAudio`, numeric fake clock; no `vi.mock`, no casts to internals). Helpers in the test: `step(core, ms, controls?)` loops `update(16, ...)`; `clearField(core)` calls `destroy()` on every Asteroid from `getEntities()`; `crashShip(core)` moves an Asteroid onto the Ship; `parkAsteroids(core)` moves every Asteroid to a far corner with zero velocity (public `setPosition`/`setVelocity`) so long runs cannot kill the Ship by chance.
+**Files:** create `engine/AsteroidsCore.ts`, `__tests__/asteroidsCore.test.ts` (recording fake `GameAudio`, numeric fake clock starting at `bullets.cooldown` so the first shot is not blocked by `lastShotTime = 0`; no `vi.mock`, no casts to internals). Helpers in the test: `step(core, ms, controls?)` loops `update(16, ...)`; `clearField(core)` calls `destroy()` on every Asteroid from `getEntities()`; `crashShip(core)` moves an Asteroid onto the Ship; `parkAsteroids(core)` moves every Asteroid to a far corner with zero velocity (public `setPosition`/`setVelocity`) so long runs cannot kill the Ship by chance.
 
 - [ ] Write failing tests:
   - starts in `menu`; `update` in `menu` changes nothing; `start()` → `playing`, Level 1, four Large Asteroids, `gameStart` sound.
@@ -118,7 +118,7 @@ Invariants:
 
 - [ ] Rewrite `AsteroidsEngine` as the adapter around `AsteroidsCore`; drop `AsteroidsEngineEvents`.
 - [ ] Rewrite `useAsteroids` on `useSyncExternalStore`; `index.tsx` untouched except as types require.
-- [ ] `__tests__/asteroidsEngine.test.ts` (happy-dom has no 2D context, so this test alone stubs `getContext` with a no-op context and `Audio` as `soundSystem.test.ts` does; the browser is the true-external dependency): menu key starts, `Escape` toggles pause, `Enter` restarts only from `gameOver`, held keys drive the Ship, High Score saved to `localStorage` when beaten and removed on clear, `destroy()` removes listeners and stops further frames.
+- [ ] `__tests__/asteroidsEngine.test.ts` (happy-dom has no 2D context, so this test alone stubs `getContext` with a no-op context and `Audio` as `soundSystem.test.ts` does; the browser is the true-external dependency; `requestAnimationFrame` is stubbed with a manual frame queue so frames are driven deterministically): menu key starts, `Escape` toggles pause, `Enter` restarts only from `gameOver`, held keys drive the Ship, High Score saved to `localStorage` when beaten, removed on clear, and a lower Score after a clear saved again, `destroy()` removes listeners and stops further frames.
 - [ ] `npx tsc --noEmit`, `npm run lint`, asteroids vitest, `npm run graph:update`.
 - [ ] Commit `refactor(asteroids): drive the core from a browser adapter and snapshot hook`.
 
