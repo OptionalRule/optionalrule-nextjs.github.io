@@ -11,3 +11,9 @@ Facts as of `b18e4aa` (2026-11-21, explorer report). Paths are relative to `src/
 - `narrativeDomainsForText` (G/index.ts:3797) feeds `NarrativeFact.domains` → `buildFactIndexes` → `groundQualifierInEntities`/`sharedDomains` in the contradicts and contests rules. Its output shapes the qualifiers on graph edges.
 
 See [architecture-strong-items](architecture-strong-items.md), [decision-log](decision-log.md).
+
+## 2026-11-21 Lane A progress
+- `56a8731`: golden guard `__tests__/generator-golden.test.ts` with 200 cases (2 seeds × 96 option combinations + 8 edge seeds), SHA-256 over key-sorted JSON, about 1.4s. Regenerate deliberately with `npm run test:star-system-golden:update`; `vitest -u` doesn't touch it. No nondeterminism found.
+- `e351cb9`: plan `docs/superpowers/plans/2026-11-21-narrative-stage.md`. Option A was chosen: a single `runNarrativeStage(input, rootRng)` that keeps the fork labels as literals inside it. The plan awaits user approval (Q16).
+- Corrections to the review: 49 full-pipeline test files, not 38. The real `fact` importers are 4 source files and 1 test; factions and the banks were not cyclic. `companionStar` still imports `activityFromRoll` from `./index`, which is left as a follow-up.
+- Risk: the hashes were verified only on Node 26. Other CI uses Node 24, and no CI runs on `develop`.

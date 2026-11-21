@@ -11,3 +11,8 @@ Facts as of `b18e4aa` (2026-11-21, explorer report). Paths are under `src/featur
 - No test round-trips URL + storage + hydration against the real modules. `Kcd2Alchemy.test.tsx` mocks four modules.
 
 See [architecture-strong-items](architecture-strong-items.md).
+
+## 2026-11-21 Lane C progress
+- The worktree branch `worktree-agent-aaf3ff58757fdc938` holds `38da341` and `e2401da` (dead-code deletions) and `237fcb9` (the plan). Not merged.
+- Bug found as of `712ffab`: the hydrate effect depends on `setQueryState`, whose identity changes on every edit, so it reruns. The restore toast reappears, and popstate refills params from saved filters. This waits on the user (Q19).
+- The test env is happy-dom, not jsdom.
