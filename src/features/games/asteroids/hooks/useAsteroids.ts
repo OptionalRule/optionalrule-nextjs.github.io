@@ -1,6 +1,6 @@
-import { useEffect, useRef, useState, useCallback, useMemo } from 'react'
+import { useEffect, useRef, useState, useCallback, useMemo, useSyncExternalStore } from 'react'
 import type { GameState } from '../types'
-import { AsteroidsEngine, type AsteroidsEngineEvents } from '../engine/AsteroidsEngine'
+import { AsteroidsEngine } from '../engine/AsteroidsEngine'
 import { GAME_CONFIG } from '../constants'
 
 export interface UseAsteroidsReturn {
@@ -15,132 +15,87 @@ export interface UseAsteroidsReturn {
   clearHighScore: () => void
 }
 
+const INITIAL_GAME_STATE: GameState = Object.freeze({
+  score: 0,
+  lives: GAME_CONFIG.ship.startingLives,
+  level: 1,
+  gameStatus: 'menu',
+  highScore: 0,
+  lastExtraLifeThreshold: 0,
+  pendingExtraLife: false,
+  extraLifeJustAwarded: false,
+})
+
+const getInitialGameState = (): GameState => INITIAL_GAME_STATE
+
+const subscribeToNothing = (): (() => void) => () => undefined
+
 export function useAsteroids(): UseAsteroidsReturn {
   const canvasRef = useRef<HTMLCanvasElement>(null)
-  const engineRef = useRef<AsteroidsEngine | undefined>(undefined)
+  const [engine, setEngine] = useState<AsteroidsEngine | null>(null)
   const [isEngineReady, setIsEngineReady] = useState(false)
-  const [gameState, setGameState] = useState<GameState>({
-    score: 0,
-    lives: GAME_CONFIG.ship.startingLives,
-    level: 1,
-    gameStatus: 'menu',
-    highScore: 0,
-    lastExtraLifeThreshold: 0,
-    pendingExtraLife: false,
-    extraLifeJustAwarded: false,
-  })
 
-  // Detect mobile device
   const isMobile = useMemo(() => {
     if (typeof window === 'undefined') return false
-    
+
     const userAgent = navigator.userAgent || navigator.vendor || (window as Window & { opera?: string }).opera || ''
-    
-    // Check for mobile user agents
     const mobileRegex = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i
     const isMobileUserAgent = mobileRegex.test(userAgent)
-    
-    // Check for touch capability
     const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0
-    
-    // Check screen size (consider tablets as mobile for this game)
     const isSmallScreen = window.innerWidth <= 1024
-    
+
     return isMobileUserAgent || (isTouchDevice && isSmallScreen)
   }, [])
 
+  const gameState = useSyncExternalStore(
+    engine ? engine.subscribe : subscribeToNothing,
+    engine ? engine.getSnapshot : getInitialGameState,
+    getInitialGameState
+  )
 
-  // Engine event handlers wrapped in useMemo to prevent recreation on every render
-  const engineEvents: AsteroidsEngineEvents = useMemo(() => ({
-    onGameStateChange: (newState: GameState) => {
-      setGameState(newState)
-    },
-
-    onScoreChange: (score: number) => {
-      setGameState(prev => ({ ...prev, score }))
-    },
-
-    onLivesChange: (lives: number) => {
-      setGameState(prev => ({ ...prev, lives }))
-    },
-
-    onLevelChange: (level: number) => {
-      setGameState(prev => ({ ...prev, level }))
-    },
-
-    onGameOver: (finalScore: number) => {
-      setGameState(prev => ({ 
-        ...prev, 
-        gameStatus: 'gameOver',
-        highScore: Math.max(prev.highScore, finalScore)
-      }))
-    },
-  }), []) // Empty dependency array since these handlers don't depend on external values
-
-  // Initialize engine when canvas is ready (but not on mobile)
   useEffect(() => {
     if (!canvasRef.current || isMobile) {
-      // On mobile, just set ready to true without initializing the engine
       if (isMobile) {
         setIsEngineReady(true)
       }
       return
     }
 
+    let created: AsteroidsEngine | undefined
     const timeoutId = setTimeout(() => {
       try {
-        // Set canvas size
         const canvas = canvasRef.current!
         canvas.width = GAME_CONFIG.canvas.width
         canvas.height = GAME_CONFIG.canvas.height
 
-        // Create engine
-        const engine = new AsteroidsEngine(canvas, engineEvents)
-        engineRef.current = engine
-        
-        // Set initial game state from engine
-        setGameState(engine.getGameState())
+        created = new AsteroidsEngine(canvas)
+        setEngine(created)
         setIsEngineReady(true)
-
       } catch (error) {
         console.error('Failed to initialize Asteroids engine:', error)
         setIsEngineReady(false)
       }
-    }, 100) // Small delay to ensure canvas is properly mounted
+    }, 100)
 
-    // Cleanup function
     return () => {
       clearTimeout(timeoutId)
-      if (engineRef.current) {
-        engineRef.current.destroy()
-        engineRef.current = undefined
-      }
+      created?.destroy()
+      setEngine(null)
       setIsEngineReady(false)
     }
-  }, [engineEvents, isMobile])
+  }, [isMobile])
 
-
-  // Handle window blur/focus for automatic pause/resume
   useEffect(() => {
-    if (!isEngineReady || !engineRef.current) return
+    if (!engine) return
 
     const handleVisibilityChange = () => {
-      if (!engineRef.current) return
-      
       if (document.hidden) {
-        if (gameState.gameStatus === 'playing') {
-          engineRef.current.pause()
-        }
+        engine.pause()
       }
-      // Note: We don't auto-resume to avoid surprising the player
     }
 
     const handleBlur = () => {
-      if (!engineRef.current) return
-      
-      if (gameState.gameStatus === 'playing') {
-        engineRef.current.pause()
-      }
+      engine.pause()
     }
 
     document.addEventListener('visibilitychange', handleVisibilityChange)
@@ -150,36 +105,13 @@ export function useAsteroids(): UseAsteroidsReturn {
       document.removeEventListener('visibilitychange', handleVisibilityChange)
       window.removeEventListener('blur', handleBlur)
     }
-  }, [isEngineReady, gameState.gameStatus])
+  }, [engine])
 
-  // Game control functions
-  const startGame = useCallback(() => {
-    if (engineRef.current && gameState.gameStatus === 'menu') {
-      engineRef.current.start()
-    }
-  }, [gameState.gameStatus])
-
-  const pauseGame = useCallback(() => {
-    if (engineRef.current && gameState.gameStatus === 'playing') {
-      engineRef.current.pause()
-    }
-  }, [gameState.gameStatus])
-
-  const resumeGame = useCallback(() => {
-    if (engineRef.current && gameState.gameStatus === 'paused') {
-      engineRef.current.resume()
-    }
-  }, [gameState.gameStatus])
-
-  const restartGame = useCallback(() => {
-    if (engineRef.current) {
-      engineRef.current.restart()
-    }
-  }, [])
-
-  const clearHighScore = useCallback(() => {
-    engineRef.current?.clearHighScore()
-  }, [])
+  const startGame = useCallback(() => engine?.start(), [engine])
+  const pauseGame = useCallback(() => engine?.pause(), [engine])
+  const resumeGame = useCallback(() => engine?.resume(), [engine])
+  const restartGame = useCallback(() => engine?.restart(), [engine])
+  const clearHighScore = useCallback(() => engine?.clearHighScore(), [engine])
 
   return {
     canvasRef,

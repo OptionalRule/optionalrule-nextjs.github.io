@@ -1,58 +1,119 @@
 import type { GameState } from '../types'
-import { SaucerSize } from '../types'
-import { GAME_CONFIG, GAMEPLAY, COLORS, CONTROLS } from '../constants'
-import { Vector2DUtils } from './utils/Vector2D'
-import { GameMath } from './utils/GameMath'
-import { Entity } from './entities/Entity'
-import { Ship } from './entities/Ship'
-import { Asteroid } from './entities/Asteroid'
-import { Bullet } from './entities/Bullet'
-import { Explosion } from './entities/Explosion'
-import { Saucer } from './entities/Saucer'
-import { collide, type CollisionOutcome } from './systems/collisions'
+import { GAMEPLAY, CONTROLS } from '../constants'
+import { AsteroidsCore, type ShipControls } from './AsteroidsCore'
 import { RenderSystem } from './systems/RenderSystem'
 import { SoundSystem } from './systems/SoundSystem'
 
-// Keys the game consumes; the browser default is suppressed only for these so the
-// rest of the page (and the rest of the site) keeps working normally.
 const PREVENTED_KEYS = new Set<string>([...Object.keys(CONTROLS), 'ArrowDown'])
 
-// Modifier and navigation keys that must not count as "press any key to start".
 const MENU_IGNORED_KEYS = new Set<string>(['Tab', 'Shift', 'Control', 'Alt', 'Meta'])
 
-export interface AsteroidsEngineEvents {
-  onGameStateChange: (gameState: GameState) => void
-  onScoreChange: (score: number) => void
-  onLivesChange: (lives: number) => void
-  onLevelChange: (level: number) => void
-  onGameOver: (finalScore: number) => void
+const HIGH_SCORE_KEY = 'asteroids_highscore'
+
+function loadHighScore(): number {
+  try {
+    const stored = localStorage.getItem(HIGH_SCORE_KEY)
+    return stored ? parseInt(stored, 10) : 0
+  } catch {
+    return 0
+  }
+}
+
+function saveHighScore(score: number): void {
+  try {
+    localStorage.setItem(HIGH_SCORE_KEY, score.toString())
+  } catch {
+    return
+  }
+}
+
+function removeHighScore(): void {
+  try {
+    localStorage.removeItem(HIGH_SCORE_KEY)
+  } catch {
+    return
+  }
 }
 
 export class AsteroidsEngine {
-  private canvas: HTMLCanvasElement
-  private renderSystem: RenderSystem
-  private soundSystem: SoundSystem
-  private ship: Ship
-  private entities: Entity[] = []
-  private gameState: GameState
-  private gameLoop: number = 0
+  private readonly core: AsteroidsCore
+  private readonly renderSystem: RenderSystem
+  private readonly soundSystem: SoundSystem
+  private readonly keys = new Set<string>()
+  private readonly unsubscribeFromCore: () => void
+  private savedHighScore: number
+  private frame = 0
   private lastFrameTime = 0
-  private events: AsteroidsEngineEvents
-  private keys: Set<string> = new Set()
-  private lastShotTime = 0
-  private nextSaucerSpawn = 0
-  private isThrusting = false
-  private isProcessingShipDeath = false
-  private isFirstSaucerSpawnForLevel = true
-  private hasCalculatedFirstSpawn = false
-  private respawnTimer: ReturnType<typeof setTimeout> | undefined
+  private destroyed = false
+
+  constructor(canvas: HTMLCanvasElement) {
+    this.renderSystem = new RenderSystem(canvas)
+    this.soundSystem = new SoundSystem()
+    this.savedHighScore = loadHighScore()
+    this.core = new AsteroidsCore({
+      audio: this.soundSystem,
+      highScore: this.savedHighScore,
+      clock: () => performance.now(),
+    })
+    this.unsubscribeFromCore = this.core.subscribe(this.persistHighScore)
+
+    document.addEventListener('keydown', this.handleKeyDown)
+    document.addEventListener('keyup', this.handleKeyUp)
+
+    this.render()
+  }
+
+  getSnapshot = (): GameState => this.core.getSnapshot()
+
+  subscribe = (listener: () => void): (() => void) => this.core.subscribe(listener)
+
+  start(): void {
+    if (this.destroyed || this.core.getSnapshot().gameStatus !== 'menu') return
+    this.core.start()
+    this.runLoop()
+  }
+
+  pause(): void {
+    if (this.destroyed) return
+    this.core.pause()
+  }
+
+  resume(): void {
+    if (this.destroyed || this.core.getSnapshot().gameStatus !== 'paused') return
+    this.core.resume()
+    this.lastFrameTime = performance.now()
+  }
+
+  restart(): void {
+    if (this.destroyed) return
+    this.keys.clear()
+    this.core.restart()
+    this.runLoop()
+  }
+
+  clearHighScore(): void {
+    if (this.destroyed) return
+    this.core.clearHighScore()
+    removeHighScore()
+  }
+
+  destroy(): void {
+    this.destroyed = true
+    this.stopLoop()
+    this.unsubscribeFromCore()
+    this.soundSystem.destroy()
+    document.removeEventListener('keydown', this.handleKeyDown)
+    document.removeEventListener('keyup', this.handleKeyUp)
+    this.keys.clear()
+  }
 
   private handleKeyDown = (event: KeyboardEvent): void => {
     if (PREVENTED_KEYS.has(event.code)) {
       event.preventDefault()
     }
 
-    if (this.gameState.gameStatus === 'menu') {
+    const status = this.core.getSnapshot().gameStatus
+    if (status === 'menu') {
       if (!MENU_IGNORED_KEYS.has(event.key)) {
         this.start()
       }
@@ -61,7 +122,7 @@ export class AsteroidsEngine {
 
     this.keys.add(event.code)
 
-    if (event.code === 'Enter' && this.gameState.gameStatus === 'gameOver') {
+    if (event.code === 'Enter' && status === 'gameOver') {
       this.restart()
     } else if (event.code === 'Escape') {
       this.togglePause()
@@ -76,738 +137,80 @@ export class AsteroidsEngine {
     }
   }
 
-  constructor(canvas: HTMLCanvasElement, events: AsteroidsEngineEvents) {
-    this.canvas = canvas
-    this.events = events
-    this.renderSystem = new RenderSystem(canvas)
-    this.soundSystem = new SoundSystem()
-    
-    // Initialize game state
-    this.gameState = {
-      score: 0,
-      lives: GAME_CONFIG.ship.startingLives,
-      level: 1,
-      gameStatus: 'menu',
-      highScore: this.loadHighScore(),
-      lastLevelBonus: undefined,
-      lastExtraLifeThreshold: 0,
-      pendingExtraLife: false,
-      extraLifeJustAwarded: false,
+  private persistHighScore = (): void => {
+    const { highScore } = this.core.getSnapshot()
+    if (highScore === this.savedHighScore) return
+
+    if (highScore > 0) {
+      saveHighScore(highScore)
     }
-
-    // Initialize ship at center
-    const centerX = GAME_CONFIG.canvas.width / 2
-    const centerY = GAME_CONFIG.canvas.height / 2
-    this.ship = new Ship({ x: centerX, y: centerY })
-    this.entities.push(this.ship)
-
-    // Set up input handling
-    this.setupInputHandling()
-    
-    // Render initial state
-    this.render()
-  }
-
-  private setupInputHandling(): void {
-    document.addEventListener('keydown', this.handleKeyDown)
-    document.addEventListener('keyup', this.handleKeyUp)
-  }
-
-  private clearRespawnTimer(): void {
-    if (this.respawnTimer !== undefined) {
-      clearTimeout(this.respawnTimer)
-      this.respawnTimer = undefined
-    }
-  }
-
-  private stopGameLoop(): void {
-    if (this.gameLoop) {
-      cancelAnimationFrame(this.gameLoop)
-      this.gameLoop = 0
-    }
-  }
-
-  start(): void {
-    // Never leave a previous loop running - a second one would double the simulation rate
-    this.stopGameLoop()
-
-    if (this.gameState.gameStatus === 'menu') {
-      this.initializeLevel()
-      this.gameState.gameStatus = 'playing'
-      this.notifyStateChange()
-      
-      // Play game start sound
-      this.soundSystem.playSound('gameStart')
-    }
-    
-    this.lastFrameTime = performance.now()
-    this.gameLoop = requestAnimationFrame((time) => this.update(time))
-  }
-
-  private update(currentTime: number): void {
-    // Clamp so a hidden or throttled tab doesn't hand the simulation a multi-second
-    // step, which would jump entities across the field and tunnel through collisions
-    const deltaTime = Math.min(currentTime - this.lastFrameTime, GAMEPLAY.maxFrameDelta)
-    this.lastFrameTime = currentTime
-
-    if (this.gameState.gameStatus === 'playing') {
-      this.handleInput(deltaTime)
-      this.updateEntities(deltaTime)
-      this.updateSaucerShooting()
-      this.checkCollisions()
-      this.updateGameLogic()
-      this.cleanupDeadEntities()
-    }
-
-    this.render()
-    
-    if (this.gameState.gameStatus !== 'gameOver') {
-      this.gameLoop = requestAnimationFrame((time) => this.update(time))
-    }
-  }
-
-  private handleInput(deltaTime: number): void {
-    if (!this.ship.getActive()) return
-
-    // Ship rotation
-    if (this.keys.has('ArrowLeft')) {
-      this.ship.rotate(-1, deltaTime)
-    }
-    if (this.keys.has('ArrowRight')) {
-      this.ship.rotate(1, deltaTime)
-    }
-
-    // Ship thrust
-    if (this.keys.has('ArrowUp')) {
-      this.ship.thrust(deltaTime)
-      // Start thrust sound if not already playing
-      if (!this.isThrusting) {
-        this.soundSystem.playSound('shipThrust')
-        this.isThrusting = true
-      }
-    } else {
-      this.ship.stopThrust()
-      // Stop thrust sound if playing
-      if (this.isThrusting) {
-        this.soundSystem.stopSound('shipThrust')
-        this.isThrusting = false
-      }
-    }
-
-    // Shooting
-    if (this.keys.has('Space')) {
-      this.handleShooting()
-    }
-  }
-
-  private handleShooting(): void {
-    // Guard against shooting when ship is not active
-    if (!this.ship.getActive()) return
-    
-    const now = performance.now()
-    
-    if (now - this.lastShotTime >= GAME_CONFIG.bullets.cooldown) {
-      const activeBullets = this.entities.filter(e => 
-        e instanceof Bullet && e.getActive()
-      ).length
-
-      if (activeBullets < GAME_CONFIG.bullets.maxCount) {
-        const shipPos = this.ship.getPosition()
-        const shipVel = this.ship.getVelocity()
-        const shipRot = this.ship.getRotation()
-        
-        // Offset bullet spawn position to ship nose
-        const noseOffset = Vector2DUtils.fromAngle(shipRot, GAMEPLAY.bulletNoseOffset)
-        const bulletPos = Vector2DUtils.add(shipPos, noseOffset)
-        
-        const bullet = new Bullet(bulletPos, shipRot, shipVel, this.ship.getId())
-        this.entities.push(bullet)
-        
-        // Play bullet fire sound
-        this.soundSystem.playSound('bulletFire')
-        
-        this.lastShotTime = now
-      }
-    }
-  }
-
-  private updateEntities(deltaTime: number): void {
-    for (const entity of this.entities) {
-      if (entity.getActive()) {
-        entity.update(deltaTime, GAME_CONFIG.canvas.width, GAME_CONFIG.canvas.height)
-      }
-    }
-  }
-
-  private updateSaucerShooting(): void {
-    // Find active saucers that can shoot
-    const saucers = this.entities.filter(e => 
-      e instanceof Saucer && e.getActive()
-    ) as Saucer[]
-
-    for (const saucer of saucers) {
-      if (saucer.canShoot() && this.ship.getActive()) {
-        const shootDirection = saucer.calculateShootDirection(this.ship.getPosition())
-        const shootPosition = saucer.getShootPosition()
-        
-        // Create saucer bullet with yellow color
-        const bullet = new Bullet(
-          shootPosition, 
-          shootDirection, 
-          Vector2DUtils.zero(), // Saucers don't inherit velocity
-          saucer.getId(),
-          COLORS.saucerBullets
-        )
-        
-        this.entities.push(bullet)
-        saucer.resetShootTimer()
-        
-        // Play saucer fire sound (with variants)
-        this.soundSystem.playSound('saucerFire')
-      }
-    }
-  }
-
-  private checkCollisions(): void {
-    for (const outcome of collide(this.entities, this.ship.getId())) {
-      this.applyCollisionOutcome(outcome)
-    }
-  }
-
-  private applyCollisionOutcome(outcome: CollisionOutcome): void {
-    switch (outcome.kind) {
-      case 'asteroidShot':
-        outcome.bullet.destroy()
-        outcome.asteroid.destroy()
-        this.handleAsteroidShot(outcome)
-        break
-      case 'saucerShot':
-        outcome.bullet.destroy()
-        outcome.saucer.destroy()
-        if (outcome.shooter === 'player') {
-          this.handleSaucerDestroyed(outcome.saucer, outcome.points)
-        }
-        break
-      case 'shipDestroyed':
-        outcome.bullet?.destroy()
-        outcome.ship.destroy()
-        this.handleShipDestroyed()
-        break
-    }
-  }
-
-  private handleAsteroidShot({ asteroid, shooter, points }: Extract<CollisionOutcome, { kind: 'asteroidShot' }>): void {
-    this.entities.push(new Explosion(asteroid.getPosition(), 'asteroid'))
-
-    if (shooter === 'player') {
-      this.addScore(points)
-    }
-
-    const fragments = asteroid.split()
-    if (fragments.length > 0) {
-      this.soundSystem.playSound('asteroidSplit')
-      this.entities.push(...fragments)
-    } else {
-      this.soundSystem.playSound('asteroidDestruction')
-    }
-  }
-
-  private handleSaucerDestroyed(saucer: Saucer, points: number): void {
-    // Create explosion at saucer position
-    const explosion = new Explosion(saucer.getPosition(), 'saucer')
-    this.entities.push(explosion)
-    
-    // Award points
-    this.addScore(points)
-
-    // Play saucer destruction sound
-    this.soundSystem.playSound('saucerDestroyed')
-    
-    // Stop the looping arrival sound when saucer is destroyed
-    this.soundSystem.stopSound('saucerArrival')
-  }
-
-  private handleShipDestroyed(): void {
-    // Prevent multiple death processing
-    if (this.isProcessingShipDeath) return
-    this.isProcessingShipDeath = true
-
-    // Create explosion at ship position
-    const explosion = new Explosion(this.ship.getPosition(), 'ship')
-    this.entities.push(explosion)
-    
-    // Play ship destruction sound
-    this.soundSystem.playSound('shipDestroyed')
-    
-    // Stop thrust sound if playing
-    if (this.isThrusting) {
-      this.soundSystem.stopSound('shipThrust')
-      this.isThrusting = false
-    }
-    
-    this.gameState.lives--
-    this.events.onLivesChange(this.gameState.lives)
-
-    if (this.gameState.lives <= 0) {
-      this.gameOver()
-    } else {
-      // Respawn ship after delay. The run may have moved on to a level transition or
-      // a pause in the meantime - only a finished game should skip the respawn, or the
-      // ship stays inactive forever and no level can ever be completed.
-      this.clearRespawnTimer()
-      this.respawnTimer = setTimeout(() => {
-        this.respawnTimer = undefined
-
-        const gameEnded = this.gameState.gameStatus === 'gameOver' || this.gameState.gameStatus === 'menu'
-        if (!gameEnded) {
-          const centerX = GAME_CONFIG.canvas.width / 2
-          const centerY = GAME_CONFIG.canvas.height / 2
-          this.ship.respawn({ x: centerX, y: centerY })
-
-          // Play ship respawn sound
-          this.soundSystem.playSound('shipRespawn')
-        }
-        this.isProcessingShipDeath = false
-      }, GAMEPLAY.respawnDelay)
-    }
-  }
-
-  private updateGameLogic(): void {
-    // Check for level completion
-    const asteroidsRemaining = this.entities.filter(e => 
-      e instanceof Asteroid && e.getActive()
-    ).length
-
-    if (asteroidsRemaining === 0) {
-      this.completeLevel()
-    }
-
-    // Handle saucer spawning
-    this.updateSaucerSpawning()
-  }
-
-  private updateSaucerSpawning(): void {
-    // Only spawn saucers from level 2 onward
-    if (this.gameState.level < GAME_CONFIG.saucer.minLevel) {
-      return
-    }
-
-    // Calculate first spawn time when first needed (not during initialization)
-    if (this.isFirstSaucerSpawnForLevel && !this.hasCalculatedFirstSpawn) {
-      const now = performance.now()
-      const randomizedFirstDelay = Math.max(5000, this.getRandomizedSaucerDelay(GAME_CONFIG.saucer.firstSpawnDelay))
-      this.nextSaucerSpawn = now + randomizedFirstDelay
-      this.hasCalculatedFirstSpawn = true
-      return
-    }
-
-    // Check if there's already a saucer on screen
-    const existingSaucer = this.entities.find(e => e instanceof Saucer && e.getActive())
-    if (existingSaucer) {
-      return
-    }
-
-    // Check if it's time to spawn a saucer
-    const now = performance.now()
-    if (this.nextSaucerSpawn > 0 && now >= this.nextSaucerSpawn) {
-      this.spawnSaucer()
-      
-      // Mark that first spawn is complete
-      this.isFirstSaucerSpawnForLevel = false
-      
-      // Schedule next spawn with regular interval
-      const randomizedInterval = Math.max(10000, this.getRandomizedSaucerDelay(GAME_CONFIG.saucer.spawnInterval))
-      this.nextSaucerSpawn = now + randomizedInterval
-    }
-  }
-
-  private spawnSaucer(): void {
-    // Determine saucer size based on level
-    const saucerSize = this.getSaucerSizeByLevel(this.gameState.level)
-    
-    // Randomly choose spawn side
-    const startSide = Math.random() < 0.5 ? 'left' : 'right'
-    
-    // Set spawn position
-    const spawnX = startSide === 'left' ? -50 : GAME_CONFIG.canvas.width + 50
-    const spawnY = GameMath.randomFloat(50, GAME_CONFIG.canvas.height - 50)
-    
-    const saucer = new Saucer(
-      { x: spawnX, y: spawnY },
-      saucerSize,
-      startSide
-    )
-    
-    this.entities.push(saucer)
-    
-    // Play saucer arrival sound (looping)
-    this.soundSystem.playSound('saucerArrival')
-  }
-
-  private getSaucerSizeByLevel(level: number): SaucerSize {
-    let weights: { small: number, large: number }
-    
-    if (level <= 4) {
-      weights = GAME_CONFIG.saucer.weights.early
-    } else if (level <= 8) {
-      weights = GAME_CONFIG.saucer.weights.mid
-    } else {
-      weights = GAME_CONFIG.saucer.weights.late
-    }
-    
-    return Math.random() < weights.small ? 'small' as SaucerSize : 'large' as SaucerSize
-  }
-
-  private getRandomizedSaucerDelay(baseDelay: number): number {
-    const variance = GAME_CONFIG.saucer.spawnDelayVariance
-    return baseDelay + GameMath.randomFloat(-variance, variance)
-  }
-
-  private completeLevel(): void {
-    // Play level completion sound (before bonus display, non-blocking)
-    this.soundSystem.playSound('levelCompletion')
-    
-    // Check for pending extra life award
-    if (this.gameState.pendingExtraLife) {
-      this.awardExtraLife()
-    }
-    
-    // Award bonus points for level completion (before incrementing level)
-    const bonusPoints = this.gameState.level * GAMEPLAY.levelCompletionBonus
-    this.addScore(bonusPoints)
-    
-    // Store bonus points for display on loading screen
-    this.gameState.lastLevelBonus = bonusPoints
-    
-    this.gameState.level++
-    this.events.onLevelChange(this.gameState.level)
-    
-    // Reset saucer spawn state for next level
-    this.isFirstSaucerSpawnForLevel = true
-    this.hasCalculatedFirstSpawn = false
-    this.nextSaucerSpawn = -1
-    
-    // Set game state to loading to show level loading screen
-    const previousState = this.gameState.gameStatus
-    this.gameState.gameStatus = 'loading'
-    this.notifyStateChange()
-    
-    // Stop any active saucer sounds before clearing entities
-    const activeSaucers = this.entities.filter(e => e instanceof Saucer && e.getActive())
-    if (activeSaucers.length > 0) {
-      this.soundSystem.stopSound('saucerArrival')
-    }
-    
-    // Clear asteroids and bullets immediately to prevent visual artifacts
-    // Keep ship and explosions for visual continuity
-    this.entities = this.entities.filter(e => e instanceof Ship || e instanceof Explosion)
-    
-    // Add ship back if it was removed
-    if (!this.entities.includes(this.ship)) {
-      this.entities.push(this.ship)
-    }
-    
-    // Start next level after brief delay
-    setTimeout(() => {
-      if (this.gameState.gameStatus === 'loading') {
-        this.initializeLevel()
-        this.gameState.gameStatus = previousState
-        this.gameState.extraLifeJustAwarded = false // Reset extra life notification
-        this.notifyStateChange()
-      }
-    }, GAMEPLAY.levelTransitionDelay)
-  }
-
-  private awardExtraLife(): void {
-    // Calculate the threshold that was crossed
-    const threshold = GAMEPLAY.extraLifeThreshold
-    const newThreshold = Math.floor(this.gameState.score / threshold) * threshold
-    
-    // Award the extra life
-    this.gameState.lives++
-    this.gameState.lastExtraLifeThreshold = newThreshold
-    this.gameState.pendingExtraLife = false
-    this.gameState.extraLifeJustAwarded = true
-    
-    // Notify UI of lives change
-    this.events.onLivesChange(this.gameState.lives)
-  }
-
-  private initializeLevel(): void {
-    // Entities should already be cleared in completeLevel(), but ensure ship is present
-    if (!this.entities.includes(this.ship)) {
-      this.entities = [this.ship]
-    }
-
-    // Spawn asteroids for this level
-    const asteroidCount = Math.min(
-      GAMEPLAY.baseAsteroidCount + (this.gameState.level - 1) * GAMEPLAY.asteroidIncrement, 
-      GAMEPLAY.maxAsteroidCount
-    )
-    const shipPos = this.ship.getPosition()
-    const minDistance = GAMEPLAY.asteroidMinDistance
-
-    const asteroids = Asteroid.createField(
-      asteroidCount,
-      GAME_CONFIG.canvas.width,
-      GAME_CONFIG.canvas.height,
-      shipPos,
-      minDistance
-    )
-
-    this.entities.push(...asteroids)
-    
-    // Reset saucer spawn state for new level
-    this.isFirstSaucerSpawnForLevel = true
-    this.hasCalculatedFirstSpawn = false
-    this.nextSaucerSpawn = -1 // Indicates first spawn not calculated yet
-  }
-
-  private cleanupDeadEntities(): void {
-    // Check for saucers that need sound cleanup before filtering
-    const deadSaucers = this.entities.filter(entity => 
-      entity instanceof Saucer && !entity.getActive()
-    ) as Saucer[]
-    
-    // Stop arrival sound for any saucers being cleaned up (they exited screen)
-    for (const saucer of deadSaucers) {
-      if (saucer.hasExitedScreen()) {
-        // Saucer exited naturally (not destroyed), just stop the sound
-        this.soundSystem.stopSound('saucerArrival')
-      }
-    }
-
-    // Keep the ship entity even when inactive (for respawning)
-    this.entities = this.entities.filter(entity => 
-      entity.getActive() || entity instanceof Ship
-    )
-  }
-
-  private render(): void {
-    this.renderSystem.clear()
-    
-    if (this.gameState.gameStatus === 'playing') {
-      this.renderSystem.renderEntities(this.entities)
-      this.renderSystem.drawHUD(
-        this.gameState.score,
-        this.gameState.lives,
-        this.gameState.level
-      )
-    } else if (this.gameState.gameStatus === 'paused') {
-      this.renderSystem.renderEntities(this.entities)
-      this.renderSystem.drawHUD(
-        this.gameState.score,
-        this.gameState.lives,
-        this.gameState.level
-      )
-      this.renderSystem.drawPauseScreen()
-    } else if (this.gameState.gameStatus === 'loading') {
-      this.renderSystem.renderEntities(this.entities)
-      this.renderSystem.drawHUD(
-        this.gameState.score,
-        this.gameState.lives,
-        this.gameState.level
-      )
-      this.renderSystem.drawLevelLoading(this.gameState.level, this.gameState.lastLevelBonus, this.gameState.extraLifeJustAwarded)
-    } else if (this.gameState.gameStatus === 'gameOver') {
-      this.renderSystem.drawGameOver(this.gameState.score, this.gameState.highScore)
-    } else if (this.gameState.gameStatus === 'menu') {
-      // For menu state, just render the background and maybe the ship
-      this.renderSystem.renderEntities([this.ship])
-    }
-  }
-
-  private addScore(points: number): void {
-    const previousScore = this.gameState.score
-    this.gameState.score += points
-    
-    // Check for extra life threshold crossing
-    this.checkExtraLifeThreshold(previousScore, this.gameState.score)
-    
-    // Update high score
-    if (this.gameState.score > this.gameState.highScore) {
-      this.gameState.highScore = this.gameState.score
-      this.saveHighScore(this.gameState.highScore)
-    }
-    
-    this.events.onScoreChange(this.gameState.score)
-  }
-
-  private checkExtraLifeThreshold(previousScore: number, currentScore: number): void {
-    const threshold = GAMEPLAY.extraLifeThreshold
-    
-    // Calculate which thresholds were crossed
-    const previousThreshold = Math.floor(previousScore / threshold) * threshold
-    const currentThreshold = Math.floor(currentScore / threshold) * threshold
-    
-    // If we crossed a new threshold
-    if (currentThreshold > previousThreshold && currentThreshold > this.gameState.lastExtraLifeThreshold) {
-      // Mark that an extra life is pending (to be awarded on next level completion)
-      this.gameState.pendingExtraLife = true
-    }
-  }
-
-  private gameOver(): void {
-    // Stop all sounds and play game over sound
-    this.soundSystem.stopAllSounds()
-    this.soundSystem.playSound('gameOver')
-    
-    this.gameState.gameStatus = 'gameOver'
-    this.events.onGameOver(this.gameState.score)
-    this.notifyStateChange()
+    this.savedHighScore = highScore
   }
 
   private togglePause(): void {
-    if (this.gameState.gameStatus === 'playing') {
-      this.gameState.gameStatus = 'paused'
-      
-      // Pause effects and ambient sounds, but allow UI sounds
-      this.soundSystem.pauseCategory('effects')
-      this.soundSystem.pauseCategory('ambient')
-      this.soundSystem.playSound('pause')
-
-      // Keep isThrusting as-is: the paused loop resumes with the rest of the effects,
-      // and handleInput() stops it on the first frame back if the key was released
-    } else if (this.gameState.gameStatus === 'paused') {
-      this.gameState.gameStatus = 'playing'
-      this.lastFrameTime = performance.now() // Reset frame timing
-      
-      // UI sounds still work, so play unpause sound
-      this.soundSystem.playSound('unpause')
-      
-      // Resume paused effects and ambient sounds
-      this.soundSystem.resumeCategory('effects')
-      this.soundSystem.resumeCategory('ambient')
-    }
-    this.notifyStateChange()
-  }
-
-  restart(): void {
-    // Reset game state
-    this.gameState = {
-      score: 0,
-      lives: GAME_CONFIG.ship.startingLives,
-      level: 1,
-      gameStatus: 'playing',
-      highScore: this.gameState.highScore,
-      lastLevelBonus: undefined,
-      lastExtraLifeThreshold: 0,
-      pendingExtraLife: false,
-      extraLifeJustAwarded: false,
-    }
-
-    // Drop any respawn pending from the run being replaced
-    this.clearRespawnTimer()
-
-    // Clear all entities and reset ship
-    this.entities = []
-    const centerX = GAME_CONFIG.canvas.width / 2
-    const centerY = GAME_CONFIG.canvas.height / 2
-    this.ship.respawn({ x: centerX, y: centerY })
-    this.entities.push(this.ship)
-
-    // Clear input state
-    this.keys.clear()
-    this.lastShotTime = 0
-    this.isThrusting = false
-    this.isProcessingShipDeath = false
-    this.isFirstSaucerSpawnForLevel = true
-    this.hasCalculatedFirstSpawn = false
-
-    // Stop all sounds
-    this.soundSystem.stopAllSounds()
-
-    // Initialize first level
-    this.initializeLevel()
-    this.notifyStateChange()
-    
-    // Start game loop
-    this.start()
-  }
-
-  pause(): void {
-    if (this.gameState.gameStatus === 'playing') {
-      this.gameState.gameStatus = 'paused'
-      
-      // Pause effects and ambient sounds, but allow UI sounds
-      this.soundSystem.pauseCategory('effects')
-      this.soundSystem.pauseCategory('ambient')
-      this.soundSystem.playSound('pause')
-
-      // Keep isThrusting as-is: the paused loop resumes with the rest of the effects,
-      // and handleInput() stops it on the first frame back if the key was released
-
-      this.notifyStateChange()
+    if (this.core.getSnapshot().gameStatus === 'paused') {
+      this.resume()
+    } else {
+      this.pause()
     }
   }
 
-  resume(): void {
-    if (this.gameState.gameStatus === 'paused') {
-      this.gameState.gameStatus = 'playing'
-      this.lastFrameTime = performance.now()
-      
-      // UI sounds still work, so play unpause sound
-      this.soundSystem.playSound('unpause')
-      
-      // Resume paused effects and ambient sounds
-      this.soundSystem.resumeCategory('effects')
-      this.soundSystem.resumeCategory('ambient')
-
-      this.notifyStateChange()
+  private controls(): ShipControls {
+    return {
+      rotateLeft: this.keys.has('ArrowLeft'),
+      rotateRight: this.keys.has('ArrowRight'),
+      thrust: this.keys.has('ArrowUp'),
+      fire: this.keys.has('Space'),
     }
   }
 
-  destroy(): void {
-    this.stopGameLoop()
-    this.clearRespawnTimer()
-
-    // Clean up sound system
-    this.soundSystem.destroy()
-
-    // Clean up event listeners
-    document.removeEventListener('keydown', this.handleKeyDown)
-    document.removeEventListener('keyup', this.handleKeyUp)
-    this.keys.clear()
+  private runLoop(): void {
+    this.stopLoop()
+    this.lastFrameTime = performance.now()
+    this.frame = requestAnimationFrame(this.tick)
   }
 
-  getGameState(): GameState {
-    return { ...this.gameState }
-  }
-
-  clearHighScore(): void {
-    try {
-      localStorage.removeItem('asteroids_highscore')
-    } catch {
-      // Ignore storage errors gracefully
-    }
-
-    this.gameState.highScore = 0
-    this.events.onGameStateChange(this.getGameState())
-  }
-
-  private notifyStateChange(): void {
-    this.events.onGameStateChange(this.getGameState())
-  }
-
-  private loadHighScore(): number {
-    try {
-      const stored = localStorage.getItem('asteroids_highscore')
-      return stored ? parseInt(stored, 10) : 0
-    } catch {
-      return 0
+  private stopLoop(): void {
+    if (this.frame) {
+      cancelAnimationFrame(this.frame)
+      this.frame = 0
     }
   }
 
-  private saveHighScore(score: number): void {
-    try {
-      localStorage.setItem('asteroids_highscore', score.toString())
-    } catch {
-      // Silently fail if localStorage is not available
+  private tick = (time: number): void => {
+    const deltaTime = Math.min(time - this.lastFrameTime, GAMEPLAY.maxFrameDelta)
+    this.lastFrameTime = time
+
+    this.core.update(deltaTime, this.controls())
+    this.render()
+
+    if (!this.destroyed && this.core.getSnapshot().gameStatus !== 'gameOver') {
+      this.frame = requestAnimationFrame(this.tick)
+    } else {
+      this.frame = 0
     }
   }
 
-  // Development/debug methods
-  getEntities(): Entity[] {
-    return [...this.entities]
+  private render(): void {
+    const { gameStatus, score, lives, level, highScore, lastLevelBonus, extraLifeJustAwarded } = this.core.getSnapshot()
+    const entities = this.core.getEntities()
+
+    this.renderSystem.clear()
+
+    if (gameStatus === 'gameOver') {
+      this.renderSystem.drawGameOver(score, highScore)
+      return
+    }
+
+    this.renderSystem.renderEntities(entities)
+    if (gameStatus === 'menu') return
+
+    this.renderSystem.drawHUD(score, lives, level)
+
+    if (gameStatus === 'paused') {
+      this.renderSystem.drawPauseScreen()
+    } else if (gameStatus === 'loading') {
+      this.renderSystem.drawLevelLoading(level, lastLevelBonus, extraLifeJustAwarded)
+    }
   }
 }
