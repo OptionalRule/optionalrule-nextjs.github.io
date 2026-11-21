@@ -9,7 +9,7 @@ import { Asteroid } from './entities/Asteroid'
 import { Bullet } from './entities/Bullet'
 import { Explosion } from './entities/Explosion'
 import { Saucer } from './entities/Saucer'
-import { CollisionSystem } from './systems/CollisionSystem'
+import { collide, type CollisionOutcome } from './systems/collisions'
 import { RenderSystem } from './systems/RenderSystem'
 import { SoundSystem } from './systems/SoundSystem'
 
@@ -32,7 +32,6 @@ export interface AsteroidsEngineEvents {
 export class AsteroidsEngine {
   private canvas: HTMLCanvasElement
   private renderSystem: RenderSystem
-  private collisionSystem: CollisionSystem
   private soundSystem: SoundSystem
   private ship: Ship
   private entities: Entity[] = []
@@ -83,7 +82,6 @@ export class AsteroidsEngine {
     this.canvas = canvas
     this.events = events
     this.renderSystem = new RenderSystem(canvas)
-    this.collisionSystem = new CollisionSystem()
     this.soundSystem = new SoundSystem()
     
     // Initialize game state
@@ -273,74 +271,59 @@ export class AsteroidsEngine {
   }
 
   private checkCollisions(): void {
-    // Resolve each pair and apply its effects immediately, so a pair whose entity
-    // was already destroyed by an earlier pair this frame is skipped entirely
-    for (const collision of this.collisionSystem.checkCollisions(this.entities)) {
-      if (!collision.entityA.getActive() || !collision.entityB.getActive()) continue
-
-      this.collisionSystem.resolveCollision(collision)
-      this.handleCollisionEffects(collision.entityA, collision.entityB)
+    for (const outcome of collide(this.entities, this.ship.getId())) {
+      this.applyCollisionOutcome(outcome)
     }
   }
 
-  private handleCollisionEffects(entityA: Entity, entityB: Entity): void {
-    // Handle asteroid destruction and splitting
-    const asteroid = entityA instanceof Asteroid ? entityA : 
-                    entityB instanceof Asteroid ? entityB : null
-    const bullet = entityA instanceof Bullet ? entityA : 
-                  entityB instanceof Bullet ? entityB : null
-    const saucer = entityA instanceof Saucer ? entityA : 
-                  entityB instanceof Saucer ? entityB : null
-
-    if (asteroid && bullet && !asteroid.getActive()) {
-      // Create small explosion at asteroid position
-      const explosion = new Explosion(asteroid.getPosition(), 'asteroid')
-      this.entities.push(explosion)
-      
-      if (bullet.getSourceId() === this.ship.getId()) {
-        const points = asteroid.getPoints()
-        this.addScore(points, {
-          points,
-          position: asteroid.getPosition(),
-          type: 'asteroid'
-        })
-      }
-
-      // Split asteroid if possible
-      const fragments = asteroid.split()
-      if (fragments.length > 0) {
-        // Play asteroid split sound
-        this.soundSystem.playSound('asteroidSplit')
-        for (const fragment of fragments) {
-          this.entities.push(fragment)
+  private applyCollisionOutcome(outcome: CollisionOutcome): void {
+    switch (outcome.kind) {
+      case 'asteroidShot':
+        outcome.bullet.destroy()
+        outcome.asteroid.destroy()
+        this.handleAsteroidShot(outcome)
+        break
+      case 'saucerShot':
+        outcome.bullet.destroy()
+        outcome.saucer.destroy()
+        if (outcome.shooter === 'player') {
+          this.handleSaucerDestroyed(outcome.saucer, outcome.points)
         }
-      } else {
-        // Play asteroid destruction sound (no fragments = completely destroyed)
-        this.soundSystem.playSound('asteroidDestruction')
-      }
-    }
-
-    // Handle saucer destruction by player bullets
-    if (saucer && bullet && !saucer.getActive()) {
-      // Only award points if bullet was fired by the player (not another saucer)
-      if (bullet.getSourceId() === this.ship.getId()) {
-        this.handleSaucerDestroyed(saucer)
-      }
-    }
-
-    // Handle ship destruction
-    if (!this.ship.getActive()) {
-      this.handleShipDestroyed()
+        break
+      case 'shipDestroyed':
+        outcome.bullet?.destroy()
+        outcome.ship.destroy()
+        this.handleShipDestroyed()
+        break
     }
   }
 
-  private handleSaucerDestroyed(saucer: Saucer): void {
+  private handleAsteroidShot({ asteroid, shooter, points }: Extract<CollisionOutcome, { kind: 'asteroidShot' }>): void {
+    this.entities.push(new Explosion(asteroid.getPosition(), 'asteroid'))
+
+    if (shooter === 'player') {
+      this.addScore(points, {
+        points,
+        position: asteroid.getPosition(),
+        type: 'asteroid'
+      })
+    }
+
+    const fragments = asteroid.split()
+    if (fragments.length > 0) {
+      this.soundSystem.playSound('asteroidSplit')
+      this.entities.push(...fragments)
+    } else {
+      this.soundSystem.playSound('asteroidDestruction')
+    }
+  }
+
+  private handleSaucerDestroyed(saucer: Saucer, points: number): void {
     // Create explosion at saucer position
     const explosion = new Explosion(saucer.getPosition(), 'saucer')
     this.entities.push(explosion)
     
     // Award points
-    const points = saucer.getPoints()
     this.addScore(points, {
       points,
       position: saucer.getPosition(),
