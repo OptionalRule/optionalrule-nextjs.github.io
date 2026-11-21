@@ -333,6 +333,10 @@ An added twist on a Conflict: a secret, a deadline, a third party, or a GU anoma
 **Visible Sign**:
 What a newcomer can actually observe that betrays a Conflict.
 
+**Narrative Stage**:
+The part of generation that turns the human layer into Narrative Facts, the Relationship Graph, Conflicts, the System Story and Stories at Port, and reshapes Settlement and System Phenomenon prose to match.
+_Avoid_: narrative pass, story pipeline
+
 ### Hooks
 
 **Stories at Port**:
