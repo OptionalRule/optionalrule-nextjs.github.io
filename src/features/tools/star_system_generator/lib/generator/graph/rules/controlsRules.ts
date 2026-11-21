@@ -5,7 +5,7 @@ import { containsWord, CONTROL_DOMAINS } from './settingPatterns'
 import type { EntityRef } from '../types'
 import { buildFactionMetadataByName } from '../../factions'
 import { getFactionEntities, factionFactIdsForName } from './factionHelpers'
-import type { NarrativeDomain } from '../../narrative/domains'
+import { findDomainMentionedInProse, type NarrativeDomain } from '../../narrative/domains'
 
 const CONTROL_DOMAIN_SET: ReadonlySet<NarrativeDomain> = new Set(CONTROL_DOMAINS)
 
@@ -99,9 +99,7 @@ export const controlsSettlementUniqueDomainRule: EdgeRule = {
       for (const factionEntity of factionEntities) {
         const faction = factionMeta.get(factionEntity.displayName)
         if (!faction) continue
-        const matchedDomain = faction.domains.find(d =>
-          containsWord(fact.value.value, d),
-        )
+        const matchedDomain = findDomainMentionedInProse(fact.value.value, faction.domains)
         if (matchedDomain) matchingFactions.push({ faction: factionEntity, domain: matchedDomain })
       }
       if (matchingFactions.length !== 1) continue

@@ -4,7 +4,14 @@ import narrativeData from '../../../../data/narrative.json'
 import { astronomyBank } from '../../factions/banks/astronomyBank'
 import { balancedBank } from '../../factions/banks/balancedBank'
 import { cinematicBank } from '../../factions/banks/cinematicBank'
-import { classifyNarrativeDomains, isNarrativeDomain, NARRATIVE_DOMAINS } from '../domains'
+import { containsWord } from '../../graph/rules/settingPatterns'
+import {
+  classifyNarrativeDomains,
+  findDomainMentionedInProse,
+  isNarrativeDomain,
+  NARRATIVE_DOMAINS,
+  proseMentionsDomain,
+} from '../domains'
 
 const EXPECTED_DOMAINS = [
   'war', 'trade', 'espionage', 'information-integrity', 'science', 'ecology', 'medicine', 'terraforming',
@@ -49,5 +56,34 @@ describe('narrative domain vocabulary', () => {
 
   it('matches the narrative data vocabulary used by the data audit', () => {
     expect(new Set(Object.keys(narrativeData.narrativeDomains))).toEqual(new Set(NARRATIVE_DOMAINS))
+  })
+})
+
+describe('domain words in prose', () => {
+  const samples = [
+    '',
+    'War council holds the port',
+    'Postwar trade compact',
+    'TRADE-guild magistrates under law',
+    'information-integrity board',
+    'information integrity board',
+    'AI-run ration office',
+    'Raid crews and daily-life wardens',
+    'gardener-interdiction picket; route-weather office',
+    'Lawful stellar-events watch',
+  ]
+
+  it('matches exactly what containsWord matches for every domain', () => {
+    for (const text of samples) {
+      for (const domain of NARRATIVE_DOMAINS) {
+        expect(proseMentionsDomain(text, domain)).toBe(containsWord(text, domain))
+      }
+    }
+  })
+
+  it('returns the first listed domain found in the prose', () => {
+    expect(findDomainMentionedInProse('Trade and war council', ['war', 'trade'])).toBe('war')
+    expect(findDomainMentionedInProse('Trade and war council', ['trade', 'war'])).toBe('trade')
+    expect(findDomainMentionedInProse('Postwar council', ['war', 'law'])).toBeUndefined()
   })
 })

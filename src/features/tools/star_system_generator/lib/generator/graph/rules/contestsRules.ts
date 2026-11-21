@@ -1,6 +1,7 @@
 import type { EdgeRule, RuleMatch } from './ruleTypes'
 import { mintEdgeId } from './ruleTypes'
-import { sharedDomains, containsWord, groundQualifierInEntities } from './settingPatterns'
+import { sharedDomains, groundQualifierInEntities } from './settingPatterns'
+import { findDomainMentionedInProse } from '../../narrative/domains'
 import { buildFactionMetadataByName } from '../../factions'
 import { getFactionEntities, factionFactIdsForName } from './factionHelpers'
 
@@ -96,9 +97,7 @@ export const contestsAuthorityRule: EdgeRule = {
       for (const factionEntity of factionEntities) {
         const faction = factionMeta.get(factionEntity.displayName)
         if (!faction) continue
-        const matchedDomain = faction.domains.find(d =>
-          containsWord(fact.value.value, d),
-        )
+        const matchedDomain = findDomainMentionedInProse(fact.value.value, faction.domains)
         if (!matchedDomain) continue
 
         const factionFactIds = factionFactIdsForName(ctx.factsByKind, factionEntity.displayName)
