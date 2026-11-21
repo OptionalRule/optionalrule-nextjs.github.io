@@ -101,7 +101,7 @@ Why and how this system sits on the human travel network, e.g. Dead-end system, 
 _Avoid_: reachable-volume bias, system role, route class
 
 **Pinch Difficulty**:
-Captain's shorthand for how dangerous a Pinchdrive approach to a system or Gate is.
+Captain's shorthand for how dangerous a Pinchdrive approach to a system or Gate is; a Gate's own Pinch Difficulty, when it has one, overrides the system's for that Gate.
 
 **Architecture**:
 The overall arrangement of a system's bodies, e.g. Compact inner system, Peas-in-a-pod chain, Migrated giant.
@@ -248,8 +248,8 @@ A specific local place within a Settlement where scenes happen.
 _Avoid_: site (unqualified)
 
 **Gate**:
-A specific Iggygate installation in a system, with its anchor, authority, condition, and route note.
-_Avoid_: gate node, route node
+A specific Iggygate installation in a system, with its anchor, authority, condition, and route note. Route infrastructure is a Gate, not a Settlement.
+_Avoid_: gate node, route node, gate settlement
 
 **Ruin**:
 A human, usually first-wave, wreck, derelict, or abandoned site in a system.
@@ -337,14 +337,26 @@ What a newcomer can actually observe that betrays a Conflict.
 
 **Stories at Port**:
 The table-ready hook set for a system, grouped as rumors, contracts, encounters, NPCs, and twists.
-_Avoid_: system hooks, adventure hooks
+_Avoid_: system hooks, adventure hooks, hooks (unqualified)
 
 **Hook Category**:
 The kind of a Stories at Port entry: rumor, contract, encounter, NPC, or twist.
 
 **Tag Hook**:
-The play-facing interpretation of a Settlement's tag pair, crisis, and hidden truth.
-_Avoid_: settlement hook
+The play-facing interpretation of a Settlement's or Gate's tag pair, crisis, and hidden truth.
+_Avoid_: settlement hook, hook (unqualified)
+
+**Story Hook**:
+A play prompt drawn from the System Story's Spine.
+_Avoid_: hook (unqualified)
+
+**Conflict Hook**:
+The play prompt attached to a System Phenomenon.
+_Avoid_: hook (unqualified)
+
+**Ruin Hook**:
+The play prompt attached to a Ruin.
+_Avoid_: hook (unqualified)
 
 ### Viewer overlay
 
