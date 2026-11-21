@@ -160,6 +160,7 @@ describe('v3 narrative domain classifier', () => {
     ['archived', 'archaeology'],
     ['misjumped', 'disaster'],
     ['scouting', 'exploration'],
+    ['salvagers', 'trade'],
     ['gateway', 'exploration'],
   ]
 

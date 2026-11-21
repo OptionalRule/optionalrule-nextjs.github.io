@@ -7,8 +7,8 @@ Version 2 tagged Narrative Facts with Narrative Domains by substring match, so `
 - Lowercased camelCase tags and kinds (`sceneAnchor`, `routeAsset`, `hiddenTruth`) no longer leak their embedded words. Encounter sites lose an accidental exploration/trade tag. Hidden truths keep espionage through their explicit `secret` tag.
 - Measured on the 200 golden cases with the version stamp normalised, 190 of 200 systems differ from Version 2.
 - Version dispatch has one seam. `lib/generator/rules.ts` maps each Generator Version to its `GeneratorRules`. `generateSystem` resolves the rules once and stamps `rules.version`; an unknown runtime value resolves to the current version. Code below `generateSystem` receives the rules or a rule function, never a version number. The next version-dependent change (Q30 hook variety) adds a field to `GeneratorRules` and an entry per version.
-- The golden guard keeps one frozen fixture per version. `STAR_SYSTEM_GOLDEN_UPDATE=1` rewrites only the current version's fixture.
-- The default audit profile runs the current version. The last Version 2 audit run (default profile, before this change) recorded 722 errors. Nothing audits Version 2 any more, because its output is frozen by its golden fixture.
+- The golden guard keeps one fixture per version. `STAR_SYSTEM_GOLDEN_UPDATE=1` rewrites only the current version's fixture; a superseded version's fixture is frozen and must never be regenerated.
+- The default audit profile runs the current version. The last Version 2 audit run (default profile, before this change) recorded 722 errors; Version 3 records the same 722, so the error baseline is unchanged. Only relationship edge mix moves slightly. Nothing audits Version 2 any more, because its output is frozen by its golden fixture.
 
 ## Considered Options
 

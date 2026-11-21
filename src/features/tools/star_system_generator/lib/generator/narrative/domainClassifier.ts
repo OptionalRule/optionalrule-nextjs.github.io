@@ -38,7 +38,7 @@ const RATION_FORMS = ['ration', 'rationing', 'rationed']
 
 const V3_DOMAIN_RULES: ReadonlyArray<readonly [readonly string[], readonly NarrativeDomain[]]> = [
   [['navy', 'militia', 'military', 'mercenary', 'weapon', 'weaponized', 'weaponry', 'war', 'defense', 'basing', 'blockade', 'casualty'], ['war']],
-  [['trade', 'traded', 'trader', 'customs', 'freeport', 'shipyard', 'depot', 'resource', 'ore', 'mine', 'mined', 'miner', 'extraction', 'concession', 'debt', 'bank', 'banking', 'fuel', 'refueling', 'tax', 'taxed', 'shipment', 'salvage', 'salvaged'], ['trade']],
+  [['trade', 'traded', 'trader', 'customs', 'freeport', 'shipyard', 'depot', 'resource', 'ore', 'mine', 'mined', 'miner', 'extraction', 'concession', 'debt', 'bank', 'banking', 'fuel', 'refueling', 'tax', 'taxed', 'shipment', 'salvage', 'salvaged', 'salvager'], ['trade']],
   [['intelligence', 'erased', 'deleted', 'falsified', 'censored', 'secret', 'secretly', 'black site', 'hidden', 'sealed', 'sabotage', 'forged', 'impostor'], ['espionage', 'information-integrity']],
   [['survey', 'surveyed', 'surveyor', 'research', 'researcher', 'science', 'biosafety', 'medical', 'microbial', 'biosphere', 'ecology', ...TERRAFORM_FORMS, 'lab', 'laboratory', 'laboratories', 'academic'], ['science']],
   [['biosphere', 'microbial', 'ecology', 'contamination', 'quarantine', 'quarantined', 'chiral', 'chirality', ...TERRAFORM_FORMS], ['ecology']],
