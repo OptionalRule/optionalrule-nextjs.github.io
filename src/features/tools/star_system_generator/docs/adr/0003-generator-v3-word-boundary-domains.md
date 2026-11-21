@@ -25,3 +25,12 @@ Version 2 always treated GU and Bleed as Active Terms, so every system leaned to
 - When a system has no Active Terms, steps that prefer Active Terms skip the bias draw and pick uniformly. Resonant steps still lean on the terms carried by earlier picks. In the 200 golden cases, one system has no Active Terms.
 - Measured on the 200 golden cases (1,600 picks per version): GU is active in 186 systems and Bleed in 176. GU- or Bleed-tagged picks fall from 39.0% to 36.5%. Distinct pool entries used rise from 275 to 276 of 281. The effective number of entries (exp of the pick entropy) rises from 238.8 to 241.5, and the most-used entry falls from 16 picks to 15. The gain is small because most generated systems do have GU. Further variety needs new pool entries or tone gating, not profile changes.
 - 86 of the 200 Version 3 golden hashes changed, and the Version 3 fixture was regenerated. The default audit still records 722 errors, so the error baseline is unchanged.
+
+## 2026-11-21: Version 3 also widens the settlement Tag Hook template pool
+
+When a settlement's tag pair has no hand-written `tagPairHooks` entry, the Tag Hook falls back to a template. Version 2 had 4 templates, so the same sentence shapes repeated across settlements. Version 3 is still unreleased, so the 12 templates approved in Q37 go into Version 3 instead of a Version 4.
+
+- `GeneratorRules` gains `settlementTagHookTemplates`. Version 2 uses `SETTLEMENT_TAG_HOOK_TEMPLATES_V2` (the original 4, same text, same `rng.int(1, 4)` draw), and its golden fixture is unchanged. Version 3 uses `SETTLEMENT_TAG_HOOK_TEMPLATES_V3`: the original 4 followed by the 12 approved templates, drawn with `rng.int(1, 16)`.
+- `generateSystem` passes the pool from its rules to settlement generation, for the primary system and for companion sub-systems. The prose code takes the pool as an argument and never sees a version number. Hand-written pair hooks still win, and the `tag-hook-N` fork labels do not change.
+- Every template fills `{obviousTag}`, `{deeperText}` and, where used, `{deeperTag}`, and renders one sentence that ends in exactly one period. A test checks this for every tag and that Version 3 can produce all 16 templates.
+- 164 of the 200 Version 3 golden hashes changed, and the Version 3 fixture was regenerated. The `proseUnchanged` snapshot, which runs the current version, was updated for the same reason; only its Tag Hooks changed. The default audit still records 722 errors, so the error baseline is unchanged.
