@@ -3,16 +3,9 @@ import { AsteroidsEngine } from '../engine/AsteroidsEngine'
 import { AsteroidsCore } from '../engine/AsteroidsCore'
 import { Asteroid } from '../engine/entities/Asteroid'
 import { Ship } from '../engine/entities/Ship'
+import { stubCanvasContext } from '@/test-utils/canvas'
 
 const HIGH_SCORE_KEY = 'asteroids_highscore'
-
-function noOpContext(): CanvasRenderingContext2D {
-  const target: Record<string | symbol, unknown> = {}
-  const context: CanvasRenderingContext2D = new Proxy(target, {
-    get: (store, property) => (property in store ? store[property] : () => context),
-  }) as unknown as CanvasRenderingContext2D
-  return context
-}
 
 let frames: FrameRequestCallback[] = []
 let now = 0
@@ -79,7 +72,7 @@ describe('AsteroidsEngine browser adapter', () => {
     frames = []
     now = 1000
     localStorage.clear()
-    vi.spyOn(HTMLCanvasElement.prototype, 'getContext').mockImplementation(() => noOpContext())
+    stubCanvasContext()
     vi.spyOn(performance, 'now').mockImplementation(() => now)
     vi.stubGlobal('AudioContext', undefined)
     vi.stubGlobal('requestAnimationFrame', (callback: FrameRequestCallback) => {
