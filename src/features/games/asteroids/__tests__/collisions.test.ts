@@ -78,6 +78,27 @@ describe('collide', () => {
     ])
   })
 
+  it('awards no points when another Saucer Bullet shoots a Saucer', () => {
+    const ship = vulnerableShip(FAR)
+    const saucer = saucerAt()
+    const bullet = bulletFrom('saucer-1')
+
+    expect(collide([ship, saucer, bullet], ship.getId())).toEqual([
+      { kind: 'saucerShot', saucer, bullet, shooter: 'saucer', points: 0 },
+    ])
+  })
+
+  it('leaves a Saucer that destroyed the Ship free to be shot', () => {
+    const ship = vulnerableShip()
+    const saucer = saucerAt()
+    const bullet = bulletFrom('saucer-1', { x: 318, y: 300 })
+
+    expect(collide([ship, saucer, bullet], ship.getId())).toEqual([
+      { kind: 'shipDestroyed', ship },
+      { kind: 'saucerShot', saucer, bullet, shooter: 'saucer', points: 0 },
+    ])
+  })
+
   it('ignores a Saucer touching its own Saucer Bullet', () => {
     const ship = vulnerableShip(FAR)
     const saucer = saucerAt()
