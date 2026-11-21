@@ -12,13 +12,13 @@ The full brewing procedure for one Potion: its Base Liquid, Ingredients with amo
 **Potion**:
 The brewed product a Recipe yields, with its Effects, Yield, and Base Value; each Potion has exactly one Recipe.
 
-**Base Liquid**:
-The liquid a Recipe starts from in the cauldron: Water, Wine, Spirits, or Oil.
-_Avoid_: Liquid
-
 **Ingredient**:
-A named herb, animal part, or other material added to a Recipe on top of the Base Liquid.
+A named material a Recipe consumes: the Base Liquid plus any herbs, animal parts, or other additions.
 _Avoid_: Item
+
+**Base Liquid**:
+The Ingredient a Recipe starts from in the cauldron: exactly one of Water, Wine, Spirits, or Oil.
+_Avoid_: Liquid
 
 **Ingredient Quantity**:
 How many units of one Ingredient a Recipe calls for.
@@ -67,6 +67,9 @@ _Avoid_: Quantity, quantities
 
 **Perk**:
 An alchemy skill perk that raises Yield: Secret of Matter I, Secret of Matter II, or Secret of Secrets.
+
+**Secret of Secrets**:
+A Perk that raises the Yield of certain Recipes on top of whichever Secret of Matter Perks are also held.
 
 **Both Secrets**:
 Having both Secret of Matter I and Secret of Matter II, which gives the highest standard Yield.
