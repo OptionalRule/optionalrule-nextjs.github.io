@@ -4,7 +4,6 @@ import type {
 } from '../../../types'
 import type { SystemRelationshipGraph } from '../graph'
 import { graphAwareSettlementWhyHere } from './graphAwareSettlementWhyHere'
-import { graphAwareSettlementHook, rewriteFourthSentence } from './graphAwareSettlementHook'
 import { fact } from '../fact'
 
 export interface GraphAwareReshapeInput {
@@ -21,17 +20,15 @@ export interface GraphAwareReshapeResult {
 }
 
 export function graphAwareReshape(input: GraphAwareReshapeInput): GraphAwareReshapeResult {
-  const flags = input.options.graphAware ?? {}
   const tone: GeneratorTone = input.options.tone ?? 'balanced'
   const rng = input.rng.fork('graph-prose')
-  const settlements = input.settlements.map(s => reshapeSettlement(s, input.relationshipGraph, flags, rng, tone))
+  const settlements = input.settlements.map(s => reshapeSettlement(s, input.relationshipGraph, rng, tone))
   return { settlements, phenomena: input.phenomena }
 }
 
 function reshapeSettlement(
   settlement: Settlement,
   graph: SystemRelationshipGraph,
-  flags: NonNullable<GenerationOptions['graphAware']>,
   rng: SeededRng,
   tone: GeneratorTone,
 ): Settlement {
@@ -42,18 +39,6 @@ function reshapeSettlement(
     updated = {
       ...updated,
       whyHere: fact(newWhyHere, 'inferred', 'Graph-aware reshape from settlementWhyHere'),
-    }
-  }
-  if (flags.settlementHookSynthesis) {
-    const replacement = graphAwareSettlementHook(updated, graph, rng.fork(`hook-${settlement.id}`))
-    if (replacement !== null) {
-      const newHook = rewriteFourthSentence(updated.tagHook.value, replacement)
-      if (newHook !== updated.tagHook.value) {
-        updated = {
-          ...updated,
-          tagHook: fact(newHook, 'inferred', 'Graph-aware reshape from settlementHookSynthesis'),
-        }
-      }
     }
   }
   return updated
