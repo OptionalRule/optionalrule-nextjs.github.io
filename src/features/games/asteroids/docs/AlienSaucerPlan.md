@@ -63,9 +63,9 @@ class Saucer extends Entity {
 - **Level Requirement**: No spawning on level 1
 - **Timing**: Spawn at configurable intervals (30 seconds default)
 - **Weighted Selection**:
-  - Early levels (2-4): 80% small saucer, 20% large saucer
-  - Mid levels (5-8): 60% small saucer, 40% large saucer
-  - Late levels (9+): 40% small saucer, 60% large saucer
+  - Early levels (2-4): 20% small saucer, 80% large saucer
+  - Mid levels (5-8): 40% small saucer, 60% large saucer
+  - Late levels (9+): 60% small saucer, 40% large saucer
 
 #### Spawn Configuration
 ```typescript
@@ -74,9 +74,9 @@ saucerSpawning: {
   minLevel: 2,
   spawnInterval: 30000, // 30 seconds
   weights: {
-    early: { small: 0.8, large: 0.2 }, // levels 2-4
-    mid: { small: 0.6, large: 0.4 },   // levels 5-8
-    late: { small: 0.4, large: 0.6 }   // levels 9+
+    early: { small: 0.2, large: 0.8 }, // levels 2-4
+    mid: { small: 0.4, large: 0.6 },   // levels 5-8
+    late: { small: 0.6, large: 0.4 }   // levels 9+
   }
 }
 ```
