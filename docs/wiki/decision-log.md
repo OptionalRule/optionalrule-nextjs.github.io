@@ -23,3 +23,9 @@ See [architecture-strong-items](architecture-strong-items.md).
 - Q13: KCD2 saved filters get a schema version. The liquid migration becomes a versioned, run-once step at load.
 - Q14: Asteroids collision rules return domain outcomes. Splitting and its RNG stay in the engine; no seeded RNG.
 - Q15: Under simulated time, saucer spawn, respawn and the Level Transition timers freeze while paused. This is an accepted gameplay change.
+
+## 2026-11-21 grilling round 2 (user: "yes to all")
+- Q16: The user approves only the #2 Narrative stage plan. All other plans proceed once a reviewer agent passes them.
+- Q17: The #1 closed domain set is the union of domains the current regexes can return. Bank `domains:` literals and `CONTROL_DOMAINS`/`CRISIS_*` are typed against it. Mismatches that would change output are reported to the user, not fixed.
+- Q18: Retro runs after the first item that hits trouble in any lane, plus about 1 in 5 of the rest. Improvements are applied without asking unless they change what users see.
+- Grilling closed; the user confirmed shared understanding. Lanes A/B/C dispatched.
