@@ -16,10 +16,8 @@ import { fact } from '../fact'
 import { generateFactions } from '../factions'
 import { lowerFirst, sentenceFragment } from '../prose/helpers'
 import type { SeededRng } from '../rng'
-
-function uniqueStrings(values: readonly string[]): string[] {
-  return [...new Set(values.filter(Boolean))]
-}
+import { classifyNarrativeDomains } from './domains'
+import { uniqueStrings } from './uniqueStrings'
 
 export interface NarrativeGenerationContext {
   options: GenerationOptions
@@ -36,36 +34,6 @@ export interface NarrativeGenerationContext {
   factionRng: SeededRng
 }
 
-function narrativeDomainsForText(value: string): string[] {
-  const text = value.toLowerCase()
-  const domains: string[] = []
-
-  if (/(navy|militia|military|mercenary|weapon|war|defense|basing|blockade|casualty)/.test(text)) domains.push('war')
-  if (/(trade|customs|freeport|shipyard|depot|resource|ore|mine|extraction|concession|debt|bank|fuel|tax|shipment|salvage)/.test(text)) domains.push('trade')
-  if (/(intelligence|erased|deleted|falsified|censored|secret|black site|hidden|sealed|sabotage|forged|impostor)/.test(text)) domains.push('espionage', 'information-integrity')
-  if (/(survey|research|science|biosafety|medical|microbial|biosphere|ecology|terrafor|lab|academic)/.test(text)) domains.push('science')
-  if (/(biosphere|microbial|ecology|contamination|quarantine|chiral|terraform)/.test(text)) domains.push('ecology')
-  if (/(medical|medicine|clinic|triage|exposure|neurological|vestibular|treatment|quarantine ward|chirality stock)/.test(text)) domains.push('medicine')
-  if (/(terraform|climate|mirror|volatile import|garden dome|failed garden|greenhouse|biosphere project)/.test(text)) domains.push('terraforming')
-  if (/(worker|labor|strike|draft|ration|life-support|forced|crew)/.test(text)) domains.push('labor')
-  if (/(life-support|repair|shipyard|power|radiator|maintenance|spare|parts|heat rejection|shield)/.test(text)) domains.push('infrastructure')
-  if (/(election|authority|council|democracy|magistrate|govern|succession|autonomy|charter)/.test(text)) domains.push('governance')
-  if (/(law|legal|court|claim|title|liability|jurisdiction|evidence|docket|compliance)/.test(text)) domains.push('law', 'information-integrity')
-  if (/(religious|cult|commune|gardener|sol)/.test(text)) domains.push('religion')
-  if (/(gardener|sol-interdiction|interdiction|exclusion picket|compliance office|sealed sol)/.test(text)) domains.push('gardener-interdiction')
-  if (/(pirate|criminal|smuggler|cartel|racket|black market)/.test(text)) domains.push('crime')
-  if (/(refugee|exile|resettlement|evacuation|ark)/.test(text)) domains.push('migration')
-  if (/(first-wave|ruin|remnant|inheritance|archive|salvage title|old)/.test(text)) domains.push('archaeology')
-  if (/(ai|narrow-ai|automation|simulation|root credentials|memory)/.test(text)) domains.push('ai')
-  if (/(disaster|accident|breach|cascade|storm|failure|hazard|radiation|misjump)/.test(text)) domains.push('disaster')
-  if (/(flare|coronal|eclipse|stellar|radiation storm|white-dwarf|brown dwarf|periastron)/.test(text)) domains.push('stellar-events')
-  if (/(ration|festival|public|school|market|funeral|civilian|colony)/.test(text)) domains.push('public-life', 'daily-life')
-  if (/(route|iggygate|pinch|gate|transit|corridor|anchor|reachability|survey|scout|chart|beacon)/.test(text)) domains.push('exploration', 'trade')
-  if (/(route weather|safe window|bleed-window|metric weather|pinch forecast|stormbound|schedule failure|calibration scar|moving node)/.test(text)) domains.push('route-weather')
-
-  return uniqueStrings(domains.length ? domains : ['public-life'])
-}
-
 function narrativeFact(input: {
   id: string
   kind: string
@@ -80,7 +48,7 @@ function narrativeFact(input: {
   domains?: string[]
 }): NarrativeFact {
   const tags = uniqueStrings([...(input.tags ?? []), input.kind, input.subjectType])
-  const domains = uniqueStrings(input.domains ?? narrativeDomainsForText(`${input.kind} ${input.value} ${tags.join(' ')}`))
+  const domains = uniqueStrings(input.domains ?? classifyNarrativeDomains(`${input.kind} ${input.value} ${tags.join(' ')}`))
 
   return {
     id: input.id,
@@ -347,7 +315,7 @@ export function buildNarrativeFacts(ctx: NarrativeGenerationContext): NarrativeF
         source: `Narrative context from ${settlementLabel} AI situation`,
         sourcePath: `${settlementBase}.aiSituation`,
         tags: ['ai', 'pressure'],
-        domains: ['ai', ...narrativeDomainsForText(settlement.aiSituation.value)],
+        domains: ['ai', ...classifyNarrativeDomains(settlement.aiSituation.value)],
       })
     )
 
@@ -375,7 +343,7 @@ export function buildNarrativeFacts(ctx: NarrativeGenerationContext): NarrativeF
       source: `Narrative context from ${settlementLabel} settlement tag hook`,
       sourcePath: `${settlementBase}.tagHook`,
       tags: ['pressure', 'claim', 'secret'],
-      domains: narrativeDomainsForText(settlement.tagHook.value),
+      domains: classifyNarrativeDomains(settlement.tagHook.value),
     }))
 
     settlement.encounterSites.forEach((site, siteIndex) => {
