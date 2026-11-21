@@ -5,6 +5,9 @@ import { containsWord, CONTROL_DOMAINS } from './settingPatterns'
 import type { EntityRef } from '../types'
 import { buildFactionMetadataByName } from '../../factions'
 import { getFactionEntities, factionFactIdsForName } from './factionHelpers'
+import type { NarrativeDomain } from '../../narrative/domains'
+
+const CONTROL_DOMAIN_SET: ReadonlySet<NarrativeDomain> = new Set(CONTROL_DOMAINS)
 
 export const controlsRouteAssetRule: EdgeRule = {
   id: 'CONTROLS:namedFaction-routeAsset',
@@ -35,7 +38,7 @@ export const controlsRouteAssetRule: EdgeRule = {
         const faction = factionMeta.get(factionEntity.displayName)
         if (!faction) continue
         const controlDomain = faction.domains.find(d =>
-          (CONTROL_DOMAINS as ReadonlyArray<string>).includes(d),
+          CONTROL_DOMAIN_SET.has(d),
         )
         if (!controlDomain) continue
 

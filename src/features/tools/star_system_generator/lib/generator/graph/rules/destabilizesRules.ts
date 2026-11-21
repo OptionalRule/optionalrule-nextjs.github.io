@@ -4,12 +4,13 @@ import { mintEdgeId } from './ruleTypes'
 import type { EntityRef } from '../types'
 import { CRISIS_DESTABILIZE_KEYWORDS, containsWord } from './settingPatterns'
 import { buildFactionMetadataByName } from '../../factions'
+import type { NarrativeDomain } from '../../narrative/domains'
 
 function findGuHazard(entities: ReadonlyArray<EntityRef>): EntityRef | undefined {
   return entities.find(e => e.kind === 'guHazard')
 }
 
-const PHYSICS_DOMAINS = new Set(['ecology', 'science'])
+const PHYSICS_DOMAINS: ReadonlySet<NarrativeDomain> = new Set<NarrativeDomain>(['ecology', 'science'])
 
 function getPhenomenonEntities(entities: ReadonlyArray<EntityRef>): EntityRef[] {
   return entities.filter(e => e.kind === 'phenomenon')
