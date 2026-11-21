@@ -38,7 +38,7 @@ The shareable address of a Generated System: its Seed, any non-default Generatio
 _Avoid_: share link, seed URL, permalink
 
 **Generator Version**:
-The numbered revision of the generation rules a Generated System was produced under. A Seed Link names it so the same link keeps producing the same system after the rules change.
+The numbered revision of the generation rules a Generated System was produced under. A Seed Link names it so the same link keeps producing the same system after the rules change; older versions keep their rules so their links still reproduce.
 _Avoid_: schema version, app version
 
 **Layer**:
