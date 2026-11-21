@@ -16,3 +16,9 @@ See [architecture-strong-items](architecture-strong-items.md).
 - The worktree branch `worktree-agent-aaf3ff58757fdc938` holds `38da341` and `e2401da` (dead-code deletions) and `237fcb9` (the plan). Not merged.
 - Bug found as of `712ffab`: the hydrate effect depends on `setQueryState`, whose identity changes on every edit, so it reruns. The restore toast reappears, and popstate refills params from saved filters. This waits on the user (Q19).
 - The test env is happy-dom, not jsdom.
+
+## 2026-11-21 #8 landed (`66de407`..`31e8257`)
+- `useFilterView(liquidIds)` in `hooks/useFilterView.ts` owns the URL codec, the versioned saved filters (`version: 2`; unversioned saves still load) and the run-once liquid migration. `index.tsx` only consumes it. `useQueryState` and `lib/persist` are removed.
+- Q19 is implemented. A save made while the migration is pending is written as version 1, so the migration isn't skipped.
+- Tests: `filter-view.test.tsx` (30, real happy-dom history and storage). `Kcd2Alchemy.test.tsx` now mocks only `useAlchemyData`. 60 kcd2 tests.
+- Still open (pre-existing): the restore toast's timer can hide the "Saving filters enabled." toast early.
