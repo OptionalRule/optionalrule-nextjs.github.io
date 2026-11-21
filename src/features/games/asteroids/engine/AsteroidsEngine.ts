@@ -40,7 +40,6 @@ export class AsteroidsEngine {
   private events: AsteroidsEngineEvents
   private keys: Set<string> = new Set()
   private lastShotTime = 0
-  private levelStartTime = 0
   private nextSaucerSpawn = 0
   private isThrusting = false
   private isProcessingShipDeath = false
@@ -557,7 +556,6 @@ export class AsteroidsEngine {
     )
 
     this.entities.push(...asteroids)
-    this.levelStartTime = performance.now()
     
     // Reset saucer spawn state for new level
     this.isFirstSaucerSpawnForLevel = true
