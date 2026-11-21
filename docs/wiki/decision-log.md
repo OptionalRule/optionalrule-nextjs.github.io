@@ -73,3 +73,6 @@ Approved v3 settlement Tag Hook pool: the 4 existing templates plus the 12 below
 10. If {obviousTag} is what brings ships in, {deeperTag} is what crews talk about on the way out: {deeperText}
 11. Any broker will mention {obviousTag}; only a local will warn you about {deeperTag}, and the warning is blunt: {deeperText}
 12. The registry says {obviousTag}, but the incident logs keep circling {deeperTag}: {deeperText}
+
+## 2026-11-21 Q38 (user: "yes")
+- v3 ships once the Tag Hook templates land: the substring fix, the v3 hook profile and 16 templates. Bigger variety work (new pool entries, tone weighting) is deferred to a future v4 and starts with a grilling on tone weighting. The release hold lifts after the templates pass CI.
