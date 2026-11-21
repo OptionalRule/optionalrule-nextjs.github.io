@@ -148,7 +148,7 @@ import { fact } from './fact'
 import { runNarrativeStage } from './narrative'
 import { GENERATOR_VERSION, generatorRules } from './rules'
 import { NameRegistry } from './nameRegistry'
-import { settlementHookSynthesis } from './prose/settlementProse'
+import { settlementHookSynthesis, type SettlementTagHookTemplates } from './prose/settlementProse'
 import { phenomenonNote } from './prose/phenomenonProse'
 import { composePhenomenonConflict } from './prose/phenomenonConflict'
 import { derivePopulationLayer } from './population'
@@ -3567,6 +3567,7 @@ function generateSettlementName(
 function generateSettlements(
   rng: SeededRng,
   options: GenerationOptions,
+  tagHookTemplates: SettlementTagHookTemplates,
   systemName: string,
   bodies: OrbitingBody[],
   guOverlay: GuOverlay,
@@ -3614,6 +3615,7 @@ function generateSettlements(
       encounterSites: encounterSiteValues,
       guIntensity: guOverlay.intensity.value,
       tone: options.tone,
+      tagHookTemplates,
     })
     const baseSettlementName = generateSettlementName(
       rng.fork(`settlement-name-${index + 1}`),
@@ -3910,7 +3912,7 @@ export function generateSystem(options: GenerationOptions, settings: GenerateSys
   const guOverlay = generateGuOverlay(rootRng.fork('gu'), options.gu, primary, companions, bodies, architectureResult.architecture.name.value)
   const allSettlements = hasVolatileCompanion
     ? []
-    : generateSettlements(rootRng.fork('settlements'), options, name.value, bodies, guOverlay, reachability, architectureResult.architecture.name.value)
+    : generateSettlements(rootRng.fork('settlements'), options, rules.settlementTagHookTemplates, name.value, bodies, guOverlay, reachability, architectureResult.architecture.name.value)
   const { settlements, gates } = partitionGates(allSettlements)
   const ruins = hasVolatileCompanion
     ? []
@@ -4011,6 +4013,7 @@ export function generateSystem(options: GenerationOptions, settings: GenerateSys
     const subAllSettlements = generateSettlements(
       subRng.fork('settlements'),
       options,
+      rules.settlementTagHookTemplates,
       `${name.value} (Companion)`,
       subBodies,
       guOverlay,

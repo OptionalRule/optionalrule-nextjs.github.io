@@ -31,18 +31,54 @@ export const CLOSING_POOLS: Record<GeneratorTone, readonly string[]> = {
   ],
 }
 
-export function settlementTagHook(rng: SeededRng, obviousTag: string, deeperTag: string): string {
+export type SettlementTagHookTemplates = readonly string[]
+
+export const SETTLEMENT_TAG_HOOK_TEMPLATES_V2 = [
+  '{obviousTag} is what visitors notice first; {deeperText}',
+  'Outsiders call it {obviousTag}, but the local pressure is sharper: {deeperText}',
+  '{obviousTag} is the surface story, but {deeperTag} shows who benefits from the tension: {deeperText}',
+  'The public tag is {obviousTag}; the private trouble is {deeperTag}, because {deeperText}',
+] as const satisfies SettlementTagHookTemplates
+
+export const SETTLEMENT_TAG_HOOK_TEMPLATES_V3 = [
+  ...SETTLEMENT_TAG_HOOK_TEMPLATES_V2,
+  'Ask about {obviousTag} and you get the brochure; ask about {deeperTag} and you learn that {deeperText}',
+  'Every manifest lists {obviousTag}, but crews who stay long enough learn about {deeperTag}: {deeperText}',
+  'Under the {obviousTag} reputation runs a harder current called {deeperTag}, where {deeperText}',
+  'Locals will talk about {obviousTag} all night, but mention {deeperTag} and the room goes quiet: {deeperText}',
+  '{deeperTag} sits under {obviousTag} like a cracked hull seal: {deeperText}',
+  'The trade guides file this place under {obviousTag}; the people who live here file it under {deeperTag}: {deeperText}',
+  'Nobody here denies {obviousTag}, but the real arguments are about {deeperTag}, since {deeperText}',
+  'Strip away {obviousTag} and what remains is {deeperTag}: {deeperText}',
+  '{obviousTag} explains how the place looks; {deeperTag} explains how it works, and the short version is that {deeperText}',
+  'If {obviousTag} is what brings ships in, {deeperTag} is what crews talk about on the way out: {deeperText}',
+  'Any broker will mention {obviousTag}; only a local will warn you about {deeperTag}, and the warning is blunt: {deeperText}',
+  'The registry says {obviousTag}, but the incident logs keep circling {deeperTag}: {deeperText}',
+] as const satisfies SettlementTagHookTemplates
+
+const TAG_HOOK_SLOT = /\{(obviousTag|deeperTag|deeperText)\}/g
+
+export function fillSettlementTagHookTemplate(
+  template: string,
+  slots: { obviousTag: string; deeperTag: string; deeperText: string },
+): string {
+  return template.replace(TAG_HOOK_SLOT, (_match, key: keyof typeof slots) => slots[key])
+}
+
+export function settlementTagHook(
+  rng: SeededRng,
+  obviousTag: string,
+  deeperTag: string,
+  templates: SettlementTagHookTemplates,
+): string {
   const exactPair = `${obviousTag} + ${deeperTag}`
   if (settlementTagPairHooks[exactPair]) return settlementTagPairHooks[exactPair]
   const reversePair = `${deeperTag} + ${obviousTag}`
   if (settlementTagPairHooks[reversePair]) return settlementTagPairHooks[reversePair]
 
   const deeperText = settlementTagPressures[deeperTag] ?? `${deeperTag.toLowerCase()} is the deeper pressure driving the site.`
-  const template = rng.int(1, 4)
-  if (template === 1) return `${obviousTag} is what visitors notice first; ${deeperText}`
-  if (template === 2) return `Outsiders call it ${obviousTag}, but the local pressure is sharper: ${deeperText}`
-  if (template === 3) return `${obviousTag} is the surface story, but ${deeperTag} shows who benefits from the tension: ${deeperText}`
-  return `The public tag is ${obviousTag}; the private trouble is ${deeperTag}, because ${deeperText}`
+  const template = templates[rng.int(1, templates.length) - 1]
+  return fillSettlementTagHookTemplate(template, { obviousTag, deeperTag, deeperText })
 }
 
 export function settlementHookSynthesis(
@@ -59,9 +95,10 @@ export function settlementHookSynthesis(
     encounterSites: string[]
     guIntensity: string
     tone?: GeneratorTone
+    tagHookTemplates: SettlementTagHookTemplates
   }
 ): string {
-  const base = settlementTagHook(rng, obviousTag, deeperTag)
+  const base = settlementTagHook(rng, obviousTag, deeperTag, context.tagHookTemplates)
   const pressure = (() => {
     const site = siteLeadNoun(context.encounterSites[0]).toLowerCase()
     switch (context.habitationPattern) {

@@ -5,16 +5,32 @@ import {
   classifyNarrativeDomainsV3,
   type NarrativeDomainClassifier,
 } from './narrative/domainClassifier'
+import {
+  SETTLEMENT_TAG_HOOK_TEMPLATES_V2,
+  SETTLEMENT_TAG_HOOK_TEMPLATES_V3,
+  type SettlementTagHookTemplates,
+} from './prose/settlementProse'
 
 export interface GeneratorRules {
   version: GeneratorVersion
   classifyNarrativeDomains: NarrativeDomainClassifier
   hookSelectionProfile: HookSelectionProfile
+  settlementTagHookTemplates: SettlementTagHookTemplates
 }
 
 const RULES_BY_VERSION: { readonly [V in GeneratorVersion]: GeneratorRules & { version: V } } = {
-  2: { version: 2, classifyNarrativeDomains: classifyNarrativeDomainsV2, hookSelectionProfile: HOOK_SELECTION_PROFILE_V2 },
-  3: { version: 3, classifyNarrativeDomains: classifyNarrativeDomainsV3, hookSelectionProfile: HOOK_SELECTION_PROFILE_V3 },
+  2: {
+    version: 2,
+    classifyNarrativeDomains: classifyNarrativeDomainsV2,
+    hookSelectionProfile: HOOK_SELECTION_PROFILE_V2,
+    settlementTagHookTemplates: SETTLEMENT_TAG_HOOK_TEMPLATES_V2,
+  },
+  3: {
+    version: 3,
+    classifyNarrativeDomains: classifyNarrativeDomainsV3,
+    hookSelectionProfile: HOOK_SELECTION_PROFILE_V3,
+    settlementTagHookTemplates: SETTLEMENT_TAG_HOOK_TEMPLATES_V3,
+  },
 }
 
 export const GENERATOR_VERSION: GeneratorVersion = 3

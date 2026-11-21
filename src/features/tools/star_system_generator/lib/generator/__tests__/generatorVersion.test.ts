@@ -64,14 +64,18 @@ describe('generator version dispatch', () => {
     expect(v3Leaks).toEqual([])
   })
 
-  it('changes nothing upstream of narrative domains and hook selection', () => {
+  it('changes nothing upstream of narrative domains and hook selection except settlement Tag Hooks', () => {
     const v2 = generateSystem({ ...base, seed: 'version-b' }, { generatorVersion: 2 })
     const v3 = generateSystem({ ...base, seed: 'version-b' }, { generatorVersion: 3 })
+    const withoutTagHook = ({ tagHook: _tagHook, ...settlement }: GeneratedSystem['settlements'][number]) => settlement
+    const nonTagHookValues = (system: GeneratedSystem) =>
+      system.narrativeFacts.filter((fact) => fact.kind !== 'settlement.tagHook').map((fact) => fact.value)
     expect(v3.primary).toEqual(v2.primary)
     expect(v3.bodies).toEqual(v2.bodies)
     expect(v3.guOverlay).toEqual(v2.guOverlay)
+    expect(v3.settlements.map(withoutTagHook)).toEqual(v2.settlements.map(withoutTagHook))
     expect(v3.narrativeFacts.map((fact) => fact.id)).toEqual(v2.narrativeFacts.map((fact) => fact.id))
-    expect(v3.narrativeFacts.map((fact) => fact.value)).toEqual(v2.narrativeFacts.map((fact) => fact.value))
+    expect(nonTagHookValues(v3)).toEqual(nonTagHookValues(v2))
   })
 
   it('only ever removes domains that version 2 found, across every option combination', () => {
