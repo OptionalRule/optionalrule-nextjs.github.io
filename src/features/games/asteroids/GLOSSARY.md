@@ -81,6 +81,13 @@ A Bullet fired by the Ship.
 **Saucer Bullet**:
 A Bullet fired by a Saucer and aimed at the Ship.
 
+**Shooter**:
+Who fired the Bullet in a hit: the player for a Player Bullet, a Saucer for a Saucer Bullet; only the player scores.
+
+**Collision Outcome**:
+The rule-decided result of two things touching: an Asteroid shot, a Saucer shot, or the Ship destroyed; each thing is destroyed by at most one Collision Outcome per frame.
+_Avoid_: Collision event, hit result
+
 ### Scoring
 
 **Score**:
