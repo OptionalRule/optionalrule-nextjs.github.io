@@ -33,6 +33,14 @@ _Avoid_: GU intensity (that is the result, not the option)
 The referee's requested lean for how much human presence a system carries: sparse, normal, crowded, or campaign hub.
 _Avoid_: settlements (as an option name)
 
+**Seed Link**:
+The shareable address of a Generated System: its Seed, any non-default Generation Options, and the Generator Version. It is the only way a system is saved or shared.
+_Avoid_: share link, seed URL, permalink
+
+**Generator Version**:
+The numbered revision of the generation rules a Generated System was produced under. A Seed Link names it so the same link keeps producing the same system after the rules change.
+_Avoid_: schema version, app version
+
 **Layer**:
 One of the three strata every fact belongs to: physical (astronomy), GU (Geometric Unity), or human.
 _Avoid_: register, tier
