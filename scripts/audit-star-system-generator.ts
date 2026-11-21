@@ -112,10 +112,6 @@ interface CorpusStats {
   spineEdgesEligibleForHistorical: number
   whyHereGraphAwareCount: number
   whyHereFallbackCount: number
-  noteGraphAwareCount: number
-  noteFallbackCount: number
-  hookGraphAwareCount: number
-  hookFallbackCount: number
   historicalSummariesByBucket: Map<string, { count: number; distinct: Set<string> }>
   spineEdgeTypesAcrossCorpus: Set<EdgeType>
   fractureSpineSamples: number
@@ -725,20 +721,14 @@ function auditSystem(system: GeneratedSystem, findings: Finding[], stats: Corpus
     increment(stats.settlementHabitationPatterns, settlement.habitationPattern.value)
   })
 
-  // Per-consumer trigger-rate detection (Phase 6). Heuristic: relies on stable
-  // Phase 6 templates — fallback whyHere uses ';' joiner; fallback tagHook ends
-  // 'decides who has leverage'; fallback note carries 'Transit:'. If a Phase 7
-  // template change alters those markers, update this block.
+  // whyHere trigger-rate detection (Phase 6). Heuristic: relies on the stable
+  // fallback whyHere template, which uses a ';' joiner. If a template change
+  // alters that marker, update this block.
   for (const settlement of system.settlements) {
     if (settlement.whyHere.value.includes(';')) {
       stats.whyHereFallbackCount += 1
     } else {
       stats.whyHereGraphAwareCount += 1
-    }
-    if (settlement.tagHook.value.includes('decides who has leverage')) {
-      stats.hookFallbackCount += 1
-    } else {
-      stats.hookGraphAwareCount += 1
     }
     if (settlement.whyHere.value.includes('{')) {
       addFinding(findings, 'error', seed, 'prose.unresolvedSlot',
@@ -750,11 +740,6 @@ function auditSystem(system: GeneratedSystem, findings: Finding[], stats: Corpus
     }
   }
   for (const phenomenon of system.phenomena) {
-    if (phenomenon.note.value.includes('Transit:')) {
-      stats.noteFallbackCount += 1
-    } else {
-      stats.noteGraphAwareCount += 1
-    }
     if (phenomenon.note.value.includes('{')) {
       addFinding(findings, 'error', seed, 'prose.unresolvedSlot',
         `Phenomenon ${phenomenon.id} note contains unresolved slot.`)
@@ -1509,10 +1494,6 @@ const stats: CorpusStats = {
   spineEdgesEligibleForHistorical: 0,
   whyHereGraphAwareCount: 0,
   whyHereFallbackCount: 0,
-  noteGraphAwareCount: 0,
-  noteFallbackCount: 0,
-  hookGraphAwareCount: 0,
-  hookFallbackCount: 0,
   historicalSummariesByBucket: new Map(),
   spineEdgeTypesAcrossCorpus: new Set<EdgeType>(),
   fractureSpineSamples: 0,
@@ -1587,13 +1568,6 @@ if (totalSettlements > 0) {
   if (whyHereRatio < 0.5) {
     console.log(`  WARN: whyHere graph-aware rate below realistic-ceiling floor (50%) — possible regression in HOSTS or DEPENDS_ON rules.`)
   }
-  const hookPct = (stats.hookGraphAwareCount / totalSettlements * 100).toFixed(1)
-  console.log(`tagHook graph-aware rate: ${hookPct}% (${stats.hookGraphAwareCount}/${totalSettlements})`)
-}
-const totalPhenomena = stats.noteGraphAwareCount + stats.noteFallbackCount
-if (totalPhenomena > 0) {
-  const notePct = (stats.noteGraphAwareCount / totalPhenomena * 100).toFixed(1)
-  console.log(`phenomenonNote graph-aware rate: ${notePct}% (${stats.noteGraphAwareCount}/${totalPhenomena})`)
 }
 console.log(`Story spineSummary length (p10/p50/p90): ${formatPercentiles(stats.spineSummaryLengths)} chars`)
 console.log(`Story body paragraph count (p10/p50/p90): ${formatPercentiles(stats.bodyParagraphCounts)}`)
