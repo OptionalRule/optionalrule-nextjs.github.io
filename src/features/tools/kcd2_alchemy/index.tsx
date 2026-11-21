@@ -15,6 +15,8 @@ export interface Kcd2AlchemyProps {
 
 type ToastType = 'info' | 'success' | 'error'
 
+const TOAST_DURATION_MS = 2600
+
 export default function Kcd2Alchemy({ className }: Kcd2AlchemyProps) {
   const { loading, error, potions, ingredientOptions } = useAlchemyData()
   const liquidIds = useMemo(() => Array.from(new Set(potions.map((p) => String(p.ingredients.liquidId)))), [potions])
@@ -30,14 +32,17 @@ export default function Kcd2Alchemy({ className }: Kcd2AlchemyProps) {
   const [toast, setToast] = useState<{ msg: string; type: ToastType } | null>(null)
   const showToast = (msg: string, type: ToastType = 'info') => {
     setToast({ msg, type })
-    window.setTimeout(() => setToast(null), 2600)
   }
+
+  useEffect(() => {
+    if (!toast) return
+    const timer = window.setTimeout(() => setToast(null), TOAST_DURATION_MS)
+    return () => window.clearTimeout(timer)
+  }, [toast])
 
   useEffect(() => {
     if (!restoredFromSave) return
     setToast({ msg: 'Restored your saved filters.', type: 'success' })
-    const timer = window.setTimeout(() => setToast(null), 2600)
-    return () => window.clearTimeout(timer)
   }, [restoredFromSave])
 
   return (

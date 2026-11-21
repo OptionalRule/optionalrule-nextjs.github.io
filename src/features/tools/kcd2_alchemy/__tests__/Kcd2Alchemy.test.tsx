@@ -130,6 +130,28 @@ describe('Kcd2Alchemy', () => {
     expect(savedRecord()).toBeNull()
   })
 
+  it('gives a toast shown during the restore toast its full duration', async () => {
+    window.localStorage.setItem(FILTERS_KEY, JSON.stringify({ version: 2, q: 'tonic', ingredients: [], ingMode: 'any', alchemyLevel: 4 }))
+    render(<Kcd2Alchemy />)
+    expect(screen.getByText(RESTORED)).toBeInTheDocument()
+    await act(async () => {
+      vi.advanceTimersByTime(1500)
+    })
+
+    const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime })
+    await user.click(screen.getByRole('switch', { name: /Toggle saving current view/ }))
+    const toast = screen.getByText(/Saving filters enabled\.|Saved filters cleared and disabled\./)
+    await act(async () => {
+      vi.advanceTimersByTime(1500)
+    })
+    expect(toast).toBeInTheDocument()
+
+    await act(async () => {
+      vi.advanceTimersByTime(1500)
+    })
+    expect(screen.queryByText(/Saving filters enabled\.|Saved filters cleared and disabled\./)).toBeNull()
+  })
+
   it('shows loading and error states', () => {
     mockUseAlchemyData.mockReturnValue(data({ loading: true, potions: [] }))
     const { rerender } = render(<Kcd2Alchemy />)
