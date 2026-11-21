@@ -41,7 +41,7 @@ export const baseLightSources: TorchCatalogEntry[] = [
     brightRadius: DEFAULT_RADIUS_BY_SOURCE.lantern,
     icon: '🕯️',
     color: '#FFD700',
-    description: 'A steady light source that lasts for several hours.',
+    description: 'A steady light source that burns for about an hour.',
     brightness: 70,
     tags: ['core', 'carried'],
     mishapNote: 'Consumes oil; spills can ignite flammable terrain.',

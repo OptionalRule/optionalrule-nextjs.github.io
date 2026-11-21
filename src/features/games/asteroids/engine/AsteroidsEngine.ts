@@ -297,13 +297,14 @@ export class AsteroidsEngine {
       const explosion = new Explosion(asteroid.getPosition(), 'asteroid')
       this.entities.push(explosion)
       
-      // Award points
-      const points = asteroid.getPoints()
-      this.addScore(points, {
-        points,
-        position: asteroid.getPosition(),
-        type: 'asteroid'
-      })
+      if (bullet.getSourceId() === this.ship.getId()) {
+        const points = asteroid.getPoints()
+        this.addScore(points, {
+          points,
+          position: asteroid.getPosition(),
+          type: 'asteroid'
+        })
+      }
 
       // Split asteroid if possible
       const fragments = asteroid.split()

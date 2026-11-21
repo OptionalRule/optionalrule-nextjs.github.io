@@ -1,0 +1,3 @@
+# One shared countdown governs every light
+
+The tracker runs a single central countdown, started by the first light added, instead of timing each light on its own. Adding more lights doesn't extend it, and when it reaches zero every light goes out and the clock stops, whatever time a light had left. We chose this because the tool's purpose is to make "the dungeon goes dark" obvious with no per-light bookkeeping (TORCH_PRD: "a single shared countdown governs all lights"). The rejected alternative was independent per-light timers, which model the fiction more closely but put the bookkeeping back on the GM.

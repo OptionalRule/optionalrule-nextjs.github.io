@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { applyFilters, textMatch, ingredientMatch } from '../lib/filter'
+import { applyFilters, textMatch, ingredientMatch, addLiquidsToLiquidlessOnlyFilter } from '../lib/filter'
 import type { NormalizedPotionRecipe } from '../types'
 
 const sample: NormalizedPotionRecipe[] = [
@@ -8,6 +8,7 @@ const sample: NormalizedPotionRecipe[] = [
     name: 'Aqua Vitalis',
     ingredients: {
       liquid: 'Water',
+      liquidId: 'water',
       items: [
         { id: 'dandelion', name: 'Dandelion', quantity: 2 },
         { id: 'marigold', name: 'Marigold', quantity: 1 },
@@ -25,6 +26,7 @@ const sample: NormalizedPotionRecipe[] = [
     name: 'Artemisia',
     ingredients: {
       liquid: 'Spirits',
+      liquidId: 'spirits',
       items: [
         { id: 'sage', name: 'Sage', quantity: 1 },
         { id: 'wormwood', name: 'Wormwood', quantity: 2 },
@@ -49,11 +51,14 @@ describe('filter predicates', () => {
     expect(ingredientMatch(sample[0], [], 'any')).toBe(true)
     expect(ingredientMatch(sample[0], ['marigold'], 'any')).toBe(true)
     expect(ingredientMatch(sample[0], ['wormwood'], 'any')).toBe(false)
+    expect(ingredientMatch(sample[0], ['water'], 'any')).toBe(true)
 
-    // only mode (potion ingredients must be subset of selected)
-    expect(ingredientMatch(sample[0], ['marigold', 'dandelion'], 'only')).toBe(true)
+    // only mode (potion ingredients, including its base liquid, must be subset of selected)
+    expect(ingredientMatch(sample[0], ['marigold', 'dandelion', 'water'], 'only')).toBe(true)
+    // Missing the base liquid -> not a subset
+    expect(ingredientMatch(sample[0], ['marigold', 'dandelion'], 'only')).toBe(false)
     // Extra selected items are fine (still a superset of potion ingredients)
-    expect(ingredientMatch(sample[0], ['marigold', 'dandelion', 'sage'], 'only')).toBe(true)
+    expect(ingredientMatch(sample[0], ['marigold', 'dandelion', 'water', 'sage'], 'only')).toBe(true)
     // Missing one of potion's ingredients -> not a subset
     expect(ingredientMatch(sample[0], ['marigold'], 'only')).toBe(false)
     // Selecting unrelated ingredients only -> not a subset
@@ -74,5 +79,22 @@ describe('applyFilters', () => {
   it('returns all when filters are empty', () => {
     const results = applyFilters(sample, { query: '', ingredientIds: [], ingredientMode: 'any' })
     expect(results.length).toBe(2)
+  })
+})
+
+describe('addLiquidsToLiquidlessOnlyFilter', () => {
+  const liquids = ['water', 'spirits', 'wine', 'oil']
+
+  it('adds every liquid to an Only filter that selects none, preserving pre-liquid behaviour', () => {
+    expect(addLiquidsToLiquidlessOnlyFilter(['sage'], 'only', liquids)).toEqual(['sage', ...liquids])
+  })
+
+  it('leaves an Only filter that already selects a liquid unchanged', () => {
+    expect(addLiquidsToLiquidlessOnlyFilter(['sage', 'water'], 'only', liquids)).toBeNull()
+  })
+
+  it('leaves Any filters and empty selections unchanged', () => {
+    expect(addLiquidsToLiquidlessOnlyFilter(['sage'], 'any', liquids)).toBeNull()
+    expect(addLiquidsToLiquidlessOnlyFilter([], 'only', liquids)).toBeNull()
   })
 })
