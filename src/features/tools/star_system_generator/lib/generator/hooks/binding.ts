@@ -50,9 +50,6 @@ function distinctBinds(entry: HookEntry): ReadonlySet<HookBindSlot> {
   return new Set(entry.binds ?? [])
 }
 
-// canBindEntry checks each pool against the worst-case set of names any upstream
-// draw could bind, so a true result guarantees bindEntryText never dead-ends and
-// the pre-draw pool filter agrees exactly with the binder.
 export function canBindEntry(entry: HookEntry, ctx: HookBindContext): boolean {
   const slots = distinctBinds(entry)
   const worstCaseBound = new Set<string>()

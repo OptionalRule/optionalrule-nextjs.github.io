@@ -98,8 +98,13 @@ export function selectSystemHooks({ rng, context, profile = HOOK_SELECTION_PROFI
   const seenIds = new Set<string>()
   const bindContext: HookBindContext = { conflicts: context.conflicts, entities: context.entities }
   const hooks: SystemHooks = { rumors: [], contracts: [], encounters: [], npcs: [], twists: [] }
+  const drawnCategories = new Set<HookCategory>()
 
   for (const step of profile.steps) {
+    if (drawnCategories.has(step.category)) {
+      throw new Error(`Hook selection profile lists category "${step.category}" more than once`)
+    }
+    drawnCategories.add(step.category)
     const slot = CATEGORY_SLOTS[step.category]
     const picks = pickHooks({
       rng: rng.fork(slot.key),
@@ -112,7 +117,7 @@ export function selectSystemHooks({ rng, context, profile = HOOK_SELECTION_PROFI
       bindContext,
     })
     if (step.feedsResonance) addResonance(resonantTerms, picks)
-    hooks[slot.key].push(...picks)
+    hooks[slot.key] = picks
   }
 
   return hooks

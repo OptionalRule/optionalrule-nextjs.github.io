@@ -6,7 +6,7 @@ import type {
   SystemArchitecture,
   SystemPhenomenon,
 } from '../../../types'
-import type { HookTerm } from '../data/hooks'
+import { HOOK_TERMS, type HookTerm } from '../data/hooks'
 
 export interface HookTermContext {
   guOverlay: GuOverlay
@@ -18,6 +18,8 @@ export interface HookTermContext {
 }
 
 type DetectableTerm = Exclude<HookTerm, 'GU'>
+
+const DETECTABLE_TERMS = HOOK_TERMS.filter((term): term is DetectableTerm => term !== 'GU')
 
 const TERM_PATTERNS: Readonly<Record<DetectableTerm, readonly RegExp[]>> = {
   Bleed: [/\bbleed\b/i, /bleed-/i, /\bbloom\b/i, /\briver\b/i, /\bnode\b/i, /\bscar\b/i, /\bseep\b/i],
@@ -79,8 +81,8 @@ function collectHaystack(context: HookTermContext): string {
 export function detectHookTerms(context: HookTermContext): Set<HookTerm> {
   const haystack = collectHaystack(context)
   const detected = new Set<HookTerm>()
-  for (const [term, patterns] of Object.entries(TERM_PATTERNS) as [DetectableTerm, readonly RegExp[]][]) {
-    if (patterns.some((re) => re.test(haystack))) detected.add(term)
+  for (const term of DETECTABLE_TERMS) {
+    if (TERM_PATTERNS[term].some((re) => re.test(haystack))) detected.add(term)
   }
   return detected
 }

@@ -45,7 +45,10 @@ function recordingRng(inner: SeededRng, log: string[], path = ''): SeededRng {
     next: () => inner.next(),
     int: (min, max) => inner.int(min, max),
     float: (min, max) => inner.float(min, max),
-    chance: (p) => inner.chance(p),
+    chance: (p) => {
+      log.push(`${path}:chance`)
+      return inner.chance(p)
+    },
     fork: (label) => {
       const childPath = path ? `${path}/${label}` : label
       log.push(childPath)
@@ -82,7 +85,7 @@ describe('HOOK_SELECTION_PROFILE_V2', () => {
   it('forks one rng per category in profile order, each with its own binds fork', () => {
     const log: string[] = []
     selectSystemHooks({ rng: recordingRng(createSeededRng('forks'), log), context: blandContext() })
-    expect(log).toEqual([
+    expect(log.filter((entry) => !entry.endsWith(':chance'))).toEqual([
       'contracts', 'contracts/binds',
       'npcs', 'npcs/binds',
       'encounters', 'encounters/binds',
@@ -138,18 +141,70 @@ describe('selectSystemHooks with a stub profile', () => {
   })
 
   it('skips the bias draw entirely when no terms are active', () => {
-    const step = { category: 'twist', count: 2, preferredTerms: 'active', feedsResonance: false } as const
-    const unbiased = selectSystemHooks({
-      rng: createSeededRng('no-terms'),
+    const log: string[] = []
+    const hooks = selectSystemHooks({
+      rng: recordingRng(createSeededRng('no-terms'), log),
       context: blandContext(),
-      profile: profile({ steps: [{ ...step, bias: 0 }] }),
+      profile: profile({ steps: [{ category: 'twist', count: 2, bias: 1, preferredTerms: 'active', feedsResonance: false }] }),
     })
-    const biased = selectSystemHooks({
-      rng: createSeededRng('no-terms'),
+    expect(hooks.twists).toHaveLength(2)
+    expect(log.filter((entry) => entry.endsWith(':chance'))).toEqual([])
+  })
+
+  it('draws one bias chance per pick when terms are active', () => {
+    const log: string[] = []
+    selectSystemHooks({
+      rng: recordingRng(createSeededRng('with-terms'), log),
       context: blandContext(),
-      profile: profile({ steps: [{ ...step, bias: 1 }] }),
+      profile: profile({
+        alwaysActiveTerms: ['Gardener'],
+        steps: [{ category: 'twist', count: 2, bias: 0.5, preferredTerms: 'active', feedsResonance: false }],
+      }),
     })
-    expect(biased).toEqual(unbiased)
+    expect(log.filter((entry) => entry.endsWith(':chance'))).toEqual(['twists:chance', 'twists:chance'])
+  })
+
+  it('keeps active-term steps blind to resonance fed by earlier steps', () => {
+    for (let i = 0; i < 10; i += 1) {
+      const hooks = selectSystemHooks({
+        rng: createSeededRng(`active-only-${i}`),
+        context: blandContext(),
+        profile: profile({
+          alwaysActiveTerms: ['Gardener'],
+          steps: [
+            { category: 'contract', count: 3, bias: 0, preferredTerms: 'active', feedsResonance: true },
+            { category: 'rumor', count: 3, bias: 1, preferredTerms: 'active', feedsResonance: false },
+          ],
+        }),
+      })
+      expect(hooks.rumors.every((hook) => hook.tags.includes('Gardener'))).toBe(true)
+    }
+  })
+
+  it('does not feed resonance from a step that opts out', () => {
+    for (let i = 0; i < 10; i += 1) {
+      const hooks = selectSystemHooks({
+        rng: createSeededRng(`no-feed-${i}`),
+        context: blandContext(),
+        profile: profile({
+          alwaysActiveTerms: ['Gardener'],
+          steps: [
+            { category: 'contract', count: 3, bias: 0, preferredTerms: 'active', feedsResonance: false },
+            { category: 'twist', count: 1, bias: 1, preferredTerms: 'resonant', feedsResonance: false },
+          ],
+        }),
+      })
+      expect(hooks.twists[0].tags).toContain('Gardener')
+    }
+  })
+
+  it('rejects a profile that lists a category twice', () => {
+    const step = { category: 'npc', count: 1, bias: 0, preferredTerms: 'active', feedsResonance: false } as const
+    expect(() => selectSystemHooks({
+      rng: createSeededRng('dupe'),
+      context: blandContext(),
+      profile: profile({ steps: [step, step] }),
+    })).toThrow(/npc/)
   })
 
   it('feeds resonant terms from an earlier step into a later resonant step', () => {

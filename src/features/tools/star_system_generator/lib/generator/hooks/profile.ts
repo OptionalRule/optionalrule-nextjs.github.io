@@ -14,7 +14,7 @@ export interface HookSelectionProfile {
   steps: readonly HookSelectionStep[]
 }
 
-export const HOOK_SELECTION_PROFILE_V2: HookSelectionProfile = {
+export const HOOK_SELECTION_PROFILE_V2 = {
   alwaysActiveTerms: ['GU', 'Bleed'],
   steps: [
     { category: 'contract', count: 1, bias: 0.7, preferredTerms: 'active', feedsResonance: true },
@@ -23,4 +23,4 @@ export const HOOK_SELECTION_PROFILE_V2: HookSelectionProfile = {
     { category: 'rumor', count: 3, bias: 0.35, preferredTerms: 'active', feedsResonance: false },
     { category: 'twist', count: 1, bias: 0.8, preferredTerms: 'resonant', feedsResonance: false },
   ],
-}
+} as const satisfies HookSelectionProfile
