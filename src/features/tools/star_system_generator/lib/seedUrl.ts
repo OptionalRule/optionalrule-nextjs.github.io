@@ -1,5 +1,5 @@
 import type { GeneratedSystem, GenerationOptions, GeneratorVersion } from '../types'
-import { GENERATOR_VERSION } from './generator'
+import { GENERATOR_VERSION, SUPPORTED_GENERATOR_VERSIONS } from './generator'
 import { normalizeSeed } from './generator/rng'
 
 export interface SeedLink {
@@ -25,7 +25,6 @@ const OPTION_KEYS = Object.keys(OPTION_SCHEMA) as OptionKey[]
 
 const VERSION_PARAM = 'v'
 const LEGACY_GENERATOR_VERSION: GeneratorVersion = 2
-const SUPPORTED_GENERATOR_VERSIONS: readonly GeneratorVersion[] = [2]
 
 function mapOptions(pick: <K extends OptionKey>(key: K) => GenerationOptions[K]): Omit<GenerationOptions, 'seed'> {
   return {

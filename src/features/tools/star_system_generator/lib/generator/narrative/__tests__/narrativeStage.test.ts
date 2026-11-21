@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest'
 import type { GenerationOptions } from '../../../../types'
 import { generateSystem } from '../..'
 import { createSeededRng, type SeededRng } from '../../rng'
+import { generatorRules } from '../../rules'
 import { runNarrativeStage, type NarrativeStageInput } from '..'
 
 const options: GenerationOptions = {
@@ -41,6 +42,7 @@ function recordingRng(rng: SeededRng, forks: string[], draws: string[] = []): Se
 function stageInput(): NarrativeStageInput {
   const system = generateSystem(options)
   return {
+    rules: generatorRules(system.generatorVersion),
     options,
     systemName: system.name,
     primary: system.primary,

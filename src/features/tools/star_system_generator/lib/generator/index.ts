@@ -146,6 +146,7 @@ import {
 } from './data/stellar'
 import { fact } from './fact'
 import { runNarrativeStage } from './narrative'
+import { GENERATOR_VERSION, generatorRules } from './rules'
 import { NameRegistry } from './nameRegistry'
 import { settlementHookSynthesis } from './prose/settlementProse'
 import { phenomenonNote } from './prose/phenomenonProse'
@@ -153,7 +154,7 @@ import { composePhenomenonConflict } from './prose/phenomenonConflict'
 import { derivePopulationLayer } from './population'
 import { selectCoherentHiddenTruth } from './settlementCoherence'
 
-export const GENERATOR_VERSION: GeneratorVersion = 2
+export { GENERATOR_VERSION, SUPPORTED_GENERATOR_VERSIONS } from './rules'
 import { createSeededRng, normalizeSeed, type SeededRng } from './rng'
 import { separationToMode } from './companionMode'
 import { generateCompanionStar } from './companionStar'
@@ -3849,7 +3850,14 @@ function stellarActivityHazards(primary: Star): Array<Fact<string>> {
   return []
 }
 
-export function generateSystem(options: GenerationOptions, knownSystem?: PartialKnownSystem): GeneratedSystem {
+export interface GenerateSystemSettings {
+  knownSystem?: PartialKnownSystem
+  generatorVersion?: GeneratorVersion
+}
+
+export function generateSystem(options: GenerationOptions, settings: GenerateSystemSettings = {}): GeneratedSystem {
+  const { knownSystem } = settings
+  const rules = generatorRules(settings.generatorVersion ?? GENERATOR_VERSION)
   const rootRng = createSeededRng(options.seed)
   const name = mergeLockedFact(fact(generateSystemName(rootRng.fork('name')), 'human-layer', 'Generated system name'), knownSystem?.name)
   const basePrimary = generatePrimaryStar(rootRng.fork('star'), options, name.value, knownSystem?.primary)
@@ -3923,6 +3931,7 @@ export function generateSystem(options: GenerationOptions, knownSystem?: Partial
     : [...generatedPhenomena, ...spawnedPhenomena]
   const narrative = runNarrativeStage(
     {
+      rules,
       options,
       systemName: name,
       primary,
@@ -4042,7 +4051,7 @@ export function generateSystem(options: GenerationOptions, knownSystem?: Partial
   return derivePopulationLayer(runNoAlienGuard({
     id: knownSystem?.id ?? `system-${options.seed}`,
     seed: options.seed,
-    generatorVersion: GENERATOR_VERSION,
+    generatorVersion: rules.version,
     options,
     name,
     dataBasis: mergeLockedFact(

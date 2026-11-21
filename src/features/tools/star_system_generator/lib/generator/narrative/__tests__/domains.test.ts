@@ -6,7 +6,6 @@ import { balancedBank } from '../../factions/banks/balancedBank'
 import { cinematicBank } from '../../factions/banks/cinematicBank'
 import { containsWord } from '../../graph/rules/settingPatterns'
 import {
-  classifyNarrativeDomains,
   findDomainMentionedInProse,
   isNarrativeDomain,
   NARRATIVE_DOMAINS,
@@ -28,13 +27,6 @@ describe('narrative domain vocabulary', () => {
     expect(isNarrativeDomain('trade')).toBe(true)
     expect(isNarrativeDomain('route')).toBe(false)
     expect(isNarrativeDomain('')).toBe(false)
-  })
-
-  it('keeps the current substring behaviour of the classifier', () => {
-    expect(classifyNarrativeDomains('maintenance')).toEqual(expect.arrayContaining(['ai', 'infrastructure']))
-    expect(classifyNarrativeDomains('isolated')).toContain('religion')
-    expect(classifyNarrativeDomains('gold')).toContain('archaeology')
-    expect(classifyNarrativeDomains('')).toEqual(['public-life'])
   })
 
   it('accepts every faction bank domain', () => {

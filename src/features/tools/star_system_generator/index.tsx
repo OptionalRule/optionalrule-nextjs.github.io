@@ -32,8 +32,8 @@ export interface StarSystemGeneratorProps {
 }
 
 export default function StarSystemGenerator({ className }: StarSystemGeneratorProps) {
-  const [options, setOptions] = useGeneratorQueryState()
-  const system = useGeneratedSystem(options)
+  const [options, setOptions, generatorVersion] = useGeneratorQueryState()
+  const system = useGeneratedSystem(options, generatorVersion)
 
   return (
     <div className={`min-h-screen bg-background text-foreground ${className || ''}`}>

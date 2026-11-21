@@ -14,7 +14,7 @@ export type GeneratorDistribution = 'frontier' | 'realistic'
 export type GeneratorTone = 'balanced' | 'astronomy' | 'cinematic'
 export type GuPreference = 'normal' | 'low' | 'high' | 'fracture'
 export type SettlementDensity = 'normal' | 'sparse' | 'crowded' | 'hub'
-export type GeneratorVersion = 2
+export type GeneratorVersion = 2 | 3
 
 export type SettlementPopulation =
   | 'Minimal (<5)'
