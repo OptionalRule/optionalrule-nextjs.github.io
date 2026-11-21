@@ -145,15 +145,11 @@ import {
   realisticStarTypes,
 } from './data/stellar'
 import { fact } from './fact'
-import { buildNarrativeFacts } from './narrative/narrativeFacts'
+import { runNarrativeStage } from './narrative'
 import { NameRegistry } from './nameRegistry'
 import { settlementHookSynthesis } from './prose/settlementProse'
 import { phenomenonNote } from './prose/phenomenonProse'
 import { composePhenomenonConflict } from './prose/phenomenonConflict'
-import { buildRelationshipGraph, renderSystemStory } from './graph'
-import { buildConflicts } from './conflicts'
-import { graphAwareReshape } from './prose'
-import { selectSystemHooks } from './hooks'
 import { derivePopulationLayer } from './population'
 import { selectCoherentHiddenTruth } from './settlementCoherence'
 
@@ -3928,87 +3924,27 @@ export function generateSystem(options: GenerationOptions, knownSystem?: Partial
   const phenomena = hasVolatileCompanion
     ? [buildBinaryContactPhenomenon(), ...generatedPhenomena, ...spawnedPhenomena]
     : [...generatedPhenomena, ...spawnedPhenomena]
-  const narrativeFacts = buildNarrativeFacts({
-    options,
-    systemName: name,
-    primary,
-    companions,
-    reachability,
-    architectureName: architectureResult.architecture.name.value,
-    bodies,
-    guOverlay,
-    settlements,
-    ruins,
-    phenomena,
-    factionRng: rootRng.fork('factions'),
-  })
-  const relationshipGraph = buildRelationshipGraph(
+  const narrative = runNarrativeStage(
     {
-      systemName: name.value,
-      primary: { spectralType: primary.spectralType },
+      options,
+      systemName: name,
+      primary,
       companions,
-      bodies,
-      settlements: settlements.map(s => ({
-        id: s.id,
-        name: s.name,
-        bodyId: s.bodyId,
-        presence: { guValue: s.presence.guValue, hazard: s.presence.hazard },
-      })),
-      guOverlay,
-      phenomena,
-      ruins: ruins.map(r => ({ id: r.id, remnantType: r.remnantType, location: r.location })),
-      narrativeFacts,
-    },
-    { tone: options.tone, gu: options.gu, distribution: options.distribution, settlements: options.settlements },
-    narrativeFacts,
-    rootRng.fork('graph'),
-  )
-  const conflicts = buildConflicts(
-    {
-      graph: relationshipGraph,
-      settlements,
-      options: { tone: options.tone, gu: options.gu, distribution: options.distribution, settlements: options.settlements },
-    },
-    rootRng.fork('conflicts'),
-  )
-  const reshaped = graphAwareReshape({
-    settlements,
-    phenomena,
-    relationshipGraph,
-    options,
-    rng: rootRng,
-  })
-  const reshapedSettlements = reshaped.settlements
-  const reshapedPhenomena = reshaped.phenomena
-  const systemStory = renderSystemStory(
-    relationshipGraph,
-    rootRng.fork('story'),
-    {
-      tone: options.tone,
-      gu: options.gu,
-      distribution: options.distribution,
-      settlements: options.settlements,
-    },
-    conflicts,
-  )
-  const hooks = selectSystemHooks({
-    rng: rootRng.fork('hooks'),
-    context: {
-      guOverlay,
-      settlements: reshapedSettlements,
-      ruins,
-      phenomena: reshapedPhenomena,
-      architecture: architectureResult.architecture,
       reachability,
-      conflicts,
-      entities: relationshipGraph.entities,
+      architecture: architectureResult.architecture,
+      bodies,
+      guOverlay,
+      settlements,
+      ruins,
+      phenomena,
     },
-  })
+    rootRng,
+  )
 
   const bodyOrbitAuById = new Map(bodies.map(b => [b.id, b.orbitAu.value]))
   const settlementsWithDebris = attachSettlementsToDebrisFields(
     rootRng.fork('debris-settlement-anchor'),
-    reshapedSettlements,
+    narrative.settlements,
     debrisFields,
     bodyOrbitAuById,
   )
@@ -4132,11 +4068,11 @@ export function generateSystem(options: GenerationOptions, knownSystem?: Partial
     settlements: settlementsWithDebris,
     gates,
     ruins: ruinsWithDebris,
-    phenomena: reshapedPhenomena,
-    narrativeFacts,
-    relationshipGraph,
-    systemStory,
-    hooks,
+    phenomena: narrative.phenomena,
+    narrativeFacts: narrative.narrativeFacts,
+    relationshipGraph: narrative.relationshipGraph,
+    systemStory: narrative.systemStory,
+    hooks: narrative.hooks,
     majorHazards: [guOverlay.hazard, ...stellarActivityHazards(primary)],
   }))
 }
