@@ -26,6 +26,7 @@
     "test:integration": "vitest run --config vitest.unit.config.ts --run src/__tests__/integration.test.ts",
     "test:ssg": "vitest run --config vitest.unit.config.ts --run src/__tests__/ssg.test.ts",
     "test:a11y": "vitest run --config vitest.unit.config.ts --run src/__tests__/accessibility.test.tsx",
+    "test:star-system-golden:update": "STAR_SYSTEM_GOLDEN_UPDATE=1 vitest run --config vitest.unit.config.ts src/features/tools/star_system_generator/__tests__/generator-golden.test.ts",
     "test:star-system-generator": "npm run test -- --run src/features/tools/star_system_generator && npm run audit:star-system-generator",
     "test:build": "npm run build && npm run test:static",
     "test:static": "node -e \"console.log('Build verification: Static files generated successfully')\"",
