@@ -17,3 +17,4 @@ See [architecture-strong-items](architecture-strong-items.md).
 - Environment: the worktree was created on an old `main` merge rather than `develop`, and the agent reset it. Future lane briefs must say "verify base == origin/develop".
 - 2026-11-21: #7 landed, `3d6730e`..`75301fb`. Q22 is implemented (the reset button shows only in the menu and after Game Over). A reviewer found that the reset dialog could carry into a run, fixed in `75301fb`. 60 asteroids tests.
 - Open follow-up (existing behaviour, not a regression): pressing Escape to cancel the reset dialog in the menu also starts a game, because `handleKeyDown` acts on almost any key in the menu. Waiting on the user.
+- 2026-11-21 (Q24): `f3865ca..0ddd57f`. `AsteroidsEngine.setInputBlocked` is on while the reset dialog is open. The dialog stops Escape in the capture phase, so while it's open no other page-wide Escape handler sees it. A shared canvas fake was added at `src/test-utils/canvas.ts`.

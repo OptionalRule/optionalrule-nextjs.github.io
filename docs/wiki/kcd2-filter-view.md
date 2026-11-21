@@ -22,3 +22,4 @@ See [architecture-strong-items](architecture-strong-items.md).
 - Q19 is implemented. A save made while the migration is pending is written as version 1, so the migration isn't skipped.
 - Tests: `filter-view.test.tsx` (30, real happy-dom history and storage). `Kcd2Alchemy.test.tsx` now mocks only `useAlchemyData`. 60 kcd2 tests.
 - Still open (pre-existing): the restore toast's timer can hide the "Saving filters enabled." toast early.
+- 2026-11-21: in the same push range, one toast timer now restarts on each toast, so each toast gets its full 2.6s.
