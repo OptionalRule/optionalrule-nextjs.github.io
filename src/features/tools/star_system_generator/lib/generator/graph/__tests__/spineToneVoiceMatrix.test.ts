@@ -14,7 +14,6 @@ import { generateSystem } from '../../index'
 // captures whichever spine edge type the curated seed actually selects.
 describe('spine tone × edge type voice matrix', () => {
   const tones = ['balanced', 'cinematic', 'astronomy'] as const
-  const flags = { phenomenonNote: true, settlementHookSynthesis: true }
 
   for (const tone of tones) {
     it(`tone=${tone}: spine prose reads in tone voice`, () => {
@@ -25,7 +24,6 @@ describe('spine tone × edge type voice matrix', () => {
         tone,
         gu: 'normal',
         settlements: 'normal',
-        graphAware: flags,
       })
       const topSpine = sys.relationshipGraph.edges.find(
         e => e.id === sys.relationshipGraph.spineEdgeIds[0],
