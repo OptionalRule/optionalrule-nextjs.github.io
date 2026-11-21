@@ -79,7 +79,7 @@ export function exportSystemMarkdown(system: GeneratedSystem): string {
         `- **${phenomenon.phenomenon.value}**`,
         `  - Transit: ${phenomenon.travelEffect.value}`,
         `  - Question: ${phenomenon.surveyQuestion.value}`,
-        `  - Hook: ${phenomenon.conflictHook.value}`,
+        `  - Conflict hook: ${phenomenon.conflictHook.value}`,
         `  - Image: ${phenomenon.sceneAnchor.value}`
       )
     }
@@ -136,7 +136,7 @@ export function exportSystemMarkdown(system: GeneratedSystem): string {
             `- **${phenomenon.phenomenon.value}**`,
             `  - Transit: ${phenomenon.travelEffect.value}`,
             `  - Question: ${phenomenon.surveyQuestion.value}`,
-            `  - Hook: ${phenomenon.conflictHook.value}`,
+            `  - Conflict hook: ${phenomenon.conflictHook.value}`,
             `  - Image: ${phenomenon.sceneAnchor.value}`
           )
         }
@@ -189,7 +189,7 @@ function formatSystemStory(system: GeneratedSystem): string[] {
   }
 
   if (hooks.length) {
-    lines.push('### Hooks', '')
+    lines.push('### Story Hooks', '')
     for (const hook of hooks) {
       lines.push(`- ${hook}`)
     }
@@ -359,7 +359,7 @@ function formatGate(gate: Gate): string[] {
     `**Condition:** ${gate.condition.value}.`,
     ...(gate.pinchDifficulty ? [`**Pinch Difficulty:** ${gate.pinchDifficulty.value}.`] : []),
     ...(gate.whyHere.value ? [`**Why Here:** ${gate.whyHere.value}.`] : []),
-    `**Hook:** ${gate.tagHook.value}.`,
+    `**Tag hook:** ${gate.tagHook.value}.`,
   ]
 }
 

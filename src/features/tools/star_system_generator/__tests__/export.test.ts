@@ -29,7 +29,7 @@ describe('star system exports', () => {
     expect(markdown).toContain('## System Phenomena')
     expect(markdown).toContain('  - Transit:')
     expect(markdown).toContain('  - Question:')
-    expect(markdown).toContain('  - Hook:')
+    expect(markdown).toContain('  - Conflict hook:')
     expect(markdown).toContain('  - Image:')
     expect(markdown).toContain('## System Story')
     expect(markdown).toContain(`**Spine:** ${system.systemStory.spineSummary}`)

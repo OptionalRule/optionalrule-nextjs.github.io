@@ -35,7 +35,7 @@ export function SystemStoryPanel({ system }: { system: GeneratedSystem }) {
         {hooks.length ? (
           <div className="rounded-md border border-[var(--border-light)] bg-[var(--card-elevated)] p-3">
             <h3 className="text-[0.68rem] font-semibold uppercase tracking-[0.08em] text-[var(--text-tertiary)]">
-              Hooks
+              Story Hooks
             </h3>
             <ul className="mt-2 space-y-2">
               {hooks.map((hook, index) => (
