@@ -274,13 +274,17 @@ The system-level dangers a crew should know about on arrival, drawn from the GU 
 _Avoid_: hazards (unqualified)
 
 **Named Faction**:
-A recurring organization with a kind and interest domains (trade, war, religion, etc.) that acts across settlements.
+A recurring organization with a kind and Narrative Domains (trade, war, religion, etc.) that acts across settlements.
 _Avoid_: faction (unqualified), institution, actor
 
 ### Narrative graph
 
 **Narrative Fact**:
 A Fact restated as a story-ready claim about a subject (system, star, body, settlement, ruin, phenomenon, faction, route, or GU), with a narrative status.
+
+**Narrative Domain**:
+One of a closed set of interest areas (trade, war, religion, law, and so on) that tags Narrative Facts and Named Factions so the Relationship Graph can connect them.
+_Avoid_: domain (unqualified), topic, category
 
 **Narrative Status**:
 How true and how known a Narrative Fact is: established, inferred, rumor, secret, or cover story.
