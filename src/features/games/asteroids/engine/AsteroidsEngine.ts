@@ -810,12 +810,4 @@ export class AsteroidsEngine {
   getEntities(): Entity[] {
     return [...this.entities]
   }
-
-  getRenderSystem(): RenderSystem {
-    return this.renderSystem
-  }
-
-  getSoundSystem(): SoundSystem {
-    return this.soundSystem
-  }
 }
