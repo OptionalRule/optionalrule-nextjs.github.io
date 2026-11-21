@@ -1665,7 +1665,8 @@ if (findings.length > 0) {
 
 const baselinePath = fileURLToPath(new URL('./star-system-audit-baseline.json', import.meta.url))
 const updateBaseline = process.env.STAR_SYSTEM_AUDIT_UPDATE_BASELINE === '1'
-const baselineApplies = corpusPerOption === profileCorpusPerOption && !includeReportOnlyValidation
+const knownAuditProfile = auditProfile === requestedAuditProfile
+const baselineApplies = corpusPerOption === profileCorpusPerOption
 const errorCounts = countErrorsByCode(errors)
 
 function readBaseline(): AuditBaseline {
@@ -1675,17 +1676,29 @@ function readBaseline(): AuditBaseline {
 
 console.log('')
 if (!baselineApplies) {
-  console.log('Error baseline: skipped (custom STAR_SYSTEM_AUDIT_COUNT_PER_OPTION or STAR_SYSTEM_AUDIT_REPORT_ONLY); failing on any error.')
+  console.log('Error baseline: skipped (custom STAR_SYSTEM_AUDIT_COUNT_PER_OPTION); failing on any error.')
   if (updateBaseline) {
     console.log('Refusing to update the error baseline for a non-standard corpus.')
     process.exitCode = 1
   } else if (errors.length > 0) {
     process.exitCode = 1
   }
+} else if (updateBaseline && !knownAuditProfile) {
+  console.log(`Refusing to update the error baseline: unknown STAR_SYSTEM_AUDIT_PROFILE "${requestedAuditProfile}" (expected ${Object.keys(auditProfiles).join(', ')}).`)
+  process.exitCode = 1
 } else if (updateBaseline) {
+  const previous = readBaseline()[auditProfile]
+  if (previous) {
+    for (const delta of compareToBaseline(previous, errorCounts).regressions) {
+      console.log(`  WARN: accepting increase ${delta.code}: ${delta.baseline} -> ${delta.current}`)
+    }
+  }
   writeFileSync(baselinePath, `${JSON.stringify(withProfileBaseline(readBaseline(), auditProfile, errorCounts), null, 2)}\n`)
   console.log(`Error baseline: wrote ${errors.length} errors across ${Object.keys(errorCounts).length} codes for profile "${auditProfile}" to ${baselinePath}`)
 } else {
+  if (!knownAuditProfile) {
+    console.log(`WARN: unknown STAR_SYSTEM_AUDIT_PROFILE "${requestedAuditProfile}"; using the "${auditProfile}" baseline.`)
+  }
   const profileBaseline = readBaseline()[auditProfile]
   if (!profileBaseline) {
     console.log(`Error baseline: no entry for profile "${auditProfile}" in ${baselinePath}; failing on any error.`)

@@ -49,13 +49,17 @@ export function compareToBaseline(baseline: ErrorCodeCounts, current: ErrorCodeC
   return { regressions, improvements, passed: regressions.length === 0 }
 }
 
+function compareKeys([left]: [string, unknown], [right]: [string, unknown]): number {
+  return left < right ? -1 : left > right ? 1 : 0
+}
+
 export function sortCounts(counts: ErrorCodeCounts): ErrorCodeCounts {
-  return Object.fromEntries(Object.entries(counts).sort(([left], [right]) => left.localeCompare(right)))
+  return Object.fromEntries(Object.entries(counts).sort(compareKeys))
 }
 
 export function withProfileBaseline(baseline: AuditBaseline, profile: string, counts: ErrorCodeCounts): AuditBaseline {
   const next: AuditBaseline = { ...baseline, [profile]: sortCounts(counts) }
-  return Object.fromEntries(Object.entries(next).sort(([left], [right]) => left.localeCompare(right)))
+  return Object.fromEntries(Object.entries(next).sort(compareKeys))
 }
 
 export function parseAuditBaseline(raw: unknown): AuditBaseline {
