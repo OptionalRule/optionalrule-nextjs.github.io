@@ -180,15 +180,14 @@ function hydrate(): Hydration {
       restoredFields.push('alchemyLevel')
     }
   }
-  const legacyRecord = saved !== null && saved.version < CURRENT_VERSION
-  const ingredientsFromCurrentRecord = restoredFields.includes('ingredients') && !legacyRecord
-  const migrationPending = !ingredientsFromCurrentRecord
+  const currentRecord = saved !== null && saved.version >= CURRENT_VERSION
+  const migrationPending = !(currentRecord && restoredFields.includes('ingredients'))
   return {
     view,
     restoredFields,
     saveEnabled: saved !== null || readSaveFlag(),
     migrationPending,
-    recordVersion: legacyRecord && migrationPending ? LEGACY_VERSION : CURRENT_VERSION,
+    recordVersion: migrationPending && !currentRecord ? LEGACY_VERSION : CURRENT_VERSION,
   }
 }
 

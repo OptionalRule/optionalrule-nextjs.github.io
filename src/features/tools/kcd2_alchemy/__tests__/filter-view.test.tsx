@@ -1,4 +1,5 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
+import { StrictMode } from 'react'
 import { act, renderHook } from '@testing-library/react'
 import { useFilterView } from '../hooks/useFilterView'
 
@@ -142,6 +143,11 @@ describe('useFilterView', () => {
       expect(result.current.view).toEqual({ q: 'old', ingredients: ['sage'], matchMode: 'any', alchemyLevel: 5 })
     })
 
+    it('reads a saved legacy all mode as Only', () => {
+      saveRecord({ ingMode: 'all' })
+      expect(mount().result.current.view.matchMode).toBe('only')
+    })
+
     it('reads numeric saved ingredient ids as strings', () => {
       saveRecord({ version: 2, ingredients: [1, 'sage'] })
       expect(mount().result.current.view.ingredients).toEqual(['1', 'sage'])
@@ -262,9 +268,36 @@ describe('useFilterView', () => {
     it('runs only once per load', () => {
       visit('?ingredients=sage&ingMode=only')
       const { result, rerender } = mount(LIQUIDS)
+      expect(result.current.view.ingredients).toEqual(['sage', ...LIQUIDS])
       act(() => result.current.update({ ingredients: ['mint'] }))
       rerender({ ids: [...LIQUIDS] })
       expect(result.current.view.ingredients).toEqual(['mint'])
+    })
+
+    it('runs once under StrictMode double effects', () => {
+      visit('?ingredients=sage&ingMode=only')
+      const { result } = renderHook(() => useFilterView(LIQUIDS), { wrapper: StrictMode })
+      expect(result.current.view.ingredients).toEqual(['sage', ...LIQUIDS])
+      expect(params().get('ingredients')).toBe(['sage', ...LIQUIDS].join(','))
+    })
+
+    it('never downgrades a current record when the URL supplies the ingredients', () => {
+      saveRecord({ version: 2, q: '', ingredients: ['mint'], ingMode: 'any', alchemyLevel: 0 })
+      visit('?ingredients=sage&ingMode=only')
+      const { result, rerender } = mount()
+      act(() => result.current.update({ q: 'x' }))
+      expect(savedRecord()).toMatchObject({ version: 2, q: 'x', ingredients: ['sage'] })
+      rerender({ ids: LIQUIDS })
+      expect(savedRecord()).toMatchObject({ version: 2, ingredients: ['sage', ...LIQUIDS] })
+    })
+
+    it('keeps a fresh record pending while a shared URL filter awaits migration', () => {
+      window.localStorage.setItem(FLAG_KEY, '1')
+      visit('?ingredients=sage&ingMode=only')
+      const { rerender } = mount()
+      expect(savedRecord()).toMatchObject({ version: 1, ingredients: ['sage'] })
+      rerender({ ids: LIQUIDS })
+      expect(savedRecord()).toMatchObject({ version: 2, ingredients: ['sage', ...LIQUIDS] })
     })
   })
 })
