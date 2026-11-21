@@ -1,4 +1,4 @@
-import type { Vector2D, GameEvent } from '../../types'
+import type { Vector2D } from '../../types'
 import { Vector2DUtils } from '../utils/Vector2D'
 import { GameMath } from '../utils/GameMath'
 import type { Entity } from '../entities/Entity'
@@ -14,11 +14,8 @@ export interface CollisionPair {
 }
 
 export class CollisionSystem {
-  private gameEvents: GameEvent[] = []
-
   checkCollisions(entities: Entity[]): CollisionPair[] {
     const collisions: CollisionPair[] = []
-    this.gameEvents = []
 
     // Check all entity pairs for collisions
     for (let i = 0; i < entities.length; i++) {
@@ -31,16 +28,6 @@ export class CollisionSystem {
         const collision = this.checkEntityCollision(entityA, entityB)
         if (collision) {
           collisions.push(collision)
-          
-          // Create collision event
-          this.gameEvents.push({
-            type: 'collision',
-            data: {
-              entityA: entityA.getId(),
-              entityB: entityB.getId(),
-              position: collision.collisionPoint,
-            }
-          })
         }
       }
     }
@@ -225,13 +212,5 @@ export class CollisionSystem {
     if ('takeDamage' in ship && typeof ship.takeDamage === 'function') {
       ship.takeDamage()
     }
-  }
-
-  getGameEvents(): GameEvent[] {
-    return [...this.gameEvents]
-  }
-
-  clearEvents(): void {
-    this.gameEvents = []
   }
 }

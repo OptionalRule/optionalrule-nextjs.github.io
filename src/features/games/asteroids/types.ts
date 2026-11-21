@@ -117,21 +117,10 @@ export interface GameConfig {
   }
 }
 
-export interface CollisionEvent {
-  entityA: string
-  entityB: string
-  position: Vector2D
-}
-
 export interface ScoreEvent {
   points: number
   position: Vector2D
   type: 'asteroid' | 'saucer' | 'extraLife'
-}
-
-export interface GameEvent {
-  type: 'collision' | 'score' | 'levelComplete' | 'gameOver' | 'shipDestroyed'
-  data: CollisionEvent | ScoreEvent | number
 }
 
 export interface GameplayConfig {
