@@ -44,7 +44,7 @@ Root: `src/features/tools/kcd2_alchemy/`. All paths below are relative to it.
     - If the data never loads, the step stays pending and the next load retries.
 13. `index.tsx` memoizes `liquidIds` from `potions`, and the hook also guards with a run-once ref. `restoredFromSave` is fixed after mount.
 
-## Open question for the user (blocks Task 2 onward)
+## Resolved: hydration reruns (Q19)
 
 The reviewer found, and a characterization test against the current code (`e2401da`) confirmed, that the hydrate effect in `index.tsx` does not run only once. It depends on `[setQueryState]`, and `useQueryState` recreates that callback on every state change, so the effect reruns after every change. With Save View on, this has two user-visible effects:
 
@@ -55,6 +55,8 @@ A module that restores saved filters once at load (items 5 and 8 above) fixes bo
 
 - **Option 1:** fix both. Restore once at load; popstate shows exactly the URL.
 - **Option 2:** preserve both bugs exactly.
+
+**Decision (Q19, 2026-11-21): Option 1.** Items 5 and 8 stand as written. Tests pin the fix: the toast appears once and not again after edits, and popstate does not merge in saved fields.
 
 ## Design it twice
 
@@ -92,6 +94,7 @@ export function useFilterView(liquidIds: readonly string[]): FilterViewControls
 - Rewrite `__tests__/Kcd2Alchemy.test.tsx`: mock only `useAlchemyData` (the data-fetch seam). Render the real children against real history and storage.
 - Delete `hooks/useQueryState.ts`, `lib/persist.ts`, `__tests__/query-state.test.tsx`, `__tests__/query-state-alchLvl.test.tsx` and `__tests__/persist.test.ts`. They are absorbed into the module, and their tests move to `filter-view.test.tsx`.
 - Delete `hooks/usePersistentAlchemyState.ts` (own commit) and `components/Toast.tsx` (own commit). Both are dead (Q4).
+- Modify `docs/PLAN.md`: point the `useQueryState` references at `useFilterView`.
 - Modify `GLOSSARY.md`: add **Filter View** and **Saved Filters** (Q6, domain-modeling).
 
 ## Tasks
