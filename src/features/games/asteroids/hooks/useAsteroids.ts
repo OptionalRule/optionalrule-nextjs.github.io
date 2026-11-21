@@ -13,8 +13,6 @@ export interface UseAsteroidsReturn {
   resumeGame: () => void
   restartGame: () => void
   clearHighScore: () => void
-  extraLifeNotification: { show: boolean; threshold: number }
-  dismissExtraLifeNotification: () => void
 }
 
 export function useAsteroids(): UseAsteroidsReturn {
@@ -31,11 +29,6 @@ export function useAsteroids(): UseAsteroidsReturn {
     pendingExtraLife: false,
     extraLifeJustAwarded: false,
   })
-  
-  const [extraLifeNotification, setExtraLifeNotification] = useState<{
-    show: boolean
-    threshold: number
-  }>({ show: false, threshold: 0 })
 
   // Detect mobile device
   const isMobile = useMemo(() => {
@@ -87,10 +80,6 @@ export function useAsteroids(): UseAsteroidsReturn {
         gameStatus: 'gameOver',
         highScore: Math.max(prev.highScore, finalScore)
       }))
-    },
-    
-    onExtraLife: (threshold: number) => {
-      setExtraLifeNotification({ show: true, threshold })
     },
   }), []) // Empty dependency array since these handlers don't depend on external values
 
@@ -197,10 +186,6 @@ export function useAsteroids(): UseAsteroidsReturn {
   const clearHighScore = useCallback(() => {
     engineRef.current?.clearHighScore()
   }, [])
-  
-  const dismissExtraLifeNotification = useCallback(() => {
-    setExtraLifeNotification({ show: false, threshold: 0 })
-  }, [])
 
   return {
     canvasRef,
@@ -212,7 +197,5 @@ export function useAsteroids(): UseAsteroidsReturn {
     resumeGame,
     restartGame,
     clearHighScore,
-    extraLifeNotification,
-    dismissExtraLifeNotification,
   }
 }

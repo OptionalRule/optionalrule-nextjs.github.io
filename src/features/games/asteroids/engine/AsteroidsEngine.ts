@@ -26,7 +26,6 @@ export interface AsteroidsEngineEvents {
   onLivesChange: (lives: number) => void
   onLevelChange: (level: number) => void
   onGameOver: (finalScore: number) => void
-  onExtraLife: (threshold: number) => void
 }
 
 export class AsteroidsEngine {
@@ -655,9 +654,6 @@ export class AsteroidsEngine {
     if (currentThreshold > previousThreshold && currentThreshold > this.gameState.lastExtraLifeThreshold) {
       // Mark that an extra life is pending (to be awarded on next level completion)
       this.gameState.pendingExtraLife = true
-      
-      // Trigger extra life notification event immediately for UI feedback
-      this.events.onExtraLife(currentThreshold)
     }
   }
 
