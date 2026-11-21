@@ -35,6 +35,10 @@ function removeHighScore(): void {
   }
 }
 
+function isBetweenGames(status: GameState['gameStatus']): boolean {
+  return status === 'menu' || status === 'gameOver'
+}
+
 export class AsteroidsEngine {
   private readonly core: AsteroidsCore
   private readonly renderSystem: RenderSystem
@@ -45,6 +49,7 @@ export class AsteroidsEngine {
   private frame = 0
   private lastFrameTime = 0
   private destroyed = false
+  private inputBlocked = false
 
   constructor(
     canvas: HTMLCanvasElement,
@@ -95,9 +100,14 @@ export class AsteroidsEngine {
   }
 
   clearHighScore(): void {
-    if (this.destroyed) return
+    if (this.destroyed || !isBetweenGames(this.core.getSnapshot().gameStatus)) return
     this.core.clearHighScore()
     removeHighScore()
+  }
+
+  setInputBlocked(blocked: boolean): void {
+    this.inputBlocked = blocked
+    if (blocked) this.keys.clear()
   }
 
   destroy(): void {
@@ -111,6 +121,8 @@ export class AsteroidsEngine {
   }
 
   private handleKeyDown = (event: KeyboardEvent): void => {
+    if (this.inputBlocked) return
+
     if (PREVENTED_KEYS.has(event.code)) {
       event.preventDefault()
     }

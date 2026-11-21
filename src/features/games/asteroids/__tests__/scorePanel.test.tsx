@@ -48,4 +48,34 @@ describe('ScorePanel High Score reset', () => {
     rerender(<ScorePanel gameState={stateWith('gameOver')} onResetHighScore={onResetHighScore} />)
     expect(screen.queryByRole('dialog')).toBeNull()
   })
+
+  it('reports the reset confirmation opening and closing', () => {
+    const onResetDialogChange = vi.fn()
+    render(
+      <ScorePanel gameState={stateWith('menu')} onResetHighScore={vi.fn()} onResetDialogChange={onResetDialogChange} />
+    )
+    expect(onResetDialogChange).not.toHaveBeenCalled()
+
+    fireEvent.click(resetButton()!)
+    expect(onResetDialogChange.mock.calls).toEqual([[true]])
+
+    fireEvent.click(screen.getByRole('button', { name: 'Cancel' }))
+    expect(onResetDialogChange.mock.calls).toEqual([[true], [false]])
+  })
+
+  it('keeps the Escape that cancels the reset confirmation from reaching game key handlers', () => {
+    const gameKeyHandler = vi.fn()
+    document.addEventListener('keydown', gameKeyHandler)
+    try {
+      render(<ScorePanel gameState={stateWith('menu')} onResetHighScore={vi.fn()} />)
+      fireEvent.click(resetButton()!)
+
+      fireEvent.keyDown(document.body, { key: 'Escape', code: 'Escape' })
+
+      expect(screen.queryByRole('dialog')).toBeNull()
+      expect(gameKeyHandler).not.toHaveBeenCalled()
+    } finally {
+      document.removeEventListener('keydown', gameKeyHandler)
+    }
+  })
 })

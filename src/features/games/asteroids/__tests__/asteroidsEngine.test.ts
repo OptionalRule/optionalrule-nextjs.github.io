@@ -111,6 +111,44 @@ describe('AsteroidsEngine browser adapter', () => {
     expect(frames).toHaveLength(1)
   })
 
+  it('ignores game keys while input is blocked', () => {
+    const game = createEngine()
+
+    game.setInputBlocked(true)
+    press('Escape')
+    press('Enter')
+    press('KeyA', 'a')
+    expect(game.getSnapshot().gameStatus).toBe('menu')
+    expect(frames).toHaveLength(0)
+
+    game.setInputBlocked(false)
+    press('KeyA', 'a')
+    expect(game.getSnapshot().gameStatus).toBe('playing')
+  })
+
+  it('drops held keys when input is blocked', () => {
+    const game = createEngine()
+    game.start()
+    parkAsteroids()
+
+    press('ArrowUp')
+    game.setInputBlocked(true)
+    runFrame()
+
+    expect(ship().getVelocity()).toEqual({ x: 0, y: 0 })
+  })
+
+  it('keeps the High Score when a clear arrives mid-Game', () => {
+    localStorage.setItem(HIGH_SCORE_KEY, '500')
+    const game = createEngine()
+    game.start()
+
+    game.clearHighScore()
+
+    expect(game.getSnapshot().highScore).toBe(500)
+    expect(localStorage.getItem(HIGH_SCORE_KEY)).toBe('500')
+  })
+
   it('toggles Pause with Escape', () => {
     const game = createEngine()
     game.start()

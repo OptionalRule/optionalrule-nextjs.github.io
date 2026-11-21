@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, { useLayoutEffect, useState } from 'react'
 import type { GameState } from '../types'
 import { ConfirmModal } from './ConfirmModal'
 
@@ -8,10 +8,17 @@ export interface ScorePanelProps {
   gameState: GameState
   className?: string
   onResetHighScore?: () => void
+  onResetDialogChange?: (open: boolean) => void
 }
 
-export function ScorePanel({ gameState, className, onResetHighScore }: ScorePanelProps) {
+export function ScorePanel({ gameState, className, onResetHighScore, onResetDialogChange }: ScorePanelProps) {
   const [isResetModalOpen, setIsResetModalOpen] = useState(false)
+
+  useLayoutEffect(() => {
+    if (!isResetModalOpen || !onResetDialogChange) return
+    onResetDialogChange(true)
+    return () => onResetDialogChange(false)
+  }, [isResetModalOpen, onResetDialogChange])
 
   const formatScore = (score: number): string => {
     return score.toLocaleString().padStart(8, '0')

@@ -13,6 +13,7 @@ export interface UseAsteroidsReturn {
   resumeGame: () => void
   restartGame: () => void
   clearHighScore: () => void
+  setInputBlocked: (blocked: boolean) => void
 }
 
 const INITIAL_GAME_STATE: GameState = Object.freeze({
@@ -112,6 +113,7 @@ export function useAsteroids(): UseAsteroidsReturn {
   const resumeGame = useCallback(() => engine?.resume(), [engine])
   const restartGame = useCallback(() => engine?.restart(), [engine])
   const clearHighScore = useCallback(() => engine?.clearHighScore(), [engine])
+  const setInputBlocked = useCallback((blocked: boolean) => engine?.setInputBlocked(blocked), [engine])
 
   return {
     canvasRef,
@@ -123,5 +125,6 @@ export function useAsteroids(): UseAsteroidsReturn {
     resumeGame,
     restartGame,
     clearHighScore,
+    setInputBlocked,
   }
 }
