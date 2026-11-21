@@ -23,3 +23,11 @@ See [architecture-strong-items](architecture-strong-items.md), [decision-log](de
 - #3 (`8ba1b67`, `81bc1b8`..`f2e04c8`): `graphAware` is deleted. `graphAwareReshape` now only rewrites `whyHere`. The spine snapshots were unchanged with flags off. In the audit, the "graph-aware rate" metrics are now meaningless (tagHook 92.3%, phenomenonNote 11.7%).
 - #1 (`c2e88c5`..`7eb3276`): `narrative/domains.ts` holds `NARRATIVE_DOMAINS`, `NarrativeDomain`, `isNarrativeDomain` and `classifyNarrativeDomains`. Banks, `NarrativeFact.domains`, `CONTROL_DOMAINS` and `PHYSICS_DOMAINS` are typed against it. Seven domains that no faction carries were removed from `CONTROL_DOMAINS` (no output change).
 - Open follow-ups: the `companionStar` → `./index` cycle (`activityFromRoll`); `settlementSpineEdgeIds` is built but never read; the audit's graph-aware-rate metrics; the graph rules use `containsWord` to find domain words in prose; `gu.json` domain drift is caught by a test, not the compiler; `CRISIS_*` are prose keywords, not domains; the substring bugs are pinned by tests (fixing them needs an ADR-0001 version-break decision).
+
+## 2026-11-21 follow-ups (`db5a4c3..002d98c`; golden fixture untouched)
+- `df5ecbb`: `activityFromRoll` moved to `lib/generator/starActivity.ts`. Nothing in `lib/generator` imports the generator `index.ts` at runtime any more.
+- `3affc2e`: the audit script's tagHook and phenomenonNote graph-aware rates were removed; the whyHere rate is kept.
+- `002d98c`: `proseMentionsDomain`/`findDomainMentionedInProse` in `narrative/domains.ts` replace raw `containsWord` matching in controls/contests/factionHelpers, with an equivalence test.
+- Kept: `settlementSpineEdgeIds`. It is part of the `relationshipGraph` output (golden hash and JSON export), so it isn't dead.
+- Kept: the `gu.json` domain-drift test. JSON imports widen to `string`, so a compile-time check would need codegen or moving the data into TS, which would break the README's JSON-pools rule.
+- Discrepancy to resolve: Lane A reported 226 audit errors after #3, and this run reported 722 (e.g. `ARCH_MINIMUM_UNSATISFIED`, `ENV_COLD_CLIMATE`). The cause could be a different audit invocation or seed count, or a regression. Not yet investigated.
