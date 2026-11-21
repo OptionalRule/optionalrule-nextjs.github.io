@@ -43,3 +43,11 @@ See [architecture-strong-items](architecture-strong-items.md).
 - Follow-ups approved: the companionStar `./index` cycle; dead `settlementSpineEdgeIds`; the meaningless audit graph-aware metrics; graph rules matching domain words in prose (must stay byte-identical); `gu.json` domain drift; the KCD2 toast timer; a shared canvas fake for tests.
 - Approved to explore next: the review's "Worth exploring" items #4 (hook variety), #5 (Seed URL), #9 (Draft rule), plus the substring-bug fix. These get grilled before design. The substring fix still needs an explicit ADR-0001 version-break decision.
 - A weekly wiki lint schedule is approved.
+
+## 2026-11-21 round 5 (user: "yes to all")
+- Q26: A single `isPublished` rule is used everywhere (content, feeds, sitemap, search index, enhance-post). Drafts are excluded from every build regardless of `NODE_ENV` and appear only under `npm run dev`. One sitemap source. Posts and pages handle read errors the same way. rss/sitemap are regenerated. Top priority.
+- Q27: Merge `develop`→`main` (which deploys) as soon as the draft fix passes CI. This releases all of today's work.
+- Q28: #5 Seed URL gets one typed option codec and one seed-link builder used at all 5 sites, plus a `v` param (missing means v2). No output change.
+- Q29: The substring fix, plus the other traps (ore, war, law, …), ships as `GENERATOR_VERSION = 3`. The v2 classifier is kept, so `v=2` and links without `v` reproduce exactly. New ADR. Comes after Q28.
+- Q30: #4 hook variety ships inside v3. First, split `hooks.ts` into its three jobs with no output change. The variety design needs its own grilling session about how it feels at the table.
+- Q31: The star system audit gets a committed per-code error baseline and fails only when a count rises (a ratchet).
