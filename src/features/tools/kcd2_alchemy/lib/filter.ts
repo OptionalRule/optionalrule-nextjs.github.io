@@ -37,6 +37,17 @@ export function ingredientMatch(
   return potionIngredientIds.some(has)
 }
 
+export function addLiquidsToLiquidlessOnlyFilter(
+  ingredientIds: IngredientId[],
+  mode: IngredientMatchMode,
+  liquidIds: IngredientId[],
+): IngredientId[] | null {
+  if (mode !== 'only' || !ingredientIds.length) return null
+  const selected = new Set(ingredientIds.map(String))
+  if (liquidIds.some((id) => selected.has(String(id)))) return null
+  return [...ingredientIds, ...liquidIds]
+}
+
 export function applyFilters(
   potions: NormalizedPotionRecipe[],
   filters: FilterState,

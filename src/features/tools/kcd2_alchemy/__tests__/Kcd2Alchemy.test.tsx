@@ -146,7 +146,7 @@ describe('Kcd2Alchemy component', () => {
     mockUseAlchemyData.mockReturnValue({
       loading: false,
       error: null,
-      potions: [{ id: 'p1', name: 'Elixir' }],
+      potions: [{ id: 'p1', name: 'Elixir', ingredients: { liquid: 'Water', liquidId: 'water', items: [] } }],
       ingredientOptions: [{ value: 'wormwood', label: 'Wormwood' }],
     });
 
@@ -180,6 +180,28 @@ describe('Kcd2Alchemy component', () => {
 
     await user.click(screen.getByTestId('search-change'));
     expect(setQueryState).toHaveBeenCalledWith({ q: 'new search' });
+  });
+
+  it('adds every base liquid to an Only filter saved before liquids were filterable', async () => {
+    const setQueryState = vi.fn();
+    mockUseQueryState.mockReturnValue([
+      { ...baseQueryState, ingredients: ['wormwood'], ingMode: 'only' },
+      setQueryState,
+    ]);
+    mockUseAlchemyData.mockReturnValue({
+      loading: false,
+      error: null,
+      potions: [
+        { id: 'p1', name: 'Elixir', ingredients: { liquid: 'Water', liquidId: 'water', items: [] } },
+        { id: 'p2', name: 'Tonic', ingredients: { liquid: 'Wine', liquidId: 'wine', items: [] } },
+      ],
+      ingredientOptions: [],
+    });
+
+    const Component = await loadComponent();
+    render(<Component />);
+
+    expect(setQueryState).toHaveBeenCalledWith({ ingredients: ['wormwood', 'water', 'wine'] });
   });
 
   it('hydrates saved filters from persistence on mount', async () => {

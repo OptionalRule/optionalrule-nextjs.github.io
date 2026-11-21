@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { applyFilters, textMatch, ingredientMatch } from '../lib/filter'
+import { applyFilters, textMatch, ingredientMatch, addLiquidsToLiquidlessOnlyFilter } from '../lib/filter'
 import type { NormalizedPotionRecipe } from '../types'
 
 const sample: NormalizedPotionRecipe[] = [
@@ -79,5 +79,22 @@ describe('applyFilters', () => {
   it('returns all when filters are empty', () => {
     const results = applyFilters(sample, { query: '', ingredientIds: [], ingredientMode: 'any' })
     expect(results.length).toBe(2)
+  })
+})
+
+describe('addLiquidsToLiquidlessOnlyFilter', () => {
+  const liquids = ['water', 'spirits', 'wine', 'oil']
+
+  it('adds every liquid to an Only filter that selects none, preserving pre-liquid behaviour', () => {
+    expect(addLiquidsToLiquidlessOnlyFilter(['sage'], 'only', liquids)).toEqual(['sage', ...liquids])
+  })
+
+  it('leaves an Only filter that already selects a liquid unchanged', () => {
+    expect(addLiquidsToLiquidlessOnlyFilter(['sage', 'water'], 'only', liquids)).toBeNull()
+  })
+
+  it('leaves Any filters and empty selections unchanged', () => {
+    expect(addLiquidsToLiquidlessOnlyFilter(['sage'], 'any', liquids)).toBeNull()
+    expect(addLiquidsToLiquidlessOnlyFilter([], 'only', liquids)).toBeNull()
   })
 })

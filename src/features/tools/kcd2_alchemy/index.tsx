@@ -1,10 +1,11 @@
 'use client'
 
-import React, { useEffect, useMemo, useState } from 'react'
+import React, { useEffect, useMemo, useRef, useState } from 'react'
 import { FlaskRound, HelpCircle } from 'lucide-react'
 import { useAlchemyData } from './hooks/useAlchemyData'
 import { useQueryState, type QueryState } from './hooks/useQueryState'
 import { usePotionFilters } from './hooks/usePotionFilters'
+import { addLiquidsToLiquidlessOnlyFilter } from './lib/filter'
 import { SearchBar } from './components/SearchBar'
 import { FiltersPanel } from './components/FiltersPanel'
 import { PotionList } from './components/PotionList'
@@ -59,6 +60,15 @@ export default function Kcd2Alchemy({ className }: Kcd2AlchemyProps) {
     }
     setQueryState(patch)
   }
+
+  const liquidMigrationDone = useRef(false)
+  useEffect(() => {
+    if (liquidMigrationDone.current || !potions.length) return
+    liquidMigrationDone.current = true
+    const liquidIds = Array.from(new Set(potions.map((p) => String(p.ingredients.liquidId))))
+    const migrated = addLiquidsToLiquidlessOnlyFilter(selectedIngredientIds, ingredientMode, liquidIds)
+    if (migrated) setStateAndPersist({ ingredients: migrated.map(String) })
+  })
 
   // Hydrate from saved once
   useEffect(() => {
