@@ -138,8 +138,8 @@ describe('settlementTagHook', () => {
   })
 
   it('produces deterministic output for the same seed', () => {
-    const a = settlementTagHook(createSeededRng('tag-hook-3', SETTLEMENT_TAG_HOOK_TEMPLATES_V2), 'Gate Shadow', 'Archive War')
-    const b = settlementTagHook(createSeededRng('tag-hook-3', SETTLEMENT_TAG_HOOK_TEMPLATES_V2), 'Gate Shadow', 'Archive War')
+    const a = settlementTagHook(createSeededRng('tag-hook-3'), 'Gate Shadow', 'Archive War', SETTLEMENT_TAG_HOOK_TEMPLATES_V2)
+    const b = settlementTagHook(createSeededRng('tag-hook-3'), 'Gate Shadow', 'Archive War', SETTLEMENT_TAG_HOOK_TEMPLATES_V2)
     expect(a).toBe(b)
   })
 })
