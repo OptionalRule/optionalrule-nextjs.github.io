@@ -7,8 +7,8 @@ Source: architecture review at `b18e4aa`, 2026-11-21 (`/tmp/architecture-review-
 | 2 | Narrative stage carve-out of `lib/generator/index.ts` | star_system_generator | grilling |
 | 1 | Narrative Domain vocabulary module (additive) | star_system_generator | grilling; after #2 |
 | 3 | Tag Hook composed once; delete `graphAware` | star_system_generator | grilling |
-| 6 | Asteroids collision outcomes in one module | asteroids | grilling |
-| 7 | Asteroids Game rules core on simulated time | asteroids | grilling; after #6 |
+| 6 | Asteroids collision outcomes in one module | asteroids | landed `fd147dc` |
+| 7 | Asteroids Game rules core on simulated time | asteroids | landed `75301fb` |
 | 8 | KCD2 filter view module | kcd2_alchemy | grilling |
 
 Lanes: A = 2→1→3, B = 6→7, C = 8. Lanes are independent.
