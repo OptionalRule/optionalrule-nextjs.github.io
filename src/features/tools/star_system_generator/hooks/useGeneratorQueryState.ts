@@ -79,7 +79,6 @@ export function useGeneratorQueryState(): [GenerationOptions, (next: Partial<Gen
         && candidate.tone === current.tone
         && candidate.gu === current.gu
         && candidate.settlements === current.settlements
-        && candidate.graphAware === current.graphAware
       ) {
         return current
       }

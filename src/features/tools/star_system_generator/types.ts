@@ -109,10 +109,6 @@ export interface GenerationOptions {
   tone: GeneratorTone
   gu: GuPreference
   settlements: SettlementDensity
-  graphAware?: {
-    phenomenonNote?: boolean
-    settlementHookSynthesis?: boolean
-  }
 }
 
 export interface PartialKnownStar {
