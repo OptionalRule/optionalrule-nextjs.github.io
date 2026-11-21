@@ -358,6 +358,20 @@ _Avoid_: system hooks, adventure hooks, hooks (unqualified)
 **Hook Category**:
 The kind of a Stories at Port entry: rumor, contract, encounter, NPC, or twist.
 
+**Hook Term**:
+A setting term (GU, Bleed, Chirality, Gardener, and so on) that tags Stories at Port entries and can be detected in a system's generated text.
+_Avoid_: tag (unqualified), keyword
+
+**Active Terms**:
+The Hook Terms detected in a system's generated text, plus any the Hook Selection Profile always treats as active.
+
+**Resonant Terms**:
+The Active Terms plus the Hook Terms carried by entries already picked from categories that feed resonance, so later picks echo earlier ones.
+
+**Hook Selection Profile**:
+The per-Generator-Version configuration of Stories at Port selection: which Hook Terms are always active, and for each Hook Category in draw order, its count, its bias toward preferred terms, whether it prefers Active or Resonant Terms, and whether its picks feed resonance.
+_Avoid_: hook config, hook settings
+
 **Tag Hook**:
 The play-facing interpretation of a Settlement's or Gate's tag pair, crisis, and hidden truth.
 _Avoid_: settlement hook, hook (unqualified)
