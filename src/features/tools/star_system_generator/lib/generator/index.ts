@@ -54,7 +54,6 @@ import {
 } from './data/gu'
 import {
   acousticEnvironmentTable,
-  activityLabels,
   atmosphereTable,
   atmosphericTracesTable,
   axialTiltTable,
@@ -157,6 +156,7 @@ export const GENERATOR_VERSION = 2 as const
 import { createSeededRng, normalizeSeed, type SeededRng } from './rng'
 import { separationToMode } from './companionMode'
 import { generateCompanionStar } from './companionStar'
+import { activityFromRoll } from './starActivity'
 import { separationToBucketAu } from './companionGeometry'
 import { circumbinaryInnerAuLimit, siblingOuterAuLimit } from './companionStability'
 import { buildVolatileHazardBelt, buildBinaryContactPhenomenon } from './volatileSystem'
@@ -402,10 +402,6 @@ function generateSystemName(rng: SeededRng): string {
   if (pattern === 'catalog') return `${core} ${pickOne(rng, systemCatalogLabels)}-${rng.int(10, 999)}`
   if (pattern === 'route') return `${core}-${secondCore} ${form}`
   return `${core}'s ${form}`
-}
-
-export function activityFromRoll(roll: number): string {
-  return activityLabels.find((entry) => roll <= entry.max)?.value ?? activityLabels[activityLabels.length - 1].value
 }
 
 function knownStarProfile(knownPrimary?: PartialKnownStar) {
