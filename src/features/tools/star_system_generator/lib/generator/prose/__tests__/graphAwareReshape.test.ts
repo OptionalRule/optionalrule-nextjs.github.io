@@ -64,7 +64,7 @@ describe('graphAwareReshape', () => {
     expect(result.settlements[1].whyHere.value).toContain('Anchor-s2')
   })
 
-  it('preserves phenomena reference when phenomenonNote flag is off', () => {
+  it('returns the input phenomena by reference', () => {
     const settlements: Settlement[] = [minimalSettlement('s1')]
     const phenomena: SystemPhenomenon[] = [minimalPhenomenon('p1')]
     const result = graphAwareReshape({
@@ -87,6 +87,7 @@ describe('graphAwareReshape', () => {
     })
     expect(result.settlements).not.toBe(settlements)
     expect(result.settlements[0].whyHere.value).toContain('Anchor-s1')
+    expect(result.phenomena).toBe(phenomena)
   })
 
   it('forks rng with label "graph-prose"', () => {
@@ -110,17 +111,16 @@ describe('graphAwareReshape', () => {
   it('preserves determinism: same input + same seed → identical output', () => {
     const settlements: Settlement[] = [minimalSettlement('s1'), minimalSettlement('s2')]
     const phenomena: SystemPhenomenon[] = [minimalPhenomenon('p1')]
-    const options: GenerationOptions = baseOptions
     const resultA = graphAwareReshape({
       settlements, phenomena,
       relationshipGraph: emptyGraph(),
-      options,
+      options: baseOptions,
       rng: createSeededRng('determinism-seed'),
     })
     const resultB = graphAwareReshape({
       settlements, phenomena,
       relationshipGraph: emptyGraph(),
-      options,
+      options: baseOptions,
       rng: createSeededRng('determinism-seed'),
     })
     expect(resultA).toEqual(resultB)

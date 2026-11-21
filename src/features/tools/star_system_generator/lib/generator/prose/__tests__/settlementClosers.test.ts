@@ -14,7 +14,6 @@ describe('closing pools', () => {
       }
     }
   })
-
 })
 
 describe('closer distribution', () => {

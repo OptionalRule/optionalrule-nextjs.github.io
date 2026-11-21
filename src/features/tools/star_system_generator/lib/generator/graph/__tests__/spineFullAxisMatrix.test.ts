@@ -29,7 +29,6 @@ const CELLS: readonly AxisCell[] = [
 ]
 
 describe('spine full axis matrix (16 representative cells)', () => {
-
   for (const cell of CELLS) {
     it(`${cell.name}: stable spine + body[0] structural fields`, () => {
       const sys = generateSystem({
