@@ -4,5 +4,5 @@ A generated system is never stored. It is fully determined by its seed plus gene
 
 ## Consequences
 
-- Any change to generation logic, table contents, or table order silently changes what an existing shared link shows. Output is stamped with a generator version, but old versions are not reproducible. ADR-0002 adds the version to the link so that old versions can be reproduced.
+- Any change to generation logic, table contents, or table order silently changes what an existing shared link shows. Output is stamped with a generator version, but old versions are not reproducible. ADR-0002 adds the version to the link so that old versions can later be reproduced.
 - Where preserving old links matters, changes are made additively: e.g. the tone-split era pools keep the `balanced` pool byte-identical so balanced-tone seeds don't drift.

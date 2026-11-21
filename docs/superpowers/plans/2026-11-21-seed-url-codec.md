@@ -12,9 +12,12 @@ export const OPTION_DEFAULTS: Omit<GenerationOptions, 'seed'>
 export function decodeSeedLink(search: string | URLSearchParams): SeedLink
 export function buildSeedLink(link: SeedLink): string            // '?seed=…[&option=…][&v=N]'
 export function sameGenerationOptions(a: GenerationOptions, b: GenerationOptions): boolean
+export function seedLinkFrom(system: Pick<GeneratedSystem, 'options' | 'generatorVersion'>, seed: string): string
 ```
 
-Behind the seam: a private `OPTION_SCHEMA` mapped over `Exclude<keyof GenerationOptions, 'seed'>`, where each entry is `{ defaultValue, values: Record<Union, true> }`. The `Record<Union, true>` type makes the value set exhaustive and closed against the unions in `types.ts` at compile time, so the unions are not repeated by hand. `OPTION_DEFAULTS`, parsing, serialising and equality all iterate the schema. Adding an option means adding it to `GenerationOptions` (the generator needs it anyway) and one schema entry; the mapped type makes forgetting the entry a compile error.
+`seedLinkFrom` is the form the five link sites call: it delegates to `buildSeedLink` with the source system's options and version and the target seed. The hook calls `buildSeedLink` directly. (Added during implementation so the same `{ options: { ...system.options, seed }, generatorVersion }` expression is not repeated at four sites.)
+
+Behind the seam: a private `OPTION_SCHEMA` mapped over `Exclude<keyof GenerationOptions, 'seed'>`, where each entry is `{ defaultValue, values: Record<Union, true> }`. The `Record<Union, true>` type makes the value set exhaustive and closed against the unions in `types.ts` at compile time, so the unions are not repeated by hand. Serialising and equality iterate the schema keys; `OPTION_DEFAULTS` and parsing go through one explicit-key `mapOptions(pick)` whose mapped return type makes a missing key a compile error. Adding an option means adding it to `GenerationOptions` (the generator needs it anyway) and one schema entry; the mapped type makes forgetting the entry a compile error.
 
 Paths are relative to `src/features/tools/star_system_generator/`.
 
@@ -42,6 +45,8 @@ Paths are relative to `src/features/tools/star_system_generator/`.
 - **Linked/parent links carry the version of the system they came from** (`system.generatorVersion`), so a companion opened from a v2 system is also v2. Today `generateSystem` stamps the constant; **Q29 must stamp the version it dispatched on**, otherwise companion links from a v2 link would be written as v3.
 - Option values are matched with `Object.hasOwn` against the schema's value record (so `constructor`/`__proto__` fall back to the default) and read with `params.get` (first duplicate wins), as before.
 - Rewriting an unsupported `v` (e.g. a v3 link on a stale cached v2 deploy) is deliberate: the rewritten link reproduces exactly what the viewer saw, so re-sharing it is honest.
+
+Because `GENERATOR_VERSION`, the legacy version and the only supported version are all 2 today, `__tests__/seed-link-version.test.tsx` mocks `GENERATOR_VERSION = 3` to check the policy itself: missing `v` stays 2, unsupported `v` becomes current, and an edit adopts current.
 
 ### Review findings applied
 
