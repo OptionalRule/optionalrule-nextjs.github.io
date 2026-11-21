@@ -16,7 +16,7 @@
 
 ## 3. Primary User Scenarios
 1. **Start a Session Quickly**: Tap an icon in the catalog bar to add a torch, lantern, spell, or campfire. The light appears as a card and the global timer begins counting down.
-2. **Run the Shared Clock**: Use the play/pause control to start or halt all lights at once; optionally skip forward exactly one minute to represent an in-world turn passing.
+2. **Run the Shared Clock**: Use the play/pause control to start or halt all lights at once; optionally skip forward exactly one minute to represent a round passing (ten rounds make a ten-minute exploration turn).
 3. **Pause Specific Lights**: Flip an individual card (click, tap, or press Space/Enter) to extinguish or relight it while retaining total burn time for that source.
 4. **Handle Expiration & Cleanup**: When a light reaches zero remaining seconds it is removed automatically. The GM can also remove cards manually with the inline delete control.
 5. **Preserve Progress Between Sessions**: Auto-save keeps the roster, timer, and settings in localStorage; users can disable saving at any time and the stored snapshot is cleared immediately.

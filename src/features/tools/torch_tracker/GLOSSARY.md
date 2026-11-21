@@ -69,12 +69,15 @@ _Avoid_: Global timer, shared timer, shared clock
 Whether time is currently flowing for the table: running or stopped.
 _Avoid_: Game clock
 
-**Advance**:
-A manual jump forward of one minute of game time applied to the Central Timer and every Lit light.
-_Avoid_: Skip forward, fast-forward
-
 **Turn**:
-The length of one in-world exploration turn for a light, ten minutes by default.
+One in-world exploration turn: ten minutes, the standard TTRPG unit for tracking light and time underground.
+
+**Round**:
+One minute of in-world time; ten Rounds make a Turn.
+
+**Skip**:
+A manual jump forward of one Round applied to the Central Timer and every Lit light.
+_Avoid_: Advance, fast-forward
 
 **Reset All**:
 Returning every Active Light to its full Burn Duration and restarting the Central Timer.
