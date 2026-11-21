@@ -17,6 +17,9 @@ Chief-of-staff memory for long-running architecture work. Historical record: eve
 - [ci](ci.md) — develop CI workflow and its first results.
 - [lane-brief-checklist](lane-brief-checklist.md) — Required lines for worktree agent briefs (retro 2026-11-21).
 
+## Candidates
+- [worth-exploring-items](worth-exploring-items.md) — #4 hooks, #5 Seed URL, #9 Draft rule, substring-fix impact.
+
 ## Decisions
 - [decision-log](decision-log.md) — Dated user decisions, newest last.
 

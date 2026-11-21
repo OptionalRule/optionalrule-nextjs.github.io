@@ -1,0 +1,23 @@
+# Worth-exploring items (#4, #5, #9) and the substring fix
+
+Explorer facts as of `develop` on 2026-11-21, after the six Strong items landed. The original review HTML in /tmp was gone by then.
+
+## #4 Hook variety (star_system_generator `lib/generator/hooks.ts`)
+- 358 lines that do three jobs: slot binding, term detection (`deriveActiveTerms`), and selection (`pickHooks`/`selectSystemHooks`). The pools come from `data/hooks.json`, generated from `docs/background/GU_HOOKS.md` (78/49/49/57/48 entries).
+- Counts and bias are hardcoded. `deriveActiveTerms` always seeds `GU`+`Bleed`, so selection always tilts toward those tags, and the same hooks repeat across systems. The settlement Tag Hook has only 4 templates.
+- ADR-0001: changing pools, order, counts, bias or fork labels changes hooks for every seed. The ADR's own suggestion is additive or tone-gated change.
+
+## #5 Seed URL
+- Encoding is in `lib/seedUrl.ts`; decoding is in `hooks/useGeneratorQueryState.ts`, with four hand-written parsers that repeat the union types in `types.ts`. Adding an option touches about 5 places. Five other places build seed URLs.
+- The URL carries no generator version. `GENERATOR_VERSION = 2` is only stamped into the output, so old versions can't be reproduced.
+- Shared links break if the generation logic changes, an `OPTION_DEFAULTS` value changes, an option value is renamed, or `normalizeSeed` is tightened.
+
+## #9 Draft rule
+- The draft rule is decided in 4 places: `content.ts` `isPostDraft`/`isPageDraft` (only tests use them); `getPostFiles`/`getPageFiles`, which filter only under `NODE_ENV==='production'` and handle read errors differently for posts and pages; `scripts/generate-search-index.ts`, which has its own copy; and `scripts/enhance-post.mjs`.
+- **Confirmed bug:** `generate-rss` runs in `npm run build` without `NODE_ENV`, so the committed `public/rss.xml` and `public/sitemap.xml` include the 2 `draft: true` posts. There are also two sources for the sitemap.
+
+## Substring fix in `classifyNarrativeDomains`
+- Measured by running the 200 golden cases through a scratch loader hook, with no repo edits. Word-boundary matching for ai/sol/old changes 185 of the 200 hashes, so it amounts to a full regeneration. It needs a `GENERATOR_VERSION` bump, a fixture update and an ADR.
+- Same kind of trap: ore, ark, gate, ration, war, lab, law, cult, chart, mine.
+
+See [decision-log](decision-log.md), [star-system-narrative-stage](star-system-narrative-stage.md).
