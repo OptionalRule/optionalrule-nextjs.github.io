@@ -15,7 +15,7 @@
   - Supports --dry-run.
 
   Usage:
-    node scripts/enhance-post.mjs <path> [options]
+    node --import tsx/esm scripts/enhance-post.mjs <path> [options]
 
   Options:
     --dry-run              Preview changes without writing files
@@ -34,6 +34,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import matter from 'gray-matter';
 import { globby } from 'globby';
+import { isPublished } from '../src/lib/publication.ts';
 
 const TAG_WHITELIST = [
   'DnD 5e',
@@ -350,8 +351,7 @@ async function processFile(file, { dryRun, overwriteExcerpt, overwriteTags, back
   const front = parsed.data || {};
   const body = parsed.content || '';
 
-  // Skip drafts
-  if (front?.draft === true) {
+  if (!isPublished(front, false)) {
     console.log(`Skipping draft: ${file}`);
     return { skipped: true };
   }
@@ -414,7 +414,7 @@ async function main() {
   const opts = parseArgs(process.argv.slice(2), cfg);
 
   if (!opts.path) {
-    console.error('Error: path is required. Usage: node scripts/enhance-post.mjs <file-or-directory> [options]');
+    console.error('Error: path is required. Usage: npm run enhance-post -- <file-or-directory> [options]');
     process.exit(1);
   }
   if (!cfg.apiKey) {

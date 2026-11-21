@@ -7,12 +7,12 @@
     "node": ">=24"
   },
   "scripts": {
-    "dev": "next dev",
+    "dev": "INCLUDE_DRAFTS=true next dev",
     "graph:hooks": "bash scripts/install-graphify-hooks.sh",
     "graph:update": "bash scripts/update-code-graph.sh",
     "build": "npm run generate-search-index && npm run generate-rss && next build",
     "start": "next start",
-    "enhance-post": "node scripts/enhance-post.mjs",
+    "enhance-post": "node --import tsx/esm scripts/enhance-post.mjs",
     "verify-titles": "node scripts/verify-titles.js",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",

@@ -38,6 +38,26 @@ vi.mock('reading-time', () => ({
 const mockFs = vi.mocked(fs);
 const mockMatter = vi.mocked(grayMatter);
 
+type StubPost = {
+  filename: string;
+  frontmatter: Record<string, unknown>;
+  content?: string;
+};
+
+const stubPosts = (posts: StubPost[]): void => {
+  mockFs.existsSync.mockReturnValue(true);
+  mockFs.readdirSync.mockReturnValue(posts.map(p => p.filename) as unknown as ReturnType<typeof fs.readdirSync>);
+  mockFs.readFileSync.mockImplementation(((file: string) => {
+    const post = posts.find(p => String(file).endsWith(p.filename));
+    if (!post) throw new Error(`ENOENT: ${String(file)}`);
+    return `raw:${post.filename}`;
+  }) as unknown as typeof fs.readFileSync);
+  mockMatter.mockImplementation(((raw: string) => {
+    const post = posts.find(p => raw === `raw:${p.filename}`);
+    return { data: post?.frontmatter ?? {}, content: post?.content ?? 'mock content' };
+  }) as unknown as typeof grayMatter);
+};
+
 // Mock fetch for search tests
 const fetchMock = vi.fn();
 global.fetch = fetchMock;
@@ -79,30 +99,13 @@ describe('Integration Tests', () => {
 
     it('processes content and makes it searchable', async () => {
       // Mock file system for content processing
-      mockFs.existsSync.mockReturnValue(true);
-        mockFs.readdirSync.mockReturnValue(mockPosts.map(p => p.filename));
-      
-        mockPosts.forEach(post => {
-          mockFs.readFileSync.mockReturnValueOnce(
-            `---\n${JSON.stringify(post.frontmatter, null, 2)}\n---\n${post.content}`
-          );
-        });
-
-      // Mock gray-matter parsing
-        mockPosts.forEach(post => {
-          mockMatter.mockReturnValueOnce(
-            {
-              data: post.frontmatter,
-              content: post.content
-            } as unknown as GrayMatterFile<string>
-          );
-        });
+      stubPosts(mockPosts);
 
       // Process content
       const allPosts = getAllPostsMeta();
       expect(allPosts).toHaveLength(2);
-      expect(allPosts[0].title).toBe('React Testing Guide');
-      expect(allPosts[1].title).toBe('Next.js Static Site Generation');
+      expect(allPosts[0].title).toBe('Next.js Static Site Generation');
+      expect(allPosts[1].title).toBe('React Testing Guide');
 
       // Mock search index with processed content
       const searchData = allPosts.map(post => ({
@@ -297,48 +300,28 @@ This is published`);
       // Re-import search functions after module reset
       const { loadSearchIndex: freshLoadSearchIndex } = await import('@/lib/search');
       
-      // Mock content files - using proper date format that matches filename sorting
-      const mockFiles = ['2023-12-02-nextjs-ssg.mdx', '2023-12-01-react-testing.mdx']; // Sorted descending by filename
-      mockFs.existsSync.mockReturnValue(true);
-      mockFs.readdirSync.mockReturnValue(mockFiles);
-      
-      // Mock file reads in the order they will be accessed
-      mockFs.readFileSync
-        .mockReturnValueOnce(`---
-title: Next.js Static Site Generation
-date: 2023-12-02
-tags: ["Next.js", "SSG"]
-excerpt: Master SSG with Next.js
----
-Static Site Generation is a powerful feature of Next.js...`)
-        .mockReturnValueOnce(`---
-title: React Testing Guide
-date: 2023-12-01
-tags: ["React", "Testing"]
-excerpt: Learn how to test React components effectively
----
-This is a comprehensive guide to testing React components...`);
-
-      // Mock matter parsing - directly mock the return values in the order they'll be called
-      mockMatter
-        .mockReturnValueOnce({
-          data: {
+      stubPosts([
+        {
+          filename: '2023-12-02-nextjs-ssg.mdx',
+          frontmatter: {
             title: 'Next.js Static Site Generation',
             date: '2023-12-02',
             tags: ['Next.js', 'SSG'],
             excerpt: 'Master SSG with Next.js'
           },
           content: 'Static Site Generation is a powerful feature of Next.js...'
-        } as unknown as GrayMatterFile<string>)
-        .mockReturnValueOnce({
-          data: {
+        },
+        {
+          filename: '2023-12-01-react-testing.mdx',
+          frontmatter: {
             title: 'React Testing Guide',
             date: '2023-12-01',
             tags: ['React', 'Testing'],
             excerpt: 'Learn how to test React components effectively'
           },
           content: 'This is a comprehensive guide to testing React components...'
-        } as unknown as GrayMatterFile<string>);
+        }
+      ]);
 
       // Get content
       const contentPosts = getAllPostsMeta();

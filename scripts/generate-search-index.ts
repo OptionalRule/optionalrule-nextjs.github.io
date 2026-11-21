@@ -4,8 +4,9 @@ import * as fs from 'fs';
 import * as path from 'path';
 import matter from 'gray-matter';
 import readingTime from 'reading-time';
-import { PostFrontmatterSchema } from '../src/lib/content';
+import { PostFrontmatterSchema, getPostFiles } from '../src/lib/content';
 import { generateExcerpt } from '../src/lib/utils';
+import { INCLUDE_DRAFTS_ENV } from '../src/lib/publication';
 
 interface SearchIndexItem {
   slug: string;
@@ -39,22 +40,7 @@ function buildSearchIndex(): SearchIndexItem[] {
     return [];
   }
 
-  const files = fs.readdirSync(POSTS_DIR)
-    .filter(file => /\.mdx?$/.test(file))
-    .filter(file => {
-      // Filter out draft posts from search index
-      try {
-        const filePath = path.join(POSTS_DIR, file);
-        const fileContent = fs.readFileSync(filePath, 'utf8');
-        const { data } = matter(fileContent);
-        const frontmatter = PostFrontmatterSchema.parse(data);
-        return frontmatter.draft !== true;
-      } catch (error) {
-        console.warn(`Warning: Error reading post ${file}, excluding from search index:`, error);
-        return false;
-      }
-    })
-    .sort((a, b) => b.localeCompare(a));
+  const files = getPostFiles();
 
   return files.map(filename => {
     const filePath = path.join(POSTS_DIR, filename);
@@ -78,6 +64,7 @@ function buildSearchIndex(): SearchIndexItem[] {
 }
 
 function generateSearchIndexFile(): void {
+  delete process.env[INCLUDE_DRAFTS_ENV];
   console.log('Generating search index...');
   
   const searchIndex = buildSearchIndex();

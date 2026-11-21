@@ -5,6 +5,7 @@ import readingTime from 'reading-time';
 import { z } from 'zod';
 import { Post, PostMeta, Page, PostFrontmatter, PageFrontmatter, PaginatedPosts, TagPage } from './types';
 import { extractHeadings, tagSlugToName, generateExcerpt } from './utils';
+import { isPublishedFile } from './publication';
 
 const POSTS_DIR = path.join(process.cwd(), 'content', 'posts');
 const PAGES_DIR = path.join(process.cwd(), 'content', 'pages');
@@ -46,36 +47,6 @@ function generatePostSlug(filename: string, customSlug?: string): string {
 }
 
 
-// Check if a post is a draft
-export function isPostDraft(filename: string): boolean {
-  try {
-    const filePath = path.join(POSTS_DIR, filename);
-    const fileContent = fs.readFileSync(filePath, 'utf8');
-    const { data } = matter(fileContent);
-    const frontmatter = data as PostFrontmatter;
-    
-    return frontmatter.draft === true;
-  } catch (error) {
-    console.warn(`Warning: Error reading post ${filename} for draft check, treating as draft:`, error);
-    return true;
-  }
-}
-
-// Check if a page is a draft
-export function isPageDraft(filename: string): boolean {
-  try {
-    const filePath = path.join(PAGES_DIR, filename);
-    const fileContent = fs.readFileSync(filePath, 'utf8');
-    const { data } = matter(fileContent);
-    const frontmatter = data as PageFrontmatter;
-    
-    return frontmatter.draft === true;
-  } catch (error) {
-    console.warn(`Warning: Error reading page ${filename} for draft check, treating as draft:`, error);
-    return true;
-  }
-}
-
 // Get all post files including drafts
 export function getAllPostFiles(): string[] {
   if (!fs.existsSync(POSTS_DIR)) {
@@ -93,27 +64,7 @@ export function getPostFiles(): string[] {
   }
   return fs.readdirSync(POSTS_DIR)
     .filter(file => /\.mdx?$/.test(file))
-    .filter(file => {
-      // Filter out draft posts during static builds
-      if (process.env.NODE_ENV === 'production') {
-        try {
-          const filePath = path.join(POSTS_DIR, file);
-          const fileContent = fs.readFileSync(filePath, 'utf8');
-          const { data } = matter(fileContent);
-          const frontmatter = data as PostFrontmatter;
-          
-          // Only include posts where draft is explicitly false or undefined
-          return frontmatter.draft !== true;
-        } catch (error) {
-          // If there's an error reading the file, log it but include the post
-          // This prevents posts from being silently excluded due to parsing errors
-          console.warn(`Warning: Error reading post ${file}, including it anyway:`, error);
-          return true;
-        }
-      }
-      // In development, include all posts
-      return true;
-    })
+    .filter(file => isPublishedFile(path.join(POSTS_DIR, file)))
     .sort((a, b) => b.localeCompare(a)); // Sort by filename desc (newest first)
 }
 
@@ -133,25 +84,7 @@ export function getPageFiles(): string[] {
   }
   return fs.readdirSync(PAGES_DIR)
     .filter(file => /\.mdx?$/.test(file))
-    .filter(file => {
-      // Filter out draft pages during static builds
-      if (process.env.NODE_ENV === 'production') {
-        try {
-          const filePath = path.join(PAGES_DIR, file);
-          const fileContent = fs.readFileSync(filePath, 'utf8');
-          const { data } = matter(fileContent);
-          const frontmatter = data as PageFrontmatter;
-          
-          // Only include pages where draft is explicitly false or undefined
-          return frontmatter.draft !== true;
-        } catch (error) {
-          console.warn(`Warning: Error reading page ${file} for filtering, excluding from build:`, error);
-          return false;
-        }
-      }
-      // In development, include all pages
-      return true;
-    });
+    .filter(file => isPublishedFile(path.join(PAGES_DIR, file)));
 }
 
 // Get post metadata only (for listings)
