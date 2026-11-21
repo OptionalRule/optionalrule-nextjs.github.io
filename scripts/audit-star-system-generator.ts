@@ -1,3 +1,12 @@
+import { existsSync, readFileSync, writeFileSync } from 'node:fs'
+import { fileURLToPath } from 'node:url'
+import {
+  compareToBaseline,
+  countErrorsByCode,
+  parseAuditBaseline,
+  withProfileBaseline,
+  type AuditBaseline,
+} from './star-system-audit-baseline'
 import { generateSystem } from '../src/features/tools/star_system_generator/lib/generator/index'
 import { isTerraformRuinType } from '../src/features/tools/star_system_generator/lib/generator/population'
 import {
@@ -127,8 +136,11 @@ const auditProfiles = {
   deep: 50,
 } as const
 
-const auditProfile = (process.env.STAR_SYSTEM_AUDIT_PROFILE ?? 'default') as keyof typeof auditProfiles
-const profileCorpusPerOption = auditProfiles[auditProfile] ?? auditProfiles.default
+const requestedAuditProfile = process.env.STAR_SYSTEM_AUDIT_PROFILE ?? 'default'
+const auditProfile: keyof typeof auditProfiles = Object.prototype.hasOwnProperty.call(auditProfiles, requestedAuditProfile)
+  ? requestedAuditProfile as keyof typeof auditProfiles
+  : 'default'
+const profileCorpusPerOption = auditProfiles[auditProfile]
 const corpusPerOption = Number.parseInt(process.env.STAR_SYSTEM_AUDIT_COUNT_PER_OPTION ?? String(profileCorpusPerOption), 10)
 const findingLimit = Number.parseInt(process.env.STAR_SYSTEM_AUDIT_FINDING_LIMIT ?? '50', 10)
 const includeReportOnlyValidation = process.env.STAR_SYSTEM_AUDIT_REPORT_ONLY === '1'
@@ -1651,6 +1663,53 @@ if (findings.length > 0) {
   }
 }
 
-if (errors.length > 0) {
-  process.exitCode = 1
+const baselinePath = fileURLToPath(new URL('./star-system-audit-baseline.json', import.meta.url))
+const updateBaseline = process.env.STAR_SYSTEM_AUDIT_UPDATE_BASELINE === '1'
+const baselineApplies = corpusPerOption === profileCorpusPerOption && !includeReportOnlyValidation
+const errorCounts = countErrorsByCode(errors)
+
+function readBaseline(): AuditBaseline {
+  if (!existsSync(baselinePath)) return {}
+  return parseAuditBaseline(JSON.parse(readFileSync(baselinePath, 'utf8')))
+}
+
+console.log('')
+if (!baselineApplies) {
+  console.log('Error baseline: skipped (custom STAR_SYSTEM_AUDIT_COUNT_PER_OPTION or STAR_SYSTEM_AUDIT_REPORT_ONLY); failing on any error.')
+  if (updateBaseline) {
+    console.log('Refusing to update the error baseline for a non-standard corpus.')
+    process.exitCode = 1
+  } else if (errors.length > 0) {
+    process.exitCode = 1
+  }
+} else if (updateBaseline) {
+  writeFileSync(baselinePath, `${JSON.stringify(withProfileBaseline(readBaseline(), auditProfile, errorCounts), null, 2)}\n`)
+  console.log(`Error baseline: wrote ${errors.length} errors across ${Object.keys(errorCounts).length} codes for profile "${auditProfile}" to ${baselinePath}`)
+} else {
+  const profileBaseline = readBaseline()[auditProfile]
+  if (!profileBaseline) {
+    console.log(`Error baseline: no entry for profile "${auditProfile}" in ${baselinePath}; failing on any error.`)
+    console.log(`  Create one with: STAR_SYSTEM_AUDIT_PROFILE=${auditProfile} npm run audit:star-system-generator:baseline`)
+    if (errors.length > 0) process.exitCode = 1
+  } else {
+    const comparison = compareToBaseline(profileBaseline, errorCounts)
+    const baselineTotal = Object.values(profileBaseline).reduce((sum, count) => sum + count, 0)
+    console.log(`Error baseline (${auditProfile}): ${errors.length} errors vs ${baselineTotal} baselined`)
+    for (const delta of comparison.regressions) {
+      const label = delta.baseline === 0 ? 'NEW' : 'REGRESSION'
+      console.log(`  ${label} ${delta.code}: ${delta.baseline} -> ${delta.current}`)
+    }
+    for (const delta of comparison.improvements) {
+      console.log(`  improved ${delta.code}: ${delta.baseline} -> ${delta.current}`)
+    }
+    if (comparison.improvements.length > 0) {
+      console.log(`  Error counts dropped below baseline; tighten it with: STAR_SYSTEM_AUDIT_PROFILE=${auditProfile} npm run audit:star-system-generator:baseline`)
+    }
+    if (!comparison.passed) {
+      console.log('Error baseline: FAILED (error counts rose above baseline).')
+      process.exitCode = 1
+    } else {
+      console.log('Error baseline: passed.')
+    }
+  }
 }
