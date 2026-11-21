@@ -58,3 +58,18 @@ See [architecture-strong-items](architecture-strong-items.md).
 - Q34: In v3, encounters feed resonance and rumors prefer the resonant terms.
 - Q35: A subagent drafts about 12 new settlement Tag Hook templates. The user approves them before merge.
 - Q36: All the hook variety changes ship in the same GENERATOR_VERSION 3. The release hold on `main` stays until they land.
+
+## 2026-11-21 Q37 (user: "yes to all")
+Approved v3 settlement Tag Hook pool: the 4 existing templates plus the 12 below. They apply in v3 only; v2 keeps its 4. Draft #4 was changed to end with ":" instead of ", because" so it never repeats "because".
+1. Ask about {obviousTag} and you get the brochure; ask about {deeperTag} and you learn that {deeperText}
+2. Every manifest lists {obviousTag}, but crews who stay long enough learn about {deeperTag}: {deeperText}
+3. Under the {obviousTag} reputation runs a harder current called {deeperTag}, where {deeperText}
+4. Locals will talk about {obviousTag} all night, but mention {deeperTag} and the room goes quiet: {deeperText}
+5. {deeperTag} sits under {obviousTag} like a cracked hull seal: {deeperText}
+6. The trade guides file this place under {obviousTag}; the people who live here file it under {deeperTag}: {deeperText}
+7. Nobody here denies {obviousTag}, but the real arguments are about {deeperTag}, since {deeperText}
+8. Strip away {obviousTag} and what remains is {deeperTag}: {deeperText}
+9. {obviousTag} explains how the place looks; {deeperTag} explains how it works, and the short version is that {deeperText}
+10. If {obviousTag} is what brings ships in, {deeperTag} is what crews talk about on the way out: {deeperText}
+11. Any broker will mention {obviousTag}; only a local will warn you about {deeperTag}, and the warning is blunt: {deeperText}
+12. The registry says {obviousTag}, but the incident logs keep circling {deeperTag}: {deeperText}
