@@ -1,110 +1,44 @@
 'use client'
 
-import React, { useEffect, useMemo, useRef, useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import { FlaskRound, HelpCircle } from 'lucide-react'
 import { useAlchemyData } from './hooks/useAlchemyData'
-import { useQueryState, type QueryState } from './hooks/useQueryState'
+import { useFilterView } from './hooks/useFilterView'
 import { usePotionFilters } from './hooks/usePotionFilters'
-import { addLiquidsToLiquidlessOnlyFilter } from './lib/filter'
 import { SearchBar } from './components/SearchBar'
 import { FiltersPanel } from './components/FiltersPanel'
 import { PotionList } from './components/PotionList'
-import { getSaveEnabled as getPersistFlag, setSaveEnabled as setPersistFlag, readPersistedFilters, writePersistedFilters, clearPersistedFilters } from './lib/persist'
 
 export interface Kcd2AlchemyProps {
   className?: string
 }
 
+type ToastType = 'info' | 'success' | 'error'
+
 export default function Kcd2Alchemy({ className }: Kcd2AlchemyProps) {
   const { loading, error, potions, ingredientOptions } = useAlchemyData()
-  const [queryState, setQueryState] = useQueryState()
-
-  const selectedIngredientIds = useMemo(() => queryState.ingredients, [queryState.ingredients])
-  const ingredientMode = queryState.ingMode
+  const liquidIds = useMemo(() => Array.from(new Set(potions.map((p) => String(p.ingredients.liquidId)))), [potions])
+  const { view, update, saveEnabled, setSaveEnabled, restoredFromSave } = useFilterView(liquidIds)
 
   const { results, count } = usePotionFilters({
     potions,
-    query: queryState.q,
-    ingredientIds: selectedIngredientIds,
-    ingredientMode,
+    query: view.q,
+    ingredientIds: view.ingredients,
+    ingredientMode: view.matchMode,
   })
 
-  // Save toggle and tiny toast
-  const [saveEnabled, setSaveEnabled] = useState<boolean>(() => {
-    if (typeof window === 'undefined') return false
-    const hasSaved = Boolean(readPersistedFilters())
-    if (hasSaved) return true
-    return getPersistFlag()
-  })
-  const [_appliedSavedOnce, setAppliedSavedOnce] = useState(false)
-  const [toast, setToast] = useState<{ msg: string; type: 'info' | 'success' | 'error' } | null>(null)
-  const showToast = (msg: string, type: 'info' | 'success' | 'error' = 'info') => {
+  const [toast, setToast] = useState<{ msg: string; type: ToastType } | null>(null)
+  const showToast = (msg: string, type: ToastType = 'info') => {
     setToast({ msg, type })
     window.setTimeout(() => setToast(null), 2600)
   }
 
-  // Persist immediately before URL change to avoid remount restoring stale saved state
-  const setStateAndPersist = (patch: Partial<QueryState>) => {
-    if (saveEnabled) {
-      const future: QueryState = { ...queryState }
-      if (patch.q !== undefined) future.q = patch.q
-      if (patch.ingredients !== undefined) future.ingredients = patch.ingredients
-      if (patch.ingMode !== undefined) future.ingMode = patch.ingMode
-      if (patch.alchLvl !== undefined) future.alchLvl = patch.alchLvl
-      writePersistedFilters({
-        q: future.q,
-        ingredients: future.ingredients,
-        ingMode: future.ingMode,
-        alchemyLevel: Number(future.alchLvl) || 0,
-      })
-    }
-    setQueryState(patch)
-  }
-
-  const liquidMigrationDone = useRef(false)
   useEffect(() => {
-    if (liquidMigrationDone.current || !potions.length) return
-    liquidMigrationDone.current = true
-    const liquidIds = Array.from(new Set(potions.map((p) => String(p.ingredients.liquidId))))
-    const migrated = addLiquidsToLiquidlessOnlyFilter(selectedIngredientIds, ingredientMode, liquidIds)
-    if (migrated) setStateAndPersist({ ingredients: migrated.map(String) })
-  })
-
-  // Hydrate from saved once
-  useEffect(() => {
-    const sp = new URLSearchParams(window.location.search)
-    const saved = readPersistedFilters()
-    if (saved) {
-      try { setPersistFlag(true) } catch {}
-      const patch: Partial<QueryState> = {}
-      if (!sp.get('q') && saved.q !== undefined) patch.q = saved.q
-      if (!sp.get('ingredients') && saved.ingredients) patch.ingredients = saved.ingredients.map(String)
-      if (!sp.get('ingMode') && saved.ingMode) patch.ingMode = saved.ingMode
-      if (!sp.get('alchLvl') && typeof saved.alchemyLevel === 'number') patch.alchLvl = saved.alchemyLevel
-      if (Object.keys(patch).length) {
-        setQueryState(patch)
-        setAppliedSavedOnce(true)
-        showToast('Restored your saved filters.', 'success')
-      }
-    }
-  }, [setQueryState])
-
-  // Removed safety net re-apply to allow intentional clearing of all filters/search when Save View is on.
-
-  // Persist on changes (when enabled)
-  useEffect(() => {
-    setPersistFlag(saveEnabled)
-    if (!saveEnabled) {
-      clearPersistedFilters()
-      return
-    }
-    writePersistedFilters({
-      q: queryState.q,
-      ingredients: queryState.ingredients,
-      ingMode: queryState.ingMode,
-      alchemyLevel: Number(queryState.alchLvl) || 0,
-    })
-  }, [saveEnabled, queryState])
+    if (!restoredFromSave) return
+    setToast({ msg: 'Restored your saved filters.', type: 'success' })
+    const timer = window.setTimeout(() => setToast(null), 2600)
+    return () => window.clearTimeout(timer)
+  }, [restoredFromSave])
 
   return (
     <div className={`min-h-screen bg-background text-foreground ${className || ''}`}>
@@ -170,18 +104,18 @@ export default function Kcd2Alchemy({ className }: Kcd2AlchemyProps) {
 
       <main className="container mx-auto p-4 space-y-3">
         <section className="flex flex-col gap-3">
-          <SearchBar value={queryState.q} onChange={(q) => setStateAndPersist({ q })} />
+          <SearchBar value={view.q} onChange={(q) => update({ q })} />
           <FiltersPanel
             ingredientOptions={ingredientOptions}
-            selectedIngredientIds={selectedIngredientIds}
-            ingredientMode={ingredientMode}
-            onChangeIngredients={(ids) => setStateAndPersist({ ingredients: ids.map(String) })}
-            onChangeIngredientMode={(mode) => setStateAndPersist({ ingMode: mode })}
+            selectedIngredientIds={view.ingredients}
+            ingredientMode={view.matchMode}
+            onChangeIngredients={(ids) => update({ ingredients: ids.map(String) })}
+            onChangeIngredientMode={(matchMode) => update({ matchMode })}
             onClearAll={() => {
-              setStateAndPersist({ q: '', ingredients: [], ingMode: 'any', alchLvl: 0 })
+              update({ q: '', ingredients: [], matchMode: 'any', alchemyLevel: 0 })
             }}
-            alchemyLevel={Number(queryState.alchLvl) || 0}
-            onChangeAlchemyLevel={(lvl) => setStateAndPersist({ alchLvl: lvl })}
+            alchemyLevel={view.alchemyLevel}
+            onChangeAlchemyLevel={(alchemyLevel) => update({ alchemyLevel })}
           />
           <div className="text-sm text-[var(--muted-2)]">{count} result{count === 1 ? '' : 's'}</div>
         </section>
@@ -194,7 +128,7 @@ export default function Kcd2Alchemy({ className }: Kcd2AlchemyProps) {
         )}
 
         {!loading && !error && (
-          <PotionList potions={results} selectedIngredientIds={selectedIngredientIds} playerAlchemyLevel={Number(queryState.alchLvl) || 0} />
+          <PotionList potions={results} selectedIngredientIds={view.ingredients} playerAlchemyLevel={view.alchemyLevel} />
         )}
       </main>
 

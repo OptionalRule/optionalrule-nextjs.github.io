@@ -29,7 +29,7 @@ src/
         hooks/
           useAlchemyData.ts        # Fetch/validate/normalize JSON, memoized
           usePotionFilters.ts      # Apply filter predicates + derive sets
-          useQueryState.ts         # Sync state <-> URL query params
+          useFilterView.ts         # Filter View: URL sync, hydration, Saved Filters
         lib/
           schema.ts                # Narrow validator for JSON shape
           filter.ts                # Pure filter predicates (testable)
@@ -37,7 +37,7 @@ src/
         __tests__/                 # Unit + a11y smoke tests
           schema.test.ts
           filter.test.ts
-          query-state.test.ts
+          filter-view.test.tsx
           a11y.test.tsx
         docs/
           PRD.md                   # Product Requirements Document for this tool
@@ -108,7 +108,7 @@ Filter semantics (implemented in `lib/filter.ts`, orchestrated by `usePotionFilt
 - Effects: include recipe if any selected effect keyword or quality matches `effects` entries.
 - Sorting (initial): by name asc.
 
-URL sync (implemented in `useQueryState.ts`)
+URL sync (implemented in `useFilterView.ts`)
 - Params: `q`, `ingredients` (comma-separated IDs), `effects` (comma-separated).
 - Read on mount; write on changes with `router.replace` to avoid history spam; always keep the route `/tools/kcd2_alchemy/` with trailing slash.
 - Default values produce a minimal URL (omit empty params).
@@ -155,7 +155,7 @@ M2 - Data Types, Validation, Normalization
 
 M3 - UI & Filtering
 - [x] Build `SearchBar`, `FiltersPanel` (ingredients + effects), `PotionList`, `PotionCard`, `QuantityTable`.
-- [x] Implement `useAlchemyData` (load potions + ingredients), `usePotionFilters`, `useQueryState`.
+- [x] Implement `useAlchemyData` (load potions + ingredients), `usePotionFilters`, `useFilterView`.
 - [x] Wire URL sync; ensure trailing slash semantics.
 
 M4 — Tests, A11y
