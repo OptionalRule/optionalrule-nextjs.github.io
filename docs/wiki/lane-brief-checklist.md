@@ -11,3 +11,8 @@ From the Lane B retro, 2026-11-21 (Asteroids #7 session).
 Alternative considered: a WorktreeCreate hook in settings to pin the base and link `node_modules`. Not applied; the user has not approved harness config changes.
 
 See [index](index.md), [asteroids-engine](asteroids-engine.md).
+
+## 2026-11-21 update (supersedes the first two bullets and the "Not applied" note above)
+- `c202f29` added a committed `.claude/settings.json` with `worktree.baseRef: "head"` and `symlinkDirectories: ["node_modules"]`. Agent worktrees now branch from the main checkout's HEAD and get `node_modules` linked. This was verified: HEAD matched origin/develop, vitest was present, and the worktree was cleaned up afterwards.
+- A WorktreeCreate hook was rejected because it replaces the built-in creation and loses auto-cleanup.
+- Remaining caveat: `baseRef: head` does no fetch. Briefs only need: "confirm `git merge-base --is-ancestor origin/develop HEAD`". The main checkout must stay on develop and be pulled.
