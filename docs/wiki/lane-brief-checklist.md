@@ -17,3 +17,5 @@ See [index](index.md), [asteroids-engine](asteroids-engine.md).
 - A WorktreeCreate hook was rejected because it replaces the built-in creation and loses auto-cleanup.
 - Remaining caveat: `baseRef: head` does no fetch. Briefs only need: "confirm `git merge-base --is-ancestor origin/develop HEAD`". The main checkout must stay on develop and be pulled.
 - 2026-11-21: the reviewer subagent type that was used had no shell, so it read files rather than `git diff`. Briefs should ask for a reviewer that has Bash (general-purpose), or should pass the commit range.
+- 2026-11-21: Turbopack refuses to build in agent worktrees because `node_modules` is a symlink outside the worktree. Use `next build --webpack` there; CI is unaffected.
+- 2026-11-21: when merging to `main`, merge the exact CI-green SHA from a temporary worktree, not the moving tip of `develop`.

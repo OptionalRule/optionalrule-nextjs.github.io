@@ -21,3 +21,8 @@ Explorer facts as of `develop` on 2026-11-21, after the six Strong items landed.
 - Same kind of trap: ore, ark, gate, ration, war, lab, law, cult, chart, mine.
 
 See [decision-log](decision-log.md), [star-system-narrative-stage](star-system-narrative-stage.md).
+
+## 2026-11-21 progress
+- #9 / Q26: `bda8f33`, `5806cea`. `src/lib/publication.ts` holds the `isPublished` rule; drafts appear only with `INCLUDE_DRAFTS=true`, which `npm run dev` sets. The sitemap is served only by `src/app/sitemap.xml/route.ts`, and `public/sitemap.xml` is deleted. A post with invalid frontmatter now fails the build.
+- Q27: `5806cea` (CI green) was merged to `main` as `46126b9`. Deploy run 44960540343.
+- #5 / Q28: `d96b008`..`22c5b44`. `lib/seedUrl.ts` has `decodeSeedLink`/`buildSeedLink`/`seedLinkFrom`/`sameGenerationOptions`; the `v` param is defined in ADR-0002. A link without `v` decodes as v2, and an unknown `v` falls back to current. Links are now relative. **Requirement for Q29:** `generateSystem` must stamp the version it actually ran, not the constant.
