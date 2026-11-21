@@ -36,6 +36,7 @@ describe('KCD2 Alchemy — Accessibility', () => {
       name: 'Artemisia',
       ingredients: {
         liquid: 'Spirits',
+        liquidId: 'spirits',
         items: [
           { id: 'sage', name: 'Sage', quantity: 1 },
           { id: 'wormwood', name: 'Wormwood', quantity: 2 },

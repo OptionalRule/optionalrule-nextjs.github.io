@@ -6,6 +6,7 @@ describe('Normalization utilities', () => {
   const ingredients: Ingredient[] = [
     { id: 'mint', name: 'Mint' },
     { id: 'belladonna', name: 'Belladonna' },
+    { id: 'water', name: 'Water' },
   ];
 
   const potion: PotionRecipe = {
@@ -38,9 +39,16 @@ describe('Normalization utilities', () => {
     expect(resolved.ingredients.items[1].name).toBe('Belladonna');
   });
 
+  it('resolves the base liquid to its ingredient id', () => {
+    const index = buildIngredientIndex(ingredients);
+    const resolved = resolvePotion(potion, index);
+    expect(resolved.ingredients.liquidId).toBe('water');
+    expect(resolved.ingredients.liquid).toBe('Water');
+  });
+
   it('derives sorted ingredient options', () => {
     const opts = deriveIngredientOptions(ingredients);
-    expect(opts.map((o) => o.name)).toEqual(['Belladonna', 'Mint']);
+    expect(opts.map((o) => o.name)).toEqual(['Belladonna', 'Mint', 'Water']);
   });
 
   it('derives effect quality list', () => {

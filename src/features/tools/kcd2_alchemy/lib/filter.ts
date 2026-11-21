@@ -30,13 +30,11 @@ export function ingredientMatch(
   if (!ingredientIds.length) return true
   const set = new Set<string>(ingredientIds.map(String))
   const has = (id: string | number) => set.has(String(id))
+  const potionIngredientIds = [p.ingredients.liquidId, ...p.ingredients.items.map((it) => it.id)]
   if (mode === 'only') {
-    // Potion's ingredient list must be a subset of the provided ingredientIds
-    // i.e., every ingredient in the potion exists in the selected set
-    return p.ingredients.items.every((it) => has(it.id))
+    return potionIngredientIds.every(has)
   }
-  // any: at least one ingredient matches
-  return p.ingredients.items.some((it) => has(it.id))
+  return potionIngredientIds.some(has)
 }
 
 export function applyFilters(

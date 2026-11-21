@@ -1,5 +1,6 @@
 // Lightweight validators for KCD2 Alchemy data (no external deps)
 
+import { findIngredientIdByName } from './normalize';
 import type {
   Ingredient,
   IngredientId,
@@ -163,6 +164,9 @@ export function validateReferentialIntegrity(potions: PotionRecipe[], ingredient
   const idSet = new Set<string>(ingredients.map((i) => String(i.id)));
   const missing: Array<{ potionId: string; itemId: IngredientId }> = [];
   for (const p of potions) {
+    if (findIngredientIdByName(p.ingredients.liquid, ingredients) === undefined) {
+      missing.push({ potionId: p.id, itemId: p.ingredients.liquid });
+    }
     for (const it of p.ingredients.items) {
       if (!idSet.has(String(it.id))) {
         missing.push({ potionId: p.id, itemId: it.id });

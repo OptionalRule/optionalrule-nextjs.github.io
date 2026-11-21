@@ -71,7 +71,10 @@ describe('Schema validators', () => {
   })
 
   it('detects missing ingredient references across files', () => {
-    const ingredients = parseIngredients([{ id: 'mint', name: 'Mint' }]);
+    const ingredients = parseIngredients([
+      { id: 'mint', name: 'Mint' },
+      { id: 'water', name: 'Water' },
+    ]);
     const potions = parsePotions([
       {
         id: '01',
@@ -91,6 +94,22 @@ describe('Schema validators', () => {
     const missing = validateReferentialIntegrity(potions, ingredients);
     expect(missing).toHaveLength(1);
     expect(missing[0]).toEqual({ potionId: '01', itemId: 'unknown' });
+  });
+
+  it('detects a base liquid missing from the ingredient catalog', () => {
+    const ingredients = parseIngredients([{ id: 'mint', name: 'Mint' }]);
+    const potions = parsePotions([
+      {
+        id: '01',
+        name: 'Missing Liquid',
+        ingredients: { liquid: 'Oil', items: [{ id: 'mint', quantity: 1 }] },
+        instructions: { default: [] },
+        quantity: { base: 1, withSecretOfMatterI: 2, withSecretOfMatterII: 3, withBothSecrets: 4 },
+        effects: [{ quality: 'Weak', description: 'x' }],
+      },
+    ]);
+
+    expect(validateReferentialIntegrity(potions, ingredients)).toEqual([{ potionId: '01', itemId: 'Oil' }]);
   });
 
   it('throws on invalid shapes', () => {

@@ -20,6 +20,17 @@ export function buildIngredientIndex(ingredients: Ingredient[]): IngredientIndex
   return map;
 }
 
+export function findIngredientIdByName(
+  name: string,
+  ingredients: Iterable<Ingredient>,
+): IngredientId | undefined {
+  const target = name.trim().toLowerCase();
+  for (const ing of ingredients) {
+    if (ing.name.trim().toLowerCase() === target) return ing.id;
+  }
+  return undefined;
+}
+
 export function resolvePotion(
   potion: PotionRecipe,
   ingredientIndex: IngredientIndex,
@@ -36,6 +47,9 @@ export function resolvePotion(
     ...potion,
     ingredients: {
       liquid: potion.ingredients.liquid,
+      liquidId:
+        findIngredientIdByName(potion.ingredients.liquid, ingredientIndex.values()) ??
+        potion.ingredients.liquid,
       items,
     },
   };

@@ -58,6 +58,7 @@ export interface ResolvedPotionItem extends PotionItem {
 export interface NormalizedPotionRecipe extends Omit<PotionRecipe, 'ingredients'> {
   ingredients: {
     liquid: string;
+    liquidId: IngredientId;
     items: ResolvedPotionItem[];
   };
 }
