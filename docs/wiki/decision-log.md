@@ -51,3 +51,10 @@ See [architecture-strong-items](architecture-strong-items.md).
 - Q29: The substring fix, plus the other traps (ore, war, law, …), ships as `GENERATOR_VERSION = 3`. The v2 classifier is kept, so `v=2` and links without `v` reproduce exactly. New ADR. Comes after Q28.
 - Q30: #4 hook variety ships inside v3. First, split `hooks.ts` into its three jobs with no output change. The variety design needs its own grilling session about how it feels at the table.
 - Q31: The star system audit gets a committed per-code error baseline and fails only when a count rises (a ratchet).
+
+## 2026-11-21 round 6 (user: "yes to all")
+- Q32: In v3, GU and Bleed are active only when the system has GU or Bleed features. No baseline seeding.
+- Q33: v3 keeps the per-category counts (1/2/1/3/1). Variety comes from bias and resonance.
+- Q34: In v3, encounters feed resonance and rumors prefer the resonant terms.
+- Q35: A subagent drafts about 12 new settlement Tag Hook templates. The user approves them before merge.
+- Q36: All the hook variety changes ship in the same GENERATOR_VERSION 3. The release hold on `main` stays until they land.
