@@ -1,6 +1,7 @@
 # Keep the canonical graph at the repository root while indexing only src/.
 /*
 !/src/
+!/src/**
 
 # Keep extraction deterministic and code-only.
 **/docs/
