@@ -290,10 +290,6 @@ function makeOptions(
   return {
     ...options,
     seed: makeSeed(options, index),
-    graphAware: {
-      phenomenonNote: true,
-      settlementHookSynthesis: true,
-    },
   }
 }
 
@@ -1268,15 +1264,14 @@ function auditCoverage(stats: CorpusStats, findings: Finding[]): void {
 
 function auditDistributionAxisSensitivity(findings: Finding[], syntheticSeed: string): void {
   const sampleSize = 100
-  const baseFlags = { phenomenonNote: true, settlementHookSynthesis: true }
   let differing = 0
   for (let i = 0; i < sampleSize; i++) {
     const seed = `dist-axis-audit-${i}`
     const frontier = generateSystem({
-      seed, distribution: 'frontier', tone: 'balanced', gu: 'normal', settlements: 'normal', graphAware: baseFlags,
+      seed, distribution: 'frontier', tone: 'balanced', gu: 'normal', settlements: 'normal',
     })
     const realistic = generateSystem({
-      seed, distribution: 'realistic', tone: 'balanced', gu: 'normal', settlements: 'normal', graphAware: baseFlags,
+      seed, distribution: 'realistic', tone: 'balanced', gu: 'normal', settlements: 'normal',
     })
     const fb = frontier.systemStory.body[0] ?? ''
     const rb = realistic.systemStory.body[0] ?? ''
@@ -1291,15 +1286,14 @@ function auditDistributionAxisSensitivity(findings: Finding[], syntheticSeed: st
 
 function auditDensityAxisSensitivity(findings: Finding[], syntheticSeed: string): void {
   const sampleSize = 100
-  const baseFlags = { phenomenonNote: true, settlementHookSynthesis: true }
   let differing = 0
   for (let i = 0; i < sampleSize; i++) {
     const seed = `density-axis-audit-${i}`
     const sparse = generateSystem({
-      seed, distribution: 'frontier', tone: 'balanced', gu: 'normal', settlements: 'sparse', graphAware: baseFlags,
+      seed, distribution: 'frontier', tone: 'balanced', gu: 'normal', settlements: 'sparse',
     })
     const hub = generateSystem({
-      seed, distribution: 'frontier', tone: 'balanced', gu: 'normal', settlements: 'hub', graphAware: baseFlags,
+      seed, distribution: 'frontier', tone: 'balanced', gu: 'normal', settlements: 'hub',
     })
     const sb = sparse.systemStory.body[0] ?? ''
     const hb = hub.systemStory.body[0] ?? ''
