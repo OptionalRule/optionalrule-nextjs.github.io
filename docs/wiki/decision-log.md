@@ -29,3 +29,10 @@ See [architecture-strong-items](architecture-strong-items.md).
 - Q17: The #1 closed domain set is the union of domains the current regexes can return. Bank `domains:` literals and `CONTROL_DOMAINS`/`CRISIS_*` are typed against it. Mismatches that would change output are reported to the user, not fixed.
 - Q18: Retro runs after the first item that hits trouble in any lane, plus about 1 in 5 of the rest. Improvements are applied without asking unless they change what users see.
 - Grilling closed; the user confirmed shared understanding. Lanes A/B/C dispatched.
+
+## 2026-11-21 round 3 (user: "yes to all")
+- Q19: KCD2 restores saved filters once at load. The toast shows once, and back/forward shows exactly the URL. This fixes the bug where the hydrate effect reran.
+- Q20: #2 Narrative stage plan approved (Option A, `runNarrativeStage`), with the golden guard as the merge gate.
+- Q21: Add GitHub Actions CI running test and lint on pushes to `develop`, on Node 24.
+- Q22: Asteroids High Score updates live; the reset-high-score button is hidden while a game is in progress.
+- Q23: Level Transition and Respawn timers wait while the tab is hidden (part of Q15).
