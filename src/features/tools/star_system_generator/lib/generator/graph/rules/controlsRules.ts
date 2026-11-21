@@ -5,6 +5,9 @@ import { containsWord, CONTROL_DOMAINS } from './settingPatterns'
 import type { EntityRef } from '../types'
 import { buildFactionMetadataByName } from '../../factions'
 import { getFactionEntities, factionFactIdsForName } from './factionHelpers'
+import { findDomainMentionedInProse, type NarrativeDomain } from '../../narrative/domains'
+
+const CONTROL_DOMAIN_SET: ReadonlySet<NarrativeDomain> = new Set(CONTROL_DOMAINS)
 
 export const controlsRouteAssetRule: EdgeRule = {
   id: 'CONTROLS:namedFaction-routeAsset',
@@ -35,7 +38,7 @@ export const controlsRouteAssetRule: EdgeRule = {
         const faction = factionMeta.get(factionEntity.displayName)
         if (!faction) continue
         const controlDomain = faction.domains.find(d =>
-          (CONTROL_DOMAINS as ReadonlyArray<string>).includes(d),
+          CONTROL_DOMAIN_SET.has(d),
         )
         if (!controlDomain) continue
 
@@ -92,13 +95,11 @@ export const controlsSettlementUniqueDomainRule: EdgeRule = {
       const settlementRef = ctx.entitiesById.get(fact.subjectId)
       if (!settlementRef || settlementRef.kind !== 'settlement') continue
 
-      const matchingFactions: { faction: EntityRef; domain: string }[] = []
+      const matchingFactions: { faction: EntityRef; domain: NarrativeDomain }[] = []
       for (const factionEntity of factionEntities) {
         const faction = factionMeta.get(factionEntity.displayName)
         if (!faction) continue
-        const matchedDomain = faction.domains.find(d =>
-          containsWord(fact.value.value, d),
-        )
+        const matchedDomain = findDomainMentionedInProse(fact.value.value, faction.domains)
         if (matchedDomain) matchingFactions.push({ faction: factionEntity, domain: matchedDomain })
       }
       if (matchingFactions.length !== 1) continue

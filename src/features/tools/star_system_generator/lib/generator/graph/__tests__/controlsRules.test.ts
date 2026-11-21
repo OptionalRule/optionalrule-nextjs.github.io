@@ -27,7 +27,7 @@ const overlappingPair = (() => {
 })()
 
 const factionWithControlDomain = (() => {
-  const controlSet = new Set<string>(CONTROL_DOMAINS as ReadonlyArray<string>)
+  const controlSet = new Set<string>(CONTROL_DOMAINS)
   for (const faction of namedFactions) {
     const domain = faction.domains.find(d => controlSet.has(d))
     if (domain) return { faction, domain }
@@ -36,7 +36,7 @@ const factionWithControlDomain = (() => {
 })()
 
 const factionWithoutControlDomain = (() => {
-  const controlSet = new Set<string>(CONTROL_DOMAINS as ReadonlyArray<string>)
+  const controlSet = new Set<string>(CONTROL_DOMAINS)
   for (const faction of namedFactions) {
     if (!faction.domains.some(d => controlSet.has(d))) return faction
   }

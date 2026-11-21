@@ -20,6 +20,7 @@ export default function AsteroidsGame({ className }: AsteroidsGameProps) {
     resumeGame,
     restartGame,
     clearHighScore,
+    setInputBlocked,
   } = useAsteroids()
 
   return (
@@ -59,6 +60,7 @@ export default function AsteroidsGame({ className }: AsteroidsGameProps) {
               onResume={resumeGame}
               onRestart={restartGame}
               onResetHighScore={clearHighScore}
+              onResetDialogChange={setInputBlocked}
             />
           </div>
         </div>

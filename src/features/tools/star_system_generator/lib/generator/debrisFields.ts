@@ -13,7 +13,7 @@ import type {
   Star,
   SystemPhenomenon,
 } from '../../types'
-import { fact } from './index'
+import { fact } from './fact'
 import { createSeededRng } from './rng'
 import type { SeededRng } from './rng'
 import { separationToBucketAu } from './companionGeometry'

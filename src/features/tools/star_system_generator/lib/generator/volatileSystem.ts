@@ -1,5 +1,5 @@
 import type { OrbitingBody, SystemPhenomenon, BodyPhysicalHints, PlanetaryDetail } from '../../types'
-import { fact } from './index'
+import { fact } from './fact'
 
 function emptyPhysical(): BodyPhysicalHints {
   return {

@@ -22,6 +22,8 @@ Commit work at logical checkpoints during development. For this feature, good ch
 
 Run `npm run audit:star-system-generator:quick` after generator-rule changes. Run `npm run audit:star-system-generator:deep` before marking procedural-generation work complete. The audit generates a deterministic corpus across frontier and realistic distributions, fails on hard generated contradictions or missing fields, reports locked imported contradictions separately, and reports warnings for coverage or tuning gaps that are useful during iterative table work.
 
+`__tests__/generator-golden.test.ts` is the golden determinism guard (ADR-0001): it hashes the full `generateSystem` output for 200 seeds (two per option combination plus edge-case seeds) and compares against `__tests__/__fixtures__/generator-golden-hashes.json`. A refactor must leave every hash unchanged. Only when an output change is a deliberate, user-approved generator-version break, regenerate the fixture with `npm run test:star-system-golden:update` and commit it alongside that change.
+
 Run `npm run audit:star-system-data` after editing JSON-backed data pools. The data audit reports name, settlement, tag, crisis, hidden-truth, encounter-site, location, function, built-form, GU, remnant, phenomenon, stellar, route, and mechanical table counts; fails on structural data errors; and warns when author-facing pools are thin enough to need expansion.
 
 Settlement density is intentionally variable. The density control chooses a range, then reachability, GU intensity, architecture, hazards, and top presence scores nudge the final number so normal systems do not all show the same count.

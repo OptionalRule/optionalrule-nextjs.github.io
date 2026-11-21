@@ -1,7 +1,7 @@
 import type { NarrativeFact } from '../../../../types'
 import type { BuildCtx } from './ruleTypes'
 import type { EntityRef } from '../types'
-import { containsWord } from './settingPatterns'
+import { findDomainMentionedInProse } from '../../narrative/domains'
 import { buildFactionMetadataByName } from '../../factions'
 
 export function getFactionEntities(entities: ReadonlyArray<EntityRef>): EntityRef[] {
@@ -33,7 +33,7 @@ export function findControllingFaction(settlement: EntityRef, ctx: BuildCtx): En
   for (const factionEntity of factionEntities) {
     const faction = factionMeta.get(factionEntity.displayName)
     if (!faction) continue
-    if (faction.domains.some(d => containsWord(authorityText, d))) {
+    if (findDomainMentionedInProse(authorityText, faction.domains) !== undefined) {
       matched.push(factionEntity)
     }
   }

@@ -1,3 +1,12 @@
+import { existsSync, readFileSync, writeFileSync } from 'node:fs'
+import { fileURLToPath } from 'node:url'
+import {
+  compareToBaseline,
+  countErrorsByCode,
+  parseAuditBaseline,
+  withProfileBaseline,
+  type AuditBaseline,
+} from './star-system-audit-baseline'
 import { generateSystem } from '../src/features/tools/star_system_generator/lib/generator/index'
 import { isTerraformRuinType } from '../src/features/tools/star_system_generator/lib/generator/population'
 import {
@@ -112,10 +121,6 @@ interface CorpusStats {
   spineEdgesEligibleForHistorical: number
   whyHereGraphAwareCount: number
   whyHereFallbackCount: number
-  noteGraphAwareCount: number
-  noteFallbackCount: number
-  hookGraphAwareCount: number
-  hookFallbackCount: number
   historicalSummariesByBucket: Map<string, { count: number; distinct: Set<string> }>
   spineEdgeTypesAcrossCorpus: Set<EdgeType>
   fractureSpineSamples: number
@@ -131,8 +136,11 @@ const auditProfiles = {
   deep: 50,
 } as const
 
-const auditProfile = (process.env.STAR_SYSTEM_AUDIT_PROFILE ?? 'default') as keyof typeof auditProfiles
-const profileCorpusPerOption = auditProfiles[auditProfile] ?? auditProfiles.default
+const requestedAuditProfile = process.env.STAR_SYSTEM_AUDIT_PROFILE ?? 'default'
+const auditProfile: keyof typeof auditProfiles = Object.prototype.hasOwnProperty.call(auditProfiles, requestedAuditProfile)
+  ? requestedAuditProfile as keyof typeof auditProfiles
+  : 'default'
+const profileCorpusPerOption = auditProfiles[auditProfile]
 const corpusPerOption = Number.parseInt(process.env.STAR_SYSTEM_AUDIT_COUNT_PER_OPTION ?? String(profileCorpusPerOption), 10)
 const findingLimit = Number.parseInt(process.env.STAR_SYSTEM_AUDIT_FINDING_LIMIT ?? '50', 10)
 const includeReportOnlyValidation = process.env.STAR_SYSTEM_AUDIT_REPORT_ONLY === '1'
@@ -290,10 +298,6 @@ function makeOptions(
   return {
     ...options,
     seed: makeSeed(options, index),
-    graphAware: {
-      phenomenonNote: true,
-      settlementHookSynthesis: true,
-    },
   }
 }
 
@@ -729,20 +733,14 @@ function auditSystem(system: GeneratedSystem, findings: Finding[], stats: Corpus
     increment(stats.settlementHabitationPatterns, settlement.habitationPattern.value)
   })
 
-  // Per-consumer trigger-rate detection (Phase 6). Heuristic: relies on stable
-  // Phase 6 templates — fallback whyHere uses ';' joiner; fallback tagHook ends
-  // 'decides who has leverage'; fallback note carries 'Transit:'. If a Phase 7
-  // template change alters those markers, update this block.
+  // whyHere trigger-rate detection (Phase 6). Heuristic: relies on the stable
+  // fallback whyHere template, which uses a ';' joiner. If a template change
+  // alters that marker, update this block.
   for (const settlement of system.settlements) {
     if (settlement.whyHere.value.includes(';')) {
       stats.whyHereFallbackCount += 1
     } else {
       stats.whyHereGraphAwareCount += 1
-    }
-    if (settlement.tagHook.value.includes('decides who has leverage')) {
-      stats.hookFallbackCount += 1
-    } else {
-      stats.hookGraphAwareCount += 1
     }
     if (settlement.whyHere.value.includes('{')) {
       addFinding(findings, 'error', seed, 'prose.unresolvedSlot',
@@ -754,11 +752,6 @@ function auditSystem(system: GeneratedSystem, findings: Finding[], stats: Corpus
     }
   }
   for (const phenomenon of system.phenomena) {
-    if (phenomenon.note.value.includes('Transit:')) {
-      stats.noteFallbackCount += 1
-    } else {
-      stats.noteGraphAwareCount += 1
-    }
     if (phenomenon.note.value.includes('{')) {
       addFinding(findings, 'error', seed, 'prose.unresolvedSlot',
         `Phenomenon ${phenomenon.id} note contains unresolved slot.`)
@@ -1268,15 +1261,14 @@ function auditCoverage(stats: CorpusStats, findings: Finding[]): void {
 
 function auditDistributionAxisSensitivity(findings: Finding[], syntheticSeed: string): void {
   const sampleSize = 100
-  const baseFlags = { phenomenonNote: true, settlementHookSynthesis: true }
   let differing = 0
   for (let i = 0; i < sampleSize; i++) {
     const seed = `dist-axis-audit-${i}`
     const frontier = generateSystem({
-      seed, distribution: 'frontier', tone: 'balanced', gu: 'normal', settlements: 'normal', graphAware: baseFlags,
+      seed, distribution: 'frontier', tone: 'balanced', gu: 'normal', settlements: 'normal',
     })
     const realistic = generateSystem({
-      seed, distribution: 'realistic', tone: 'balanced', gu: 'normal', settlements: 'normal', graphAware: baseFlags,
+      seed, distribution: 'realistic', tone: 'balanced', gu: 'normal', settlements: 'normal',
     })
     const fb = frontier.systemStory.body[0] ?? ''
     const rb = realistic.systemStory.body[0] ?? ''
@@ -1291,15 +1283,14 @@ function auditDistributionAxisSensitivity(findings: Finding[], syntheticSeed: st
 
 function auditDensityAxisSensitivity(findings: Finding[], syntheticSeed: string): void {
   const sampleSize = 100
-  const baseFlags = { phenomenonNote: true, settlementHookSynthesis: true }
   let differing = 0
   for (let i = 0; i < sampleSize; i++) {
     const seed = `density-axis-audit-${i}`
     const sparse = generateSystem({
-      seed, distribution: 'frontier', tone: 'balanced', gu: 'normal', settlements: 'sparse', graphAware: baseFlags,
+      seed, distribution: 'frontier', tone: 'balanced', gu: 'normal', settlements: 'sparse',
     })
     const hub = generateSystem({
-      seed, distribution: 'frontier', tone: 'balanced', gu: 'normal', settlements: 'hub', graphAware: baseFlags,
+      seed, distribution: 'frontier', tone: 'balanced', gu: 'normal', settlements: 'hub',
     })
     const sb = sparse.systemStory.body[0] ?? ''
     const hb = hub.systemStory.body[0] ?? ''
@@ -1515,10 +1506,6 @@ const stats: CorpusStats = {
   spineEdgesEligibleForHistorical: 0,
   whyHereGraphAwareCount: 0,
   whyHereFallbackCount: 0,
-  noteGraphAwareCount: 0,
-  noteFallbackCount: 0,
-  hookGraphAwareCount: 0,
-  hookFallbackCount: 0,
   historicalSummariesByBucket: new Map(),
   spineEdgeTypesAcrossCorpus: new Set<EdgeType>(),
   fractureSpineSamples: 0,
@@ -1593,13 +1580,6 @@ if (totalSettlements > 0) {
   if (whyHereRatio < 0.5) {
     console.log(`  WARN: whyHere graph-aware rate below realistic-ceiling floor (50%) — possible regression in HOSTS or DEPENDS_ON rules.`)
   }
-  const hookPct = (stats.hookGraphAwareCount / totalSettlements * 100).toFixed(1)
-  console.log(`tagHook graph-aware rate: ${hookPct}% (${stats.hookGraphAwareCount}/${totalSettlements})`)
-}
-const totalPhenomena = stats.noteGraphAwareCount + stats.noteFallbackCount
-if (totalPhenomena > 0) {
-  const notePct = (stats.noteGraphAwareCount / totalPhenomena * 100).toFixed(1)
-  console.log(`phenomenonNote graph-aware rate: ${notePct}% (${stats.noteGraphAwareCount}/${totalPhenomena})`)
 }
 console.log(`Story spineSummary length (p10/p50/p90): ${formatPercentiles(stats.spineSummaryLengths)} chars`)
 console.log(`Story body paragraph count (p10/p50/p90): ${formatPercentiles(stats.bodyParagraphCounts)}`)
@@ -1683,6 +1663,66 @@ if (findings.length > 0) {
   }
 }
 
-if (errors.length > 0) {
+const baselinePath = fileURLToPath(new URL('./star-system-audit-baseline.json', import.meta.url))
+const updateBaseline = process.env.STAR_SYSTEM_AUDIT_UPDATE_BASELINE === '1'
+const knownAuditProfile = auditProfile === requestedAuditProfile
+const baselineApplies = corpusPerOption === profileCorpusPerOption
+const errorCounts = countErrorsByCode(errors)
+
+function readBaseline(): AuditBaseline {
+  if (!existsSync(baselinePath)) return {}
+  return parseAuditBaseline(JSON.parse(readFileSync(baselinePath, 'utf8')))
+}
+
+console.log('')
+if (!baselineApplies) {
+  console.log('Error baseline: skipped (custom STAR_SYSTEM_AUDIT_COUNT_PER_OPTION); failing on any error.')
+  if (updateBaseline) {
+    console.log('Refusing to update the error baseline for a non-standard corpus.')
+    process.exitCode = 1
+  } else if (errors.length > 0) {
+    process.exitCode = 1
+  }
+} else if (updateBaseline && !knownAuditProfile) {
+  console.log(`Refusing to update the error baseline: unknown STAR_SYSTEM_AUDIT_PROFILE "${requestedAuditProfile}" (expected ${Object.keys(auditProfiles).join(', ')}).`)
   process.exitCode = 1
+} else if (updateBaseline) {
+  const previous = readBaseline()[auditProfile]
+  if (previous) {
+    for (const delta of compareToBaseline(previous, errorCounts).regressions) {
+      console.log(`  WARN: accepting increase ${delta.code}: ${delta.baseline} -> ${delta.current}`)
+    }
+  }
+  writeFileSync(baselinePath, `${JSON.stringify(withProfileBaseline(readBaseline(), auditProfile, errorCounts), null, 2)}\n`)
+  console.log(`Error baseline: wrote ${errors.length} errors across ${Object.keys(errorCounts).length} codes for profile "${auditProfile}" to ${baselinePath}`)
+} else {
+  if (!knownAuditProfile) {
+    console.log(`WARN: unknown STAR_SYSTEM_AUDIT_PROFILE "${requestedAuditProfile}"; using the "${auditProfile}" baseline.`)
+  }
+  const profileBaseline = readBaseline()[auditProfile]
+  if (!profileBaseline) {
+    console.log(`Error baseline: no entry for profile "${auditProfile}" in ${baselinePath}; failing on any error.`)
+    console.log(`  Create one with: STAR_SYSTEM_AUDIT_PROFILE=${auditProfile} npm run audit:star-system-generator:baseline`)
+    if (errors.length > 0) process.exitCode = 1
+  } else {
+    const comparison = compareToBaseline(profileBaseline, errorCounts)
+    const baselineTotal = Object.values(profileBaseline).reduce((sum, count) => sum + count, 0)
+    console.log(`Error baseline (${auditProfile}): ${errors.length} errors vs ${baselineTotal} baselined`)
+    for (const delta of comparison.regressions) {
+      const label = delta.baseline === 0 ? 'NEW' : 'REGRESSION'
+      console.log(`  ${label} ${delta.code}: ${delta.baseline} -> ${delta.current}`)
+    }
+    for (const delta of comparison.improvements) {
+      console.log(`  improved ${delta.code}: ${delta.baseline} -> ${delta.current}`)
+    }
+    if (comparison.improvements.length > 0) {
+      console.log(`  Error counts dropped below baseline; tighten it with: STAR_SYSTEM_AUDIT_PROFILE=${auditProfile} npm run audit:star-system-generator:baseline`)
+    }
+    if (!comparison.passed) {
+      console.log('Error baseline: FAILED (error counts rose above baseline).')
+      process.exitCode = 1
+    } else {
+      console.log('Error baseline: passed.')
+    }
+  }
 }

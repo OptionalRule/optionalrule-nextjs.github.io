@@ -29,8 +29,6 @@ const CELLS: readonly AxisCell[] = [
 ]
 
 describe('spine full axis matrix (16 representative cells)', () => {
-  const flags = { phenomenonNote: true, settlementHookSynthesis: true }
-
   for (const cell of CELLS) {
     it(`${cell.name}: stable spine + body[0] structural fields`, () => {
       const sys = generateSystem({
@@ -39,7 +37,6 @@ describe('spine full axis matrix (16 representative cells)', () => {
         tone: cell.tone,
         gu: cell.gu,
         settlements: cell.settlements,
-        graphAware: flags,
       })
       const top = sys.relationshipGraph.edges.find(
         e => e.id === sys.relationshipGraph.spineEdgeIds[0],

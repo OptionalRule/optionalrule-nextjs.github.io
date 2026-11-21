@@ -85,7 +85,7 @@ export class RenderSystem {
     this.ctx.restore()
   }
 
-  renderEntities(entities: Entity[], options: RenderOptions = { showDebugInfo: false, showCollisionBounds: false, showFPS: false }): void {
+  renderEntities(entities: readonly Entity[], options: RenderOptions = { showDebugInfo: false, showCollisionBounds: false, showFPS: false }): void {
     // Sort entities by render priority (background to foreground)
     const sortedEntities = this.sortEntitiesByRenderPriority(entities)
     
@@ -111,7 +111,7 @@ export class RenderSystem {
     }
   }
 
-  private sortEntitiesByRenderPriority(entities: Entity[]): Entity[] {
+  private sortEntitiesByRenderPriority(entities: readonly Entity[]): Entity[] {
     return [...entities].sort((a, b) => {
       const priorityA = this.getRenderPriority(a)
       const priorityB = this.getRenderPriority(b)
@@ -149,7 +149,7 @@ export class RenderSystem {
     this.ctx.restore()
   }
 
-  private renderDebugInfo(entities: Entity[]): void {
+  private renderDebugInfo(entities: readonly Entity[]): void {
     const activeEntities = entities.filter(e => e.getActive())
     const entityCounts = this.getEntityCounts(activeEntities)
     
@@ -172,7 +172,7 @@ export class RenderSystem {
     this.ctx.restore()
   }
 
-  private getEntityCounts(entities: Entity[]): Record<string, number> {
+  private getEntityCounts(entities: readonly Entity[]): Record<string, number> {
     const counts: Record<string, number> = {}
     
     for (const entity of entities) {

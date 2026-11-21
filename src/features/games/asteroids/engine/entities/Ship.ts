@@ -130,11 +130,6 @@ export class Ship extends Entity {
     this.thrustTween = 0
   }
 
-  takeDamage(): void {
-    if (this.isInvulnerable) return
-    this.destroy()
-  }
-
   getCollisionRadius(): number {
     return PHYSICS.collisionRadius.ship
   }

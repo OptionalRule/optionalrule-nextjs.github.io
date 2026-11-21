@@ -4,7 +4,6 @@ import { generateSystem } from '../../index'
 describe('spine tone × gu matrix (structural fields only)', () => {
   const tones = ['balanced', 'astronomy', 'cinematic'] as const
   const gus = ['low', 'normal', 'high', 'fracture'] as const
-  const flags = { phenomenonNote: true, settlementHookSynthesis: true }
 
   for (const tone of tones) {
     for (const gu of gus) {
@@ -15,7 +14,6 @@ describe('spine tone × gu matrix (structural fields only)', () => {
           tone,
           gu,
           settlements: 'normal',
-          graphAware: flags,
         })
         const top = sys.relationshipGraph.edges.find(
           e => e.id === sys.relationshipGraph.spineEdgeIds[0],

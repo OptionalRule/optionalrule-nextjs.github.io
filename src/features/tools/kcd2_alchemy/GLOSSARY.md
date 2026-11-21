@@ -89,3 +89,13 @@ A Recipe matches if it uses at least one of the filtered Ingredients.
 **Only Match**:
 A Recipe matches if every Ingredient it uses is among the filtered Ingredients, so nothing else is needed.
 _Avoid_: All
+
+### Saving and sharing
+
+**Filter View**:
+The search text, Ingredient Filter, Match Mode, and Alchemy Level currently applied, carried in the page address so the view can be shared.
+_Avoid_: Query state
+
+**Saved Filters**:
+A Filter View kept in this browser while Save View is on, restored once on the next visit for any part the page address leaves out.
+_Avoid_: Persisted filters

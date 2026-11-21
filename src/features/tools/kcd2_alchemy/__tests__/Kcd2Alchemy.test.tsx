@@ -1,270 +1,163 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen, waitFor } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
-
-const createDefaultAlchemyState = () => ({
-  loading: false,
-  error: null,
-  potions: [],
-  ingredients: [],
-  ingredientOptions: [],
-});
-
-const createDefaultQueryState = () => ({
-  q: '',
-  ingredients: [] as string[],
-  ingMode: 'any' as const,
-  alchLvl: 0,
-});
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
+import { act, render, screen } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
+import type { AlchemyDataState } from '../hooks/useAlchemyData'
+import type { NormalizedPotionRecipe } from '../types'
 
 vi.mock('../hooks/useAlchemyData', () => ({
-  useAlchemyData: vi.fn(() => createDefaultAlchemyState()),
-}));
+  useAlchemyData: vi.fn(),
+}))
 
-vi.mock('../hooks/useQueryState', () => ({
-  useQueryState: vi.fn(() => [createDefaultQueryState(), vi.fn()]),
-}));
+import { useAlchemyData } from '../hooks/useAlchemyData'
+import Kcd2Alchemy from '..'
 
-vi.mock('../hooks/usePotionFilters', () => ({
-  usePotionFilters: vi.fn(() => ({ results: [], count: 0 })),
-}));
+const mockUseAlchemyData = vi.mocked(useAlchemyData)
 
-vi.mock('../lib/persist', () => ({
-  getSaveEnabled: vi.fn(() => false),
-  setSaveEnabled: vi.fn(),
-  readPersistedFilters: vi.fn(() => null),
-  writePersistedFilters: vi.fn(),
-  clearPersistedFilters: vi.fn(),
-}));
+const PATH = '/tools/kcd2_alchemy/'
+const FILTERS_KEY = 'kcd2Alchemy:filters'
+const FLAG_KEY = 'kcd2Alchemy:saveEnabled'
+const RESTORED = 'Restored your saved filters.'
 
-const searchBarSpy = vi.fn((props: { value: string; onChange: (value: string) => void }) => (
-  <div>
-    <span data-testid="search-value">{props.value}</span>
-    <button data-testid="search-change" onClick={() => props.onChange('new search')}>
-      change search
-    </button>
-  </div>
-));
-
-const filtersPanelSpy = vi.fn(
-  (props: {
-    ingredientOptions: Array<{ value: string; label: string }>;
-    selectedIngredientIds: string[];
-    ingredientMode: string;
-    onChangeIngredients: (ids: string[]) => void;
-    onChangeIngredientMode: (mode: string) => void;
-    onClearAll: () => void;
-    alchemyLevel: number;
-    onChangeAlchemyLevel: (level: number) => void;
-  }) => (
-    <div data-testid="filters">
-      {props.ingredientMode}
-      <button data-testid="clear-filters" onClick={() => props.onClearAll()}>
-        clear
-      </button>
-    </div>
-  )
-);
-
-const potionListSpy = vi.fn((props: { potions: Array<{ id: string; name: string }>; selectedIngredientIds: string[]; playerAlchemyLevel: number }) => (
-  <div data-testid="potion-list">{props.potions.map((p) => p.name).join(',')}</div>
-));
-
-vi.mock('../components/SearchBar', () => ({
-  SearchBar: (props: { value: string; onChange: (value: string) => void }) => searchBarSpy(props),
-}));
-
-vi.mock('../components/FiltersPanel', () => ({
-  FiltersPanel: (props: {
-    ingredientOptions: Array<{ value: string; label: string }>;
-    selectedIngredientIds: string[];
-    ingredientMode: string;
-    onChangeIngredients: (ids: string[]) => void;
-    onChangeIngredientMode: (mode: string) => void;
-    onClearAll: () => void;
-    alchemyLevel: number;
-    onChangeAlchemyLevel: (level: number) => void;
-  }) => filtersPanelSpy(props),
-}));
-
-vi.mock('../components/PotionList', () => ({
-  PotionList: (props: { potions: Array<{ id: string; name: string }>; selectedIngredientIds: string[]; playerAlchemyLevel: number }) => potionListSpy(props),
-}));
-
-import { useAlchemyData } from '../hooks/useAlchemyData';
-import { useQueryState } from '../hooks/useQueryState';
-import { usePotionFilters } from '../hooks/usePotionFilters';
-import { getSaveEnabled, setSaveEnabled, readPersistedFilters, writePersistedFilters, clearPersistedFilters } from '../lib/persist';
-
-const mockUseAlchemyData = vi.mocked(useAlchemyData);
-const mockUseQueryState = vi.mocked(useQueryState);
-const mockUsePotionFilters = vi.mocked(usePotionFilters);
-const mockGetSaveEnabled = vi.mocked(getSaveEnabled);
-const mockSetSaveEnabled = vi.mocked(setSaveEnabled);
-const mockReadPersistedFilters = vi.mocked(readPersistedFilters);
-const mockWritePersistedFilters = vi.mocked(writePersistedFilters);
-const mockClearPersistedFilters = vi.mocked(clearPersistedFilters);
-
-mockUseAlchemyData.mockReturnValue({
-  loading: false,
-  error: null,
-  potions: [],
-  ingredients: [],
-  ingredientOptions: [],
-});
-
-async function loadComponent() {
-  const mod = await import('..');
-  return mod.default;
+function potion(id: string, name: string, liquidId: string, itemId: string): NormalizedPotionRecipe {
+  return {
+    id,
+    name,
+    ingredients: { liquid: liquidId, liquidId, items: [{ id: itemId, name: itemId, quantity: 1 }] },
+    instructions: { default: [`Brew ${name}`] },
+    quantity: { base: 1, withSecretOfMatterI: 2, withSecretOfMatterII: 3, withBothSecrets: 4 },
+    effects: [{ quality: 'Standard', description: `${name} effect` }],
+  }
 }
 
-const baseQueryState = createDefaultQueryState();
+const POTIONS = [potion('p1', 'Elixir', 'water', 'mint'), potion('p2', 'Tonic', 'wine', 'sage')]
 
-describe('Kcd2Alchemy component', () => {
+function data(overrides: Partial<AlchemyDataState> = {}): AlchemyDataState {
+  return {
+    loading: false,
+    error: null,
+    potions: POTIONS,
+    ingredients: [],
+    ingredientOptions: [
+      { id: 'mint', name: 'Mint' },
+      { id: 'sage', name: 'Sage' },
+      { id: 'water', name: 'Water' },
+      { id: 'wine', name: 'Wine' },
+    ],
+    ...overrides,
+  }
+}
+
+function params(): URLSearchParams {
+  return new URLSearchParams(window.location.search)
+}
+
+function savedRecord(): Record<string, unknown> | null {
+  const raw = window.localStorage.getItem(FILTERS_KEY)
+  return raw ? (JSON.parse(raw) as Record<string, unknown>) : null
+}
+
+async function typeSearch(text: string) {
+  const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime })
+  await user.type(screen.getByPlaceholderText('Search potions…'), text)
+  await act(async () => {
+    vi.advanceTimersByTime(400)
+  })
+}
+
+describe('Kcd2Alchemy', () => {
   beforeEach(() => {
-    vi.clearAllMocks();
-    mockUseAlchemyData.mockReturnValue({
-      loading: false,
-      error: null,
-      potions: [],
-      ingredients: [],
-      ingredientOptions: [],
-    });
-    mockUsePotionFilters.mockReturnValue({ results: [], count: 0 });
-    mockUseQueryState.mockReturnValue([baseQueryState, vi.fn()]);
-    mockGetSaveEnabled.mockReturnValue(false);
-    mockReadPersistedFilters.mockReturnValue(null);
-  });
+    vi.useFakeTimers({ shouldAdvanceTime: true })
+    window.history.replaceState(null, '', PATH)
+    window.localStorage.clear()
+    mockUseAlchemyData.mockReturnValue(data())
+  })
 
-  it('wires hooks into child components and renders potion results', async () => {
-    const setQueryState = vi.fn();
-    mockUseQueryState.mockReturnValue([
-      { ...baseQueryState, q: 'elixir', ingredients: ['wormwood'] },
-      setQueryState,
-    ]);
+  afterEach(() => {
+    vi.useRealTimers()
+  })
 
-    mockUseAlchemyData.mockReturnValue({
-      loading: false,
-      error: null,
-      potions: [{ id: 'p1', name: 'Elixir', ingredients: { liquid: 'Water', liquidId: 'water', items: [] } }],
-      ingredientOptions: [{ value: 'wormwood', label: 'Wormwood' }],
-    });
+  it('filters by search and reflects it in the URL', async () => {
+    render(<Kcd2Alchemy />)
+    expect(screen.getByText('2 results')).toBeInTheDocument()
+    await typeSearch('elix')
+    expect(params().get('q')).toBe('elix')
+    expect(screen.getByText('1 result')).toBeInTheDocument()
+    expect(savedRecord()).toBeNull()
+  })
 
-    mockUsePotionFilters.mockReturnValue({
-      results: [{ id: 'p1', name: 'Elixir' }],
-      count: 1,
-    });
+  it('restores saved filters into the view and URL and announces it once', async () => {
+    window.localStorage.setItem(FILTERS_KEY, JSON.stringify({ version: 2, q: 'tonic', ingredients: [], ingMode: 'any', alchemyLevel: 4 }))
+    render(<Kcd2Alchemy />)
+    expect(screen.getByText(RESTORED)).toBeInTheDocument()
+    expect(screen.getByText('1 result')).toBeInTheDocument()
+    expect(params().get('q')).toBe('tonic')
+    expect(params().get('alchLvl')).toBe('4')
+    await act(async () => {
+      vi.advanceTimersByTime(3000)
+    })
+    expect(screen.queryByText(RESTORED)).toBeNull()
+    await typeSearch('x')
+    expect(params().get('q')).toBe('tonicx')
+    expect(savedRecord()).toMatchObject({ q: 'tonicx' })
+    expect(screen.queryByText(RESTORED)).toBeNull()
+  })
 
-    const Component = await loadComponent();
+  it('adds every base liquid to a legacy saved Only filter once data has loaded', () => {
+    window.localStorage.setItem(FILTERS_KEY, JSON.stringify({ q: '', ingredients: ['mint'], ingMode: 'only', alchemyLevel: 0 }))
+    mockUseAlchemyData.mockReturnValue(data({ loading: true, potions: [] }))
+    const { rerender } = render(<Kcd2Alchemy />)
+    expect(savedRecord()).toMatchObject({ version: 1, ingredients: ['mint'] })
+    mockUseAlchemyData.mockReturnValue(data())
+    rerender(<Kcd2Alchemy />)
+    expect(params().get('ingredients')).toBe('mint,water,wine')
+    expect(savedRecord()).toMatchObject({ version: 2, ingredients: ['mint', 'water', 'wine'] })
+    expect(screen.getByText('1 result')).toBeInTheDocument()
+  })
 
-    render(<Component />);
+  it('saves the view when Save view is switched on and clears it when switched off', async () => {
+    window.history.replaceState(null, '', `${PATH}?q=elix`)
+    render(<Kcd2Alchemy />)
+    const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime })
+    const toggle = screen.getByRole('switch', { name: /Toggle saving current view/ })
+    await user.click(toggle)
+    expect(toggle).toHaveAttribute('aria-checked', 'true')
+    expect(window.localStorage.getItem(FLAG_KEY)).toBe('1')
+    expect(savedRecord()).toMatchObject({ q: 'elix' })
+    expect(screen.getByText('Saving filters enabled.')).toBeInTheDocument()
+    await user.click(toggle)
+    expect(toggle).toHaveAttribute('aria-checked', 'false')
+    expect(window.localStorage.getItem(FLAG_KEY)).toBeNull()
+    expect(savedRecord()).toBeNull()
+  })
 
-    expect(searchBarSpy).toHaveBeenCalledWith(
-      expect.objectContaining({ value: 'elixir' })
-    );
-    expect(filtersPanelSpy).toHaveBeenCalledWith(
-      expect.objectContaining({
-        ingredientOptions: [{ value: 'wormwood', label: 'Wormwood' }],
-        selectedIngredientIds: ['wormwood'],
-      })
-    );
-    expect(potionListSpy).toHaveBeenCalledWith(
-      expect.objectContaining({
-        potions: [{ id: 'p1', name: 'Elixir' }],
-        selectedIngredientIds: ['wormwood'],
-      })
-    );
+  it('gives a toast shown during the restore toast its full duration', async () => {
+    window.localStorage.setItem(FILTERS_KEY, JSON.stringify({ version: 2, q: 'tonic', ingredients: [], ingMode: 'any', alchemyLevel: 4 }))
+    render(<Kcd2Alchemy />)
+    expect(screen.getByText(RESTORED)).toBeInTheDocument()
+    await act(async () => {
+      vi.advanceTimersByTime(1500)
+    })
 
-    // Trigger search change from child
-    const user = userEvent.setup();
+    const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime })
+    await user.click(screen.getByRole('switch', { name: /Toggle saving current view/ }))
+    const toast = screen.getByText(/Saving filters enabled\.|Saved filters cleared and disabled\./)
+    await act(async () => {
+      vi.advanceTimersByTime(1500)
+    })
+    expect(toast).toBeInTheDocument()
 
-    await user.click(screen.getByTestId('search-change'));
-    expect(setQueryState).toHaveBeenCalledWith({ q: 'new search' });
-  });
+    await act(async () => {
+      vi.advanceTimersByTime(1500)
+    })
+    expect(screen.queryByText(/Saving filters enabled\.|Saved filters cleared and disabled\./)).toBeNull()
+  })
 
-  it('adds every base liquid to an Only filter saved before liquids were filterable', async () => {
-    const setQueryState = vi.fn();
-    mockUseQueryState.mockReturnValue([
-      { ...baseQueryState, ingredients: ['wormwood'], ingMode: 'only' },
-      setQueryState,
-    ]);
-    mockUseAlchemyData.mockReturnValue({
-      loading: false,
-      error: null,
-      potions: [
-        { id: 'p1', name: 'Elixir', ingredients: { liquid: 'Water', liquidId: 'water', items: [] } },
-        { id: 'p2', name: 'Tonic', ingredients: { liquid: 'Wine', liquidId: 'wine', items: [] } },
-      ],
-      ingredientOptions: [],
-    });
-
-    const Component = await loadComponent();
-    render(<Component />);
-
-    expect(setQueryState).toHaveBeenCalledWith({ ingredients: ['wormwood', 'water', 'wine'] });
-  });
-
-  it('hydrates saved filters from persistence on mount', async () => {
-    const setQueryState = vi.fn();
-    mockUseQueryState.mockReturnValue([
-      baseQueryState,
-      setQueryState,
-    ]);
-    mockGetSaveEnabled.mockReturnValue(false);
-    mockReadPersistedFilters.mockReturnValue({
-      q: 'restored',
-      ingredients: ['sage'],
-      ingMode: 'only',
-      alchemyLevel: 12,
-    });
-
-    const Component = await loadComponent();
-
-    render(<Component />);
-
-    await waitFor(() => {
-      expect(setQueryState).toHaveBeenCalledWith(
-        expect.objectContaining({
-          q: 'restored',
-          ingredients: ['sage'],
-          ingMode: 'only',
-          alchLvl: 12,
-        })
-      );
-    });
-
-    expect(mockSetSaveEnabled).toHaveBeenCalledWith(true);
-    expect(mockWritePersistedFilters).toHaveBeenCalled();
-  });
-
-  it('reflects loading and error states from alchemy data hook', async () => {
-    mockUseAlchemyData.mockReturnValue({
-      loading: true,
-      error: null,
-      potions: [],
-      ingredients: [],
-      ingredientOptions: [],
-    });
-
-    const Component = await loadComponent();
-    const { rerender } = render(<Component />);
-    expect(screen.getByText('Loading data.')).toBeInTheDocument();
-
-    mockUseAlchemyData.mockReturnValue({
-      loading: false,
-      error: 'Something broke',
-      potions: [],
-      ingredients: [],
-      ingredientOptions: [],
-    });
-
-    rerender(<Component />);
-    expect(screen.getByText('Something broke')).toBeInTheDocument();
-    expect(mockClearPersistedFilters).toHaveBeenCalled();
-  });
-});
-
-
-
-
-
+  it('shows loading and error states', () => {
+    mockUseAlchemyData.mockReturnValue(data({ loading: true, potions: [] }))
+    const { rerender } = render(<Kcd2Alchemy />)
+    expect(screen.getByText('Loading data.')).toBeInTheDocument()
+    mockUseAlchemyData.mockReturnValue(data({ error: 'Something broke', potions: [] }))
+    rerender(<Kcd2Alchemy />)
+    expect(screen.getByText('Something broke')).toBeInTheDocument()
+  })
+})

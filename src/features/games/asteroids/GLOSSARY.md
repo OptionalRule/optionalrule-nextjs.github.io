@@ -23,6 +23,13 @@ _Avoid_: Loading, level loading
 **Game Over**:
 The end of a Game, reached when the last Life is lost.
 
+**Pause**:
+A hold on a Level being played, entered and left by the player; nothing moves and no Simulated Time passes until it ends.
+
+**Simulated Time**:
+Game time that advances only while a Level is played or in a Level Transition; it is frozen while paused and while the page is hidden. Saucer arrivals, Respawn and Level Transitions are timed in it.
+_Avoid_: Wall-clock time, real time
+
 ### Ship
 
 **Ship**:
@@ -80,6 +87,13 @@ A Bullet fired by the Ship.
 
 **Saucer Bullet**:
 A Bullet fired by a Saucer and aimed at the Ship.
+
+**Shooter**:
+Who fired the Bullet in a hit: the player for a Player Bullet, a Saucer for a Saucer Bullet; only the player scores.
+
+**Collision Outcome**:
+The rule-decided result of two things touching: an Asteroid shot, a Saucer shot, or the Ship destroyed; each thing is destroyed by at most one Collision Outcome per frame.
+_Avoid_: Collision event, hit result
 
 ### Scoring
 

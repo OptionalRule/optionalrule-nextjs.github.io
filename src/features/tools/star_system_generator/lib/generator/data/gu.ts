@@ -1,4 +1,5 @@
 import guData from '../../../data/gu.json'
+import { isNarrativeDomain, type NarrativeDomain } from '../narrative/domains'
 
 export interface GuIntensityEntry {
   max: number
@@ -33,6 +34,7 @@ export const guResourceTable = typedGuData.resources
 export const guHazardTable = typedGuData.hazards
 export const guDomainTags = typedGuData.domainTags ?? {}
 
-export function domainsForGuValue(table: GuDomainTagTable, value: string, fallback: readonly string[]): string[] {
-  return [...(guDomainTags[table]?.[value] ?? fallback)]
+export function domainsForGuValue(table: GuDomainTagTable, value: string, fallback: readonly NarrativeDomain[]): NarrativeDomain[] {
+  const tagged = guDomainTags[table]?.[value]
+  return tagged ? tagged.filter(isNarrativeDomain) : [...fallback]
 }

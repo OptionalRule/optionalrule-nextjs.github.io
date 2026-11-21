@@ -225,7 +225,7 @@ npm run enhance-post -- <path> [options]
 
 Direct execution:
 ```bash
-node scripts/enhance-post.mjs <path> [options]
+node --import tsx/esm scripts/enhance-post.mjs <path> [options]
 ```
 
 Behavior:

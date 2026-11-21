@@ -37,6 +37,26 @@ vi.mock('reading-time', () => ({
 const mockFs = vi.mocked(fs);
 const mockGrayMatter = vi.mocked(grayMatter);
 
+type StubPost = {
+  filename: string;
+  frontmatter: Record<string, unknown>;
+  content?: string;
+};
+
+const stubPosts = (posts: StubPost[]): void => {
+  mockFs.existsSync.mockReturnValue(true);
+  mockFs.readdirSync.mockReturnValue(posts.map(p => p.filename) as unknown as ReturnType<typeof fs.readdirSync>);
+  mockFs.readFileSync.mockImplementation(((file: string) => {
+    const post = posts.find(p => String(file).endsWith(p.filename));
+    if (!post) throw new Error(`ENOENT: ${String(file)}`);
+    return `raw:${post.filename}`;
+  }) as unknown as typeof fs.readFileSync);
+  mockGrayMatter.mockImplementation(((raw: string) => {
+    const post = posts.find(p => raw === `raw:${p.filename}`);
+    return { data: post?.frontmatter ?? {}, content: post?.content ?? 'mock content' };
+  }) as unknown as typeof grayMatter);
+};
+
 describe('Static Site Generation Tests', () => {
   beforeEach(() => {
     vi.clearAllMocks();
@@ -65,18 +85,7 @@ describe('Static Site Generation Tests', () => {
         }
       ];
 
-      mockFs.existsSync.mockReturnValue(true);
-      // Files will be sorted descending by filename, so christmas comes first
-      mockFs.readdirSync.mockReturnValue(testPosts.map(p => p.filename));
-      
-      // Mock file reads in the order they'll be processed (christmas first)
-      testPosts.forEach(post => {
-        mockFs.readFileSync.mockReturnValueOnce('mock content');
-        mockGrayMatter.mockReturnValueOnce({
-          data: post.frontmatter,
-          content: 'mock content'
-        } as unknown as GrayMatterFile<string>);
-      });
+      stubPosts(testPosts);
 
       const posts = getAllPostsMeta();
       
@@ -137,33 +146,12 @@ describe('Static Site Generation Tests', () => {
         }
       ];
 
-      mockFs.existsSync.mockReturnValue(true);
-      mockFs.readdirSync.mockReturnValue(testPosts.map(p => p.filename));
-      
-      // Setup mock for getAllTags call
-      testPosts.forEach(post => {
-        mockFs.readFileSync.mockReturnValueOnce('mock content');
-        mockGrayMatter.mockReturnValueOnce({
-          data: post.frontmatter,
-          content: 'mock content'
-        } as unknown as GrayMatterFile<string>);
-      });
+      stubPosts(testPosts);
 
       const allTags = getAllTags();
       expect(allTags).toEqual(['Next.js', 'React', 'TypeScript']);
 
-      // For each tag test, we need to call getAllPostsMeta again
-      // So setup mocks for those calls
       allTags.forEach(tag => {
-        // Each getPostsByTag call will call getAllPostsMeta, so mock the file operations
-        testPosts.forEach(post => {
-          mockFs.readFileSync.mockReturnValueOnce('mock content');
-          mockGrayMatter.mockReturnValueOnce({
-            data: post.frontmatter,
-            content: 'mock content'
-          } as unknown as GrayMatterFile<string>);
-        });
-        
         const tagPage = getPostsByTag(tag);
         expect(tagPage.posts.length).toBeGreaterThan(0);
         expect(tagPage.tag).toBe(tag);

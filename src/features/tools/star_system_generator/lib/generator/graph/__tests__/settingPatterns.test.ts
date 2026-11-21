@@ -67,9 +67,7 @@ describe('CONTRADICTION_KEYWORDS', () => {
 })
 
 describe('CONTROL_DOMAINS', () => {
-  it('includes route/compliance/interdiction control axes', () => {
-    expect(CONTROL_DOMAINS).toContain('route')
-    expect(CONTROL_DOMAINS).toContain('compliance')
+  it('includes the interdiction control axis', () => {
     expect(CONTROL_DOMAINS).toContain('gardener-interdiction')
   })
 

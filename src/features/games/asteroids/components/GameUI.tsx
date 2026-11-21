@@ -11,6 +11,7 @@ export interface GameUIProps {
   onResume?: () => void
   onRestart?: () => void
   onResetHighScore?: () => void
+  onResetDialogChange?: (open: boolean) => void
   className?: string
 }
 
@@ -20,12 +21,17 @@ export function GameUI({
   onResume, 
   onRestart,
   onResetHighScore,
+  onResetDialogChange,
   className 
 }: GameUIProps) {
   return (
     <aside className={`space-y-6 ${className || ''}`}>
       {/* Score and Status Panel */}
-      <ScorePanel gameState={gameState} onResetHighScore={onResetHighScore} />
+      <ScorePanel
+        gameState={gameState}
+        onResetHighScore={onResetHighScore}
+        onResetDialogChange={onResetDialogChange}
+      />
       
       {/* Controls and Actions Panel */}
       <ControlsPanel

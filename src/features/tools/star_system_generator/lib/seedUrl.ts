@@ -1,6 +1,6 @@
 import type { GenerationOptions } from '../types'
 
-export const OPTION_DEFAULTS: Omit<GenerationOptions, 'seed' | 'graphAware'> = {
+export const OPTION_DEFAULTS: Omit<GenerationOptions, 'seed'> = {
   distribution: 'frontier',
   tone: 'balanced',
   gu: 'normal',

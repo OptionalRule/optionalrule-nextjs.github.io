@@ -149,21 +149,33 @@ const seedPosts = () => {
   );
 };
 
-const originalNodeEnv = process.env.NODE_ENV;
+const env = process.env as Record<string, string | undefined>;
+const originalNodeEnv = env.NODE_ENV;
+const originalIncludeDrafts = env.INCLUDE_DRAFTS;
+
+const restoreEnv = (key: string, value: string | undefined) => {
+  if (value === undefined) {
+    delete env[key];
+  } else {
+    env[key] = value;
+  }
+};
 
 describe("Content and feed integration", () => {
   beforeEach(() => {
     virtualFiles.clear();
     vi.resetModules();
+    delete env.INCLUDE_DRAFTS;
   });
 
   afterEach(() => {
-    process.env.NODE_ENV = originalNodeEnv;
+    restoreEnv("NODE_ENV", originalNodeEnv);
+    restoreEnv("INCLUDE_DRAFTS", originalIncludeDrafts);
   });
 
-  it("filters drafts in production while preserving post metadata", async () => {
+  it("filters drafts while preserving post metadata", async () => {
     seedPosts();
-    process.env.NODE_ENV = "production";
+    env.NODE_ENV = "production";
 
     const { getAllPostsMeta, getPaginatedPosts } = await import("@/lib/content");
 
@@ -178,27 +190,37 @@ describe("Content and feed integration", () => {
     expect(pagination.totalPages).toBe(1);
     expect(pagination.posts).toHaveLength(2);
     expect(pagination.hasNextPage).toBe(false);
-
-    process.env.NODE_ENV = "development";
-    const allPostsIncludingDrafts = getAllPostsMeta();
-    expect(allPostsIncludingDrafts.some((post) => post.title === "Draft Post")).toBe(true);
   });
 
-  it("generates RSS feed entries for published posts only", async () => {
+  it("shows drafts only under the dev draft flag", async () => {
     seedPosts();
-    process.env.NODE_ENV = "production";
+    env.NODE_ENV = "development";
 
-    const { generateRSSFeed } = await import("@/lib/feeds");
-    const rss = generateRSSFeed();
+    const { getAllPostsMeta } = await import("@/lib/content");
+    expect(getAllPostsMeta().some((post) => post.title === "Draft Post")).toBe(false);
 
-    expect(rss).toContain("<title><![CDATA[Custom Post]]></title>");
-    expect(rss).toContain(`${siteConfig.url}/2024/01/12/custom-slug/`);
-    expect(rss).toContain("Guides, How-To");
-    expect(rss).not.toContain("Draft Post");
+    env.INCLUDE_DRAFTS = "true";
+    expect(getAllPostsMeta().some((post) => post.title === "Draft Post")).toBe(true);
   });
+
+  it.each([undefined, "development", "production"])(
+    "excludes drafts from RSS and sitemap when NODE_ENV=%s",
+    async (nodeEnv) => {
+      seedPosts();
+      restoreEnv("NODE_ENV", nodeEnv);
+
+      const { generateRSSFeed, generateSitemap } = await import("@/lib/feeds");
+      const rss = generateRSSFeed();
+      const sitemap = generateSitemap();
+
+      expect(rss).toContain("<title><![CDATA[Custom Post]]></title>");
+      expect(rss).toContain(`${siteConfig.url}/2024/01/12/custom-slug/`);
+      expect(rss).toContain("Guides, How-To");
+      expect(rss).not.toContain("Draft Post");
+      expect(rss).not.toContain("draft-post");
+
+      expect(sitemap).toContain(`${siteConfig.url}/2024/01/12/custom-slug/`);
+      expect(sitemap).not.toContain("draft-post");
+    },
+  );
 });
-
-
-
-
-

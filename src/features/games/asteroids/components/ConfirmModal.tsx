@@ -21,6 +21,7 @@ export function ConfirmModal({
     (event: KeyboardEvent) => {
       if (event.key === 'Escape') {
         event.preventDefault()
+        event.stopPropagation()
         onCancel()
       }
     },
@@ -29,9 +30,9 @@ export function ConfirmModal({
 
   useEffect(() => {
     if (!isOpen) return
-    document.addEventListener('keydown', handleKeyDown)
+    document.addEventListener('keydown', handleKeyDown, true)
     return () => {
-      document.removeEventListener('keydown', handleKeyDown)
+      document.removeEventListener('keydown', handleKeyDown, true)
     }
   }, [isOpen, handleKeyDown])
 

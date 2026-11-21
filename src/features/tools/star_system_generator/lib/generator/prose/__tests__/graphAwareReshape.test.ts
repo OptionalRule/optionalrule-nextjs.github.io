@@ -64,7 +64,7 @@ describe('graphAwareReshape', () => {
     expect(result.settlements[1].whyHere.value).toContain('Anchor-s2')
   })
 
-  it('preserves phenomena reference when phenomenonNote flag is off', () => {
+  it('returns the input phenomena by reference', () => {
     const settlements: Settlement[] = [minimalSettlement('s1')]
     const phenomena: SystemPhenomenon[] = [minimalPhenomenon('p1')]
     const result = graphAwareReshape({
@@ -76,54 +76,18 @@ describe('graphAwareReshape', () => {
     expect(result.phenomena).toBe(phenomena)
   })
 
-  it('preserves phenomena reference when graphAware is empty object', () => {
+  it('iterates settlements while leaving phenomena untouched', () => {
     const settlements: Settlement[] = [minimalSettlement('s1')]
     const phenomena: SystemPhenomenon[] = [minimalPhenomenon('p1')]
     const result = graphAwareReshape({
       settlements, phenomena,
       relationshipGraph: emptyGraph(),
-      options: { ...baseOptions, graphAware: {} },
-      rng: createSeededRng('reshape-test'),
-    })
-    expect(result.phenomena).toBe(phenomena)
-  })
-
-  it('iterates phenomena when phenomenonNote flag is on', () => {
-    const settlements: Settlement[] = [minimalSettlement('s1')]
-    const phenomena: SystemPhenomenon[] = [minimalPhenomenon('p1'), minimalPhenomenon('p2')]
-    const result = graphAwareReshape({
-      settlements, phenomena,
-      relationshipGraph: emptyGraph(),
-      options: { ...baseOptions, graphAware: { phenomenonNote: true } },
-      rng: createSeededRng('reshape-test'),
-    })
-    expect(result.phenomena).not.toBe(phenomena)
-    expect(result.phenomena).toEqual(phenomena)
-  })
-
-  it('does not iterate phenomena when only settlementHookSynthesis flag is on', () => {
-    const settlements: Settlement[] = [minimalSettlement('s1')]
-    const phenomena: SystemPhenomenon[] = [minimalPhenomenon('p1')]
-    const result = graphAwareReshape({
-      settlements, phenomena,
-      relationshipGraph: emptyGraph(),
-      options: { ...baseOptions, graphAware: { settlementHookSynthesis: true } },
-      rng: createSeededRng('reshape-test'),
-    })
-    expect(result.phenomena).toBe(phenomena)
-  })
-
-  it('iterates settlements even when only phenomenonNote flag is on', () => {
-    const settlements: Settlement[] = [minimalSettlement('s1')]
-    const phenomena: SystemPhenomenon[] = [minimalPhenomenon('p1')]
-    const result = graphAwareReshape({
-      settlements, phenomena,
-      relationshipGraph: emptyGraph(),
-      options: { ...baseOptions, graphAware: { phenomenonNote: true } },
+      options: baseOptions,
       rng: createSeededRng('reshape-test'),
     })
     expect(result.settlements).not.toBe(settlements)
     expect(result.settlements[0].whyHere.value).toContain('Anchor-s1')
+    expect(result.phenomena).toBe(phenomena)
   })
 
   it('forks rng with label "graph-prose"', () => {
@@ -147,17 +111,16 @@ describe('graphAwareReshape', () => {
   it('preserves determinism: same input + same seed → identical output', () => {
     const settlements: Settlement[] = [minimalSettlement('s1'), minimalSettlement('s2')]
     const phenomena: SystemPhenomenon[] = [minimalPhenomenon('p1')]
-    const options: GenerationOptions = { ...baseOptions, graphAware: { phenomenonNote: true } }
     const resultA = graphAwareReshape({
       settlements, phenomena,
       relationshipGraph: emptyGraph(),
-      options,
+      options: baseOptions,
       rng: createSeededRng('determinism-seed'),
     })
     const resultB = graphAwareReshape({
       settlements, phenomena,
       relationshipGraph: emptyGraph(),
-      options,
+      options: baseOptions,
       rng: createSeededRng('determinism-seed'),
     })
     expect(resultA).toEqual(resultB)
@@ -248,57 +211,24 @@ function makeDestabilizesEdge(subjectId: string, objectId: string, objectDisplay
   }
 }
 
-describe('graphAwareReshape — phenomenonNote integration', () => {
-  it('replaces note when phenomenonNote flag is on AND DESTABILIZES exists', () => {
+describe('graphAwareReshape — phenomena', () => {
+  it('returns phenomena by reference even when a DESTABILIZES edge exists', () => {
     const phenomenon = makePhenomenonWithFields('p1', {
       travelEffect: 'Ships must navigate the bloom.',
       surveyQuestion: 'What pulses behind the static?',
       conflictHook: 'Whoever owns the recordings owns the question.',
       sceneAnchor: 'A drift of low-amplitude blooms.',
     })
-    const edge = makeDestabilizesEdge('p1', 's1', 'Orison Hold')
-    const graph = graphWithEdges([edge])
+    const phenomena = [phenomenon]
     const result = graphAwareReshape({
       settlements: [],
-      phenomena: [phenomenon],
-      relationshipGraph: graph,
-      options: { ...baseOptions, graphAware: { phenomenonNote: true } },
+      phenomena,
+      relationshipGraph: graphWithEdges([makeDestabilizesEdge('p1', 's1', 'Orison Hold')]),
+      options: baseOptions,
       rng: createSeededRng('ph-integration-test'),
     })
-    expect(result.phenomena[0].note.value).toContain('Orison Hold')
-    expect(result.phenomena[0].note.value).not.toContain('Transit:')
-    expect(result.phenomena[0].note.confidence).toBe('inferred')
-  })
-
-  it('preserves note when phenomenonNote flag is off', () => {
-    const phenomenon = makePhenomenonWithFields('p1', {
-      travelEffect: 'Ships must navigate the bloom.',
-      surveyQuestion: 'What pulses behind the static?',
-    })
-    const originalNote = phenomenon.note
-    const result = graphAwareReshape({
-      settlements: [],
-      phenomena: [phenomenon],
-      relationshipGraph: emptyGraph(),
-      options: baseOptions,
-      rng: createSeededRng('ph-flag-off'),
-    })
-    expect(result.phenomena[0].note).toBe(originalNote)
-  })
-
-  it('preserves note when flag on but reshape returns null (all-empty fields)', () => {
-    const phenomenon = makePhenomenonWithFields('p1', {
-      travelEffect: '', surveyQuestion: '', conflictHook: '', sceneAnchor: '',
-    })
-    const originalNote = phenomenon.note
-    const result = graphAwareReshape({
-      settlements: [],
-      phenomena: [phenomenon],
-      relationshipGraph: emptyGraph(),
-      options: { ...baseOptions, graphAware: { phenomenonNote: true } },
-      rng: createSeededRng('ph-null-fields'),
-    })
-    expect(result.phenomena[0].note).toBe(originalNote)
+    expect(result.phenomena).toBe(phenomena)
+    expect(result.phenomena[0].note.value).toBe('original note')
   })
 })
 
@@ -384,57 +314,13 @@ function graphWithEdgesAndSpine(edges: RelationshipEdge[], spineEdgeIds: string[
   }
 }
 
-describe('graphAwareReshape — settlementHookSynthesis integration', () => {
-  it('rewrites tagHook 4th sentence when settlementHookSynthesis flag on + spine edge exists', () => {
+describe('graphAwareReshape — tagHook', () => {
+  it('rewrites whyHere but returns tagHook unchanged even with an eligible spine edge', () => {
     const tagHookValue = 'Sentence one. Pressure sentence. Privately, secret. Control of the function decides who has leverage.'
-    const settlement = settlementWithTagHook('s1', 'Settlement-1', tagHookValue)
-    const edge = makeContestsEdge('s1', 'f1', 'Route Authority')
-    const graph = graphWithEdgesAndSpine([edge], [edge.id])
-    const result = graphAwareReshape({
-      settlements: [settlement],
-      phenomena: [],
-      relationshipGraph: graph,
-      options: { ...baseOptions, graphAware: { settlementHookSynthesis: true } },
-      rng: createSeededRng('hook-test'),
-    })
-    expect(result.settlements[0].tagHook.value).toContain('Route Authority')
-    expect(result.settlements[0].tagHook.value).not.toContain('decides who has leverage')
-    expect(result.settlements[0].tagHook.confidence).toBe('inferred')
-  })
-
-  it('combines whyHere + settlementHookSynthesis flags independently', () => {
-    const tagHookValue = 'Sentence one. Pressure sentence. Privately, secret. Control of the function decides who has leverage.'
-    const settlement = {
-      id: 's1',
-      name: { value: 'Orison Hold', confidence: 'confirmed' },
-      anchorName: { value: 'Orison Hold', confidence: 'confirmed' },
-      whyHere: { value: 'original whyHere', confidence: 'confirmed' },
-      tagHook: { value: tagHookValue, confidence: 'human-layer' },
-    } as unknown as Settlement
-
-    const depEdge = makeDependsOnEdge('s1', 'gu1')
-    const contestsEdge = makeContestsEdge('s1', 'f1', 'Route Authority')
-    const graph = graphWithEdgesAndSpine([depEdge, contestsEdge], [contestsEdge.id])
-
-    const result = graphAwareReshape({
-      settlements: [settlement],
-      phenomena: [],
-      relationshipGraph: graph,
-      options: { ...baseOptions, graphAware: { settlementHookSynthesis: true } },
-      rng: createSeededRng('combined-test'),
-    })
-    expect(result.settlements[0].whyHere.value).toContain('Orison Hold')
-    expect(result.settlements[0].whyHere.value).toContain('chiral ice belt')
-    expect(result.settlements[0].tagHook.value).toContain('Route Authority')
-    expect(result.settlements[0].tagHook.value).not.toContain('decides who has leverage')
-  })
-
-  it('preserves tagHook when settlementHookSynthesis flag is off', () => {
-    const tagHookValue = 'Sentence one. Pressure sentence. Privately, secret. Control of the function decides who has leverage.'
-    const settlement = settlementWithTagHook('s1', 'Settlement-1', tagHookValue)
-    const edge = makeContestsEdge('s1', 'f1', 'Route Authority')
-    const graph = graphWithEdgesAndSpine([edge], [edge.id])
+    const settlement = settlementWithTagHook('s1', 'Orison Hold', tagHookValue)
     const originalTagHook = settlement.tagHook
+    const contestsEdge = makeContestsEdge('s1', 'f1', 'Route Authority')
+    const graph = graphWithEdgesAndSpine([makeDependsOnEdge('s1', 'gu1'), contestsEdge], [contestsEdge.id])
     const result = graphAwareReshape({
       settlements: [settlement],
       phenomena: [],
@@ -442,20 +328,7 @@ describe('graphAwareReshape — settlementHookSynthesis integration', () => {
       options: baseOptions,
       rng: createSeededRng('hook-off-test'),
     })
-    expect(result.settlements[0].tagHook).toBe(originalTagHook)
-  })
-
-  it('preserves tagHook when flag on but no eligible spine edge', () => {
-    const tagHookValue = 'Sentence one. Pressure sentence. Privately, secret. Control of the function decides who has leverage.'
-    const settlement = settlementWithTagHook('s1', 'Settlement-1', tagHookValue)
-    const originalTagHook = settlement.tagHook
-    const result = graphAwareReshape({
-      settlements: [settlement],
-      phenomena: [],
-      relationshipGraph: emptyGraph(),
-      options: { ...baseOptions, graphAware: { settlementHookSynthesis: true } },
-      rng: createSeededRng('hook-no-edge-test'),
-    })
+    expect(result.settlements[0].whyHere.value).toContain('chiral ice belt')
     expect(result.settlements[0].tagHook).toBe(originalTagHook)
   })
 })

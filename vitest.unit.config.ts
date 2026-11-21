@@ -27,6 +27,7 @@ export default defineConfig({
         'src/stories/**',
         'src/test-setup.ts',
         'src/**/__generated__/**',
+        'src/**/__snapshots__/**',
         'src/**/*.d.ts',
         'src/app/(interactive)/**',
         'src/features/games/**'
