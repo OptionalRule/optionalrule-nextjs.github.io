@@ -147,6 +147,7 @@ import {
   reachabilityClasses,
   realisticStarTypes,
 } from './data/stellar'
+import { fact } from './fact'
 import { NameRegistry } from './nameRegistry'
 import { lowerFirst, sentenceFragment } from './prose/helpers'
 import { settlementHookSynthesis } from './prose/settlementProse'
@@ -390,10 +391,6 @@ function pickBodySite(rng: SeededRng, category: BodyCategory): string {
   const group = bodySiteGroupByCategory[category]
   const pool = [...bodySites.any, ...bodySites[group]]
   return pickOne(rng, pool)
-}
-
-export function fact<T>(value: T, confidence: Fact<T>['confidence'], source?: string): Fact<T> {
-  return { value, confidence, source }
 }
 
 function uniqueStrings(values: readonly string[]): string[] {

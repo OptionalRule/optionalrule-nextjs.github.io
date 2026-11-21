@@ -1,5 +1,6 @@
 import type { Star } from '../../types'
-import { fact, activityFromRoll } from './index'
+import { fact } from './fact'
+import { activityFromRoll } from './index'
 import type { SeededRng } from './rng'
 import { twoD6 } from './dice'
 

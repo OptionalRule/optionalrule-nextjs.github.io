@@ -6,7 +6,7 @@ import type { SystemRelationshipGraph } from '../graph'
 import { graphAwareSettlementWhyHere } from './graphAwareSettlementWhyHere'
 import { graphAwareSettlementHook, rewriteFourthSentence } from './graphAwareSettlementHook'
 import { graphAwarePhenomenonNote } from './graphAwarePhenomenonNote'
-import { fact } from '../index'
+import { fact } from '../fact'
 
 export interface GraphAwareReshapeInput {
   settlements: Settlement[]

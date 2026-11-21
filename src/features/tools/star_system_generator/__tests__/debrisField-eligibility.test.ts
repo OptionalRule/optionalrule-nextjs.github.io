@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest'
 import { deriveDebrisFields, selectArchetypeForCompanion } from '../lib/generator/debrisFields'
-import { fact } from '../lib/generator'
+import { fact } from '../lib/generator/fact'
 import { createSeededRng } from '../lib/generator/rng'
 import type { StellarCompanion, Star } from '../types'
 
