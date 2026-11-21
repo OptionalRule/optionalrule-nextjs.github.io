@@ -16,7 +16,7 @@ import { fact } from '../fact'
 import { generateFactions } from '../factions'
 import { lowerFirst, sentenceFragment } from '../prose/helpers'
 import type { SeededRng } from '../rng'
-import { classifyNarrativeDomains } from './domains'
+import { classifyNarrativeDomains, type NarrativeDomain } from './domains'
 import { uniqueStrings } from './uniqueStrings'
 
 export interface NarrativeGenerationContext {
@@ -45,7 +45,7 @@ function narrativeFact(input: {
   sourcePath: string
   tags?: string[]
   status?: NarrativeFact['status']
-  domains?: string[]
+  domains?: NarrativeDomain[]
 }): NarrativeFact {
   const tags = uniqueStrings([...(input.tags ?? []), input.kind, input.subjectType])
   const domains = uniqueStrings(input.domains ?? classifyNarrativeDomains(`${input.kind} ${input.value} ${tags.join(' ')}`))

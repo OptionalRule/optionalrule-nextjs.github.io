@@ -1,4 +1,5 @@
 import type { GeneratorTone } from '../../../types'
+import { isNarrativeDomain, type NarrativeDomain } from '../narrative/domains'
 import type { SeededRng } from '../rng'
 import type { FactionBank, GeneratedFaction } from './index'
 import { astronomyBank } from './banks/astronomyBank'
@@ -79,7 +80,7 @@ function nameToId(name: string): string {
 
 function pickKindForGenerated(
   bank: FactionBank,
-  domains: readonly string[],
+  domains: readonly NarrativeDomain[],
   rng: SeededRng,
 ): string {
   const candidateKinds: string[] = []
@@ -90,7 +91,7 @@ function pickKindForGenerated(
   if (candidateKinds.length === 0) {
     const allKinds: string[] = []
     for (const kinds of Object.values(bank.kindByDomain)) {
-      allKinds.push(...kinds)
+      if (kinds) allKinds.push(...kinds)
     }
     return allKinds[Math.floor(rng.next() * allKinds.length)]
   }
@@ -100,8 +101,8 @@ function pickKindForGenerated(
 function pickDomainsForGenerated(
   bank: FactionBank,
   rng: SeededRng,
-): readonly string[] {
-  const allDomains = Object.keys(bank.kindByDomain)
+): readonly NarrativeDomain[] {
+  const allDomains = Object.keys(bank.kindByDomain).filter(isNarrativeDomain)
   const count = 2 + Math.floor(rng.next() * 2)
   const shuffled = shuffleDeterministic([...allDomains], rng)
   return shuffled.slice(0, Math.min(count, shuffled.length))

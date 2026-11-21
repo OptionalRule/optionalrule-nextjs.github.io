@@ -1,4 +1,5 @@
 import type { SystemRelationshipGraph, SystemStoryOutput } from './lib/generator/graph/types'
+import type { NarrativeDomain } from './lib/generator/narrative/domains'
 
 export type Confidence = 'confirmed' | 'derived' | 'inferred' | 'gu-layer' | 'human-layer'
 
@@ -435,7 +436,7 @@ export type NarrativeFactSubjectType =
 export interface NarrativeFact {
   id: string
   kind: string
-  domains: string[]
+  domains: NarrativeDomain[]
   subjectType: NarrativeFactSubjectType
   subjectId?: string
   value: Fact<string>

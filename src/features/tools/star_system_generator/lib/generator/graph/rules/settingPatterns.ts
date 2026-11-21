@@ -1,5 +1,6 @@
 import type { EntityKind } from '../types'
 import type { BuildCtx } from './ruleTypes'
+import type { NarrativeDomain } from '../../narrative/domains'
 
 export const RESOURCE_KEYWORDS = [
   'chiral', 'volatile', 'bleed', 'plasma', 'ice', 'pinchdrive',
@@ -62,12 +63,12 @@ export function containsWord(text: string, word: string): boolean {
   return new RegExp(`\\b${escaped}\\b`, 'i').test(text)
 }
 
-export function sharedDomains(
-  a: ReadonlyArray<string>,
-  b: ReadonlyArray<string>,
-): string[] {
+export function sharedDomains<T extends string>(
+  a: ReadonlyArray<T>,
+  b: ReadonlyArray<T>,
+): T[] {
   const setB = new Set(b)
-  const out: string[] = []
+  const out: T[] = []
   for (const item of a) {
     if (setB.has(item)) out.push(item)
   }
@@ -79,7 +80,7 @@ const GROUNDABLE_KINDS: ReadonlySet<EntityKind> = new Set([
 ])
 
 export function groundQualifierInEntities(
-  domain: string | undefined,
+  domain: NarrativeDomain | undefined,
   ctx: Pick<BuildCtx, 'entities' | 'factsBySubjectId'>,
   excludeIds: ReadonlySet<string>,
 ): string | undefined {

@@ -1,7 +1,8 @@
 import type { NarrativeFact } from '../../../types'
+import type { NarrativeDomain } from '../narrative/domains'
 
 export interface FactionMetadata {
-  domains: readonly string[]
+  domains: readonly NarrativeDomain[]
   kind: string
 }
 
