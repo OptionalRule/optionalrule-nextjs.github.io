@@ -1,4 +1,4 @@
-import type { GameState, ScoreEvent } from '../types'
+import type { GameState } from '../types'
 import { SaucerSize } from '../types'
 import { GAME_CONFIG, GAMEPLAY, COLORS, CONTROLS } from '../constants'
 import { Vector2DUtils } from './utils/Vector2D'
@@ -22,7 +22,7 @@ const MENU_IGNORED_KEYS = new Set<string>(['Tab', 'Shift', 'Control', 'Alt', 'Me
 
 export interface AsteroidsEngineEvents {
   onGameStateChange: (gameState: GameState) => void
-  onScoreChange: (score: number, event?: ScoreEvent) => void
+  onScoreChange: (score: number) => void
   onLivesChange: (lives: number) => void
   onLevelChange: (level: number) => void
   onGameOver: (finalScore: number) => void
@@ -301,11 +301,7 @@ export class AsteroidsEngine {
     this.entities.push(new Explosion(asteroid.getPosition(), 'asteroid'))
 
     if (shooter === 'player') {
-      this.addScore(points, {
-        points,
-        position: asteroid.getPosition(),
-        type: 'asteroid'
-      })
+      this.addScore(points)
     }
 
     const fragments = asteroid.split()
@@ -323,11 +319,7 @@ export class AsteroidsEngine {
     this.entities.push(explosion)
     
     // Award points
-    this.addScore(points, {
-      points,
-      position: saucer.getPosition(),
-      type: 'saucer'
-    })
+    this.addScore(points)
 
     // Play saucer destruction sound
     this.soundSystem.playSound('saucerDestroyed')
@@ -627,7 +619,7 @@ export class AsteroidsEngine {
     }
   }
 
-  private addScore(points: number, event?: ScoreEvent): void {
+  private addScore(points: number): void {
     const previousScore = this.gameState.score
     this.gameState.score += points
     
@@ -640,7 +632,7 @@ export class AsteroidsEngine {
       this.saveHighScore(this.gameState.highScore)
     }
     
-    this.events.onScoreChange(this.gameState.score, event)
+    this.events.onScoreChange(this.gameState.score)
   }
 
   private checkExtraLifeThreshold(previousScore: number, currentScore: number): void {

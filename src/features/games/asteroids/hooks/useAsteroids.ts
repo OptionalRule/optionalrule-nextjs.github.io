@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, useCallback, useMemo } from 'react'
-import type { GameState, ScoreEvent } from '../types'
+import type { GameState } from '../types'
 import { AsteroidsEngine, type AsteroidsEngineEvents } from '../engine/AsteroidsEngine'
 import { GAME_CONFIG } from '../constants'
 
@@ -56,14 +56,8 @@ export function useAsteroids(): UseAsteroidsReturn {
       setGameState(newState)
     },
 
-    onScoreChange: (score: number, event?: ScoreEvent) => {
+    onScoreChange: (score: number) => {
       setGameState(prev => ({ ...prev, score }))
-      
-      // TODO: Handle score event for visual effects
-      if (event) {
-        // Could trigger particle effects or score popup animations
-        // console.log('Score event:', event) // Disabled to reduce console noise
-      }
     },
 
     onLivesChange: (lives: number) => {

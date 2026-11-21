@@ -117,12 +117,6 @@ export interface GameConfig {
   }
 }
 
-export interface ScoreEvent {
-  points: number
-  position: Vector2D
-  type: 'asteroid' | 'saucer' | 'extraLife'
-}
-
 export interface GameplayConfig {
   baseAsteroidCount: number
   maxAsteroidCount: number
