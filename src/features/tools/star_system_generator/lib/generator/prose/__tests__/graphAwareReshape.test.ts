@@ -76,31 +76,6 @@ describe('graphAwareReshape', () => {
     expect(result.phenomena).toBe(phenomena)
   })
 
-  it('preserves phenomena reference when graphAware is empty object', () => {
-    const settlements: Settlement[] = [minimalSettlement('s1')]
-    const phenomena: SystemPhenomenon[] = [minimalPhenomenon('p1')]
-    const result = graphAwareReshape({
-      settlements, phenomena,
-      relationshipGraph: emptyGraph(),
-      options: { ...baseOptions, graphAware: {} },
-      rng: createSeededRng('reshape-test'),
-    })
-    expect(result.phenomena).toBe(phenomena)
-  })
-
-  it('iterates phenomena when phenomenonNote flag is on', () => {
-    const settlements: Settlement[] = [minimalSettlement('s1')]
-    const phenomena: SystemPhenomenon[] = [minimalPhenomenon('p1'), minimalPhenomenon('p2')]
-    const result = graphAwareReshape({
-      settlements, phenomena,
-      relationshipGraph: emptyGraph(),
-      options: { ...baseOptions, graphAware: { phenomenonNote: true } },
-      rng: createSeededRng('reshape-test'),
-    })
-    expect(result.phenomena).not.toBe(phenomena)
-    expect(result.phenomena).toEqual(phenomena)
-  })
-
   it('does not iterate phenomena when only settlementHookSynthesis flag is on', () => {
     const settlements: Settlement[] = [minimalSettlement('s1')]
     const phenomena: SystemPhenomenon[] = [minimalPhenomenon('p1')]
@@ -113,13 +88,13 @@ describe('graphAwareReshape', () => {
     expect(result.phenomena).toBe(phenomena)
   })
 
-  it('iterates settlements even when only phenomenonNote flag is on', () => {
+  it('iterates settlements while leaving phenomena untouched', () => {
     const settlements: Settlement[] = [minimalSettlement('s1')]
     const phenomena: SystemPhenomenon[] = [minimalPhenomenon('p1')]
     const result = graphAwareReshape({
       settlements, phenomena,
       relationshipGraph: emptyGraph(),
-      options: { ...baseOptions, graphAware: { phenomenonNote: true } },
+      options: baseOptions,
       rng: createSeededRng('reshape-test'),
     })
     expect(result.settlements).not.toBe(settlements)
@@ -147,7 +122,7 @@ describe('graphAwareReshape', () => {
   it('preserves determinism: same input + same seed → identical output', () => {
     const settlements: Settlement[] = [minimalSettlement('s1'), minimalSettlement('s2')]
     const phenomena: SystemPhenomenon[] = [minimalPhenomenon('p1')]
-    const options: GenerationOptions = { ...baseOptions, graphAware: { phenomenonNote: true } }
+    const options: GenerationOptions = baseOptions
     const resultA = graphAwareReshape({
       settlements, phenomena,
       relationshipGraph: emptyGraph(),
@@ -248,57 +223,24 @@ function makeDestabilizesEdge(subjectId: string, objectId: string, objectDisplay
   }
 }
 
-describe('graphAwareReshape — phenomenonNote integration', () => {
-  it('replaces note when phenomenonNote flag is on AND DESTABILIZES exists', () => {
+describe('graphAwareReshape — phenomena', () => {
+  it('returns phenomena by reference even when a DESTABILIZES edge exists', () => {
     const phenomenon = makePhenomenonWithFields('p1', {
       travelEffect: 'Ships must navigate the bloom.',
       surveyQuestion: 'What pulses behind the static?',
       conflictHook: 'Whoever owns the recordings owns the question.',
       sceneAnchor: 'A drift of low-amplitude blooms.',
     })
-    const edge = makeDestabilizesEdge('p1', 's1', 'Orison Hold')
-    const graph = graphWithEdges([edge])
+    const phenomena = [phenomenon]
     const result = graphAwareReshape({
       settlements: [],
-      phenomena: [phenomenon],
-      relationshipGraph: graph,
-      options: { ...baseOptions, graphAware: { phenomenonNote: true } },
+      phenomena,
+      relationshipGraph: graphWithEdges([makeDestabilizesEdge('p1', 's1', 'Orison Hold')]),
+      options: baseOptions,
       rng: createSeededRng('ph-integration-test'),
     })
-    expect(result.phenomena[0].note.value).toContain('Orison Hold')
-    expect(result.phenomena[0].note.value).not.toContain('Transit:')
-    expect(result.phenomena[0].note.confidence).toBe('inferred')
-  })
-
-  it('preserves note when phenomenonNote flag is off', () => {
-    const phenomenon = makePhenomenonWithFields('p1', {
-      travelEffect: 'Ships must navigate the bloom.',
-      surveyQuestion: 'What pulses behind the static?',
-    })
-    const originalNote = phenomenon.note
-    const result = graphAwareReshape({
-      settlements: [],
-      phenomena: [phenomenon],
-      relationshipGraph: emptyGraph(),
-      options: baseOptions,
-      rng: createSeededRng('ph-flag-off'),
-    })
-    expect(result.phenomena[0].note).toBe(originalNote)
-  })
-
-  it('preserves note when flag on but reshape returns null (all-empty fields)', () => {
-    const phenomenon = makePhenomenonWithFields('p1', {
-      travelEffect: '', surveyQuestion: '', conflictHook: '', sceneAnchor: '',
-    })
-    const originalNote = phenomenon.note
-    const result = graphAwareReshape({
-      settlements: [],
-      phenomena: [phenomenon],
-      relationshipGraph: emptyGraph(),
-      options: { ...baseOptions, graphAware: { phenomenonNote: true } },
-      rng: createSeededRng('ph-null-fields'),
-    })
-    expect(result.phenomena[0].note).toBe(originalNote)
+    expect(result.phenomena).toBe(phenomena)
+    expect(result.phenomena[0].note.value).toBe('original note')
   })
 })
 

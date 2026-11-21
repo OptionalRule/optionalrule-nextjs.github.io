@@ -5,7 +5,6 @@ import type {
 import type { SystemRelationshipGraph } from '../graph'
 import { graphAwareSettlementWhyHere } from './graphAwareSettlementWhyHere'
 import { graphAwareSettlementHook, rewriteFourthSentence } from './graphAwareSettlementHook'
-import { graphAwarePhenomenonNote } from './graphAwarePhenomenonNote'
 import { fact } from '../fact'
 
 export interface GraphAwareReshapeInput {
@@ -26,11 +25,7 @@ export function graphAwareReshape(input: GraphAwareReshapeInput): GraphAwareResh
   const tone: GeneratorTone = input.options.tone ?? 'balanced'
   const rng = input.rng.fork('graph-prose')
   const settlements = input.settlements.map(s => reshapeSettlement(s, input.relationshipGraph, flags, rng, tone))
-  const phenomena = flags.phenomenonNote
-    ? input.phenomena.map(p => reshapePhenomenon(p, input.relationshipGraph, rng))
-    : input.phenomena
-
-  return { settlements, phenomena }
+  return { settlements, phenomena: input.phenomena }
 }
 
 function reshapeSettlement(
@@ -62,17 +57,4 @@ function reshapeSettlement(
     }
   }
   return updated
-}
-
-function reshapePhenomenon(
-  phenomenon: SystemPhenomenon,
-  graph: SystemRelationshipGraph,
-  rng: SeededRng,
-): SystemPhenomenon {
-  const newNote = graphAwarePhenomenonNote(phenomenon, graph, rng)
-  if (newNote === null) return phenomenon
-  return {
-    ...phenomenon,
-    note: fact(newNote, 'inferred', 'Graph-aware reshape from phenomenonNote'),
-  }
 }
