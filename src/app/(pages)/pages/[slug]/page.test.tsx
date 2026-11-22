@@ -52,11 +52,6 @@ const loadModule = async (): Promise<PageModule> => {
     ),
   }));
 
-  vi.doMock("@/stories/mdx-components", () => ({
-    __esModule: true,
-    mdxComponents: {},
-  }));
-
   vi.doMock("@/lib/mdx-options", () => ({
     __esModule: true,
     mdxOptions: {},
