@@ -99,5 +99,3 @@ export const z = {
   array,
   object,
 };
-
-export default z;
