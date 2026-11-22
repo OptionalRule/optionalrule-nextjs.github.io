@@ -44,31 +44,52 @@ export function generateMetaDescription(description?: string, excerpt?: string, 
   return description || excerpt || defaultDescription;
 }
 
-// Generate slugified ID from heading text
 export function generateHeadingId(text: string): string {
-  return text
-    .toLowerCase()
-    .trim()
-    .replace(/[^\w\s-]/g, '') // Remove special characters except spaces and hyphens
-    .replace(/\s+/g, '-') // Replace spaces with hyphens
-    .replace(/-+/g, '-') // Replace multiple hyphens with single hyphen
-    .replace(/^-|-$/g, ''); // Remove leading/trailing hyphens
+  return text.toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]/g, '');
 }
 
-// Extract headings from MDX content
+export function markdownHeadingText(markdown: string): string {
+  let text = markdown
+    .replace(/!\[([^\]]*)\]\([^)]*\)/g, '$1')
+    .replace(/\[([^\]]*)\]\([^)]*\)/g, '$1')
+    .replace(/\[([^\]]*)\]\[[^\]]*\]/g, '$1')
+    .replace(/`([^`]*)`/g, '$1')
+    .replace(/<[^>]+>/g, '');
+  let previous;
+  do {
+    previous = text;
+    text = text.replace(/(\*\*|__|\*|_)(\S(?:.*?\S)?)\1/g, '$2');
+  } while (text !== previous);
+  return text.replace(/\\([\\`*_{}[\]()#+\-.!>])/g, '$1').trim();
+}
+
+const FENCE = /^ {0,3}(`{3,}|~{3,})/;
+const ATX_HEADING = /^ {0,3}(#{1,6})[ \t]+(.*?)(?:[ \t]+#+)?[ \t]*$/;
+const BLOCKQUOTE_PREFIX = /^(?: {0,3}> ?)+/;
+
 export function extractHeadings(content: string): Array<{ level: number; text: string; id: string }> {
-  const headingRegex = /^(#{1,6})\s+(.+)$/gm;
   const headings: Array<{ level: number; text: string; id: string }> = [];
-  
-  let match;
-  while ((match = headingRegex.exec(content)) !== null) {
-    const level = match[1].length;
-    const text = match[2].trim();
-    const id = generateHeadingId(text);
-    
-    headings.push({ level, text, id });
+  let fence: string | null = null;
+
+  for (const rawLine of content.split('\n')) {
+    const line = rawLine.replace(BLOCKQUOTE_PREFIX, '');
+    const fenceMatch = FENCE.exec(line);
+    if (fence) {
+      if (fenceMatch && fenceMatch[1][0] === fence[0] && fenceMatch[1].length >= fence.length) {
+        fence = null;
+      }
+      continue;
+    }
+    if (fenceMatch) {
+      fence = fenceMatch[1];
+      continue;
+    }
+    const match = ATX_HEADING.exec(line);
+    if (!match || match[2] === '') continue;
+    const text = markdownHeadingText(match[2]);
+    headings.push({ level: match[1].length, text, id: generateHeadingId(text) });
   }
-  
+
   return headings;
 }
 

@@ -89,12 +89,10 @@ describe('Heading utilities', () => {
       expect(generateHeadingId('Hello! World?')).toBe('hello-world');
     });
 
-    it('handles multiple spaces and hyphens', () => {
-      expect(generateHeadingId('Hello   World---Test')).toBe('hello-world-test');
-    });
-
-    it('removes leading and trailing hyphens', () => {
-      expect(generateHeadingId('-Hello World-')).toBe('hello-world');
+    it('keeps the published page rule for hyphens and punctuation', () => {
+      expect(generateHeadingId('Hello   World---Test')).toBe('hello-world---test');
+      expect(generateHeadingId('Design & Running')).toBe('design--running');
+      expect(generateHeadingId('Rule Zero – No Risk, No Roll')).toBe('rule-zero--no-risk-no-roll');
     });
   });
 
@@ -127,6 +125,18 @@ More content`;
       expect(headings).toEqual([
         { level: 1, text: 'Real Heading', id: 'real-heading' },
       ]);
+    });
+
+    it('uses plain text for formatted headings', () => {
+      expect(extractHeadings('### **Spells**\n## _I Do Not Do Reviews Disclaimer_')).toEqual([
+        { level: 3, text: 'Spells', id: 'spells' },
+        { level: 2, text: 'I Do Not Do Reviews Disclaimer', id: 'i-do-not-do-reviews-disclaimer' },
+      ]);
+    });
+
+    it('includes headings inside blockquotes and skips fenced code', () => {
+      const content = ['> ## Pony/Mule', '```python', '# a comment', '```', '## After'].join('\n');
+      expect(extractHeadings(content).map((h) => h.id)).toEqual(['ponymule', 'after']);
     });
   });
 });
