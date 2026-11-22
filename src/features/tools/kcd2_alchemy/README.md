@@ -19,4 +19,4 @@ See `types.ts` and `docs/PRD.md`. The tool expects a JSON array of recipe object
 ## Notes
 
 - Static export only; avoid server APIs. Keep all URLs with trailing slashes.
-- Follow repository coding standards in `documentation/STANDARDS.md`.
+- Follow repository coding standards in the repository-root `docs/STANDARDS.md`.
