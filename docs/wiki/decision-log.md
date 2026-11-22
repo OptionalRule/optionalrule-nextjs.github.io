@@ -106,3 +106,6 @@ Rows refer to [the defect ledger](../superpowers/plans/2026-11-21-defect-ledger.
 ## 2026-11-21 Q60–Q61 (user: "yes to all")
 - Q60 (refines Q40 for C3): the TOC and the page headings share one id rule, which is the current page rule except that bold or italic headings take their id from their text. So `#object-object` becomes `#spells` and `#i-do-not-do-reviews-disclaimer`; every other existing page id stays the same. Found 2026-11-21: all affected posts have `showToc: false`.
 - Q61: N1 (viewer3d `sceneGraph.ts`: outer moons can land past a wide companion, reachable only with hand-built inputs; no generator output change) is deferred.
+
+## 2026-11-21 Q62 (user: "no", so the alternative applies)
+- Q62: Fix duplicate heading ids now (N2). Within a page, the first occurrence keeps its id and later occurrences get `-1`, `-2`, …; the TOC uses the same ids. Only those later occurrences change (places-of-power, april-2021-experimental-house-rules, as found 2026-11-21 at `019c8e9`).
