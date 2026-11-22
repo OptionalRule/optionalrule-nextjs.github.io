@@ -33,8 +33,6 @@ describe('Date utilities', () => {
       expect(result).toEqual({ year: 2023, month: 1, day: 5 });
     });
   });
-
-  // generatePostUrl tests moved to urls.test.ts
 });
 
 describe('String utilities', () => {

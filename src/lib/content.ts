@@ -150,12 +150,6 @@ export function getPost(slug: string): Post | null {
   };
 }
 
-// Get all post metadata including drafts
-export function getAllPostsMetaWithDrafts(): PostMeta[] {
-  const files = getAllPostFiles();
-  return files.map(getPostMeta);
-}
-
 // Get all post metadata
 export function getAllPostsMeta(): PostMeta[] {
   const files = getPostFiles();

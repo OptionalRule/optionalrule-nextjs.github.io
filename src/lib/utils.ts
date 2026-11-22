@@ -29,15 +29,6 @@ export function parseDateToUTCDate(dateString: string): Date {
   return new Date(dateString + 'T00:00:00.000Z'); // Force UTC midnight to avoid timezone issues
 }
 
-// Generate post URL from date and slug
-export function generatePostUrl(date: string, slug: string): string {
-  const { year, month, day } = parseDateToUTC(date);
-  const monthStr = String(month).padStart(2, '0');
-  const dayStr = String(day).padStart(2, '0');
-  
-  return `/${year}/${monthStr}/${dayStr}/${slug}/`;
-}
-
 // Capitalize first letter of string
 export function capitalize(str: string): string {
   return str.charAt(0).toUpperCase() + str.slice(1);
