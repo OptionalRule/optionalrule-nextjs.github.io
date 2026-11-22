@@ -73,6 +73,43 @@ showToc: false
 
 Images in MDX render through the components in `src/lib/mdx-components.tsx`; no `imageWidth`/`imageHeight` frontmatter fields are read.
 
+### Content Processing
+- **Reading time calculation** automatically added to all posts
+- **Heading extraction** for table of contents generation
+- **Excerpt generation** from content if not provided in frontmatter
+- **Tag normalization** and slug generation for tag pages
+
+## TypeScript Configuration
+
+### Module Resolution
+- **Path aliases**: `@/*` maps to `./src/*` for clean imports
+- **ESM scripts**: Scripts use `node --import tsx/esm` for TypeScript execution
+- **Type definitions**: Comprehensive types in `src/lib/types.ts`
+
+### Search Index Types
+The search system uses strictly typed interfaces for `SearchIndexItem`, `SearchResult`, and `SearchOptions` with runtime validation during index loading.
+
+## Scripts and Utilities
+
+### Content Management Scripts
+All scripts use ESM loader pattern and are located in `scripts/` directory:
+- **Search index generation**: Processes all MDX files into searchable JSON
+- **Empty link detection**: Scans for broken markdown link patterns
+- **Post creation**: Interactive post scaffold with proper frontmatter
+
+### Build Process
+1. Generate search index and RSS feed from all posts
+2. Next.js static build with route pre-rendering  
+3. Export to `out/` directory for GitHub Pages
+4. Automatic deployment via GitHub Actions
+
+## Key Configuration Files
+
+- **Site config**: `src/config/site.ts` contains metadata, author info, analytics
+- **Content processing**: `src/lib/content.ts` handles MDX parsing and post management
+- **Route layouts**: App Router layouts in `src/app/layout.tsx` with font loading
+- **Static export**: `next.config.ts` configures GitHub Pages deployment
+
 ## Important Implementation Notes
 
 - **Content outside src/**: MDX files in `content/` directory separate from Next.js source
