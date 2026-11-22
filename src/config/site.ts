@@ -40,3 +40,5 @@ export const siteConfig = {
 
 export type SiteConfig = typeof siteConfig;
 
+export const THEME_STORAGE_KEY = 'theme';
+

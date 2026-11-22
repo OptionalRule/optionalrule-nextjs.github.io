@@ -3,7 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { GoogleAnalytics } from "@/components/GoogleAnalytics";
-import { siteConfig } from "@/config/site";
+import { siteConfig, THEME_STORAGE_KEY } from "@/config/site";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -120,7 +120,7 @@ export default function RootLayout({
           dangerouslySetInnerHTML={{
             __html: `(() => {
   try {
-    const stored = localStorage.getItem('theme');
+    const stored = localStorage.getItem(${JSON.stringify(THEME_STORAGE_KEY)});
     const def = document.documentElement.getAttribute('data-default-theme') || 'system';
     let isDark;
     if (stored === 'dark' || stored === 'light') {

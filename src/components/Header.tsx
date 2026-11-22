@@ -4,6 +4,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { useEffect, useState, type ReactNode } from 'react';
 import { urlPaths } from '@/lib/urls';
+import { THEME_STORAGE_KEY } from '@/config/site';
 
 type NavigationItem = {
   href: string;
@@ -126,7 +127,7 @@ export function Header() {
     const next = theme === 'dark' ? 'light' : 'dark';
     setTheme(next);
     try {
-      localStorage.setItem('theme', next);
+      localStorage.setItem(THEME_STORAGE_KEY, next);
     } catch {
       // ignore storage failures
     }

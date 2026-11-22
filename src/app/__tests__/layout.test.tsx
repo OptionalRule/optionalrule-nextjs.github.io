@@ -29,6 +29,7 @@ async function loadLayoutModule(mutate?: ConfigMutator<MutableSiteConfig>) {
 
   vi.doMock("@/config/site", () => ({
     __esModule: true,
+    ...actualSiteModule,
     siteConfig: siteConfigClone,
   }));
 
@@ -137,7 +138,7 @@ describe("RootLayout component", () => {
     expect(html.classList.contains("dark")).toBe(true);
 
     const themeScript = dom.querySelector("head script");
-    expect(themeScript?.textContent).toContain("localStorage.getItem('theme')");
+    expect(themeScript?.textContent).toContain('localStorage.getItem("theme")');
 
     const msMeta = dom.querySelector("meta[name='msapplication-config']");
     expect(msMeta?.getAttribute("content")).toBe("/favicon/browserconfig.xml");
