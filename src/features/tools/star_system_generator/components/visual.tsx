@@ -3,13 +3,8 @@ import {
   Circle,
   CircleDashed,
   CircleSmall,
-  Flame,
   Globe2,
-  Leaf,
-  Snowflake,
   Sparkles,
-  Sun,
-  Thermometer,
 } from 'lucide-react'
 import {
   GasGiantIcon,
@@ -204,13 +199,4 @@ export function FieldRow({ label, children, layer = 'neutral', className = '' }:
       <dd className="mt-1 text-sm font-medium text-[var(--text-primary)]">{children}</dd>
     </div>
   )
-}
-
-export const ZoneIcons = {
-  hot: Flame,
-  temperate: Leaf,
-  cold: Snowflake,
-  thermometer: Thermometer,
-  star: Sun,
-  sparkles: Sparkles,
 }

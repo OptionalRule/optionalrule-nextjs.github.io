@@ -36,7 +36,7 @@ Architecture generation uses the modified 2d6 table from the source writeup, the
 
 The current look is a compact operational TTRPG tool, not a marketing page. Future UI additions should extend the established page language instead of introducing a separate visual system.
 
-- Reuse `components/visual.tsx` primitives before adding new presentational helpers: `SectionHeader`, `sectionShellClasses`, `FieldRow`, `SpectralChip`, `ThermalZoneTag`, `BodyCategoryIcon`, and `ZoneIcons`.
+- Reuse `components/visual.tsx` primitives before adding new presentational helpers: `SectionHeader`, `sectionShellClasses`, `FieldRow`, `SpectralChip`, `ThermalZoneTag`, and `BodyCategoryIcon`.
 - Preserve the three semantic visual layers:
   - Physical/astronomy: `accent`
   - Geometric Unity: `accent-mystical`
