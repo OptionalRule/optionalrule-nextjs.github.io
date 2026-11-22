@@ -19,7 +19,7 @@ export default defineConfig({
     exclude: ['src/**/*.stories.{js,ts,tsx}', 'node_modules/**/*'],
     coverage: {
       reporter: ['text', 'json', 'html'],
-      include: ['src/**/*'],
+      include: ['src/**/*.{ts,tsx,js,jsx}'],
       exclude: [
         'src/**/*.test.{js,ts,tsx}',
         'src/**/*.spec.{js,ts,tsx}',
@@ -29,8 +29,7 @@ export default defineConfig({
         'src/**/__generated__/**',
         'src/**/__snapshots__/**',
         'src/**/*.d.ts',
-        'src/app/(interactive)/**',
-        'src/features/games/**'
+        'src/app/\\(interactive\\)/**',
       ],
       thresholds: {
         statements: 60,
