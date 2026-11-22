@@ -291,15 +291,9 @@ describe('seo.ts', () => {
     });
 
     it('should use default description when not provided', () => {
-      const metadata = generatePageMetadata('About');
+      const metadata = generatePageMetadata('About', undefined, '/pages/about/');
 
       expect(metadata.description).toBe('A test blog description');
-    });
-
-    it('should generate canonical from title when not provided', () => {
-      const metadata = generatePageMetadata('About');
-
-      expect(metadata.alternates?.canonical).toBe('/about/');
     });
   });
 

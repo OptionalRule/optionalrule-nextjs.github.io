@@ -23,6 +23,7 @@ const mockNotFound = vi.fn(() => {
 const mockUrlPaths = {
   home: vi.fn(() => "/"),
   tags: vi.fn(() => "/tags/"),
+  staticPage: vi.fn((slug: string) => `/pages/${slug}/`),
 };
 
 const loadModule = async (): Promise<PageModule> => {

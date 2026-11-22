@@ -1,9 +1,10 @@
 import Link from 'next/link';
+import { urlPaths } from '@/lib/urls';
 
 interface PaginationProps {
   currentPage: number;
   totalPages: number;
-  basePath: string; // e.g., "/" or "/tag/react"
+  tag?: string;
 }
 
 /**
@@ -37,25 +38,13 @@ export function getVisiblePages(
   return pages.slice(start, end);
 }
 
-export function Pagination({ currentPage, totalPages, basePath }: PaginationProps) {
+export function Pagination({ currentPage, totalPages, tag }: PaginationProps) {
   if (totalPages <= 1) {
     return null;
   }
 
-  const generatePageUrl = (page: number): string => {
-    if (page === 1) {
-      // Handle different basePath scenarios
-      if (basePath === '' || basePath === '/') {
-        return '/';
-      }
-      return `${basePath}/`;
-    }
-    // For page 2+, always use the /page/X/ format
-    if (basePath === '' || basePath === '/') {
-      return `/page/${page}/`;
-    }
-    return `${basePath}/page/${page}/`;
-  };
+  const generatePageUrl = (page: number): string =>
+    tag ? urlPaths.tag(tag, page) : urlPaths.page(page);
 
   const visiblePages = getVisiblePages(currentPage, totalPages, 5, false);
 

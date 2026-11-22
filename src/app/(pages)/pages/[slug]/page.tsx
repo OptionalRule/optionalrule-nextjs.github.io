@@ -26,7 +26,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     return { title: 'Page Not Found' };
   }
 
-  return generatePageMetadata(page.title, page.description, `/pages/${slug}/`);
+  return generatePageMetadata(page.title, page.description, urlPaths.staticPage(slug));
 }
 
 export default async function StaticPage({ params }: PageProps) {

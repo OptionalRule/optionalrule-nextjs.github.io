@@ -126,7 +126,7 @@ export function generateHomeMetadata(): Metadata {
 export function generateTagMetadata(tag: string, page?: number): Metadata {
   const title = `Posts tagged "${tag}"${page && page > 1 ? ` - Page ${page}` : ''}`;
   const description = `All posts tagged with "${tag}" on ${siteConfig.name}`;
-  const canonical = `/tag/${tag.toLowerCase()}/${page && page > 1 ? `page/${page}/` : ''}`;
+  const canonical = urlPaths.tag(tag, page);
 
   return generateMetadata({
     title,
@@ -139,7 +139,7 @@ export function generateTagMetadata(tag: string, page?: number): Metadata {
 export function generatePaginationMetadata(page: number): Metadata {
   const title = `Posts - Page ${page}`;
   const description = `Browse posts on ${siteConfig.name} - Page ${page}`;
-  const canonical = `/page/${page}/`;
+  const canonical = urlPaths.page(page);
 
   return generateMetadata({
     title,
@@ -149,11 +149,11 @@ export function generatePaginationMetadata(page: number): Metadata {
 }
 
 // Generate metadata for static pages
-export function generatePageMetadata(title: string, description?: string, canonical?: string): Metadata {
+export function generatePageMetadata(title: string, description: string | undefined, canonical: string): Metadata {
   return generateMetadata({
     title,
     description: description || siteConfig.description,
-    canonical: canonical || `/${title.toLowerCase()}/`,
+    canonical,
   });
 }
 

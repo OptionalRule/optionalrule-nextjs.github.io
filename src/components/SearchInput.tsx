@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
+import { urlPaths } from '@/lib/urls';
 
 interface SearchInputProps {
   placeholder?: string;
@@ -57,7 +58,7 @@ export function SearchInput({
     e.preventDefault();
     if (query.trim()) {
       // Navigate to search page with query (ensure trailing slash for static export)
-      router.push(`/search/?q=${encodeURIComponent(query.trim())}`);
+      router.push(urlPaths.search(query));
     }
   };
 
@@ -69,7 +70,7 @@ export function SearchInput({
     setQuery('');
     inputRef.current?.focus();
     // Update URL to remove query parameter
-    router.push('/search/');
+    router.push(urlPaths.search());
     if (onSearch) {
       onSearch('');
     }

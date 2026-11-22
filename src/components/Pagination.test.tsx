@@ -21,18 +21,18 @@ describe('getVisiblePages', () => {
 
 describe('Pagination', () => {
   it('renders nothing for a single page', () => {
-    expect(renderToStaticMarkup(<Pagination currentPage={1} totalPages={1} basePath="" />)).toBe('');
+    expect(renderToStaticMarkup(<Pagination currentPage={1} totalPages={1} />)).toBe('');
   });
 
   it('links home pages to / and /page/N/', () => {
-    const markup = renderToStaticMarkup(<Pagination currentPage={2} totalPages={3} basePath="" />);
+    const markup = renderToStaticMarkup(<Pagination currentPage={2} totalPages={3} />);
     expect(hrefs(markup)).toEqual(['/', '/', '/page/2/', '/page/3/', '/page/3/']);
     expect(markup).toContain('aria-current="page"');
   });
 
   it('links tag pages under the tag path', () => {
     const markup = renderToStaticMarkup(
-      <Pagination currentPage={1} totalPages={2} basePath="/tag/game-development" />,
+      <Pagination currentPage={1} totalPages={2} tag="Game Development" />,
     );
     expect(hrefs(markup)).toEqual([
       '/tag/game-development/',
