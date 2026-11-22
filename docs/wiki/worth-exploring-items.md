@@ -33,3 +33,11 @@ See [decision-log](decision-log.md), [star-system-narrative-stage](star-system-n
 - 2026-11-21: Tag Hook pool `37afa1c`..`f9547e1` (164 of 200 v3 hashes changed). Released: CI-green `f9547e1` merged to `main` as `94dc4fd`, and the deploy succeeded. v3 is live; v2 links and links without `v` reproduce. The release hold is lifted.
 - Gap found: test files are excluded from tsc. A fix to typecheck tests in CI was dispatched on 2026-11-21.
 - Parked: v4 variety work (pool entries, tone weighting); it starts with a grilling.
+
+## 2026-11-21 deferred to v4 by the defect sweep (Q44, Q45)
+Ledger rows as of `f0411a0` ([ledger](../superpowers/plans/2026-11-21-defect-ledger.md)). None of these sites are version-pinned, so each fix changes v2 and v3 output and needs `GENERATOR_VERSION` 4 plus an ADR.
+- D1: DEPENDS_ON substring keywords (`ice`⊂office/lattice, `ration`⊂operation/calibration). 10 of 68 edges in a 2000-system sample. Note: the round-4 follow-up requires byte-identical v2/v3 behaviour.
+- D2: `isGuTouched` `/GU/i` matches "irregular" and "Rogue" (763 bodies in the sample).
+- D3: `lab` matches "debt-labor", so prisons get named "…Laboratory".
+- K1: 722 audit baseline errors (318 coded, 404 path-only).
+- D4 (`silence`/`blade` hook-term patterns) joins the parked hook-variety work.

@@ -76,3 +76,24 @@ Approved v3 settlement Tag Hook pool: the 4 existing templates plus the 12 below
 
 ## 2026-11-21 Q38 (user: "yes")
 - v3 ships once the Tag Hook templates land: the substring fix, the v3 hook profile and 16 templates. Bigger variety work (new pool entries, tone weighting) is deferred to a future v4 and starts with a grilling on tone weighting. The release hold lifts after the templates pass CI.
+
+## 2026-11-21 defect-sweep triage, Q39–Q56 (user: "yes to all")
+Rows refer to [the defect ledger](../superpowers/plans/2026-11-21-defect-ledger.md) as of `f0411a0`.
+- Q39: Fix all 19 user-visible rows (C1, C3, D5, F1–F8, G15, H1–H6, H11), each starting with a failing test. F4–F8 become "won't fix" if they can't be reproduced.
+- Q40: For C3, the table-of-contents links change to match the page's heading ids. Existing `#anchor` links stay stable.
+- Q41: Fix all 48 internal rows, batched per lane (includes G1 `lint:ci` and G2 build/coverage/validate-config in develop CI).
+- Q42: Delete the 18 verified-dead items, one commit per area.
+- Q43: After the fix lanes merge, remove the 14 agent worktrees and their merged branches, plus the stale dependabot `next-16.3.0` and `tsx-4.23.11` branches.
+- Q44: Defer D1, D2, D3 and K1 (all change generator output) to a future v4.
+- Q45: Fold D4 into the parked v4 hook-variety work (K6).
+- Q46: Keep `baseline-browser-mapping` (B5b).
+- Q47: Declare the phantom deps (B7) in package.json at their lockfile versions.
+- Q48: Defer the cleanup of about 170 unneeded `export` keywords (B15).
+- Q49: The deploy's `npm audit` uses `--omit=dev --audit-level=high` and fails the build (G11).
+- Q50: Delete the `/test-pagination/` route; its test moves to Pagination (G14).
+- Q51: The coordinator drafts tags (H7) and descriptions of at most 160 characters (H8) for user approval before merge. Drafts stay untouched (H9).
+- Q52: Untrack `.claude/settings.local.json` and gitignore it (I1).
+- Q53: Keep `.cursor/plans/`, `tasks/` and `prompt_archive/` (I7).
+- Q54: Defer the eslint 10, TypeScript 7 and @types/node 26 majors to a separate upgrade task. Their PRs stay open (I8).
+- Q55: Document the worktree no-fetch constraint only; no hook (K5).
+- Q56: Release the exact CI-green SHA to `main` once all lanes land, then check the live site with `curl`.
