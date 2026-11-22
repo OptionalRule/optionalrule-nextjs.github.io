@@ -5,7 +5,7 @@ import { OrbitalTable } from '../components/OrbitalTable'
 import type { GenerationOptions } from '../types'
 
 const options: GenerationOptions = {
-  seed: 'debris-region-64',
+  seed: 'debris-region-0',
   distribution: 'frontier',
   tone: 'balanced',
   gu: 'normal',
@@ -17,17 +17,17 @@ describe('OrbitalTable debris region suffix', () => {
     const system = generateSystem(options)
 
     const debrisSettlement = system.settlements.find((s) => s.debrisFieldId)
-    if (!debrisSettlement) return
+    expect(debrisSettlement, 'seed must attach a settlement to a debris field').toBeDefined()
 
-    const field = system.debrisFields.find((d) => d.id === debrisSettlement.debrisFieldId)
-    if (!field) return
+    const field = system.debrisFields.find((d) => d.id === debrisSettlement!.debrisFieldId)
+    if (!field) throw new Error('attached debris field missing from system')
 
     const body = system.bodies.find(
       (b) =>
         b.orbitAu.value >= field.spatialExtent.innerAu.value &&
         b.orbitAu.value <= field.spatialExtent.outerAu.value,
     )
-    if (!body) return
+    if (!body) throw new Error('seed must place a body inside the debris field')
 
     render(<OrbitalTable system={system} />)
 
@@ -45,7 +45,7 @@ describe('OrbitalTable debris region suffix', () => {
     const system = generateSystem(noDebrisOptions)
 
     const debrisSettlements = system.settlements.filter((s) => s.debrisFieldId)
-    if (debrisSettlements.length > 0) return
+    expect(debrisSettlements, 'seed must have no debris-attached settlements').toHaveLength(0)
 
     render(<OrbitalTable system={system} />)
 

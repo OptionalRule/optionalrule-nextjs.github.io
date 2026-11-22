@@ -22,50 +22,51 @@ function nonCircumbinaryCompanionOffset(graph: ReturnType<typeof buildSceneGraph
   return Math.hypot(pos[0], pos[1], pos[2])
 }
 
-function findSeedOutermostMoonCrossesCompanion(max = 300): string | null {
-  for (let i = 0; i < max; i++) {
-    const seed = `moon-env-probe-${i}`
-    const system = generateSystem({ ...BASE, seed })
-    const companionOffset = nonCircumbinaryCompanionOffset(buildSceneGraph(system), system)
-    if (companionOffset === null) continue
-    const graph = buildSceneGraph(system)
-    if (graph.bodies.length === 0) continue
-    const outermost = graph.bodies[graph.bodies.length - 1]
-    if (outermost.moons.length === 0) continue
-    const outerMoonRelative = Math.max(...outermost.moons.map((m: MoonVisual) => m.parentRelativeOrbit))
-    const reach = outermost.orbitRadius + outerMoonRelative
-    if (reach >= companionOffset) return seed
-  }
-  return null
+const VOLATILE_COMPANION_SEED = 'moon-env-probe-9'
+
+type GeneratedSystem = ReturnType<typeof generateSystem>
+
+function outermostReach(graph: ReturnType<typeof buildSceneGraph>): number | null {
+  if (graph.bodies.length === 0) return null
+  const outermost = graph.bodies[graph.bodies.length - 1]
+  if (outermost.moons.length === 0) return null
+  return outermost.orbitRadius + Math.max(...outermost.moons.map((m: MoonVisual) => m.parentRelativeOrbit))
+}
+
+function distantVolatileCompanion(): GeneratedSystem['companions'][number] {
+  const source = generateSystem({ ...BASE, seed: VOLATILE_COMPANION_SEED })
+  const companion = source.companions.find((c) => c.mode === 'volatile')
+  expect(companion, `${VOLATILE_COMPANION_SEED} must still roll a volatile companion`).toBeDefined()
+  return { ...companion!, separation: { ...companion!.separation, value: 'Distant binary' } }
 }
 
 describe('moon envelope is capped against next neighbour', () => {
-  it('outermost body moon envelope must not cross the companion star (fixed seed)', () => {
-    const fixedSeed = 'probe-frontier-balanced-normal-normal-0-60'
-    const system = generateSystem({ ...BASE, seed: fixedSeed })
+  it('outermost body moon envelope must not cross the companion star (fixed fixture)', () => {
+    const generated = generateSystem({ ...BASE, seed: 'moon-env-probe-1' })
+    const system = { ...generated, companions: [distantVolatileCompanion()] }
     const graph = buildSceneGraph(system)
-    if (graph.bodies.length === 0) return
-    const outermost = graph.bodies[graph.bodies.length - 1]
-    if (outermost.moons.length === 0) return
     const companionOffset = nonCircumbinaryCompanionOffset(graph, system)
-    if (companionOffset === null) return
-    const outerMoonRelative = Math.max(...outermost.moons.map((m: MoonVisual) => m.parentRelativeOrbit))
-    const reach = outermost.orbitRadius + outerMoonRelative
-    expect(reach, `body+moons reach ${reach} crosses companion at ${companionOffset}`).toBeLessThan(companionOffset)
+    const reach = outermostReach(graph)
+    expect(companionOffset, 'companion must be in scene').not.toBeNull()
+    expect(reach, 'outermost scene body must carry moons').not.toBeNull()
+    expect(reach!, `body+moons reach ${reach} crosses companion at ${companionOffset}`).toBeLessThan(companionOffset!)
   })
 
-  it('outermost body moon envelope (seed sweep) must not cross the companion star', () => {
-    const probeSeed = findSeedOutermostMoonCrossesCompanion()
-    if (!probeSeed) {
-      return
+  it('generated volatile-companion systems keep every scene body and its moons inside the companion (seed sweep)', () => {
+    let volatileSystems = 0
+    for (let i = 0; i < 300; i++) {
+      const seed = `moon-env-probe-${i}`
+      const system = generateSystem({ ...BASE, seed })
+      const graph = buildSceneGraph(system)
+      const companionOffset = nonCircumbinaryCompanionOffset(graph, system)
+      if (companionOffset === null) continue
+      volatileSystems++
+      for (const body of graph.bodies) {
+        const moonReach = body.moons.length === 0 ? 0 : Math.max(...body.moons.map((m: MoonVisual) => m.parentRelativeOrbit))
+        expect(body.orbitRadius + moonReach, `seed ${seed}: ${body.id} crosses companion at ${companionOffset}`).toBeLessThan(companionOffset)
+      }
     }
-    const system = generateSystem({ ...BASE, seed: probeSeed })
-    const graph = buildSceneGraph(system)
-    const outermost = graph.bodies[graph.bodies.length - 1]
-    const companionOffset = nonCircumbinaryCompanionOffset(graph, system)!
-    const outerMoonRelative = Math.max(...outermost.moons.map((m: MoonVisual) => m.parentRelativeOrbit))
-    const reach = outermost.orbitRadius + outerMoonRelative
-    expect(reach, `seed ${probeSeed}: body+moons reach ${reach} crosses companion at ${companionOffset}`).toBeLessThan(companionOffset)
+    expect(volatileSystems, 'sweep must reach systems with an in-scene companion').toBeGreaterThan(0)
   })
 
   it('inner-body moons cap against next body, not the companion', () => {
