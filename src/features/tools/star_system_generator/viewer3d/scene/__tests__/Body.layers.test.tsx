@@ -25,11 +25,20 @@ vi.mock('../MoonOrbit', () => ({
   MoonOrbit: () => <div data-testid="moon-orbit" />,
 }))
 
+vi.mock('../BodyShells', () => ({
+  AtmosphereShell: () => null,
+  CloudShell: () => null,
+}))
+
+vi.mock('../AuroraShell', () => ({
+  AuroraShell: () => null,
+}))
+
 vi.mock('../BodySettlements', () => ({
   BodySettlements: () => <div data-testid="settlement-pin" />,
 }))
 
-const bodyWithoutSurface: Omit<BodyVisual, 'surface'> = {
+const body: BodyVisual = {
   id: 'body-1',
   orbitRadius: 12,
   orbitTiltY: 0,
@@ -39,6 +48,34 @@ const bodyWithoutSurface: Omit<BodyVisual, 'surface'> = {
   shading: 'rocky-warm',
   renderArchetype: 'rocky',
   category: 'rocky-planet',
+  surface: {
+    profileVersion: 1,
+    family: 'rocky',
+    atmosphereColor: '#9fb8d0',
+    atmosphereStrength: 0,
+    atmosphereThickness: 0,
+    cloudColor: '#ffffff',
+    cloudStrength: 0,
+    cloudRotationSpeed: 0,
+    normalStrength: 0,
+    reliefStrength: 0.15,
+    nightLightStrength: 0,
+    cityLightColor: '#ffb15c',
+    surfaceSeed: 0,
+    cloudSeed: 0,
+    cloudTraceTint: '#ffffff',
+    cloudTraceBlend: 0,
+    cloudBandStrength: 0,
+    cloudRotationMultiplier: 1,
+    atmospherePressureMultiplier: -1,
+    auroraIntensity: 0,
+    auroraColor: '#7fffd4',
+    auroraMode: 0,
+    auroraPulse: 0,
+    auroraAxisOffset: 0,
+    darkSectorStrength: 0,
+    refractionHaloBoost: 0,
+  },
   rings: {
     innerRadius: 1.6,
     outerRadius: 2.2,
@@ -80,7 +117,6 @@ const bodyWithoutSurface: Omit<BodyVisual, 'surface'> = {
   gateIds: [],
 }
 
-const body = bodyWithoutSurface as BodyVisual
 
 function renderBody(ui: ReactNode) {
   const system = { bodies: [], settlements: [], gates: [], ruins: [], phenomena: [] } as unknown as GeneratedSystem
