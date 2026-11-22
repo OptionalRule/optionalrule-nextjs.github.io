@@ -7,12 +7,23 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 export default defineConfig({
-  esbuild: {
-    target: 'node20',
-    jsx: 'automatic',
-  },
   test: {
     environment: 'happy-dom',
+    environmentOptions: {
+      happyDOM: {
+        settings: {
+          enableIframePageLoading: true,
+          navigation: {
+            disableChildFrameNavigation: true,
+          },
+        },
+      },
+    },
+    server: {
+      deps: {
+        inline: [/@react-three\//],
+      },
+    },
     globals: true,
     setupFiles: ['./src/test-setup.ts'],
     include: ['src/**/*.{test,spec}.{js,ts,tsx}'],
@@ -46,6 +57,7 @@ export default defineConfig({
     alias: {
       '@': path.resolve(__dirname, './src'),
       'zod': path.resolve(__dirname, './src/lib/zod.ts'),
+      '@react-three/fiber': path.resolve(__dirname, './node_modules/@react-three/fiber/dist/react-three-fiber.esm.js'),
     },
   },
 });
