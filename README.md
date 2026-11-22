@@ -233,7 +233,7 @@ Options:
 Examples:
 ```bash
 # Single file dry run
-npm run enhance-post -- content/posts/2025-09-12-kcd2-alchemy-tool-and-nostalgia-for-ttrpg-crafting.mdx --dry-run
+npm run enhance-post -- content/posts/2025-09-12-kcd2-alchemy-tool.mdx --dry-run
 
 # Enhance all posts in a directory, overwrite only excerpt
 npm run enhance-post -- content/posts --overwrite-excerpt
