@@ -20,6 +20,9 @@ Chief-of-staff memory for long-running architecture work. Historical record: eve
 ## Candidates
 - [worth-exploring-items](worth-exploring-items.md) — #4 hooks, #5 Seed URL, #9 Draft rule, substring-fix impact.
 
+## Handoffs
+- [defect-sweep handoff](../superpowers/plans/2026-11-21-defect-sweep-handoff.md) — One-pass discovery → single triage round → batched fixes (2026-11-21).
+
 ## Decisions
 - [decision-log](decision-log.md) — Dated user decisions, newest last.
 
