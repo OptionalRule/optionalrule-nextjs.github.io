@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useRef } from 'react'
+import { useCallback, useEffect, useRef } from 'react'
 import { useThree } from '@react-three/fiber'
 import { OrbitControls } from '@react-three/drei'
 import type { OrbitControls as OrbitControlsImpl } from 'three-stdlib'
@@ -13,7 +13,20 @@ export interface CameraRigProps {
 
 export function CameraRig({ sceneRadius }: CameraRigProps) {
   const controlsRef = useRef<OrbitControlsImpl | null>(null)
+  const animRef = useRef<number | null>(null)
   const { camera } = useThree()
+
+  const cancelAnimation = useCallback(() => {
+    if (animRef.current !== null) cancelAnimationFrame(animRef.current)
+    animRef.current = null
+  }, [])
+
+  const startAnimation = useCallback((step: FrameRequestCallback) => {
+    cancelAnimation()
+    animRef.current = requestAnimationFrame(step)
+  }, [cancelAnimation])
+
+  useEffect(() => cancelAnimation, [cancelAnimation])
 
   useEffect(() => {
     camera.position.set(0, sceneRadius * 0.35, sceneRadius * 0.95)
@@ -36,13 +49,13 @@ export function CameraRig({ sceneRadius }: CameraRigProps) {
         camera.position.lerpVectors(start, target, eased)
         camera.lookAt(0, 0, 0)
         controlsRef.current?.update()
-        if (k < 1) requestAnimationFrame(step)
+        if (k < 1) animRef.current = requestAnimationFrame(step)
       }
-      requestAnimationFrame(step)
+      startAnimation(step)
     }
     window.addEventListener('viewer3d:frame-system', handle)
     return () => window.removeEventListener('viewer3d:frame-system', handle)
-  }, [camera, sceneRadius])
+  }, [camera, sceneRadius, startAnimation])
 
   const { selection } = useSelectionState()
 
@@ -77,10 +90,10 @@ export function CameraRig({ sceneRadius }: CameraRigProps) {
         controlsRef.current.target.copy(targetVec)
         controlsRef.current.update()
       }
-      if (k < 1) requestAnimationFrame(step)
+      if (k < 1) animRef.current = requestAnimationFrame(step)
     }
-    requestAnimationFrame(step)
-  }, [selection, camera, sceneRadius])
+    startAnimation(step)
+  }, [selection, camera, sceneRadius, startAnimation])
 
   useEffect(() => {
     if (selection || !controlsRef.current) return
