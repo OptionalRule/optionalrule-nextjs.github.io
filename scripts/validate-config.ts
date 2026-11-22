@@ -100,7 +100,8 @@ function checkAnalytics(): Finding[] {
 function checkHardcodedHosts(): Finding[] {
   const findings: Finding[] = [];
   const srcDir = path.join(process.cwd(), 'src');
-  const ignoreDirs = ['__tests__', 'stories', 'config'];
+  const ignoreDirs = ['__tests__', 'stories'];
+  const siteConfigDir = path.join(srcDir, 'config');
   const testFile = /\.(test|spec)\.(t|j)sx?$/;
   const hostRegex = /(https?:\/\/[A-Za-z0-9][^\s'"`)]*)/g;
   const allowedPrefixes = [
@@ -117,6 +118,7 @@ function checkHardcodedHosts(): Finding[] {
     for (const entry of entries) {
       const full = path.join(dir, entry.name);
       if (entry.isDirectory()) {
+        if (full === siteConfigDir) continue;
         if (ignoreDirs.some(d => full.includes(path.sep + d + path.sep))) continue;
         walk(full);
       } else if (entry.isFile() && /\.(t|j)sx?$/.test(entry.name)) {
