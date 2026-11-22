@@ -2,66 +2,8 @@
 
 import * as fs from 'fs';
 import * as path from 'path';
-import matter from 'gray-matter';
-import readingTime from 'reading-time';
-import { PostFrontmatterSchema, getPostFiles } from '../src/lib/content';
-import { generateExcerpt } from '../src/lib/utils';
+import { buildSearchIndex } from '../src/lib/search-index';
 import { INCLUDE_DRAFTS_ENV } from '../src/lib/publication';
-
-interface SearchIndexItem {
-  slug: string;
-  title: string;
-  excerpt: string;
-  tags: string[];
-  content: string;
-  date: string;
-  readingTime: number;
-}
-
-// Generate slug from filename
-function generateSlug(filename: string): string {
-  return filename.replace(/\.mdx?$/, '');
-}
-
-// Generate slug with fallback logic
-function generatePostSlug(filename: string, customSlug?: string): string {
-  if (customSlug && customSlug.trim() !== '') {
-    return customSlug.trim();
-  }
-  return generateSlug(filename);
-}
-
-
-function buildSearchIndex(): SearchIndexItem[] {
-  const POSTS_DIR = path.join(process.cwd(), 'content', 'posts');
-  
-  if (!fs.existsSync(POSTS_DIR)) {
-    console.warn('Posts directory not found:', POSTS_DIR);
-    return [];
-  }
-
-  const files = getPostFiles();
-
-  return files.map(filename => {
-    const filePath = path.join(POSTS_DIR, filename);
-    const fileContent = fs.readFileSync(filePath, 'utf8');
-    const { data, content } = matter(fileContent);
-
-    const frontmatter = PostFrontmatterSchema.parse(data);
-    const slug = generatePostSlug(filename, frontmatter.slug);
-    const readingTimeResult = readingTime(content);
-    
-    return {
-      slug,
-      title: frontmatter.title,
-      excerpt: frontmatter.excerpt || generateExcerpt(content),
-      tags: frontmatter.tags || [],
-      content: '', // We don't need full content for search, just title/excerpt/tags
-      date: frontmatter.date,
-      readingTime: Math.ceil(readingTimeResult.minutes),
-    };
-  });
-}
 
 function generateSearchIndexFile(): void {
   delete process.env[INCLUDE_DRAFTS_ENV];

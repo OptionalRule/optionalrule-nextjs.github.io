@@ -325,29 +325,18 @@ This is published`);
       const contentPosts = getAllPostsMeta();
       expect(contentPosts).toHaveLength(2);
       
-      // Test that search index generation works end-to-end
-      // Since we've verified content processing works, just test that search loads
-      const mockSearchIndex = [
-        {
-          slug: '2023-12-02-nextjs-ssg',
-          title: 'Next.js Static Site Generation',
-          excerpt: 'Master SSG with Next.js',
-          tags: ['Next.js', 'SSG'],
-          content: 'Static Site Generation is a powerful feature of Next.js...',
-          date: '2023-12-02',
-          readingTime: 5
-        },
-        {
-          slug: '2023-12-01-react-testing',
-          title: 'React Testing Guide',
-          excerpt: 'Learn how to test React components effectively',
-          tags: ['React', 'Testing'],
-          content: 'This is a comprehensive guide to testing React components...',
-          date: '2023-12-01',
-          readingTime: 5
-        }
-      ];
-      
+      const { buildSearchIndex } = await import('@/lib/search-index');
+      const mockSearchIndex = buildSearchIndex();
+      expect(mockSearchIndex.map(item => item.slug)).toEqual(contentPosts.map(p => p.slug));
+      expect(mockSearchIndex[0]).toMatchObject({
+        slug: '2023-12-02-nextjs-ssg',
+        title: 'Next.js Static Site Generation',
+        excerpt: 'Master SSG with Next.js',
+        tags: ['Next.js', 'SSG'],
+        content: '',
+        date: '2023-12-02',
+      });
+
       fetchMock.mockResolvedValue({
         ok: true,
         json: () => Promise.resolve(mockSearchIndex)
