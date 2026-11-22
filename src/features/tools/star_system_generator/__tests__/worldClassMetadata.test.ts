@@ -1,16 +1,16 @@
 import { describe, expect, it } from 'vitest'
+import type { Star } from '../types'
 import type { WorldClassOption } from '../lib/generator/domain'
 import { deriveEnvironmentPolicy } from '../lib/generator/environmentPolicy'
 import { allWorldClassOptions } from '../lib/generator'
 import { deriveWorldClassMetadata, hasWorldClassPhysicalTag, metadataForClassName } from '../lib/generator/worldClassMetadata'
 
-const star = {
+const star: Star = {
   id: 'metadata-star',
   name: { value: 'Metadata Star', confidence: 'confirmed', source: 'Test fixture' },
   spectralType: { value: 'G star', confidence: 'confirmed', source: 'Test fixture' },
   massSolar: { value: 1, confidence: 'confirmed', source: 'Test fixture' },
   luminositySolar: { value: 1, confidence: 'confirmed', source: 'Test fixture' },
-  ageGyr: { value: 5, confidence: 'confirmed', source: 'Test fixture' },
   ageState: { value: 'Mature main sequence', confidence: 'confirmed', source: 'Test fixture' },
   metallicity: { value: 'Solar', confidence: 'confirmed', source: 'Test fixture' },
   activity: { value: 'Normal', confidence: 'confirmed', source: 'Test fixture' },

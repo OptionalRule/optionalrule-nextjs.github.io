@@ -23,7 +23,7 @@ describe("Header navigation", () => {
     const anchors = Array.from(document.querySelectorAll<HTMLAnchorElement>("a[href]"));
     const internalHrefs = anchors
       .map((anchor) => anchor.getAttribute("href"))
-      .filter((href): href is string => Boolean(href) && href.startsWith("/") && !href.includes("."));
+      .filter((href): href is string => href !== null && href.startsWith("/") && !href.includes("."));
 
     expect(internalHrefs).toContain("/");
     expect(internalHrefs).toContain("/search/");

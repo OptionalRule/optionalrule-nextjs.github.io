@@ -1,6 +1,6 @@
 import React from "react";
 import { renderToStaticMarkup } from "react-dom/server";
-import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
+import { afterAll, beforeAll, beforeEach, describe, expect, it, vi, type MockInstance } from "vitest";
 
 type PageModule = typeof import("./page");
 
@@ -80,7 +80,7 @@ beforeEach(() => {
   mockGeneratePaginationMetadata.mockReturnValue({ title: "Page" });
 });
 
-let consoleErrorSpy: vi.SpyInstance;
+let consoleErrorSpy: MockInstance<typeof console.error>;
 
 beforeAll(() => {
   consoleErrorSpy = vi.spyOn(console, "error").mockImplementation(() => {});

@@ -1,6 +1,8 @@
 import { describe, expect, it } from 'vitest'
-import type { BodyCategory, Fact, GeneratedSystem, OrbitingBody, Settlement } from '../types'
+import type { BodyCategory, Fact, GeneratedSystem, OrbitingBody, PlanetaryDetail, Settlement, SettlementHabitationPattern, SettlementPopulation } from '../types'
 import type { Star, StellarCompanion } from '../types'
+import { EDGE_TYPES } from '../lib/generator/graph'
+import type { SystemRelationshipGraph } from '../lib/generator/graph'
 import {
   validateArchitecture,
   validateBinaryStability,
@@ -15,6 +17,36 @@ import {
 
 function fact<T>(value: T): Fact<T> {
   return { value, confidence: 'inferred' }
+}
+
+function planetaryDetail(overrides: Partial<PlanetaryDetail> = {}): PlanetaryDetail {
+  return {
+    atmosphere: fact(''),
+    hydrosphere: fact(''),
+    geology: fact(''),
+    climate: [],
+    radiation: fact(''),
+    biosphere: fact(''),
+    mineralComposition: fact(''),
+    magneticField: fact(''),
+    atmosphericTraces: fact(''),
+    hydrology: fact(''),
+    topography: fact(''),
+    rotationProfile: fact(''),
+    seismicActivity: fact(''),
+    surfaceHazards: fact(''),
+    dayLength: fact(''),
+    surfaceLight: fact(''),
+    axialTilt: fact(''),
+    skyPhenomena: fact(''),
+    atmosphericPressure: fact(''),
+    windRegime: fact(''),
+    tidalRegime: fact(''),
+    acousticEnvironment: fact(''),
+    resourceAccess: fact(''),
+    biosphereDistribution: fact(''),
+    ...overrides,
+  }
 }
 
 function body(overrides: Partial<OrbitingBody> = {}): OrbitingBody {
@@ -38,14 +70,14 @@ function body(overrides: Partial<OrbitingBody> = {}): OrbitingBody {
       closeIn: fact(false),
       volatileEnvelope: fact(category === 'sub-neptune' || category === 'gas-giant' || category === 'ice-giant'),
     },
-    detail: {
+    detail: planetaryDetail({
       atmosphere: fact('Moderate inert atmosphere'),
       hydrosphere: fact('Briny aquifers'),
       geology: fact('Static lid'),
       climate: [fact('Permanent storm tracks')],
       radiation: fact('Manageable'),
       biosphere: fact('Sterile'),
-    },
+    }),
     moons: [],
     filterNotes: [],
     traits: [],
@@ -65,7 +97,8 @@ function settlement(overrides: Partial<Settlement> = {}): Settlement {
     siteCategory: fact('Surface settlement'),
     location: fact('Equatorial highland'),
     function: fact('Refinery'),
-    scale: fact('21-100 people'),
+    population: fact<SettlementPopulation>('21-100'),
+    habitationPattern: fact<SettlementHabitationPattern>('Surface settlement'),
     authority: fact('Worker council'),
     builtForm: fact('Dome cluster'),
     aiSituation: fact('No local AI'),
@@ -97,6 +130,7 @@ function system(overrides: Partial<GeneratedSystem> = {}): GeneratedSystem {
   return {
     id: 'system-test',
     seed: 'test',
+    generatorVersion: 3,
     options: { seed: 'test', distribution: 'frontier', tone: 'balanced', gu: 'normal', settlements: 'normal' },
     name: fact('Test System'),
     dataBasis: fact('Fixture'),
@@ -118,10 +152,23 @@ function system(overrides: Partial<GeneratedSystem> = {}): GeneratedSystem {
       intensityRoll: fact(7),
       intensityModifiers: [],
     },
+    debrisFields: [],
     settlements: [],
+    gates: [],
     ruins: [],
     phenomena: [],
     narrativeFacts: [],
+    relationshipGraph: {
+      entities: [],
+      edges: [],
+      edgesByEntity: {},
+      edgesByType: Object.fromEntries(EDGE_TYPES.map((t): [string, string[]] => [t, []])) as SystemRelationshipGraph['edgesByType'],
+      spineEdgeIds: [],
+      settlementSpineEdgeIds: [],
+      historicalEdgeIds: [],
+    },
+    systemStory: { spineSummary: '', body: [], hooks: [] },
+    hooks: { rumors: [], contracts: [], encounters: [], npcs: [], twists: [] },
     majorHazards: [],
     noAlienCheck: { passed: true, note: 'passed' },
     ...overrides,
@@ -132,14 +179,14 @@ describe('star system validation contracts', () => {
   it('reports airless atmosphere and hydrosphere contradictions as generated errors', () => {
     const findings = validateBodyEnvironment(body({
       bodyClass: fact('Airless rock in nominal HZ'),
-      detail: {
+      detail: planetaryDetail({
         atmosphere: fact('Moderate inert atmosphere'),
         hydrosphere: fact('Global ocean'),
         geology: fact('Static lid'),
         climate: [fact('Cold desert')],
         radiation: fact('Manageable'),
         biosphere: fact('Sterile'),
-      },
+      }),
     }))
 
     expect(findings.map((finding) => finding.code)).toContain('ENV_AIRLESS_ATMOSPHERE')
@@ -151,14 +198,14 @@ describe('star system validation contracts', () => {
     const locked = <T,>(value: T): Fact<T> => ({ value, confidence: 'confirmed', source: 'Test catalog', locked: true })
     const testBody = body({
       bodyClass: locked('Airless rock in nominal HZ'),
-      detail: {
+      detail: planetaryDetail({
         atmosphere: locked('Moderate inert atmosphere'),
         hydrosphere: locked('Global ocean'),
         geology: fact('Static lid'),
         climate: [fact('Cold desert')],
         radiation: fact('Manageable'),
         biosphere: fact('Sterile'),
-      },
+      }),
     })
 
     const findings = validateLockedBodyDetail(testBody)
@@ -176,14 +223,14 @@ describe('star system validation contracts', () => {
       architecture: { name: fact('Sparse rocky'), description: fact('Fixture') },
       bodies: [body({
         bodyClass: locked('Dry supercontinent world'),
-        detail: {
+        detail: planetaryDetail({
           atmosphere: fact('Thin CO2/N2'),
           hydrosphere: locked('Global ocean'),
           geology: fact('Static lid'),
           climate: [fact('Permanent storm tracks')],
           radiation: fact('Manageable'),
           biosphere: fact('Sterile'),
-        },
+        }),
       })],
     })
 
@@ -201,14 +248,14 @@ describe('star system validation contracts', () => {
   it('reports desert hydrosphere contradictions as generated errors', () => {
     const findings = validateBodyEnvironment(body({
       bodyClass: fact('Dry supercontinent world'),
-      detail: {
+      detail: planetaryDetail({
         atmosphere: fact('Thin CO2/N2'),
         hydrosphere: fact('Global ocean'),
         geology: fact('Static lid'),
         climate: [fact('Hot desert')],
         radiation: fact('Manageable'),
         biosphere: fact('Sterile'),
-      },
+      }),
     }))
 
     expect(findings.map((finding) => finding.code)).toContain('ENV_DESERT_HYDROSPHERE')
@@ -217,51 +264,51 @@ describe('star system validation contracts', () => {
   it('reports greenhouse, ocean, hycean, and stripped-core qualitative contradictions', () => {
     expect(validateBodyEnvironment(body({
       bodyClass: fact('Steam greenhouse'),
-      detail: {
+      detail: planetaryDetail({
         atmosphere: fact('Hard vacuum'),
         hydrosphere: fact('Vaporized volatile traces'),
         geology: fact('Global resurfacing'),
         climate: [fact('Runaway greenhouse')],
         radiation: fact('Manageable'),
         biosphere: fact('Sterile'),
-      },
+      }),
     })).map((finding) => finding.code)).toContain('ENV_GREENHOUSE_ATMOSPHERE')
 
     expect(validateBodyEnvironment(body({
       bodyClass: fact('Waterworld'),
-      detail: {
+      detail: planetaryDetail({
         atmosphere: fact('Moderate inert atmosphere'),
         hydrosphere: fact('Bone dry'),
         geology: fact('Static lid'),
         climate: [fact('Permanent storm tracks')],
         radiation: fact('Manageable'),
         biosphere: fact('Sterile'),
-      },
+      }),
     })).map((finding) => finding.code)).toContain('ENV_OCEAN_HYDROSPHERE')
 
     expect(validateBodyEnvironment(body({
       category: fact('sub-neptune' as BodyCategory),
       bodyClass: fact('Hycean-like candidate'),
-      detail: {
+      detail: planetaryDetail({
         atmosphere: fact('Hydrogen/helium envelope'),
         hydrosphere: fact('No accessible volatile layer'),
         geology: fact('High-pressure ice mantle'),
         climate: [fact('Permanent storm tracks')],
         radiation: fact('Manageable'),
         biosphere: fact('Sterile'),
-      },
+      }),
     })).map((finding) => finding.code)).toContain('ENV_HYCEAN_HYDROSPHERE')
 
     expect(validateBodyEnvironment(body({
       bodyClass: fact('Stripped rocky super-Earth'),
-      detail: {
+      detail: planetaryDetail({
         atmosphere: fact('Hydrogen/helium envelope'),
         hydrosphere: fact('Bone dry'),
         geology: fact('Static lid'),
         climate: [fact('Hot desert')],
         radiation: fact('Manageable'),
         biosphere: fact('Sterile'),
-      },
+      }),
     })).map((finding) => finding.code)).toContain('ENV_SOLID_H2_ENVELOPE')
   })
 
@@ -346,7 +393,7 @@ function star(overrides: Partial<Star> = {}): Star {
   }
 }
 
-function companion(overrides: Partial<StellarCompanion>): StellarCompanion {
+function companion(overrides: Partial<StellarCompanion> = {}): StellarCompanion {
   return {
     id: 'companion-1',
     companionType: fact('Stellar'),

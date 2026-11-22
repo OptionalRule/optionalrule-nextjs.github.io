@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach, afterAll } from 'vitest';
 import { performSearch, getSearchTags } from './search';
-import { mockGlobalFetch } from '@/test-utils/mocks';
+import { createMockResponse, mockGlobalFetch } from '@/test-utils/mocks';
 
 const { fetchMock, restore: restoreFetch } = mockGlobalFetch();
 
@@ -44,10 +44,10 @@ describe('Search functionality', () => {
 
   describe('loadSearchIndex', () => {
     it('loads search index successfully', async () => {
-      fetchMock.mockResolvedValueOnce({
+      fetchMock.mockResolvedValueOnce(createMockResponse({
         ok: true,
         json: () => Promise.resolve(mockSearchData)
-      });
+      }));
 
       // Import fresh module
       const { loadSearchIndex: freshLoadSearchIndex } = await import('./search');
@@ -57,10 +57,10 @@ describe('Search functionality', () => {
     });
 
     it('returns empty array on fetch failure', async () => {
-      fetchMock.mockResolvedValueOnce({
+      fetchMock.mockResolvedValueOnce(createMockResponse({
         ok: false,
         status: 404
-      });
+      }));
 
       const { loadSearchIndex: freshLoadSearchIndex } = await import('./search');
       const result = await freshLoadSearchIndex();
@@ -90,10 +90,10 @@ describe('Search functionality', () => {
         mockSearchData[1]
       ];
 
-      fetchMock.mockResolvedValueOnce({
+      fetchMock.mockResolvedValueOnce(createMockResponse({
         ok: true,
         json: () => Promise.resolve(invalidData)
-      });
+      }));
 
       const { loadSearchIndex: freshLoadSearchIndex } = await import('./search');
       const result = await freshLoadSearchIndex();
@@ -102,10 +102,10 @@ describe('Search functionality', () => {
     });
 
     it('handles non-array response', async () => {
-      fetchMock.mockResolvedValueOnce({
+      fetchMock.mockResolvedValueOnce(createMockResponse({
         ok: true,
         json: () => Promise.resolve({ not: 'an array' })
-      });
+      }));
 
       const { loadSearchIndex: freshLoadSearchIndex } = await import('./search');
       const result = await freshLoadSearchIndex();
@@ -117,10 +117,10 @@ describe('Search functionality', () => {
     });
 
     it('caches the search index after first load', async () => {
-      fetchMock.mockResolvedValueOnce({
+      fetchMock.mockResolvedValueOnce(createMockResponse({
         ok: true,
         json: () => Promise.resolve(mockSearchData)
-      });
+      }));
 
       // Import fresh module to test caching
       const { loadSearchIndex: freshLoadSearchIndex } = await import('./search');
@@ -138,10 +138,10 @@ describe('Search functionality', () => {
 
   describe('performSearch', () => {
     beforeEach(() => {
-      fetchMock.mockResolvedValue({
+      fetchMock.mockResolvedValue(createMockResponse({
         ok: true,
         json: () => Promise.resolve(mockSearchData)
-      });
+      }));
     });
 
     it('returns empty array for empty query', async () => {
@@ -194,10 +194,10 @@ describe('Search functionality', () => {
 
   describe('getSearchTags', () => {
     beforeEach(() => {
-      fetchMock.mockResolvedValue({
+      fetchMock.mockResolvedValue(createMockResponse({
         ok: true,
         json: () => Promise.resolve(mockSearchData)
-      });
+      }));
     });
 
     it('returns unique sorted tags', async () => {
@@ -208,10 +208,10 @@ describe('Search functionality', () => {
     });
 
     it('handles empty search index', async () => {
-      fetchMock.mockResolvedValueOnce({
+      fetchMock.mockResolvedValueOnce(createMockResponse({
         ok: true,
         json: () => Promise.resolve([])
-      });
+      }));
 
       // Import fresh module
       const { getSearchTags: freshGetSearchTags } = await import('./search');
@@ -225,10 +225,10 @@ describe('Search functionality', () => {
         { ...mockSearchData[1], tags: ['React', 'TypeScript'] }
       ];
 
-      fetchMock.mockResolvedValue({
+      fetchMock.mockResolvedValue(createMockResponse({
         ok: true,
         json: () => Promise.resolve(dataWithDuplicates)
-      });
+      }));
 
       const result = await getSearchTags();
       

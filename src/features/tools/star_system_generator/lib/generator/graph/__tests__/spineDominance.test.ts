@@ -3,7 +3,7 @@ import { scoreCandidates, selectEdges } from '../score'
 import type { EntityRef, RelationshipEdge } from '../types'
 import { balancedBank } from '../../factions/banks/balancedBank'
 import { generateSystem } from '../../index'
-import type { GenerationOptions } from '../../../types'
+import type { GenerationOptions } from '../../../../types'
 
 function makeEdge(overrides: Partial<RelationshipEdge> & Pick<RelationshipEdge, 'subject' | 'object'>): RelationshipEdge {
   return {

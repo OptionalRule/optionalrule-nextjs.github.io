@@ -251,7 +251,7 @@ describe('Static Site Generation Tests', () => {
       };
 
       mockFs.existsSync.mockReturnValue(true);
-      mockFs.readdirSync.mockReturnValue([mockPost.filename]);
+      mockFs.readdirSync.mockReturnValue([mockPost.filename] as unknown as ReturnType<typeof fs.readdirSync>);
       mockFs.readFileSync.mockReturnValue('mock file content');
       
       mockGrayMatter.mockReturnValue({

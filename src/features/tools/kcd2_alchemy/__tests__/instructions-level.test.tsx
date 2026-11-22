@@ -7,6 +7,7 @@ import type { NormalizedPotionRecipe } from '../types'
 const potion: NormalizedPotionRecipe = {
   id: 'p1',
   name: 'Test Tonic',
+  baseValue: 0,
   ingredients: { liquid: 'Water', liquidId: 'water', items: [{ id: 'mint', name: 'Mint', quantity: 1 }] },
   instructions: {
     default: ['Boil water', 'Add mint'],

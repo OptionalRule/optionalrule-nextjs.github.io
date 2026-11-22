@@ -36,21 +36,6 @@ vi.mock('three', () => {
   return { RingGeometry, SphereGeometry, ShaderMaterial, Color, DoubleSide: 2 }
 })
 
-declare global {
-  namespace JSX {
-    interface IntrinsicElements {
-      mesh: React.HTMLAttributes<HTMLElement> & {
-        geometry?: unknown
-        material?: unknown
-        position?: unknown
-        scale?: unknown
-        renderOrder?: number
-        raycast?: unknown
-      }
-    }
-  }
-}
-
 import { DebrisVolumeFog, volumeFogLayerCount } from '../DebrisVolumeFog'
 import { defaultDebrisVisualProfile } from '../debrisVisualProfile'
 

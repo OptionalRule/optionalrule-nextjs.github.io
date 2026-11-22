@@ -79,19 +79,6 @@ vi.mock('three', () => {
 
 vi.mock('@react-three/fiber', () => ({}))
 
-declare global {
-  namespace JSX {
-    interface IntrinsicElements {
-      mesh: React.HTMLAttributes<HTMLElement> & { geometry?: unknown; material?: unknown; rotation?: unknown; position?: unknown; scale?: unknown; renderOrder?: number; raycast?: unknown }
-      group: React.HTMLAttributes<HTMLElement> & { rotation?: unknown }
-      points: React.HTMLAttributes<HTMLElement> & { geometry?: unknown; material?: unknown; renderOrder?: number }
-      primitive: React.HTMLAttributes<HTMLElement> & { object?: unknown; dispose?: unknown }
-      sphereGeometry: React.HTMLAttributes<HTMLElement> & { args?: unknown }
-      meshBasicMaterial: React.HTMLAttributes<HTMLElement> & { color?: string; transparent?: boolean; opacity?: number }
-    }
-  }
-}
-
 import { DebrisFieldRing } from '../DebrisFieldRing'
 
 describe('DebrisFieldRing', () => {

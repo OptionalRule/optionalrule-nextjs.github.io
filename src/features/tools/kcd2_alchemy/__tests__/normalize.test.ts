@@ -12,6 +12,7 @@ describe('Normalization utilities', () => {
   const potion: PotionRecipe = {
     id: '01',
     name: 'Test',
+    baseValue: 0,
     ingredients: {
       liquid: 'Water',
       items: [

@@ -9,6 +9,7 @@ import type { BuildCtx } from '../rules/ruleTypes'
 import type { EntityRef } from '../types'
 import type { EntityInventoryInput } from '../entities'
 import { createSeededRng } from '../../rng'
+import { isNarrativeDomain } from '../../narrative/domains'
 import type { NarrativeFact } from '../../../../types'
 
 const singleDomainFaction = realFactions.find(f => {
@@ -105,7 +106,7 @@ describe('CONTRADICTS:ruinHook-vs-settlementAuthority', () => {
           kind: 'ruin.hook',
           subjectType: 'ruin',
           subjectId: 'ruin-1',
-          domains: ['archive'],
+          domains: ['archaeology'],
           value: { value: 'a buried archive of original logs', confidence: 'derived' },
         }),
         makeFact({
@@ -113,7 +114,7 @@ describe('CONTRADICTS:ruinHook-vs-settlementAuthority', () => {
           kind: 'settlement.authority',
           subjectType: 'settlement',
           subjectId: 'settlement-1',
-          domains: ['archive'],
+          domains: ['archaeology'],
           value: { value: 'official archive committee', confidence: 'derived' },
         }),
       ],
@@ -219,7 +220,7 @@ describe('CONTRADICTS:ruinHook-vs-settlementAuthority', () => {
           kind: 'ruin.hook',
           subjectType: 'ruin',
           subjectId: 'ruin-1',
-          domains: ['archive'],
+          domains: ['archaeology'],
           value: { value: 'a buried archive', confidence: 'derived' },
         }),
         makeFact({
@@ -227,7 +228,7 @@ describe('CONTRADICTS:ruinHook-vs-settlementAuthority', () => {
           kind: 'settlement.authority',
           subjectType: 'settlement',
           subjectId: 'settlement-1',
-          domains: ['archive'],
+          domains: ['archaeology'],
           value: { value: 'official archive committee', confidence: 'derived' },
         }),
       ],
@@ -311,7 +312,7 @@ describe('CONTRADICTS:ruinHook-vs-settlementAuthority', () => {
           kind: 'ruin.hook',
           subjectType: 'ruin',
           subjectId: 'ruin-1',
-          domains: ['archive'],
+          domains: ['archaeology'],
           value: { value: 'a buried archive', confidence: 'derived' },
         }),
         makeFact({
@@ -319,7 +320,7 @@ describe('CONTRADICTS:ruinHook-vs-settlementAuthority', () => {
           kind: 'settlement.authority',
           subjectType: 'settlement',
           subjectId: 'settlement-b',
-          domains: ['archive'],
+          domains: ['archaeology'],
           value: { value: 'archive court', confidence: 'derived' },
         }),
         makeFact({
@@ -327,7 +328,7 @@ describe('CONTRADICTS:ruinHook-vs-settlementAuthority', () => {
           kind: 'settlement.authority',
           subjectType: 'settlement',
           subjectId: 'settlement-a',
-          domains: ['archive'],
+          domains: ['archaeology'],
           value: { value: 'archive court', confidence: 'derived' },
         }),
       ],
@@ -362,7 +363,7 @@ describe('CONTRADICTS:hiddenTruth-vs-publicSurface', () => {
           kind: 'namedFaction',
           subjectType: 'faction',
           value: { value: singleDomainFaction.name, confidence: 'derived' },
-          domains: [...singleDomainFaction.domains],
+          domains: singleDomainFaction.domains.filter(isNarrativeDomain),
         }),
         makeFact({
           id: 'f-auth-1',
@@ -377,7 +378,7 @@ describe('CONTRADICTS:hiddenTruth-vs-publicSurface', () => {
           kind: 'settlement.hiddenTruth',
           subjectType: 'settlement',
           subjectId: 'settlement-1',
-          domains: ['archive'],
+          domains: ['archaeology'],
           value: { value: 'records of the original colonists are missing', confidence: 'inferred' },
         }),
         makeFact({
@@ -385,7 +386,7 @@ describe('CONTRADICTS:hiddenTruth-vs-publicSurface', () => {
           kind: 'settlement.tagHook',
           subjectType: 'settlement',
           subjectId: 'settlement-1',
-          domains: ['archive'],
+          domains: ['archaeology'],
           value: { value: 'public archive open to all', confidence: 'derived' },
         }),
       ],
@@ -421,7 +422,7 @@ describe('CONTRADICTS:hiddenTruth-vs-publicSurface', () => {
           kind: 'settlement.hiddenTruth',
           subjectType: 'settlement',
           subjectId: 'settlement-1',
-          domains: ['archive'],
+          domains: ['archaeology'],
           value: { value: 'a buried scandal', confidence: 'inferred' },
         }),
         makeFact({
@@ -449,7 +450,7 @@ describe('CONTRADICTS:hiddenTruth-vs-publicSurface', () => {
           kind: 'settlement.hiddenTruth',
           subjectType: 'settlement',
           subjectId: 'settlement-1',
-          domains: ['archive'],
+          domains: ['archaeology'],
           value: { value: 'records of the original colonists are missing', confidence: 'inferred' },
         }),
         makeFact({
@@ -457,7 +458,7 @@ describe('CONTRADICTS:hiddenTruth-vs-publicSurface', () => {
           kind: 'settlement.tagHook',
           subjectType: 'settlement',
           subjectId: 'settlement-1',
-          domains: ['archive'],
+          domains: ['archaeology'],
           value: { value: 'public archive open to all', confidence: 'derived' },
         }),
       ],
@@ -490,7 +491,7 @@ describe('CONTRADICTS:hiddenTruth-vs-publicSurface', () => {
           kind: 'settlement.hiddenTruth',
           subjectType: 'settlement',
           subjectId: 'settlement-b',
-          domains: ['archive'],
+          domains: ['archaeology'],
           value: { value: 'a buried scandal', confidence: 'inferred' },
         }),
         makeFact({
@@ -498,7 +499,7 @@ describe('CONTRADICTS:hiddenTruth-vs-publicSurface', () => {
           kind: 'settlement.tagHook',
           subjectType: 'settlement',
           subjectId: 'settlement-b',
-          domains: ['archive'],
+          domains: ['archaeology'],
           value: { value: 'public archive', confidence: 'derived' },
         }),
         makeFact({
@@ -506,7 +507,7 @@ describe('CONTRADICTS:hiddenTruth-vs-publicSurface', () => {
           kind: 'settlement.hiddenTruth',
           subjectType: 'settlement',
           subjectId: 'settlement-a',
-          domains: ['archive'],
+          domains: ['archaeology'],
           value: { value: 'another buried scandal', confidence: 'inferred' },
         }),
         makeFact({
@@ -514,7 +515,7 @@ describe('CONTRADICTS:hiddenTruth-vs-publicSurface', () => {
           kind: 'settlement.tagHook',
           subjectType: 'settlement',
           subjectId: 'settlement-a',
-          domains: ['archive'],
+          domains: ['archaeology'],
           value: { value: 'public archive', confidence: 'derived' },
         }),
       ],

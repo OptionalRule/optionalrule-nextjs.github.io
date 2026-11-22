@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest'
 import { debrisVisualProfile } from '../debrisVisualProfile'
 import type { DebrisFieldVisual } from '../../../types'
-import type { DebrisField } from '../../../../../types'
+import type { DebrisField } from '../../../../types'
 
 function makeField(
   shape: DebrisField['shape']['value'],

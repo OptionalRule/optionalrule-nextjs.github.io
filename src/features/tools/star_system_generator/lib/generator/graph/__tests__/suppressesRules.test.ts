@@ -10,7 +10,7 @@ vi.mock('../../data/narrative', async () => {
     id: 'test-gardener-warden',
     name: 'Synthetic Gardener Warden',
     kind: 'compact',
-    domains: ['gardener-interdiction', 'compliance'],
+    domains: ['gardener-interdiction', 'law'],
     publicFace: 'public face',
   }
   return {
@@ -29,6 +29,7 @@ import type { BuildCtx } from '../rules/ruleTypes'
 import type { EntityRef } from '../types'
 import type { EntityInventoryInput } from '../entities'
 import { createSeededRng } from '../../rng'
+import { isNarrativeDomain } from '../../narrative/domains'
 import type { NarrativeFact } from '../../../../types'
 
 const realOnlyFactions = realFactions.filter(
@@ -112,7 +113,7 @@ describe('SUPPRESSES:gardener-interdiction-target', () => {
           kind: 'namedFaction',
           subjectType: 'faction',
           value: { value: SYNTHETIC_INTERDICTION_FACTION_NAME, confidence: 'derived' },
-          domains: ['gardener-interdiction', 'compliance'],
+          domains: ['gardener-interdiction', 'law'],
         }),
         makeFact({
           id: 'f-phen-1',
@@ -209,7 +210,7 @@ describe('SUPPRESSES:gardener-interdiction-target', () => {
           kind: 'namedFaction',
           subjectType: 'faction',
           value: { value: SYNTHETIC_INTERDICTION_FACTION_NAME, confidence: 'derived' },
-          domains: ['gardener-interdiction', 'compliance'],
+          domains: ['gardener-interdiction', 'law'],
         }),
         makeFact({
           id: 'f-phen-b',
@@ -256,7 +257,7 @@ describe('SUPPRESSES:authority-over-hiddenTruth', () => {
           kind: 'namedFaction',
           subjectType: 'faction',
           value: { value: singleDomainFaction.name, confidence: 'derived' },
-          domains: [...singleDomainFaction.domains],
+          domains: singleDomainFaction.domains.filter(isNarrativeDomain),
         }),
         makeFact({
           id: 'f-auth-1',
@@ -397,7 +398,7 @@ describe('SUPPRESSES:authority-over-hiddenTruth', () => {
           kind: 'namedFaction',
           subjectType: 'faction',
           value: { value: singleDomainFaction.name, confidence: 'derived' },
-          domains: [...singleDomainFaction.domains],
+          domains: singleDomainFaction.domains.filter(isNarrativeDomain),
         }),
         makeFact({
           id: 'f-auth-b',

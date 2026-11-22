@@ -4,7 +4,7 @@ import type { ConflictParty } from '../types'
 import type { SeededRng } from '../../rng'
 import type { EntityRef, RelationshipEdge, SystemRelationshipGraph } from '../../graph/types'
 import { EDGE_TYPES } from '../../graph/types'
-import type { Settlement } from '../../../types'
+import type { Settlement } from '../../../../types'
 
 const factionA: EntityRef = { kind: 'namedFaction', id: 'fac-a', displayName: 'Kestrel Free Compact', layer: 'human' }
 const factionB: EntityRef = { kind: 'namedFaction', id: 'fac-b', displayName: 'Red Vane Labor Combine', layer: 'human' }
@@ -41,8 +41,8 @@ function makeSettlement(id: string, hiddenTruth: string): Settlement {
     name: f('Orison Hold'),
     anchorKind: f('body'), anchorName: f('Body One'), anchorDetail: f(''),
     siteCategory: f('Surface settlement'), location: f('surface'), function: f('Salvage yard'),
-    population: { value: 'Hundreds', confidence: 'inferred' },
-    habitationPattern: { value: 'Inhabited', confidence: 'inferred' },
+    population: { value: '101-1,000', confidence: 'inferred' },
+    habitationPattern: { value: 'Surface settlement', confidence: 'inferred' },
     authority: f('Salvage court'), builtForm: f('Dome'), aiSituation: f('None'), condition: f('Stable'),
     tags: [], tagHook: f(''), crisis: f('Ship full of dead arrives'), hiddenTruth: f(hiddenTruth),
     encounterSites: [], whyHere: f(''), methodNotes: [],
@@ -50,7 +50,7 @@ function makeSettlement(id: string, hiddenTruth: string): Settlement {
       score: n(0), roll: n(0), tier: f('outpost'), resource: n(0), access: n(0),
       strategic: n(0), guValue: n(0), habitability: n(0), hazard: n(0), legalHeat: n(0),
     },
-  } as Settlement
+  }
 }
 
 function stubRng(values: readonly number[]): { rng: SeededRng; calls: () => number } {

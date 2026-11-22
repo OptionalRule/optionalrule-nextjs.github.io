@@ -8,6 +8,7 @@ import type { BuildCtx } from '../rules/ruleTypes'
 import type { EntityRef } from '../types'
 import type { EntityInventoryInput } from '../entities'
 import { createSeededRng } from '../../rng'
+import { isNarrativeDomain } from '../../narrative/domains'
 import type { NarrativeFact } from '../../../../types'
 import { namedFactions } from '../../data/narrative'
 import { CONTROL_DOMAINS } from '../rules/settingPatterns'
@@ -19,7 +20,7 @@ const overlappingPair = (() => {
     for (let j = i + 1; j < namedFactions.length; j++) {
       const a = namedFactions[i]
       const b = namedFactions[j]
-      const shared = a.domains.find(d => b.domains.includes(d))
+      const shared = a.domains.filter(isNarrativeDomain).find(d => b.domains.includes(d))
       if (shared) return { a, b, shared }
     }
   }
@@ -98,7 +99,7 @@ describe('CONTROLS:namedFaction-settlement-uniqueDomain', () => {
           kind: 'namedFaction',
           subjectType: 'faction',
           value: { value: singleFaction.name, confidence: 'derived' },
-          domains: [...singleFaction.domains],
+          domains: singleFaction.domains.filter(isNarrativeDomain),
         }),
         makeFact({
           id: 'f-auth-1',
@@ -149,14 +150,14 @@ describe('CONTROLS:namedFaction-settlement-uniqueDomain', () => {
           kind: 'namedFaction',
           subjectType: 'faction',
           value: { value: a.name, confidence: 'derived' },
-          domains: [...a.domains],
+          domains: a.domains.filter(isNarrativeDomain),
         }),
         makeFact({
           id: 'f-fac-b',
           kind: 'namedFaction',
           subjectType: 'faction',
           value: { value: b.name, confidence: 'derived' },
-          domains: [...b.domains],
+          domains: b.domains.filter(isNarrativeDomain),
         }),
         makeFact({
           id: 'f-auth-1',
@@ -200,7 +201,7 @@ describe('CONTROLS:namedFaction-settlement-uniqueDomain', () => {
           kind: 'namedFaction',
           subjectType: 'faction',
           value: { value: singleFaction.name, confidence: 'derived' },
-          domains: [...singleFaction.domains],
+          domains: singleFaction.domains.filter(isNarrativeDomain),
         }),
         makeFact({
           id: 'f-auth-b',
@@ -247,7 +248,7 @@ describe('CONTROLS:namedFaction-routeAsset', () => {
           kind: 'namedFaction',
           subjectType: 'faction',
           value: { value: faction.name, confidence: 'derived' },
-          domains: [...faction.domains],
+          domains: faction.domains.filter(isNarrativeDomain),
         }),
         makeFact({
           id: 'f-loc-1',
@@ -295,7 +296,7 @@ describe('CONTROLS:namedFaction-routeAsset', () => {
           kind: 'namedFaction',
           subjectType: 'faction',
           value: { value: faction.name, confidence: 'derived' },
-          domains: [...faction.domains],
+          domains: faction.domains.filter(isNarrativeDomain),
         }),
         makeFact({
           id: 'f-loc-1',
@@ -328,7 +329,7 @@ describe('CONTROLS:namedFaction-routeAsset', () => {
           kind: 'namedFaction',
           subjectType: 'faction',
           value: { value: faction.name, confidence: 'derived' },
-          domains: [...faction.domains],
+          domains: faction.domains.filter(isNarrativeDomain),
         }),
       ],
     })
@@ -353,7 +354,7 @@ describe('CONTROLS:namedFaction-routeAsset', () => {
           kind: 'namedFaction',
           subjectType: 'faction',
           value: { value: faction.name, confidence: 'derived' },
-          domains: [...faction.domains],
+          domains: faction.domains.filter(isNarrativeDomain),
         }),
         makeFact({
           id: 'f-bleed',

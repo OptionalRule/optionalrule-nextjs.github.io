@@ -8,6 +8,7 @@ import type { BuildCtx } from '../rules/ruleTypes'
 import type { EntityRef } from '../types'
 import type { EntityInventoryInput } from '../entities'
 import { createSeededRng } from '../../rng'
+import { isNarrativeDomain } from '../../narrative/domains'
 import type { NarrativeFact } from '../../../../types'
 import { namedFactions } from '../../data/narrative'
 
@@ -16,7 +17,7 @@ const factionPair = (() => {
     for (let j = i + 1; j < namedFactions.length; j++) {
       const a = namedFactions[i]
       const b = namedFactions[j]
-      const sharedDomain = a.domains.find(d => b.domains.includes(d))
+      const sharedDomain = a.domains.filter(isNarrativeDomain).find(d => b.domains.includes(d))
       if (sharedDomain) return { a, b, sharedDomain }
     }
   }
@@ -87,14 +88,14 @@ describe('CONTESTS:namedFaction-namedFaction-sharedDomain', () => {
           kind: 'namedFaction',
           subjectType: 'faction',
           value: { value: a.name, confidence: 'derived' },
-          domains: [...a.domains],
+          domains: a.domains.filter(isNarrativeDomain),
         }),
         makeFact({
           id: 'f-fac-b',
           kind: 'namedFaction',
           subjectType: 'faction',
           value: { value: b.name, confidence: 'derived' },
-          domains: [...b.domains],
+          domains: b.domains.filter(isNarrativeDomain),
         }),
         makeFact({
           id: 'f-auth-1',
@@ -154,7 +155,7 @@ describe('CONTESTS:namedFaction-namedFaction-sharedDomain', () => {
           kind: 'settlement.authority',
           subjectType: 'settlement',
           subjectId: 'settlement-1',
-          domains: [...a.domains, ...b.domains],
+          domains: [...a.domains, ...b.domains].filter(isNarrativeDomain),
           value: { value: 'compliance bureau', confidence: 'derived' },
         }),
       ],
@@ -196,14 +197,14 @@ describe('CONTESTS:namedFaction-namedFaction-sharedDomain', () => {
           kind: 'namedFaction',
           subjectType: 'faction',
           value: { value: a.name, confidence: 'derived' },
-          domains: [...a.domains],
+          domains: a.domains.filter(isNarrativeDomain),
         }),
         makeFact({
           id: 'f-fac-b',
           kind: 'namedFaction',
           subjectType: 'faction',
           value: { value: b.name, confidence: 'derived' },
-          domains: [...b.domains],
+          domains: b.domains.filter(isNarrativeDomain),
         }),
         makeFact({
           id: 'f-auth-1',
@@ -236,7 +237,7 @@ describe('CONTESTS:namedFaction-namedFaction-sharedDomain', () => {
           kind: 'settlement.authority',
           subjectType: 'settlement',
           subjectId: 'settlement-1',
-          domains: ['unrelated-domain-xyz'],
+          domains: ['route-weather'],
           value: { value: 'compliance bureau', confidence: 'derived' },
         }),
       ],
@@ -259,7 +260,7 @@ describe('CONTESTS:namedFaction-authority', () => {
           kind: 'namedFaction',
           subjectType: 'faction',
           value: { value: singleFaction.name, confidence: 'derived' },
-          domains: [...singleFaction.domains],
+          domains: singleFaction.domains.filter(isNarrativeDomain),
         }),
         makeFact({
           id: 'f-auth-1',

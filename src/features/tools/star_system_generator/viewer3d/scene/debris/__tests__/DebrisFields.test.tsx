@@ -85,25 +85,9 @@ vi.mock('../../overlay/OverlayMarker', () => ({
   ),
 }))
 
-declare global {
-  namespace JSX {
-    interface IntrinsicElements {
-      mesh: React.HTMLAttributes<HTMLElement> & { geometry?: unknown; material?: unknown; rotation?: unknown; position?: unknown; scale?: unknown; renderOrder?: number; raycast?: unknown }
-      meshBasicMaterial: React.HTMLAttributes<HTMLElement> & { color?: string; transparent?: boolean; opacity?: number; side?: unknown }
-      points: React.HTMLAttributes<HTMLElement> & { geometry?: unknown; material?: unknown; renderOrder?: number }
-      pointsMaterial: React.HTMLAttributes<HTMLElement> & { color?: string; size?: number; sizeAttenuation?: boolean; transparent?: boolean; opacity?: number }
-      line: React.HTMLAttributes<HTMLElement> & { geometry?: unknown }
-      lineBasicMaterial: React.HTMLAttributes<HTMLElement> & { vertexColors?: boolean; transparent?: boolean; opacity?: number }
-      group: React.HTMLAttributes<HTMLElement> & { rotation?: unknown }
-      sphereGeometry: React.HTMLAttributes<HTMLElement> & { args?: unknown }
-      primitive: React.HTMLAttributes<HTMLElement> & { object?: unknown; dispose?: unknown }
-    }
-  }
-}
-
 import { DebrisFields } from '../DebrisFields'
 import type { DebrisFieldVisual } from '../../../types'
-import type { DebrisField } from '../../../../../types'
+import type { DebrisField } from '../../../../types'
 
 function makeField(shape: DebrisField['shape']['value'], id = 'd1'): DebrisFieldVisual {
   return {

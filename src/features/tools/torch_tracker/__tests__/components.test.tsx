@@ -137,7 +137,6 @@ describe('ActiveLightCard', () => {
 
     const metrics = screen.getAllByLabelText(/Bright radius/i, {
       selector: '.torch-card-metric',
-      hidden: true,
     })
 
     metrics.forEach((metric) => {
@@ -313,6 +312,10 @@ describe('TorchTrackerHeader disabled states', () => {
         onResetAll={vi.fn()}
         onAdvance={vi.fn()}
         canAdvance={false}
+        canToggleClock={true}
+        canReset={true}
+        isPersistenceEnabled={false}
+        onTogglePersistence={vi.fn()}
         catalog={<div>catalog</div>}
       />,
     )
