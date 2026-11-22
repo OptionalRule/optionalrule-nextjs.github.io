@@ -134,6 +134,16 @@ More content`;
       ]);
     });
 
+    it('suffixes later duplicate ids in document order', () => {
+      const content = ['## Rare', '## Rare', '## Rare-1', '## Rare'].join('\n');
+      expect(extractHeadings(content).map((h) => h.id)).toEqual(['rare', 'rare-1', 'rare-1-1', 'rare-2']);
+    });
+
+    it('starts the duplicate count fresh for each document', () => {
+      expect(extractHeadings('## Rare').map((h) => h.id)).toEqual(['rare']);
+      expect(extractHeadings('## Rare').map((h) => h.id)).toEqual(['rare']);
+    });
+
     it('includes headings inside blockquotes and skips fenced code', () => {
       const content = ['> ## Pony/Mule', '```python', '# a comment', '```', '## After'].join('\n');
       expect(extractHeadings(content).map((h) => h.id)).toEqual(['ponymule', 'after']);

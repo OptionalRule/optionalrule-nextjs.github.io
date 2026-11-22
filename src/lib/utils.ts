@@ -48,6 +48,19 @@ export function generateHeadingId(text: string): string {
   return text.toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]/g, '');
 }
 
+export function createHeadingIdAllocator(): (text: string) => string {
+  const used = new Set<string>();
+  return (text: string): string => {
+    const base = generateHeadingId(text);
+    let id = base;
+    for (let n = 1; used.has(id); n++) {
+      id = `${base}-${n}`;
+    }
+    used.add(id);
+    return id;
+  };
+}
+
 export function markdownHeadingText(markdown: string): string {
   let text = markdown
     .replace(/!\[([^\]]*)\]\([^)]*\)/g, '$1')
@@ -69,6 +82,7 @@ const BLOCKQUOTE_PREFIX = /^(?: {0,3}> ?)+/;
 
 export function extractHeadings(content: string): Array<{ level: number; text: string; id: string }> {
   const headings: Array<{ level: number; text: string; id: string }> = [];
+  const allocateId = createHeadingIdAllocator();
   let fence: string | null = null;
 
   for (const rawLine of content.split('\n')) {
@@ -87,7 +101,7 @@ export function extractHeadings(content: string): Array<{ level: number; text: s
     const match = ATX_HEADING.exec(line);
     if (!match || match[2] === '') continue;
     const text = markdownHeadingText(match[2]);
-    headings.push({ level: match[1].length, text, id: generateHeadingId(text) });
+    headings.push({ level: match[1].length, text, id: allocateId(text) });
   }
 
   return headings;

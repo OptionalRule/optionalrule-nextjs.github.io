@@ -44,6 +44,13 @@ describe('heading ids across all published content', () => {
     }
   }, 120000);
 
+  it('never repeats a heading id within a page', () => {
+    const duplicates = rendered.flatMap(({ key, pageIds }) =>
+      pageIds.filter((id, i) => pageIds.indexOf(id) !== i).map((id) => `${key}: ${id}`),
+    );
+    expect(duplicates).toEqual([]);
+  });
+
   it('gives the table of contents the same ids as the rendered headings', () => {
     const mismatched = rendered
       .filter(({ tocIds, pageIds }) => JSON.stringify(tocIds) !== JSON.stringify(pageIds))
@@ -51,7 +58,7 @@ describe('heading ids across all published content', () => {
     expect(mismatched).toEqual([]);
   });
 
-  it('keeps every published page id except the former object-object ids', () => {
+  it('keeps every published page id except former object-object ids and later duplicates', () => {
     const snapshot = publishedIds as Record<string, string[]>;
     const changes: string[] = [];
     for (const { key, pageIds } of rendered) {
@@ -62,6 +69,13 @@ describe('heading ids across all published content', () => {
       }
     }
     expect(changes).toEqual([
+      'post:places-of-power: uncommon-universal -> uncommon-universal-1',
+      'post:places-of-power: uncommon-universal -> uncommon-universal-2',
+      'post:places-of-power: rare-universal -> rare-universal-1',
+      'post:places-of-power: rare-universal -> rare-universal-2',
+      'post:places-of-power: rare-universal -> rare-universal-3',
+      'post:places-of-power: very-rare-universal -> very-rare-universal-1',
+      'post:april-2021-experimental-house-rules: comments-so-far -> comments-so-far-1',
       'post:my-current-5e-house-rules: object-object -> spells',
       'post:thoughts-on-the-first-issue-of-arcadia: object-object -> i-do-not-do-reviews-disclaimer',
     ]);

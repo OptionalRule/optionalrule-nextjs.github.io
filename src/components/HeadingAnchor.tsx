@@ -13,10 +13,10 @@ function nodeText(node: ReactNode): string {
   return '';
 }
 
-export default function HeadingAnchor({ level, children, ...props }: HeadingAnchorProps) {
+export default function HeadingAnchor({ level, children, id: providedId, ...props }: HeadingAnchorProps) {
   const Tag = `h${level}` as const;
   const text = nodeText(children);
-  const id = generateHeadingId(text);
+  const id = providedId ?? generateHeadingId(text);
 
   return (
     <Tag id={id} className="group scroll-mt-20" {...props}>

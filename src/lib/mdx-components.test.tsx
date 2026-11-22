@@ -24,6 +24,14 @@ describe('mdxComponents', () => {
     expect(await render(source)).toContain(`id="${id}"`);
   });
 
+  it('suffixes duplicate heading ids per render without leaking between pages', async () => {
+    const html = await render('## Rare\n\n## Rare');
+    expect(html).toContain('<h2 id="rare"');
+    expect(html).toContain('<h2 id="rare-1"');
+    expect(html).toContain('href="#rare-1"');
+    expect(await render('## Rare')).toContain('<h2 id="rare"');
+  });
+
   it('routes links through MarkdownLink', async () => {
     const html = await render('[About](/pages/about/)');
     expect(html).toContain('href="/pages/about/"');
