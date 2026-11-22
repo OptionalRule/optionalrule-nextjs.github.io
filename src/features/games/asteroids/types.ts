@@ -214,18 +214,3 @@ export interface ControlsConfig {
   Enter: string
   Escape: string
 }
-
-export interface AudioConfig {
-  enabled: boolean
-  masterVolume: number
-  sfxVolume: number
-  musicVolume: number
-}
-
-export interface DebugConfig {
-  enabled: boolean
-  showCollisionBounds: boolean
-  showFPS: boolean
-  showEntityCount: boolean
-  logPerformance: boolean
-}
