@@ -19,3 +19,9 @@ See [index](index.md), [asteroids-engine](asteroids-engine.md).
 - 2026-11-21: the reviewer subagent type that was used had no shell, so it read files rather than `git diff`. Briefs should ask for a reviewer that has Bash (general-purpose), or should pass the commit range.
 - 2026-11-21: Turbopack refuses to build in agent worktrees because `node_modules` is a symlink outside the worktree. Use `next build --webpack` there; CI is unaffected.
 - 2026-11-21: when merging to `main`, merge the exact CI-green SHA from a temporary worktree, not the moving tip of `develop`.
+
+## 2026-11-21 defect-sweep lessons
+- Untracking a file (`git rm --cached`) in a lane deletes the main checkout's copy on the next `git pull`. Before pulling such a commit, back the file up and restore it afterwards (this was done for `.claude/settings.local.json`, `9eb815a`).
+- After a lane deletes a route, stale `.next/types` from an earlier local build break `npm run typecheck` in that worktree. Delete `.next/` and rerun; CI is unaffected.
+- Tell reviewers the expected commit trailer. One reviewer flagged the correct Opus trailer as wrong because it assumed its own model's trailer.
+- Doc-fix lanes need "change only the stale claims". A README fix deleted about 50 lines of valid sections, and the reviewer caught it (restored in `1516e61`).

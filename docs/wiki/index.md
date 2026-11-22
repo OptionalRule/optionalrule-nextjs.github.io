@@ -23,6 +23,7 @@ Chief-of-staff memory for long-running architecture work. Historical record: eve
 ## Handoffs
 - [defect-sweep handoff](../superpowers/plans/2026-11-21-defect-sweep-handoff.md) — One-pass discovery → single triage round → batched fixes (2026-11-21).
 - [defect ledger](../superpowers/plans/2026-11-21-defect-ledger.md) — 108 rows from the 2026-11-21 sweep; triage Q39–Q56.
+- [defect-sweep-2026-11-21](defect-sweep-2026-11-21.md) — Sweep summary: counts, fixes, deferrals, release `5f422e8`.
 
 ## Decisions
 - [decision-log](decision-log.md) — Dated user decisions, newest last.
