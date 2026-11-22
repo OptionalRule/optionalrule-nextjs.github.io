@@ -1,4 +1,4 @@
-#!/usr/bin/env ts-node
+#!/usr/bin/env -S node --import tsx/esm
 
 import fs from 'fs';
 import path from 'path';
