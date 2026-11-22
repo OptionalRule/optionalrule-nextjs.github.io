@@ -1,6 +1,6 @@
 # Technical Design Document (TDD) — Optional Rule Static Site
 
-Reference: Product Requirements in `documentation/PRD.md`
+Reference: Product Requirements in `docs/PRD.md`
 
 This document captures the current technical architecture, data flows, and design decisions implemented in the repository. It also highlights inconsistencies and provides recommendations to streamline and refactor the codebase for sustainability, SOLID, and DRY improvements.
 
@@ -29,7 +29,7 @@ See PRD sections “Purpose & Overview”, “Goals & Non‑Goals”, “System 
 - Content pipeline (MDX + frontmatter) handled in `src/lib/content.ts:1` using `gray-matter`, a local `zod`‑style validator alias, and utilities in `src/lib/utils.ts:1`.
 - Search pipeline: build‑time index generation to `public/search-index.json` + client‑side Fuse.js query in `src/lib/search.ts:1`.
 - SEO helpers and JSON‑LD in `src/lib/seo.ts:1`; feeds in `src/lib/feeds.ts:1` with route handlers for sitemap and robots.
-- Components in `src/components/*` with a11y and unit tests; MDX render components in `src/stories/mdx-components.tsx:1`.
+- Components in `src/components/*` with a11y and unit tests; MDX render components in `src/lib/mdx-components.tsx:1`.
 - Tests: vitest + Testing Library + jest‑axe; targeted suites under `src/__tests__/`.
 
 
@@ -106,7 +106,7 @@ See PRD sections “Purpose & Overview”, “Goals & Non‑Goals”, “System 
 ## 6. MDX Rendering and Sanitization
 
 - Rendering: `next-mdx-remote/rsc` in post and page routes.
-- Components: override mapping in `src/stories/mdx-components.tsx:1` provides consistent headings with anchors, link handling, images, lists, tables, code blocks, etc. Images fall back to `<img>` when dimensions are missing to avoid Next/Image requirements during export.
+- Components: override mapping in `src/lib/mdx-components.tsx:1` provides consistent headings with anchors, link handling, images, lists, tables, code blocks, etc. Images fall back to `<img>` when dimensions are missing to avoid Next/Image requirements during export.
 - Sanitization: custom `rehype-sanitize` plugin (`src/lib/rehype-sanitize.ts:1`) with an allow‑list schema (`src/lib/sanitize-schema.ts:1`).
   - Drops disallowed tags (e.g., `script`) and any `on*` handlers.
   - Allows select attributes (`href`, `alt`, `className`, etc.).

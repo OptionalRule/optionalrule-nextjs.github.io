@@ -71,69 +71,19 @@ draft: false
 showToc: false
 ```
 
-For static images rendered in MDX, Next.js's `<Image>` component requires explicit dimensions. Add `imageWidth` and `imageHeight` fields to your frontmatter and use them when referencing the image:
-
-```yaml
-imageWidth: 800
-imageHeight: 600
-```
-
-```mdx
-<img src="/images/example.png" alt="Example" width={frontmatter.imageWidth} height={frontmatter.imageHeight} />
-```
-
-### Content Processing
-- **Reading time calculation** automatically added to all posts
-- **Heading extraction** for table of contents generation
-- **Excerpt generation** from content if not provided in frontmatter
-- **Tag normalization** and slug generation for tag pages
-
-## TypeScript Configuration
-
-### Module Resolution
-- **Path aliases**: `@/*` maps to `./src/*` for clean imports
-- **ESM scripts**: Scripts use `node --import tsx/esm` for TypeScript execution
-- **Type definitions**: Comprehensive types in `src/lib/types.ts`
-
-### Search Index Types
-The search system uses strictly typed interfaces for `SearchIndexItem`, `SearchResult`, and `SearchOptions` with runtime validation during index loading.
-
-## Scripts and Utilities
-
-### Content Management Scripts
-All scripts use ESM loader pattern and are located in `scripts/` directory:
-- **Search index generation**: Processes all MDX files into searchable JSON
-- **Empty link detection**: Scans for broken markdown link patterns
-- **Post creation**: Interactive post scaffold with proper frontmatter
-
-### Build Process
-1. Generate search index from all posts
-2. Next.js static build with route pre-rendering  
-3. Export to `out/` directory for GitHub Pages
-4. Automatic deployment via GitHub Actions
-
-## Key Configuration Files
-
-- **Site config**: `src/config/site.ts` contains metadata, author info, analytics
-- **Content processing**: `src/lib/content.ts` handles MDX parsing and post management
-- **Route layouts**: App Router layouts in `src/app/layout.tsx` with font loading
-- **Static export**: `next.config.ts` configures GitHub Pages deployment
+Images in MDX render through the components in `src/lib/mdx-components.tsx`; no `imageWidth`/`imageHeight` frontmatter fields are read.
 
 ## Important Implementation Notes
 
 - **Content outside src/**: MDX files in `content/` directory separate from Next.js source
 - **Trailing slashes required**: All routes end with `/` for GitHub Pages compatibility
 - **Static-only**: No server-side rendering or API routes in production
-- **Image optimization enabled**: Uses Next.js `<Image>` with static export; images require width and height in frontmatter
+- **Image optimization disabled**: `images.unoptimized: true` in `next.config.ts` is required for static export to GitHub Pages
 - **Search runs client-side**: No server dependency for search functionality
 
 ## Content Security Policy
 
-The application emits a strict Content Security Policy (CSP) using Next.js middleware. A unique nonce is generated for every request and applied to inline `<script>` tags, allowing them to execute while blocking injected scripts. The middleware sets the `Content-Security-Policy` header with:
-
-- `script-src 'self' 'nonce-<random>' https://www.googletagmanager.com https://platform.twitter.com https://s.imgur.com`
-
-This restricts script execution to the site itself and the trusted domains above. Server components can read the nonce via `headers().get('x-nonce')` and pass it to `<script>` or `next/script` elements.
+The site is a static export (`output: 'export'`) with no middleware, so no Content Security Policy header or per-request nonce is emitted. `GoogleAnalytics` accepts an optional `nonce` prop, but nothing supplies one.
 
 ## Theme Toggle
 
