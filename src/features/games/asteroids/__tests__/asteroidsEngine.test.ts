@@ -174,6 +174,20 @@ describe('AsteroidsEngine browser adapter', () => {
     expect(localStorage.getItem(HIGH_SCORE_KEY)).toBeNull()
   })
 
+  it.each(['not-a-number', '-5', '12.5', '12abc', 'Infinity', 'NaN'])(
+    'reads a corrupt stored High Score %s as 0 and can clear it',
+    stored => {
+      localStorage.setItem(HIGH_SCORE_KEY, stored)
+      const game = createEngine()
+      expect(game.getSnapshot().highScore).toBe(0)
+
+      game.clearHighScore()
+
+      expect(game.getSnapshot().highScore).toBe(0)
+      expect(localStorage.getItem(HIGH_SCORE_KEY)).toBeNull()
+    }
+  )
+
   it('drives the Ship from held keys', () => {
     const game = createEngine()
     game.start()

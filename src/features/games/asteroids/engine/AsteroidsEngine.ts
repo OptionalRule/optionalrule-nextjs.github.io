@@ -13,7 +13,9 @@ const HIGH_SCORE_KEY = 'asteroids_highscore'
 function loadHighScore(): number {
   try {
     const stored = localStorage.getItem(HIGH_SCORE_KEY)
-    return stored ? parseInt(stored, 10) : 0
+    if (!stored || !/^\d+$/.test(stored)) return 0
+    const parsed = Number(stored)
+    return Number.isSafeInteger(parsed) ? parsed : 0
   } catch {
     return 0
   }
