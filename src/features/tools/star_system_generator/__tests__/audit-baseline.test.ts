@@ -23,6 +23,15 @@ describe('star system audit error baseline', () => {
       .toBe('audit:reachability.roll :: Reachability roll must be clamped to # got #')
   })
 
+  it('keeps ordinary hyphenated words in uncoded message templates', () => {
+    expect(baselineKeyForFinding({ severity: 'error', path: 'bodies[1].detail.geology', message: 'sub-neptune has surface geology "rock".' }))
+      .toBe('audit:bodies[].detail.geology :: sub-neptune has surface geology "*".')
+    expect(baselineKeyForFinding({ severity: 'error', path: 'bodies[1].detail.geology', message: 'super-Earth has surface geology "rock".' }))
+      .toBe('audit:bodies[].detail.geology :: super-Earth has surface geology "*".')
+    expect(baselineKeyForFinding({ severity: 'error', path: 'prose.unresolvedSlot', message: 'Settlement faction-watch-order-trust whyHere contains unresolved slot.' }))
+      .toBe('audit:prose.unresolvedSlot :: Settlement # whyHere contains unresolved slot.')
+  })
+
   it('catches a rise in one uncoded finding hidden by a drop in another on the same path', () => {
     const furnace = { severity: 'error', path: 'bodies[0].detail.hydrosphere', message: 'Furnace world has implausible hydrosphere "ice".' }
     const inferno = { severity: 'error', path: 'bodies[1].detail.hydrosphere', message: 'Inferno world has implausible hydrosphere "ice".' }

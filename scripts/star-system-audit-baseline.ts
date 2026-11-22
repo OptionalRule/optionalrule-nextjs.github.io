@@ -27,7 +27,7 @@ export function messageTemplate(message: string): string {
     .replace(/"[^"]*"/g, '"*"')
     .split(/\s+/)
     .filter(token => token.length > 0)
-    .map(token => (/\d|\w[:-]\w/.test(token) ? '#' : token))
+    .map(token => (/\d|\w:\w|--|\w-\w+-\w/.test(token) ? '#' : token))
     .join(' ')
 }
 
