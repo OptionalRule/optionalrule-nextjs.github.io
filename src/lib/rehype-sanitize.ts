@@ -2,8 +2,8 @@ import { visit, SKIP } from 'unist-util-visit';
 import type { Root, Element } from 'hast';
 
 interface SanitizeSchema {
-  tagNames?: string[];
-  attributes?: Record<string, string[]>;
+  tagNames?: readonly string[];
+  attributes?: Readonly<Record<string, readonly string[]>>;
 }
 
 /**
