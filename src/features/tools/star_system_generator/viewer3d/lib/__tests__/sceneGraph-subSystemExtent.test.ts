@@ -38,12 +38,10 @@ describe('sub-system orbit-ring scene radius is capped against companion offset'
     const graph = buildSceneGraph(system)
     const sibling = system.companions.find((c) => c.mode === 'orbital-sibling' && c.subSystem)
     expect(sibling).toBeTruthy()
-    if (!sibling) return
-
+    if (!sibling) throw new Error('test precondition not met: !sibling')
     const sub = graph.subSystems.find((entry) => entry.star.id === sibling.id)
     expect(sub).toBeTruthy()
-    if (!sub) return
-
+    if (!sub) throw new Error('test precondition not met: !sub')
     const offset = Math.hypot(...sub.star.position)
     const separationAu = separationToBucketAu(sibling.separation.value)
     const primaryLimitAu = siblingOuterAuLimit(separationAu, system.primary.massSolar.value, sibling.star.massSolar.value)

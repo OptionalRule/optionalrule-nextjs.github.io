@@ -149,7 +149,7 @@ describe('HIDES_FROM:hiddenTruth-from-gardenerFaction', () => {
 
   it('produces no match when a hiddenTruth is present but no gardener-interdiction faction is present (real-data path)', () => {
     expect(nonGardenerFaction).toBeDefined()
-    if (!nonGardenerFaction) return
+    if (!nonGardenerFaction) throw new Error('test precondition not met: !nonGardenerFaction')
     const ctx = makeCtx({
       entities: [
         { kind: 'settlement', id: 'settlement-1', displayName: 'Hold', layer: 'human' },
@@ -250,7 +250,7 @@ describe('HIDES_FROM:hiddenTruth-from-gardenerFaction', () => {
 describe('HIDES_FROM:aiSituation-from-authority', () => {
   it('produces a match when an aiSituation contains a hiding keyword and a unique controlling faction is identifiable', () => {
     expect(singleDomainFaction).toBeDefined()
-    if (!singleDomainFaction) return
+    if (!singleDomainFaction) throw new Error('test precondition not met: !singleDomainFaction')
     const uniqueDomain = uniqueDomainFor(singleDomainFaction)
 
     const ctx = makeCtx({
@@ -309,7 +309,7 @@ describe('HIDES_FROM:aiSituation-from-authority', () => {
 
   it('produces no match when the aiSituation lacks a hiding keyword', () => {
     expect(singleDomainFaction).toBeDefined()
-    if (!singleDomainFaction) return
+    if (!singleDomainFaction) throw new Error('test precondition not met: !singleDomainFaction')
     const uniqueDomain = uniqueDomainFor(singleDomainFaction)
 
     const ctx = makeCtx({
@@ -363,8 +363,7 @@ describe('HIDES_FROM:aiSituation-from-authority', () => {
       return null
     })()
     expect(sharedDomain).toBeDefined()
-    if (!sharedDomain) return
-
+    if (!sharedDomain) throw new Error('test precondition not met: !sharedDomain')
     const ctx = makeCtx({
       entities: [
         { kind: 'settlement', id: 'settlement-1', displayName: 'Hold', layer: 'human' },
@@ -404,7 +403,7 @@ describe('HIDES_FROM:aiSituation-from-authority', () => {
 
   it('sorts matches deterministically by subject id then object id', () => {
     expect(singleDomainFaction).toBeDefined()
-    if (!singleDomainFaction) return
+    if (!singleDomainFaction) throw new Error('test precondition not met: !singleDomainFaction')
     const uniqueDomain = uniqueDomainFor(singleDomainFaction)
 
     const ctx = makeCtx({

@@ -39,7 +39,7 @@ describe('failed terraform → HumanRemnant', () => {
 
   it('produces stable terraform ruins across runs with the same seed', () => {
     const found = findFailedTerraformSeed()
-    if (!found) return
+    if (!found) throw new Error('test precondition not met: !found')
     const a = generateSystem({ ...baseOptions, seed: found.seed })
     const b = generateSystem({ ...baseOptions, seed: found.seed })
     expect(a.ruins.map((r) => r.remnantType.value)).toEqual(b.ruins.map((r) => r.remnantType.value))
@@ -50,7 +50,7 @@ describe('failed terraform → HumanRemnant', () => {
     const failedBodyNames = sys.bodies
       .filter((b) => b.population?.value.terraformState === 'failed')
       .map((b) => b.name.value)
-    if (failedBodyNames.length !== 0) return
+    if (failedBodyNames.length !== 0) throw new Error('test precondition not met: failedBodyNames.length !== 0')
     const phantomRuins = sys.ruins.filter((r) => isTerraformRuinType(r.remnantType.value))
     expect(phantomRuins.length).toBe(0)
   })

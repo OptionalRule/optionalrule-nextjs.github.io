@@ -64,8 +64,7 @@ describe('SystemLevelRail', () => {
     const hasAny =
       graph.systemLevelHazards.length + graph.systemLevelPhenomena.length > 0
       || graph.subSystems.some((s) => s.systemLevelHazards.length + s.systemLevelPhenomena.length > 0)
-    if (!hasAny) return
-
+    if (!hasAny) throw new Error('test precondition not met: !hasAny')
     const user = userEvent.setup()
     const button = screen.getByRole('button', { name: /system facts/i })
     expect(button).toHaveAttribute('aria-expanded', 'true')

@@ -69,10 +69,7 @@ function makeCtx(overrides: Partial<BuildCtx> = {}): BuildCtx {
 
 describe('CONTESTS:namedFaction-namedFaction-sharedDomain', () => {
   it('produces a match when two factions share a domain and a settlement.authority fact has overlapping domain tags', () => {
-    if (!factionPair) {
-      expect(true).toBe(true)
-      return
-    }
+    if (!factionPair) throw new Error('test precondition not met: !factionPair')
     const { a, b, sharedDomain } = factionPair
     const factionAId = `faction-${a.id}-entity`
     const factionBId = `faction-${b.id}-entity`
@@ -138,10 +135,7 @@ describe('CONTESTS:namedFaction-namedFaction-sharedDomain', () => {
       }
       return null
     })()
-    if (!noOverlap) {
-      expect(true).toBe(true)
-      return
-    }
+    if (!noOverlap) throw new Error('test precondition not met: !noOverlap')
     const { a, b } = noOverlap
     const ctx = makeCtx({
       entities: [
@@ -164,10 +158,7 @@ describe('CONTESTS:namedFaction-namedFaction-sharedDomain', () => {
   })
 
   it('produces no match when no settlement.authority fact exists', () => {
-    if (!factionPair) {
-      expect(true).toBe(true)
-      return
-    }
+    if (!factionPair) throw new Error('test precondition not met: !factionPair')
     const { a, b } = factionPair
     const ctx = makeCtx({
       entities: [
@@ -180,10 +171,7 @@ describe('CONTESTS:namedFaction-namedFaction-sharedDomain', () => {
   })
 
   it('shared-domain: skips authority facts with missing subjectId', () => {
-    if (!factionPair) {
-      expect(true).toBe(true)
-      return
-    }
+    if (!factionPair) throw new Error('test precondition not met: !factionPair')
     const { a, b, sharedDomain } = factionPair
     const ctx = makeCtx({
       entities: [
@@ -220,10 +208,7 @@ describe('CONTESTS:namedFaction-namedFaction-sharedDomain', () => {
   })
 
   it('produces no match when settlement.authority fact has no overlapping domain tag', () => {
-    if (!factionPair) {
-      expect(true).toBe(true)
-      return
-    }
+    if (!factionPair) throw new Error('test precondition not met: !factionPair')
     const { a, b } = factionPair
     const ctx = makeCtx({
       entities: [

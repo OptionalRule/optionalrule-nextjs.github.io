@@ -343,7 +343,7 @@ describe('CONTRADICTS:ruinHook-vs-settlementAuthority', () => {
 describe('CONTRADICTS:hiddenTruth-vs-publicSurface', () => {
   it('produces a match when hidden-truth and tag-hook share a domain on the same settlement', () => {
     expect(singleDomainFaction).toBeDefined()
-    if (!singleDomainFaction) return
+    if (!singleDomainFaction) throw new Error('test precondition not met: !singleDomainFaction')
     const uniqueDomain = uniqueDomainFor(singleDomainFaction)
 
     const ctx = makeCtx({

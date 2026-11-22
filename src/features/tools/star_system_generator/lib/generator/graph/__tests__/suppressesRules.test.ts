@@ -238,7 +238,7 @@ describe('SUPPRESSES:gardener-interdiction-target', () => {
 describe('SUPPRESSES:authority-over-hiddenTruth', () => {
   it('produces a match when a unique controlling faction and a hiddenTruth fact are both present', () => {
     expect(singleDomainFaction).toBeDefined()
-    if (!singleDomainFaction) return
+    if (!singleDomainFaction) throw new Error('test precondition not met: !singleDomainFaction')
     const uniqueDomain = uniqueDomainFor(singleDomainFaction)
 
     const ctx = makeCtx({
@@ -308,8 +308,7 @@ describe('SUPPRESSES:authority-over-hiddenTruth', () => {
       return null
     })()
     expect(sharedDomain).toBeDefined()
-    if (!sharedDomain) return
-
+    if (!sharedDomain) throw new Error('test precondition not met: !sharedDomain')
     const ctx = makeCtx({
       entities: [
         { kind: 'settlement', id: 'settlement-1', displayName: 'Hold', layer: 'human' },
@@ -349,7 +348,7 @@ describe('SUPPRESSES:authority-over-hiddenTruth', () => {
 
   it('produces no match when no settlement.hiddenTruth fact exists', () => {
     expect(singleDomainFaction).toBeDefined()
-    if (!singleDomainFaction) return
+    if (!singleDomainFaction) throw new Error('test precondition not met: !singleDomainFaction')
     const uniqueDomain = uniqueDomainFor(singleDomainFaction)
 
     const ctx = makeCtx({
@@ -378,7 +377,7 @@ describe('SUPPRESSES:authority-over-hiddenTruth', () => {
 
   it('sorts matches deterministically by subject id then object id', () => {
     expect(singleDomainFaction).toBeDefined()
-    if (!singleDomainFaction) return
+    if (!singleDomainFaction) throw new Error('test precondition not met: !singleDomainFaction')
     const uniqueDomain = uniqueDomainFor(singleDomainFaction)
 
     const ctx = makeCtx({
