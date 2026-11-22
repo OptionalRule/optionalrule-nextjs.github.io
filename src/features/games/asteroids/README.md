@@ -30,14 +30,17 @@ Desktop-only Asteroids clone built with TypeScript + React and HTML5 Canvas. Loa
 
 ## Structure
 
-- `engine/`: entities (Ship, Asteroid, Bullet, Saucer, Explosion) and systems (Render, Collision, Sound)
-- `components/`: `GameCanvas`, `GameUI`, `ScorePanel`, `ControlsPanel`
-- `hooks/`: `useAsteroids`, `useGameInput`, `useGameLoop`
-- `config/`: game settings, sound config
+- `engine/`: `AsteroidsCore` (pure game rules), `AsteroidsEngine` (browser adapter: input, frame loop, storage)
+- `engine/entities/`: Ship, Asteroid, Bullet, Saucer, Explosion
+- `engine/systems/`: `collisions` (pure collision outcomes), `RenderSystem`, `SoundSystem`
+- `engine/utils/`: vector and math helpers
+- `components/`: `GameCanvas`, `GameUI`, `ScorePanel`, `ControlsPanel`, `ConfirmModal`
+- `hooks/`: `useAsteroids`
+- `config.ts`, `constants.ts`: game settings; `config/sounds.ts`: sound config
 - `assets/`: development assets (see `public/` for deployed sounds)
+- `docs/`, `GLOSSARY.md`: feature plans and domain terms
 
 ## Links
 
-- Detailed PRD: `../../../../documentation/asteroids/PRD.md`
-- Main PRD summary (section 6.6): `../../../../documentation/PRD.md`
-
+- Detailed PRD: `../../../../docs/asteroids/PRD.md`
+- Main PRD summary (section 6.6): `../../../../docs/PRD.md`
