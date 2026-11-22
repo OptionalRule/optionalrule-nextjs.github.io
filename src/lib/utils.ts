@@ -1,17 +1,10 @@
 // Format date for display
 export function formatDate(dateString: string): string {
-  // Parse the date string directly to avoid timezone conversion issues
-  // dateString format: "YYYY-MM-DD"
-  const [year, month, day] = dateString.split('-').map(Number);
-  
-  // Create a date object for formatting, but use UTC methods to avoid timezone conversion
-  const date = new Date(Date.UTC(year, month - 1, day)); // month is 0-indexed
-  
-  return date.toLocaleDateString('en-US', {
+  return parseDateToUTCDate(dateString).toLocaleDateString('en-US', {
     year: 'numeric',
     month: 'long',
     day: 'numeric',
-    timeZone: 'UTC' // Force UTC timezone to avoid local conversion
+    timeZone: 'UTC'
   });
 }
 
@@ -113,11 +106,6 @@ export function createTagSlug(tag: string): string {
     .replace(/[^\w\-]/g, '')        // Remove special characters except hyphens
     .replace(/\-+/g, '-')           // Replace multiple hyphens with single
     .replace(/^\-+|\-+$/g, '');     // Remove leading/trailing hyphens
-}
-
-// Convert tag slug back to display name
-export function tagSlugToName(slug: string): string {
-  return slug.replace(/\-/g, ' ');
 }
 
 // Generate excerpt from content with basic markdown stripping

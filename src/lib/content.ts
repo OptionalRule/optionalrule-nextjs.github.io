@@ -4,7 +4,7 @@ import matter from 'gray-matter';
 import readingTime from 'reading-time';
 import { z } from 'zod';
 import { Post, PostMeta, Page, PostFrontmatter, PageFrontmatter, PaginatedPosts, TagPage } from './types';
-import { extractHeadings, tagSlugToName, generateExcerpt } from './utils';
+import { extractHeadings, createTagSlug, generateExcerpt } from './utils';
 import { isPublishedFile } from './publication';
 
 const POSTS_DIR = path.join(process.cwd(), 'content', 'posts');
@@ -13,7 +13,7 @@ export const POSTS_PER_PAGE = 10;
 
 export const PostFrontmatterSchema = z.object({
   title: z.string(),
-  date: z.string(),
+  date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
   excerpt: z.string().optional(),
   description: z.string().optional(),
   tags: z.array(z.string()).optional(),
@@ -197,24 +197,12 @@ export function getAllTags(): string[] {
 // Get posts by tag with pagination (accepts slug or tag name)
 export function getPostsByTag(tagSlugOrName: string, page: number = 1): TagPage {
   const allPosts = getAllPostsMeta();
-  
-  // Convert slug to tag name for comparison
-  const tagName = tagSlugOrName.includes('-') ? tagSlugToName(tagSlugOrName) : tagSlugOrName;
-  
-  const tagPosts = allPosts.filter(post => 
-    post.tags && post.tags.some(t => t.toLowerCase() === tagName.toLowerCase())
-  );
-  
-  // Find the actual original tag name from the first matching post
-  let actualTagName = tagName;
-  if (tagPosts.length > 0) {
-    const firstPost = tagPosts[0];
-    const matchingTag = firstPost.tags?.find(t => t.toLowerCase() === tagName.toLowerCase());
-    if (matchingTag) {
-      actualTagName = matchingTag;
-    }
-  }
-  
+  const slug = createTagSlug(tagSlugOrName);
+  const matchesTag = (t: string): boolean => createTagSlug(t) === slug;
+
+  const tagPosts = allPosts.filter(post => post.tags?.some(matchesTag));
+  const actualTagName = tagPosts[0]?.tags?.find(matchesTag) ?? tagSlugOrName;
+
   const totalPosts = tagPosts.length;
   const totalPages = Math.ceil(totalPosts / POSTS_PER_PAGE);
   const startIndex = (page - 1) * POSTS_PER_PAGE;

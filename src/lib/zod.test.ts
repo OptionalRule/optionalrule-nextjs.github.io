@@ -42,6 +42,13 @@ describe('zod.ts', () => {
       expect(schema.parse(undefined)).toBeUndefined();
       expect(schema.parse('test')).toBe('test');
     });
+
+    it('should enforce regex()', () => {
+      const schema = string().regex(/^\d+$/);
+      expect(schema.parse('123')).toBe('123');
+      expect(() => schema.parse('12a')).toThrow('Expected string matching');
+      expect(schema.optional().parse(undefined)).toBeUndefined();
+    });
   });
 
   describe('boolean()', () => {

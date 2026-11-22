@@ -16,15 +16,23 @@ function optional<T>(schema: Schema<T>): Schema<T | undefined> {
   return opt;
 }
 
-export function string(): Schema<string> {
-  const base: Schema<string> = {
+export type StringSchema = Schema<string> & {
+  regex: (pattern: RegExp) => StringSchema;
+};
+
+export function string(pattern?: RegExp): StringSchema {
+  const base: StringSchema = {
     parse(input: unknown): string {
       if (typeof input !== 'string') {
         throw new Error('Expected string');
       }
+      if (pattern && !pattern.test(input)) {
+        throw new Error(`Expected string matching ${pattern}`);
+      }
       return input;
     },
     optional: () => optional(base),
+    regex: (next: RegExp) => string(next),
   };
   return base;
 }

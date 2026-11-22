@@ -1,6 +1,7 @@
 import { getAllPostsMeta, getAllPageSlugs, getAllTags, POSTS_PER_PAGE } from './content';
 import { urlPaths } from './urls';
 import { siteConfig } from '../config/site';
+import { parseDateToUTCDate } from './utils';
 
 // Generate RSS feed XML
 export function generateRSSFeed(): string {
@@ -8,7 +9,7 @@ export function generateRSSFeed(): string {
   
   const rssItems = posts.map(post => {
     const postUrl = `${siteConfig.url}${urlPaths.post(post.date, post.slug)}`;
-    const pubDate = new Date(post.date).toUTCString();
+    const pubDate = parseDateToUTCDate(post.date).toUTCString();
     
     return `
     <item>
@@ -22,7 +23,7 @@ export function generateRSSFeed(): string {
   }).join('');
 
   const lastBuildDate = posts.length > 0 
-    ? new Date(posts[0].date).toUTCString()
+    ? parseDateToUTCDate(posts[0].date).toUTCString()
     : new Date().toUTCString();
 
   return `<?xml version="1.0" encoding="UTF-8" ?>

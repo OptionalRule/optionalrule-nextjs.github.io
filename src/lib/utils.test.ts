@@ -9,7 +9,6 @@ import {
   extractHeadings,
   normalizeImagePath,
   createTagSlug,
-  tagSlugToName,
 } from './utils';
 
 describe('Date utilities', () => {
@@ -167,16 +166,6 @@ describe('Tag utilities', () => {
 
     it('removes leading and trailing hyphens', () => {
       expect(createTagSlug('-React-')).toBe('react');
-    });
-  });
-
-  describe('tagSlugToName', () => {
-    it('converts slug back to readable name', () => {
-      expect(tagSlugToName('react-development')).toBe('react development');
-    });
-
-    it('handles single words', () => {
-      expect(tagSlugToName('react')).toBe('react');
     });
   });
 });
