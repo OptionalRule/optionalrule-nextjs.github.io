@@ -137,7 +137,6 @@ describe('ActiveLightCard', () => {
 
     const metrics = screen.getAllByLabelText(/Bright radius/i, {
       selector: '.torch-card-metric',
-      hidden: true,
     })
 
     metrics.forEach((metric) => {
@@ -276,6 +275,27 @@ describe('TorchTracker interactions', () => {
 
     await waitFor(() => expect(lightCard).toHaveAttribute('aria-pressed', 'true'))
   })
+
+  it('works when browser storage access throws', async () => {
+    const descriptor = Object.getOwnPropertyDescriptor(window, 'localStorage')
+    Object.defineProperty(window, 'localStorage', {
+      configurable: true,
+      get() {
+        throw new DOMException('Storage blocked', 'SecurityError')
+      },
+    })
+
+    try {
+      render(<TorchTracker />)
+      const addTorchButton = await screen.findByRole('button', { name: /^add torch$/i })
+      fireEvent.click(addTorchButton)
+      expect(await screen.findByRole('button', { name: /^torch$/i })).toBeInTheDocument()
+    } finally {
+      if (descriptor) {
+        Object.defineProperty(window, 'localStorage', descriptor)
+      }
+    }
+  })
 })
 
 describe('CircularCountdownTimer', () => {
@@ -313,6 +333,10 @@ describe('TorchTrackerHeader disabled states', () => {
         onResetAll={vi.fn()}
         onAdvance={vi.fn()}
         canAdvance={false}
+        canToggleClock={true}
+        canReset={true}
+        isPersistenceEnabled={false}
+        onTogglePersistence={vi.fn()}
         catalog={<div>catalog</div>}
       />,
     )

@@ -1,6 +1,6 @@
 import React from "react";
 import { act, render, screen, waitFor } from "@testing-library/react";
-import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
+import { afterAll, beforeAll, beforeEach, describe, expect, it, vi, type MockInstance } from "vitest";
 
 let currentQueryParam = "";
 
@@ -52,7 +52,7 @@ vi.mock("@/lib/search", () => ({
 }));
 
 describe("search page", () => {
-  let consoleErrorSpy: vi.SpyInstance;
+  let consoleErrorSpy: MockInstance<typeof console.error>;
 
   beforeAll(() => {
     consoleErrorSpy = vi.spyOn(console, "error").mockImplementation(() => {});

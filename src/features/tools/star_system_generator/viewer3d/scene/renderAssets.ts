@@ -12,5 +12,4 @@ export const beltParticleGeometry = new THREE.DodecahedronGeometry(0.065, 0)
 export const beltShardGeometry = new THREE.IcosahedronGeometry(0.058, 1)
 export const beltChunkGeometry = new THREE.DodecahedronGeometry(0.075, 1)
 
-export const moonMaterial = new THREE.MeshStandardMaterial({ color: '#8a8a82', roughness: 1, metalness: 0 })
 export const invisibleHitMaterial = new THREE.MeshBasicMaterial({ visible: false })

@@ -78,7 +78,7 @@ describe('Content Management', () => {
           'image.jpg',
           'post3.mdx',
           'README.txt'
-        ] as unknown as string[]);
+        ] as unknown as ReturnType<typeof fs.readdirSync>);
 
         const result = getAllPostFiles();
         expect(result).toEqual(['post3.mdx', 'post2.md', 'post1.mdx']);
@@ -94,7 +94,7 @@ describe('Content Management', () => {
     describe('getPostFiles', () => {
       it('includes drafts when the dev draft flag is set', () => {
         process.env[INCLUDE_DRAFTS_ENV] = 'true';
-        process.env.NODE_ENV = 'development';
+        setNodeEnv('development');
 
         mockFs.existsSync.mockReturnValue(true);
         mockFs.readdirSync.mockReturnValue(['post1.mdx', 'post2.mdx'] as unknown as ReturnType<typeof fs.readdirSync>);
@@ -152,7 +152,7 @@ describe('Content Management', () => {
           'about.mdx',
           'contact.md',
           'style.css'
-          ] as unknown as string[]);
+          ] as unknown as ReturnType<typeof fs.readdirSync>);
 
         const result = getAllPageFiles();
         expect(result).toEqual(['about.mdx', 'contact.md']);
@@ -162,7 +162,7 @@ describe('Content Management', () => {
     describe('getPageFiles', () => {
       it('includes draft pages when the dev draft flag is set', () => {
         process.env[INCLUDE_DRAFTS_ENV] = 'true';
-        process.env.NODE_ENV = 'development';
+        setNodeEnv('development');
 
         mockFs.existsSync.mockReturnValue(true);
         mockFs.readdirSync.mockReturnValue(['about.mdx'] as unknown as ReturnType<typeof fs.readdirSync>);

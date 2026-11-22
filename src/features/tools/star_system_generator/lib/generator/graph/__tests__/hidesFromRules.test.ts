@@ -10,7 +10,7 @@ vi.mock('../../data/narrative', async () => {
     id: 'test-gardener-warden',
     name: 'Synthetic Gardener Warden',
     kind: 'compact',
-    domains: ['gardener-interdiction', 'compliance'],
+    domains: ['gardener-interdiction', 'law'],
     publicFace: 'public face',
   }
   return {
@@ -29,6 +29,7 @@ import type { BuildCtx } from '../rules/ruleTypes'
 import type { EntityRef } from '../types'
 import type { EntityInventoryInput } from '../entities'
 import { createSeededRng } from '../../rng'
+import { isNarrativeDomain } from '../../narrative/domains'
 import type { NarrativeFact } from '../../../../types'
 
 const realOnlyFactions = realFactions.filter(
@@ -116,7 +117,7 @@ describe('HIDES_FROM:hiddenTruth-from-gardenerFaction', () => {
           kind: 'namedFaction',
           subjectType: 'faction',
           value: { value: SYNTHETIC_GARDENER_FACTION_NAME, confidence: 'derived' },
-          domains: ['gardener-interdiction', 'compliance'],
+          domains: ['gardener-interdiction', 'law'],
         }),
         makeFact({
           id: 'f-hidden-1',
@@ -148,7 +149,7 @@ describe('HIDES_FROM:hiddenTruth-from-gardenerFaction', () => {
 
   it('produces no match when a hiddenTruth is present but no gardener-interdiction faction is present (real-data path)', () => {
     expect(nonGardenerFaction).toBeDefined()
-    if (!nonGardenerFaction) return
+    if (!nonGardenerFaction) throw new Error('test precondition not met: !nonGardenerFaction')
     const ctx = makeCtx({
       entities: [
         { kind: 'settlement', id: 'settlement-1', displayName: 'Hold', layer: 'human' },
@@ -165,7 +166,7 @@ describe('HIDES_FROM:hiddenTruth-from-gardenerFaction', () => {
           kind: 'namedFaction',
           subjectType: 'faction',
           value: { value: nonGardenerFaction.name, confidence: 'derived' },
-          domains: [...nonGardenerFaction.domains],
+          domains: nonGardenerFaction.domains.filter(isNarrativeDomain),
         }),
         makeFact({
           id: 'f-hidden-1',
@@ -196,7 +197,7 @@ describe('HIDES_FROM:hiddenTruth-from-gardenerFaction', () => {
           kind: 'namedFaction',
           subjectType: 'faction',
           value: { value: SYNTHETIC_GARDENER_FACTION_NAME, confidence: 'derived' },
-          domains: ['gardener-interdiction', 'compliance'],
+          domains: ['gardener-interdiction', 'law'],
         }),
       ],
     })
@@ -221,7 +222,7 @@ describe('HIDES_FROM:hiddenTruth-from-gardenerFaction', () => {
           kind: 'namedFaction',
           subjectType: 'faction',
           value: { value: SYNTHETIC_GARDENER_FACTION_NAME, confidence: 'derived' },
-          domains: ['gardener-interdiction', 'compliance'],
+          domains: ['gardener-interdiction', 'law'],
         }),
         makeFact({
           id: 'f-hidden-b',
@@ -249,7 +250,7 @@ describe('HIDES_FROM:hiddenTruth-from-gardenerFaction', () => {
 describe('HIDES_FROM:aiSituation-from-authority', () => {
   it('produces a match when an aiSituation contains a hiding keyword and a unique controlling faction is identifiable', () => {
     expect(singleDomainFaction).toBeDefined()
-    if (!singleDomainFaction) return
+    if (!singleDomainFaction) throw new Error('test precondition not met: !singleDomainFaction')
     const uniqueDomain = uniqueDomainFor(singleDomainFaction)
 
     const ctx = makeCtx({
@@ -268,7 +269,7 @@ describe('HIDES_FROM:aiSituation-from-authority', () => {
           kind: 'namedFaction',
           subjectType: 'faction',
           value: { value: singleDomainFaction.name, confidence: 'derived' },
-          domains: [...singleDomainFaction.domains],
+          domains: singleDomainFaction.domains.filter(isNarrativeDomain),
         }),
         makeFact({
           id: 'f-auth-1',
@@ -308,7 +309,7 @@ describe('HIDES_FROM:aiSituation-from-authority', () => {
 
   it('produces no match when the aiSituation lacks a hiding keyword', () => {
     expect(singleDomainFaction).toBeDefined()
-    if (!singleDomainFaction) return
+    if (!singleDomainFaction) throw new Error('test precondition not met: !singleDomainFaction')
     const uniqueDomain = uniqueDomainFor(singleDomainFaction)
 
     const ctx = makeCtx({
@@ -327,7 +328,7 @@ describe('HIDES_FROM:aiSituation-from-authority', () => {
           kind: 'namedFaction',
           subjectType: 'faction',
           value: { value: singleDomainFaction.name, confidence: 'derived' },
-          domains: [...singleDomainFaction.domains],
+          domains: singleDomainFaction.domains.filter(isNarrativeDomain),
         }),
         makeFact({
           id: 'f-auth-1',
@@ -362,8 +363,7 @@ describe('HIDES_FROM:aiSituation-from-authority', () => {
       return null
     })()
     expect(sharedDomain).toBeDefined()
-    if (!sharedDomain) return
-
+    if (!sharedDomain) throw new Error('test precondition not met: !sharedDomain')
     const ctx = makeCtx({
       entities: [
         { kind: 'settlement', id: 'settlement-1', displayName: 'Hold', layer: 'human' },
@@ -403,7 +403,7 @@ describe('HIDES_FROM:aiSituation-from-authority', () => {
 
   it('sorts matches deterministically by subject id then object id', () => {
     expect(singleDomainFaction).toBeDefined()
-    if (!singleDomainFaction) return
+    if (!singleDomainFaction) throw new Error('test precondition not met: !singleDomainFaction')
     const uniqueDomain = uniqueDomainFor(singleDomainFaction)
 
     const ctx = makeCtx({
@@ -423,7 +423,7 @@ describe('HIDES_FROM:aiSituation-from-authority', () => {
           kind: 'namedFaction',
           subjectType: 'faction',
           value: { value: singleDomainFaction.name, confidence: 'derived' },
-          domains: [...singleDomainFaction.domains],
+          domains: singleDomainFaction.domains.filter(isNarrativeDomain),
         }),
         makeFact({
           id: 'f-auth-b',

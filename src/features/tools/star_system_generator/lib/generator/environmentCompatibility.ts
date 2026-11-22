@@ -1,6 +1,6 @@
 import type { BodyCategory, OrbitingBody } from '../../types'
-import { envelopeCategories, solidSurfaceCategories, type WorldClassOption } from './domain'
-import { deriveWorldClassMetadata, metadataForClassName } from './worldClassMetadata'
+import { envelopeCategories, solidSurfaceCategories } from './domain'
+import { metadataForClassName } from './worldClassMetadata'
 
 export const airlessAllowedAtmospheres = new Set([
   'None / hard vacuum',
@@ -189,13 +189,6 @@ export const hyceanHydrospheres = new Set([
   'Global ocean',
 ])
 
-export const dryHydrospheres = new Set([
-  'Bone dry',
-  'Hydrated minerals only',
-  'No accessible surface volatiles',
-  'Vaporized volatile traces',
-])
-
 export const extremeHotAllowedAtmospheres = new Set([
   'None / hard vacuum',
   'Trace exosphere',
@@ -327,10 +320,6 @@ export function isDesertCompatibleHydrosphere(value: string): boolean {
   return desertAllowedHydrospheres.has(value)
 }
 
-export function isDryHydrosphere(value: string): boolean {
-  return dryHydrospheres.has(value)
-}
-
 export function isWetOceanHydrosphere(value: string): boolean {
   return waterOceanHydrospheres.has(value)
 }
@@ -341,10 +330,6 @@ export function isHyceanHydrosphere(value: string): boolean {
 
 export function isHydrogenHeliumEnvelope(value: string): boolean {
   return value === 'Hydrogen/helium envelope'
-}
-
-export function isSolidSurfaceAtmosphere(value: string): boolean {
-  return solidSurfaceAtmospheres.has(value)
 }
 
 export function isGreenhouseAtmosphereCompatible(value: string): boolean {
@@ -366,10 +351,6 @@ export function isGreenhouseClass(className: string): boolean {
   return metadata.physicalTags.includes('greenhouse') || metadata.physicalTags.includes('steam') || metadata.physicalTags.includes('cloud')
 }
 
-export function isSteamClass(className: string): boolean {
-  return metadataForClassName(className).physicalTags.includes('steam')
-}
-
 export function isHyceanClass(className: string): boolean {
   return metadataForClassName(className).physicalTags.includes('hycean')
 }
@@ -387,19 +368,10 @@ export function isHydrogenAtmosphereException(className: string): boolean {
   return metadataForClassName(className).physicalTags.includes('hydrogen-atmosphere')
 }
 
-export function isSolidNoEnvelopeClass(className: string): boolean {
-  const metadata = metadataForClassName(className)
-  return metadata.physicalTags.includes('stripped-core') || /\brocky terrestrial\b|\bearth-sized terrestrial\b|\bsuper-terrestrial\b|\bbasaltic\b|\bmercury\b/i.test(className)
-}
-
 export function isSolidHydrogenEnvelopeConflict(body: OrbitingBody): boolean {
   return (
     solidSurfaceCategories.has(body.category.value) &&
     isHydrogenHeliumEnvelope(body.detail.atmosphere.value) &&
     !isHydrogenAtmosphereException(body.bodyClass.value)
   )
-}
-
-export function worldClassHasTag(option: WorldClassOption, tag: ReturnType<typeof deriveWorldClassMetadata>['physicalTags'][number]): boolean {
-  return deriveWorldClassMetadata(option).physicalTags.includes(tag)
 }

@@ -139,10 +139,6 @@ export function hasWorldClassPhysicalTag(option: WorldClassOption, tag: WorldCla
   return deriveWorldClassMetadata(option).physicalTags.includes(tag)
 }
 
-export function worldClassEnvironmentProfile(option: WorldClassOption): WorldClassEnvironmentProfile {
-  return deriveWorldClassMetadata(option).environmentProfileHint
-}
-
 export function metadataForClassName(className: string): Pick<WorldClassMetadata, 'environmentProfileHint' | 'physicalTags'> {
   return deriveWorldClassMetadata({
     className,

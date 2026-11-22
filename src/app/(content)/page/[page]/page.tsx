@@ -56,7 +56,6 @@ export default async function PagePage({ params }: PageProps) {
             <Pagination 
               currentPage={currentPage}
               totalPages={totalPages}
-              basePath=""
             />
           </div>
         </header>
@@ -71,7 +70,6 @@ export default async function PagePage({ params }: PageProps) {
           <Pagination 
             currentPage={currentPage}
             totalPages={totalPages}
-            basePath=""
           />
         </main>
       </div>

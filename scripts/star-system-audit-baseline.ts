@@ -7,6 +7,7 @@ export interface BaselineFindingLike {
   path: string
   code?: string
   source?: string
+  message?: string
 }
 
 export interface BaselineDelta {
@@ -21,10 +22,20 @@ export interface BaselineComparison {
   passed: boolean
 }
 
+export function messageTemplate(message: string): string {
+  return message
+    .replace(/"[^"]*"/g, '"*"')
+    .split(/\s+/)
+    .filter(token => token.length > 0)
+    .map(token => (/\d|\w:\w|--|\w-\w+-\w/.test(token) ? '#' : token))
+    .join(' ')
+}
+
 export function baselineKeyForFinding(finding: BaselineFindingLike): string {
   if (finding.code) return finding.code
   const source = finding.source ?? 'audit'
-  return `${source}:${finding.path.replace(/\[\d+\]/g, '[]')}`
+  const path = finding.path.replace(/\[\d+\]/g, '[]')
+  return `${source}:${path} :: ${messageTemplate(finding.message ?? '')}`
 }
 
 export function countErrorsByCode(findings: readonly BaselineFindingLike[]): ErrorCodeCounts {

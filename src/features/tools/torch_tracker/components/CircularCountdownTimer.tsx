@@ -153,5 +153,3 @@ export function CircularCountdownTimer({
     </div>
   )
 }
-
-export default CircularCountdownTimer

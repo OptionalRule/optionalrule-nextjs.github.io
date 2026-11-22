@@ -53,7 +53,8 @@ export function SeedControl({ options, onChange }: SeedControlProps) {
 
   async function copyLink() {
     try {
-      await navigator.clipboard?.writeText(window.location.href)
+      if (!navigator.clipboard) throw new Error('Clipboard unavailable')
+      await navigator.clipboard.writeText(window.location.href)
       setCopyStatus('copied')
     } catch {
       setCopyStatus('failed')

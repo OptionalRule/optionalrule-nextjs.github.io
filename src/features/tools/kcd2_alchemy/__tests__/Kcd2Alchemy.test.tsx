@@ -22,6 +22,7 @@ function potion(id: string, name: string, liquidId: string, itemId: string): Nor
   return {
     id,
     name,
+    baseValue: 0,
     ingredients: { liquid: liquidId, liquidId, items: [{ id: itemId, name: itemId, quantity: 1 }] },
     instructions: { default: [`Brew ${name}`] },
     quantity: { base: 1, withSecretOfMatterI: 2, withSecretOfMatterII: 3, withBothSecrets: 4 },

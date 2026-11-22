@@ -5,7 +5,5 @@ export {
   COLORS,
   PHYSICS,
   GAMEPLAY,
-  RENDERING,
-  AUDIO,
-  DEBUG
+  RENDERING
 } from './config'

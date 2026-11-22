@@ -56,10 +56,10 @@ export function Body({ body }: BodyProps) {
       mat.uniforms.uCraterStrength.value = u.craterStrength
       mat.uniforms.uVolcanicStrength.value = u.volcanicStrength
       mat.uniforms.uStormStrength.value = u.stormStrength
-      mat.uniforms.uSurfaceSeed.value = body.surface?.surfaceSeed || u.surfaceSeed
-      mat.uniforms.uReliefStrength.value = body.surface?.reliefStrength ?? 0.15
-      mat.uniforms.uNightLightStrength.value = body.surface?.nightLightStrength ?? 0
-      mat.uniforms.uCityLightColor.value.set(body.surface?.cityLightColor ?? '#ffb15c')
+      mat.uniforms.uSurfaceSeed.value = body.surface.surfaceSeed || u.surfaceSeed
+      mat.uniforms.uReliefStrength.value = body.surface.reliefStrength
+      mat.uniforms.uNightLightStrength.value = body.surface.nightLightStrength
+      mat.uniforms.uCityLightColor.value.set(body.surface.cityLightColor)
       mat.uniforms.uMineralTint.value.set(u.mineralTint)
       mat.uniforms.uMineralBlend.value = u.mineralBlend
       mat.uniforms.uHazardTint.value.set(u.hazardTint)
@@ -73,7 +73,7 @@ export function Body({ body }: BodyProps) {
       mat.uniforms.uVegetationColor.value.set(u.vegetationColor)
       mat.uniforms.uVegetationLatitudeBias.value = u.vegetationLatitudeBias
       mat.uniforms.uIceCapAsymmetry.value = u.iceCapAsymmetry
-      mat.uniforms.uDarkSectorStrength.value = body.surface?.darkSectorStrength ?? 0
+      mat.uniforms.uDarkSectorStrength.value = body.surface.darkSectorStrength
     }
     return mat
   }, [body, orbitingBody])
@@ -164,13 +164,9 @@ export function Body({ body }: BodyProps) {
                 dispose={null}
               />
             ) : null}
-            {body.surface ? (
-              <>
-                <AtmosphereShell body={body} />
-                <CloudShell body={body} />
-                <AuroraShell body={body} />
-              </>
-            ) : null}
+            <AtmosphereShell body={body} />
+            <CloudShell body={body} />
+            <AuroraShell body={body} />
             {body.rings ? <Ring ring={body.rings} /> : null}
             {showMoonOrbits ? body.moons.map((moon) => (
               <MoonOrbit key={`moon-orbit-${moon.id}`} moon={moon} parentSize={body.visualSize} />

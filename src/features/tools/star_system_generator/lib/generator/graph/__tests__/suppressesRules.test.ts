@@ -10,7 +10,7 @@ vi.mock('../../data/narrative', async () => {
     id: 'test-gardener-warden',
     name: 'Synthetic Gardener Warden',
     kind: 'compact',
-    domains: ['gardener-interdiction', 'compliance'],
+    domains: ['gardener-interdiction', 'law'],
     publicFace: 'public face',
   }
   return {
@@ -29,6 +29,7 @@ import type { BuildCtx } from '../rules/ruleTypes'
 import type { EntityRef } from '../types'
 import type { EntityInventoryInput } from '../entities'
 import { createSeededRng } from '../../rng'
+import { isNarrativeDomain } from '../../narrative/domains'
 import type { NarrativeFact } from '../../../../types'
 
 const realOnlyFactions = realFactions.filter(
@@ -112,7 +113,7 @@ describe('SUPPRESSES:gardener-interdiction-target', () => {
           kind: 'namedFaction',
           subjectType: 'faction',
           value: { value: SYNTHETIC_INTERDICTION_FACTION_NAME, confidence: 'derived' },
-          domains: ['gardener-interdiction', 'compliance'],
+          domains: ['gardener-interdiction', 'law'],
         }),
         makeFact({
           id: 'f-phen-1',
@@ -209,7 +210,7 @@ describe('SUPPRESSES:gardener-interdiction-target', () => {
           kind: 'namedFaction',
           subjectType: 'faction',
           value: { value: SYNTHETIC_INTERDICTION_FACTION_NAME, confidence: 'derived' },
-          domains: ['gardener-interdiction', 'compliance'],
+          domains: ['gardener-interdiction', 'law'],
         }),
         makeFact({
           id: 'f-phen-b',
@@ -237,7 +238,7 @@ describe('SUPPRESSES:gardener-interdiction-target', () => {
 describe('SUPPRESSES:authority-over-hiddenTruth', () => {
   it('produces a match when a unique controlling faction and a hiddenTruth fact are both present', () => {
     expect(singleDomainFaction).toBeDefined()
-    if (!singleDomainFaction) return
+    if (!singleDomainFaction) throw new Error('test precondition not met: !singleDomainFaction')
     const uniqueDomain = uniqueDomainFor(singleDomainFaction)
 
     const ctx = makeCtx({
@@ -256,7 +257,7 @@ describe('SUPPRESSES:authority-over-hiddenTruth', () => {
           kind: 'namedFaction',
           subjectType: 'faction',
           value: { value: singleDomainFaction.name, confidence: 'derived' },
-          domains: [...singleDomainFaction.domains],
+          domains: singleDomainFaction.domains.filter(isNarrativeDomain),
         }),
         makeFact({
           id: 'f-auth-1',
@@ -307,8 +308,7 @@ describe('SUPPRESSES:authority-over-hiddenTruth', () => {
       return null
     })()
     expect(sharedDomain).toBeDefined()
-    if (!sharedDomain) return
-
+    if (!sharedDomain) throw new Error('test precondition not met: !sharedDomain')
     const ctx = makeCtx({
       entities: [
         { kind: 'settlement', id: 'settlement-1', displayName: 'Hold', layer: 'human' },
@@ -348,7 +348,7 @@ describe('SUPPRESSES:authority-over-hiddenTruth', () => {
 
   it('produces no match when no settlement.hiddenTruth fact exists', () => {
     expect(singleDomainFaction).toBeDefined()
-    if (!singleDomainFaction) return
+    if (!singleDomainFaction) throw new Error('test precondition not met: !singleDomainFaction')
     const uniqueDomain = uniqueDomainFor(singleDomainFaction)
 
     const ctx = makeCtx({
@@ -377,7 +377,7 @@ describe('SUPPRESSES:authority-over-hiddenTruth', () => {
 
   it('sorts matches deterministically by subject id then object id', () => {
     expect(singleDomainFaction).toBeDefined()
-    if (!singleDomainFaction) return
+    if (!singleDomainFaction) throw new Error('test precondition not met: !singleDomainFaction')
     const uniqueDomain = uniqueDomainFor(singleDomainFaction)
 
     const ctx = makeCtx({
@@ -397,7 +397,7 @@ describe('SUPPRESSES:authority-over-hiddenTruth', () => {
           kind: 'namedFaction',
           subjectType: 'faction',
           value: { value: singleDomainFaction.name, confidence: 'derived' },
-          domains: [...singleDomainFaction.domains],
+          domains: singleDomainFaction.domains.filter(isNarrativeDomain),
         }),
         makeFact({
           id: 'f-auth-b',

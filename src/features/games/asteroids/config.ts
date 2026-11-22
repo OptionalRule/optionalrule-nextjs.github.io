@@ -1,8 +1,6 @@
 import type {
-  AudioConfig,
   ColorsConfig,
   ControlsConfig,
-  DebugConfig,
   GameConfig,
   GameplayConfig,
   PhysicsConfig,
@@ -219,23 +217,3 @@ export const RENDERING = {
   // FPS monitoring
   fpsUpdateInterval: 1000,
 } as const satisfies RenderingConfig
-
-// Audio configuration (for future implementation)
-export const AUDIO = {
-  enabled: true,
-  masterVolume: 0.7,
-  sfxVolume: 0.8,
-  musicVolume: 0.5,
-} as const satisfies AudioConfig
-
-// Development and debug configuration
-export const DEBUG = {
-  enabled: false,
-  showCollisionBounds: false,
-  showFPS: false,
-  showEntityCount: false,
-  logPerformance: false,
-} as const satisfies DebugConfig
-
-// Consolidated export for backwards compatibility
-export const GAME_CONFIG = ASTEROIDS_CONFIG

@@ -24,6 +24,11 @@ export function useGameClock({
   const lastTickRef = useRef<number | null>(null)
   const rafRef = useRef<number | null>(null)
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null)
+  const onTickRef = useRef(onTick)
+
+  useEffect(() => {
+    onTickRef.current = onTick
+  }, [onTick])
 
   const clearTimers = useCallback(() => {
     if (rafRef.current !== null && typeof cancelAnimationFrame !== 'undefined') {
@@ -45,29 +50,29 @@ export function useGameClock({
     (deltaMs: number, now: number) => {
       const deltaSeconds = deltaMs / 1000
       if (deltaSeconds <= 0) return
-      onTick(deltaSeconds, now)
+      onTickRef.current(deltaSeconds, now)
       lastTickRef.current = now
     },
-    [onTick],
+    [],
   )
 
-  // Manual tick API for toolbar buttons
   const tickOnce = useCallback(
     (deltaSeconds: number) => {
       const now = Date.now()
-      onTick(deltaSeconds, now)
+      onTickRef.current(deltaSeconds, now)
       lastTickRef.current = now
     },
-    [onTick],
+    [],
   )
 
   const startInterval = useCallback(() => {
     const useAnimationFrame = tickIntervalMs < 30 && typeof requestAnimationFrame !== 'undefined'
     lastTickRef.current = Date.now()
     if (useAnimationFrame) {
-      const tick = (timestamp: number) => {
-        const previous = lastTickRef.current ?? timestamp
-        handleTick(timestamp - previous, Date.now())
+      const tick = () => {
+        const now = Date.now()
+        const previous = lastTickRef.current ?? now
+        handleTick(now - previous, now)
         rafRef.current = requestAnimationFrame(tick)
       }
       rafRef.current = requestAnimationFrame(tick)

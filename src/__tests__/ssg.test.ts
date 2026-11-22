@@ -178,14 +178,13 @@ describe('Static Site Generation Tests', () => {
       const testTags = ['React', 'Next.js', 'TypeScript', 'D&D 5e'];
       
       testTags.forEach(tag => {
-        const tagSlug = tag.toLowerCase().replace(/\s+/g, '-').replace(/[^\w\-]/g, '');
-        const expectedUrl = `/tag/${tagSlug}/`;
-        
-        // Verify URL is safe for static file system
-        expect(expectedUrl).toMatch(/^\/tag\/[a-z0-9\-]+\/$/);
-        expect(expectedUrl).not.toContain('//');
-        expect(expectedUrl).not.toContain(' ');
+        const url = urlPaths.tag(tag);
+
+        expect(url).toMatch(/^\/tag\/[a-z0-9\-]+\/$/);
+        expect(url).not.toContain('//');
+        expect(url).not.toContain(' ');
       });
+      expect(urlPaths.tag('D&D 5e')).toBe('/tag/dd-5e/');
     });
   });
 
@@ -251,7 +250,7 @@ describe('Static Site Generation Tests', () => {
       };
 
       mockFs.existsSync.mockReturnValue(true);
-      mockFs.readdirSync.mockReturnValue([mockPost.filename]);
+      mockFs.readdirSync.mockReturnValue([mockPost.filename] as unknown as ReturnType<typeof fs.readdirSync>);
       mockFs.readFileSync.mockReturnValue('mock file content');
       
       mockGrayMatter.mockReturnValue({
@@ -311,37 +310,6 @@ describe('Static Site Generation Tests', () => {
         // Verify URL generation is consistent
         const url = urlPaths.post(dateStr, 'test-slug');
         expect(url).toContain(`/${year}/${String(month).padStart(2, '0')}/${String(day).padStart(2, '0')}/`);
-      });
-    });
-  });
-
-  describe('Metadata Generation for SEO', () => {
-    it('generates proper metadata for all post types', () => {
-      const testPosts = [
-        {
-          title: 'Complete Guide to Testing',
-          excerpt: 'Learn comprehensive testing strategies',
-          tags: ['Testing', 'Best Practices']
-        },
-        {
-          title: 'No Excerpt Post',
-          excerpt: undefined,
-          tags: []
-        }
-      ];
-
-      testPosts.forEach(post => {
-        // Verify title formatting
-        expect(post.title).toBeTruthy();
-        expect(post.title.length).toBeLessThan(60); // SEO title length
-        
-        // Verify excerpt handling
-        if (post.excerpt) {
-          expect(post.excerpt.length).toBeLessThan(160); // Meta description length
-        }
-        
-        // Verify tags are arrays
-        expect(Array.isArray(post.tags)).toBe(true);
       });
     });
   });

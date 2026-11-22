@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { generateSystem } from '../../../index'
-import type { GenerationOptions } from '../../../../types'
+import type { GenerationOptions } from '../../../../../types'
 
 const baseOptions: Omit<GenerationOptions, 'seed'> = {
   distribution: 'frontier',

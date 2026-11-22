@@ -17,7 +17,7 @@ function makeFact(overrides: Partial<NarrativeFact> = {}): NarrativeFact {
   return {
     id: overrides.id ?? 'f1',
     kind: overrides.kind ?? 'settlement.crisis',
-    domains: overrides.domains ?? ['settlement'],
+    domains: overrides.domains ?? ['infrastructure'],
     subjectType: overrides.subjectType ?? 'settlement',
     subjectId: overrides.subjectId ?? 'settlement-1',
     value: overrides.value ?? { value: 'Bleed node changed course', confidence: 'inferred' },
@@ -608,7 +608,7 @@ describe('DESTABILIZES:phenomenon-physicsFaction', () => {
           subjectType: 'system',
           subjectId: 'system',
           value: { value: 'Trade Guild', confidence: 'derived' },
-          domains: ['economy'],
+          domains: ['trade'],
           tags: ['guild'],
         }),
       ],

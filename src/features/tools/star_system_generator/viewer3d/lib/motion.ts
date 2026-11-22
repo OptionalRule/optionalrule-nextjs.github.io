@@ -1,6 +1,5 @@
 export const VIEWER_SECONDS_PER_EARTH_YEAR = 31_557_600
 const MIN_ORBIT_PERIOD_SEC = 20
-const FALLBACK_HZ_PERIOD_SEC = VIEWER_SECONDS_PER_EARTH_YEAR
 const GOLDEN_ANGLE_TURN = 0.6180339887498949
 const ORBIT_PHASE_JITTER_TURN = 0.12
 
@@ -28,5 +27,3 @@ export function angularSpeedFromPeriod(periodDays: number | null | undefined): n
   const periodSec = Math.max(MIN_ORBIT_PERIOD_SEC, (days / 365) * VIEWER_SECONDS_PER_EARTH_YEAR)
   return (2 * Math.PI) / periodSec
 }
-
-export const FALLBACK_ORBIT_PERIOD_SEC = FALLBACK_HZ_PERIOD_SEC

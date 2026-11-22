@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { ALL_WHY_HERE_TEMPLATES, graphAwareSettlementWhyHere } from '../graphAwareSettlementWhyHere'
 import { createSeededRng } from '../../rng'
-import type { Settlement } from '../../../types'
+import type { Settlement } from '../../../../types'
 import type { SystemRelationshipGraph } from '../../graph'
 import { EDGE_TYPES } from '../../graph'
 
@@ -30,8 +30,8 @@ describe('graphAwareSettlementWhyHere rendering', () => {
       anchorName: f('Taiyangshou-66 III route geometry'),
       anchorDetail: f(''),
       siteCategory: f('Surface settlement'), location: f('surface'), function: f('Salvage yard'),
-      population: { value: 'Hundreds', confidence: 'inferred' },
-      habitationPattern: { value: 'Inhabited', confidence: 'inferred' },
+      population: { value: '101-1,000', confidence: 'inferred' },
+      habitationPattern: { value: 'Surface settlement', confidence: 'inferred' },
       authority: f('Salvage court'), builtForm: f('Dome'), aiSituation: f('None'), condition: f('Stable'),
       tags: [], tagHook: f(''), crisis: f(''), hiddenTruth: f(''),
       encounterSites: [], whyHere: f(''), methodNotes: [],
@@ -39,11 +39,11 @@ describe('graphAwareSettlementWhyHere rendering', () => {
         score: n(0), roll: n(0), tier: f('outpost'), resource: n(0), access: n(0),
         strategic: n(0), guValue: n(0), habitability: n(0), hazard: n(0), legalHeat: n(0),
       },
-    } as Settlement
+    }
   }
 
   function emptyGraph(): SystemRelationshipGraph {
-    const edgesByType = Object.fromEntries(EDGE_TYPES.map(t => [t, []])) as SystemRelationshipGraph['edgesByType']
+    const edgesByType = Object.fromEntries(EDGE_TYPES.map((t): [string, string[]] => [t, []])) as SystemRelationshipGraph['edgesByType']
     return {
       entities: [], edges: [], edgesByEntity: {}, edgesByType,
       spineEdgeIds: [], settlementSpineEdgeIds: [], historicalEdgeIds: [],

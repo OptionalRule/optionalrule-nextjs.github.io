@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest'
 import { generateSystem } from '../lib/generator'
 import { validateSystem } from '../lib/generator/validation'
+import type { GeneratedSystem } from '../types'
 
 describe('debris-field audit rules', () => {
   it('DEBRIS_FIELD_MISSING fires when an expected field is absent', () => {
@@ -38,13 +39,13 @@ describe('debris-field audit rules', () => {
       if (!transientField) continue
       const fakeSettlement = sys.settlements[0]
       if (!fakeSettlement) continue
-      const mutated = {
+      const mutated: GeneratedSystem = {
         ...sys,
         settlements: [{
           ...fakeSettlement,
           debrisFieldId: transientField.id,
           bodyId: undefined,
-          habitationPattern: { ...fakeSettlement.habitationPattern, value: 'Permanent station' },
+          habitationPattern: { ...fakeSettlement.habitationPattern, value: 'Surface settlement' },
         }],
       }
       const findings = validateSystem(mutated)

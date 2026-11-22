@@ -144,5 +144,3 @@ export function TorchTrackerHeader({
     </header>
   )
 }
-
-export default TorchTrackerHeader

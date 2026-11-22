@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { CLOSING_POOLS, SETTLEMENT_TAG_HOOK_TEMPLATES_V2, settlementHookSynthesis } from '../settlementProse'
 import { createSeededRng } from '../../rng'
-import type { GeneratorTone } from '../../../types'
+import type { GeneratorTone } from '../../../../types'
 
 const TONES: readonly GeneratorTone[] = ['balanced', 'cinematic', 'astronomy']
 
@@ -25,7 +25,7 @@ describe('closer distribution', () => {
         'Air Is Money',
         'Debt Labor',
         {
-          habitationPattern: 'Inhabited',
+          habitationPattern: 'Surface settlement',
           siteCategory: 'Surface settlement',
           settlementFunction: 'Salvage yard',
           condition: 'Stable',

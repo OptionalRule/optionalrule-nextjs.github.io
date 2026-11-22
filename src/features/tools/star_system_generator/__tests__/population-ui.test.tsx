@@ -30,7 +30,7 @@ describe('OrbitalTable population indicators', () => {
       const band = b.population?.value.band
       return band && !['empty', 'automated', 'transient'].includes(band)
     })
-    if (!populatedBody) return
+    if (!populatedBody) throw new Error('test precondition not met: !populatedBody')
     const band = populatedBody.population!.value.band
     const labelFragment = bandLabelFragment(band)
     expect(screen.getAllByText(new RegExp(labelFragment, 'i')).length).toBeGreaterThan(0)
@@ -54,7 +54,7 @@ describe('BodyDetailPanel population block', () => {
       const band = b.population?.value.band
       return band && !['empty', 'automated', 'transient'].includes(band)
     })
-    if (!populatedBody) return
+    if (!populatedBody) throw new Error('test precondition not met: !populatedBody')
     render(<BodyDetailPanel body={populatedBody} system={sys} />)
     expect(screen.getByText(/^Population$/i)).toBeTruthy()
   })

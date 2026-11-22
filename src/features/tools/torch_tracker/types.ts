@@ -109,11 +109,3 @@ export type TorchTrackerReducerAction =
   | TorchTrackerBaseAction<'state/replace', TorchTrackerHydrationSnapshot>
 
 export type TorchTrackerSelector<TResult> = (state: TorchTrackerState) => TResult
-
-export interface TorchTrackerSelectors {
-  selectCatalog: TorchTrackerSelector<TorchCatalogEntry[]>
-  selectActive: TorchTrackerSelector<ActiveLightSource[]>
-  selectSettings: TorchTrackerSelector<TorchTrackerSettings>
-  selectIsClockRunning: TorchTrackerSelector<boolean>
-  selectCentralTimer: TorchTrackerSelector<CentralTimerSnapshot>
-}

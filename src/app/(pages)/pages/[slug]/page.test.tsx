@@ -23,6 +23,7 @@ const mockNotFound = vi.fn(() => {
 const mockUrlPaths = {
   home: vi.fn(() => "/"),
   tags: vi.fn(() => "/tags/"),
+  staticPage: vi.fn((slug: string) => `/pages/${slug}/`),
 };
 
 const loadModule = async (): Promise<PageModule> => {
@@ -49,11 +50,6 @@ const loadModule = async (): Promise<PageModule> => {
     default: ({ headings }: { headings: StaticPage["headings"] }) => (
       <div data-testid="toc">{JSON.stringify(headings)}</div>
     ),
-  }));
-
-  vi.doMock("@/stories/mdx-components", () => ({
-    __esModule: true,
-    mdxComponents: {},
   }));
 
   vi.doMock("@/lib/mdx-options", () => ({

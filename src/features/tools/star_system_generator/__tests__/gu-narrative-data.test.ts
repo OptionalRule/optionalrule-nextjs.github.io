@@ -4,7 +4,9 @@ import {
   bleedLocationTable,
   guHazardTable,
   guIntensityTable,
+  guDomainTags,
   guResourceTable,
+  parseGuDomainTags,
 } from '../lib/generator/data/gu'
 import { humanRemnants, phenomena, remnantHooks } from '../lib/generator/data/narrative'
 
@@ -17,6 +19,12 @@ describe('star system GU and narrative data', () => {
     expect(guResourceTable).toHaveLength(20)
     expect(guHazardTable).toHaveLength(20)
     expect(guHazardTable.at(-1)).toBe('Systemic cascade')
+  })
+
+  it('loads GU domain tags through the narrative domain guard', () => {
+    expect(Object.keys(guDomainTags.bleedLocations ?? {}).length).toBeGreaterThan(0)
+    expect(parseGuDomainTags({ hazards: { Flux: ['disaster'] } })).toEqual({ hazards: { Flux: ['disaster'] } })
+    expect(() => parseGuDomainTags({ hazards: { Flux: ['weather'] } })).toThrow(/unknown narrative domain "weather"/)
   })
 
   it('has playable remnant and phenomenon pools', () => {

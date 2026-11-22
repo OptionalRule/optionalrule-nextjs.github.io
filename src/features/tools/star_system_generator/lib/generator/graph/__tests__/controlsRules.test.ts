@@ -8,6 +8,7 @@ import type { BuildCtx } from '../rules/ruleTypes'
 import type { EntityRef } from '../types'
 import type { EntityInventoryInput } from '../entities'
 import { createSeededRng } from '../../rng'
+import { isNarrativeDomain } from '../../narrative/domains'
 import type { NarrativeFact } from '../../../../types'
 import { namedFactions } from '../../data/narrative'
 import { CONTROL_DOMAINS } from '../rules/settingPatterns'
@@ -19,7 +20,7 @@ const overlappingPair = (() => {
     for (let j = i + 1; j < namedFactions.length; j++) {
       const a = namedFactions[i]
       const b = namedFactions[j]
-      const shared = a.domains.find(d => b.domains.includes(d))
+      const shared = a.domains.filter(isNarrativeDomain).find(d => b.domains.includes(d))
       if (shared) return { a, b, shared }
     }
   }
@@ -98,7 +99,7 @@ describe('CONTROLS:namedFaction-settlement-uniqueDomain', () => {
           kind: 'namedFaction',
           subjectType: 'faction',
           value: { value: singleFaction.name, confidence: 'derived' },
-          domains: [...singleFaction.domains],
+          domains: singleFaction.domains.filter(isNarrativeDomain),
         }),
         makeFact({
           id: 'f-auth-1',
@@ -132,10 +133,7 @@ describe('CONTROLS:namedFaction-settlement-uniqueDomain', () => {
   })
 
   it('does not fire when two factions both match the authority text', () => {
-    if (!overlappingPair) {
-      expect(true).toBe(true)
-      return
-    }
+    if (!overlappingPair) throw new Error('test precondition not met: !overlappingPair')
     const { a, b, shared } = overlappingPair
     const ctx = makeCtx({
       entities: [
@@ -149,14 +147,14 @@ describe('CONTROLS:namedFaction-settlement-uniqueDomain', () => {
           kind: 'namedFaction',
           subjectType: 'faction',
           value: { value: a.name, confidence: 'derived' },
-          domains: [...a.domains],
+          domains: a.domains.filter(isNarrativeDomain),
         }),
         makeFact({
           id: 'f-fac-b',
           kind: 'namedFaction',
           subjectType: 'faction',
           value: { value: b.name, confidence: 'derived' },
-          domains: [...b.domains],
+          domains: b.domains.filter(isNarrativeDomain),
         }),
         makeFact({
           id: 'f-auth-1',
@@ -200,7 +198,7 @@ describe('CONTROLS:namedFaction-settlement-uniqueDomain', () => {
           kind: 'namedFaction',
           subjectType: 'faction',
           value: { value: singleFaction.name, confidence: 'derived' },
-          domains: [...singleFaction.domains],
+          domains: singleFaction.domains.filter(isNarrativeDomain),
         }),
         makeFact({
           id: 'f-auth-b',
@@ -229,10 +227,7 @@ describe('CONTROLS:namedFaction-settlement-uniqueDomain', () => {
 
 describe('CONTROLS:namedFaction-routeAsset', () => {
   it('produces a match when a faction with a control-axis domain coexists with a routeAsset-tagged location fact', () => {
-    if (!factionWithControlDomain) {
-      expect(true).toBe(true)
-      return
-    }
+    if (!factionWithControlDomain) throw new Error('test precondition not met: !factionWithControlDomain')
     const { faction, domain } = factionWithControlDomain
     const ctx = makeCtx({
       entities: [
@@ -247,7 +242,7 @@ describe('CONTROLS:namedFaction-routeAsset', () => {
           kind: 'namedFaction',
           subjectType: 'faction',
           value: { value: faction.name, confidence: 'derived' },
-          domains: [...faction.domains],
+          domains: faction.domains.filter(isNarrativeDomain),
         }),
         makeFact({
           id: 'f-loc-1',
@@ -277,10 +272,7 @@ describe('CONTROLS:namedFaction-routeAsset', () => {
   })
 
   it('does not fire when the only faction has no control-axis domain', () => {
-    if (!factionWithoutControlDomain) {
-      expect(true).toBe(true)
-      return
-    }
+    if (!factionWithoutControlDomain) throw new Error('test precondition not met: !factionWithoutControlDomain')
     const faction = factionWithoutControlDomain
     const ctx = makeCtx({
       entities: [
@@ -295,7 +287,7 @@ describe('CONTROLS:namedFaction-routeAsset', () => {
           kind: 'namedFaction',
           subjectType: 'faction',
           value: { value: faction.name, confidence: 'derived' },
-          domains: [...faction.domains],
+          domains: faction.domains.filter(isNarrativeDomain),
         }),
         makeFact({
           id: 'f-loc-1',
@@ -311,10 +303,7 @@ describe('CONTROLS:namedFaction-routeAsset', () => {
   })
 
   it('does not fire when no routeAsset-tagged location facts exist', () => {
-    if (!factionWithControlDomain) {
-      expect(true).toBe(true)
-      return
-    }
+    if (!factionWithControlDomain) throw new Error('test precondition not met: !factionWithControlDomain')
     const { faction } = factionWithControlDomain
     const ctx = makeCtx({
       entities: [
@@ -328,7 +317,7 @@ describe('CONTROLS:namedFaction-routeAsset', () => {
           kind: 'namedFaction',
           subjectType: 'faction',
           value: { value: faction.name, confidence: 'derived' },
-          domains: [...faction.domains],
+          domains: faction.domains.filter(isNarrativeDomain),
         }),
       ],
     })
@@ -336,10 +325,7 @@ describe('CONTROLS:namedFaction-routeAsset', () => {
   })
 
   it('falls back to the system entity when a gu.bleedLocation fact references no known body name', () => {
-    if (!factionWithControlDomain) {
-      expect(true).toBe(true)
-      return
-    }
+    if (!factionWithControlDomain) throw new Error('test precondition not met: !factionWithControlDomain')
     const { faction, domain } = factionWithControlDomain
     const ctx = makeCtx({
       entities: [
@@ -353,7 +339,7 @@ describe('CONTROLS:namedFaction-routeAsset', () => {
           kind: 'namedFaction',
           subjectType: 'faction',
           value: { value: faction.name, confidence: 'derived' },
-          domains: [...faction.domains],
+          domains: faction.domains.filter(isNarrativeDomain),
         }),
         makeFact({
           id: 'f-bleed',

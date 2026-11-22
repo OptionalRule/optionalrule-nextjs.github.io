@@ -122,8 +122,8 @@ describe('seo.ts', () => {
         publishedTime: '2024-01-01',
       });
 
-      expect(metadata.openGraph?.type).toBe('article');
-      expect(metadata.openGraph?.publishedTime).toBe('2024-01-01');
+      expect(metadata.openGraph).toHaveProperty('type', 'article');
+      expect(metadata.openGraph).toHaveProperty('publishedTime', '2024-01-01');
     });
 
     it('should include tags in OpenGraph when provided', () => {
@@ -131,7 +131,7 @@ describe('seo.ts', () => {
         tags: ['tag1', 'tag2'],
       });
 
-      expect(metadata.openGraph?.tags).toEqual(['tag1', 'tag2']);
+      expect(metadata.openGraph).toHaveProperty('tags', ['tag1', 'tag2']);
     });
 
     it('should not include tags when empty array', () => {
@@ -139,7 +139,7 @@ describe('seo.ts', () => {
         tags: [],
       });
 
-      expect(metadata.openGraph?.tags).toBeUndefined();
+      expect(metadata.openGraph).not.toHaveProperty('tags');
     });
 
     it('should include Google verification when configured', () => {
@@ -182,9 +182,9 @@ describe('seo.ts', () => {
 
       expect(metadata.title).toBe('Test Post');
       expect(metadata.description).toBe('Test excerpt');
-      expect(metadata.openGraph?.type).toBe('article');
-      expect(metadata.openGraph?.publishedTime).toBe('2024-01-15');
-      expect(metadata.openGraph?.tags).toEqual(['test', 'post']);
+      expect(metadata.openGraph).toHaveProperty('type', 'article');
+      expect(metadata.openGraph).toHaveProperty('publishedTime', '2024-01-15');
+      expect(metadata.openGraph).toHaveProperty('tags', ['test', 'post']);
     });
 
     it('should prefer description over excerpt for SEO', () => {
@@ -291,15 +291,9 @@ describe('seo.ts', () => {
     });
 
     it('should use default description when not provided', () => {
-      const metadata = generatePageMetadata('About');
+      const metadata = generatePageMetadata('About', undefined, '/pages/about/');
 
       expect(metadata.description).toBe('A test blog description');
-    });
-
-    it('should generate canonical from title when not provided', () => {
-      const metadata = generatePageMetadata('About');
-
-      expect(metadata.alternates?.canonical).toBe('/about/');
     });
   });
 

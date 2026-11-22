@@ -75,7 +75,3 @@ export function pickEra(
   const index = Math.floor(rng.next() * pool.length)
   return pool[index]
 }
-
-export function erasForTone(tone: GeneratorTone): readonly string[] {
-  return ERAS_BY_TONE[tone]
-}

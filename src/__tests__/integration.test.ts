@@ -158,7 +158,7 @@ describe('Integration Tests', () => {
       const mockFiles = Array.from({ length: 25 }, (_, i) => `post-${i + 1}.mdx`);
       
       mockFs.existsSync.mockReturnValue(true);
-      mockFs.readdirSync.mockReturnValue(mockFiles);
+      mockFs.readdirSync.mockReturnValue(mockFiles as unknown as ReturnType<typeof fs.readdirSync>);
       
       // Mock each file read
       mockFiles.forEach((filename, index) => {
@@ -213,15 +213,13 @@ Content for post ${index + 1}`);
 
   describe('Draft Filtering Integration', () => {
     it('properly filters drafts across all content operations', () => {
-      const originalEnv = process.env.NODE_ENV;
-      
       try {
         // Test production environment
-        process.env.NODE_ENV = 'production';
+        vi.stubEnv('NODE_ENV', 'production');
         
         const mockFiles = ['draft.mdx', 'published.mdx'];
         mockFs.existsSync.mockReturnValue(true);
-        mockFs.readdirSync.mockReturnValue(mockFiles);
+        mockFs.readdirSync.mockReturnValue(mockFiles as unknown as ReturnType<typeof fs.readdirSync>);
         
         // Mock draft post - this should be filtered out by getPostFiles
         mockFs.readFileSync.mockReturnValueOnce(`---
@@ -240,7 +238,7 @@ draft: false
 This is published`);
         
         // Mock the matter calls for each file (both for filtering and meta extraction)
-        mockMatter.mockImplementation((content: string) => {
+        mockMatter.mockImplementation(((content: string) => {
           if (typeof content === 'string' && content.includes('draft: true')) {
             return {
               data: { title: 'Draft Post', date: '2023-12-01', draft: true },
@@ -251,8 +249,8 @@ This is published`);
             data: { title: 'Published Post', date: '2023-12-02', draft: false },
             content: 'This is published'
           } as unknown as GrayMatterFile<string>;
-        });
-        
+        }) as unknown as typeof grayMatter);
+
         const allPosts = getAllPostsMeta();
         expect(allPosts).toHaveLength(1);
         expect(allPosts[0].title).toBe('Published Post');
@@ -260,14 +258,14 @@ This is published`);
         // Setup additional mocks for getPost calls
         // getPost will call getPostFiles again and then read files to find matching slug
         // Since draft is filtered out in production, only published.mdx will be in the files list
-        mockFs.readdirSync.mockReturnValueOnce(['published.mdx']); // Only published file for getPost('draft')
+        mockFs.readdirSync.mockReturnValueOnce(['published.mdx'] as unknown as ReturnType<typeof fs.readdirSync>); // Only published file for getPost('draft')
         
         // Verify draft is not accessible by slug
         const draftPost = getPost('draft');
         expect(draftPost).toBeNull();
         
         // Setup mocks for published post lookup
-        mockFs.readdirSync.mockReturnValueOnce(['published.mdx']); // For getPost('published')
+        mockFs.readdirSync.mockReturnValueOnce(['published.mdx'] as unknown as ReturnType<typeof fs.readdirSync>); // For getPost('published')
         mockFs.readFileSync.mockReturnValueOnce(`---
 title: Published Post
 date: 2023-12-02
@@ -284,7 +282,7 @@ This is published`);
         expect(publishedPost?.title).toBe('Published Post');
         
       } finally {
-        process.env.NODE_ENV = originalEnv;
+        vi.unstubAllEnvs();
       }
     });
   });
@@ -327,29 +325,18 @@ This is published`);
       const contentPosts = getAllPostsMeta();
       expect(contentPosts).toHaveLength(2);
       
-      // Test that search index generation works end-to-end
-      // Since we've verified content processing works, just test that search loads
-      const mockSearchIndex = [
-        {
-          slug: '2023-12-02-nextjs-ssg',
-          title: 'Next.js Static Site Generation',
-          excerpt: 'Master SSG with Next.js',
-          tags: ['Next.js', 'SSG'],
-          content: 'Static Site Generation is a powerful feature of Next.js...',
-          date: '2023-12-02',
-          readingTime: 5
-        },
-        {
-          slug: '2023-12-01-react-testing',
-          title: 'React Testing Guide',
-          excerpt: 'Learn how to test React components effectively',
-          tags: ['React', 'Testing'],
-          content: 'This is a comprehensive guide to testing React components...',
-          date: '2023-12-01',
-          readingTime: 5
-        }
-      ];
-      
+      const { buildSearchIndex } = await import('@/lib/search-index');
+      const mockSearchIndex = buildSearchIndex();
+      expect(mockSearchIndex.map(item => item.slug)).toEqual(contentPosts.map(p => p.slug));
+      expect(mockSearchIndex[0]).toMatchObject({
+        slug: '2023-12-02-nextjs-ssg',
+        title: 'Next.js Static Site Generation',
+        excerpt: 'Master SSG with Next.js',
+        tags: ['Next.js', 'SSG'],
+        content: '',
+        date: '2023-12-02',
+      });
+
       fetchMock.mockResolvedValue({
         ok: true,
         json: () => Promise.resolve(mockSearchIndex)

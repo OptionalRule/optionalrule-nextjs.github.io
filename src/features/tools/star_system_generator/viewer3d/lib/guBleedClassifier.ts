@@ -147,6 +147,13 @@ const LOCATION_RULES: LocationRule[] = [
     },
   },
   {
+    keywords: ['gas giant radiation belt', 'gas giant'],
+    resolve: (system, hz) => {
+      const giant = firstGiant(system)
+      return giant ? bodyAnchor(giant, hz) : null
+    },
+  },
+  {
     keywords: ['asteroid belt seam', 'snow-line volatile belt', 'belt seam', 'volatile belt', 'belt', 'asteroid'],
     resolve: (system, hz) => {
       const belt = firstBelt(system)
@@ -160,13 +167,6 @@ const LOCATION_RULES: LocationRule[] = [
       return ringed
         ? bodyAnchor(ringed, hz)
         : zoneAnchor(system, hz, system.zones.snowLineAu.value, 'gu#ring-arc-fallback')
-    },
-  },
-  {
-    keywords: ['gas giant radiation belt', 'gas giant'],
-    resolve: (system, hz) => {
-      const giant = firstGiant(system)
-      return giant ? bodyAnchor(giant, hz) : null
     },
   },
   {

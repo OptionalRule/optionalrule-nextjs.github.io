@@ -120,10 +120,20 @@ describe('buildSceneGraph', () => {
   })
 
   it('marks a body with gu-fracture trait as guAccent', () => {
-    const fractured = graph.bodies.find((b) =>
-      system.bodies.find((sb) => sb.id === b.id)?.traits.some((t) => /gu|fracture/i.test(t.value)),
-    )
-    if (fractured) expect(fractured.guAccent).toBe(true)
+    const candidates = system.bodies.filter((b) => b.category.value !== 'anomaly')
+    expect(candidates.length).toBeGreaterThanOrEqual(2)
+    const [fracturedBody, plainBody] = candidates
+    const patchedSystem = {
+      ...system,
+      bodies: system.bodies.map((body) => {
+        if (body.id === fracturedBody.id) return { ...body, traits: [...body.traits, fact('GU fracture seam')] }
+        if (body.id === plainBody.id) return { ...body, traits: [fact('Quiet basalt plains')], filterNotes: [] }
+        return body
+      }),
+    }
+    const patchedGraph = buildSceneGraph(patchedSystem)
+    expect(patchedGraph.bodies.find((b) => b.id === fracturedBody.id)?.guAccent).toBe(true)
+    expect(patchedGraph.bodies.find((b) => b.id === plainBody.id)?.guAccent).toBe(false)
   })
 
   it('sceneRadius is at least the outermost orbit radius', () => {
@@ -247,7 +257,7 @@ describe('buildSceneGraph', () => {
 
   it('classifies a belt-keyword ruin onto a belt body when one exists', () => {
     const beltIds = system.bodies.filter((b) => b.category.value === 'belt').map((b) => b.id)
-    if (beltIds.length === 0) return
+    if (beltIds.length === 0) throw new Error('test precondition not met: beltIds.length === 0')
     const ruin = {
       id: 'belt-keyword-ruin',
       location: fact('Lost in the asteroid swarm', 'human-layer'),

@@ -9,7 +9,6 @@ import {
   extractHeadings,
   normalizeImagePath,
   createTagSlug,
-  tagSlugToName,
 } from './utils';
 
 describe('Date utilities', () => {
@@ -34,8 +33,6 @@ describe('Date utilities', () => {
       expect(result).toEqual({ year: 2023, month: 1, day: 5 });
     });
   });
-
-  // generatePostUrl tests moved to urls.test.ts
 });
 
 describe('String utilities', () => {
@@ -92,12 +89,10 @@ describe('Heading utilities', () => {
       expect(generateHeadingId('Hello! World?')).toBe('hello-world');
     });
 
-    it('handles multiple spaces and hyphens', () => {
-      expect(generateHeadingId('Hello   World---Test')).toBe('hello-world-test');
-    });
-
-    it('removes leading and trailing hyphens', () => {
-      expect(generateHeadingId('-Hello World-')).toBe('hello-world');
+    it('keeps the published page rule for hyphens and punctuation', () => {
+      expect(generateHeadingId('Hello   World---Test')).toBe('hello-world---test');
+      expect(generateHeadingId('Design & Running')).toBe('design--running');
+      expect(generateHeadingId('Rule Zero – No Risk, No Roll')).toBe('rule-zero--no-risk-no-roll');
     });
   });
 
@@ -130,6 +125,28 @@ More content`;
       expect(headings).toEqual([
         { level: 1, text: 'Real Heading', id: 'real-heading' },
       ]);
+    });
+
+    it('uses plain text for formatted headings', () => {
+      expect(extractHeadings('### **Spells**\n## _I Do Not Do Reviews Disclaimer_')).toEqual([
+        { level: 3, text: 'Spells', id: 'spells' },
+        { level: 2, text: 'I Do Not Do Reviews Disclaimer', id: 'i-do-not-do-reviews-disclaimer' },
+      ]);
+    });
+
+    it('suffixes later duplicate ids in document order', () => {
+      const content = ['## Rare', '## Rare', '## Rare-1', '## Rare'].join('\n');
+      expect(extractHeadings(content).map((h) => h.id)).toEqual(['rare', 'rare-1', 'rare-1-1', 'rare-2']);
+    });
+
+    it('starts the duplicate count fresh for each document', () => {
+      expect(extractHeadings('## Rare').map((h) => h.id)).toEqual(['rare']);
+      expect(extractHeadings('## Rare').map((h) => h.id)).toEqual(['rare']);
+    });
+
+    it('includes headings inside blockquotes and skips fenced code', () => {
+      const content = ['> ## Pony/Mule', '```python', '# a comment', '```', '## After'].join('\n');
+      expect(extractHeadings(content).map((h) => h.id)).toEqual(['ponymule', 'after']);
     });
   });
 });
@@ -167,16 +184,6 @@ describe('Tag utilities', () => {
 
     it('removes leading and trailing hyphens', () => {
       expect(createTagSlug('-React-')).toBe('react');
-    });
-  });
-
-  describe('tagSlugToName', () => {
-    it('converts slug back to readable name', () => {
-      expect(tagSlugToName('react-development')).toBe('react development');
-    });
-
-    it('handles single words', () => {
-      expect(tagSlugToName('react')).toBe('react');
     });
   });
 });

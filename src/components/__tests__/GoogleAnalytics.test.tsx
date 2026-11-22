@@ -4,6 +4,7 @@ import { siteConfig } from '@/config/site';
 
 type MockedScriptCall = { __esModule?: boolean } & Record<string, unknown> & { children?: React.ReactNode };
 const scriptCalls: MockedScriptCall[] = [];
+const mutableAnalytics: { googleAnalyticsId: string } = siteConfig.analytics;
 
 
 vi.mock('next/script', () => ({
@@ -29,18 +30,18 @@ describe('GoogleAnalytics component', () => {
   });
 
   afterEach(() => {
-    siteConfig.analytics.googleAnalyticsId = originalId;
+    mutableAnalytics.googleAnalyticsId = originalId;
   });
 
   it('renders nothing when GA id is missing or invalid', () => {
-    siteConfig.analytics.googleAnalyticsId = '';
+    mutableAnalytics.googleAnalyticsId = '';
     const { container } = render(<GoogleAnalytics />);
     expect(container).toBeEmptyDOMElement();
     expect(scriptCalls).toHaveLength(0);
   });
 
   it('injects GA scripts when a valid id is configured', () => {
-    siteConfig.analytics.googleAnalyticsId = 'G-TEST1234';
+    mutableAnalytics.googleAnalyticsId = 'G-TEST1234';
     render(<GoogleAnalytics nonce="abc" />);
 
     expect(scriptCalls).toHaveLength(2);

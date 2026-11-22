@@ -4,9 +4,6 @@ import { separationToBucketAu } from './companionGeometry'
 import { circumbinaryInnerAuLimit, siblingOuterAuLimit } from './companionStability'
 import { selectArchetypeForCompanion } from './debrisFields'
 import {
-  rockyChainCategories,
-} from './domain'
-import {
   builtForms,
   guFractureFunctionsBySiteCategory as settlementGuFractureFunctionsBySiteCategory,
   settlementLocations,
@@ -210,25 +207,6 @@ export function isEnvelopeCategory(category: BodyCategory): boolean {
 
 export function isSolidSurfaceCategory(category: BodyCategory): boolean {
   return isSolidSurfaceCategoryCompatible(category)
-}
-
-export function isRockyChainCategory(category: BodyCategory): boolean {
-  return rockyChainCategories.has(category)
-}
-
-export function isAtmosphereCompatible(body: OrbitingBody): boolean {
-  if (isAirlessClass(body.bodyClass.value)) return isAirlessAtmosphere(body.detail.atmosphere.value)
-  if (isGreenhouseClass(body.bodyClass.value)) return isGreenhouseAtmosphereCompatible(body.detail.atmosphere.value)
-  if (isSolidHydrogenEnvelopeConflict(body)) return false
-  return true
-}
-
-export function isHydrosphereCompatible(body: OrbitingBody): boolean {
-  if (isHyceanClass(body.bodyClass.value)) return isHyceanHydrosphere(body.detail.hydrosphere.value)
-  if (isAirlessClass(body.bodyClass.value)) return isAirlessHydrosphere(body.detail.hydrosphere.value)
-  if (isDesertClass(body.bodyClass.value)) return isDesertCompatibleHydrosphere(body.detail.hydrosphere.value)
-  if (isWaterOceanClass(body.bodyClass.value)) return isWetOceanHydrosphere(body.detail.hydrosphere.value)
-  return true
 }
 
 export function validateBodyEnvironment(body: OrbitingBody, path = 'body'): ValidationFinding[] {
@@ -536,10 +514,6 @@ export function validateSettlementCompatibility(system: GeneratedSystem, settlem
   }
 
   return findings
-}
-
-export function validateMoonAnchors(system: GeneratedSystem): ValidationFinding[] {
-  return system.settlements.flatMap((settlement, index) => validateSettlementCompatibility(system, settlement, `settlements[${index}]`).filter((finding) => finding.path.endsWith('.moonId')))
 }
 
 function collectStrings(value: unknown, path = '$'): Array<{ path: string; value: string }> {

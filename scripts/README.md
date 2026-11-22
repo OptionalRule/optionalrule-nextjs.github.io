@@ -6,28 +6,14 @@ This directory contains utility scripts for the Next.js blog project.
 
 A TypeScript command-line script to generate new blog posts with proper frontmatter and sample content. Built with full type safety and modern ES module syntax.
 
-## import-jekyll-posts.ts
-
-A TypeScript script to migrate Jekyll blog posts to NextJS MDX format. Converts Jekyll frontmatter to NextJS gray-matter fields and preserves post content. Generates properly formatted YAML frontmatter that's compatible with the gray-matter parser.
-
 ### Usage
 
 ```bash
 # Using npm script (recommended)
 npm run create-post
 
-# Or run directly with ts-node
-npx ts-node scripts/create-post.ts
-
-### import-jekyll-posts.ts
-
-```bash
-# Using npm script (recommended)
-npm run import-jekyll-posts
-
-# Or run directly with ts-node
-npx ts-node scripts/import-jekyll-posts.ts
-```
+# Or run directly
+node --import tsx/esm scripts/create-post.ts
 ```
 
 ### What it does
@@ -38,15 +24,6 @@ npx ts-node scripts/import-jekyll-posts.ts
 4. **Creates file**: Generates `YYYY-MM-DD-slug.mdx` in the `content/posts/` directory
 5. **Adds frontmatter**: Includes all required fields with sensible defaults
 6. **Provides sample content**: Includes a comprehensive guide on Markdown features
-
-### import-jekyll-posts.ts
-
-1. **Prompts for source directory**: Asks for the directory containing Jekyll posts
-2. **Scans for markdown files**: Finds all `.md` files in the source directory
-3. **Parses Jekyll frontmatter**: Extracts metadata from Jekyll YAML frontmatter
-4. **Converts to NextJS format**: Maps Jekyll fields to NextJS gray-matter fields
-5. **Preserves content**: Keeps the original post content intact
-6. **Generates MDX files**: Creates properly formatted NextJS posts
 
 ### Generated frontmatter
 
@@ -76,24 +53,6 @@ showToc: true
 - **Tables**: Markdown table examples
 - **Headers**: All heading levels (H1-H4)
 
-### Jekyll to NextJS Field Mapping
-
-The import script maps Jekyll frontmatter fields to NextJS fields as follows:
-
-| Jekyll Field | NextJS Field | Notes |
-|--------------|--------------|-------|
-| `title` | `title` | Direct mapping |
-| `date` | `date` | YYYY-MM-DD portion only |
-| `description` | `excerpt` | Primary source |
-| `summary` | `excerpt` | Fallback if description missing |
-| `tags` | `tags` | Direct mapping |
-| `categories` | `tags` | Fallback if tags missing |
-| `image` | `featured_image` | Direct mapping |
-| - | `featured_image` | Defaults to `/images/or_logo.png` |
-| - | `slug` | Extracted from filename |
-| - | `draft` | Always set to `false` |
-| - | `showToc` | Always set to `false` |
-
 ### YAML Frontmatter Format
 
 The script generates properly formatted YAML frontmatter that's compatible with the gray-matter parser:
@@ -112,17 +71,6 @@ The script generates properly formatted YAML frontmatter that's compatible with 
 - **Comprehensive guide**: Sample content serves as a reference for Markdown features
 - **Error handling**: Graceful error handling with helpful messages
 - **Modern ES modules**: Uses modern JavaScript/TypeScript syntax
-
-### import-jekyll-posts.ts Features
-
-- **Jekyll frontmatter parsing**: Handles YAML frontmatter with fallback parsing
-- **Smart field mapping**: Maps Jekyll fields to NextJS format with fallbacks
-- **Filename parsing**: Extracts slug and date from Jekyll filename pattern
-- **Content preservation**: Keeps original post content intact
-- **Batch processing**: Processes multiple files in one run
-- **Conflict detection**: Skips files that already exist
-- **Progress reporting**: Shows conversion progress and results
-- **Error handling**: Gracefully handles parsing errors and continues processing
 
 ### Example output
 
@@ -148,39 +96,6 @@ Enter the title for your new post: My Amazing Blog Post
    4. Add a featured image to /public/images/
 ```
 
-### import-jekyll-posts.ts Example
-
-```bash
-$ npm run import-jekyll-posts
-
-🚀 Jekyll to NextJS Post Migration Script
-
-Enter the source directory containing Jekyll posts: /path/to/jekyll/_posts
-Enter output directory (default: /path/to/content/posts): 
-
-📁 Scanning directory: /path/to/jekyll/_posts
-📁 Output directory: /path/to/content/posts
-
-📝 Found 15 markdown files to process.
-
-Processing: 2024-01-15-getting-started-with-nextjs.md
-  ✅ Converted: 2024-01-15-getting-started-with-nextjs.mdx
-Processing: 2024-02-03-mastering-typescript.md
-  ✅ Converted: 2024-02-03-mastering-typescript.mdx
-
-📊 Migration Results:
-✅ Successfully converted: 15
-❌ Failed: 0
-
-🎉 Migration completed! 15 posts imported to /path/to/content/posts
-
-💡 Next steps:
-   1. Review the imported posts
-   2. Update frontmatter fields as needed
-   3. Verify tags and excerpts
-   4. Check featured images
-```
-
 ### Customization
 
 You can modify the script to:
@@ -193,9 +108,9 @@ You can modify the script to:
 ### Requirements
 
 - Node.js
-- TypeScript support (ts-node is included as a dev dependency)
+- TypeScript support through `tsx` (a dev dependency): run scripts with `node --import tsx/esm`
 - Write access to the `content/posts/` directory
 
 ### Configuration
 
-The script uses a dedicated `tsconfig.json` and `package.json` in the scripts directory to ensure proper ES module handling and eliminate TypeScript warnings.
+Scripts are type-checked by the root `tsconfig.json` (`npm run typecheck`). `scripts/package.json` marks the directory as ES modules.

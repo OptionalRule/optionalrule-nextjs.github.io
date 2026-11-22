@@ -4,7 +4,7 @@ import { useMemo, useReducer } from 'react'
 
 import { lightSourceCatalog } from '../data/lightSources'
 import { cloneCatalogEntry, createActiveSourceFromCatalog, createCatalogIndex } from '../lib/catalog'
-import { selectCentralTimer, selectSettings } from '../lib/selectors'
+import { selectCentralTimer } from '../lib/selectors'
 import type {
   ActiveLightSource,
   CentralTimerSnapshot,
@@ -473,14 +473,4 @@ export const useTorchTrackerState = (
   const centralTimer = useMemo(() => selectCentralTimer(state), [state])
 
   return { state, controller, centralTimer }
-}
-
-export const useTorchTrackerSettings = (state: TorchTrackerState) => {
-  const settings = selectSettings(state)
-  return useMemo(
-    () => ({
-      settings,
-    }),
-    [settings],
-  )
 }

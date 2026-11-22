@@ -13,7 +13,6 @@ This is a Next.js 15 static blog site for Optional Rule Games that deploys to Gi
 - `npm run dev` - Start development server with hot reloading (includes draft posts)
 - `npm run build` - Build static site for production (excludes draft posts)
 - `npm run validate-config` - Validate configuration (URL/CNAME/robots/sitemap/assets/GA)
-- `npm run start` - Start production server  
 - `npm run lint` - Run ESLint for code quality checks
 - `npm run generate-search-index` - Generate search index from all posts
 - `npm run find-empty-links` - Scan content for broken markdown links
@@ -71,16 +70,7 @@ draft: false
 showToc: false
 ```
 
-For static images rendered in MDX, Next.js's `<Image>` component requires explicit dimensions. Add `imageWidth` and `imageHeight` fields to your frontmatter and use them when referencing the image:
-
-```yaml
-imageWidth: 800
-imageHeight: 600
-```
-
-```mdx
-<img src="/images/example.png" alt="Example" width={frontmatter.imageWidth} height={frontmatter.imageHeight} />
-```
+Images in MDX render through the components in `src/lib/mdx-components.tsx`; no `imageWidth`/`imageHeight` frontmatter fields are read.
 
 ### Content Processing
 - **Reading time calculation** automatically added to all posts
@@ -107,7 +97,7 @@ All scripts use ESM loader pattern and are located in `scripts/` directory:
 - **Post creation**: Interactive post scaffold with proper frontmatter
 
 ### Build Process
-1. Generate search index from all posts
+1. Generate search index and RSS feed from all posts
 2. Next.js static build with route pre-rendering  
 3. Export to `out/` directory for GitHub Pages
 4. Automatic deployment via GitHub Actions
@@ -124,16 +114,12 @@ All scripts use ESM loader pattern and are located in `scripts/` directory:
 - **Content outside src/**: MDX files in `content/` directory separate from Next.js source
 - **Trailing slashes required**: All routes end with `/` for GitHub Pages compatibility
 - **Static-only**: No server-side rendering or API routes in production
-- **Image optimization enabled**: Uses Next.js `<Image>` with static export; images require width and height in frontmatter
+- **Image optimization disabled**: `images.unoptimized: true` in `next.config.ts` is required for static export to GitHub Pages
 - **Search runs client-side**: No server dependency for search functionality
 
 ## Content Security Policy
 
-The application emits a strict Content Security Policy (CSP) using Next.js middleware. A unique nonce is generated for every request and applied to inline `<script>` tags, allowing them to execute while blocking injected scripts. The middleware sets the `Content-Security-Policy` header with:
-
-- `script-src 'self' 'nonce-<random>' https://www.googletagmanager.com https://platform.twitter.com https://s.imgur.com`
-
-This restricts script execution to the site itself and the trusted domains above. Server components can read the nonce via `headers().get('x-nonce')` and pass it to `<script>` or `next/script` elements.
+The site is a static export (`output: 'export'`) with no middleware, so no Content Security Policy header or per-request nonce is emitted. `GoogleAnalytics` accepts an optional `nonce` prop, but nothing supplies one.
 
 ## Theme Toggle
 
@@ -246,7 +232,7 @@ Options:
 Examples:
 ```bash
 # Single file dry run
-npm run enhance-post -- content/posts/2025-09-12-kcd2-alchemy-tool-and-nostalgia-for-ttrpg-crafting.mdx --dry-run
+npm run enhance-post -- content/posts/2025-09-12-kcd2-alchemy-tool.mdx --dry-run
 
 # Enhance all posts in a directory, overwrite only excerpt
 npm run enhance-post -- content/posts --overwrite-excerpt

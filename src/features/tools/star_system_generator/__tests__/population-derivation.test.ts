@@ -118,23 +118,23 @@ describe('derivePopulationLayer', () => {
   })
 
   it('sets prominentForm only for colony+ bands', () => {
-    const system = withPopulation({ seed: 'prominent-form-check', settlements: 'hub' })
-    for (const body of system.bodies) {
-      const pop = body.population?.value
-      if (!pop) continue
-      if (bandRank(pop.band) < bandRank('colony')) {
-        expect(pop.prominentForm).toBeNull()
-      }
-    }
+    const system = withPopulation({ seed: 'prominent-form-check-1', settlements: 'hub' })
+    const populations = system.bodies.map((body) => body.population?.value).filter((pop) => pop !== undefined)
+    const colonyPlus = populations.filter((pop) => bandRank(pop.band) >= bandRank('colony'))
+    const belowColony = populations.filter((pop) => bandRank(pop.band) < bandRank('colony'))
+    expect(colonyPlus.length, 'seed must produce a colony+ body').toBeGreaterThan(0)
+    expect(belowColony.length, 'seed must produce a below-colony body').toBeGreaterThan(0)
+    for (const pop of colonyPlus) expect(pop.prominentForm).not.toBeNull()
+    for (const pop of belowColony) expect(pop.prominentForm).toBeNull()
   })
 
   it('assigns higher bands to bodies with named settlements than to neighbors without them', () => {
     const system = withPopulation({ seed: 'settled-vs-unsettled', settlements: 'crowded' })
     const settledBodyIds = new Set(system.settlements.map((s) => s.bodyId).filter((id): id is string => !!id))
-    if (settledBodyIds.size === 0) return
+    if (settledBodyIds.size === 0) throw new Error('test precondition not met: settledBodyIds.size === 0')
     const settledBodies = system.bodies.filter((b) => settledBodyIds.has(b.id))
     const unsettledBodies = system.bodies.filter((b) => !settledBodyIds.has(b.id))
-    if (settledBodies.length === 0 || unsettledBodies.length === 0) return
+    if (settledBodies.length === 0 || unsettledBodies.length === 0) throw new Error('test precondition not met: settledBodies.length === 0 || unsettledBodies.length === 0')
     const avgSettled = average(settledBodies.map((b) => bandRank(b.population?.value.band ?? 'empty')))
     const avgUnsettled = average(unsettledBodies.map((b) => bandRank(b.population?.value.band ?? 'empty')))
     expect(avgSettled).toBeGreaterThan(avgUnsettled)

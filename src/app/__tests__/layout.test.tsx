@@ -4,7 +4,13 @@ import { describe, expect, it, vi } from "vitest";
 
 type LayoutModule = typeof import("../layout");
 type SiteConfig = typeof import("@/config/site")["siteConfig"];
-type DeepWriteable<T> = { -readonly [Key in keyof T]: DeepWriteable<T[Key]> };
+type DeepWriteable<T> = T extends string
+  ? string
+  : T extends number
+    ? number
+    : T extends boolean
+      ? boolean
+      : { -readonly [Key in keyof T]: DeepWriteable<T[Key]> };
 type MutableSiteConfig = DeepWriteable<SiteConfig>;
 
 type ConfigMutator<Config> = (config: Config) => void;
@@ -23,6 +29,7 @@ async function loadLayoutModule(mutate?: ConfigMutator<MutableSiteConfig>) {
 
   vi.doMock("@/config/site", () => ({
     __esModule: true,
+    ...actualSiteModule,
     siteConfig: siteConfigClone,
   }));
 
@@ -95,8 +102,12 @@ describe("layout metadata", () => {
       },
     });
 
-    expect(metadata.icons?.icon?.[0]?.url).toBe("/favicon/favicon-16x16.png");
-    expect(metadata.icons?.shortcut).toBe("/favicon/favicon.ico");
+    const icons = metadata.icons;
+    if (!icons || typeof icons !== "object" || Array.isArray(icons) || icons instanceof URL) {
+      throw new Error("expected metadata.icons to be an icons object");
+    }
+    expect(Array.isArray(icons.icon) ? icons.icon[0] : undefined).toMatchObject({ url: "/favicon/favicon-16x16.png" });
+    expect(icons.shortcut).toBe("/favicon/favicon.ico");
     expect(metadata.verification).toBeUndefined();
   });
 
@@ -127,7 +138,7 @@ describe("RootLayout component", () => {
     expect(html.classList.contains("dark")).toBe(true);
 
     const themeScript = dom.querySelector("head script");
-    expect(themeScript?.textContent).toContain("localStorage.getItem('theme')");
+    expect(themeScript?.textContent).toContain('localStorage.getItem("theme")');
 
     const msMeta = dom.querySelector("meta[name='msapplication-config']");
     expect(msMeta?.getAttribute("content")).toBe("/favicon/browserconfig.xml");

@@ -12,11 +12,10 @@
 - `npm run graph:hooks`: Install or refresh the local post-commit and post-checkout Graphify hooks.
 - `npm run graph:update`: Refresh the local `src/` code graph without semantic extraction or visualization.
 - `npm run build`: Generate search index + RSS, then static build to `out/`.
-- `npm start`: Serve production build locally.
 - `npm run lint`: ESLint checks.
 - `npm run test`: Unit tests (Vitest). Use `test:watch`, `test:ui`, `test:coverage` as needed.
 - `npm run test:integration` / `test:ssg` / `test:a11y`: Targeted CI-aligned test suites.
-- `npm run test:all`: Unit + a11y + build verification.
+- `npm run test:all`: Unit tests (a11y included) + build verification.
 - Content helpers: `npm run create-post`, `npm run generate-search-index`, `npm run generate-rss`.
 
 ## Coding Style & Naming Conventions

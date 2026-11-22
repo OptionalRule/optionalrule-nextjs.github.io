@@ -75,6 +75,15 @@ describe('classifyGuBleed', () => {
     expect(Math.abs(v.center[0]) + Math.abs(v.center[1]) + Math.abs(v.center[2]) + v.radius).toBeGreaterThan(0)
   })
 
+  it('anchors gas giant radiation belt bleeds on the giant, not the asteroid belt', () => {
+    const sys = makeSystem()
+    const radiationBelt = classifyGuBleed({ ...sys.guOverlay, bleedLocation: fact('Gas giant radiation belt') }, sys)
+    const giant = classifyGuBleed({ ...sys.guOverlay, bleedLocation: fact('Bessel') }, sys)
+    const belt = classifyGuBleed({ ...sys.guOverlay, bleedLocation: fact('Grain') }, sys)
+    expect(radiationBelt.center).toEqual(giant.center)
+    expect(radiationBelt.center).not.toEqual(belt.center)
+  })
+
   it('anchors ring-arc bleeds even when no ringed body exists', () => {
     const sys = makeSystem()
     const systemWithoutRings = {

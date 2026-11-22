@@ -15,7 +15,7 @@ function makeFact(overrides: Partial<NarrativeFact> = {}): NarrativeFact {
   return {
     id: overrides.id ?? 'f1',
     kind: overrides.kind ?? 'settlement.function',
-    domains: overrides.domains ?? ['settlement'],
+    domains: overrides.domains ?? ['infrastructure'],
     subjectType: overrides.subjectType ?? 'settlement',
     subjectId: overrides.subjectId ?? 'settlement-1',
     value: overrides.value ?? { value: 'Chiral harvesting site', confidence: 'derived' },

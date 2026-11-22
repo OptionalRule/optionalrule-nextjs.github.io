@@ -82,7 +82,7 @@ export default async function TagPage({ params }: TagPageProps) {
               <Pagination 
                 currentPage={currentPage}
                 totalPages={totalPages}
-                basePath={`/tag/${createTagSlug(tagData.tag)}`}
+                tag={tagData.tag}
               />
             </div>
           )}
@@ -108,7 +108,7 @@ export default async function TagPage({ params }: TagPageProps) {
           <Pagination 
             currentPage={currentPage}
             totalPages={totalPages}
-            basePath={`/tag/${createTagSlug(tagData.tag)}`}
+            tag={tagData.tag}
           />
         </main>
       </div>

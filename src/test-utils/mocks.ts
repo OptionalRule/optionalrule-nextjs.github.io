@@ -114,6 +114,10 @@ export const resetNextNavigationMocks = () => {
 type FetchArgs = Parameters<typeof fetch>;
 type FetchReturn = ReturnType<typeof fetch>;
 
+export const createMockResponse = (
+  init: Pick<Response, 'ok'> & Partial<Pick<Response, 'status' | 'json'>>,
+): Response => init as Response;
+
 export const mockGlobalFetch = (
   implementation?: (...args: FetchArgs) => FetchReturn,
 ) => {

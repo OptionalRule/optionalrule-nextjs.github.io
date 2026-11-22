@@ -1,17 +1,10 @@
 // Format date for display
 export function formatDate(dateString: string): string {
-  // Parse the date string directly to avoid timezone conversion issues
-  // dateString format: "YYYY-MM-DD"
-  const [year, month, day] = dateString.split('-').map(Number);
-  
-  // Create a date object for formatting, but use UTC methods to avoid timezone conversion
-  const date = new Date(Date.UTC(year, month - 1, day)); // month is 0-indexed
-  
-  return date.toLocaleDateString('en-US', {
+  return parseDateToUTCDate(dateString).toLocaleDateString('en-US', {
     year: 'numeric',
     month: 'long',
     day: 'numeric',
-    timeZone: 'UTC' // Force UTC timezone to avoid local conversion
+    timeZone: 'UTC'
   });
 }
 
@@ -36,15 +29,6 @@ export function parseDateToUTCDate(dateString: string): Date {
   return new Date(dateString + 'T00:00:00.000Z'); // Force UTC midnight to avoid timezone issues
 }
 
-// Generate post URL from date and slug
-export function generatePostUrl(date: string, slug: string): string {
-  const { year, month, day } = parseDateToUTC(date);
-  const monthStr = String(month).padStart(2, '0');
-  const dayStr = String(day).padStart(2, '0');
-  
-  return `/${year}/${monthStr}/${dayStr}/${slug}/`;
-}
-
 // Capitalize first letter of string
 export function capitalize(str: string): string {
   return str.charAt(0).toUpperCase() + str.slice(1);
@@ -60,31 +44,66 @@ export function generateMetaDescription(description?: string, excerpt?: string, 
   return description || excerpt || defaultDescription;
 }
 
-// Generate slugified ID from heading text
 export function generateHeadingId(text: string): string {
-  return text
-    .toLowerCase()
-    .trim()
-    .replace(/[^\w\s-]/g, '') // Remove special characters except spaces and hyphens
-    .replace(/\s+/g, '-') // Replace spaces with hyphens
-    .replace(/-+/g, '-') // Replace multiple hyphens with single hyphen
-    .replace(/^-|-$/g, ''); // Remove leading/trailing hyphens
+  return text.toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]/g, '');
 }
 
-// Extract headings from MDX content
+export function createHeadingIdAllocator(): (text: string) => string {
+  const used = new Set<string>();
+  return (text: string): string => {
+    const base = generateHeadingId(text);
+    let id = base;
+    for (let n = 1; used.has(id); n++) {
+      id = `${base}-${n}`;
+    }
+    used.add(id);
+    return id;
+  };
+}
+
+export function markdownHeadingText(markdown: string): string {
+  let text = markdown
+    .replace(/!\[([^\]]*)\]\([^)]*\)/g, '$1')
+    .replace(/\[([^\]]*)\]\([^)]*\)/g, '$1')
+    .replace(/\[([^\]]*)\]\[[^\]]*\]/g, '$1')
+    .replace(/`([^`]*)`/g, '$1')
+    .replace(/<[^>]+>/g, '');
+  let previous;
+  do {
+    previous = text;
+    text = text.replace(/(\*\*|__|\*|_)(\S(?:.*?\S)?)\1/g, '$2');
+  } while (text !== previous);
+  return text.replace(/\\([\\`*_{}[\]()#+\-.!>])/g, '$1').trim();
+}
+
+const FENCE = /^ {0,3}(`{3,}|~{3,})/;
+const ATX_HEADING = /^ {0,3}(#{1,6})[ \t]+(.*?)(?:[ \t]+#+)?[ \t]*$/;
+const BLOCKQUOTE_PREFIX = /^(?: {0,3}> ?)+/;
+
 export function extractHeadings(content: string): Array<{ level: number; text: string; id: string }> {
-  const headingRegex = /^(#{1,6})\s+(.+)$/gm;
   const headings: Array<{ level: number; text: string; id: string }> = [];
-  
-  let match;
-  while ((match = headingRegex.exec(content)) !== null) {
-    const level = match[1].length;
-    const text = match[2].trim();
-    const id = generateHeadingId(text);
-    
-    headings.push({ level, text, id });
+  const allocateId = createHeadingIdAllocator();
+  let fence: string | null = null;
+
+  for (const rawLine of content.split('\n')) {
+    const line = rawLine.replace(BLOCKQUOTE_PREFIX, '');
+    const fenceMatch = FENCE.exec(line);
+    if (fence) {
+      if (fenceMatch && fenceMatch[1][0] === fence[0] && fenceMatch[1].length >= fence.length) {
+        fence = null;
+      }
+      continue;
+    }
+    if (fenceMatch) {
+      fence = fenceMatch[1];
+      continue;
+    }
+    const match = ATX_HEADING.exec(line);
+    if (!match || match[2] === '') continue;
+    const text = markdownHeadingText(match[2]);
+    headings.push({ level: match[1].length, text, id: allocateId(text) });
   }
-  
+
   return headings;
 }
 
@@ -113,11 +132,6 @@ export function createTagSlug(tag: string): string {
     .replace(/[^\w\-]/g, '')        // Remove special characters except hyphens
     .replace(/\-+/g, '-')           // Replace multiple hyphens with single
     .replace(/^\-+|\-+$/g, '');     // Remove leading/trailing hyphens
-}
-
-// Convert tag slug back to display name
-export function tagSlugToName(slug: string): string {
-  return slug.replace(/\-/g, ' ');
 }
 
 // Generate excerpt from content with basic markdown stripping

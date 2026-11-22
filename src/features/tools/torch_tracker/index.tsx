@@ -11,6 +11,7 @@ import type { ActiveLightSource, TorchCatalogEntry } from './types'
 import { getAllImageVariants } from './utils/images'
 import {
   clearTorchTrackerState,
+  getTorchTrackerStorage,
   loadTorchTrackerState,
   persistTorchTrackerState,
 } from './lib/persistence'
@@ -122,13 +123,14 @@ export default function TorchTracker({ className }: TorchTrackerProps) {
 
   useEffect(() => {
     if (hasHydratedPersistence) return
-    if (typeof window === 'undefined') {
+    const storage = getTorchTrackerStorage()
+    if (!storage) {
       setHasHydratedPersistence(true)
       return
     }
 
     if (isPersistenceEnabled) {
-      const snapshot = loadTorchTrackerState(window.localStorage)
+      const snapshot = loadTorchTrackerState(storage)
       if (snapshot) {
         controller.replaceState(snapshot)
         centrallyPausedIdsRef.current.clear()
@@ -139,23 +141,25 @@ export default function TorchTracker({ className }: TorchTrackerProps) {
   }, [controller, hasHydratedPersistence, isPersistenceEnabled])
 
   useEffect(() => {
-    if (typeof window === 'undefined') return
+    const storage = getTorchTrackerStorage()
+    if (!storage) return
     if (!isPersistenceEnabled) {
-      clearTorchTrackerState(window.localStorage)
+      clearTorchTrackerState(storage)
     }
   }, [isPersistenceEnabled])
 
   useEffect(() => {
     if (!hasHydratedPersistence) return
     if (!isPersistenceEnabled) return
-    if (typeof window === 'undefined') return
+    const storage = getTorchTrackerStorage()
+    if (!storage) return
 
     if (state.active.length === 0) {
-      clearTorchTrackerState(window.localStorage)
+      clearTorchTrackerState(storage)
       return
     }
 
-    persistTorchTrackerState(window.localStorage, state)
+    persistTorchTrackerState(storage, state)
   }, [hasHydratedPersistence, isPersistenceEnabled, state])
 
   useGameClock({
@@ -279,5 +283,3 @@ export default function TorchTracker({ className }: TorchTrackerProps) {
     </div>
   )
 }
-
-export { TorchTracker as TorchTrackerComponent }

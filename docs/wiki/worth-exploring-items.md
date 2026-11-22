@@ -30,3 +30,14 @@ See [decision-log](decision-log.md), [star-system-narrative-stage](star-system-n
 - Q29: `9db3d50`..`2dc9275`. `lib/generator/rules.ts` maps each version to its `GeneratorRules`. `generateSystem(options, {generatorVersion})` stamps the version it ran. v3 uses whole-word classification (with plurals and explicit legitimate forms). v2 is byte-identical. 190 of 200 golden cases differ under v3; the audit shows 722 errors for both versions. Recorded in ADR-0003.
 - **Release hold (chief-of-staff, 2026-11-21):** do not merge `develop`→`main` until the Q32–Q36 hook-variety decisions are resolved. If v3 shipped first, changing hooks later would alter v3 links that had already been shared, and that would force a v4.
 - Q32–Q34: `4124bf1` adds `HOOK_SELECTION_PROFILE_V3`. GU is active above the "Geometrically quiet" band (186 of 200 golden systems); Bleed is active through its own regexes (176 of 200). 86 of 200 v3 hashes changed. **The measured variety gain is small:** GU/Bleed-tagged picks went from 39.0% to 36.5%, and effective entries from 238.8 to 241.5. Almost every system really does have GU. Real variety would need more pool entries or tone gating. Audit still 722.
+- 2026-11-21: Tag Hook pool `37afa1c`..`f9547e1` (164 of 200 v3 hashes changed). Released: CI-green `f9547e1` merged to `main` as `94dc4fd`, and the deploy succeeded. v3 is live; v2 links and links without `v` reproduce. The release hold is lifted.
+- Gap found: test files are excluded from tsc. A fix to typecheck tests in CI was dispatched on 2026-11-21.
+- Parked: v4 variety work (pool entries, tone weighting); it starts with a grilling.
+
+## 2026-11-21 deferred to v4 by the defect sweep (Q44, Q45)
+Ledger rows as of `f0411a0` ([ledger](../superpowers/plans/2026-11-21-defect-ledger.md)). None of these sites are version-pinned, so each fix changes v2 and v3 output and needs `GENERATOR_VERSION` 4 plus an ADR.
+- D1: DEPENDS_ON substring keywords (`ice`⊂office/lattice, `ration`⊂operation/calibration). 10 of 68 edges in a 2000-system sample. Note: the round-4 follow-up requires byte-identical v2/v3 behaviour.
+- D2: `isGuTouched` `/GU/i` matches "irregular" and "Rogue" (763 bodies in the sample).
+- D3: `lab` matches "debt-labor", so prisons get named "…Laboratory".
+- K1: 722 audit baseline errors (318 coded, 404 path-only).
+- D4 (`silence`/`blade` hook-term patterns) joins the parked hook-variety work.

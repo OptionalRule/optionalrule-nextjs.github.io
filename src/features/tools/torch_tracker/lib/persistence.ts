@@ -234,5 +234,14 @@ export const clearTorchTrackerState = (storage: Storage) => {
   }
 }
 
+export const getTorchTrackerStorage = (): Storage | null => {
+  if (typeof window === 'undefined') return null
+  try {
+    return window.localStorage
+  } catch {
+    return null
+  }
+}
+
 export const getTorchTrackerStorageKey = () => STORAGE_KEY
 

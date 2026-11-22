@@ -207,7 +207,6 @@ describe('Accessibility Tests', () => {
         <Pagination 
           currentPage={2} 
           totalPages={5} 
-          basePath="/posts" 
         />
       );
       const results = await axe(container);
@@ -219,7 +218,6 @@ describe('Accessibility Tests', () => {
         <Pagination 
           currentPage={3} 
           totalPages={10} 
-          basePath="/posts" 
         />
       );
       
@@ -236,7 +234,6 @@ describe('Accessibility Tests', () => {
         <Pagination 
           currentPage={3} 
           totalPages={10} 
-          basePath="/posts" 
         />
       );
       
@@ -250,7 +247,6 @@ describe('Accessibility Tests', () => {
         <Pagination 
           currentPage={3} 
           totalPages={10} 
-          basePath="/posts" 
         />
       );
       

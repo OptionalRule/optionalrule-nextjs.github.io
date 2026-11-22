@@ -42,6 +42,7 @@ beforeEach(() => {
   // Clear all mocks before each test
   vi.clearAllMocks();
   resetNextNavigationMocks();
+  if (expect.getState().testPath?.includes('/star_system_generator/')) expect.hasAssertions();
 });
 
 // Some environments omit the Node constructor, which React checks via `instanceof`.

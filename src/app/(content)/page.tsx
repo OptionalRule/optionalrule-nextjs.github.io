@@ -33,7 +33,6 @@ export default function Home() {
                 <Pagination
                   currentPage={currentPage}
                   totalPages={totalPages}
-                  basePath=""
                 />
               </div>
             </header>
@@ -57,7 +56,6 @@ export default function Home() {
               <Pagination
                 currentPage={currentPage}
                 totalPages={totalPages}
-                basePath=""
               />
             </main>
           </div>

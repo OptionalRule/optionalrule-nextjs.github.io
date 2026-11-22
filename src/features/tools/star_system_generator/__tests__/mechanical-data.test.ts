@@ -46,6 +46,16 @@ describe('star system mechanical data', () => {
     expectTableCoverage(architectures, 2, 13)
   })
 
+  it('has numeric [min, max] mass and luminosity ranges for every star type', () => {
+    for (const entry of [...realisticStarTypes, ...frontierStarTypes]) {
+      for (const range of [entry.value.massRange, entry.value.luminosityRange]) {
+        expect(range, entry.value.type).toHaveLength(2)
+        expect(range.every((bound) => typeof bound === 'number'), entry.value.type).toBe(true)
+        expect(range[0], entry.value.type).toBeLessThanOrEqual(range[1])
+      }
+    }
+  })
+
   it('has complete environment, moon, and ring roll tables', () => {
     expect(activityLabels.at(-1)?.max).toBe(Number.POSITIVE_INFINITY)
     expectTableCoverage(atmosphereTable, 1, 12)

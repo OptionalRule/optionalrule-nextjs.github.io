@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { buildEdgeIndexes } from '../buildIndexes'
-import type { RelationshipEdge } from '../types'
+import type { EntityRef, RelationshipEdge } from '../types'
 
 function makeEdge(o: Partial<RelationshipEdge>): RelationshipEdge {
   return {
@@ -51,7 +51,7 @@ describe('buildEdgeIndexes', () => {
   })
 
   it('handles edges with same subject and object (self-loop) — both refs map to the edge', () => {
-    const ref = { kind: 'body', id: 'b1', displayName: 'B1', layer: 'physical' as const }
+    const ref: EntityRef = { kind: 'body', id: 'b1', displayName: 'B1', layer: 'physical' }
     const edge = makeEdge({ id: 'e1', subject: ref, object: ref })
     const indexes = buildEdgeIndexes([edge])
     expect(indexes.edgesByEntity['b1']).toEqual(['e1'])

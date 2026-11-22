@@ -58,15 +58,6 @@ vi.mock('three', () => {
   return { Group, Object3D, Color, ShaderMaterial, InstancedMesh }
 })
 
-declare global {
-  namespace JSX {
-    interface IntrinsicElements {
-      group: React.HTMLAttributes<HTMLElement> & { ref?: unknown; rotation?: unknown }
-      primitive: React.HTMLAttributes<HTMLElement> & { object?: unknown; dispose?: unknown }
-    }
-  }
-}
-
 import { Belt } from '../Belt'
 import type { BeltVisual } from '../../types'
 

@@ -22,7 +22,6 @@ src/
         types.ts
         components/
           BodyDetailPanel.tsx
-          ConfidenceBadge.tsx
           ExportPanel.tsx
           GeneratorControls.tsx
           OrbitalTable.tsx
@@ -232,8 +231,8 @@ M6 - UI MVP
 - [x] Build `OrbitalTable`.
 - [x] Build `BodyDetailPanel`.
 - [x] Build `SettlementCard`.
-- [x] Build `ConfidenceBadge`.
-- [x] Build confidence-label legend.
+- [x] Build `ConfidenceBadge` (later removed as unused).
+- [x] Build confidence-label legend (later removed as unused).
 - [x] Wire `useGeneratedSystem`.
 - [x] Wire `useGeneratorQueryState`.
 - [x] Add component tests for first vertical slice.

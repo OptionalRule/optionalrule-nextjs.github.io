@@ -66,6 +66,45 @@ describe("Search page integration", () => {
     expect(screen.getByRole("link", { name: "How-To" })).toBeInTheDocument();
   });
 
+  it("stops searching once the query is idle", async () => {
+    setMockSearchParams({ q: "alchemy" });
+    performSearch.mockImplementation(() => new Promise((resolve) => setTimeout(() => resolve([]), 20)));
+
+    const SearchPage = await loadSearchPage();
+    render(<SearchPage />);
+
+    await waitFor(() => expect(performSearch).toHaveBeenCalled());
+    await act(async () => {
+      await new Promise((resolve) => setTimeout(resolve, 700));
+    });
+    const settledCalls = performSearch.mock.calls.length;
+
+    await act(async () => {
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+    });
+    expect(performSearch.mock.calls.length).toBe(settledCalls);
+    expect(settledCalls).toBeLessThanOrEqual(2);
+  });
+
+  it("lets the user edit a query that came from the URL", async () => {
+    setMockSearchParams({ q: "foo" });
+    performSearch.mockResolvedValue([]);
+
+    const SearchPage = await loadSearchPage();
+    render(<SearchPage />);
+
+    const user = userEvent.setup();
+    const input = await screen.findByPlaceholderText("Search for posts...");
+    expect(input).toHaveValue("foo");
+
+    await user.type(input, "b");
+    expect(input).toHaveValue("foob");
+
+    await user.clear(input);
+    await user.type(input, "bar");
+    expect(input).toHaveValue("bar");
+  });
+
   it("shows loading state while searching and renders results once complete", async () => {
     const deferred = (() => {
       let resolve!: (value: SearchHit[]) => void;

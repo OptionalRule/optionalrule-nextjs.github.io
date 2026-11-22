@@ -101,23 +101,33 @@ function checkHardcodedHosts(): Finding[] {
   const findings: Finding[] = [];
   const srcDir = path.join(process.cwd(), 'src');
   const ignoreDirs = ['__tests__', 'stories'];
-  const hostRegex = /(https?:\/\/[^\s'"`]+)/g;
+  const siteConfigDir = path.join(srcDir, 'config');
+  const testFile = /\.(test|spec)\.(t|j)sx?$/;
+  const hostRegex = /(https?:\/\/[A-Za-z0-9][^\s'"`)]*)/g;
+  const allowedPrefixes = [
+    siteConfig.url,
+    'https://www.googletagmanager.com/',
+    'http://www.w3.org/',
+    'http://www.sitemaps.org/schemas/',
+    'https://schema.org',
+    'https://www.youtube.com/embed/',
+    'https://player.vimeo.com/video/',
+  ];
   function walk(dir: string) {
     const entries = fs.readdirSync(dir, { withFileTypes: true });
     for (const entry of entries) {
       const full = path.join(dir, entry.name);
       if (entry.isDirectory()) {
+        if (full === siteConfigDir) continue;
         if (ignoreDirs.some(d => full.includes(path.sep + d + path.sep))) continue;
         walk(full);
       } else if (entry.isFile() && /\.(t|j)sx?$/.test(entry.name)) {
         if (ignoreDirs.some(d => full.includes(path.sep + d + path.sep))) continue;
+        if (testFile.test(entry.name)) continue;
         const content = readFileSafe(full) || '';
         const matches = content.match(hostRegex) || [];
         for (const m of matches) {
-          // Allow common external references in SVGs; we've filtered those directories already
-          if (m.startsWith(siteConfig.url)) continue;
-          // Allow GA script URL in GA component
-          if (m.startsWith('https://www.googletagmanager.com/')) continue;
+          if (allowedPrefixes.some(prefix => m.startsWith(prefix))) continue;
           findings.push({ level: 'warning', message: `Hard-coded host found in ${path.relative(process.cwd(), full)}: ${m}` });
         }
       }

@@ -34,6 +34,7 @@ describe('KCD2 Alchemy — Accessibility', () => {
     const potion: NormalizedPotionRecipe = {
       id: 'p1',
       name: 'Artemisia',
+      baseValue: 0,
       ingredients: {
         liquid: 'Spirits',
         liquidId: 'spirits',

@@ -6,6 +6,7 @@ const sample: NormalizedPotionRecipe[] = [
   {
     id: 'p1',
     name: 'Aqua Vitalis',
+    baseValue: 0,
     ingredients: {
       liquid: 'Water',
       liquidId: 'water',
@@ -24,6 +25,7 @@ const sample: NormalizedPotionRecipe[] = [
   {
     id: 'p2',
     name: 'Artemisia',
+    baseValue: 0,
     ingredients: {
       liquid: 'Spirits',
       liquidId: 'spirits',

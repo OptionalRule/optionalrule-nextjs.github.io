@@ -1,6 +1,7 @@
-import { getAllPostsMeta } from './content';
+import { getAllPostsMeta, getAllPageSlugs, getAllTags, POSTS_PER_PAGE } from './content';
 import { urlPaths } from './urls';
 import { siteConfig } from '../config/site';
+import { parseDateToUTCDate } from './utils';
 
 // Generate RSS feed XML
 export function generateRSSFeed(): string {
@@ -8,7 +9,7 @@ export function generateRSSFeed(): string {
   
   const rssItems = posts.map(post => {
     const postUrl = `${siteConfig.url}${urlPaths.post(post.date, post.slug)}`;
-    const pubDate = new Date(post.date).toUTCString();
+    const pubDate = parseDateToUTCDate(post.date).toUTCString();
     
     return `
     <item>
@@ -22,7 +23,7 @@ export function generateRSSFeed(): string {
   }).join('');
 
   const lastBuildDate = posts.length > 0 
-    ? new Date(posts[0].date).toUTCString()
+    ? parseDateToUTCDate(posts[0].date).toUTCString()
     : new Date().toUTCString();
 
   return `<?xml version="1.0" encoding="UTF-8" ?>
@@ -47,41 +48,32 @@ export function generateRSSFeed(): string {
 export function generateSitemap(): string {
   const posts = getAllPostsMeta();
   
-  // Static pages
   const staticPages = [
     { url: '', priority: '1.0' },
-    { url: '/pages/about/', priority: '0.8' },
-    { url: '/tags/', priority: '0.7' },
+    ...getAllPageSlugs().map(slug => ({ url: urlPaths.staticPage(slug), priority: '0.8' })),
+    { url: urlPaths.tags(), priority: '0.7' },
   ];
-  
-  // Dynamic post pages
+
   const postPages = posts.map(post => ({
     url: urlPaths.post(post.date, post.slug),
     lastmod: post.date,
     priority: '0.9',
   }));
-  
-  // Pagination pages (if needed)
-  const totalPages = Math.ceil(posts.length / 10);
+
+  const totalPages = Math.ceil(posts.length / POSTS_PER_PAGE);
   const paginationPages = [];
   for (let i = 2; i <= totalPages; i++) {
     paginationPages.push({
-      url: `/page/${i}/`,
+      url: urlPaths.page(i),
       priority: '0.6',
     });
   }
-  
-  // Get unique tags
-  const tags = new Set<string>();
-  posts.forEach(post => {
-    post.tags?.forEach(tag => tags.add(tag.toLowerCase()));
-  });
-  
-  const tagPages = Array.from(tags).map(tag => ({
-    url: `/tag/${tag}/`,
+
+  const tagPages = Array.from(new Set(getAllTags().map(tag => urlPaths.tag(tag)))).map(url => ({
+    url,
     priority: '0.6',
   }));
-  
+
   const allPages = [...staticPages, ...postPages, ...paginationPages, ...tagPages];
   
   const urlEntries = allPages.map(page => {

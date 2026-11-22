@@ -2,7 +2,8 @@ import { describe, expect, it } from 'vitest'
 import { buildRelationshipGraph } from '../buildRelationshipGraph'
 import type { EntityInventoryInput } from '../entities'
 import { createSeededRng } from '../../rng'
-import type { NarrativeFact } from '../../../types'
+import { isNarrativeDomain } from '../../narrative/domains'
+import type { NarrativeFact } from '../../../../types'
 import { namedFactions } from '../../data/narrative'
 
 const minimalInput = (): EntityInventoryInput => ({
@@ -40,7 +41,7 @@ const controlsFacts = (): NarrativeFact[] => [
   {
     id: 'f-fac-a',
     kind: 'namedFaction',
-    domains: [...controlsFaction.domains],
+    domains: controlsFaction.domains.filter(isNarrativeDomain),
     subjectType: 'faction',
     value: { value: controlsFaction.name, confidence: 'derived' },
     tags: [],

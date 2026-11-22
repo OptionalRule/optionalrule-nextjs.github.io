@@ -74,11 +74,6 @@ const loadPageModule = async (): Promise<PageModule> => {
     ),
   }));
 
-  vi.doMock("@/stories/mdx-components", () => ({
-    __esModule: true,
-    mdxComponents: {},
-  }));
-
   vi.doMock("next/image", () => ({
     __esModule: true,
     default: ({
