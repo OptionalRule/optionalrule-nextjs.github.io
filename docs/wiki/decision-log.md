@@ -97,3 +97,8 @@ Rows refer to [the defect ledger](../superpowers/plans/2026-11-21-defect-ledger.
 - Q54: Defer the eslint 10, TypeScript 7 and @types/node 26 majors to a separate upgrade task. Their PRs stay open (I8).
 - Q55: Document the worktree no-fetch constraint only; no hook (K5).
 - Q56: Release the exact CI-green SHA to `main` once all lanes land, then check the live site with `curl`.
+
+## 2026-11-21 Q57–Q59 (user: "yes to all")
+- Q57: H7 — the site-migration post gets the tags `Community` and `Philosophy`.
+- Q58: H8 — the five drafted descriptions are approved as written (drafts held in the coordinator's session scratchpad; applied in the commit that closes H8).
+- Q59: Fix "buiding" → "building" in the MUD post's title only; the slug and URL stay unchanged.
