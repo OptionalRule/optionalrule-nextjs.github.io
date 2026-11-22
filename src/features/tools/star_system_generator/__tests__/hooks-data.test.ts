@@ -3,6 +3,7 @@ import {
   contractPool,
   encounterPool,
   HOOK_TERMS,
+  type HookBindSlot,
   npcPool,
   rumorPool,
   twistPool,
@@ -17,6 +18,7 @@ const POOLS = {
 } as const
 
 const KNOWN_TAGS = new Set<string>(HOOK_TERMS)
+const BIND_SLOTS: ReadonlySet<string> = new Set<HookBindSlot>(['party', 'place', 'stake', 'phenomenon'])
 
 describe('hook data integrity', () => {
   it('has non-empty pools for every category', () => {
@@ -63,6 +65,16 @@ describe('hook data integrity', () => {
     }
     for (const term of HOOK_TERMS) {
       expect(seen.has(term), `term "${term}" must appear in at least one pool`).toBe(true)
+    }
+  })
+
+  it('every bind slot is a known HookBindSlot', () => {
+    for (const [name, pool] of Object.entries(POOLS)) {
+      for (const entry of pool) {
+        for (const slot of entry.binds ?? []) {
+          expect(BIND_SLOTS.has(slot), `${name} bind slot "${slot}"`).toBe(true)
+        }
+      }
     }
   })
 })
