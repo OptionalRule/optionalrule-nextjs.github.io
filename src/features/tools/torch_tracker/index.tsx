@@ -283,5 +283,3 @@ export default function TorchTracker({ className }: TorchTrackerProps) {
     </div>
   )
 }
-
-export { TorchTracker as TorchTrackerComponent }

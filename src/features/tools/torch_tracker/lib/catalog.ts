@@ -47,16 +47,6 @@ export const createCatalogIndex = (entries: TorchCatalogEntry[]) => {
   return index
 }
 
-export const findCatalogEntry = (
-  catalog: TorchCatalogEntry[] | Map<string, TorchCatalogEntry>,
-  id: string,
-): TorchCatalogEntry | undefined => {
-  if (catalog instanceof Map) {
-    return catalog.get(id)
-  }
-  return catalog.find((entry) => entry.id === id)
-}
-
 const secondsFromMinutes = (minutes: number) => Math.max(0, Math.round(minutes * 60))
 
 export interface CreateActiveSourceOptions {
