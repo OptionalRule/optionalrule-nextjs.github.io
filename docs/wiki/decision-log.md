@@ -102,3 +102,7 @@ Rows refer to [the defect ledger](../superpowers/plans/2026-11-21-defect-ledger.
 - Q57: H7 — the site-migration post gets the tags `Community` and `Philosophy`.
 - Q58: H8 — the five drafted descriptions are approved as written (drafts held in the coordinator's session scratchpad; applied in the commit that closes H8).
 - Q59: Fix "buiding" → "building" in the MUD post's title only; the slug and URL stay unchanged.
+
+## 2026-11-21 Q60–Q61 (user: "yes to all")
+- Q60 (refines Q40 for C3): the TOC and the page headings share one id rule, which is the current page rule except that bold or italic headings take their id from their text. So `#object-object` becomes `#spells` and `#i-do-not-do-reviews-disclaimer`; every other existing page id stays the same. Found 2026-11-21: all affected posts have `showToc: false`.
+- Q61: N1 (viewer3d `sceneGraph.ts`: outer moons can land past a wide companion, reachable only with hand-built inputs; no generator output change) is deferred.
