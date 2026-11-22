@@ -109,3 +109,6 @@ Rows refer to [the defect ledger](../superpowers/plans/2026-11-21-defect-ledger.
 
 ## 2026-11-21 Q62 (user: "no", so the alternative applies)
 - Q62: Fix duplicate heading ids now (N2). Within a page, the first occurrence keeps its id and later occurrences get `-1`, `-2`, …; the TOC uses the same ids. Only those later occurrences change (places-of-power, april-2021-experimental-house-rules, as found 2026-11-21 at `019c8e9`).
+
+## 2026-11-22 Q63–Q65 (user: "yes to all")
+- Q63–Q65: A weekly wiki lint runs as a cloud routine `trig_01XukurVS7tVwwErhhd1DuNX` every Monday at 14:00 UTC (9:00 New York in winter). It runs on Sonnet 5.5 in the Default environment with no connectors. It fixes only index entries, links, orphans, and overtaken code claims (as new dated lines), commits `docs(wiki): weekly lint` to develop, and writes judgment items to `docs/wiki/lint-log.md`. This fulfils the round-4 approval of a weekly lint.
