@@ -33,6 +33,35 @@ describe("Header navigation", () => {
     });
   });
 
+  it("closes an open dropdown when clicking elsewhere in the header", () => {
+    render(<Header />);
+
+    fireEvent.click(screen.getAllByRole("button", { name: "Tools" })[0]);
+    expect(screen.getByText("Torch Tracker")).toBeInTheDocument();
+
+    fireEvent.mouseDown(screen.getByAltText("Optional Rule Logo"));
+    expect(screen.queryByText("Torch Tracker")).not.toBeInTheDocument();
+  });
+
+  it("keeps an open dropdown open when clicking inside it", () => {
+    render(<Header />);
+
+    fireEvent.click(screen.getAllByRole("button", { name: "Tools" })[0]);
+    fireEvent.mouseDown(screen.getByText("Torch Tracker"));
+    expect(screen.getByText("Torch Tracker")).toBeInTheDocument();
+  });
+
+  it("keeps a mobile submenu open when pressing one of its links", () => {
+    render(<Header />);
+
+    fireEvent.click(screen.getByRole("button", { name: "Toggle navigation menu" }));
+    const toolsButtons = screen.getAllByRole("button", { name: "Tools" });
+    fireEvent.click(toolsButtons[toolsButtons.length - 1]);
+
+    fireEvent.mouseDown(screen.getByText("Torch Tracker"));
+    expect(screen.getByText("Torch Tracker")).toBeInTheDocument();
+  });
+
   it("marks external utility links with security attributes", () => {
     render(<Header />);
 

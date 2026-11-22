@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import Image from 'next/image';
-import { useEffect, useState, type ReactNode } from 'react';
+import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { urlPaths } from '@/lib/urls';
 import { THEME_STORAGE_KEY } from '@/config/site';
 
@@ -103,6 +103,7 @@ export function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [theme, setTheme] = useState<"light" | "dark" | null>(null);
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
+  const openDropdownRef = useRef<HTMLDivElement | null>(null);
 
   // Rehydrate theme from the current document class (set by inline script)
   useEffect(() => {
@@ -113,8 +114,8 @@ export function Header() {
   // Close dropdowns when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      const target = event.target as Element;
-      if (openDropdown && !target.closest('.relative')) {
+      const target = event.target as Node;
+      if (openDropdown && !openDropdownRef.current?.contains(target)) {
         setOpenDropdown(null);
       }
     };
@@ -206,6 +207,7 @@ export function Header() {
     
     return (
       <div 
+        ref={isOpen ? openDropdownRef : undefined}
         className="relative"
         onMouseEnter={() => setOpenDropdown(dropdown.label)}
         onMouseLeave={closeDropdown}
@@ -345,7 +347,11 @@ export function Header() {
             <div className="flex flex-col space-y-3 pt-4">
               {navigationItems.map((item) => (
                 isDropdown(item) ? (
-                  <div key={item.label} className="flex flex-col">
+                  <div
+                    key={item.label}
+                    ref={openDropdown === `mobile-${item.label}` ? openDropdownRef : undefined}
+                    className="flex flex-col"
+                  >
                     {/* Mobile dropdown trigger */}
                     <button
                       onClick={() => handleDropdownToggle(`mobile-${item.label}`)}
