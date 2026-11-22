@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, Suspense } from 'react';
+import { useState, useEffect, useCallback, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { SearchInput } from '@/components/SearchInput';
@@ -13,16 +13,7 @@ function SearchPageContent() {
   const [isLoading, setIsLoading] = useState(false);
   const [currentQuery, setCurrentQuery] = useState('');
 
-  // Initialize search from URL params
-  useEffect(() => {
-    const urlQuery = searchParams.get('q') || '';
-    setCurrentQuery(urlQuery);
-    if (urlQuery) {
-      handleSearch(urlQuery);
-    }
-  }, [searchParams]);
-
-  const handleSearch = async (searchQuery: string) => {
+  const handleSearch = useCallback(async (searchQuery: string) => {
     setCurrentQuery(searchQuery);
     
     if (!searchQuery.trim()) {
@@ -43,7 +34,15 @@ function SearchPageContent() {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    const urlQuery = searchParams.get('q') || '';
+    setCurrentQuery(urlQuery);
+    if (urlQuery) {
+      handleSearch(urlQuery);
+    }
+  }, [searchParams, handleSearch]);
 
   return (
     <div className="container mx-auto px-4 py-8 max-w-4xl">

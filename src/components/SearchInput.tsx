@@ -32,27 +32,30 @@ export function SearchInput({
     return searchParams.get('q') || defaultValue;
   });
 
-  // Handle hydration and URL param changes
+  const onSearchRef = useRef(onSearch);
+  const lastSearchedRef = useRef<string | null>(null);
+
   useEffect(() => {
-    // Sync with URL params after hydration
+    onSearchRef.current = onSearch;
+  }, [onSearch]);
+
+  useEffect(() => {
     const urlQuery = searchParams.get('q') || '';
-    // Only update if URL param is different and not empty
-    // (avoid overriding user input with empty URL param)
-    if (urlQuery && urlQuery !== query) {
+    if (urlQuery) {
       setQuery(urlQuery);
     }
-  }, [searchParams, query]);
+  }, [searchParams]);
 
-  // Handle input changes with debouncing
   useEffect(() => {
     const timeoutId = setTimeout(() => {
-      if (onSearch) {
-        onSearch(query);
+      if (onSearchRef.current && query !== lastSearchedRef.current) {
+        lastSearchedRef.current = query;
+        onSearchRef.current(query);
       }
-    }, 300); // 300ms debounce
+    }, 300);
 
     return () => clearTimeout(timeoutId);
-  }, [query, onSearch]);
+  }, [query]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -71,10 +74,9 @@ export function SearchInput({
     inputRef.current?.focus();
     // Update URL to remove query parameter
     router.push(urlPaths.search());
-    if (onSearch) {
-      onSearch('');
-    }
-  }, [router, onSearch]);
+    lastSearchedRef.current = '';
+    onSearchRef.current?.('');
+  }, [router]);
 
   // Keyboard shortcuts
   useEffect(() => {
