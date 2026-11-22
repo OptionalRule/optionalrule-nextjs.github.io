@@ -1,9 +1,18 @@
 import { describe, it, expect, vi } from 'vitest'
-import { render, screen } from '@testing-library/react'
+import { fireEvent, render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import type { ReactNode } from 'react'
 import { ViewerModal } from '../ViewerModal'
-import { ViewerContextProvider } from '../ViewerContext'
+import { ViewerContextProvider, useLayers } from '../ViewerContext'
+
+function LayersProbe() {
+  const { layers } = useLayers()
+  return <output data-testid="layers">{JSON.stringify(layers)}</output>
+}
+
+function layerState(): Record<string, boolean> {
+  return JSON.parse(screen.getByTestId('layers').textContent ?? '{}') as Record<string, boolean>
+}
 
 function renderModal(ui: ReactNode) {
   return render(<ViewerContextProvider>{ui}</ViewerContextProvider>)
@@ -46,5 +55,53 @@ describe('ViewerModal', () => {
     expect(document.body.style.overflow).toBe('hidden')
     unmount()
     expect(document.body.style.overflow).toBe(original)
+  })
+
+  it.each([
+    ['1', 'physical'],
+    ['2', 'gu'],
+    ['3', 'human'],
+    ['4', 'moonOrbits'],
+  ])('toggles a layer when %s is pressed', (key, layer) => {
+    renderModal(<ViewerModal title="X" onClose={() => undefined}><LayersProbe /></ViewerModal>)
+    const before = layerState()[layer]
+    expect(typeof before).toBe('boolean')
+    fireEvent.keyDown(window, { key })
+    expect(layerState()[layer]).toBe(!before)
+    fireEvent.keyDown(window, { key })
+    expect(layerState()[layer]).toBe(before)
+  })
+
+  it('wraps Tab focus from the last focusable element to the first', () => {
+    renderModal(<ViewerModal title="X" onClose={() => undefined}><button type="button">Inner</button></ViewerModal>)
+    const close = screen.getByRole('button', { name: /close/i })
+    const inner = screen.getByRole('button', { name: 'Inner' })
+    inner.focus()
+    fireEvent.keyDown(window, { key: 'Tab' })
+    expect(document.activeElement).toBe(close)
+  })
+
+  it('wraps Shift+Tab focus from the first focusable element to the last', () => {
+    renderModal(<ViewerModal title="X" onClose={() => undefined}><button type="button">Inner</button></ViewerModal>)
+    const close = screen.getByRole('button', { name: /close/i })
+    const inner = screen.getByRole('button', { name: 'Inner' })
+    close.focus()
+    fireEvent.keyDown(window, { key: 'Tab', shiftKey: true })
+    expect(document.activeElement).toBe(inner)
+  })
+
+  it('leaves Tab alone when focus is not on an edge element', () => {
+    renderModal(
+      <ViewerModal title="X" onClose={() => undefined}>
+        <button type="button">Middle</button>
+        <button type="button">Last</button>
+      </ViewerModal>,
+    )
+    const middle = screen.getByRole('button', { name: 'Middle' })
+    middle.focus()
+    const event = new KeyboardEvent('keydown', { key: 'Tab', cancelable: true })
+    window.dispatchEvent(event)
+    expect(event.defaultPrevented).toBe(false)
+    expect(document.activeElement).toBe(middle)
   })
 })
